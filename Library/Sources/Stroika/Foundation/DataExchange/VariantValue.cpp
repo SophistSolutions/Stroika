@@ -395,7 +395,7 @@ VariantValue VariantValue::ConvertTo (Type to) const
         case Type::eMap:
             return VariantValue{As<Mapping<String, VariantValue>> ()};
     }
-    static const DataExchange::BadFormatException kCannotCoerce2ThatType_{L"Cannot coerce VariantValue to that type"sv};
+    static const DataExchange::BadFormatException kCannotCoerce2ThatType_{"Cannot coerce VariantValue to that type"sv};
     Execution::Throw (kCannotCoerce2ThatType_);
 }
 

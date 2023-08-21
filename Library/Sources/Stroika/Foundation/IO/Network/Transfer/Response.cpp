@@ -31,12 +31,12 @@ using namespace Stroika::Foundation::Memory;
 String Response::SSLResultInfo::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Subject-Common-Name: " + Characters::ToString (fSubjectCommonName) + ",";
-    sb += "Subject-Company-Name: " + Characters::ToString (fSubjectCompanyName) + ",";
-    sb += "Issuer: " + Characters::ToString (fIssuer) + L",";
-    sb += "Validation-Status: " + Characters::ToString (fValidationStatus) + ",";
-    sb += "}";
+    sb += "{"sv;
+    sb += "Subject-Common-Name: "sv + Characters::ToString (fSubjectCommonName) + ","sv;
+    sb += "Subject-Company-Name: "sv + Characters::ToString (fSubjectCompanyName) + ","sv;
+    sb += "Issuer: "sv + Characters::ToString (fIssuer) + ","sv;
+    sb += "Validation-Status: "sv + Characters::ToString (fValidationStatus) + ","sv;
+    sb += "}"sv;
     return sb.str ();
 }
 

@@ -114,7 +114,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
     auto bindingActivity =
-        Execution::LazyEvalActivity{[&] () -> Characters::String { return L"binding to " + Characters::ToString (sockAddr); }};
+        Execution::LazyEvalActivity{[&] () -> Characters::String { return "binding to "sv + Characters::ToString (sockAddr); }};
     [[maybe_unused]] auto&& declareActivity = Execution::DeclareActivity{&bindingActivity};
 
     // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
@@ -168,11 +168,11 @@ String Socket::Ptr::ToString () const
         sb += "nullptr"sv;
     }
     else {
-        sb += "{";
-        sb += "Native-Socket: " +
-              ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? "CLOSED" : Characters::ToString (fRep_->GetNativeSocket ())) + ", ";
+        sb += "{"sv;
+        sb += "Native-Socket: "sv +
+              ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? "CLOSED"sv : Characters::ToString (fRep_->GetNativeSocket ())) + ", "sv;
         if (auto ola = GetLocalAddress ()) {
-            sb += "Local-Address: " + Characters::ToString (*ola);
+            sb += "Local-Address: "sv + Characters::ToString (*ola);
         }
         sb += "}";
     }

@@ -284,7 +284,7 @@ namespace {
                  */
                 // Note - /procfs files always unseekable
                 for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
-                    if (line.size () >= 3 and line[0] == String::FromNarrowSDKString (name) and line[1] == L"00000000") {
+                    if (line.size () >= 3 and line[0] == String::FromNarrowSDKString (name) and line[1] == "00000000"sv) {
                         //
                         int tmp[4]{};
                         swscanf (line[2].c_str (), L"%02x%02x%02x%02x", &tmp[3], &tmp[2], &tmp[1], &tmp[0]);

@@ -135,7 +135,7 @@ namespace {
                 String devName = line[0];
                 // procfs/mounts often contains symbolic links to device files
                 // e.g. /dev/disk/by-uuid/e1d70192-1bb0-461d-b89f-b054e45bfa00
-                if (devName.StartsWith (L"/")) {
+                if (devName.StartsWith ("/"sv)) {
                     IgnoreExceptionsExceptThreadInterruptForCall (
                         devName = IO::FileSystem::FromPath (filesystem::canonical (IO::FileSystem::ToPath (devName))));
                 }
@@ -293,18 +293,18 @@ namespace {
 String MountedFilesystemType::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Mounted-On: " + Characters::ToString (fMountedOn) + L", ";
+    sb += "{"sv;
+    sb += "Mounted-On: "sv + Characters::ToString (fMountedOn) + ", "sv;
     if (fDevicePaths) {
-        sb += L"Device-Paths: " + Characters::ToString (*fDevicePaths) + L", ";
+        sb += "Device-Paths: "sv + Characters::ToString (*fDevicePaths) + ", "sv;
     }
     if (fFileSystemType) {
-        sb += L"FileSystem-Type: '" + *fFileSystemType + L"', ";
+        sb += "FileSystem-Type: '"sv + *fFileSystemType + "', "sv;
     }
     if (fVolumeID) {
-        sb += L"Volume-ID: '" + *fVolumeID + L"', ";
+        sb += "Volume-ID: '"sv + *fVolumeID + "', "sv;
     }
-    sb += L"}";
+    sb += "}"sv;
     return sb.str ();
 }
 

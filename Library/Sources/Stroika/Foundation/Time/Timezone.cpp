@@ -185,8 +185,8 @@ optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const optional
 Characters::String Timezone::ToString () const
 {
     // This format is just comsetic and for information (debugging) purposes, and follows no standards
-    static const String kUTC_{L"UTC"sv};
-    static const String kLocaltime_{L"localtime"sv};
+    static const String kUTC_{"UTC"sv};
+    static const String kLocaltime_{"localtime"sv};
     switch (fTZ_) {
         case TZ_::eUTC:
             return kUTC_;
@@ -246,7 +246,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
         try {
             // Not a good approach because this returns a zone abbreviation, which doesn't uniquely define a zone.
             // For example, CDT could be Cocos Islands Time, or Central Daylight Time (North America) etc (see http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations)
-            String  tzAbbrev = Execution::ProcessRunner {L"date +%Z"}.Run (String {}).Trim ();
+            String  tzAbbrev = Execution::ProcessRunner {"date +%Z"}.Run (String {}).Trim ();
             using   Containers::Mapping;
             using   Common::KeyValuePair;
             // Table from Hand-coded for a few empirical cases around 2015-06-01

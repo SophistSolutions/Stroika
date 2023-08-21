@@ -29,7 +29,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         if (wireFormat.StartsWith ('\"')) {
             return ETag{wireFormat.SubString (1, -1)};
         }
-        if (wireFormat.StartsWith (L"\\W\""sv)) {
+        if (wireFormat.StartsWith ("\\W\""sv)) {
             return ETag{wireFormat.SubString (3, -1), true};
         }
         return nullopt;
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     template <>
     inline Characters::String ETag::As () const
     {
-        return (fWeak ? "\\W\""sv : "\"") + fValue + "\""sv;
+        return (fWeak ? "\\W\""sv : "\""sv) + fValue + "\""sv;
     }
     inline Characters::String ETag::ToString () const
     {

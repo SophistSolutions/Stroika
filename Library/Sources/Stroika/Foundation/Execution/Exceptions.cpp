@@ -139,7 +139,7 @@ Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkMsg_ (er
 Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkCombinedMsg_ (error_code errCode, const Characters::String& message)
 {
     StringBuilder sb{message};
-    sb += L" ";
+    sb += " ";
     if (errCode.category () == generic_category ()) {
         sb += Characters::Format (L"{errno: %d}", errCode.value ());
     }
