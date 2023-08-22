@@ -23,8 +23,8 @@ in DockerBuildContainers (both windows dev vm and Hercules)
 ```bash
 (sometimes remove all existing containers/images first)
 make pull-base-images
-make tag-images
 make build-images
+make tag-images
 make push-images
 ```
 
