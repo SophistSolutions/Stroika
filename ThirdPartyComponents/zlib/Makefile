@@ -112,13 +112,20 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE_} > BUILD-OUT.txt 2>&1
 else
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib  > BUILD-OUT.txt 2>&1
+	@# sadly complex build steps due to compat with Ubuntu 18.04
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic  > BUILD-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlib  >> BUILD-OUT.txt 2>&1
 endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
+	@# sadly complex build steps due to compat with Ubuntu 18.04
+	@mkdir -p ${PER_CONFIGURATION_BUILDS_DIR_}lib ${PER_CONFIGURATION_BUILDS_DIR_}include
+	@cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/libz.a ${PER_CONFIGURATION_BUILDS_DIR_}lib
+	@cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/zconf.h ${PER_CONFIGURATION_BUILDS_DIR_}include
+	@cp CURRENT/zlib.h ${PER_CONFIGURATION_BUILDS_DIR_}include
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@#some hacks to make more similar to what I had before - not sure why this fixes things... --LGP 2023-05-11
