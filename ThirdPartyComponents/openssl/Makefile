@@ -20,21 +20,17 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 # As of OpenSSL 3.0, QUICK_BUILD really needed by default since takes like 30 minutes (at least with windows/sanitizer) -- LGP 2021-09-09
 QUICK_BUILD ?= 1
 
+CMAKE ?= cmake
+
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
-VERSION=3.1.0
+VERSION=3.1.2
+#VERSION=3.1.1
+#VERSION=3.1.0
 #VERSION=3.0.8
 #VERSION=3.0.7
 #VERSION=3.0.5
-#VERSION=3.0.4
-#VERSION=3.0.2
-#VERSION=3.0.1
-#VERSION=3.0.0
-
-#VERSION=1.1.1k
-#VERSION=1.1.1j
-
 
 BASENAME=openssl-$(VERSION)
 EXTRACTED_DIRNAME=$(BASENAME)
@@ -53,6 +49,7 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS=
+FETCHURLS+=https://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/old/1.1.1/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/old/1.1.0/$(BASENAME).tar.gz
@@ -114,10 +111,10 @@ else
 INSTALL_TARGET=install
 endif
 
-
-# autoconfigure sometimes detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
+# autoconfigure sometimes (linux) detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
+ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIG_ARGS+=	--libdir=lib
-
+endif
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
@@ -337,6 +334,16 @@ endif
 ifeq (${PERL_VERSION_PATCH_},)
 PERL_VERSION_PATCH_=echo 'using installed perl'
 endif
+
+
+ifeq ($(qFeatureFlag_StrawberryPerl), use)
+# These perl scripts require \ not / in pathnames (at least on MSYS) - not sure why not needed for cygwin
+# and THEN, only when run inside docker? So very confusing...
+# --LGP 2023-06-10
+CFLAGS:=$(shell echo ${CFLAGS} | sed 's/\//\\/g')
+endif
+
+
 
 doBuilds_:
 	@
