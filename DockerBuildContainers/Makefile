@@ -19,6 +19,17 @@ help:
 	@echo "And first thing when you run docker image, cat /Getting-Started-With-Stroika.md"
 
 
+ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+# Due to https://stroika.atlassian.net/browse/STK-742 - you may see the error message building "Invoke-WebRequest : The remote name could not be resolved"
+#	- add   --network "Default Switch" 
+# to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
+# in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
+# Build with -m 4GB cuz default of 1GB pages alot
+EXTRA_DOCKER_BUILD_ARGS_= --network "Default Switch" 
+#EXTRA_DOCKER_BUILD_ARGS_=
+endif
+
+
 build-images:
 ifeq (${DETECTED_HOST_OS},Linux)
 	docker build -f Ubuntu1804-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu1804-small .
@@ -33,19 +44,32 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2204 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@# to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
-	@# in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
-	@# Build with -m 4GB cuz default of 1GB pages alot
-	@# Due to https://stroika.atlassian.net/browse/STK-742 - add   --network "Default Switch" 
-	@#docker build -m 4GB --network "Default Switch" -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
-	@# as of 2021-09-20 - on new laptop  fails to build with -m, but works without (crazy buggy docker)
-	docker build --network "Default Switch" -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
-	docker build --network "Default Switch" -f Windows-Cygwin-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 .
-	@echo "BEWARE DOCKER BUG: https://stroika.atlassian.net/browse/STK-766 - see that for instructions on workaorund for hang building MSYS containers"
-	@echo "***may need todo rm -rf hcs*/Files/'\$Recycle.Bin' when docker build hangs"
-	docker build --network "Default Switch" -f Windows-MSYS-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 .
-	docker build --network "Default Switch" -f Windows-MSYS-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 .
+	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 endif
+
+
+sophistsolutionsinc/stroika-buildvm-windows-vs2k19:
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-VS2k19/Dockerfile --build-arg BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 -t $@ .
+
+sophistsolutionsinc/stroika-buildvm-windows-vs2k22:
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 -t $@ .
+
+sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:		sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-Cygwin/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k19 -t $@ .
+
+sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-Cygwin/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 -t $@ .
+
+sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19:		sophistsolutionsinc/stroika-buildvm-windows-vs2k19
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-MSYS/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k19 -t $@ .
+
+sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-MSYS/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 -t $@ .
+
+
 
 
 stroika-dev-containers:

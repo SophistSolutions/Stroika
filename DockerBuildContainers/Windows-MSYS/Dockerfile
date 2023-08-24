@@ -91,8 +91,8 @@ RUN \
     pacman --noconfirm -S base-devel git unzip p7zip doxygen mingw-w64-x86_64-jq && \
     pacman --noconfirm -Syuu
 
-COPY Windows-MSYS-VS2k22/Getting-Started-With-Stroika.md $MSYS_DIR
-COPY Windows-MSYS-VS2k22/.bash_profile $MSYS_DIR
+COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR
+COPY Windows-MSYS/.bash_profile $MSYS_DIR
 
 # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
 # and much worse with windows (in part due to available shell commands)
