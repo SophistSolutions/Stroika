@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Memory {
      */
     class LeakTrackingGeneralPurposeAllocator : public AbstractGeneralPurposeAllocator {
     public:
-        using PTRMAP = map<void*, size_t, less<void*>, STLAllocator<pair<void* const, size_t>>>;
+        using PTRMAP = map<void*, size_t, less<void*>>;
 
     public:
         LeakTrackingGeneralPurposeAllocator ();
