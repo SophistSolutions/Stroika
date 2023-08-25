@@ -20,8 +20,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 # As of OpenSSL 3.0, QUICK_BUILD really needed by default since takes like 30 minutes (at least with windows/sanitizer) -- LGP 2021-09-09
 QUICK_BUILD ?= 1
 
-CMAKE ?= cmake
-
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #

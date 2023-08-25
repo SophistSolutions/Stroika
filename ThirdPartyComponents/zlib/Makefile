@@ -17,8 +17,6 @@ ifneq (${CONFIGURATION},)
 include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
 endif
 
-CMAKE?= cmake
-
 #
 # CHECK FOR UPDATED VERSIONS http://zlib.net/
 #
