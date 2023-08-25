@@ -155,8 +155,8 @@ namespace Stroika::Foundation::Memory {
 
     private:
         AbstractGeneralPurposeAllocator& fBaseAllocator_;
-        atomic<uint32_t>                 fNetAllocationCount_;
-        atomic<size_t>                   fNetAllocatedByteCount_;
+        atomic<uint32_t>                 fNetAllocationCount_{0};
+        atomic<size_t>                   fNetAllocatedByteCount_{0};
     };
 
     /**
@@ -166,11 +166,15 @@ namespace Stroika::Foundation::Memory {
      */
     class LeakTrackingGeneralPurposeAllocator : public AbstractGeneralPurposeAllocator {
     public:
-        using PTRMAP = map<void*, size_t, less<void*>, STLAllocator<pair<void* const, size_t>>>;
+        using PTRMAP = map<void*, size_t, less<void*>>;
 
     public:
+        /**
+         *  
+         */
         LeakTrackingGeneralPurposeAllocator ();
         LeakTrackingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator);
+    public:
         ~LeakTrackingGeneralPurposeAllocator ();
 
     public:
@@ -182,9 +186,12 @@ namespace Stroika::Foundation::Memory {
         nonvirtual size_t GetNetAllocatedByteCount () const;
 
     public:
+        /**
+         *  
+         */
         class Snapshot {
         public:
-            Snapshot ();
+            Snapshot () = delete;
             explicit Snapshot (const PTRMAP& m);
 
         public:

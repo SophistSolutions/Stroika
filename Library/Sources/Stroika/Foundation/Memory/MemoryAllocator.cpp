@@ -101,16 +101,12 @@ namespace {
  ********************************************************************************
  */
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator ()
-    : fBaseAllocator_ (sDefaultAllocator_)
-    , fNetAllocationCount_ (0)
-    , fNetAllocatedByteCount_ (0)
+    : fBaseAllocator_ {sDefaultAllocator_}
 {
 }
 
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator)
-    : fBaseAllocator_ (baseAllocator)
-    , fNetAllocationCount_ (0)
-    , fNetAllocatedByteCount_ (0)
+    : fBaseAllocator_ {baseAllocator}
 {
 }
 
@@ -188,16 +184,12 @@ namespace {
     }
 }
 LeakTrackingGeneralPurposeAllocator::LeakTrackingGeneralPurposeAllocator ()
-    : fCritSection_ ()
-    , fBaseAllocator_ (sDefaultAllocator_)
-    , fAllocations_ ()
+    : fBaseAllocator_ {sDefaultAllocator_}
 {
 }
 
 LeakTrackingGeneralPurposeAllocator::LeakTrackingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator)
-    : fCritSection_ ()
-    , fBaseAllocator_ (baseAllocator)
-    , fAllocations_ ()
+    : fBaseAllocator_ {baseAllocator}
 {
 }
 
@@ -338,12 +330,7 @@ void LeakTrackingGeneralPurposeAllocator::DUMPCurMemStats (const Snapshot& since
     DUMPCurMemStats_ (curSnapshot, sinceSnapshot);
 }
 
-LeakTrackingGeneralPurposeAllocator::Snapshot::Snapshot ()
-    : fAllocations ()
-{
-}
-
 LeakTrackingGeneralPurposeAllocator::Snapshot::Snapshot (const PTRMAP& m)
-    : fAllocations (m)
+    : fAllocations{m}
 {
 }
