@@ -7,6 +7,42 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+####### 2.1.14 DRAFT NOTES
+
+- fixed typo / minor bug detected by newer vs2k22 compiler (17.7.0)
+ 
+- workaround https://stroika.atlassian.net/browse/STK-984 ASAN issue with 17.7.0 release of vis studio (for now disable ASAN by default)
+-  support _MSC_VER_2k22_17Pt7_ bug defines; lose support of deprecated errc::stream_timeout;
+- make format-code with new version of clang-format
+
+- DOCKER FILES RESTRUCTURE
+  -     use docker containers from v3 - or dont use msys docker containers
+-   VS_17_7_1 in docker file
+    migrate v3 branch changes to zlib makeifle and docker containers so works with msys again
+
+    use v3-Dev version of ThirdPartyComponents makefile for zlib
+    more fixes from stkv3 for thirdpartycompoentns zlib change
+    lose unneeed pragam comment lib zlib.lib (needed to lose due to rename, but pragma comment not needed anyhow)
+
+    progress backporting docker container build changes from v3 to v2.1 branch
+
+    support building (windows) strawberry perl tool
+    experiemnt strawberry perl
+    use strawberryperl instead of activeperl on windows - seems bug for bug compatible, but better installation story, and seems for free of encumbrances
+
+    migrated stroika v3 changet to ThirdPartyCompontents/openssl/Makefile
+
+    Adjust configure genration of CWARNINGS_FLAGS for gcc/clang to fit more with v3-Stroika and use no-unqualified-std-cast-call
+
+    lose unneeded unhelpful STLAllocator arg in LeakTrackingGeneralPurposeAllocator utility cuz breaks on clang++7 and unneeded/unuseful
+
+    Added CMAKE variable to configure script
+
+(migrate from v3-branch)    in IO::Transfer regtest, also just warn - not fail - on timeouts - since remote network servers we ping often timeout
+
+
+------------------------
+
 ### 2.1.13 {2023-04-14}
 
 #### TLDR
