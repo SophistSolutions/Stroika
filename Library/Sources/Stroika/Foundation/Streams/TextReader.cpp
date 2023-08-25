@@ -498,9 +498,11 @@ private:
  ******************************* Streams::TextReader ****************************
  ********************************************************************************
  */
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 namespace {
     const codecvt_utf8<wchar_t> kUTF8Converter_; // safe to keep static because only read-only const methods used
 }
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 namespace {
     const MyWCharTConverterType_& LookupCharsetConverter_ (const optional<Characters::String>& charset)

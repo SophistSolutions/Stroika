@@ -22,9 +22,11 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Streams;
 
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 namespace {
     const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
 }
+DISABLE_COMPILER_CLANG_WARNING_end ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 class TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedMutex {
 public:
