@@ -26,7 +26,6 @@ DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-d
 namespace {
     const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
 }
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 class TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedMutex {
 public:
@@ -101,6 +100,7 @@ protected:
     mbstate_t               fMBState_{};
     OutputStream<byte>::Ptr _fSource;
 };
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 class TextWriter::UnSeekable_WCharT_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedMutex {
 public:
