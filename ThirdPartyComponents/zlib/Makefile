@@ -118,7 +118,7 @@ else
 endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
+	@#cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
 	@# sadly complex build steps due to compat with vs2k17
 	@mkdir -p ${PER_CONFIGURATION_BUILDS_DIR_}lib ${PER_CONFIGURATION_BUILDS_DIR_}include
 	@cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/*/zlibstatic*.lib ${PER_CONFIGURATION_BUILDS_DIR_}lib
