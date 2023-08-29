@@ -131,7 +131,8 @@
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
 			"**/target": true
-		}
+		},
+		"dotnet.defaultSolution": "disable"
 
 	}
 }

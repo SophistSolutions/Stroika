@@ -7,39 +7,41 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-####### 2.1.14 DRAFT NOTES
+### 2.1.14 {2023-08-30xxxxxxxxxxxxxxxxxxx}
 
-- fixed typo / minor bug detected by newer vs2k22 compiler (17.7.0)
- 
-- workaround https://stroika.atlassian.net/browse/STK-984 ASAN issue with 17.7.0 release of vis studio (for now disable ASAN by default)
--  support _MSC_VER_2k22_17Pt7_ bug defines; lose support of deprecated errc::stream_timeout;
-- make format-code with new version of clang-format
+#### TLDR
+- Support visual studio.net 2022 17.x
+- Redo build of docker windows msys docker containers so more automated (better in v3, partial backport) - and so works again building some third party component libraries
+- Disable ASAN by default for windows debug builds since MSFT broke [https://stroika.atlassian.net/browse/STK-984](ish) in 17.x.
 
-- DOCKER FILES RESTRUCTURE
-  -     use docker containers from v3 - or dont use msys docker containers
--   VS_17_7_1 in docker file
-    migrate v3 branch changes to zlib makeifle and docker containers so works with msys again
+#### Change Details
 
-    use v3-Dev version of ThirdPartyComponents makefile for zlib
-    more fixes from stkv3 for thirdpartycompoentns zlib change
-    lose unneeed pragam comment lib zlib.lib (needed to lose due to rename, but pragma comment not needed anyhow)
-
-    progress backporting docker container build changes from v3 to v2.1 branch
-
-    support building (windows) strawberry perl tool
-    experiemnt strawberry perl
+- Build System
+  - Docker Containers
+    - Restructure Windows docker container build (borrowed much from v3 - mostly automated)
+      - use docker containers from v3 - or dont use msys docker containers
+    - VS_17_7_1 in docker file
+  - Cosmetic
+    - make format-code with new version of clang-format
+  - configure
+    - Adjust configure genration of CWARNINGS_FLAGS for gcc/clang to fit more with v3-Stroika and use no-unqualified-std-cast-call
+    - workaround https://stroika.atlassian.net/browse/STK-984 ASAN issue with 17.7.0 release of vis studio (for now disable ASAN by default)
+- Library
+  - Misc 
+    - support _MSC_VER_2k22_17Pt7_ bug defines; lose support of deprecated errc::stream_timeout;
+  - Foundation
+    - Memory
+      - lose unneeded unhelpful STLAllocator arg in LeakTrackingGeneralPurposeAllocator utility cuz breaks on clang++7 and unneeded/unuseful
+- RegressionTests and Sanitizers
+  - in IO::Transfer regtest, also just warn - not fail - on timeouts - since remote network servers we ping often timeout (migrate from v3-branch)    
+- ThirdPartyComponents
+  - Use StrawberyPerl instead of ActivePerl for building openssl
+  - OpenSSL
+    - redo makefile using cmake, and StrawberryPerl (reason was compat with msys inside docker container)
+  - zlib
+    - redo makefile using cmake (reason was compat with msys inside docker container)
+    - lose unneeed pragam comment lib zlib.lib (needed to lose due to rename, but pragma comment not needed anyhow)
     use strawberryperl instead of activeperl on windows - seems bug for bug compatible, but better installation story, and seems for free of encumbrances
-
-    migrated stroika v3 changet to ThirdPartyCompontents/openssl/Makefile
-
-    Adjust configure genration of CWARNINGS_FLAGS for gcc/clang to fit more with v3-Stroika and use no-unqualified-std-cast-call
-
-    lose unneeded unhelpful STLAllocator arg in LeakTrackingGeneralPurposeAllocator utility cuz breaks on clang++7 and unneeded/unuseful
-
-    Added CMAKE variable to configure script
-
-(migrate from v3-branch)    in IO::Transfer regtest, also just warn - not fail - on timeouts - since remote network servers we ping often timeout
-
 
 ------------------------
 
