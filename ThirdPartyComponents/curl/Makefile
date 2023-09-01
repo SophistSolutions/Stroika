@@ -32,6 +32,15 @@ TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 SLINKDIRNAME=$(BASENAME)
 
+
+#
+# only saw failed configure with sanitize-leak on ubuntu 20.04, but easier to remove from all like we do for openssl --LGP 2023-09-01
+#
+CFLAGS:=$(filter-out -fsanitize=%, $(CFLAGS))
+CXXFLAGS:=$(filter-out -fsanitize=%, $(CXXFLAGS))
+LDFLAGS:=$(filter-out -fsanitize=%, $(LDFLAGS))
+
+
 #
 # CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
 #
