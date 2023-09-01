@@ -3729,6 +3729,7 @@ vector<byte> Characters::MapUNICODETextToSerializedFormat (const wchar_t* start,
  ********************************************************************************
  */
 namespace {
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     // From https://en.wikipedia.org/wiki/ISO/IEC_8859-1 - "ISO-8859-1 was incorporated as the first 256 code points of ISO/IEC 10646 and Unicode.
     struct codecvt_iso10646_ : std::codecvt<wchar_t, char, mbstate_t> {
         virtual result do_in (mbstate_t& _State, const char* _First1, const char* _Last1, const char*& _Mid1, wchar_t* _First2, wchar_t* _Last2, wchar_t*& _Mid2) const
@@ -3771,3 +3772,4 @@ namespace Stroika::Foundation::Characters {
         Execution::Throw (Execution::Exception{L"charset not supported"sv});
     }
 }
+DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated-declarations\"");

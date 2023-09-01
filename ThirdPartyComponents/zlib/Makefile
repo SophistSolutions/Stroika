@@ -17,8 +17,6 @@ ifneq (${CONFIGURATION},)
 include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
 endif
 
-CMAKE?= cmake
-
 #
 # CHECK FOR UPDATED VERSIONS http://zlib.net/
 #
@@ -110,7 +108,9 @@ endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 	@#@todo dont understand why config=${CMAKE_BUILD_TYPE_} NEEDED for windows, and needs to not exist on unix
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE_} > BUILD-OUT.txt 2>&1
+	@# sadly complex build steps due to compat with msvc 2k17
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic  --config ${CMAKE_BUILD_TYPE_} > BUILD-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlib --config ${CMAKE_BUILD_TYPE_} >> BUILD-OUT.txt 2>&1
 else
 	@# sadly complex build steps due to compat with Ubuntu 18.04
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic  > BUILD-OUT.txt 2>&1
@@ -118,7 +118,12 @@ else
 endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
+	@#cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
+	@# sadly complex build steps due to compat with vs2k17
+	@mkdir -p ${PER_CONFIGURATION_BUILDS_DIR_}lib ${PER_CONFIGURATION_BUILDS_DIR_}include
+	@cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/*/zlibstatic*.lib ${PER_CONFIGURATION_BUILDS_DIR_}lib
+	@cp ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/zconf.h ${PER_CONFIGURATION_BUILDS_DIR_}include
+	@cp CURRENT/zlib.h ${PER_CONFIGURATION_BUILDS_DIR_}include
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
 	@# sadly complex build steps due to compat with Ubuntu 18.04

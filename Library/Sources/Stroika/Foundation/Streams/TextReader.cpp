@@ -25,6 +25,7 @@ namespace {
     using MyWCharTConverterType_ = codecvt<wchar_t, char, mbstate_t>;
 }
 
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedMutex {
 public:
     FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
@@ -186,6 +187,7 @@ protected:
 #endif
     SeekOffsetType _fOffset;
 };
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 class TextReader::UnseekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
     using inherited = FromBinaryStreamBaseRep_;
@@ -496,9 +498,11 @@ private:
  ******************************* Streams::TextReader ****************************
  ********************************************************************************
  */
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 namespace {
     const codecvt_utf8<wchar_t> kUTF8Converter_; // safe to keep static because only read-only const methods used
 }
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 namespace {
     const MyWCharTConverterType_& LookupCharsetConverter_ (const optional<Characters::String>& charset)
