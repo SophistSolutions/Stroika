@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1.14 {2023-08-30xxxxxxxxxxxxxxxxxxx}
+### 2.1.14 {2023-09-06}
 
 #### TLDR
 - Support visual studio.net 2022 17.7.x
@@ -26,6 +26,7 @@ especially those they need to be aware of when upgrading.
   - configure
     - Adjust configure genration of CWARNINGS_FLAGS for gcc/clang to fit more with v3-Stroika and use no-unqualified-std-cast-call
     - workaround https://stroika.atlassian.net/browse/STK-984 ASAN issue with 17.7.0 release of vis studio (for now disable ASAN by default)
+    - https://bugs.launchpad.net/ubuntu/+source/gcc-9/+bug/2029910 a avoid tsan on Ubuntu 20.04 of only-if-compiler used in configure
 - Library
   - Misc 
     - support _MSC_VER_2k22_17Pt7_ bug defines; lose support of deprecated errc::stream_timeout;
