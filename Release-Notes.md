@@ -12,7 +12,7 @@ especially those they need to be aware of when upgrading.
 #### TLDR
 - Support visual studio.net 2022 17.7.x
 - Redo build of docker windows msys docker containers so more automated (better in v3, partial backport) - and so works again building some third party component libraries
-- Disable ASAN by default for visual studio debug builds since MSFT broke [STK-984](https://stroika.atlassian.net/browse/STK-984) in 17.x.
+- Disable ASAN by default for visual studio debug builds since MSFT broke [STK-984](https://stroika.atlassian.net/browse/STK-984) in 17.7.x.
 
 #### Change Details
 
