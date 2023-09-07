@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1.14 {2023-09-06}
+### 2.1.14 {2023-09-07}
 
 #### TLDR
 - Support visual studio.net 2022 17.7.x
