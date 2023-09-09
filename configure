@@ -913,27 +913,17 @@ sub	SetDefaultForCompilerDriver_
 
 		### if is msvc and version > 19.29 (which is 16.10), enable asan
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) >= 192930037) {
-			# https://stroika.atlassian.net/browse/STK-984
-			# avoid buggy 17.7 ASAN issue - https://developercommunity.visualstudio.com/t/ASAN-177-clang_rtasan_dynamic-x86_64d/10436682?
-			my $clVer = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
-			if (193732822 <= $clVer and $clVer <= 193732822) {
-				## SKIP by default, but if use force it with sanitzer flag fine - but must do
-				# export PATH=$PATH:/C:Program\ Files/Microsoft\ Visual\ Studio/2022/BuildTools/VC/Tools/MSVC/14.37.32822/bin//Hostx64/x64/"
-				# or similar to distribute dll
-			}
-			else {
-				if (!$sanitizerFlagsNoneSet) {
-					my %already = map { $_ => 1 } @sanitizerFlags;
-					if(!exists($already{'address'})) {
-						push @sanitizerFlags, 'address';
-					}
-					# note ubsan not yet supported --LGP 2022-01-04
-					# if(!exists($already{'undefined'})) {
-					# 	push @sanitizerFlags, 'undefined';
-					# }
+			if (!$sanitizerFlagsNoneSet) {
+				my %already = map { $_ => 1 } @sanitizerFlags;
+				if(!exists($already{'address'})) {
+					push @sanitizerFlags, 'address';
 				}
-				$sanitizerFlagsIsDefined = true;
+				# note ubsan not yet supported --LGP 2022-01-04
+				# if(!exists($already{'undefined'})) {
+				# 	push @sanitizerFlags, 'undefined';
+				# }
 			}
+			$sanitizerFlagsIsDefined = true;
 		}
 
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
@@ -2155,6 +2145,23 @@ sub PostProcessOptions_ ()
 			}
 			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) or IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
 				$EXTRA_PREFIX_LINKER_ARGS .= $crap2Add2CZZFlags;
+			}
+			if ($isVisualStudio) {
+				# https://stroika.atlassian.net/browse/STK-984
+				# avoid buggy 17.7 ASAN issue - https://developercommunity.visualstudio.com/t/ASAN-177-clang_rtasan_dynamic-x86_64d/10436682?
+				#
+				# Since 17.7.x, we need /c/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.37.32822/bin/Hostx64/x64/ - full toolspath is overkill
+				# but simple enuf and only when building for asan
+				my $clVer = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
+				my %already = map { $_ => 1 } @sanitizerFlags;
+				if(exists($already{'address'}) and 193732822 <= $clVer and $clVer <= 193732822) {
+					if (not ($RUN_PREFIX eq "")) {
+						$RUN_PREFIX = " " . $RUN_PREFIX;
+					}
+					FillInToolsPathAdditionsIfNeeded_();
+					my $dir2Add  = GetMSVCVarName_ ("ASAN_DLL_DIR");;
+					$RUN_PREFIX = "ASAN_DLL_DIR_=\$\$(cygpath --unix \"$dir2Add\"); PATH=\"\$\$PATH:\$\$ASAN_DLL_DIR_\"" . $RUN_PREFIX;
+				}
 			}
 			push @CFLAGS, $crap2Add2CZZFlags;
 			push @CXXFLAGS, $crap2Add2CZZFlags;
