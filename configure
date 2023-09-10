@@ -2130,9 +2130,9 @@ sub PostProcessOptions_ ()
 	}
 	if ($ENABLE_LTO == true) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-			push @CFLAGS, "-flto";
-			push @CXXFLAGS, "-flto";
-			$EXTRA_PREFIX_LINKER_ARGS .= " -flto";
+			push @CFLAGS, "-flto=auto";
+			push @CXXFLAGS, "-flto=auto";
+			$EXTRA_PREFIX_LINKER_ARGS .= " -flto=auto";
 		}
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-GL";			#	Whole Program Optimization
