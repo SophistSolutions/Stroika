@@ -75,10 +75,11 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
 
 ## Complete MSYS install, once the basic (core components of) MSYS are installed one way or another
 
+# Add MSYS bin directory to the path
+
 # Setup path to include msys tools (and mingw dir for jq)
 # ENV PATH="${PATH};${MSYS_ASDOS_DIR}\usr\bin;${MSYS_ASDOS_DIR}\mingw64\bin"
 
-# Add cygwin to the path
 SHELL ["powershell"]
 RUN  \
     $env:PATH =  $env:PATH + ';C:\msys64\usr\bin;C:\msys64\mingw64\bin'; \

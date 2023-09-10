@@ -141,12 +141,14 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 DEFAULT_CC_LINE=\
 	"$(CC)" \
+		$(CPPFLAGS) \
 		$(CFLAGS) \
 		-c $1 \
 		-o $2
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 DEFAULT_CC_LINE=\
 	"$(CC)" \
+		$(CPPFLAGS) \
 		$(CFLAGS) \
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \
@@ -162,12 +164,14 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 DEFAULT_CXX_LINE=\
 	"$(CXX)" \
+		$(CPPFLAGS) \
 		$(CXXFLAGS) \
 		-c $1 \
 		-o $2
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 DEFAULT_CXX_LINE=\
 	"$(CXX)" \
+		$(CPPFLAGS) \
 		$(CXXFLAGS) \
 		-c $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		-Fo$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2) \

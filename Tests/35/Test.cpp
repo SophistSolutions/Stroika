@@ -142,40 +142,40 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"{}::Test5_InternetMediaType_"};
             {
-                InternetMediaType ct0{L"text/plain"};
-                VerifyTestResult (ct0.GetType () == L"text");
-                VerifyTestResult (ct0.GetSubType () == L"plain");
+                InternetMediaType ct0{"text/plain"};
+                VerifyTestResult (ct0.GetType () == "text");
+                VerifyTestResult (ct0.GetSubType () == "plain");
                 VerifyTestResult (ct0.GetSuffix () == nullopt);
 
                 InternetMediaType ct1{L"text/plain;charset=ascii"};
                 VerifyTestResult (
-                    (ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{L"charset", L"ascii"}}));
+                    (ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{"charset", "ascii"}}));
                 VerifyTestResult (ct1.GetSuffix () == nullopt);
 
-                InternetMediaType ct2{L"text/plain; charset = ascii"};
+                InternetMediaType ct2{"text/plain; charset = ascii"};
                 VerifyTestResult (ct1 == ct2);
 
-                InternetMediaType ct3{L"text/plain; charset = \"ascii\""};
+                InternetMediaType ct3{"text/plain; charset = \"ascii\""};
                 VerifyTestResult (ct1 == ct3);
 
-                InternetMediaType ct4{L"text/plain; charset = \"ASCII\""}; // case insensitive compare key, but not value
+                InternetMediaType ct4{"text/plain; charset = \"ASCII\""}; // case insensitive compare key, but not value
                 VerifyTestResult (ct1 != ct4);
 
-                InternetMediaType ct5{L"application/vnd.ms-excel"};
-                VerifyTestResult (ct5.GetType () == L"application");
-                VerifyTestResult (ct5.GetSubType () == L"vnd.ms-excel");
+                InternetMediaType ct5{"application/vnd.ms-excel"};
+                VerifyTestResult (ct5.GetType () == "application");
+                VerifyTestResult (ct5.GetSubType () == "vnd.ms-excel");
                 VerifyTestResult (ct5.GetSuffix () == nullopt);
 
-                InternetMediaType ct6{L"application/mathml+xml"};
-                VerifyTestResult (ct6.GetType () == L"application");
-                VerifyTestResult (ct6.GetSubType () == L"mathml");
-                VerifyTestResult (ct6.GetSuffix () == L"xml");
+                InternetMediaType ct6{"application/mathml+xml"};
+                VerifyTestResult (ct6.GetType () == "application");
+                VerifyTestResult (ct6.GetSubType () == "mathml");
+                VerifyTestResult (ct6.GetSuffix () == "xml");
                 VerifyTestResult (ct6.As<wstring> () == L"application/mathml+xml");
             }
             {
                 // Example from https://tools.ietf.org/html/rfc2045#page-10 - comments ignored, and quotes on value
-                InternetMediaType ct1{L"text/plain; charset=us-ascii (Plain text)"};
-                InternetMediaType ct2{L"text/plain; charset=\"us-ascii\""};
+                InternetMediaType ct1{"text/plain; charset=us-ascii (Plain text)"};
+                InternetMediaType ct2{"text/plain; charset=\"us-ascii\""};
                 VerifyTestResult (ct1 == ct2);
                 VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (ct1));
             }
@@ -210,13 +210,13 @@ namespace {
                     }
                 };
                 dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
-                checkCT (InternetMediaTypes::kText_PLAIN, {L".txt"});
+                checkCT (InternetMediaTypes::kText_PLAIN, {".txt"});
                 dumpCT (L"HTML", InternetMediaTypes::kHTML);
-                checkCT (InternetMediaTypes::kHTML, {L".html", L".htm"});
+                checkCT (InternetMediaTypes::kHTML, {".html", ".htm"});
                 dumpCT (L"JSON", InternetMediaTypes::kJSON);
-                checkCT (InternetMediaTypes::kJSON, {L".json"});
+                checkCT (InternetMediaTypes::kJSON, {".json"});
                 dumpCT (L"PNG", InternetMediaTypes::kPNG);
-                checkCT (InternetMediaTypes::kPNG, {L".png"});
+                checkCT (InternetMediaTypes::kPNG, {".png"});
                 {
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kPNG));
                     VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kJSON));
@@ -227,8 +227,8 @@ namespace {
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kHTML));
                     VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kJSON));
                     VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kPNG));
-                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{L"text/foobar"}));
-                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{L"text/foobar+xml"}));
+                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar"}));
+                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar+xml"}));
                 }
             }
             {
@@ -242,9 +242,9 @@ namespace {
                 Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry - updating"};
                 InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
                 InternetMediaTypeRegistry updatedRegistry = origRegistry;
-                const auto                kHFType_        = InternetMediaType{L"application/fake-heatlthframe-phr+xml"};
+                const auto                kHFType_        = InternetMediaType{"application/fake-heatlthframe-phr+xml"};
                 VerifyTestResult (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
-                updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Containers::Set<String>{L".HPHR"}, L".HPHR"});
+                updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Containers::Set<String>{".HPHR"}, ".HPHR"});
                 InternetMediaTypeRegistry::Set (updatedRegistry);
                 VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
                 VerifyTestResult (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
