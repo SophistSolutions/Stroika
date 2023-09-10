@@ -408,7 +408,7 @@ namespace Stroika::Foundation::Characters {
         /**
          * See https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
          * 
-         *  \note - would be nice to use DiscreteRange for these, but hard todo given deadly embrace, plus constexpr issues
+         *  \note - would be nice to use DiscreteRange for these, but hard todo given deadly embrace.
          */
         static constexpr char16_t kUNICODESurrogate_High_Start{0xD800}; // was UNI_SUR_HIGH_START
         static constexpr char16_t kUNICODESurrogate_High_End{0xDBFF};   // was UNI_SUR_HIGH_END
