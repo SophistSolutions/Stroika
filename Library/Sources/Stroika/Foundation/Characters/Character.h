@@ -60,10 +60,7 @@ namespace Stroika::Foundation::Characters {
      */
     struct Latin1 {
         uint8_t data;
-        constexpr operator uint8_t () const
-        {
-            return data;
-        }
+        constexpr operator uint8_t () const;
         constexpr bool operator== (const Latin1&) const  = default;
         constexpr auto operator<=> (const Latin1&) const = default;
     };
