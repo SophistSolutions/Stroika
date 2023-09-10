@@ -63,7 +63,7 @@ Stroika's biggest strength is also its biggest weakness:
 
 - Stroika v3
 
-  TBD, but so far looks like vs2k22 or later on windows, XCode 14.3 or later on MacOS, and g++10 or later, and clang++13 or later (roughly - depends on version of libc++ vs libstdc++)
+  TBD, but so far looks like vs2k22 or later on windows, XCode 14.3 or later on MacOS, and g++11 or later, and clang++13 or later (roughly - depends on version of libc++ vs libstdc++)
 
 - Stroika v2.1
 
