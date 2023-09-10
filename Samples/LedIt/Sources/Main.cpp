@@ -102,9 +102,18 @@ inline size_t DoGetPtrSize (void* p)
  */
 #include "pool_alloc.h"
 extern "C" {
-void*       __sys_alloc (std::size_t n) { return DoSysAlloc (n); }
-void        __sys_free (void* p) { DoSysFree (p); }
-std::size_t __sys_pointer_size (void* p) { return ::DoGetPtrSize (p); }
+void* __sys_alloc (std::size_t n)
+{
+    return DoSysAlloc (n);
+}
+void __sys_free (void* p)
+{
+    DoSysFree (p);
+}
+std::size_t __sys_pointer_size (void* p)
+{
+    return ::DoGetPtrSize (p);
+}
 }
 #endif
 

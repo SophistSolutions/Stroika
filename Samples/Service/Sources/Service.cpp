@@ -107,4 +107,7 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
     AssertNotReached ();
 }
 
-Main::ServiceDescription SampleAppServiceRep::GetServiceDescription () const { return kServiceDescription_; }
+Main::ServiceDescription SampleAppServiceRep::GetServiceDescription () const
+{
+    return kServiceDescription_;
+}

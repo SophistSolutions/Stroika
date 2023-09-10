@@ -34,7 +34,9 @@ LedItInPlaceFrame::LedItInPlaceFrame ()
 {
 }
 
-LedItInPlaceFrame::~LedItInPlaceFrame () {}
+LedItInPlaceFrame::~LedItInPlaceFrame ()
+{
+}
 
 int LedItInPlaceFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
 {
@@ -92,7 +94,13 @@ BOOL LedItInPlaceFrame::PreCreateWindow (CREATESTRUCT& cs)
 }
 
 #ifdef _DEBUG
-void LedItInPlaceFrame::AssertValid () const { COleIPFrameWnd::AssertValid (); }
+void LedItInPlaceFrame::AssertValid () const
+{
+    COleIPFrameWnd::AssertValid ();
+}
 
-void LedItInPlaceFrame::Dump (CDumpContext& dc) const { COleIPFrameWnd::Dump (dc); }
+void LedItInPlaceFrame::Dump (CDumpContext& dc) const
+{
+    COleIPFrameWnd::Dump (dc);
+}
 #endif //_DEBUG

@@ -26,17 +26,25 @@ using namespace DataExchange::Variant;
  */
 class INI::Writer::Rep_ : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
-    Rep_ () {}
+    Rep_ ()
+    {
+    }
     virtual _SharedPtrIRep Clone () const override
     {
         return make_shared<Rep_> (); // no instance data
     }
-    virtual String GetDefaultFileSuffix () const override { return ".ini"sv; }
-    virtual void   Write (const VariantValue& v, const OutputStream<byte>::Ptr& out) override
+    virtual String GetDefaultFileSuffix () const override
+    {
+        return ".ini"sv;
+    }
+    virtual void Write (const VariantValue& v, const OutputStream<byte>::Ptr& out) override
     {
         Write (v, TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude));
     }
-    virtual void    Write (const VariantValue& v, const OutputStream<Character>::Ptr& out) override { Write (Convert (v), out); }
+    virtual void Write (const VariantValue& v, const OutputStream<Character>::Ptr& out) override
+    {
+        Write (Convert (v), out);
+    }
     nonvirtual void Write (const Profile& profile, const OutputStream<Characters::Character>::Ptr& out) const
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

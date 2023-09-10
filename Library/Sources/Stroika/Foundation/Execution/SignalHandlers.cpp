@@ -209,10 +209,16 @@ public:
     }
 
 public:
-    Set<SignalID> GetHandledSignals () const { return Set<SignalID>{fHandlers_.cget ()->Keys ()}; }
+    Set<SignalID> GetHandledSignals () const
+    {
+        return Set<SignalID>{fHandlers_.cget ()->Keys ()};
+    }
 
 public:
-    Set<SignalHandler> GetSignalHandlers (SignalID signal) const { return fHandlers_.cget ()->LookupValue (signal); }
+    Set<SignalHandler> GetSignalHandlers (SignalID signal) const
+    {
+        return fHandlers_.cget ()->LookupValue (signal);
+    }
 
 public:
     void Remove (SignalID signal)
@@ -348,7 +354,10 @@ Set<SignalHandler> SignalHandlerRegistry::GetSignalHandlers (SignalID signal) co
     return result;
 }
 
-void SignalHandlerRegistry::SetSignalHandlers (SignalID signal) { SetSignalHandlers (signal, Set<SignalHandler>{}); }
+void SignalHandlerRegistry::SetSignalHandlers (SignalID signal)
+{
+    SetSignalHandlers (signal, Set<SignalHandler>{});
+}
 
 void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const SignalHandler& handler)
 {

@@ -31,7 +31,10 @@ using StyleMarkerSummarySink = StyledTextImager::StyleMarkerSummarySink;
     easily either markers that take precedence over, or are always superseded by the
     standard style markers. And this returns eBaselinePriority - ZERO - by default.</p>
  */
-int StyleMarker::GetPriority () const { return eBaselinePriority; }
+int StyleMarker::GetPriority () const
+{
+    return eBaselinePriority;
+}
 
 /*
  ********************************************************************************
@@ -495,7 +498,9 @@ DistanceType StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to) c
 }
 
 #if qDebug
-void StyledTextImager::Invariant_ () const {}
+void StyledTextImager::Invariant_ () const
+{
+}
 #endif
 
 /*
@@ -503,4 +508,7 @@ void StyledTextImager::Invariant_ () const {}
  ************************** TrivialFontSpecStyleMarker **************************
  ********************************************************************************
  */
-int TrivialFontSpecStyleMarker::GetPriority () const { return eBaselinePriority + 1; }
+int TrivialFontSpecStyleMarker::GetPriority () const
+{
+    return eBaselinePriority + 1;
+}

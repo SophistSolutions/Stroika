@@ -7,8 +7,8 @@
 #include <iostream>
 #include <sstream>
 
-#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Characters/CodeCvt.h"
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/SortedMapping.h"
@@ -49,7 +49,7 @@ namespace {
         size_t           sz = codeCvt.ComputeTargetByteBufferSize (w.length ());
         // const auto       bom = GetByteOrderMark (UnicodeExternalEncodings::eUTF8);
         // out.write (reinterpret_cast<const char*> (bom.data ()), bom.size ());         // https://stroika.atlassian.net/browse/STK-982 - this should work (and I think is) - but causes later failure (reader) - so debug why
-        Memory::StackBuffer<byte> buf{ Memory::UninitializedConstructorFlag::eUninitialized, sz};
+        Memory::StackBuffer<byte> buf{Memory::UninitializedConstructorFlag::eUninitialized, sz};
         span<byte>                outSpan = codeCvt.Characters2Bytes (span{w}, span{buf});
         out.write (reinterpret_cast<const char*> (outSpan.data ()), outSpan.size ());
     }
@@ -106,8 +106,14 @@ namespace {
 
         class MyCallback : public StructuredStreamEvents::IConsumer {
         public:
-            virtual void StartDocument () override { fEltDepthCount = 0; }
-            virtual void EndDocument () override { VerifyTestResult (fEltDepthCount == 0); }
+            virtual void StartDocument () override
+            {
+                fEltDepthCount = 0;
+            }
+            virtual void EndDocument () override
+            {
+                VerifyTestResult (fEltDepthCount == 0);
+            }
             virtual void StartElement (const StructuredStreamEvents::Name& name) override
             {
                 fEltDepthCount++;
@@ -190,9 +196,8 @@ namespace {
             {
                 vector<Appointment_>                     calendar;
                 ObjectReader::IConsumerDelegateToContext ctx{
-                    registry,
-                    make_shared<ObjectReader::ReadDownToReader> (
-                        make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar), Name{"Appointment"})};
+                    registry, make_shared<ObjectReader::ReadDownToReader> (
+                                  make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar), Name{"Appointment"})};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
                 VerifyTestResult (calendar[0].withWhom.firstName == "Jim");
@@ -232,7 +237,10 @@ namespace {
         struct Person_ {
             String firstName;
             String lastName;
-            bool   operator== (const Person_& rhs) const { return firstName == rhs.firstName and lastName == rhs.lastName; }
+            bool   operator== (const Person_& rhs) const
+            {
+                return firstName == rhs.firstName and lastName == rhs.lastName;
+            }
         };
         Memory::BLOB mkdata_ ()
         {
@@ -411,7 +419,10 @@ namespace {
             VerifyTestResult (p.firstName == "Jim");
             VerifyTestResult (p.lastName == "Smith");
         }
-        void DoTests () { DoTest1 (); }
+        void DoTests ()
+        {
+            DoTest1 ();
+        }
     }
 }
 

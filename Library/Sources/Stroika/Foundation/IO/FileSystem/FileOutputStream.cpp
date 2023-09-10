@@ -98,8 +98,11 @@ public:
         }
     }
     nonvirtual Rep_& operator= (const Rep_&) = delete;
-    virtual bool     IsSeekable () const override { return fSeekable_; }
-    virtual void     CloseWrite () override
+    virtual bool     IsSeekable () const override
+    {
+        return fSeekable_;
+    }
+    virtual void CloseWrite () override
     {
         Require (IsOpenWrite ());
         if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
@@ -111,7 +114,10 @@ public:
         }
         fFD_ = -1;
     }
-    virtual bool IsOpenWrite () const override { return fFD_ >= 0; }
+    virtual bool IsOpenWrite () const override
+    {
+        return fFD_ >= 0;
+    }
     virtual void Write (const byte* start, const byte* end) override
     {
         Require (start != nullptr or start == end);

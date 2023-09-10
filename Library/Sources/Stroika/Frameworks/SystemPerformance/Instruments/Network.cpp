@@ -536,7 +536,10 @@ namespace {
             }
             return rawMeasurement;
         }
-        virtual unique_ptr<IRep>   Clone () const override { return make_unique<NetworkInstrumentRep_> (_fOptions, _fContext.load ()); }
+        virtual unique_ptr<IRep> Clone () const override
+        {
+            return make_unique<NetworkInstrumentRep_> (_fOptions, _fContext.load ());
+        }
         Instruments::Network::Info _InternalCapture ()
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};

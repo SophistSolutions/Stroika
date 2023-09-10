@@ -41,7 +41,10 @@ ON_WM_GETDLGCODE ()
 ON_WM_KEYDOWN ()
 END_MESSAGE_MAP ()
 
-UINT GotoEdit::OnGetDlgCode () { return CEdit::OnGetDlgCode () | DLGC_WANTALLKEYS; }
+UINT GotoEdit::OnGetDlgCode ()
+{
+    return CEdit::OnGetDlgCode () | DLGC_WANTALLKEYS;
+}
 
 void GotoEdit::OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags)
 {
@@ -114,7 +117,10 @@ void StatusBar::OnMagicEdited ()
     DISABLE_COMPILER_MSC_WARNING_END (4996)
 }
 
-void StatusBar::OnMagicLoseFocus () { Verify (fGotoEdit.DestroyWindow ()); }
+void StatusBar::OnMagicLoseFocus ()
+{
+    Verify (fGotoEdit.DestroyWindow ());
+}
 
 /*
  ********************************************************************************
@@ -134,9 +140,15 @@ ON_COMMAND (kCloseWindowCmdID, OnCloseWindowCommand)
 ON_COMMAND (kCloseAllWindowsCmdID, OnCloseAllWindowsCommand)
 END_MESSAGE_MAP ()
 
-bool LedLineItMainFrame::GetStatusBarShown () const { return !!fStatusBar.IsWindowVisible (); }
+bool LedLineItMainFrame::GetStatusBarShown () const
+{
+    return !!fStatusBar.IsWindowVisible ();
+}
 
-void LedLineItMainFrame::SetStatusBarShown (bool shown) { fStatusBar.ShowWindow (shown ? SW_SHOWNORMAL : SW_HIDE); }
+void LedLineItMainFrame::SetStatusBarShown (bool shown)
+{
+    fStatusBar.ShowWindow (shown ? SW_SHOWNORMAL : SW_HIDE);
+}
 
 void LedLineItMainFrame::TrackInGotoLineField ()
 {

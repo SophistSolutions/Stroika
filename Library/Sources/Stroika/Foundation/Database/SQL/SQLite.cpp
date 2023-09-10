@@ -250,7 +250,10 @@ struct Connection::Rep_ final : IRep {
     virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
     {
         struct MyEngineProperties_ final : EngineProperties {
-            virtual String GetEngineName () const override { return "SQLite"sv; }
+            virtual String GetEngineName () const override
+            {
+                return "SQLite"sv;
+            }
             virtual String GetSQL (NonStandardSQL n) const override
             {
                 switch (n) {
@@ -260,8 +263,14 @@ struct Connection::Rep_ final : IRep {
                 AssertNotReached ();
                 return String{};
             }
-            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override { return true; }
-            virtual bool SupportsNestedTransactions () const override { return false; }
+            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override
+            {
+                return true;
+            }
+            virtual bool SupportsNestedTransactions () const override
+            {
+                return false;
+            }
         };
         static const shared_ptr<const EngineProperties> kProps_ = make_shared<const MyEngineProperties_> ();
         return kProps_;
@@ -425,7 +434,10 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  ************************** SQL::SQLite::Connection *****************************
  ********************************************************************************
  */
-auto SQL::SQLite::Connection::New (const Options& options) -> Ptr { return Ptr{make_shared<Rep_> (options)}; }
+auto SQL::SQLite::Connection::New (const Options& options) -> Ptr
+{
+    return Ptr{make_shared<Rep_> (options)};
+}
 
 /*
  ********************************************************************************

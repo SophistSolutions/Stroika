@@ -250,7 +250,10 @@ void TextImager::SpecifyTextStore (TextStore* useTextStore)
     }
 }
 
-void TextImager::HookLosingTextStore () { HookLosingTextStore_ (); }
+void TextImager::HookLosingTextStore ()
+{
+    HookLosingTextStore_ ();
+}
 
 void TextImager::HookLosingTextStore_ ()
 {
@@ -265,7 +268,10 @@ void TextImager::HookLosingTextStore_ ()
     }
 }
 
-void TextImager::HookGainedNewTextStore () { HookGainedNewTextStore_ (); }
+void TextImager::HookGainedNewTextStore ()
+{
+    HookGainedNewTextStore_ ();
+}
 
 void TextImager::HookGainedNewTextStore_ ()
 {
@@ -283,7 +289,10 @@ void TextImager::HookGainedNewTextStore_ ()
             The default implementation calls @'TextImager::InvalidateAllCaches'.
             </p>
 */
-void TextImager::PurgeUnneededMemory () { InvalidateAllCaches (); }
+void TextImager::PurgeUnneededMemory ()
+{
+    InvalidateAllCaches ();
+}
 
 /*
 @METHOD:        TextImager::InvalidateAllCaches
@@ -314,7 +323,10 @@ void TextImager::InvalidateAllCaches ()
             use @'StandardStyledTextInteractor::InteractiveSetFont'.
             </p>
 */
-void TextImager::SetDefaultFont (const IncrementalFontSpecification& defaultFont) { SetDefaultFont_ (defaultFont); }
+void TextImager::SetDefaultFont (const IncrementalFontSpecification& defaultFont)
+{
+    SetDefaultFont_ (defaultFont);
+}
 
 void TextImager::SetDefaultFont_ (const IncrementalFontSpecification& defaultFont)
 {
@@ -446,7 +458,7 @@ FontSpecification TextImager::GetStaticDefaultFont ()
         sDefaultFont.SetPointSize (::GetScriptVariable (smCurrentScript, smScriptAppFondSize));
         sDefaultFont.SetStyle_Plain ();
 #elif qPlatform_Windows
-        sDefaultFont = GetStaticDefaultFont (DEFAULT_CHARSET);
+        sDefaultFont                          = GetStaticDefaultFont (DEFAULT_CHARSET);
 #elif qStroika_FeatureSupported_XWindows
         {
             sDefaultFont.SetFontNameSpecifier ("times");
@@ -516,9 +528,15 @@ FontSpecification TextImager::GetStaticDefaultFont (BYTE charSet)
             the selection's current font.
             </p>
 */
-FontSpecification TextImager::GetDefaultSelectionFont () const { return GetDefaultFont (); }
+FontSpecification TextImager::GetDefaultSelectionFont () const
+{
+    return GetDefaultFont ();
+}
 
-void TextImager::SetSelectionShown (bool shown) { fSelectionShown = shown; }
+void TextImager::SetSelectionShown (bool shown)
+{
+    fSelectionShown = shown;
+}
 
 /*
 @METHOD:        TextImager::GetTabStopList
@@ -539,7 +557,10 @@ const TextImager::TabStopList& TextImager::GetTabStopList (size_t /*containingPo
 @METHOD:        TextImager::SetWindowRect
 @DESCRIPTION:   <p>See also @'TextImager::GetWindowRect'.
 */
-void TextImager::SetWindowRect (const Led_Rect& windowRect) { SetWindowRect_ (windowRect); }
+void TextImager::SetWindowRect (const Led_Rect& windowRect)
+{
+    SetWindowRect_ (windowRect);
+}
 
 /*
 @METHOD:        TextImager::ScrollSoShowingHHelper
@@ -631,7 +652,10 @@ void TextImager::SetHScrollPos (CoordinateType hScrollPos)
             (@'WordProcessor::ComputeMaxHScrollPos').
             </p>
 */
-DistanceType TextImager::ComputeMaxHScrollPos () const { return 0; }
+DistanceType TextImager::ComputeMaxHScrollPos () const
+{
+    return 0;
+}
 
 /*
 @METHOD:        TextImager::CalculateLongestRowInWindowPixelWidth
@@ -664,7 +688,10 @@ DistanceType TextImager::CalculateLongestRowInWindowPixelWidth () const
     invalidate any information the @'TextImager' has cached. This is called automaticly, internal to Led, by anything
     Led knows about which would change the metrics.</p>
 */
-void TextImager::TabletChangedMetrics () { InvalidateAllCaches (); }
+void TextImager::TabletChangedMetrics ()
+{
+    InvalidateAllCaches ();
+}
 
 void TextImager::SetSelection (size_t start, size_t end)
 {
@@ -1291,7 +1318,7 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
 #if 1
         TextLayoutBlock_Copy text = GetTextLayoutBlock (startOfRow, endOfRow);
 #else
-        size_t rowLen = endOfRow - startOfRow;
+        size_t                         rowLen = endOfRow - startOfRow;
         Memory::StackBuffer<Led_tChar> rowBuf{Memory::eUninitialized, rowLen};
         CopyOut (startOfRow, rowLen, rowBuf);
         TextLayoutBlock_Basic text{rowBuf, rowBuf + rowLen};
@@ -1577,7 +1604,10 @@ void TextImager::DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet
         <p>If you OVERRIDE this - you may find it handy to call @'TextImager::ContainsMappedDisplayCharacters_HelperForChar'
     to do most of the work.</p>
 */
-bool TextImager::ContainsMappedDisplayCharacters (const Led_tChar* /*text*/, size_t /*nTChars*/) const { return false; }
+bool TextImager::ContainsMappedDisplayCharacters (const Led_tChar* /*text*/, size_t /*nTChars*/) const
+{
+    return false;
+}
 
 /*
 @METHOD:        TextImager::ReplaceMappedDisplayCharacters

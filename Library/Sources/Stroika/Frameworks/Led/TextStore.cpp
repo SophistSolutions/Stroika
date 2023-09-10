@@ -17,7 +17,10 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-inline bool IsASCIIAlpha (int c) { return isascii (c) and isalpha (c); }
+inline bool IsASCIIAlpha (int c)
+{
+    return isascii (c) and isalpha (c);
+}
 
 /*
  ********************************************************************************
@@ -808,7 +811,7 @@ void TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* m
 #else
     {
         vector<Marker*>::const_reverse_iterator start = markers.rbegin ();
-        vector<Marker*>::const_reverse_iterator end = markers.rend ();
+        vector<Marker*>::const_reverse_iterator end   = markers.rend ();
         for (auto i = start; i != end; ++i) {
             (*i)->DidUpdateText (updateInfo);
             Assert (GetMarkerOwners () == markerOwners);
@@ -830,7 +833,10 @@ void TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* m
 @METHOD:        TextStore::PeekAtTextStore
 @DESCRIPTION:   <p>Since a TextStore is a MarkerOwner, is must OVERRIDE the PeekAtTextStore method, and return itself.</p>
 */
-TextStore* TextStore::PeekAtTextStore () const { return const_cast<TextStore*> (this); }
+TextStore* TextStore::PeekAtTextStore () const
+{
+    return const_cast<TextStore*> (this);
+}
 
 #if qDebug
 /*

@@ -51,6 +51,12 @@ RegularExpressionMatch::RegularExpressionMatch (const String& fullMatch, const C
 {
 }
 
-String RegularExpressionMatch::GetFullMatch () const { return fFullMatch_; }
+String RegularExpressionMatch::GetFullMatch () const
+{
+    return fFullMatch_;
+}
 
-Containers::Sequence<String> RegularExpressionMatch::GetSubMatches () const { return fSubMatches_; }
+Containers::Sequence<String> RegularExpressionMatch::GetSubMatches () const
+{
+    return fSubMatches_;
+}

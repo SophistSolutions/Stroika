@@ -59,7 +59,9 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
             response.Abort ();
         }
     }
-    virtual void HandleMessage ([[maybe_unused]] Message* m) const override {}
+    virtual void HandleMessage ([[maybe_unused]] Message* m) const override
+    {
+    }
 };
 
 struct DefaultFaultInterceptor::Rep_Explicit_ : Interceptor::_IRep {
@@ -73,7 +75,9 @@ struct DefaultFaultInterceptor::Rep_Explicit_ : Interceptor::_IRep {
         RequireNotNull (m);
         fHandleFault_ (m, e);
     }
-    virtual void HandleMessage ([[maybe_unused]] Message* m) const override {}
+    virtual void HandleMessage ([[maybe_unused]] Message* m) const override
+    {
+    }
 };
 
 /*

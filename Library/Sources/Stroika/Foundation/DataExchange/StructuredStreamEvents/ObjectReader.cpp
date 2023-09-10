@@ -34,13 +34,22 @@ using Time::TimeOfDay;
  *********************** ObjectReaderIElementConsumer ***************************
  ********************************************************************************
  */
-shared_ptr<IElementConsumer> IElementConsumer::HandleChildStart ([[maybe_unused]] const Name& name) { return nullptr; }
+shared_ptr<IElementConsumer> IElementConsumer::HandleChildStart ([[maybe_unused]] const Name& name)
+{
+    return nullptr;
+}
 
-void IElementConsumer::HandleTextInside ([[maybe_unused]] const String& text) {}
+void IElementConsumer::HandleTextInside ([[maybe_unused]] const String& text)
+{
+}
 
-void IElementConsumer::Activated ([[maybe_unused]] Context& r) {}
+void IElementConsumer::Activated ([[maybe_unused]] Context& r)
+{
+}
 
-void IElementConsumer::Deactivating () {}
+void IElementConsumer::Deactivating ()
+{
+}
 
 /*
  ********************************************************************************

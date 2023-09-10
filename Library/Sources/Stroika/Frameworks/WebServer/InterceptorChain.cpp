@@ -16,8 +16,11 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
         : fInterceptors_{interceptors}
     {
     }
-    virtual Sequence<Interceptor> GetInterceptors () const override { return fInterceptors_; }
-    virtual shared_ptr<_IRep>     SetInterceptors (const Sequence<Interceptor>& interceptors) const override
+    virtual Sequence<Interceptor> GetInterceptors () const override
+    {
+        return fInterceptors_;
+    }
+    virtual shared_ptr<_IRep> SetInterceptors (const Sequence<Interceptor>& interceptors) const override
     {
         return make_shared<Rep_> (interceptors);
     }

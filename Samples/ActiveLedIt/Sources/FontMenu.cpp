@@ -23,7 +23,10 @@ namespace {
  *********************************** GetUsableFontNames *************************
  ********************************************************************************
  */
-const vector<SDKString>& GetUsableFontNames () { return sInstalledFonts.GetUsableFontNames (); }
+const vector<SDKString>& GetUsableFontNames ()
+{
+    return sInstalledFonts.GetUsableFontNames ();
+}
 
 /*
  ********************************************************************************

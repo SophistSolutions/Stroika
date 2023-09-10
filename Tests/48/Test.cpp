@@ -152,11 +152,17 @@ namespace {
         };
         struct jimStdSP_ : std::enable_shared_from_this<jimStdSP_> {
             int                   field = 1;
-            shared_ptr<jimStdSP_> doIt () { return shared_from_this (); }
+            shared_ptr<jimStdSP_> doIt ()
+            {
+                return shared_from_this ();
+            }
         };
         struct jimMIXStdSP_ : X_, std::enable_shared_from_this<jimMIXStdSP_> {
             int                      field = 1;
-            shared_ptr<jimMIXStdSP_> doIt () { return shared_from_this (); }
+            shared_ptr<jimMIXStdSP_> doIt ()
+            {
+                return shared_from_this ();
+            }
         };
     }
 
@@ -397,7 +403,9 @@ namespace {
         };
         struct NotDefaultConstructible {
             NotDefaultConstructible () = delete;
-            constexpr NotDefaultConstructible (int) {}
+            constexpr NotDefaultConstructible (int)
+            {
+            }
             int firstName{};
             int lastName{};
         };
@@ -448,7 +456,6 @@ namespace {
     }
 }
 
-
 namespace {
     namespace Test14_OffsetOf_ {
         namespace Private_ {
@@ -459,7 +466,7 @@ namespace {
                 int   c;
                 s () = delete; // no constructor
             };
-            #pragma pack(push, 1)
+#pragma pack(push, 1)
             struct s2 {
                 float  a;
                 char   b;
@@ -468,7 +475,7 @@ namespace {
                 double d;
                 char   e;
             };
-            #pragma pack(pop)
+#pragma pack(pop)
             struct a {
                 int i;
                 int j;
@@ -535,7 +542,7 @@ namespace {
             VerifyTestResult (OffsetOf (&al::a) == 0);
             VerifyTestResult (OffsetOf (&al::b) == 8);
             VerifyTestResult (OffsetOf (&al::bb) == 9);
-           // Assert (OffsetOf (&al::arr) == 16);
+            // Assert (OffsetOf (&al::arr) == 16);
 
             VerifyTestResult (OffsetOf (&al2::a) == 0);
             VerifyTestResult (OffsetOf (&al2::b) == 2);

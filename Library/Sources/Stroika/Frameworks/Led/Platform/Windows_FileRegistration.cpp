@@ -44,8 +44,14 @@ inline Win32FileAssociationRegistrationHelper::KeyHolder::KeyHolder (HKEY baseKe
     DWORD ignored = 0;
     ThrowIfRegError (::RegCreateKeyEx (baseKey, lpSubKey, 0, REG_NONE, REG_OPTION_NON_VOLATILE, KEY_WRITE | KEY_READ, NULL, &fKey, &ignored));
 }
-inline Win32FileAssociationRegistrationHelper::KeyHolder::~KeyHolder () { ::RegCloseKey (fKey); }
-inline Win32FileAssociationRegistrationHelper::KeyHolder::operator HKEY () { return fKey; }
+inline Win32FileAssociationRegistrationHelper::KeyHolder::~KeyHolder ()
+{
+    ::RegCloseKey (fKey);
+}
+inline Win32FileAssociationRegistrationHelper::KeyHolder::operator HKEY ()
+{
+    return fKey;
+}
 
 /*
  ********************************************************************************
@@ -203,7 +209,10 @@ Win32UIFileAssociationRegistrationHelper::Win32UIFileAssociationRegistrationHelp
 {
 }
 
-void Win32UIFileAssociationRegistrationHelper::Add (const Win32UIFileAssociationInfo& infoRec) { fInfoRecs.push_back (infoRec); }
+void Win32UIFileAssociationRegistrationHelper::Add (const Win32UIFileAssociationInfo& infoRec)
+{
+    fInfoRecs.push_back (infoRec);
+}
 
 void Win32UIFileAssociationRegistrationHelper::DoIt () noexcept
 {

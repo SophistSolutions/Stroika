@@ -236,6 +236,12 @@ void OptionsFile::Write (const VariantValue& optionsObject)
     WriteRaw (tmp.As<BLOB> ());
 }
 
-filesystem::path OptionsFile::GetReadFilePath_ () const { return fModuleNameToReadFileNameMapper_ (fModuleName_, fFileSuffix_); }
+filesystem::path OptionsFile::GetReadFilePath_ () const
+{
+    return fModuleNameToReadFileNameMapper_ (fModuleName_, fFileSuffix_);
+}
 
-filesystem::path OptionsFile::GetWriteFilePath_ () const { return fModuleNameToWriteFileNameMapper_ (fModuleName_, fFileSuffix_); }
+filesystem::path OptionsFile::GetWriteFilePath_ () const
+{
+    return fModuleNameToWriteFileNameMapper_ (fModuleName_, fFileSuffix_);
+}

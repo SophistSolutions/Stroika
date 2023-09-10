@@ -165,7 +165,10 @@ vector<Led_tString> COMBased_SpellCheckEngine::GenerateSuggestions (const Led_tS
     return UnpackVectorOfStringsFromVariantArray (comResult);
 }
 
-TextBreaks* COMBased_SpellCheckEngine::PeekAtTextBreaksUsed () { return this; }
+TextBreaks* COMBased_SpellCheckEngine::PeekAtTextBreaksUsed ()
+{
+    return this;
+}
 
 void COMBased_SpellCheckEngine::FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
                                                 size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const
@@ -212,7 +215,10 @@ void COMBased_SpellCheckEngine::FindLineBreaks (const Led_tChar* startOfText, si
     FindWordBreaks (startOfText, lengthOfText, textOffsetToStartLookingForWord, &wordStartIgnored, wordEndResult, wordReal);
 }
 
-COMBased_SpellCheckEngine::UDInterface* COMBased_SpellCheckEngine::GetUDInterface () { return this; }
+COMBased_SpellCheckEngine::UDInterface* COMBased_SpellCheckEngine::GetUDInterface ()
+{
+    return this;
+}
 
 bool COMBased_SpellCheckEngine::AddWordToUserDictionarySupported () const
 {
@@ -425,7 +431,10 @@ END_EVENT_MAP ()
 #if qKeepListOfALInstancesForSPR_1599BWA
 set<ActiveLedItControl*> ActiveLedItControl::sAll;
 
-const set<ActiveLedItControl*>& ActiveLedItControl::GetAll () { return sAll; }
+const set<ActiveLedItControl*>& ActiveLedItControl::GetAll ()
+{
+    return sAll;
+}
 #endif
 
 BEGIN_PROPPAGEIDS (ActiveLedItControl, 1)
@@ -498,7 +507,10 @@ void ActiveLedItControl::DidUpdateText (const UpdateInfo& updateInfo) noexcept
     }
 }
 
-TextStore* ActiveLedItControl::PeekAtTextStore () const { return &const_cast<ActiveLedItControl*> (this)->fTextStore; }
+TextStore* ActiveLedItControl::PeekAtTextStore () const
+{
+    return &const_cast<ActiveLedItControl*> (this)->fTextStore;
+}
 
 void ActiveLedItControl::OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid)
 {
@@ -984,7 +996,10 @@ HRESULT STDMETHODCALLTYPE ActiveLedItControl::XObjSafe::SetInterfaceSafetyOption
     return ResultFromScode (S_OK);
 }
 
-void ActiveLedItControl::AboutBox () { OnAboutBoxCommand (); }
+void ActiveLedItControl::AboutBox ()
+{
+    OnAboutBoxCommand ();
+}
 
 Led_FileFormat ActiveLedItControl::GuessFormatFromName (LPCTSTR name)
 {
@@ -1212,11 +1227,20 @@ void ActiveLedItControl::SaveFileHTML (LPCTSTR filename)
     WriteBytesToFile (filename, sink.PeekAtData (), sink.GetLength ());
 }
 
-void ActiveLedItControl::Refresh () { fEditor.Refresh (); }
+void ActiveLedItControl::Refresh ()
+{
+    fEditor.Refresh ();
+}
 
-void ActiveLedItControl::ScrollToSelection () { fEditor.ScrollToSelection (); }
+void ActiveLedItControl::ScrollToSelection ()
+{
+    fEditor.ScrollToSelection ();
+}
 
-long ActiveLedItControl::OLE_GetMaxUndoLevel () { return static_cast<long> (fCommandHandler.GetMaxUnDoLevels ()); }
+long ActiveLedItControl::OLE_GetMaxUndoLevel ()
+{
+    return static_cast<long> (fCommandHandler.GetMaxUnDoLevels ());
+}
 
 void ActiveLedItControl::OLE_SetMaxUndoLevel (long maxUndoLevel)
 {
@@ -1231,7 +1255,10 @@ BOOL ActiveLedItControl::OLE_GetCanUndo ()
     return fCommandHandler.CanUndo () or (fCommandHandler.GetMaxUnDoLevels () == 1 and fCommandHandler.CanRedo ());
 }
 
-BOOL ActiveLedItControl::OLE_GetCanRedo () { return fCommandHandler.CanRedo (); }
+BOOL ActiveLedItControl::OLE_GetCanRedo ()
+{
+    return fCommandHandler.CanRedo ();
+}
 
 void ActiveLedItControl::OLE_Undo ()
 {
@@ -1256,13 +1283,25 @@ void ActiveLedItControl::OLE_Redo ()
     }
 }
 
-void ActiveLedItControl::OLE_CommitUndo () { fCommandHandler.Commit (); }
+void ActiveLedItControl::OLE_CommitUndo ()
+{
+    fCommandHandler.Commit ();
+}
 
-void ActiveLedItControl::OLE_LaunchFontSettingsDialog () { fEditor.OnChooseFontCommand (); }
+void ActiveLedItControl::OLE_LaunchFontSettingsDialog ()
+{
+    fEditor.OnChooseFontCommand ();
+}
 
-void ActiveLedItControl::OLE_LaunchParagraphSettingsDialog () { fEditor.OnParagraphSpacingChangeCommand (); }
+void ActiveLedItControl::OLE_LaunchParagraphSettingsDialog ()
+{
+    fEditor.OnParagraphSpacingChangeCommand ();
+}
 
-void ActiveLedItControl::OLE_LaunchFindDialog () { fEditor.OnFindCommand (); }
+void ActiveLedItControl::OLE_LaunchFindDialog ()
+{
+    fEditor.OnFindCommand ();
+}
 
 long ActiveLedItControl::OLE_Find (long searchFrom, const VARIANT& findText, BOOL wrapSearch, BOOL wholeWordSearch, BOOL caseSensativeSearch)
 {
@@ -1294,7 +1333,10 @@ long ActiveLedItControl::OLE_Find (long searchFrom, const VARIANT& findText, BOO
     return static_cast<long> (whereTo);
 }
 
-void ActiveLedItControl::OLE_LaunchReplaceDialog () { fEditor.OnReplaceCommand (); }
+void ActiveLedItControl::OLE_LaunchReplaceDialog ()
+{
+    fEditor.OnReplaceCommand ();
+}
 
 long ActiveLedItControl::OLE_FindReplace (long searchFrom, const VARIANT& findText, const VARIANT& replaceText, BOOL wrapSearch,
                                           BOOL wholeWordSearch, BOOL caseSensativeSearch)
@@ -1326,11 +1368,20 @@ long ActiveLedItControl::OLE_FindReplace (long searchFrom, const VARIANT& findTe
     return fEditor.OLE_FindReplace (searchFrom, findStr, replaceStr, wrapSearch, wholeWordSearch, caseSensativeSearch);
 }
 
-void ActiveLedItControl::OLE_PrinterSetupDialog () { fEditor.OnFilePrintSetup (); }
+void ActiveLedItControl::OLE_PrinterSetupDialog ()
+{
+    fEditor.OnFilePrintSetup ();
+}
 
-void ActiveLedItControl::OLE_PrintDialog () { fEditor.OnFilePrint (); }
+void ActiveLedItControl::OLE_PrintDialog ()
+{
+    fEditor.OnFilePrint ();
+}
 
-void ActiveLedItControl::OLE_PrintOnce () { fEditor.OnFilePrintOnce (); }
+void ActiveLedItControl::OLE_PrintOnce ()
+{
+    fEditor.OnFilePrintOnce ();
+}
 
 long ActiveLedItControl::OLE_GetHeight (long from, long to)
 {
@@ -1358,9 +1409,15 @@ long ActiveLedItControl::OLE_GetHeight (long from, long to)
     return fEditor.GetHeightOfRows (startingRow, fEditor.CountRowDifference (startingRow, endingRow) + 1);
 }
 
-BOOL ActiveLedItControl::OLE_GetDirty () { return fDataDirty; }
+BOOL ActiveLedItControl::OLE_GetDirty ()
+{
+    return fDataDirty;
+}
 
-void ActiveLedItControl::OLE_SetDirty (BOOL dirty) { fDataDirty = !!dirty; }
+void ActiveLedItControl::OLE_SetDirty (BOOL dirty)
+{
+    fDataDirty = !!dirty;
+}
 
 void ActiveLedItControl::OnBrowseHelpCommand ()
 {
@@ -1479,7 +1536,10 @@ void ActiveLedItControl::ForceUIActive ()
     OnActivateInPlace (TRUE, NULL); // == UI-Activate the control
 }
 
-void ActiveLedItControl::FireOLEEvent (DISPID eventID) { FireOLEEvent (eventID, EVENT_PARAM (VTS_NONE)); }
+void ActiveLedItControl::FireOLEEvent (DISPID eventID)
+{
+    FireOLEEvent (eventID, EVENT_PARAM (VTS_NONE));
+}
 
 void ActiveLedItControl::FireOLEEvent (DISPID dispid, BYTE* pbParams, ...)
 {
@@ -1529,7 +1589,10 @@ void ActiveLedItControl::FireUserCommand (const wstring& internalCmdName)
 }
 
 #if qFunnyDisplayInDesignMode
-bool ActiveLedItControl::IsInDesignMode () const { return not const_cast<ActiveLedItControl*> (this)->AmbientUserMode (); }
+bool ActiveLedItControl::IsInDesignMode () const
+{
+    return not const_cast<ActiveLedItControl*> (this)->AmbientUserMode ();
+}
 
 bool ActiveLedItControl::DrawExtraDesignModeBorder () const
 {
@@ -1644,10 +1707,16 @@ void ActiveLedItControl::Layout ()
     }
 }
 
-void ActiveLedItControl::OLE_InvalidateLayout () { Layout (); }
+void ActiveLedItControl::OLE_InvalidateLayout ()
+{
+    Layout ();
+}
 
 #if qDontUIActivateOnOpen
-HRESULT ActiveLedItControl::OnOpen (BOOL /*bTryInPlace*/, LPMSG pMsg) { return OnActivateInPlace (false, pMsg); }
+HRESULT ActiveLedItControl::OnOpen (BOOL /*bTryInPlace*/, LPMSG pMsg)
+{
+    return OnActivateInPlace (false, pMsg);
+}
 #endif
 
 void ActiveLedItControl::OnBackColorChanged ()
@@ -1673,7 +1742,10 @@ void ActiveLedItControl::OnAmbientPropertyChange (DISPID dispid)
 }
 #endif
 
-UINT ActiveLedItControl::OLE_VersionNumber () { return kActiveLedItDWORDVersion; }
+UINT ActiveLedItControl::OLE_VersionNumber ()
+{
+    return kActiveLedItDWORDVersion;
+}
 
 BSTR ActiveLedItControl::OLE_ShortVersionString ()
 {
@@ -1761,7 +1833,10 @@ void ActiveLedItControl::OLE_SetEnabled (BOOL bNewValue)
     CATCH_AND_HANDLE_EXCEPTIONS ();
 }
 
-BOOL ActiveLedItControl::OLE_GetEnableAutoChangesBackgroundColor () { return fEditor.fEnableAutoChangesBackgroundColor; }
+BOOL ActiveLedItControl::OLE_GetEnableAutoChangesBackgroundColor ()
+{
+    return fEditor.fEnableAutoChangesBackgroundColor;
+}
 
 void ActiveLedItControl::OLE_SetEnableAutoChangesBackgroundColor (BOOL bNewValue)
 {
@@ -1773,7 +1848,10 @@ void ActiveLedItControl::OLE_SetEnableAutoChangesBackgroundColor (BOOL bNewValue
     CATCH_AND_HANDLE_EXCEPTIONS ();
 }
 
-int ActiveLedItControl::OLE_GetWindowMarginTop () { return fEditor.GetDefaultWindowMargins ().GetTop (); }
+int ActiveLedItControl::OLE_GetWindowMarginTop ()
+{
+    return fEditor.GetDefaultWindowMargins ().GetTop ();
+}
 
 void ActiveLedItControl::OLE_SetWindowMarginTop (int windowMarginTop)
 {
@@ -1787,7 +1865,10 @@ void ActiveLedItControl::OLE_SetWindowMarginTop (int windowMarginTop)
     CATCH_AND_HANDLE_EXCEPTIONS ();
 }
 
-int ActiveLedItControl::OLE_GetWindowMarginLeft () { return fEditor.GetDefaultWindowMargins ().GetLeft (); }
+int ActiveLedItControl::OLE_GetWindowMarginLeft ()
+{
+    return fEditor.GetDefaultWindowMargins ().GetLeft ();
+}
 
 void ActiveLedItControl::OLE_SetWindowMarginLeft (int windowMarginLeft)
 {
@@ -1801,7 +1882,10 @@ void ActiveLedItControl::OLE_SetWindowMarginLeft (int windowMarginLeft)
     CATCH_AND_HANDLE_EXCEPTIONS ();
 }
 
-int ActiveLedItControl::OLE_GetWindowMarginBottom () { return fEditor.GetDefaultWindowMargins ().GetBottom (); }
+int ActiveLedItControl::OLE_GetWindowMarginBottom ()
+{
+    return fEditor.GetDefaultWindowMargins ().GetBottom ();
+}
 
 void ActiveLedItControl::OLE_SetWindowMarginBottom (int windowMarginBottom)
 {
@@ -1815,7 +1899,10 @@ void ActiveLedItControl::OLE_SetWindowMarginBottom (int windowMarginBottom)
     CATCH_AND_HANDLE_EXCEPTIONS ();
 }
 
-int ActiveLedItControl::OLE_GetWindowMarginRight () { return fEditor.GetDefaultWindowMargins ().GetRight (); }
+int ActiveLedItControl::OLE_GetWindowMarginRight ()
+{
+    return fEditor.GetDefaultWindowMargins ().GetRight ();
+}
 
 void ActiveLedItControl::OLE_SetWindowMarginRight (int windowMarginRight)
 {
@@ -1829,7 +1916,10 @@ void ActiveLedItControl::OLE_SetWindowMarginRight (int windowMarginRight)
     CATCH_AND_HANDLE_EXCEPTIONS ();
 }
 
-int ActiveLedItControl::OLE_GetPrintMarginTop () { return fEditor.GetPrintMargins ().GetTop (); }
+int ActiveLedItControl::OLE_GetPrintMarginTop ()
+{
+    return fEditor.GetPrintMargins ().GetTop ();
+}
 
 void ActiveLedItControl::OLE_SetPrintMarginTop (int printMarginTop)
 {
@@ -1841,7 +1931,10 @@ void ActiveLedItControl::OLE_SetPrintMarginTop (int printMarginTop)
     CATCH_AND_HANDLE_EXCEPTIONS ();
 }
 
-int ActiveLedItControl::OLE_GetPrintMarginLeft () { return fEditor.GetPrintMargins ().GetLeft (); }
+int ActiveLedItControl::OLE_GetPrintMarginLeft ()
+{
+    return fEditor.GetPrintMargins ().GetLeft ();
+}
 
 void ActiveLedItControl::OLE_SetPrintMarginLeft (int printMarginLeft)
 {
@@ -1853,7 +1946,10 @@ void ActiveLedItControl::OLE_SetPrintMarginLeft (int printMarginLeft)
     CATCH_AND_HANDLE_EXCEPTIONS ();
 }
 
-int ActiveLedItControl::OLE_GetPrintMarginBottom () { return fEditor.GetPrintMargins ().GetBottom (); }
+int ActiveLedItControl::OLE_GetPrintMarginBottom ()
+{
+    return fEditor.GetPrintMargins ().GetBottom ();
+}
 
 void ActiveLedItControl::OLE_SetPrintMarginBottom (int printMarginBottom)
 {
@@ -1865,7 +1961,10 @@ void ActiveLedItControl::OLE_SetPrintMarginBottom (int printMarginBottom)
     CATCH_AND_HANDLE_EXCEPTIONS ();
 }
 
-int ActiveLedItControl::OLE_GetPrintMarginRight () { return fEditor.GetPrintMargins ().GetRight (); }
+int ActiveLedItControl::OLE_GetPrintMarginRight ()
+{
+    return fEditor.GetPrintMargins ().GetRight ();
+}
 
 void ActiveLedItControl::OLE_SetPrintMarginRight (int printMarginRight)
 {
@@ -1990,7 +2089,10 @@ BSTR ActiveLedItControl::GetBufferTextCRLF ()
     return NULL;
 }
 
-void ActiveLedItControl::SetBufferTextCRLF (LPCTSTR text) { SetBufferText (text); }
+void ActiveLedItControl::SetBufferTextCRLF (LPCTSTR text)
+{
+    SetBufferText (text);
+}
 
 BSTR ActiveLedItControl::GetBufferTextAsRTF ()
 {
@@ -2185,13 +2287,25 @@ VARIANT ActiveLedItControl::GetBufferTextAsDIB ()
     return v;
 }
 
-long ActiveLedItControl::GetBufferLength () { return static_cast<long> (fEditor.GetLength ()); }
+long ActiveLedItControl::GetBufferLength ()
+{
+    return static_cast<long> (fEditor.GetLength ());
+}
 
-long ActiveLedItControl::GetMaxLength () { return fEditor.GetMaxLength (); }
+long ActiveLedItControl::GetMaxLength ()
+{
+    return fEditor.GetMaxLength ();
+}
 
-void ActiveLedItControl::SetMaxLength (long maxLength) { fEditor.SetMaxLength (maxLength < 0 ? -1 : maxLength); }
+void ActiveLedItControl::SetMaxLength (long maxLength)
+{
+    fEditor.SetMaxLength (maxLength < 0 ? -1 : maxLength);
+}
 
-BOOL ActiveLedItControl::GetSupportContextMenu () { return fEditor.GetSupportContextMenu (); }
+BOOL ActiveLedItControl::GetSupportContextMenu ()
+{
+    return fEditor.GetSupportContextMenu ();
+}
 
 void ActiveLedItControl::SetSupportContextMenu (BOOL bNewValue)
 {
@@ -2200,7 +2314,10 @@ void ActiveLedItControl::SetSupportContextMenu (BOOL bNewValue)
     }
 }
 
-BOOL ActiveLedItControl::OLE_GetHideDisabledContextMenuItems () { return fEditor.GetHideDisabledContextMenuItems (); }
+BOOL ActiveLedItControl::OLE_GetHideDisabledContextMenuItems ()
+{
+    return fEditor.GetHideDisabledContextMenuItems ();
+}
 
 void ActiveLedItControl::OLE_SetHideDisabledContextMenuItems (BOOL bNewValue)
 {
@@ -2209,7 +2326,10 @@ void ActiveLedItControl::OLE_SetHideDisabledContextMenuItems (BOOL bNewValue)
     }
 }
 
-BOOL ActiveLedItControl::GetSmartCutAndPaste () { return fEditor.GetSmartCutAndPasteMode (); }
+BOOL ActiveLedItControl::GetSmartCutAndPaste ()
+{
+    return fEditor.GetSmartCutAndPasteMode ();
+}
 
 void ActiveLedItControl::SetSmartCutAndPaste (BOOL bNewValue)
 {
@@ -2236,7 +2356,10 @@ void ActiveLedItControl::OLE_SetSmartQuoteMode (BOOL bNewValue)
 #endif
 }
 
-BOOL ActiveLedItControl::GetWrapToWindow () { return fEditor.GetWrapToWindow (); }
+BOOL ActiveLedItControl::GetWrapToWindow ()
+{
+    return fEditor.GetWrapToWindow ();
+}
 
 void ActiveLedItControl::SetWrapToWindow (BOOL bNewValue)
 {
@@ -2245,7 +2368,10 @@ void ActiveLedItControl::SetWrapToWindow (BOOL bNewValue)
     }
 }
 
-BOOL ActiveLedItControl::GetShowParagraphGlyphs () { return fEditor.GetShowParagraphGlyphs (); }
+BOOL ActiveLedItControl::GetShowParagraphGlyphs ()
+{
+    return fEditor.GetShowParagraphGlyphs ();
+}
 
 void ActiveLedItControl::SetShowParagraphGlyphs (BOOL bNewValue)
 {
@@ -2254,7 +2380,10 @@ void ActiveLedItControl::SetShowParagraphGlyphs (BOOL bNewValue)
     }
 }
 
-BOOL ActiveLedItControl::GetShowTabGlyphs () { return fEditor.GetShowTabGlyphs (); }
+BOOL ActiveLedItControl::GetShowTabGlyphs ()
+{
+    return fEditor.GetShowTabGlyphs ();
+}
 
 void ActiveLedItControl::SetShowTabGlyphs (BOOL bNewValue)
 {
@@ -2263,7 +2392,10 @@ void ActiveLedItControl::SetShowTabGlyphs (BOOL bNewValue)
     }
 }
 
-BOOL ActiveLedItControl::GetShowSpaceGlyphs () { return fEditor.GetShowSpaceGlyphs (); }
+BOOL ActiveLedItControl::GetShowSpaceGlyphs ()
+{
+    return fEditor.GetShowSpaceGlyphs ();
+}
 
 void ActiveLedItControl::SetShowSpaceGlyphs (BOOL bNewValue)
 {
@@ -2272,7 +2404,10 @@ void ActiveLedItControl::SetShowSpaceGlyphs (BOOL bNewValue)
     }
 }
 
-BOOL ActiveLedItControl::OLE_GetUseSelectEOLBOLRowHilightStyle () { return fEditor.GetUseSelectEOLBOLRowHilightStyle (); }
+BOOL ActiveLedItControl::OLE_GetUseSelectEOLBOLRowHilightStyle ()
+{
+    return fEditor.GetUseSelectEOLBOLRowHilightStyle ();
+}
 
 void ActiveLedItControl::OLE_SetUseSelectEOLBOLRowHilightStyle (BOOL bNewValue)
 {
@@ -2282,7 +2417,10 @@ void ActiveLedItControl::OLE_SetUseSelectEOLBOLRowHilightStyle (BOOL bNewValue)
     }
 }
 
-BOOL ActiveLedItControl::OLE_GetShowSecondaryHilight () { return fEditor.GetUseSecondaryHilight (); }
+BOOL ActiveLedItControl::OLE_GetShowSecondaryHilight ()
+{
+    return fEditor.GetUseSecondaryHilight ();
+}
 
 void ActiveLedItControl::OLE_SetShowSecondaryHilight (BOOL bNewValue)
 {
@@ -3097,8 +3235,12 @@ BOOL ActiveLedItControl::OLE_CommandEnabled (const VARIANT& command)
                 fEnabled         = !!bOn;
                 m_bEnableChanged = TRUE;
             }
-            virtual void SetCheck (int /*nCheck*/) override {}
-            virtual void SetText (LPCTSTR /*lpszText*/) override {}
+            virtual void SetCheck (int /*nCheck*/) override
+            {
+            }
+            virtual void SetText (LPCTSTR /*lpszText*/) override
+            {
+            }
 
             bool fEnabled;
         };
@@ -3123,9 +3265,17 @@ BOOL ActiveLedItControl::OLE_CommandChecked (const VARIANT& command)
                 , fChecked (false)
             {
             }
-            virtual void Enable ([[maybe_unused]] BOOL bOn) override { m_bEnableChanged = TRUE; }
-            virtual void SetCheck (int nCheck) override { fChecked = nCheck != 0; }
-            virtual void SetText (LPCTSTR /*lpszText*/) override {}
+            virtual void Enable ([[maybe_unused]] BOOL bOn) override
+            {
+                m_bEnableChanged = TRUE;
+            }
+            virtual void SetCheck (int nCheck) override
+            {
+                fChecked = nCheck != 0;
+            }
+            virtual void SetText (LPCTSTR /*lpszText*/) override
+            {
+            }
 
             bool fChecked;
         };
@@ -3501,7 +3651,10 @@ VARIANT ActiveLedItControl::OLE_GetCurrentEventArguments ()
     return result;
 }
 
-long ActiveLedItControl::GetSelStart () { return static_cast<long> (fEditor.GetSelectionStart ()); }
+long ActiveLedItControl::GetSelStart ()
+{
+    return static_cast<long> (fEditor.GetSelectionStart ());
+}
 
 void ActiveLedItControl::SetSelStart (long start)
 {

@@ -18,7 +18,10 @@ using namespace Stroika::Foundation::DataExchange::Variant::INI;
  ************************** DataExchange::INI::Section **************************
  ********************************************************************************
  */
-String Section::ToString () const { return "{ properties: " + Characters::ToString (fProperties) + "}"; }
+String Section::ToString () const
+{
+    return "{ properties: " + Characters::ToString (fProperties) + "}";
+}
 
 /*
  ********************************************************************************

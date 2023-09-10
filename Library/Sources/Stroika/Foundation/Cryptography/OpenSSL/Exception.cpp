@@ -77,7 +77,10 @@ Exception::Exception (InternalErrorCodeType errorCode)
 {
 }
 
-Exception::InternalErrorCodeType Exception::GetErrorCode () const { return fErrorCode_; }
+Exception::InternalErrorCodeType Exception::GetErrorCode () const
+{
+    return fErrorCode_;
+}
 
 Characters::String Exception::GetMessage (InternalErrorCodeType errorCode)
 {
@@ -95,9 +98,15 @@ void Exception::ThrowLastErrorIfFailed (int status)
     }
 }
 
-void Exception::ThrowLastError () { Execution::Throw (Exception{ERR_get_error ()}); }
+void Exception::ThrowLastError ()
+{
+    Execution::Throw (Exception{ERR_get_error ()});
+}
 
-bool Exception::GetNamesSupported () { return sNamesSupported_.load (); }
+bool Exception::GetNamesSupported ()
+{
+    return sNamesSupported_.load ();
+}
 
 void Exception::SetNamesSupported (bool openSSLStringsSupported)
 {

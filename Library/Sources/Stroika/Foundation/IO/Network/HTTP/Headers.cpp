@@ -717,4 +717,7 @@ Collection<KeyValuePair<String, String>> Headers::As () const
     return results;
 }
 
-String Headers::ToString () const { return Characters::ToString (As<Association<String, String>> ()); }
+String Headers::ToString () const
+{
+    return Characters::ToString (As<Association<String, String>> ());
+}

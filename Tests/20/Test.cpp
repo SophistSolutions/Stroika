@@ -46,7 +46,10 @@ namespace {
         using COMPARE_SimpleClass = std::equal_to<SimpleClass>;
         struct COMPARE_SimpleClassWithoutComparisonOperators : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (value_type v1, value_type v2) const { return v1.GetValue () == v2.GetValue (); }
+            bool operator() (value_type v1, value_type v2) const
+            {
+                return v1.GetValue () == v2.GetValue ();
+            }
         };
 
         SimpleQueueTest_All_For_Type<Queue<size_t>, COMPARE_SIZET> ();

@@ -538,7 +538,10 @@ namespace {
         });
 #endif
         struct FRED {
-            static void DoIt () { Execution::Sleep (0.01); }
+            static void DoIt ()
+            {
+                Execution::Sleep (0.01);
+            }
         };
 
         //https://stroika.atlassian.net/browse/STK-717

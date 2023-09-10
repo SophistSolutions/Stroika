@@ -77,8 +77,11 @@ namespace {
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
-        Options_ Get () const { return fActualCurrentConfigData_; }
-        void     Set (const Options_& v)
+        Options_ Get () const
+        {
+            return fActualCurrentConfigData_;
+        }
+        void Set (const Options_& v)
         {
             fActualCurrentConfigData_ = v;
             fOptionsFile_.Write (v);
@@ -486,7 +489,9 @@ LedItViewController::LedItViewController ()
     fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new ColoredUniformHidableTextMarkerOwner (fTextStore));
 }
 
-LedItViewController::~LedItViewController () {}
+LedItViewController::~LedItViewController ()
+{
+}
 
 /*
  ********************************************************************************
@@ -546,7 +551,10 @@ LedItView::LedItView ()
                                          kLedItViewRHSMargin - kLedItViewLHSMargin));
 }
 
-LedItView::~LedItView () { SetController (NULL); }
+LedItView::~LedItView ()
+{
+    SetController (NULL);
+}
 
 void LedItView::SetController (LedItViewController* controller)
 {
@@ -563,7 +571,10 @@ void LedItView::SetController (LedItViewController* controller)
     }
 }
 
-void LedItView::SetSupportContextMenu (bool allowContextMenu) { fSupportContextMenu = allowContextMenu; }
+void LedItView::SetSupportContextMenu (bool allowContextMenu)
+{
+    fSupportContextMenu = allowContextMenu;
+}
 
 void LedItView::SetHideDisabledContextMenuItems (bool hideDisabledContextMenuItems)
 {
@@ -579,7 +590,10 @@ void LedItView::SetWrapToWindow (bool wrapToWindow)
     }
 }
 
-void LedItView::SetMaxLength (long maxLength) { fMaxLength = maxLength; }
+void LedItView::SetMaxLength (long maxLength)
+{
+    fMaxLength = maxLength;
+}
 
 void LedItView::GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const
 {
@@ -626,7 +640,9 @@ DistanceType LedItView::CalculateFarthestRightMarginInWindow () const
     }
 }
 
-void LedItView::PostNcDestroy () {}
+void LedItView::PostNcDestroy ()
+{
+}
 
 int LedItView::OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message)
 {
@@ -823,7 +839,10 @@ void LedItView::OnPasteAsTextCommand ()
     BreakInGroupedCommands ();
 }
 
-void LedItView::OnUpdatePasteAsTextCommand (CCmdUI* pCmdUI) { OnUpdatePasteCommand (Led_MFC_TmpCmdUpdater (pCmdUI)); }
+void LedItView::OnUpdatePasteAsTextCommand (CCmdUI* pCmdUI)
+{
+    OnUpdatePasteCommand (Led_MFC_TmpCmdUpdater (pCmdUI));
+}
 
 void LedItView::OnOLEUserCommand (UINT nID)
 {
@@ -848,7 +867,10 @@ void LedItView::OnUpdateOLEUserCommand (CCmdUI* pCmdUI)
     }
 }
 
-LedItView::SearchParameters LedItView::GetSearchParameters () const { return sOptions_.Get ().fSearchParameters; }
+LedItView::SearchParameters LedItView::GetSearchParameters () const
+{
+    return sOptions_.Get ().fSearchParameters;
+}
 
 void LedItView::SetSearchParameters (const SearchParameters& sp)
 {
@@ -986,9 +1008,15 @@ void LedItView::OnAboutBoxCommand ()
     }
 }
 
-void LedItView::OnFilePrintOnce () { DoPrintHelper (false); }
+void LedItView::OnFilePrintOnce ()
+{
+    DoPrintHelper (false);
+}
 
-void LedItView::OnFilePrint () { DoPrintHelper (true); }
+void LedItView::OnFilePrint ()
+{
+    DoPrintHelper (true);
+}
 
 void LedItView::OnFilePrintSetup ()
 {
@@ -1018,7 +1046,9 @@ void LedItView::DoPrintHelper (bool showPrintDlg)
             Create (CPrintingDialog::IDD, pParent); // modeless !
             _afxWinState->m_bUserAbort = FALSE;
         }
-        virtual ~CPrintingDialog () {}
+        virtual ~CPrintingDialog ()
+        {
+        }
         virtual BOOL OnInitDialog ()
         {
             SetWindowText (AfxGetAppName ());
@@ -1229,7 +1259,13 @@ void LedItView::DoPrintHelper (bool showPrintDlg)
 }
 
 #ifdef _DEBUG
-void LedItView::AssertValid () const { inherited::AssertValid (); }
+void LedItView::AssertValid () const
+{
+    inherited::AssertValid ();
+}
 
-void LedItView::Dump (CDumpContext& dc) const { inherited::Dump (dc); }
+void LedItView::Dump (CDumpContext& dc) const
+{
+    inherited::Dump (dc);
+}
 #endif //_DEBUG

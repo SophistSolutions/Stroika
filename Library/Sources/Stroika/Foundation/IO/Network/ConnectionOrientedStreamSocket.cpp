@@ -159,7 +159,7 @@ namespace {
                     FD_ZERO (&setE);
                     FD_SET (fSD_, &setE);
                     timeval time_out = timeout.As<timeval> ();
-                    int ret = ::select (0, NULL, &setW, &setE, &time_out);
+                    int     ret      = ::select (0, NULL, &setW, &setE, &time_out);
                     if (ret <= 0) {
                         // select() failed or connection timed out
                         if (ret == 0)
@@ -201,7 +201,7 @@ namespace {
                 return Handle_ErrNoResultInterruption (
                     [this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
 #elif qPlatform_Windows
-                int flags = 0;
+                int flags        = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
                 return static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));
 #else
@@ -282,9 +282,9 @@ namespace {
                 BreakWriteIntoParts_<byte> (start, end, maxSendAtATime, [this, maxSendAtATime] (const byte* start, const byte* end) -> size_t {
                     Require (static_cast<size_t> (end - start) <= maxSendAtATime);
                     Assert ((end - start) < numeric_limits<int>::max ());
-                    int len = static_cast<int> (end - start);
+                    int len   = static_cast<int> (end - start);
                     int flags = 0;
-                    int n = ThrowWSASystemErrorIfSOCKET_ERROR (::send (fSD_, reinterpret_cast<const char*> (start), len, flags));
+                    int n     = ThrowWSASystemErrorIfSOCKET_ERROR (::send (fSD_, reinterpret_cast<const char*> (start), len, flags));
                     Assert (0 <= n and n <= (end - start));
                     return static_cast<size_t> (n);
                 });
@@ -428,4 +428,7 @@ void ConnectionOrientedStreamSocket::Ptr::SetLinger (const optional<int>& linger
     setsockopt<::linger> (SOL_SOCKET, SO_LINGER, so_linger);
 }
 
-void ConnectionOrientedStreamSocket::Ptr::Write (const Memory::BLOB& b) const { Write (b.begin (), b.end ()); }
+void ConnectionOrientedStreamSocket::Ptr::Write (const Memory::BLOB& b) const
+{
+    Write (b.begin (), b.end ());
+}

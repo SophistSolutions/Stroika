@@ -72,8 +72,14 @@ namespace {
         }
         AutoWinHINTERNET_ ()                         = delete;
         AutoWinHINTERNET_ (const AutoWinHINTERNET_&) = delete;
-        ~AutoWinHINTERNET_ () { Verify (::WinHttpCloseHandle (fHandle)); }
-                                            operator HINTERNET () { return fHandle; }
+        ~AutoWinHINTERNET_ ()
+        {
+            Verify (::WinHttpCloseHandle (fHandle));
+        }
+        operator HINTERNET ()
+        {
+            return fHandle;
+        }
         nonvirtual const AutoWinHINTERNET_& operator= (const AutoWinHINTERNET_&) = delete;
     };
 }
@@ -93,7 +99,10 @@ public:
     nonvirtual Rep_& operator= (const Rep_&) = delete;
 
 public:
-    virtual Options             GetOptions () const override { return fOptions_; }
+    virtual Options GetOptions () const override
+    {
+        return fOptions_;
+    }
     virtual DurationSecondsType GetTimeout () const override;
     virtual void                SetTimeout (DurationSecondsType timeout) override;
     virtual URI                 GetSchemeAndAuthority () const override;
@@ -151,7 +160,10 @@ Connection_WinHTTP::Rep_::~Rep_ ()
     fSessionHandle_.reset ();
 }
 
-DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const { return fTimeout_; }
+DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const
+{
+    return fTimeout_;
+}
 
 void Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout)
 {
@@ -169,7 +181,10 @@ void Connection_WinHTTP::Rep_::SetAuthorityRelativeURL_ (const URI& url)
     }
 }
 
-URI Connection_WinHTTP::Rep_::GetSchemeAndAuthority () const { return fURL_.GetSchemeAndAuthority (); }
+URI Connection_WinHTTP::Rep_::GetSchemeAndAuthority () const
+{
+    return fURL_.GetSchemeAndAuthority ();
+}
 
 void Connection_WinHTTP::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
 {
@@ -552,5 +567,8 @@ void Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
  ********************** Transfer::Connection_WinHTTP ****************************
  ********************************************************************************
  */
-Connection::Ptr Connection_WinHTTP::New (const Options& options) { return Connection::Ptr{make_shared<Rep_> (options)}; }
+Connection::Ptr Connection_WinHTTP::New (const Options& options)
+{
+    return Connection::Ptr{make_shared<Rep_> (options)};
+}
 #endif

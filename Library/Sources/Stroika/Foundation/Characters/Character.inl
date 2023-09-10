@@ -103,7 +103,6 @@ namespace Stroika::Foundation::Characters {
         void ThrowSurrogatesOutOfRange_ ();
     }
 
-
     /*
      ********************************************************************************
      ************************************* Latin1 ***********************************
@@ -143,7 +142,7 @@ namespace Stroika::Foundation::Characters {
         if (not IsSurrogatePair_Lo (lowSurrogate)) [[unlikely]] {
             Private_::ThrowSurrogatesOutOfRange_ ();
         }
-        fCharacterCode_ = ((hiSurrogate - UNI_SUR_HIGH_START) << halfShift) + (lowSurrogate - UNI_SUR_LOW_START) + halfBase;
+        fCharacterCode_ = ((hiSurrogate - kUNICODESurrogate_High_Start) << halfShift) + (lowSurrogate - kUNICODESurrogate_Low_Start) + halfBase;
     }
     inline char Character::GetAsciiCode () const noexcept
     {
@@ -511,7 +510,8 @@ namespace Stroika::Foundation::Characters {
          *      0x10000 + (H - 0xD800) x 0x400 + (L - 0xDC00)
          */
         constexpr char32_t kMinCode_ = 0x10000;
-        constexpr char32_t kMaxCode_ = kMinCode_ + (UNI_SUR_HIGH_END - UNI_SUR_HIGH_START) * 0x400 + (UNI_SUR_LOW_END - UNI_SUR_LOW_START);
+        constexpr char32_t kMaxCode_ = kMinCode_ + (kUNICODESurrogate_High_End - kUNICODESurrogate_High_Start) * 0x400 +
+                                       (kUNICODESurrogate_Low_End - kUNICODESurrogate_Low_Start);
         return kMinCode_ <= fCharacterCode_ and fCharacterCode_ <= kMaxCode_;
     }
     constexpr bool Character::IsSurrogatePair (char16_t hiSurrogate, char16_t lowSurrogate)
@@ -520,24 +520,24 @@ namespace Stroika::Foundation::Characters {
     }
     constexpr bool Character::IsSurrogatePair_Hi (char16_t hiSurrogate)
     {
-        return UNI_SUR_HIGH_START <= hiSurrogate and hiSurrogate <= UNI_SUR_HIGH_END;
+        return kUNICODESurrogate_High_Start <= hiSurrogate and hiSurrogate <= kUNICODESurrogate_High_End;
     }
     constexpr bool Character::IsSurrogatePair_Lo (char16_t lowSurrogate)
     {
-        return UNI_SUR_LOW_START <= lowSurrogate and lowSurrogate <= UNI_SUR_LOW_END;
+        return kUNICODESurrogate_Low_Start <= lowSurrogate and lowSurrogate <= kUNICODESurrogate_Low_End;
     }
     constexpr pair<char16_t, char16_t> Character::GetSurrogatePair () const
     {
         Require (IsSurrogatePair ());
         /*
-         * Run fCharacterCode_ = ((hiSurrogate - UNI_SUR_HIGH_START) << halfShift) + (lowSurrogate - UNI_SUR_LOW_START) + halfBase; BACKWARDS
+         * Run fCharacterCode_ = ((hiSurrogate - kUNICODESurrogate_High_Start) << halfShift) + (lowSurrogate - kUNICODESurrogate_Low_Start) + halfBase; BACKWARDS
          */
         constexpr int      halfShift = 10; /* used for shifting by 10 bits */
         constexpr char32_t halfBase  = 0x0010000UL;
         constexpr char32_t halfMask  = 0x3FFUL;
         char32_t           ch        = fCharacterCode_ - halfBase;
-        return pair<char16_t, char16_t>{static_cast<char16_t> ((ch >> halfShift) + UNI_SUR_HIGH_START),
-                                        static_cast<char16_t> ((ch & halfMask) + UNI_SUR_LOW_START)};
+        return pair<char16_t, char16_t>{static_cast<char16_t> ((ch >> halfShift) + kUNICODESurrogate_High_Start),
+                                        static_cast<char16_t> ((ch & halfMask) + kUNICODESurrogate_Low_Start)};
     }
 
     /*

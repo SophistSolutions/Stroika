@@ -25,13 +25,13 @@ using Memory::InlineBuffer;
 using Memory::StackBuffer;
 
 namespace {
-const auto kReadPartialCharacterAtEndOfBinaryStreamException_ =
+    const auto kReadPartialCharacterAtEndOfBinaryStreamException_ =
         Execution::RuntimeErrorException{"TextReader read partial character at end of binary input stream"sv};
 }
 
 class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep {
 public:
-    FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt <> &charConverter)
+    FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& charConverter)
         : _fSource{src}
         , _fCharConverter{charConverter}
     {
@@ -53,8 +53,8 @@ protected:
      *  so just go with the second - since it will always work, and work fairly well (downside is a bit of extra code complexity here)
      */
     struct _ReadAheadCache {
-        SeekOffsetType        fFrom;    // save offset cuz cache only valid on reads from this offset (if subclass allowed seek)
-        InlineBuffer<byte, 8> fData;    // @todo UPDATE DOCS - AND LOGIC - CAN BE MORE THAN ONE CHARACTERS WORTH DUE TO READ NON BLOCKING WITH nullptr args!!!
+        SeekOffsetType fFrom; // save offset cuz cache only valid on reads from this offset (if subclass allowed seek)
+        InlineBuffer<byte, 8> fData; // @todo UPDATE DOCS - AND LOGIC - CAN BE MORE THAN ONE CHARACTERS WORTH DUE TO READ NON BLOCKING WITH nullptr args!!!
     };
     optional<_ReadAheadCache> _fReadAheadCache;
 
@@ -69,7 +69,10 @@ protected:
         _fSource.Close ();
         Assert (_fSource == nullptr);
     }
-    virtual bool IsOpenRead () const override { return _fSource != nullptr; }
+    virtual bool IsOpenRead () const override
+    {
+        return _fSource != nullptr;
+    }
 
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
@@ -88,7 +91,7 @@ protected:
          */
         AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         {
-            size_t                      readAtMostCharacters = size_t (intoEnd - intoStart);    // must read at least one character, and no more than (intoEnd - intoStart)
+            size_t readAtMostCharacters = size_t (intoEnd - intoStart); // must read at least one character, and no more than (intoEnd - intoStart)
             StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, readAtMostCharacters};
             if (_fReadAheadCache and _fReadAheadCache->fFrom == this->_fOffset) {
                 // If _fReadAheadCache present, may contain enuf bytes for a full character, so don't do another
@@ -121,10 +124,10 @@ protected:
                     Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
                 }
             }
-            else  {
+            else {
                 Assert (not binarySrcSpan.empty () and not convertedCharacters.empty ());
                 Assert (convertedCharacters.size () <= targetBuf.size ());
-                _fOffset += convertedCharacters.size ();    // complete the read
+                _fOffset += convertedCharacters.size (); // complete the read
                 // Save the extra bytes for next time (with the offset where those bytes come from)
                 _fReadAheadCache.emplace (_ReadAheadCache{.fFrom = _fOffset, .fData = binarySrcSpan});
                 return convertedCharacters.size ();
@@ -173,15 +176,15 @@ protected:
                     return 0;
                 }
             }
-            again:
+        again:
             span<const byte> binarySrcSpan{inBuf};
             if (intoStart == nullptr) {
                 // tricky case. Must possibly do several binary reads til we have enuf for a character, and then return
                 // one for that case, but must save away the read bits (_fReadAheadCache).
-                auto cs =_fCharConverter.Bytes2Characters (binarySrcSpan);
+                auto cs = _fCharConverter.Bytes2Characters (binarySrcSpan);
                 if (cs == 0) {
                     byte b{};
-                    if (auto o = _fSource.ReadNonBlocking (&b, &b+1)) {
+                    if (auto o = _fSource.ReadNonBlocking (&b, &b + 1)) {
                         inBuf.push_back (b);
                         goto again;
                     }
@@ -249,7 +252,7 @@ protected:
 
 protected:
     InputStream<byte>::Ptr                                         _fSource;
-     const Characters::CodeCvt<Character>                           _fCharConverter;
+    const Characters::CodeCvt<Character>                           _fCharConverter;
     SeekOffsetType                                                 _fOffset{0};
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
@@ -275,14 +278,17 @@ class TextReader::CachingSeekableBinaryStreamRep_ final : public FromBinaryStrea
     using inherited = FromBinaryStreamBaseRep_;
 
 public:
-    CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<char32_t>&  charConverter, ReadAhead readAhead)
+    CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<char32_t>& charConverter, ReadAhead readAhead)
         : FromBinaryStreamBaseRep_{src, charConverter}
         , fReadAheadAllowed_{readAhead == ReadAhead::eReadAheadAllowed}
     {
     }
 
 protected:
-    virtual bool   IsSeekable () const override { return true; }
+    virtual bool IsSeekable () const override
+    {
+        return true;
+    }
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
@@ -430,13 +436,19 @@ private:
     bool fIsOpen_{true};
 
 protected:
-    virtual bool IsSeekable () const override { return true; }
+    virtual bool IsSeekable () const override
+    {
+        return true;
+    }
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
         fIsOpen_ = false;
     }
-    virtual bool   IsOpenRead () const override { return fIsOpen_; }
+    virtual bool IsOpenRead () const override
+    {
+        return fIsOpen_;
+    }
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require (intoEnd - intoStart >= 1);
@@ -600,7 +612,7 @@ auto TextReader::New (const InputStream<byte>::Ptr& src, const AutomaticCodeCvtF
             return CodeCvt<>{get<UnicodeExternalEncodings> (*bomInfo)};
         }
         else {
-            src.Seek (savedSeek);    // adjust amount read from input stream if we read anything
+            src.Seek (savedSeek); // adjust amount read from input stream if we read anything
             switch (codeCvtFlags) {
                 case AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8:
                     return CodeCvt<>{UnicodeExternalEncodings::eUTF8};

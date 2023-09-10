@@ -63,8 +63,14 @@ namespace {
         }
         InOutStrmCommon_ (const InOutStrmCommon_&)            = delete;
         InOutStrmCommon_& operator= (const InOutStrmCommon_&) = delete;
-        virtual ~InOutStrmCommon_ () { ::EVP_CIPHER_CTX_free (fCTX_); }
-        static constexpr size_t _GetMinOutBufSize (size_t n) { return n + EVP_MAX_BLOCK_LENGTH; }
+        virtual ~InOutStrmCommon_ ()
+        {
+            ::EVP_CIPHER_CTX_free (fCTX_);
+        }
+        static constexpr size_t _GetMinOutBufSize (size_t n)
+        {
+            return n + EVP_MAX_BLOCK_LENGTH;
+        }
         // return nBytes in outBuf, throws on error
         size_t _runOnce (const byte* data2ProcessStart, const byte* data2ProcessEnd, byte* outBufStart, [[maybe_unused]] byte* outBufEnd)
         {
@@ -109,7 +115,10 @@ public:
         , fRealIn_{realIn}
     {
     }
-    virtual bool IsSeekable () const override { return false; }
+    virtual bool IsSeekable () const override
+    {
+        return false;
+    }
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
@@ -117,7 +126,10 @@ public:
         Assert (fRealIn_ == nullptr);
         Ensure (not IsOpenRead ());
     }
-    virtual bool           IsOpenRead () const override { return fRealIn_ != nullptr; }
+    virtual bool IsOpenRead () const override
+    {
+        return fRealIn_ != nullptr;
+    }
     virtual SeekOffsetType GetReadOffset () const override
     {
         RequireNotReached ();
@@ -240,7 +252,10 @@ public:
             // not great to do in DTOR, because we must drop exceptions on the floor!
         }
     }
-    virtual bool IsSeekable () const override { return false; }
+    virtual bool IsSeekable () const override
+    {
+        return false;
+    }
     virtual void CloseWrite () override
     {
         Require (IsOpenWrite ());
@@ -248,7 +263,10 @@ public:
         Assert (fRealOut_ == nullptr);
         Ensure (not IsOpenWrite ());
     }
-    virtual bool           IsOpenWrite () const override { return fRealOut_ != nullptr; }
+    virtual bool IsOpenWrite () const override
+    {
+        return fRealOut_ != nullptr;
+    }
     virtual SeekOffsetType GetWriteOffset () const override
     {
         RequireNotReached ();

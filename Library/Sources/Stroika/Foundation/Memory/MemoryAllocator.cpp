@@ -77,7 +77,10 @@ void SimpleAllocator_CallLIBCMallocFree::Deallocate (void* p)
  ******************* Memory::SimpleAllocator_CallLIBCNewDelete ******************
  ********************************************************************************
  */
-void* SimpleAllocator_CallLIBCNewDelete::Allocate (size_t size) { return ::operator new (size); }
+void* SimpleAllocator_CallLIBCNewDelete::Allocate (size_t size)
+{
+    return ::operator new (size);
+}
 
 void SimpleAllocator_CallLIBCNewDelete::Deallocate (void* p)
 {
@@ -101,12 +104,12 @@ namespace {
  ********************************************************************************
  */
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator ()
-    : fBaseAllocator_ {sDefaultAllocator_}
+    : fBaseAllocator_{sDefaultAllocator_}
 {
 }
 
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator)
-    : fBaseAllocator_ {baseAllocator}
+    : fBaseAllocator_{baseAllocator}
 {
 }
 
@@ -184,12 +187,12 @@ namespace {
     }
 }
 LeakTrackingGeneralPurposeAllocator::LeakTrackingGeneralPurposeAllocator ()
-    : fBaseAllocator_ {sDefaultAllocator_}
+    : fBaseAllocator_{sDefaultAllocator_}
 {
 }
 
 LeakTrackingGeneralPurposeAllocator::LeakTrackingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator)
-    : fBaseAllocator_ {baseAllocator}
+    : fBaseAllocator_{baseAllocator}
 {
 }
 

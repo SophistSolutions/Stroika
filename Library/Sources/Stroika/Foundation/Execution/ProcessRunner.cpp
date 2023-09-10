@@ -148,7 +148,10 @@ namespace {
         {
         }
         AutoHANDLE_ (const AutoHANDLE_&) = delete;
-        ~AutoHANDLE_ () { Close (); }
+        ~AutoHANDLE_ ()
+        {
+            Close ();
+        }
         AutoHANDLE_& operator= (const AutoHANDLE_& rhs)
         {
             if (this != &rhs) {
@@ -157,9 +160,15 @@ namespace {
             }
             return *this;
         }
-                operator HANDLE () const { return fHandle; }
-        HANDLE* operator& () { return &fHandle; }
-        void    Close ()
+        operator HANDLE () const
+        {
+            return fHandle;
+        }
+        HANDLE* operator& ()
+        {
+            return &fHandle;
+        }
+        void Close ()
         {
             if (fHandle != INVALID_HANDLE_VALUE) {
                 Verify (::CloseHandle (fHandle));

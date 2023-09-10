@@ -103,14 +103,20 @@ struct DoIt_SetJustification {
     {
         wp->SetJustification (selStart, selEnd, justification);
     }
-    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fJustificationCommandName; }
+    static SDKString GetName (WordProcessor* wp)
+    {
+        return wp->GetCommandNames ().fJustificationCommandName;
+    }
 };
 struct DoIt_SetStandardTabStopList {
     static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, WordProcessor::StandardTabStopList tabStops)
     {
         wp->SetStandardTabStopList (selStart, selEnd, tabStops);
     }
-    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fStandardTabStopListCommandName; }
+    static SDKString GetName (WordProcessor* wp)
+    {
+        return wp->GetCommandNames ().fStandardTabStopListCommandName;
+    }
 };
 struct DoIt_SetMargins {
     struct Margins {
@@ -126,14 +132,20 @@ struct DoIt_SetMargins {
     {
         wp->SetMargins (selStart, selEnd, margins.fLHS, margins.fRHS);
     }
-    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fMarginsCommandName; }
+    static SDKString GetName (WordProcessor* wp)
+    {
+        return wp->GetCommandNames ().fMarginsCommandName;
+    }
 };
 struct DoIt_SetFirstIndent {
     static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, TWIPS firstIndent)
     {
         wp->SetFirstIndent (selStart, selEnd, firstIndent);
     }
-    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fFirstIndentCommandName; }
+    static SDKString GetName (WordProcessor* wp)
+    {
+        return wp->GetCommandNames ().fFirstIndentCommandName;
+    }
 };
 struct DoIt_SetMarginsAndFirstIndent {
     struct MarginsAndFirstIndent {
@@ -152,7 +164,10 @@ struct DoIt_SetMarginsAndFirstIndent {
         wp->SetMargins (selStart, selEnd, marginsEtc.fLHS, marginsEtc.fRHS);
         wp->SetFirstIndent (selStart, selEnd, marginsEtc.fFirstIndent);
     }
-    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fMarginsAndFirstIndentCommandName; }
+    static SDKString GetName (WordProcessor* wp)
+    {
+        return wp->GetCommandNames ().fMarginsAndFirstIndentCommandName;
+    }
 };
 struct DoIt_SetParagraphSpacing {
     struct AllSpacingArgs {
@@ -182,14 +197,20 @@ struct DoIt_SetParagraphSpacing {
             wp->SetLineSpacing (selStart, selEnd, spacingArgs.fLineSpacing);
         }
     }
-    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fParagraphSpacingCommandName; }
+    static SDKString GetName (WordProcessor* wp)
+    {
+        return wp->GetCommandNames ().fParagraphSpacingCommandName;
+    }
 };
 struct DoIt_SetListStyle {
     static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, ListStyle listStyle)
     {
         wp->SetListStyle (selStart, selEnd, listStyle, true);
     }
-    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fSetListStyleCommandName; }
+    static SDKString GetName (WordProcessor* wp)
+    {
+        return wp->GetCommandNames ().fSetListStyleCommandName;
+    }
 };
 struct DoIt_IndentUnIndentList {
     static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, bool indent)
@@ -213,7 +234,10 @@ struct DoIt_IndentUnIndentList {
         }
         wp->SetListIndentLevel (selStart, selEnd, indentLevel, true);
     }
-    static SDKString GetName (WordProcessor* wp) { return wp->GetCommandNames ().fIndentLevelChangeCommandName; }
+    static SDKString GetName (WordProcessor* wp)
+    {
+        return wp->GetCommandNames ().fIndentLevelChangeCommandName;
+    }
 };
 
 /*
@@ -281,7 +305,10 @@ ParagraphInfo ParagraphDatabaseRep::GetStaticDefaultParagraphInfo ()
     return defaultPi;
 }
 
-const ParagraphInfo& ParagraphDatabaseRep::GetParagraphInfo (size_t charAfterPos) const { return GetInfo (charAfterPos); }
+const ParagraphInfo& ParagraphDatabaseRep::GetParagraphInfo (size_t charAfterPos) const
+{
+    return GetInfo (charAfterPos);
+}
 
 vector<pair<WordProcessor::ParagraphInfo, size_t>> ParagraphDatabaseRep::GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const
 {
@@ -878,13 +905,22 @@ bool CheckForCommonParaValue (EXTRACTOR /*IGNORED_BUT_HERE_FOR_OVERLOADING*/, co
     }
 }
 struct JustificationExtractor {
-    Justification operator() (const WordProcessor::ParagraphInfo& from) { return from.GetJustification (); }
+    Justification operator() (const WordProcessor::ParagraphInfo& from)
+    {
+        return from.GetJustification ();
+    }
 };
 struct TabStopExtractor {
-    TextImager::StandardTabStopList operator() (const WordProcessor::ParagraphInfo& from) { return from.GetTabStopList (); }
+    TextImager::StandardTabStopList operator() (const WordProcessor::ParagraphInfo& from)
+    {
+        return from.GetTabStopList ();
+    }
 };
 struct FirstIndentExtractor {
-    TWIPS operator() (const WordProcessor::ParagraphInfo& from) { return from.GetFirstIndent (); }
+    TWIPS operator() (const WordProcessor::ParagraphInfo& from)
+    {
+        return from.GetFirstIndent ();
+    }
 };
 struct MarginsRec {
     MarginsRec ()
@@ -901,25 +937,46 @@ struct MarginsRec {
     TWIPS fLHS;
     TWIPS fRHS;
 
-    inline bool operator!= (const MarginsRec& rhs) { return fLHS != rhs.fLHS or fRHS != rhs.fRHS; }
+    inline bool operator!= (const MarginsRec& rhs)
+    {
+        return fLHS != rhs.fLHS or fRHS != rhs.fRHS;
+    }
 };
 struct MarginsRecExtractor {
-    MarginsRec operator() (const WordProcessor::ParagraphInfo& from) { return MarginsRec (from.GetLeftMargin (), from.GetRightMargin ()); }
+    MarginsRec operator() (const WordProcessor::ParagraphInfo& from)
+    {
+        return MarginsRec (from.GetLeftMargin (), from.GetRightMargin ());
+    }
 };
 struct SpaceBeforeExtractor {
-    TWIPS operator() (const WordProcessor::ParagraphInfo& from) { return from.GetSpaceBefore (); }
+    TWIPS operator() (const WordProcessor::ParagraphInfo& from)
+    {
+        return from.GetSpaceBefore ();
+    }
 };
 struct SpaceAfterExtractor {
-    TWIPS operator() (const WordProcessor::ParagraphInfo& from) { return from.GetSpaceAfter (); }
+    TWIPS operator() (const WordProcessor::ParagraphInfo& from)
+    {
+        return from.GetSpaceAfter ();
+    }
 };
 struct LineSpacingExtractor {
-    LineSpacing operator() (const WordProcessor::ParagraphInfo& from) { return from.GetLineSpacing (); }
+    LineSpacing operator() (const WordProcessor::ParagraphInfo& from)
+    {
+        return from.GetLineSpacing ();
+    }
 };
 struct ListStyleExtractor {
-    ListStyle operator() (const WordProcessor::ParagraphInfo& from) { return from.GetListStyle (); }
+    ListStyle operator() (const WordProcessor::ParagraphInfo& from)
+    {
+        return from.GetListStyle ();
+    }
 };
 struct ListIndentLevelExtractor {
-    unsigned char operator() (const WordProcessor::ParagraphInfo& from) { return from.GetListIndentLevel (); }
+    unsigned char operator() (const WordProcessor::ParagraphInfo& from)
+    {
+        return from.GetListIndentLevel ();
+    }
 };
 
 const TWIPS WordProcessor::kBadCachedFarthestRightMarginInDocument = TWIPS (-1);
@@ -947,7 +1004,10 @@ WordProcessor::WordProcessor ()
     IdleManager::Get ().SetIdlerFrequncy (&fWPIdler, 0.25f);
 }
 
-WordProcessor::~WordProcessor () { IdleManager::Get ().RemoveIdler (&fWPIdler); }
+WordProcessor::~WordProcessor ()
+{
+    IdleManager::Get ().RemoveIdler (&fWPIdler);
+}
 
 void WordProcessor::HookLosingTextStore ()
 {
@@ -1115,7 +1175,10 @@ void WordProcessor::SetHidableTextDatabase (const HidableTextDatabasePtr& hidabl
     data in the hidable text database changes.</p>
         <p>Usually called by @'WordProcessor::SetHidableTextDatabase'. By default, it calls @'WordProcessor::HookHidableTextDatabaseChanged_'.</p>
 */
-void WordProcessor::HookHidableTextDatabaseChanged () { HookHidableTextDatabaseChanged_ (); }
+void WordProcessor::HookHidableTextDatabaseChanged ()
+{
+    HookHidableTextDatabaseChanged_ ();
+}
 
 /*
 @METHOD:        WordProcessor::HookHidableTextDatabaseChanged_
@@ -1295,7 +1358,10 @@ void WordProcessor::SetJustification (size_t from, size_t to, Justification just
     fParagraphDatabase->SetParagraphInfo (from, to - from, pi);
 }
 
-TextImager::StandardTabStopList WordProcessor::GetDefaultStandardTabStopList () { return StandardTabStopList (); }
+TextImager::StandardTabStopList WordProcessor::GetDefaultStandardTabStopList ()
+{
+    return StandardTabStopList ();
+}
 
 /*
 @METHOD:        WordProcessor::GetStandardTabStopList
@@ -2025,7 +2091,10 @@ TWIPS WordProcessor::CalculateFarthestRightMarginInWindow () const
             @'WordProcessor::CalculateFarthestRightMarginInWindow'. This is typically called by @'WordProcessor::ComputeMaxHScrollPos'.
             </p>
 */
-TWIPS WordProcessor::CalculateFarthestRightMargin () const { return GetFarthestRightMarginInDocument (); }
+TWIPS WordProcessor::CalculateFarthestRightMargin () const
+{
+    return GetFarthestRightMarginInDocument ();
+}
 
 void WordProcessor::InvalidateAllCaches ()
 {
@@ -3082,9 +3151,15 @@ void WordProcessor::OnUpdateHideSelectionCommands (CommandUpdater* enabler)
     enabler->SetEnabled (enabled);
 }
 
-void WordProcessor::OnHideSelection () { InterectiveSetRegionHidable (true); }
+void WordProcessor::OnHideSelection ()
+{
+    InterectiveSetRegionHidable (true);
+}
 
-void WordProcessor::OnUnHideSelection () { InterectiveSetRegionHidable (false); }
+void WordProcessor::OnUnHideSelection ()
+{
+    InterectiveSetRegionHidable (false);
+}
 
 void WordProcessor::OnUpdateParagraphJustificationCommand (CommandUpdater* enabler)
 {
@@ -3526,7 +3601,10 @@ void WordProcessor::InteractiveSetListStyle (ListStyle listStyle)
 @METHOD:        WordProcessor::InteractiveDoIndentChange
 @DESCRIPTION:
 */
-void WordProcessor::InteractiveDoIndentChange (bool increase) { InteractiveWPHelper1<DoIt_IndentUnIndentList> (this, increase); }
+void WordProcessor::InteractiveDoIndentChange (bool increase)
+{
+    InteractiveWPHelper1<DoIt_IndentUnIndentList> (this, increase);
+}
 
 /*
 @METHOD:        WordProcessor::GetTabStopList
@@ -4467,16 +4545,25 @@ void WordProcessorTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMa
     }
 }
 
-void WordProcessorTextIOSinkStream::AppendSoftLineBreak () { AppendText (&WordWrappedTextImager::kSoftLineBreakChar, 1, nullptr); }
+void WordProcessorTextIOSinkStream::AppendSoftLineBreak ()
+{
+    AppendText (&WordWrappedTextImager::kSoftLineBreakChar, 1, nullptr);
+}
 
-void WordProcessorTextIOSinkStream::SetJustification (Justification justification) { fNewParagraphInfo.SetJustification (justification); }
+void WordProcessorTextIOSinkStream::SetJustification (Justification justification)
+{
+    fNewParagraphInfo.SetJustification (justification);
+}
 
 void WordProcessorTextIOSinkStream::SetStandardTabStopList (const TextImager::StandardTabStopList& tabStops)
 {
     fNewParagraphInfo.SetTabStopList (tabStops);
 }
 
-void WordProcessorTextIOSinkStream::SetFirstIndent (TWIPS tx) { fNewParagraphInfo.SetFirstIndent (tx); }
+void WordProcessorTextIOSinkStream::SetFirstIndent (TWIPS tx)
+{
+    fNewParagraphInfo.SetFirstIndent (tx);
+}
 
 void WordProcessorTextIOSinkStream::SetLeftMargin (TWIPS lhs)
 {
@@ -4488,13 +4575,25 @@ void WordProcessorTextIOSinkStream::SetRightMargin (TWIPS rhs)
     fNewParagraphInfo.SetMargins (fNewParagraphInfo.GetLeftMargin (), max (TWIPS (fNewParagraphInfo.GetLeftMargin () + 1), rhs));
 }
 
-void WordProcessorTextIOSinkStream::SetSpaceBefore (TWIPS sb) { fNewParagraphInfo.SetSpaceBefore (sb); }
+void WordProcessorTextIOSinkStream::SetSpaceBefore (TWIPS sb)
+{
+    fNewParagraphInfo.SetSpaceBefore (sb);
+}
 
-void WordProcessorTextIOSinkStream::SetSpaceAfter (TWIPS sa) { fNewParagraphInfo.SetSpaceAfter (sa); }
+void WordProcessorTextIOSinkStream::SetSpaceAfter (TWIPS sa)
+{
+    fNewParagraphInfo.SetSpaceAfter (sa);
+}
 
-void WordProcessorTextIOSinkStream::SetLineSpacing (LineSpacing sl) { fNewParagraphInfo.SetLineSpacing (sl); }
+void WordProcessorTextIOSinkStream::SetLineSpacing (LineSpacing sl)
+{
+    fNewParagraphInfo.SetLineSpacing (sl);
+}
 
-void WordProcessorTextIOSinkStream::SetTextHidden (bool hidden) { fTextHidden = hidden; }
+void WordProcessorTextIOSinkStream::SetTextHidden (bool hidden)
+{
+    fTextHidden = hidden;
+}
 
 void WordProcessorTextIOSinkStream::StartTable ()
 {
@@ -4750,9 +4849,15 @@ void WordProcessorTextIOSinkStream::EndTableCell ()
     PopContext ();
 }
 
-void WordProcessorTextIOSinkStream::SetListStyle (ListStyle listStyle) { fNewParagraphInfo.SetListStyle (listStyle); }
+void WordProcessorTextIOSinkStream::SetListStyle (ListStyle listStyle)
+{
+    fNewParagraphInfo.SetListStyle (listStyle);
+}
 
-void WordProcessorTextIOSinkStream::SetListIndentLevel (unsigned char indentLevel) { fNewParagraphInfo.SetListIndentLevel (indentLevel); }
+void WordProcessorTextIOSinkStream::SetListIndentLevel (unsigned char indentLevel)
+{
+    fNewParagraphInfo.SetListIndentLevel (indentLevel);
+}
 
 void WordProcessorTextIOSinkStream::SetIgnoreLastParaAttributes (bool ignoreLastParaAttributes)
 {
@@ -4838,7 +4943,10 @@ void WordProcessorTextIOSinkStream::PopContext ()
     fSavedContexts.pop_back ();
 }
 
-void WordProcessorTextIOSinkStream::EndOfBuffer () { fEndOfBuffer = true; }
+void WordProcessorTextIOSinkStream::EndOfBuffer ()
+{
+    fEndOfBuffer = true;
+}
 
 void WordProcessorTextIOSinkStream::Flush ()
 {
@@ -5058,9 +5166,15 @@ void WordProcessor::WordProcessorTextIOSrcStream::GetListStyleInfo (ListStyle* l
     }
 }
 
-Led_tChar WordProcessorTextIOSrcStream::GetSoftLineBreakCharacter () const { return WordWrappedTextImager::kSoftLineBreakChar; }
+Led_tChar WordProcessorTextIOSrcStream::GetSoftLineBreakCharacter () const
+{
+    return WordWrappedTextImager::kSoftLineBreakChar;
+}
 
-DiscontiguousRun<bool> WordProcessorTextIOSrcStream::GetHidableTextRuns () const { return fHidableTextRuns; }
+DiscontiguousRun<bool> WordProcessorTextIOSrcStream::GetHidableTextRuns () const
+{
+    return fHidableTextRuns;
+}
 
 WordProcessorTextIOSrcStream::Table* WordProcessorTextIOSrcStream::GetTableAt (size_t at) const
 {
@@ -5151,7 +5265,10 @@ WordProcessorTextIOSrcStream::TableIOMapper::TableIOMapper (WordProcessor::Table
     Ensure (fEndCol <= fRealTable.GetColumnCount ());
 }
 
-size_t WordProcessorTextIOSrcStream::TableIOMapper::GetRows () const { return fEndRow - fStartRow; }
+size_t WordProcessorTextIOSrcStream::TableIOMapper::GetRows () const
+{
+    return fEndRow - fStartRow;
+}
 
 size_t WordProcessorTextIOSrcStream::TableIOMapper::GetColumns (size_t row) const
 {
@@ -6771,13 +6888,25 @@ void Table::WhileSimpleMouseTracking (Led_Point newMousePos)
 #endif
 }
 
-Color Table::GetTableBorderColor () const { return fBorderColor; }
+Color Table::GetTableBorderColor () const
+{
+    return fBorderColor;
+}
 
-void Table::SetTableBorderColor (Color c) { fBorderColor = c; }
+void Table::SetTableBorderColor (Color c)
+{
+    fBorderColor = c;
+}
 
-TWIPS Table::GetTableBorderWidth () const { return fBorderWidth; }
+TWIPS Table::GetTableBorderWidth () const
+{
+    return fBorderWidth;
+}
 
-void Table::SetTableBorderWidth (TWIPS w) { fBorderWidth = w; }
+void Table::SetTableBorderWidth (TWIPS w)
+{
+    fBorderWidth = w;
+}
 
 TWIPS Table::GetColumnWidth (size_t row, size_t column) const
 {
@@ -6794,7 +6923,10 @@ void Table::SetColumnWidth (size_t row, size_t column, TWIPS colWidth)
     InvalidateLayout ();
 }
 
-Color Table::GetCellColor (size_t row, size_t column) const { return GetCell (row, column).GetBackColor (); }
+Color Table::GetCellColor (size_t row, size_t column) const
+{
+    return GetCell (row, column).GetBackColor ();
+}
 
 void Table::SetCellColor (size_t row, size_t column, const Color& c)
 {
@@ -7588,7 +7720,10 @@ WordProcessor::Table::CellRep::~CellRep ()
     delete fTextStore;
 }
 
-TextStore* WordProcessor::Table::CellRep::PeekAtTextStore () const { return fTextStore; }
+TextStore* WordProcessor::Table::CellRep::PeekAtTextStore () const
+{
+    return fTextStore;
+}
 
 void WordProcessor::Table::CellRep::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
@@ -7646,9 +7781,15 @@ WordProcessor::Table::EmbeddedTableWordProcessor::EmbeddedTableWordProcessor (Wo
     SetImageUsingOffscreenBitmaps (false);
 }
 
-WordProcessor::Table& WordProcessor::Table::EmbeddedTableWordProcessor::GetOwningTable () const { return fOwningTable; }
+WordProcessor::Table& WordProcessor::Table::EmbeddedTableWordProcessor::GetOwningTable () const
+{
+    return fOwningTable;
+}
 
-WordProcessor& WordProcessor::Table::EmbeddedTableWordProcessor::GetOwningWordProcessor () const { return fOwningWordProcessor; }
+WordProcessor& WordProcessor::Table::EmbeddedTableWordProcessor::GetOwningWordProcessor () const
+{
+    return fOwningWordProcessor;
+}
 
 void WordProcessor::Table::EmbeddedTableWordProcessor::SaveMiscActiveFocusInfo ()
 {
@@ -7691,13 +7832,25 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::HookInternalizerChanged (
 }
 #endif
 
-bool WordProcessor::Table::EmbeddedTableWordProcessor::OnCopyCommand_Before () { return fOwningWordProcessor.OnCopyCommand_Before (); }
+bool WordProcessor::Table::EmbeddedTableWordProcessor::OnCopyCommand_Before ()
+{
+    return fOwningWordProcessor.OnCopyCommand_Before ();
+}
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::OnCopyCommand_After () { fOwningWordProcessor.OnCopyCommand_After (); }
+void WordProcessor::Table::EmbeddedTableWordProcessor::OnCopyCommand_After ()
+{
+    fOwningWordProcessor.OnCopyCommand_After ();
+}
 
-bool WordProcessor::Table::EmbeddedTableWordProcessor::OnPasteCommand_Before () { return fOwningWordProcessor.OnPasteCommand_Before (); }
+bool WordProcessor::Table::EmbeddedTableWordProcessor::OnPasteCommand_Before ()
+{
+    return fOwningWordProcessor.OnPasteCommand_Before ();
+}
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::OnPasteCommand_After () { fOwningWordProcessor.OnPasteCommand_After (); }
+void WordProcessor::Table::EmbeddedTableWordProcessor::OnPasteCommand_After ()
+{
+    fOwningWordProcessor.OnPasteCommand_After ();
+}
 
 void WordProcessor::Table::EmbeddedTableWordProcessor::DrawRowHilight (Tablet* /*tablet*/, const Led_Rect& /*currentRowRect*/,
                                                                        const Led_Rect& /*invalidRowRect*/, const TextLayoutBlock& /*text*/,
@@ -7853,7 +8006,10 @@ WordProcessor::Table::SavedTextRepWSel::SavedTextRepWSel (SavedTextRep* delegate
     }
 }
 
-size_t WordProcessor::Table::SavedTextRepWSel::GetLength () const { return fRealRep->GetLength (); }
+size_t WordProcessor::Table::SavedTextRepWSel::GetLength () const
+{
+    return fRealRep->GetLength ();
+}
 
 void WordProcessor::Table::SavedTextRepWSel::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
 {

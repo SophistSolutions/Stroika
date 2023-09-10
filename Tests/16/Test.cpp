@@ -33,7 +33,10 @@ namespace {
                 int        otherData{}; //
             };
             struct My_Extractor_ {
-                auto operator() (const Obj_& t) const -> type_index { return t.fTypeIndex; };
+                auto operator() (const Obj_& t) const -> type_index
+                {
+                    return t.fTypeIndex;
+                };
             };
             using My_Traits_ = Containers::KeyedCollection_DefaultTraits<Obj_, type_index, My_Extractor_>;
         }
@@ -48,7 +51,7 @@ namespace {
             }
             {
                 // Or slighltly more flexiblely, but less efficiently (cuz extractor stored in std::function and invoked through that wrapper)
-                KeyedCollection<Obj_, type_index>                  s2{My_Extractor_{}};
+                KeyedCollection<Obj_, type_index> s2{My_Extractor_{}};
                 s2.Add (Obj_{typeid (int)});
                 s2.Add (Obj_{typeid (long int)});
             }

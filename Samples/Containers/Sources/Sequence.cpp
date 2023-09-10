@@ -46,4 +46,7 @@ namespace {
     }
 }
 
-void Samples::Containers::Sequence::RunDemo () { SimplestSequenceTest_ (); }
+void Samples::Containers::Sequence::RunDemo ()
+{
+    SimplestSequenceTest_ ();
+}

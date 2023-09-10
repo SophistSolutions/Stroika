@@ -274,4 +274,7 @@ Router::Router (const Sequence<Route>& routes, const CORSOptions& corsOptions)
 {
 }
 
-optional<RequestHandler> Router::Lookup (const Request& request) const { return _GetRep<Rep_> ().Lookup_ (request, nullptr); }
+optional<RequestHandler> Router::Lookup (const Request& request) const
+{
+    return _GetRep<Rep_> ().Lookup_ (request, nullptr);
+}

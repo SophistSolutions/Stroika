@@ -6,8 +6,8 @@
 #include <cctype>
 
 #include "../../Foundation/Characters/Character.h"
-#include "../../Foundation/Characters/CodePage.h"
 #include "../../Foundation/Characters/CodeCvt.h"
+#include "../../Foundation/Characters/CodePage.h"
 
 #include "Config.h"
 
@@ -23,10 +23,22 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
 // These SHOULD work for UNICODE, MBYTE and SingleByte case...
-inline bool IsASCIISpace (Led_tChar c) { return isascii (c) and isspace (c); }
-inline bool IsASCIIAlnum (Led_tChar c) { return isascii (c) and isalnum (c); }
-inline bool IsASCIIAlpha (Led_tChar c) { return isascii (c) and isalpha (c); }
-inline bool IsASCIIDigit (Led_tChar c) { return isascii (c) and isdigit (c); }
+inline bool IsASCIISpace (Led_tChar c)
+{
+    return isascii (c) and isspace (c);
+}
+inline bool IsASCIIAlnum (Led_tChar c)
+{
+    return isascii (c) and isalnum (c);
+}
+inline bool IsASCIIAlpha (Led_tChar c)
+{
+    return isascii (c) and isalpha (c);
+}
+inline bool IsASCIIDigit (Led_tChar c)
+{
+    return isascii (c) and isdigit (c);
+}
 
 #if qWideCharacters
 static bool SJIS_IsLeadByte (unsigned char c)
@@ -113,9 +125,10 @@ inline bool IsJapaneseBOLChar (wchar_t c)
 {
     char   mbyteChars[2];
     size_t nBytesInThisChar = 2;
-    char16_t useC = static_cast<char16_t> (c);      // this code was originally written for wchar_t == char16_t, so that explains unfortunate casts for now
-    nBytesInThisChar = CodeCvt<char16_t>{Characters::WellKnownCodePages::kSJIS}.Characters2Bytes (
-        span{&useC, 1}, Memory::SpanReInterpretCast<std::byte, char> (span{mbyteChars})).size ();
+    char16_t useC = static_cast<char16_t> (c); // this code was originally written for wchar_t == char16_t, so that explains unfortunate casts for now
+    nBytesInThisChar = CodeCvt<char16_t>{Characters::WellKnownCodePages::kSJIS}
+                           .Characters2Bytes (span{&useC, 1}, Memory::SpanReInterpretCast<std::byte, char> (span{mbyteChars}))
+                           .size ();
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
         return 0; // if No SJIS code page, not much we can do!

@@ -162,7 +162,10 @@ namespace {
     }
 
     struct DoRunIt {
-        DoRunIt () { WriteMemoizedUniscribeDirProc (GetInitialUNISCRIBEDir, "GetInitialUNISCRIBEDir", "myGetInitialUNISCRIBEDir"); }
+        DoRunIt ()
+        {
+            WriteMemoizedUniscribeDirProc (GetInitialUNISCRIBEDir, "GetInitialUNISCRIBEDir", "myGetInitialUNISCRIBEDir");
+        }
     } gRunIt;
 };
 #endif
@@ -206,7 +209,10 @@ namespace {
             }
         }
 
-        nonvirtual bool IsAvail () const { return fDLL != nullptr; }
+        nonvirtual bool IsAvail () const
+        {
+            return fDLL != nullptr;
+        }
 
         HRESULT WINAPI ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl,
                                       const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems)
@@ -818,7 +824,10 @@ void TextLayoutBlock_Basic::PeekAtVirtualText_ (const Led_tChar** startText, con
     *endText   = fVirtualText.data () + fTextLength;
 }
 
-vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_Basic::GetScriptRuns () const { return fScriptRuns; }
+vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_Basic::GetScriptRuns () const
+{
+    return fScriptRuns;
+}
 
 /*
  ********************************************************************************
@@ -970,7 +979,10 @@ void TextLayoutBlock_VirtualSubset::PeekAtVirtualText_ (const Led_tChar** startT
     *endText = *startText + (fEnd - fStart);
 }
 
-vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_VirtualSubset::GetScriptRuns () const { return fScriptRuns; }
+vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_VirtualSubset::GetScriptRuns () const
+{
+    return fScriptRuns;
+}
 
 #if qTryToUseUNISCRIBEForTextRuns
 /*

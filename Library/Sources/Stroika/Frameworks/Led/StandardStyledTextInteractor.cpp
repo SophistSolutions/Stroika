@@ -101,7 +101,9 @@ void StandardStyledTextInteractor::HookGainedNewTextStore ()
     HookGainedNewTextStore_ ();
 }
 
-void StandardStyledTextInteractor::HookGainedNewTextStore_ () {}
+void StandardStyledTextInteractor::HookGainedNewTextStore_ ()
+{
+}
 
 /*
 @METHOD:        StandardStyledTextInteractor::SetDefaultFont
@@ -399,7 +401,10 @@ void StandardStyledTextInteractor::SetSelection_ ([[maybe_unused]] size_t start,
     in order to implement the usual semantics of a font / style menu.</p>
         <p>See @'StandardStyledTextInteractor::SetEmptySelectionStyle'.</p>
 */
-FontSpecification StandardStyledTextInteractor::GetEmptySelectionStyle () const { return fEmptySelectionStyle; }
+FontSpecification StandardStyledTextInteractor::GetEmptySelectionStyle () const
+{
+    return fEmptySelectionStyle;
+}
 
 /*
 @METHOD:        StandardStyledTextInteractor::SetEmptySelectionStyle_OVLD
@@ -533,7 +538,10 @@ StandardStyledTextIOSinkStream::~StandardStyledTextIOSinkStream ()
     }
 }
 
-size_t StandardStyledTextIOSinkStream::current_offset () const { return (fInsertionStart - fOriginalStart); }
+size_t StandardStyledTextIOSinkStream::current_offset () const
+{
+    return (fInsertionStart - fOriginalStart);
+}
 
 void StandardStyledTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec)
 {
@@ -573,7 +581,10 @@ void StandardStyledTextIOSinkStream::ApplyStyle (size_t from, size_t to, const v
     fStyleRunDatabase->SetStyleInfo (fOriginalStart + from, to - from, styleRuns);
 }
 
-FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const { return TextImager::GetStaticDefaultFont (); }
+FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const
+{
+    return TextImager::GetStaticDefaultFont ();
+}
 
 void StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at)
 {
@@ -714,7 +725,10 @@ size_t StandardStyledTextIOSrcStream::readNTChars (Led_tChar* intoBuf, size_t ma
     return (bytesToRead);
 }
 
-size_t StandardStyledTextIOSrcStream::current_offset () const { return (fCurOffset - fSelStart); }
+size_t StandardStyledTextIOSrcStream::current_offset () const
+{
+    return (fCurOffset - fSelStart);
+}
 
 void StandardStyledTextIOSrcStream::seek_to (size_t to)
 {
@@ -760,7 +774,10 @@ vector<SimpleEmbeddedObjectStyleMarker*> StandardStyledTextIOSrcStream::CollectA
     return result.fResult;
 }
 
-StandardStyledTextIOSrcStream::Table* StandardStyledTextIOSrcStream::GetTableAt (size_t /*at*/) const { return nullptr; }
+StandardStyledTextIOSrcStream::Table* StandardStyledTextIOSrcStream::GetTableAt (size_t /*at*/) const
+{
+    return nullptr;
+}
 
 void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
 {
@@ -782,7 +799,10 @@ void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* 
     }
 }
 
-size_t StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const { return (fSelStart); }
+size_t StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const
+{
+    return (fSelStart);
+}
 
 /*
  ********************************************************************************
@@ -1217,7 +1237,10 @@ EmptySelStyleTextRep::EmptySelStyleTextRep (StandardStyledTextInteractor* intera
 {
 }
 
-size_t EmptySelStyleTextRep::GetLength () const { return 0; }
+size_t EmptySelStyleTextRep::GetLength () const
+{
+    return 0;
+}
 
 void EmptySelStyleTextRep::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
 {

@@ -71,7 +71,10 @@ namespace {
 }
 namespace {
     void PrettyPrint_ (const Options_& options, const VariantValue& v, const OutputStream<Character>::Ptr& out, int indentLevel);
-    void PrettyPrint_Null_ (const Options_& /*options*/, const OutputStream<Character>::Ptr& out) { out.Write ("null"sv); }
+    void PrettyPrint_Null_ (const Options_& /*options*/, const OutputStream<Character>::Ptr& out)
+    {
+        out.Write ("null"sv);
+    }
     void PrettyPrint_ (const Options_& /*options*/, bool v, const OutputStream<Character>::Ptr& out)
     {
         if (v) {
@@ -252,8 +255,11 @@ public:
     {
         return make_shared<Rep_> (fOptions_); // no instance data
     }
-    virtual String GetDefaultFileSuffix () const override { return ".json"sv; }
-    virtual void   Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
+    virtual String GetDefaultFileSuffix () const override
+    {
+        return ".json"sv;
+    }
+    virtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
     {
         TextWriter::Ptr textOut = TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
         PrettyPrint_ (fOptions_, v, textOut, 0);

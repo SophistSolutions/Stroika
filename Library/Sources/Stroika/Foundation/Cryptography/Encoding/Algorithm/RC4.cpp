@@ -19,7 +19,10 @@ using Memory::BLOB;
 
 #if qHasFeature_OpenSSL
 namespace {
-    OpenSSLCryptoParams cvt_ (const BLOB& key) { return OpenSSLCryptoParams{OpenSSL::CipherAlgorithms::kRC4, key, BLOB{}}; }
+    OpenSSLCryptoParams cvt_ (const BLOB& key)
+    {
+        return OpenSSLCryptoParams{OpenSSL::CipherAlgorithms::kRC4, key, BLOB{}};
+    }
 }
 #endif
 

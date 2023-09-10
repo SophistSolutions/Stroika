@@ -11,7 +11,6 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
-
 /*
  ********************************************************************************
  ********************** Characters::CharacterEncodingException ******************
@@ -33,11 +32,9 @@ CharacterEncodingException::CharacterEncodingException (EncodingOrDecoding encod
         }
         sb += "."sv;
         return sb.str ();
-        }()
-    }
+    }()}
     , fEncodingOrDecoding_{encodingOrDecoding}
     , fAtSourceOffset_{atSourceOffset}
     , fEncoding_{encoding}
 {
 }
-

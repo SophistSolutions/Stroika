@@ -22,7 +22,6 @@ using namespace Stroika::Foundation::Containers;
 
 using Concrete::Bijection_LinkedList;
 
-
 namespace {
     template <typename CONCRETE_CONTAINER>
     void RunTests_ ()
@@ -46,7 +45,10 @@ namespace {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
             : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (value_type v1, value_type v2) const { return v1.GetValue () == v2.GetValue (); }
+            bool operator() (value_type v1, value_type v2) const
+            {
+                return v1.GetValue () == v2.GetValue ();
+            }
         };
 
         RunTests_<Bijection<size_t, size_t>> ();

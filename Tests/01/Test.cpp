@@ -99,9 +99,14 @@ namespace {
     namespace Test2_LRUCache_ObjWithNoArgCTORs_ {
         namespace Private_ {
             struct TNoCTOR_ {
-                TNoCTOR_ (int) {}
+                TNoCTOR_ (int)
+                {
+                }
                 TNoCTOR_ () = delete;
-                bool operator== ([[maybe_unused]] const TNoCTOR_& rhs) const { return true; }
+                bool operator== ([[maybe_unused]] const TNoCTOR_& rhs) const
+                {
+                    return true;
+                }
             };
         }
         void DoIt ()
@@ -118,9 +123,14 @@ namespace {
     namespace Test3_LRUCache_Elements {
         namespace Private_ {
             struct TNoCTOR_ {
-                TNoCTOR_ (int) {}
+                TNoCTOR_ (int)
+                {
+                }
                 TNoCTOR_ () = delete;
-                bool operator== ([[maybe_unused]] const TNoCTOR_& rhs) const { return true; }
+                bool operator== ([[maybe_unused]] const TNoCTOR_& rhs) const
+                {
+                    return true;
+                }
             };
         }
         void DoIt ()
@@ -150,7 +160,10 @@ namespace {
                     int size;
                 };
                 // do the actual lookup part which maybe slow
-                auto LookupDiskStats_ ([[maybe_unused]] const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
+                auto LookupDiskStats_ ([[maybe_unused]] const String& filename) -> DiskSpaceUsageType
+                {
+                    return DiskSpaceUsageType{33};
+                };
 
                 using namespace Time;
                 Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0_duration};

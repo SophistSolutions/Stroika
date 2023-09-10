@@ -45,7 +45,10 @@ namespace {
             }
         }
 
-        void Tests_ () { TestBasicConstruction_ (); }
+        void Tests_ ()
+        {
+            TestBasicConstruction_ ();
+        }
     }
 }
 
@@ -73,7 +76,10 @@ namespace {
             }
         }
 
-        void Tests_ () { TestBasicConstruction_ (); }
+        void Tests_ ()
+        {
+            TestBasicConstruction_ ();
+        }
     }
 }
 
@@ -116,7 +122,10 @@ namespace {
             }
         }
 
-        void Tests_ () { TestBasicConstruction_ (); }
+        void Tests_ ()
+        {
+            TestBasicConstruction_ ();
+        }
     }
 }
 
@@ -134,7 +143,10 @@ namespace {
             }
         }
 
-        void Tests_ () { T1_ (); }
+        void Tests_ ()
+        {
+            T1_ ();
+        }
     }
 }
 
@@ -166,7 +178,10 @@ namespace {
             }
         }
 
-        void Tests_ () { Private_::T1_ (); }
+        void Tests_ ()
+        {
+            Private_::T1_ ();
+        }
     }
 }
 
@@ -187,7 +202,10 @@ namespace {
             }
         }
 
-        void Tests_ () { T1_ (); }
+        void Tests_ ()
+        {
+            T1_ ();
+        }
     }
 }
 
@@ -205,7 +223,10 @@ namespace {
             }
         }
 
-        void Tests_ () { T1_ (); }
+        void Tests_ ()
+        {
+            T1_ ();
+        }
     }
 }
 
@@ -239,7 +260,10 @@ namespace {
             }
         }
 
-        void Tests_ () { Private_::T1_ (); }
+        void Tests_ ()
+        {
+            Private_::T1_ ();
+        }
     }
 }
 
@@ -260,7 +284,10 @@ namespace {
             }
         }
 
-        void Tests_ () { Private_::T1_ (); }
+        void Tests_ ()
+        {
+            Private_::T1_ ();
+        }
     }
 }
 

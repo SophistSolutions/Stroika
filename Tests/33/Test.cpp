@@ -300,7 +300,10 @@ namespace {
             {
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const { return fEnum1 == rhs.fEnum1; }
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
+                return fEnum1 == rhs.fEnum1;
+            }
         };
 
         {
@@ -559,12 +562,18 @@ namespace {
 
         struct BaseObj_ {
             int  fVV1{};
-            bool operator== (const BaseObj_& rhs) const { return fVV1 == rhs.fVV1; }
+            bool operator== (const BaseObj_& rhs) const
+            {
+                return fVV1 == rhs.fVV1;
+            }
         };
 
         struct Derived_ : BaseObj_ {
             int  fVV2{};
-            bool operator== (const Derived_& rhs) const { return BaseObj_::operator== (rhs) and fVV2 == rhs.fVV2; }
+            bool operator== (const Derived_& rhs) const
+            {
+                return BaseObj_::operator== (rhs) and fVV2 == rhs.fVV2;
+            }
         };
 
         ObjectVariantMapper mapper;
@@ -682,7 +691,10 @@ namespace {
                 uint8_t red;
                 uint8_t green;
                 uint8_t blue;
-                bool    operator== (const RGBColor& rhs) const { return red == rhs.red and green == rhs.green and blue == rhs.blue; }
+                bool    operator== (const RGBColor& rhs) const
+                {
+                    return red == rhs.red and green == rhs.green and blue == rhs.blue;
+                }
             };
 
             ObjectVariantMapper mapper;
@@ -758,7 +770,10 @@ namespace {
             {
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const { return fEnum1 == rhs.fEnum1; }
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
+                return fEnum1 == rhs.fEnum1;
+            }
         };
 
         {
@@ -814,7 +829,10 @@ namespace {
                 IO::Network::InternetAddress    ia;
                 optional<IO::Network::CIDR>     cidr;
                 DataExchange::InternetMediaType mediaType;
-                bool operator== (const T& rhs) const { return ia == rhs.ia and cidr == rhs.cidr and mediaType == rhs.mediaType; }
+                bool                            operator== (const T& rhs) const
+                {
+                    return ia == rhs.ia and cidr == rhs.cidr and mediaType == rhs.mediaType;
+                }
             };
             mapper.AddCommonType<IO::Network::CIDR> ();
             mapper.AddCommonType<optional<IO::Network::CIDR>> ();

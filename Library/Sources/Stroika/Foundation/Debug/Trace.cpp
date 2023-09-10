@@ -515,7 +515,10 @@ void Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
  ************************ Debug::GetDbgTraceThreadName_A ************************
  ********************************************************************************
  */
-string Debug::GetDbgTraceThreadName_A (thread::id threadID) { return mkThreadLabelForThreadID_ (threadID).second; }
+string Debug::GetDbgTraceThreadName_A (thread::id threadID)
+{
+    return mkThreadLabelForThreadID_ (threadID).second;
+}
 
 /*
  ********************************************************************************
@@ -564,11 +567,20 @@ TraceContextBumper::TraceContextBumper (const char* contextName) noexcept
 {
 }
 
-unsigned int TraceContextBumper::GetCount () { return tTraceContextDepth_; }
+unsigned int TraceContextBumper::GetCount ()
+{
+    return tTraceContextDepth_;
+}
 
-void TraceContextBumper::IncCount_ () noexcept { ++tTraceContextDepth_; }
+void TraceContextBumper::IncCount_ () noexcept
+{
+    ++tTraceContextDepth_;
+}
 
-void TraceContextBumper::DecrCount_ () noexcept { --tTraceContextDepth_; }
+void TraceContextBumper::DecrCount_ () noexcept
+{
+    --tTraceContextDepth_;
+}
 
 TraceContextBumper::~TraceContextBumper ()
 {

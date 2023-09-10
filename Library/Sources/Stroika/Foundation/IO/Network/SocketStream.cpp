@@ -34,7 +34,10 @@ public:
         , fSD_{sd}
     {
     }
-    virtual bool IsSeekable () const override { return false; }
+    virtual bool IsSeekable () const override
+    {
+        return false;
+    }
     virtual void CloseWrite () override
     {
         Require (IsOpenWrite ());
@@ -45,7 +48,10 @@ public:
         }
         Ensure (not IsOpenWrite ());
     }
-    virtual bool IsOpenWrite () const override { return fOpenForWrite_; }
+    virtual bool IsOpenWrite () const override
+    {
+        return fOpenForWrite_;
+    }
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
@@ -55,7 +61,10 @@ public:
             fSD_.reset ();
         }
     }
-    virtual bool           IsOpenRead () const override { return fOpenForRead_; }
+    virtual bool IsOpenRead () const override
+    {
+        return fOpenForRead_;
+    }
     virtual SeekOffsetType GetReadOffset () const override
     {
         Require (IsOpenRead ());
@@ -116,7 +125,10 @@ private:
  **************************** IO::Network::SocketStream *************************
  ********************************************************************************
  */
-auto SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr { return make_shared<Rep_> (sd); }
+auto SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
+{
+    return make_shared<Rep_> (sd);
+}
 
 auto SocketStream::New (Execution::InternallySynchronized internallySynchronized, const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
 {

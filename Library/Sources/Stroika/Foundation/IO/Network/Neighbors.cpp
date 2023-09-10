@@ -258,4 +258,7 @@ NeighborsMonitor::NeighborsMonitor (const Options& options)
 {
 }
 
-Collection<NeighborsMonitor::Neighbor> NeighborsMonitor::GetNeighbors () const { return fRep_->GetNeighbors (); }
+Collection<NeighborsMonitor::Neighbor> NeighborsMonitor::GetNeighbors () const
+{
+    return fRep_->GetNeighbors ();
+}

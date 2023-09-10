@@ -110,14 +110,20 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
  ******************* Service::Main::IApplicationRep *****************************
  ********************************************************************************
  */
-bool Main::IApplicationRep::HandleCommandLineArgument (const String& /*s*/) { return false; }
+bool Main::IApplicationRep::HandleCommandLineArgument (const String& /*s*/)
+{
+    return false;
+}
 
 void Main::IApplicationRep::OnReReadConfigurationRequest ()
 {
     //  fMustReReadConfig = true;
 }
 
-String Main::IApplicationRep::GetServiceStatusMessage () const { return String{}; }
+String Main::IApplicationRep::GetServiceStatusMessage () const
+{
+    return String{};
+}
 
 /*
  ********************************************************************************
@@ -153,7 +159,10 @@ Main::Main (const shared_ptr<IApplicationRep>& rep, const shared_ptr<IServiceInt
     serviceIntegrationRep->_Attach (rep);
 }
 
-Main::~Main () { fServiceRep_->_Attach (nullptr); }
+Main::~Main ()
+{
+    fServiceRep_->_Attach (nullptr);
+}
 
 void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters::Character>::Ptr& out)
 {
@@ -305,11 +314,20 @@ void Main::ReReadConfiguration ()
 #endif
 }
 
-void Main::Pause () { AssertNotImplemented (); }
+void Main::Pause ()
+{
+    AssertNotImplemented ();
+}
 
-void Main::Continue () { AssertNotImplemented (); }
+void Main::Continue ()
+{
+    AssertNotImplemented ();
+}
 
-Main::ServiceDescription Main::GetServiceDescription () const { return GetAppRep_ ().GetServiceDescription (); }
+Main::ServiceDescription Main::GetServiceDescription () const
+{
+    return GetAppRep_ ().GetServiceDescription ();
+}
 
 void Main::Restart (Time::DurationSecondsType timeout)
 {
@@ -340,16 +358,25 @@ Main::LoggerServiceWrapper::LoggerServiceWrapper (const shared_ptr<Main::IServic
     RequireNotNull (delegateTo);
 }
 
-void Main::LoggerServiceWrapper::_Attach (const shared_ptr<IApplicationRep>& appRep) { fDelegateTo_->_Attach (appRep); }
+void Main::LoggerServiceWrapper::_Attach (const shared_ptr<IApplicationRep>& appRep)
+{
+    fDelegateTo_->_Attach (appRep);
+}
 
-shared_ptr<Main::IApplicationRep> Main::LoggerServiceWrapper::_GetAttachedAppRep () const { return fDelegateTo_->_GetAttachedAppRep (); }
+shared_ptr<Main::IApplicationRep> Main::LoggerServiceWrapper::_GetAttachedAppRep () const
+{
+    return fDelegateTo_->_GetAttachedAppRep ();
+}
 
 Set<Main::ServiceIntegrationFeatures> Main::LoggerServiceWrapper::_GetSupportedFeatures () const
 {
     return fDelegateTo_->_GetSupportedFeatures ();
 }
 
-Main::State Main::LoggerServiceWrapper::_GetState () const { return fDelegateTo_->_GetState (); }
+Main::State Main::LoggerServiceWrapper::_GetState () const
+{
+    return fDelegateTo_->_GetState ();
+}
 
 void Main::LoggerServiceWrapper::_Install ()
 {
@@ -405,13 +432,25 @@ void Main::LoggerServiceWrapper::_RunDirectly (const optional<Time::Duration>& r
     Logger::sThe.Log (Logger::eNotice, L"Service stopped normally");
 }
 
-void Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout) { fDelegateTo_->_Start (timeout); }
+void Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout)
+{
+    fDelegateTo_->_Start (timeout);
+}
 
-void Main::LoggerServiceWrapper::_Stop (Time::DurationSecondsType timeout) { fDelegateTo_->_Stop (timeout); }
+void Main::LoggerServiceWrapper::_Stop (Time::DurationSecondsType timeout)
+{
+    fDelegateTo_->_Stop (timeout);
+}
 
-void Main::LoggerServiceWrapper::_ForcedStop (Time::DurationSecondsType timeout) { fDelegateTo_->_ForcedStop (timeout); }
+void Main::LoggerServiceWrapper::_ForcedStop (Time::DurationSecondsType timeout)
+{
+    fDelegateTo_->_ForcedStop (timeout);
+}
 
-pid_t Main::LoggerServiceWrapper::_GetServicePID () const { return fDelegateTo_->_GetServicePID (); }
+pid_t Main::LoggerServiceWrapper::_GetServicePID () const
+{
+    return fDelegateTo_->_GetServicePID ();
+}
 
 #if qPlatform_POSIX
 /*
@@ -450,7 +489,10 @@ void Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& app
     fAppRep_ = appRep;
 }
 
-shared_ptr<Main::IApplicationRep> Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const { return fAppRep_; }
+shared_ptr<Main::IApplicationRep> Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
+{
+    return fAppRep_;
+}
 
 Set<Main::ServiceIntegrationFeatures> Main::BasicUNIXServiceImpl::_GetSupportedFeatures () const
 {
@@ -477,9 +519,15 @@ Main::State Main::BasicUNIXServiceImpl::_GetState () const
     return State::eStopped;
 }
 
-void Main::BasicUNIXServiceImpl::_Install () { Execution::Throw (Execution::OperationNotSupportedException{"Install"sv}); }
+void Main::BasicUNIXServiceImpl::_Install ()
+{
+    Execution::Throw (Execution::OperationNotSupportedException{"Install"sv});
+}
 
-void Main::BasicUNIXServiceImpl::_UnInstall () { Execution::Throw (Execution::OperationNotSupportedException{"UnInstall"sv}); }
+void Main::BasicUNIXServiceImpl::_UnInstall ()
+{
+    Execution::Throw (Execution::OperationNotSupportedException{"UnInstall"sv});
+}
 
 void Main::BasicUNIXServiceImpl::_RunAsService ()
 {
@@ -686,7 +734,10 @@ void Main::WindowsService::_Attach (const shared_ptr<IApplicationRep>& appRep)
     fAppRep_ = appRep;
 }
 
-shared_ptr<Main::IApplicationRep> Main::WindowsService::_GetAttachedAppRep () const { return fAppRep_; }
+shared_ptr<Main::IApplicationRep> Main::WindowsService::_GetAttachedAppRep () const
+{
+    return fAppRep_;
+}
 
 Set<Main::ServiceIntegrationFeatures> Main::WindowsService::_GetSupportedFeatures () const
 {
@@ -879,7 +930,10 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType tim
     }
 }
 
-void Main::WindowsService::_ForcedStop ([[maybe_unused]] Time::DurationSecondsType timeout) { AssertNotImplemented (); }
+void Main::WindowsService::_ForcedStop ([[maybe_unused]] Time::DurationSecondsType timeout)
+{
+    AssertNotImplemented ();
+}
 
 pid_t Main::WindowsService::_GetServicePID () const
 {

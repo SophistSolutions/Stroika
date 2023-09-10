@@ -43,8 +43,11 @@ namespace {
 #endif
             interactor->GetExternalizer ()->ExternalizeBestFlavor (fSavedText, regionStart, regionEnd);
         }
-        virtual size_t GetLength () const override { return fTextLength; }
-        virtual void   InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override
+        virtual size_t GetLength () const override
+        {
+            return fTextLength;
+        }
+        virtual void InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override
         {
 #if !qFailToLookupFunctionNameWhenCompilingFunctionLocalClassMethodCompilerBug
             RequireNotNull (interactor);
@@ -60,7 +63,10 @@ namespace {
 
 namespace {
     // Only these chars count as whitespce for smart cut/n/paste
-    inline bool IsSmartSpace (Led_tChar c) { return (c == ' ' or c == '\t'); }
+    inline bool IsSmartSpace (Led_tChar c)
+    {
+        return (c == ' ' or c == '\t');
+    }
     inline bool IsShouldBeSepWithWhitespaceWordChar (Led_tChar c)
     {
         // iswalnum vectors to GetStringTypeW (CT_CTYPE1) and then checks for C1_ALPHA, which
@@ -416,11 +422,20 @@ TextInteractor::PreReplaceInfo::~PreReplaceInfo ()
     }
 }
 
-TextInteractor::UpdateMode TextInteractor::PreReplaceInfo::GetUpdateMode () const { return fUpdateMode; }
+TextInteractor::UpdateMode TextInteractor::PreReplaceInfo::GetUpdateMode () const
+{
+    return fUpdateMode;
+}
 
-size_t TextInteractor::PreReplaceInfo::GetFrom () const { return fFrom; }
+size_t TextInteractor::PreReplaceInfo::GetFrom () const
+{
+    return fFrom;
+}
 
-size_t TextInteractor::PreReplaceInfo::GetTo () const { return fTo; }
+size_t TextInteractor::PreReplaceInfo::GetTo () const
+{
+    return fTo;
+}
 
 /*
  ********************************************************************************
@@ -928,13 +943,25 @@ void TextInteractor::OnUpdateFindCommands (CommandUpdater* enabler)
     }
 }
 
-TextInteractor::SearchParameters TextInteractor::GetSearchParameters () const { return sSearchParameters; }
+TextInteractor::SearchParameters TextInteractor::GetSearchParameters () const
+{
+    return sSearchParameters;
+}
 
-void TextInteractor::SetSearchParameters (const SearchParameters& sp) { sSearchParameters = sp; }
+void TextInteractor::SetSearchParameters (const SearchParameters& sp)
+{
+    sSearchParameters = sp;
+}
 
-TextInteractor::ReplaceParameters TextInteractor::GetReplaceParameters () const { return sReplaceParameters; }
+TextInteractor::ReplaceParameters TextInteractor::GetReplaceParameters () const
+{
+    return sReplaceParameters;
+}
 
-void TextInteractor::SetReplaceParameters (const ReplaceParameters& rp) { sReplaceParameters = rp; }
+void TextInteractor::SetReplaceParameters (const ReplaceParameters& rp)
+{
+    sReplaceParameters = rp;
+}
 
 vector<Led_tString> TextInteractor::MergeRecentFindStrings (const Led_tString& s, const vector<Led_tString>& oldRecents)
 {
@@ -1197,7 +1224,10 @@ void TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (si
 @DESCRIPTION:   <p>See TextInteractor::GetSelectionShown. Typically this method isn't called directly by user code, but
     from within the class library wrappers (e.g. Led_MFC) on gain/lose focus events.</p>
 */
-void TextInteractor::SetSelectionShown (bool shown) { SetSelectionShown (shown, eDefaultUpdate); }
+void TextInteractor::SetSelectionShown (bool shown)
+{
+    SetSelectionShown (shown, eDefaultUpdate);
+}
 
 void TextInteractor::SetSelectionShown (bool shown, UpdateMode updateMode)
 {
@@ -2253,7 +2283,10 @@ void TextInteractor::InteractiveReplace_ (size_t from, size_t to, const Led_tCha
         </p>The boolean return value must be true if any changes were made that could affect undo processing (i.e. that could affect
     what infomration must be saved for proper undo processing).</p>
 */
-bool TextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_t /*withWhatCharCount*/) { return false; }
+bool TextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_t /*withWhatCharCount*/)
+{
+    return false;
+}
 
 /*
 @METHOD:        TextInteractor::PreInteractiveUndoHelper
@@ -2710,14 +2743,19 @@ void TextInteractor::OnClearCommand ()
                 @'TextInteractor::OnPasteCommand_After'
                 .</p>
  */
-bool TextInteractor::OnCopyCommand_Before () { return true; }
+bool TextInteractor::OnCopyCommand_Before ()
+{
+    return true;
+}
 
 /*
 @METHOD:        TextInteractor::OnCopyCommand_After
 @ACCESS:        protected
 @DESCRIPTION:   <p>See also @'TextInteractor::OnCopyCommand_Before'.</p>
  */
-void TextInteractor::OnCopyCommand_After () {}
+void TextInteractor::OnCopyCommand_After ()
+{
+}
 
 /*
 @METHOD:        TextInteractor::OnCopyCommand_CopyFlavors
@@ -2730,7 +2768,10 @@ void TextInteractor::OnCopyCommand_CopyFlavors ()
     ExternalizeFlavors (writer);
 }
 
-bool TextInteractor::ShouldEnablePasteCommand () const { return Led_ClipboardObjectAcquire::FormatAvailable_TEXT (); }
+bool TextInteractor::ShouldEnablePasteCommand () const
+{
+    return Led_ClipboardObjectAcquire::FormatAvailable_TEXT ();
+}
 
 /*
 @METHOD:        TextInteractor::OnPasteCommand_Before
@@ -2744,14 +2785,19 @@ bool TextInteractor::ShouldEnablePasteCommand () const { return Led_ClipboardObj
                 @'TextInteractor::OnCopyCommand_After'
                 .</p>
  */
-bool TextInteractor::OnPasteCommand_Before () { return true; }
+bool TextInteractor::OnPasteCommand_Before ()
+{
+    return true;
+}
 
 /*
 @METHOD:        TextInteractor::OnPasteCommand_After
 @ACCESS:        protected
 @DESCRIPTION:   <p>See also @'TextInteractor::OnPasteCommand_Before'.</p>
  */
-void TextInteractor::OnPasteCommand_After () {}
+void TextInteractor::OnPasteCommand_After ()
+{
+}
 
 /*
 @METHOD:        TextInteractor::OnPasteCommand_PasteBestFlavor
@@ -2835,7 +2881,10 @@ bool TextInteractor::PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const
 @DESCRIPTION:   <p>Command to implement the "Select All" UI. Trivial implementation, but nearly all UI's want it, so why
             write it each time?</p>
 */
-void TextInteractor::OnSelectAllCommand () { SetSelection (0, GetLength ()); }
+void TextInteractor::OnSelectAllCommand ()
+{
+    SetSelection (0, GetLength ());
+}
 
 bool TextInteractor::CanAcceptFlavor (Led_ClipFormat clipFormat) const
 {
@@ -2954,7 +3003,9 @@ shared_ptr<FlavorPackageInternalizer> TextInteractor::MakeDefaultInternalizer ()
 @METHOD:        TextInteractor::HookInternalizerChanged
 @DESCRIPTION:   <p>Called by @'TextInteractor::SetInternalizer' whenever there is a new internalizer specified.</p>
 */
-void TextInteractor::HookInternalizerChanged () {}
+void TextInteractor::HookInternalizerChanged ()
+{
+}
 
 /*
 @METHOD:        TextInteractor::ExternalizeFlavors
@@ -2991,7 +3042,9 @@ shared_ptr<FlavorPackageExternalizer> TextInteractor::MakeDefaultExternalizer ()
 @METHOD:        TextInteractor::HookExternalizerChanged
 @DESCRIPTION:   <p>Called by @'TextInteractor::SetExternalizer' whenever there is a new externalizer specified.</p>
 */
-void TextInteractor::HookExternalizerChanged () {}
+void TextInteractor::HookExternalizerChanged ()
+{
+}
 
 /*
 @METHOD:        TextInteractor::OnBadUserInput
@@ -3038,7 +3091,10 @@ void TextInteractor::SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType)
 @DESCRIPTION:   <p>Mark the contents of the scrollbars as invalid. Someone, sometime later soon will call
     @'TextInteractor::UpdateScrollBars' to fix them up again.</p>
 */
-void TextInteractor::InvalidateScrollBarParameters () { InvalidateScrollBarParameters_ (); }
+void TextInteractor::InvalidateScrollBarParameters ()
+{
+    InvalidateScrollBarParameters_ ();
+}
 
 /*
 @METHOD:        TextInteractor::UpdateScrollBars
@@ -3047,7 +3103,10 @@ void TextInteractor::InvalidateScrollBarParameters () { InvalidateScrollBarParam
     This is usually taken care of in any class library wrapper code, such as @'Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>'
     or @'Led_Win32_Helper<BASE_INTERACTOR>'.</p>
 */
-void TextInteractor::UpdateScrollBars () { UpdateScrollBars_ (); }
+void TextInteractor::UpdateScrollBars ()
+{
+    UpdateScrollBars_ ();
+}
 
 /*
 @METHOD:        TextInteractor::SetCaretShown

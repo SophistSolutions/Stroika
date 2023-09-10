@@ -877,8 +877,11 @@ namespace {
         {
             return Do_Capture_Raw<Info> ([this] () { return _InternalCapture (); }, outMeasuredAt);
         }
-        virtual unique_ptr<IRep> Clone () const override { return make_unique<FilesystemInstrumentRep_> (_fOptions, _fContext.load ()); }
-        nonvirtual Info          _InternalCapture ()
+        virtual unique_ptr<IRep> Clone () const override
+        {
+            return make_unique<FilesystemInstrumentRep_> (_fOptions, _fContext.load ());
+        }
+        nonvirtual Info _InternalCapture ()
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
             Debug::TraceContextBumper                       ctx{"Instruments::Filesystem _InternalCapture"};

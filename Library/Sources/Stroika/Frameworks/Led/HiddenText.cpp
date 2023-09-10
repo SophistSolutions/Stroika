@@ -63,7 +63,10 @@ HidableTextMarkerOwner::~HidableTextMarkerOwner ()
     Call @'HidableTextMarkerOwner::MakeRegionHidable' for that.</p>
         <p>See @'HidableTextMarkerOwner::ShowAll' to re-show them.</p>
 */
-void HidableTextMarkerOwner::HideAll () { HideAll (0, fTextStore.GetEnd () + 1); }
+void HidableTextMarkerOwner::HideAll ()
+{
+    HideAll (0, fTextStore.GetEnd () + 1);
+}
 
 void HidableTextMarkerOwner::HideAll (size_t from, size_t to)
 {
@@ -86,7 +89,10 @@ void HidableTextMarkerOwner::HideAll (size_t from, size_t to)
     It merely re-installs their context into the document so that it can be seen and edited.</p>
         <p>See also @'HidableTextMarkerOwner::HideAll'.</p>
 */
-void HidableTextMarkerOwner::ShowAll () { ShowAll (0, fTextStore.GetEnd () + 1); }
+void HidableTextMarkerOwner::ShowAll ()
+{
+    ShowAll (0, fTextStore.GetEnd () + 1);
+}
 
 void HidableTextMarkerOwner::ShowAll (size_t from, size_t to)
 {
@@ -296,7 +302,10 @@ DiscontiguousRun<bool> HidableTextMarkerOwner::GetHidableRegions (size_t from, s
     return result;
 }
 
-DiscontiguousRun<bool> HidableTextMarkerOwner::GetHidableRegions () const { return GetHidableRegions (0, fTextStore.GetEnd () + 1); }
+DiscontiguousRun<bool> HidableTextMarkerOwner::GetHidableRegions () const
+{
+    return GetHidableRegions (0, fTextStore.GetEnd () + 1);
+}
 
 /*
 @METHOD:        HidableTextMarkerOwner::GetHidableRegionsContiguous
@@ -411,7 +420,10 @@ HidableTextMarkerOwner::HidableTextMarker* HidableTextMarkerOwner::MakeHidableTe
     return new LightUnderlineHidableTextMarker ();
 }
 
-TextStore* HidableTextMarkerOwner::PeekAtTextStore () const { return &fTextStore; }
+TextStore* HidableTextMarkerOwner::PeekAtTextStore () const
+{
+    return &fTextStore;
+}
 
 void HidableTextMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo)
 {

@@ -139,8 +139,8 @@ namespace {
         ostream& outTo = GetOutStream_ ();
         outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs "
               << compareWithTName.AsNarrowSDKString () << ")" << endl;
-        double performanceScore = (baselineTime == 0) ? 1000000 : compareWithTime / baselineTime;
-        const char kOneTab_[] = "\t";
+        double     performanceScore = (baselineTime == 0) ? 1000000 : compareWithTime / baselineTime;
+        const char kOneTab_[]       = "\t";
         {
             FloatConversion::ToStringOptions fo = FloatConversion::ToStringOptions{FloatConversion::eDontTrimZeros, FloatConversion::Precision{2}};
             outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << FloatConversion::ToString (performanceScore, fo).AsNarrowSDKString () << endl;
@@ -276,7 +276,9 @@ namespace {
             WIDESTRING_IMPL fS2;
             WIDESTRING_IMPL fS3;
             WIDESTRING_IMPL fS4;
-            S () {}
+            S ()
+            {
+            }
             S (const WIDESTRING_IMPL& w1, const WIDESTRING_IMPL& w2, const WIDESTRING_IMPL& w3, const WIDESTRING_IMPL& w4)
                 : fS1 (w1)
                 , fS2 (w2)
@@ -310,7 +312,9 @@ namespace {
             WIDESTRING_IMPL fS4;
             WIDESTRING_IMPL fS5;
             WIDESTRING_IMPL fS6;
-            S () {}
+            S ()
+            {
+            }
             S (const WIDESTRING_IMPL& w1, const WIDESTRING_IMPL& w2, const WIDESTRING_IMPL& w3, const WIDESTRING_IMPL& w4)
                 : fS1 (w1)
                 , fS2 (w2)
@@ -437,7 +441,10 @@ namespace {
         }
 
         int  s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT;
-        void Test_MutexVersusSharedPtrCopy_COUNTEST (int* i) { s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT += *i; }
+        void Test_MutexVersusSharedPtrCopy_COUNTEST (int* i)
+        {
+            s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT += *i;
+        }
     }
 
     void Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK ()
@@ -476,7 +483,10 @@ namespace {
             doInsideLock (&sCnt2Add_);
         }
         int  sRunningCnt_;
-        void Test_MutexVersusSpinLock_COUNTEST (int* i) { sRunningCnt_ += *i; }
+        void Test_MutexVersusSpinLock_COUNTEST (int* i)
+        {
+            sRunningCnt_ += *i;
+        }
     }
 
     void Test_MutexVersusSpinLock_MUTEXT_LOCK ()
@@ -1087,7 +1097,7 @@ namespace {
         constexpr wchar_t                  kS1_[] =
             L"asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";
         constexpr wchar_t kS2_[] = L"z\u00df\u6c34\U0001d10b";
-        void Test_WString2UTF8_codecvt_utf8 (const wchar_t* s, const wchar_t* e)
+        void              Test_WString2UTF8_codecvt_utf8 (const wchar_t* s, const wchar_t* e)
         {
             const wchar_t*                                 sc = s;
             const wchar_t*                                 ec = e;
@@ -1460,7 +1470,9 @@ namespace {
 namespace {
     // just temp hack to test one thing or another - which is performance related
     namespace TemporaryTest_ {
-        void DoTest_ () {}
+        void DoTest_ ()
+        {
+        }
     }
 }
 

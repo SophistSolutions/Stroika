@@ -120,9 +120,15 @@ void FormatToolbar::OnFontSizeDropDown ()
     m_comboFontSize.SetTwipSize (nSize);
 }
 
-void FormatToolbar::OnComboCloseUp () { NotifyOwner (NM_RETURN); }
+void FormatToolbar::OnComboCloseUp ()
+{
+    NotifyOwner (NM_RETURN);
+}
 
-void FormatToolbar::OnComboSetFocus () { NotifyOwner (NM_SETFOCUS); }
+void FormatToolbar::OnComboSetFocus ()
+{
+    NotifyOwner (NM_SETFOCUS);
+}
 
 void FormatToolbar::OnFontNameKillFocus ()
 {
@@ -273,7 +279,10 @@ const int BMH = 15;
 BEGIN_MESSAGE_MAP (FontComboBox, LocalComboBox)
 END_MESSAGE_MAP ()
 
-FontComboBox::FontComboBox () { VERIFY (m_bmFontType.LoadBitmap (IDB_FONTTYPE)); }
+FontComboBox::FontComboBox ()
+{
+    VERIFY (m_bmFontType.LoadBitmap (IDB_FONTTYPE));
+}
 
 void FontComboBox::EnumFontFamiliesEx ()
 {
@@ -399,7 +408,10 @@ void FontComboBox::MatchFont (LPCTSTR lpszName)
  */
 using SizeComboBox = FormatToolbar::SizeComboBox;
 
-SizeComboBox::SizeComboBox () { m_nTwipsLast = 0; }
+SizeComboBox::SizeComboBox ()
+{
+    m_nTwipsLast = 0;
+}
 
 void SizeComboBox::EnumFontSizes (CDC& dc, LPCTSTR pFontName)
 {

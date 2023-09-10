@@ -63,10 +63,10 @@ namespace {
  */
 namespace {
     namespace UTFConvert_libutfxx_ {
-       // static constexpr char32_t UNI_REPLACEMENT_CHAR = (char32_t)0x0000FFFD;
-        static constexpr char32_t UNI_MAX_BMP          = (char32_t)0x0000FFFF;
-        static constexpr char32_t UNI_MAX_UTF16        = (char32_t)0x0010FFFF;
-        static constexpr char32_t UNI_MAX_LEGAL_UTF32  = (char32_t)0x0010FFFF;
+        // static constexpr char32_t UNI_REPLACEMENT_CHAR = (char32_t)0x0000FFFD;
+        static constexpr char32_t UNI_MAX_BMP         = (char32_t)0x0000FFFF;
+        static constexpr char32_t UNI_MAX_UTF16       = (char32_t)0x0010FFFF;
+        static constexpr char32_t UNI_MAX_LEGAL_UTF32 = (char32_t)0x0010FFFF;
 
         enum ConversionResult {
             conversionOK,    /* conversion successful */
@@ -192,9 +192,9 @@ namespace {
         inline ConversionResult ConvertUTF8toUTF16_ (const char8_t** sourceStart, const char8_t* sourceEnd, char16_t** targetStart,
                                                      char16_t* targetEnd, optional<char32_t> missingCharacterReplacement)
         {
-            ConversionResult result = conversionOK;
-            const char8_t*   source = *sourceStart;
-            char16_t*        target = *targetStart;
+            ConversionResult result     = conversionOK;
+            const char8_t*   source     = *sourceStart;
+            char16_t*        target     = *targetStart;
             auto             addMissing = [&] () {
                 if (Character{*missingCharacterReplacement}.IsSurrogatePair ()) {
                     auto p    = Character{*missingCharacterReplacement}.GetSurrogatePair ();
@@ -214,7 +214,7 @@ namespace {
                 }
                 if (!isLegalUTF8_ (source, extraBytesToRead + 1)) {
                     if (missingCharacterReplacement) {
-                        AssertNotImplemented ();    // @todo - not hard - but not done
+                        AssertNotImplemented (); // @todo - not hard - but not done
                     }
                     else {
                         result = sourceIllegal;
@@ -252,7 +252,7 @@ namespace {
                 }
                 if (ch <= UNI_MAX_BMP) { /* Target is a character <= 0xFFFF */
                     /* UTF-16 surrogate values are illegal in UTF-32 */
-                    if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_LOW_END) {
+                    if (ch >= Character::kUNICODESurrogate_High_Start && ch <= Character::kUNICODESurrogate_Low_End) {
                         if (missingCharacterReplacement) {
                             addMissing ();
                         }
@@ -284,8 +284,8 @@ namespace {
                         break;
                     }
                     ch -= halfBase;
-                    *target++ = (char16_t)((ch >> halfShift) + Character::UNI_SUR_HIGH_START);
-                    *target++ = (char16_t)((ch & halfMask) + Character::UNI_SUR_LOW_START);
+                    *target++ = (char16_t)((ch >> halfShift) + Character::kUNICODESurrogate_High_Start);
+                    *target++ = (char16_t)((ch & halfMask) + Character::kUNICODESurrogate_Low_Start);
                 }
             }
             *sourceStart = source;
@@ -306,17 +306,17 @@ namespace {
                 const char16_t*    oldSource    = source; /* In case we have to back up because of target overflow. */
                 ch                              = *source++;
                 /* If we have a surrogate pair, convert to char32_t first. */
-                if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_HIGH_END) [[unlikely]] {
+                if (ch >= Character::kUNICODESurrogate_High_Start && ch <= Character::kUNICODESurrogate_High_End) [[unlikely]] {
                     /* If the 16 bits following the high surrogate are in the source buffer... */
                     if (source < sourceEnd) [[likely]] {
                         char32_t ch2 = *source;
                         /* If it's a low surrogate, convert to char32_t. */
-                        if (ch2 >= Character::UNI_SUR_LOW_START && ch2 <= Character::UNI_SUR_LOW_END) {
-                            ch = ((ch - Character::UNI_SUR_HIGH_START) << halfShift) + (ch2 - Character::UNI_SUR_LOW_START) + halfBase;
+                        if (ch2 >= Character::kUNICODESurrogate_Low_Start && ch2 <= Character::kUNICODESurrogate_Low_End) {
+                            ch = ((ch - Character::kUNICODESurrogate_High_Start) << halfShift) + (ch2 - Character::kUNICODESurrogate_Low_Start) + halfBase;
                             ++source;
                         }
-                        else if (missingCharacterReplacement == nullopt) {  /* it's an unpaired high surrogate */
-                            --source;                                       /* return to the illegal value itself */
+                        else if (missingCharacterReplacement == nullopt) { /* it's an unpaired high surrogate */
+                            --source;                                      /* return to the illegal value itself */
                             result = sourceIllegal;
                             break;
                         }
@@ -329,7 +329,7 @@ namespace {
                 }
                 else if (missingCharacterReplacement == nullopt) {
                     /* UTF-16 surrogate values are illegal in UTF-32 */
-                    if (ch >= Character::UNI_SUR_LOW_START && ch <= Character::UNI_SUR_LOW_END) {
+                    if (ch >= Character::kUNICODESurrogate_Low_Start && ch <= Character::kUNICODESurrogate_Low_End) {
                         --source; /* return to the illegal value itself */
                         result = sourceIllegal;
                         break;
@@ -350,7 +350,7 @@ namespace {
                 }
                 else {
                     bytesToWrite = 3;
-                    Assert (missingCharacterReplacement.has_value ());  // I THINK sb caught above if 'strict' mode
+                    Assert (missingCharacterReplacement.has_value ()); // I THINK sb caught above if 'strict' mode
                     ch = *missingCharacterReplacement;
                 }
 
@@ -393,17 +393,17 @@ namespace {
                 const char16_t* oldSource = source; /*  In case we have to back up because of target overflow. */
                 ch                        = *source++;
                 /* If we have a surrogate pair, convert to UTF32 first. */
-                if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_HIGH_END) [[unlikely]] {
+                if (ch >= Character::kUNICODESurrogate_High_Start && ch <= Character::kUNICODESurrogate_High_End) [[unlikely]] {
                     /* If the 16 bits following the high surrogate are in the source buffer... */
                     if (source < sourceEnd) {
                         ch2 = *source;
                         /* If it's a low surrogate, convert to UTF32. */
-                        if (ch2 >= Character::UNI_SUR_LOW_START && ch2 <= Character::UNI_SUR_LOW_END) {
-                            ch = ((ch - Character::UNI_SUR_HIGH_START) << halfShift) + (ch2 - Character::UNI_SUR_LOW_START) + halfBase;
+                        if (ch2 >= Character::kUNICODESurrogate_Low_Start && ch2 <= Character::kUNICODESurrogate_Low_End) {
+                            ch = ((ch - Character::kUNICODESurrogate_High_Start) << halfShift) + (ch2 - Character::kUNICODESurrogate_Low_Start) + halfBase;
                             ++source;
                         }
-                        else if (missingCharacterReplacement == nullopt) {  /* it's an unpaired high surrogate */
-                            --source;                                       /* return to the illegal value itself */
+                        else if (missingCharacterReplacement == nullopt) { /* it's an unpaired high surrogate */
+                            --source;                                      /* return to the illegal value itself */
                             result = sourceIllegal;
                             break;
                         }
@@ -416,7 +416,7 @@ namespace {
                 }
                 else if (missingCharacterReplacement == nullopt) {
                     /* UTF-16 surrogate values are illegal in UTF-32 */
-                    if (ch >= Character::UNI_SUR_LOW_START && ch <= Character::UNI_SUR_LOW_END) {
+                    if (ch >= Character::kUNICODESurrogate_Low_Start && ch <= Character::kUNICODESurrogate_Low_End) {
                         --source; /* return to the illegal value itself */
                         result = sourceIllegal;
                         break;
@@ -441,9 +441,9 @@ namespace {
         inline ConversionResult ConvertUTF32toUTF16_ (const char32_t** sourceStart, const char32_t* sourceEnd, char16_t** targetStart,
                                                       char16_t* targetEnd, optional<char32_t> missingCharacterReplacement)
         {
-            ConversionResult result = conversionOK;
-            const char32_t*  source = *sourceStart;
-            char16_t*        target = *targetStart;
+            ConversionResult result     = conversionOK;
+            const char32_t*  source     = *sourceStart;
+            char16_t*        target     = *targetStart;
             auto             addMissing = [&] () {
                 if (Character{*missingCharacterReplacement}.IsSurrogatePair ()) {
                     auto p    = Character{*missingCharacterReplacement}.GetSurrogatePair ();
@@ -463,7 +463,7 @@ namespace {
                 ch = *source++;
                 if (ch <= UNI_MAX_BMP) [[likely]] { /* Target is a character <= 0xFFFF */
                     /*   UTF-16 surrogate values are illegal in UTF-32; 0xffff or 0xfffe are both reserved values */
-                    if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_LOW_END) [[unlikely]] {
+                    if (ch >= Character::kUNICODESurrogate_High_Start && ch <= Character::kUNICODESurrogate_Low_End) [[unlikely]] {
                         if (missingCharacterReplacement == nullopt) {
                             --source; /* return to the illegal value itself */
                             result = sourceIllegal;
@@ -493,8 +493,8 @@ namespace {
                         break;
                     }
                     ch -= halfBase;
-                    *target++ = (char16_t)((ch >> halfShift) + Character::UNI_SUR_HIGH_START);
-                    *target++ = (char16_t)((ch & halfMask) + Character::UNI_SUR_LOW_START);
+                    *target++ = (char16_t)((ch >> halfShift) + Character::kUNICODESurrogate_High_Start);
+                    *target++ = (char16_t)((ch & halfMask) + Character::kUNICODESurrogate_Low_Start);
                 }
             }
             *sourceStart = source;
@@ -516,7 +516,7 @@ namespace {
                 }
                 if (!isLegalUTF8_ (source, extraBytesToRead + 1)) {
                     if (missingCharacterReplacement) {
-                        AssertNotImplemented ();        // @todo - not hard - but not done
+                        AssertNotImplemented (); // @todo - not hard - but not done
                     }
                     else {
                         result = sourceIllegal;
@@ -557,7 +557,7 @@ namespace {
                      * UTF-16 surrogate values are illegal in UTF-32, and anything
                      * over Plane 17 (> 0x10FFFF) is illegal.
                      */
-                    if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_LOW_END) {
+                    if (ch >= Character::kUNICODESurrogate_High_Start && ch <= Character::kUNICODESurrogate_Low_End) {
                         if (missingCharacterReplacement) {
                             *target++ = *missingCharacterReplacement;
                         }
@@ -574,12 +574,11 @@ namespace {
                 else { /* i.e., ch > UNI_MAX_LEGAL_UTF32 */
                     if (missingCharacterReplacement) {
                         *target++ = *missingCharacterReplacement;
-                    
-                   }
+                    }
                     else {
-                        result    = sourceIllegal;
+                        result = sourceIllegal;
                         break;
-                   }
+                    }
                 }
             }
             *sourceStart = source;
@@ -600,7 +599,7 @@ namespace {
                 ch                          = *source++;
                 if (missingCharacterReplacement == nullopt) {
                     /* UTF-16 surrogate values are illegal in UTF-32 */
-                    if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_LOW_END) [[unlikely]] {
+                    if (ch >= Character::kUNICODESurrogate_High_Start && ch <= Character::kUNICODESurrogate_Low_End) [[unlikely]] {
                         --source; /* return to the illegal value itself */
                         result = sourceIllegal;
                         break;
@@ -624,8 +623,8 @@ namespace {
                 }
                 else {
                     if (missingCharacterReplacement) {
-                        ch = *missingCharacterReplacement;
-                        bytesToWrite = 3;   // @todo WRONG - must get right number for this character
+                        ch           = *missingCharacterReplacement;
+                        bytesToWrite = 3; // @todo WRONG - must get right number for this character
                     }
                     else {
                         result = sourceIllegal;
@@ -682,7 +681,7 @@ namespace {
             }
         }
         inline UTFConvert::ConversionStatusFlag ConvertUTF8toUTF16_codecvt_ (const char8_t** sourceStart, const char8_t* sourceEnd,
-                                                                               char16_t** targetStart, char16_t* targetEnd)
+                                                                             char16_t** targetStart, char16_t* targetEnd)
         {
             static const deletable_facet_<codecvt<char16_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                                            ignoredMBState{};
@@ -694,7 +693,7 @@ namespace {
             return cvt_stdcodecvt_results_ (rr);
         }
         inline UTFConvert::ConversionStatusFlag ConvertUTF16toUTF8_codecvt_ (const char16_t** sourceStart, const char16_t* sourceEnd,
-                                                                               char8_t** targetStart, char8_t* targetEnd)
+                                                                             char8_t** targetStart, char8_t* targetEnd)
         {
             static const deletable_facet_<codecvt<char16_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                                            ignoredMBState{};
@@ -706,7 +705,7 @@ namespace {
             return cvt_stdcodecvt_results_ (rr);
         }
         inline UTFConvert::ConversionStatusFlag ConvertUTF8toUTF32_codecvt_ (const char8_t** sourceStart, const char8_t* sourceEnd,
-                                                                               char32_t** targetStart, char32_t* targetEnd)
+                                                                             char32_t** targetStart, char32_t* targetEnd)
         {
             static const deletable_facet_<codecvt<char32_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                                            ignoredState{};
@@ -719,7 +718,7 @@ namespace {
             return cvt_stdcodecvt_results_ (rr);
         }
         inline UTFConvert::ConversionStatusFlag ConvertUTF32toUTF8_codecvt_ (const char32_t** sourceStart, const char32_t* sourceEnd,
-                                                                               char8_t** targetStart, char8_t* targetEnd)
+                                                                             char8_t** targetStart, char8_t* targetEnd)
         {
             static const deletable_facet_<codecvt<char32_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                                            ignoredState{};
@@ -742,7 +741,7 @@ namespace {
     using ConversionResultWithStatus = Characters::UTFConvert::ConversionResultWithStatus;
     using ConversionStatusFlag       = Characters::UTFConvert::ConversionStatusFlag;
 
-    template <typename IN_T, typename OUT_T, regular_invocable<const IN_T**, const IN_T*, OUT_T**, OUT_T*,optional<char32_t>> FUN2DO_REAL_WORK>
+    template <typename IN_T, typename OUT_T, regular_invocable<const IN_T**, const IN_T*, OUT_T**, OUT_T*, optional<char32_t>> FUN2DO_REAL_WORK>
     inline auto ConvertQuietly_StroikaPortable_helper_ (optional<Character> invalidCharacterReplacement, span<const IN_T> source,
                                                         span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
@@ -751,41 +750,41 @@ namespace {
         const IN_T* sourceEnd   = sourceStart + source.size ();
         OUT_T*      targetStart = target.data ();
         OUT_T*      targetEnd   = targetStart + target.size ();
-            // convert replacement character to target character set, and then pass that
-            ConversionResult r = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd,
-                                           invalidCharacterReplacement.has_value () ? invalidCharacterReplacement->As<char32_t> ()
-                                                                                    : optional<char32_t>{});
-            return ConversionResultWithStatus{
-                {static_cast<size_t> (sourceStart - source.data ()), static_cast<size_t> (targetStart - target.data ())}, cvt_ (r)};
+        // convert replacement character to target character set, and then pass that
+        ConversionResult r =
+            realWork (&sourceStart, sourceEnd, &targetStart, targetEnd,
+                      invalidCharacterReplacement.has_value () ? invalidCharacterReplacement->As<char32_t> () : optional<char32_t>{});
+        return ConversionResultWithStatus{
+            {static_cast<size_t> (sourceStart - source.data ()), static_cast<size_t> (targetStart - target.data ())}, cvt_ (r)};
     }
 }
-auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source,
-                                                    span<char16_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source, span<char16_t> target)
+    -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF16_);
 }
-auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source,
-                                                    span<char32_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source, span<char32_t> target)
+    -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF32_);
 }
 auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source,
-                                                    span<char32_t> target) -> ConversionResultWithStatus
+                                                  span<char32_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF32_);
 }
 auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source,
-                                                    span<char16_t> target) -> ConversionResultWithStatus
+                                                  span<char16_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF32toUTF16_);
 }
-auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source,
-                                                    span<char8_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source, span<char8_t> target)
+    -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF32toUTF8_);
 }
-auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source,
-                                                    span<char8_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source, span<char8_t> target)
+    -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF8_);
 }

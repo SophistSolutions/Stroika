@@ -179,7 +179,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
     InternalNumericFormatType_ t        = As<InternalNumericFormatType_> ();
     bool                       isNeg    = (t < 0);
     InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;
-    StringBuilder                     result;
+    StringBuilder              result;
     if (timeLeft >= kSecondsPerYear_) {
         unsigned int nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear_);
         if (nYears != 0) {
@@ -336,7 +336,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         static const String kNeg_{"-"sv};
         result = kNeg_ + result.str ();
     }
-    return result.str();
+    return result.str ();
 }
 
 Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const

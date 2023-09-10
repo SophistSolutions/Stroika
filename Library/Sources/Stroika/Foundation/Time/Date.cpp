@@ -154,7 +154,10 @@ String Date::Format (NonStandardPrintFormat pf) const
     return String{};
 }
 
-String Date::Format (const locale& l) const { return Format (l, kLocaleStandardFormat); }
+String Date::Format (const locale& l) const
+{
+    return Format (l, kLocaleStandardFormat);
+}
 
 String Date::Format (const String& formatPattern) const
 {
@@ -194,7 +197,10 @@ Date Date::AsDate_ (const ::tm& when)
     return Date{chrono::sys_days{fRep_} + dayCount, DataExchange::ValidationStrategy::eThrow};
 }
 
-days Date::Since () const { return Since (DateTime::GetToday (), this->As<year_month_day> ()); }
+days Date::Since () const
+{
+    return Since (DateTime::GetToday (), this->As<year_month_day> ());
+}
 
 weekday Date::GetDayOfWeek () const
 {
@@ -233,7 +239,10 @@ weekday Date::GetDayOfWeek () const
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
-String Date::ToString () const { return Format (); }
+String Date::ToString () const
+{
+    return Format ();
+}
 #endif
 
 /*

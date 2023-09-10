@@ -51,8 +51,12 @@ namespace {
      *  without worrying about races, just use mutex.
      */
     struct no_lock_ {
-        void lock () {}
-        void unlock () {}
+        void lock ()
+        {
+        }
+        void unlock ()
+        {
+        }
     };
 }
 
@@ -406,7 +410,10 @@ namespace {
                         : fVal{i}
                     {
                     }
-                    bool operator== (const intish_object1& rhs) const { return rhs.fVal == fVal; }
+                    bool operator== (const intish_object1& rhs) const
+                    {
+                        return rhs.fVal == fVal;
+                    }
                 };
                 if (false) {
                     // Fails cuz no synchonization

@@ -42,8 +42,14 @@ namespace {
         }
         return result;
     }
-    inline String mkMessage_ () { return "Badly formatted input"sv; }
-    inline String mkMessage_ (const String& details) { return details.empty () ? mkMessage_ () : details; }
+    inline String mkMessage_ ()
+    {
+        return "Badly formatted input"sv;
+    }
+    inline String mkMessage_ (const String& details)
+    {
+        return details.empty () ? mkMessage_ () : details;
+    }
     String mkMessage_ (const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, optional<uint64_t> fileOffset)
     {
         String msg           = mkMessage_ ();

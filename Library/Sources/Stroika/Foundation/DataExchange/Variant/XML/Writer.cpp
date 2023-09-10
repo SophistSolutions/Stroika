@@ -147,9 +147,15 @@ public:
         , fDocumentElementName_{config.GetDocumentElementName ().value_or (String{})}
     {
     }
-    virtual _SharedPtrIRep Clone () const override { return make_shared<Rep_> (fSerializationConfiguration_); }
-    virtual String         GetDefaultFileSuffix () const override { return ".xml"sv; }
-    virtual void           Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
+    virtual _SharedPtrIRep Clone () const override
+    {
+        return make_shared<Rep_> (fSerializationConfiguration_);
+    }
+    virtual String GetDefaultFileSuffix () const override
+    {
+        return ".xml"sv;
+    }
+    virtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
     {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::eMap);
@@ -173,8 +179,11 @@ public:
             PrettyPrint_ (VariantValue{v2}, out, 0);
         }
     }
-    nonvirtual SerializationConfiguration GetConfiguration () const { return fSerializationConfiguration_; }
-    nonvirtual void                       SetConfiguration (const SerializationConfiguration& config)
+    nonvirtual SerializationConfiguration GetConfiguration () const
+    {
+        return fSerializationConfiguration_;
+    }
+    nonvirtual void SetConfiguration (const SerializationConfiguration& config)
     {
         fSerializationConfiguration_ = config;
         fDocumentElementName_        = config.GetDocumentElementName ().value_or (String{});
@@ -202,6 +211,12 @@ const Variant::XML::Writer::Rep_& Variant::XML::Writer::GetRep_ () const
     return reinterpret_cast<const Rep_&> (inherited::_GetRep ());
 }
 
-SerializationConfiguration Variant::XML::Writer::GetConfiguration () const { return GetRep_ ().GetConfiguration (); }
+SerializationConfiguration Variant::XML::Writer::GetConfiguration () const
+{
+    return GetRep_ ().GetConfiguration ();
+}
 
-void Variant::XML::Writer::SetConfiguration (const SerializationConfiguration& config) { GetRep_ ().SetConfiguration (config); }
+void Variant::XML::Writer::SetConfiguration (const SerializationConfiguration& config)
+{
+    GetRep_ ().SetConfiguration (config);
+}

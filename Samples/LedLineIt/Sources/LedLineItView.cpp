@@ -52,8 +52,14 @@ My_CMDNUM_MAPPING sMy_CMDNUM_MAPPING;
 
 struct LedLineIt_DialogSupport : TextInteractor::DialogSupport {
 public:
-    LedLineIt_DialogSupport () { TextInteractor::SetDialogSupport (this); }
-    ~LedLineIt_DialogSupport () { TextInteractor::SetDialogSupport (NULL); }
+    LedLineIt_DialogSupport ()
+    {
+        TextInteractor::SetDialogSupport (this);
+    }
+    ~LedLineIt_DialogSupport ()
+    {
+        TextInteractor::SetDialogSupport (NULL);
+    }
 #if qSupportStdFindDlg
 public:
     virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch,
@@ -191,7 +197,10 @@ inline bool IsPredefinedFontSize (int size)
     }
 }
 
-inline bool IsASCIISpace (int c) { return isascii (c) and isspace (c); }
+inline bool IsASCIISpace (int c)
+{
+    return isascii (c) and isspace (c);
+}
 
 // Perhaps replace this with a user-configuration option in the options dialog?
 const unsigned int kCharsPerTab = 4;
@@ -235,7 +244,10 @@ END_MESSAGE_MAP ()
 #if qSupportGenRandomCombosCommand
 namespace {
     struct AtStartup {
-        AtStartup () { ::srand ((unsigned)::time (NULL)); }
+        AtStartup ()
+        {
+            ::srand ((unsigned)::time (NULL));
+        }
     } X_AtStartup;
 }
 #endif
@@ -421,7 +433,10 @@ void LedLineItView::SetCurUserLine (size_t newCurLine)
     ScrollToSelection ();
 }
 
-const LedLineItView::TabStopList& LedLineItView::GetTabStopList (size_t /*containingPos*/) const { return fTabStopList; }
+const LedLineItView::TabStopList& LedLineItView::GetTabStopList (size_t /*containingPos*/) const
+{
+    return fTabStopList;
+}
 
 void LedLineItView::TabletChangedMetrics ()
 {
@@ -672,9 +687,15 @@ DistanceType LedLineItView::PickOtherFontHeight (DistanceType origHeight)
     }
 }
 
-LedLineItView::SearchParameters LedLineItView::GetSearchParameters () const { return Options{}.GetSearchParameters (); }
+LedLineItView::SearchParameters LedLineItView::GetSearchParameters () const
+{
+    return Options{}.GetSearchParameters ();
+}
 
-void LedLineItView::SetSearchParameters (const SearchParameters& sp) { Options{}.SetSearchParameters (sp); }
+void LedLineItView::SetSearchParameters (const SearchParameters& sp)
+{
+    Options{}.SetSearchParameters (sp);
+}
 
 void LedLineItView::OnGotoLineCommand ()
 {
@@ -751,9 +772,15 @@ void LedLineItView::OnGenRandomCombosCommand ()
 }
 #endif
 
-void LedLineItView::OnShiftLeftCommand () { OnShiftNCommand (false); }
+void LedLineItView::OnShiftLeftCommand ()
+{
+    OnShiftNCommand (false);
+}
 
-void LedLineItView::OnShiftRightCommand () { OnShiftNCommand (true); }
+void LedLineItView::OnShiftRightCommand ()
+{
+    OnShiftNCommand (true);
+}
 
 void LedLineItView::OnShiftNCommand (bool shiftRight)
 {
@@ -839,9 +866,15 @@ void LedLineItView::OnSetFocus (CWnd* pOldWnd)
     inherited::OnSetFocus (pOldWnd);
 }
 
-void LedLineItView::OnCancelEditSrvr () { GetDocument ().OnDeactivateUI (FALSE); }
+void LedLineItView::OnCancelEditSrvr ()
+{
+    GetDocument ().OnDeactivateUI (FALSE);
+}
 
-void LedLineItView::OnSelectAllCommand () { SetSelection (0, GetLength ()); }
+void LedLineItView::OnSelectAllCommand ()
+{
+    SetSelection (0, GetLength ());
+}
 
 void LedLineItView::OnChooseFontCommand ()
 {
@@ -866,9 +899,15 @@ void LedLineItView::OnChooseFontCommand ()
 }
 
 #ifdef _DEBUG
-void LedLineItView::AssertValid () const { inherited::AssertValid (); }
+void LedLineItView::AssertValid () const
+{
+    inherited::AssertValid ();
+}
 
-void LedLineItView::Dump (CDumpContext& dc) const { inherited::Dump (dc); }
+void LedLineItView::Dump (CDumpContext& dc) const
+{
+    inherited::Dump (dc);
+}
 
 LedLineItDocument& LedLineItView::GetDocument () const // non-debug version is inline
 {

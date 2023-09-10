@@ -246,7 +246,10 @@ Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds
     Start (initialSearch, autoRetryInterval);
 }
 
-Search::~Search () { IgnoreExceptionsForCall (fRep_->Stop ()); }
+Search::~Search ()
+{
+    IgnoreExceptionsForCall (fRep_->Stop ());
+}
 
 void Search::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
 {
@@ -258,4 +261,7 @@ void Search::Start (const String& serviceType, const optional<Time::Duration>& a
     fRep_->Start (serviceType, autoRetryInterval);
 }
 
-void Search::Stop () { fRep_->Stop (); }
+void Search::Stop ()
+{
+    fRep_->Stop ();
+}

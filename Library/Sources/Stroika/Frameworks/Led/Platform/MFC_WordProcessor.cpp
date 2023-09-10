@@ -64,7 +64,9 @@ Led_MFC_ControlItem::Led_MFC_ControlItem (COleDocument* pContainer)
 {
 }
 
-Led_MFC_ControlItem::~Led_MFC_ControlItem () {}
+Led_MFC_ControlItem::~Led_MFC_ControlItem ()
+{
+}
 
 SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker (const char* embeddingTag, const void* data, size_t len)
 {
@@ -416,7 +418,10 @@ void Led_MFC_ControlItem::ExternalizeFlavors (WriterFlavorPackage& flavorPackage
     }
 }
 
-const char* Led_MFC_ControlItem::GetTag () const { return kEmbeddingTag; }
+const char* Led_MFC_ControlItem::GetTag () const
+{
+    return kEmbeddingTag;
+}
 
 void Led_MFC_ControlItem::Serialize (CArchive& ar)
 {
@@ -521,7 +526,10 @@ void Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, byte** resultData
     ips->Release ();
 }
 
-Led_Size Led_MFC_ControlItem::GetSize () { return fSize; }
+Led_Size Led_MFC_ControlItem::GetSize ()
+{
+    return fSize;
+}
 
 bool Led_MFC_ControlItem::HandleOpen ()
 {

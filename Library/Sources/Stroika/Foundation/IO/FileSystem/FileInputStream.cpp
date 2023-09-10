@@ -107,7 +107,10 @@ public:
     }
     nonvirtual Rep_& operator= (const Rep_&) = delete;
 
-    virtual bool IsSeekable () const override { return fSeekable_ == eSeekable; }
+    virtual bool IsSeekable () const override
+    {
+        return fSeekable_ == eSeekable;
+    }
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
@@ -120,7 +123,10 @@ public:
         }
         fFD_ = -1;
     }
-    virtual bool   IsOpenRead () const override { return fFD_ >= 0; }
+    virtual bool IsOpenRead () const override
+    {
+        return fFD_ >= 0;
+    }
     virtual size_t Read (byte* intoStart, byte* intoEnd) override
     {
         RequireNotNull (intoStart);

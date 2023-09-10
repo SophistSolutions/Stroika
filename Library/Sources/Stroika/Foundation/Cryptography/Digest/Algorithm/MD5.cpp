@@ -330,7 +330,10 @@ void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Transform (UINT4* buf, UINT4*
  **************** Algorithm::DigesterAlgorithm<Algorithm::MD5> ******************
  ********************************************************************************
  */
-Algorithm::DigesterAlgorithm<Algorithm::MD5>::DigesterAlgorithm () { MD5Init_ (&fCtx_); }
+Algorithm::DigesterAlgorithm<Algorithm::MD5>::DigesterAlgorithm ()
+{
+    MD5Init_ (&fCtx_);
+}
 
 void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Write (const std::byte* start, const std::byte* end)
 {

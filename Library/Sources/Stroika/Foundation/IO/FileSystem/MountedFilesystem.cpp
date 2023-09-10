@@ -51,7 +51,10 @@ namespace {
             : mfd{::open (fn.c_str (), O_RDONLY, 0)}
         {
         }
-        ~Watcher_Proc_Mounts_ () { ::close (mfd); }
+        ~Watcher_Proc_Mounts_ ()
+        {
+            ::close (mfd);
+        }
         bool IsNewAvail () const
         {
             // according to http://stackoverflow.com/questions/5070801/monitoring-mount-point-changes-via-proc-mounts

@@ -213,13 +213,22 @@ Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnF
     Start ();
 }
 
-Listener::~Listener () { IgnoreExceptionsForCall (fRep_->Stop ()); }
+Listener::~Listener ()
+{
+    IgnoreExceptionsForCall (fRep_->Stop ());
+}
 
 void Listener::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
 {
     fRep_->AddOnFoundCallback (callOnFinds);
 }
 
-void Listener::Start () { fRep_->Start (); }
+void Listener::Start ()
+{
+    fRep_->Start ();
+}
 
-void Listener::Stop () { fRep_->Stop (); }
+void Listener::Stop ()
+{
+    fRep_->Stop ();
+}

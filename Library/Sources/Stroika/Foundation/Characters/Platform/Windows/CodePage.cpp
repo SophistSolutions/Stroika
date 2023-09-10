@@ -102,5 +102,6 @@ void PlatformCodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t i
     Require (inCharCnt == 0 or inChars != nullptr);
     RequireNotNull (outCharCnt);
     Require (*outCharCnt == 0 or outChars != nullptr);
-    *outCharCnt = ::WideCharToMultiByte (fCodePage_, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), nullptr, nullptr);
+    *outCharCnt =
+        ::WideCharToMultiByte (fCodePage_, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), nullptr, nullptr);
 }

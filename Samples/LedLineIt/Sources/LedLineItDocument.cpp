@@ -214,7 +214,10 @@ void LedLineItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept
     }
 }
 
-TextStore* LedLineItDocument::PeekAtTextStore () const { return &const_cast<LedLineItDocument*> (this)->fTextStore; }
+TextStore* LedLineItDocument::PeekAtTextStore () const
+{
+    return &const_cast<LedLineItDocument*> (this)->fTextStore;
+}
 
 BOOL LedLineItDocument::OnNewDocument ()
 {
@@ -276,7 +279,10 @@ BOOL LedLineItDocument::DoSave (LPCTSTR lpszPathName, BOOL bReplace)
         if (!OnSaveDocument (newName)) {
             if (lpszPathName == NULL) {
                 // be sure to delete the file
-                TRY { CFile::Remove (newName); }
+                TRY
+                {
+                    CFile::Remove (newName);
+                }
                 CATCH_ALL (e)
                 {
                     TRACE0 ("Warning: failed to delete file after failed SaveAs.\n");
@@ -362,7 +368,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 maxLineSize = max (maxLineSize, curLineSize);
             }
             if (suggestedCodePage and (suggestedCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE or
-                                               suggestedCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN)) {
+                                       suggestedCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN)) {
                 maxLineSize /= 2; // because we'd be counting null-bytes between chars.
                 // Note this whole computation is VERY approximate - because its counting raw bytes of what could be
                 // encoded text. For example - if the text was SJIS or UTF-7 encoding of far-east text - this would
@@ -383,8 +389,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
         }
 
         virtual bool InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage,
-                                                         size_t from,
-                                                         size_t to, const void* rawBytes, size_t nRawBytes) override
+                                                         size_t from, size_t to, const void* rawBytes, size_t nRawBytes) override
         {
             Led_ClipFormat cf = (suggestedClipFormat == NULL or *suggestedClipFormat == kBadClipFormat) ? kTEXTClipFormat : *suggestedClipFormat;
             Require (cf == kTEXTClipFormat);
@@ -393,15 +398,15 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 
             if (fBreakLongLines) {
 #if qWideCharacters
-                using Characters::String;
                 using Characters::CodeCvt;
+                using Characters::String;
                 using Streams::TextReader;
-                Memory::BLOB rawBytesBLOB{span{ reinterpret_cast<const byte*> (rawBytes), nRawBytes }};
+                Memory::BLOB rawBytesBLOB{span { reinterpret_cast<const byte*> (rawBytes), nRawBytes }};
 
-                String x = suggestedCodePage ? TextReader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
-                                             : TextReader::New (rawBytesBLOB).ReadAll ();
-                x        = x.NoramlizeTextToNL ();
-                Led_tString tx = x.As<Led_tString> ();
+                String x              = suggestedCodePage ? TextReader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
+                                                          : TextReader::New (rawBytesBLOB).ReadAll ();
+                x                     = x.NoramlizeTextToNL ();
+                Led_tString tx        = x.As<Led_tString> ();
                 size_t      charsRead = tx.length ();
                 const auto  fileData2 = span{tx};
                 {
@@ -478,9 +483,9 @@ void LedLineItDocument::Serialize (CArchive& ar)
 {
     if (ar.IsStoring ()) {
         constexpr size_t kBufSize = 8 * 1024;
-        Led_tChar    buf[kBufSize];
-        size_t       offset    = 0;
-        size_t       eob       = fTextStore.GetLength ();
+        Led_tChar        buf[kBufSize];
+        size_t           offset = 0;
+        size_t           eob    = fTextStore.GetLength ();
         if (fCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE or
             fCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN or fCodePage == Characters::WellKnownCodePages::kUTF8) {
             // write BOM
@@ -513,13 +518,13 @@ void LedLineItDocument::Serialize (CArchive& ar)
 #endif
             charsToWrite = Characters::NLToNative<Led_tChar> (buf, charsToWrite, buf2, sizeof (buf2));
 #if qWideCharacters
-             StackBuffer<byte> buf3_{Memory::eUninitialized, codeCvt.ComputeTargetByteBufferSize (span{buf, charsToWrite})};
-            auto              toWrite = codeCvt.Characters2Bytes (span{buf, charsToWrite}, span{buf3_});
-            char*              buffp   = reinterpret_cast<char*> (buf3_.data ());
-            size_t nBytesToWrite        = toWrite.size ();
+            StackBuffer<byte> buf3_{Memory::eUninitialized, codeCvt.ComputeTargetByteBufferSize (span{buf, charsToWrite})};
+            auto              toWrite       = codeCvt.Characters2Bytes (span{buf, charsToWrite}, span{buf3_});
+            char*             buffp         = reinterpret_cast<char*> (buf3_.data ());
+            size_t            nBytesToWrite = toWrite.size ();
 #else
-            char* buffp = static_cast<char*> (buf2);
-            size_t nBytesToWrite = charsToWrite;
+            char*     buffp         = static_cast<char*> (buf2);
+            size_t    nBytesToWrite = charsToWrite;
 #endif
             ar.Write (buffp, static_cast<UINT> (nBytesToWrite));
         }
@@ -533,8 +538,8 @@ void LedLineItDocument::Serialize (CArchive& ar)
             AfxThrowArchiveException (CArchiveException::endOfFile);
         }
 
-        CodePage useCodePage = fCodePage;
-        size_t   bytesToStrip = 0;
+        CodePage                                       useCodePage  = fCodePage;
+        size_t                                         bytesToStrip = 0;
         optional<Characters::UnicodeExternalEncodings> useUnicodEncoding;
         if (LedLineItDocument::sHiddenDocOpenArg != kIGNORECodePage) {
             useCodePage = sHiddenDocOpenArg;
@@ -542,7 +547,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
                 optional<tuple<Characters::UnicodeExternalEncodings, size_t>> n =
                     Characters::ReadByteOrderMark (span{reinterpret_cast<const byte*> (buf.data ()), nLen});
                 if (n) {
-                    bytesToStrip = get<size_t> (*n);
+                    bytesToStrip      = get<size_t> (*n);
                     useUnicodEncoding = get<Characters::UnicodeExternalEncodings> (*n);
                 }
             }
@@ -550,13 +555,13 @@ void LedLineItDocument::Serialize (CArchive& ar)
 
 #if qWideCharacters
         using Characters::CodeCvt;
-        CodeCvt<Led_tChar> codeCvt{useUnicodEncoding ? CodeCvt<Led_tChar>{*useUnicodEncoding}
-                                                     : (useCodePage == kAutomaticallyGuessCodePage ? CodeCvt<Led_tChar>{locale{}}
-                                                                                                   : CodeCvt<Led_tChar>{useCodePage})};
+        CodeCvt<Led_tChar>     codeCvt{useUnicodEncoding ? CodeCvt<Led_tChar>{*useUnicodEncoding}
+                                                         : (useCodePage == kAutomaticallyGuessCodePage ? CodeCvt<Led_tChar>{locale{}}
+                                                                                                       : CodeCvt<Led_tChar>{useCodePage})};
         StackBuffer<Led_tChar> result{Memory::eUninitialized,
-                                      codeCvt.ComputeTargetCharacterBufferSize (span{reinterpret_cast<const byte*> (buf.data ()), nLen})+1};
+                                      codeCvt.ComputeTargetCharacterBufferSize (span{reinterpret_cast<const byte*> (buf.data ()), nLen}) + 1};
         span<Led_tChar> n = codeCvt.Bytes2Characters (span{reinterpret_cast<const byte*> (buf.data ()), nLen}.subspan (bytesToStrip), span{result});
-        nLen             = static_cast<DWORD> (n.size());
+        nLen             = static_cast<DWORD> (n.size ());
         result[nLen]     = '\0'; // assure NUL-Term
         Led_tChar* buffp = static_cast<Led_tChar*> (result);
 #else
@@ -599,7 +604,10 @@ void LedLineItDocument::OnFileSaveCopyAs ()
     m_bRemember = true;
 }
 
-void LedLineItDocument::DeleteContents () { fTextStore.Replace (fTextStore.GetStart (), fTextStore.GetEnd (), LED_TCHAR_OF (""), 0); }
+void LedLineItDocument::DeleteContents ()
+{
+    fTextStore.Replace (fTextStore.GetStart (), fTextStore.GetEnd (), LED_TCHAR_OF (""), 0);
+}
 
 bool LedLineItDocument::DoPromptSaveAsFileName (CString* fileName, CodePage* codePage)
 {

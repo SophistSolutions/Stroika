@@ -413,7 +413,10 @@ namespace {
 }
 
 namespace {
-    void DoRegressionTests_ () { forward_list_tests_::test_all (); }
+    void DoRegressionTests_ ()
+    {
+        forward_list_tests_::test_all ();
+    }
 }
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])

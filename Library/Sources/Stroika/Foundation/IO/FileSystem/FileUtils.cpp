@@ -296,7 +296,9 @@ IO::FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
     }
 }
 
-void IO::FileSystem::DirectoryChangeWatcher::ValueChanged () {}
+void IO::FileSystem::DirectoryChangeWatcher::ValueChanged ()
+{
+}
 
 void IO::FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
 {
@@ -332,5 +334,8 @@ AdjustSysErrorMode::AdjustSysErrorMode (UINT newErrorMode)
 {
 }
 
-AdjustSysErrorMode::~AdjustSysErrorMode () { (void)::SetErrorMode (fSavedErrorMode); }
+AdjustSysErrorMode::~AdjustSysErrorMode ()
+{
+    (void)::SetErrorMode (fSavedErrorMode);
+}
 #endif

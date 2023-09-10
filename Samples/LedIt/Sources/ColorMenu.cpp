@@ -33,7 +33,10 @@ ColorMenu::ColorMenu ()
     //      MenuItem    "Other...",             kFontSizeOtherCmdID
 }
 
-COLORREF ColorMenu::GetColor (UINT id) { return FontCmdToColor (id).GetOSRep (); }
+COLORREF ColorMenu::GetColor (UINT id)
+{
+    return FontCmdToColor (id).GetOSRep ();
+}
 
 Color ColorMenu::FontCmdToColor (UINT cmd)
 {
@@ -142,7 +145,10 @@ void ColorMenu::MeasureItem (LPMEASUREITEMSTRUCT lpMIS)
     ASSERT (id <= kLastFontNamedColorCmd);
     class CDisplayIC : public CDC {
     public:
-        CDisplayIC () { CreateIC (_T("DISPLAY"), NULL, NULL, NULL); }
+        CDisplayIC ()
+        {
+            CreateIC (_T("DISPLAY"), NULL, NULL, NULL);
+        }
     };
     CDisplayIC dc;
     CString    strColor;

@@ -33,4 +33,7 @@ String Stats_Basic::ToString () const
  ************************************ Stats_Null ********************************
  ********************************************************************************
  */
-String Stats_Null::ToString () const { return {}; }
+String Stats_Null::ToString () const
+{
+    return {};
+}

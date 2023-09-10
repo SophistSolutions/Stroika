@@ -43,8 +43,11 @@ namespace {
         return ((*theMenuData)->mHandle);
     }
 #endif
-    SDKString FormatINTAsString (int t) { return Characters::CString::Format (Led_SDK_TCHAROF ("%d"), t); }
-    bool      ParseStringToINT (const SDKString& s, int* t)
+    SDKString FormatINTAsString (int t)
+    {
+        return Characters::CString::Format (Led_SDK_TCHAROF ("%d"), t);
+    }
+    bool ParseStringToINT (const SDKString& s, int* t)
     {
 #if 1
         // get rid of this function - COULD do better API - but this is fine for how we currently use it...
@@ -74,8 +77,11 @@ namespace {
 #endif
     }
     // Later revise these so they take into account UNITS - like CM, or IN, or TWIPS, or pt, etc...
-    SDKString FormatTWIPSAsString (TWIPS t) { return FormatINTAsString (t); }
-    bool      ParseStringToTWIPS (const SDKString& s, TWIPS* t)
+    SDKString FormatTWIPSAsString (TWIPS t)
+    {
+        return FormatINTAsString (t);
+    }
+    bool ParseStringToTWIPS (const SDKString& s, TWIPS* t)
     {
         int  i = 0;
         bool r = ParseStringToINT (s, &i);
@@ -117,7 +123,9 @@ StdColorPopupHelper::StdColorPopupHelper (bool allowNone)
         }
     }
 }
-StdColorPopupHelper::~StdColorPopupHelper () {}
+StdColorPopupHelper::~StdColorPopupHelper ()
+{
+}
 
 bool StdColorPopupHelper::GetSelectedColor (Color* c) const
 {
@@ -381,7 +389,10 @@ LedDialogWidget::~LedDialogWidget ()
 @METHOD:        LedDialogWidget::OnBadUserInput
 @DESCRIPTION:   <p>Override @'TextInteractor::OnBadUserInputn' - to just beep - not throw (cuz a throw messes up dialogs).</p>
 */
-void LedDialogWidget::OnBadUserInput () { Led_BeepNotify (); }
+void LedDialogWidget::OnBadUserInput ()
+{
+    Led_BeepNotify ();
+}
 
 void LedDialogWidget::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
                                               bool controlPressed, bool altKeyPressed)
@@ -621,7 +632,10 @@ LedComboBoxWidget::MyTextWidget::MyTextWidget ()
     SpecifyTextStore (&fTextStore);
 }
 
-LedComboBoxWidget::MyTextWidget::~MyTextWidget () { SpecifyTextStore (NULL); }
+LedComboBoxWidget::MyTextWidget::~MyTextWidget ()
+{
+    SpecifyTextStore (NULL);
+}
 
 #if qPlatform_Windows
 LRESULT LedComboBoxWidget::MyTextWidget::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
@@ -669,7 +683,10 @@ LedComboBoxWidget::LedComboBoxWidget ()
     fTextWidget.fComboBox        = this;
 }
 
-LedComboBoxWidget::~LedComboBoxWidget () { delete fUseWidgetFont; }
+LedComboBoxWidget::~LedComboBoxWidget ()
+{
+    delete fUseWidgetFont;
+}
 
 #if qPlatform_Windows
 bool LedComboBoxWidget::ReplaceWindow (HWND hWnd)
@@ -722,9 +739,15 @@ bool LedComboBoxWidget::ReplaceWindow (HWND hWnd)
 }
 #endif
 
-Led_tString LedComboBoxWidget::GetText () const { return fTextWidget.GetText (); }
+Led_tString LedComboBoxWidget::GetText () const
+{
+    return fTextWidget.GetText ();
+}
 
-void LedComboBoxWidget::SetText (const Led_tString& t) { fTextWidget.SetText (t); }
+void LedComboBoxWidget::SetText (const Led_tString& t)
+{
+    fTextWidget.SetText (t);
+}
 
 void LedComboBoxWidget::SetPopupItems (const vector<Led_tString>& pi)
 {
@@ -918,7 +941,10 @@ void LedComboBoxWidget::HidePopup ()
     fComboListBoxPopup.SetWindowVisible (false);
 }
 
-bool LedComboBoxWidget::PopupShown () const { return fComboListBoxPopup.IsWindowShown (); }
+bool LedComboBoxWidget::PopupShown () const
+{
+    return fComboListBoxPopup.IsWindowShown ();
+}
 
 void LedComboBoxWidget::TogglePopupShown ()
 {
@@ -948,11 +974,11 @@ Led_StdDialogHelper::Led_StdDialogHelper (int resID)
 Led_StdDialogHelper::Led_StdDialogHelper (HINSTANCE hInstance, const Characters::SDKChar* resID, HWND parentWnd)
     : fSetFocusItemCalled{false}
 {
-    fHWnd = NULL;
+    fHWnd      = NULL;
     fHINSTANCE = hInstance;
-    fResID = resID;
+    fResID     = resID;
     fParentWnd = parentWnd;
-    fWasOK = false;
+    fWasOK     = false;
 }
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
 Led_StdDialogHelper::Led_StdDialogHelper (GtkWindow* parentWindow)
@@ -975,7 +1001,10 @@ Led_StdDialogHelper::~Led_StdDialogHelper ()
 #endif
 }
 
-bool Led_StdDialogHelper::GetWasOK () const { return fWasOK; }
+bool Led_StdDialogHelper::GetWasOK () const
+{
+    return fWasOK;
+}
 
 bool Led_StdDialogHelper::DoModal ()
 {
@@ -1000,7 +1029,7 @@ bool Led_StdDialogHelper::DoModal ()
 #elif qPlatform_Windows
     HWND oldFocusWnd = ::GetFocus ();
 #if qNO_INT_PTR_DefinedCompilerBug
-    using INT_PTR = int;
+    using INT_PTR    = int;
 #endif
     [[maybe_unused]] INT_PTR x =
         ::DialogBoxParam (fHINSTANCE, fResID, fParentWnd, reinterpret_cast<DLGPROC> (StaticDialogProc), reinterpret_cast<LPARAM> (this));
@@ -1042,7 +1071,9 @@ void Led_StdDialogHelper::ReplaceAllTokens (SDKString* m, const SDKString& token
     *m = String::FromSDKString (*m).ReplaceAll (String::FromSDKString (token), String::FromSDKString (with)).AsSDKString ();
 }
 
-void Led_StdDialogHelper::PreDoModalHook () {}
+void Led_StdDialogHelper::PreDoModalHook ()
+{
+}
 
 #if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
 GtkWidget* Led_StdDialogHelper::MakeWindow ()
@@ -1292,7 +1323,10 @@ void Led_StdDialogHelper::SetFocusedItem (DialogItemID itemID)
 #endif
 
 #if qPlatform_MacOS
-DialogPtr Led_StdDialogHelper::GetDialogPtr () const { return fDialogPtr; }
+DialogPtr Led_StdDialogHelper::GetDialogPtr () const
+{
+    return fDialogPtr;
+}
 
 void Led_StdDialogHelper::SetDialogPtr (DialogPtr d)
 {
@@ -1313,9 +1347,15 @@ void Led_StdDialogHelper::SetHWND (HWND hWnd)
     }
 }
 
-HWND Led_StdDialogHelper::GetHWND () const { return fHWnd; }
+HWND Led_StdDialogHelper::GetHWND () const
+{
+    return fHWnd;
+}
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-GtkWidget* Led_StdDialogHelper::GetWindow () const { return fWindow; }
+GtkWidget* Led_StdDialogHelper::GetWindow () const
+{
+    return fWindow;
+}
 
 void Led_StdDialogHelper::SetWindow (GtkWidget* w)
 {
@@ -1329,11 +1369,23 @@ void Led_StdDialogHelper::SetWindow (GtkWidget* w)
         }
     }
 }
-GtkWidget* Led_StdDialogHelper::GetOKButton () const { return fOKButton; }
-void       Led_StdDialogHelper::SetOKButton (GtkWidget* okButton) { fOKButton = okButton; }
+GtkWidget* Led_StdDialogHelper::GetOKButton () const
+{
+    return fOKButton;
+}
+void Led_StdDialogHelper::SetOKButton (GtkWidget* okButton)
+{
+    fOKButton = okButton;
+}
 
-GtkWidget* Led_StdDialogHelper::GetCancelButton () const { return fWindow; }
-void       Led_StdDialogHelper::SetCancelButton (GtkWidget* cancelButton) { fCancelButton = cancelButton; }
+GtkWidget* Led_StdDialogHelper::GetCancelButton () const
+{
+    return fWindow;
+}
+void Led_StdDialogHelper::SetCancelButton (GtkWidget* cancelButton)
+{
+    fCancelButton = cancelButton;
+}
 #endif
 
 void Led_StdDialogHelper::OnOK ()
@@ -1435,7 +1487,10 @@ Led_StdDialogHelper_AboutBox::Led_StdDialogHelper_AboutBox (GtkWindow* parentWin
 #endif
 
 #if qPlatform_MacOS
-void Led_StdDialogHelper_AboutBox::PreDoModalHook () { inherited::PreDoModalHook (); }
+void Led_StdDialogHelper_AboutBox::PreDoModalHook ()
+{
+    inherited::PreDoModalHook ();
+}
 
 void Led_StdDialogHelper_AboutBox::SimpleLayoutHelper (short pictHeight, short pictWidth, Led_Rect infoField, Led_Rect webPageField, const SDKString versionStr)
 {
@@ -1503,7 +1558,10 @@ void Led_StdDialogHelper_AboutBox::SimpleLayoutHelper (short pictHeight, short p
 #endif
 
 #if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-GtkWidget* Led_StdDialogHelper_AboutBox::MakeWindow () { return gtk_window_new (GTK_WINDOW_TOPLEVEL); }
+GtkWidget* Led_StdDialogHelper_AboutBox::MakeWindow ()
+{
+    return gtk_window_new (GTK_WINDOW_TOPLEVEL);
+}
 #endif
 
 #if qPlatform_MacOS
@@ -1557,9 +1615,15 @@ BOOL Led_StdDialogHelper_AboutBox::DialogProc (UINT message, WPARAM wParam, LPAR
 }
 #endif
 
-void Led_StdDialogHelper_AboutBox::OnClickInInfoField () { OnOK (); }
+void Led_StdDialogHelper_AboutBox::OnClickInInfoField ()
+{
+    OnOK ();
+}
 
-void Led_StdDialogHelper_AboutBox::OnClickInLedWebPageField () { OnOK (); }
+void Led_StdDialogHelper_AboutBox::OnClickInLedWebPageField ()
+{
+    OnOK ();
+}
 
 #if qSupportStdFindDlg
 /*
@@ -1929,7 +1993,7 @@ void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
     DialogItemID findText    = kLedStdDlg_ReplaceBox_FindText;
     DialogItemID replaceText = kLedStdDlg_ReplaceBox_ReplaceText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    DialogItemID findText = fLookupTextWidget;
+    DialogItemID findText    = fLookupTextWidget;
     DialogItemID replaceText = fReplaceTextWidget;
 #endif
 
@@ -1993,10 +2057,10 @@ void Led_StdDialogHelper_ReplaceDialog::SaveItems ()
     fFindText    = fFindTextWidget.GetText ();
     fReplaceText = fReplaceTextWidget.GetText ();
 #elif qPlatform_MacOS || qPlatform_Windows
-    fFindText = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_FindText));
+    fFindText    = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_FindText));
     fReplaceText = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_ReplaceText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    fFindText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
+    fFindText    = Led_SDKString2tString (GetItemText (fLookupTextWidget));
     fReplaceText = Led_SDKString2tString (GetItemText (fReplaceTextWidget));
 #endif
 
@@ -2053,7 +2117,10 @@ StdFontPickBox::StdFontPickBox (GtkWindow* modalParentWindow, const FontSpecific
 {
 }
 
-GtkWidget* StdFontPickBox::MakeWindow () { return gtk_font_selection_dialog_new ("Select font"); }
+GtkWidget* StdFontPickBox::MakeWindow ()
+{
+    return gtk_font_selection_dialog_new ("Select font");
+}
 
 void StdFontPickBox::PreDoModalHook ()
 {
@@ -2153,7 +2220,10 @@ UINT_PTR CALLBACK StdColorPickBox::ColorPickerINITPROC (HWND hWnd, UINT message,
 #endif
 
 #if qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows
-GtkWidget* StdColorPickBox::MakeWindow () { return gtk_color_selection_dialog_new ("Select color"); }
+GtkWidget* StdColorPickBox::MakeWindow ()
+{
+    return gtk_color_selection_dialog_new ("Select color");
+}
 
 void StdColorPickBox::PreDoModalHook ()
 {
@@ -2194,7 +2264,10 @@ StdFilePickBox::StdFilePickBox (GtkWindow* modalParentWindow, const SDKString& t
 {
 }
 
-GtkWidget* StdFilePickBox::MakeWindow () { return gtk_file_selection_new (fTitle.c_str ()); }
+GtkWidget* StdFilePickBox::MakeWindow ()
+{
+    return gtk_file_selection_new (fTitle.c_str ());
+}
 
 void StdFilePickBox::PreDoModalHook ()
 {
@@ -2225,7 +2298,10 @@ void StdFilePickBox::OnOK ()
     }
 }
 
-SDKString StdFilePickBox::GetFileName () const { return fFileName; }
+SDKString StdFilePickBox::GetFileName () const
+{
+    return fFileName;
+}
 #endif
 
 #if qSupportUpdateWin32FileAssocDlg
@@ -2633,8 +2709,8 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
     GtkWidget* window = GetWindow ();
     gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 
-    string message = "Selected object is of type '" + fEmbeddingTypeName + "'.";
-    GtkWidget* label = gtk_label_new (message.c_str ());
+    string     message = "Selected object is of type '" + fEmbeddingTypeName + "'.";
+    GtkWidget* label   = gtk_label_new (message.c_str ());
 
     gtk_widget_show (label);
 
@@ -2724,8 +2800,8 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
     GtkWidget* window = GetWindow ();
     gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 
-    string message = "Selected object is of type '" + fEmbeddingTypeName + "'.";
-    GtkWidget* label = gtk_label_new (message.c_str ());
+    string     message = "Selected object is of type '" + fEmbeddingTypeName + "'.";
+    GtkWidget* label   = gtk_label_new (message.c_str ());
 
     gtk_widget_show (label);
 
@@ -2840,8 +2916,8 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::PreDoModalHook ()
     GtkWidget* window = GetWindow ();
     gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 
-    string message = "ADD URL.";
-    GtkWidget* label = gtk_label_new (message.c_str ());
+    string     message = "ADD URL.";
+    GtkWidget* label   = gtk_label_new (message.c_str ());
 
     gtk_widget_show (label);
 
@@ -3139,7 +3215,10 @@ Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (Spel
 }
 #endif
 
-Led_StdDialogHelper_SpellCheckDialog::~Led_StdDialogHelper_SpellCheckDialog () { delete fCurrentMisspellInfo; }
+Led_StdDialogHelper_SpellCheckDialog::~Led_StdDialogHelper_SpellCheckDialog ()
+{
+    delete fCurrentMisspellInfo;
+}
 
 #if qPlatform_MacOS
 bool Led_StdDialogHelper_SpellCheckDialog::HandleCommandClick (int itemNum)
@@ -3179,7 +3258,7 @@ BOOL Led_StdDialogHelper_SpellCheckDialog::DialogProc (UINT message, WPARAM wPar
     switch (message) {
         case WM_COMMAND: {
             WORD notificationCode = HIWORD (wParam);
-            WORD itemID = LOWORD (wParam);
+            WORD itemID           = LOWORD (wParam);
             switch (itemID) {
                 case kLedStdDlg_SpellCheckBox_IgnoreOnce:
                     OnIgnoreButton ();
@@ -3334,9 +3413,9 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeButton ()
 #if qSupportLedDialogWidgets
     Led_tString changeText = fChangeTextWidget.GetText ();
 #elif qPlatform_MacOS || qPlatform_Windows
-    Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
+    Led_tString changeText        = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Led_tString changeText = Led_SDKString2tString (GetItemText (fChangeTextWidget));
+    Led_tString changeText        = Led_SDKString2tString (GetItemText (fChangeTextWidget));
 #endif
     fCallback.DoChange (changeText);
     DoFindNextCall ();
@@ -3347,9 +3426,9 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeAllButton ()
 #if qSupportLedDialogWidgets
     Led_tString changeText = fChangeTextWidget.GetText ();
 #elif qPlatform_MacOS || qPlatform_Windows
-    Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
+    Led_tString changeText        = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Led_tString changeText = Led_SDKString2tString (GetItemText (fChangeTextWidget));
+    Led_tString changeText        = Led_SDKString2tString (GetItemText (fChangeTextWidget));
 #endif
     fCallback.DoChangeAll (changeText);
     DoFindNextCall ();
@@ -3380,9 +3459,15 @@ void Led_StdDialogHelper_SpellCheckDialog::OnLookupOnWebButton ()
     fCallback.LookupOnWeb (undefinedWordText);
 }
 
-void Led_StdDialogHelper_SpellCheckDialog::OnOptionsDialogButton () { fCallback.OptionsDialog (); }
+void Led_StdDialogHelper_SpellCheckDialog::OnOptionsDialogButton ()
+{
+    fCallback.OptionsDialog ();
+}
 
-void Led_StdDialogHelper_SpellCheckDialog::OnCloseButton () { OnCancel (); }
+void Led_StdDialogHelper_SpellCheckDialog::OnCloseButton ()
+{
+    OnCancel ();
+}
 
 void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListChangeSelection ()
 {
@@ -3411,7 +3496,10 @@ void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListChangeSelection ()
     }
 }
 
-void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListDoubleClick () { OnChangeButton (); }
+void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListDoubleClick ()
+{
+    OnChangeButton ();
+}
 
 void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
 {
@@ -3424,7 +3512,7 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
     DialogItemID changeTextItem    = kLedStdDlg_SpellCheckBox_ChangeText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     DialogItemID undefinedTextItem = fLookupTextWidget;
-    DialogItemID changeTextItem = fChangeTextWidget;
+    DialogItemID changeTextItem    = fChangeTextWidget;
 #endif
 
 #if qPlatform_Windows

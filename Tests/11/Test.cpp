@@ -65,11 +65,15 @@ namespace {
             struct A {
                 A ()         = default;
                 A (const A&) = default;
-                A (const B&) {}
+                A (const B&)
+                {
+                }
             };
             struct B {
                 B () = default;
-                B (const A&) {}
+                B (const A&)
+                {
+                }
                 B (const B&) = default;
             };
             using Common::KeyValuePair;
@@ -231,7 +235,10 @@ namespace {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
             : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () == v2.GetValue (); }
+            bool operator() (const value_type& v1, const value_type& v2) const
+            {
+                return v1.GetValue () == v2.GetValue ();
+            }
         };
 
         DoTestForConcreteContainer_<Association<size_t, size_t>> ();
@@ -268,7 +275,10 @@ namespace {
             struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
                 : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
                 using value_type = SimpleClassWithoutComparisonOperators;
-                bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () < v2.GetValue (); }
+                bool operator() (const value_type& v1, const value_type& v2) const
+                {
+                    return v1.GetValue () < v2.GetValue ();
+                }
             };
             DoTestForConcreteContainer_<Association_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
                 [] () {

@@ -1308,9 +1308,15 @@ namespace {
             return unzOpenInternal (path, NULL, 1);
     }
 
-    unzFile unzOpen (const char* path) { return unzOpenInternal (path, NULL, 0); }
+    unzFile unzOpen (const char* path)
+    {
+        return unzOpenInternal (path, NULL, 0);
+    }
 
-    unzFile unzOpen64 (const void* path) { return unzOpenInternal (path, NULL, 1); }
+    unzFile unzOpen64 (const void* path)
+    {
+        return unzOpenInternal (path, NULL, 1);
+    }
 
     /*
       Close a ZipFile opened with unzOpen.
@@ -2064,9 +2070,15 @@ namespace {
         return UNZ_OK;
     }
 
-    int unzOpenCurrentFile (unzFile file) { return unzOpenCurrentFile3_ (file, NULL, NULL, 0, NULL); }
+    int unzOpenCurrentFile (unzFile file)
+    {
+        return unzOpenCurrentFile3_ (file, NULL, NULL, 0, NULL);
+    }
 
-    int unzOpenCurrentFilePassword (unzFile file, const char* password) { return unzOpenCurrentFile3_ (file, NULL, NULL, 0, password); }
+    int unzOpenCurrentFilePassword (unzFile file, const char* password)
+    {
+        return unzOpenCurrentFile3_ (file, NULL, NULL, 0, password);
+    }
 
     int unzOpenCurrentFile2 (unzFile file, int* method, int* level, int raw)
     {
@@ -2486,7 +2498,10 @@ namespace {
         return err;
     }
 
-    int unzSetOffset (unzFile file, uLong pos) { return unzSetOffset64 (file, pos); }
+    int unzSetOffset (unzFile file, uLong pos)
+    {
+        return unzSetOffset64 (file, pos);
+    }
 }
 ///////////////////////////////// END OF unzip.c ////////////////////
 #endif
@@ -2565,7 +2580,10 @@ private:
             };
             this->opaque = this;
         }
-        ~MyISeekInStream () { Assert (not fOpened_); }
+        ~MyISeekInStream ()
+        {
+            Assert (not fOpened_);
+        }
     };
     MyISeekInStream fInSeekStream_;
     unzFile         fZipFile_;

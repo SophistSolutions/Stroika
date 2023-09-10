@@ -40,7 +40,10 @@ namespace {
 #endif
 #if qPlatform_Windows
     // CAN RETURN NULL
-    DLLHandle LoadDLL_ (const SDKChar* dllName) { return ::LoadLibrary (dllName); }
+    DLLHandle LoadDLL_ (const SDKChar* dllName)
+    {
+        return ::LoadLibrary (dllName);
+    }
 #endif
 
     void ThrowLoadErr_ ()

@@ -277,7 +277,10 @@ namespace {
         }
 
     public:
-        optional<unsigned int> CountThreads (pid_t pid) const { return fThreads_.OccurrencesOf (pid); }
+        optional<unsigned int> CountThreads (pid_t pid) const
+        {
+            return fThreads_.OccurrencesOf (pid);
+        }
     };
 }
 #endif
@@ -1316,8 +1319,11 @@ namespace {
                 {
                     return reinterpret_cast<const SYSTEM_PROCESS_INFORMATION*> (fBuf_.begin ());
                 }
-                static bool IsValidPID_ (pid_t p) { return static_cast<make_signed_t<pid_t>> (p) > 0; }
-                Set<pid_t>  GetAllProcessIDs_ () const
+                static bool IsValidPID_ (pid_t p)
+                {
+                    return static_cast<make_signed_t<pid_t>> (p) > 0;
+                }
+                Set<pid_t> GetAllProcessIDs_ () const
                 {
                     const SYSTEM_PROCESS_INFORMATION* start = GetProcessInfo ();
                     const SYSTEM_PROCESS_INFORMATION* end   = start + fActualNumElts_;
@@ -1700,8 +1706,11 @@ namespace {
             }
             return rawMeasurement;
         }
-        virtual unique_ptr<IRep> Clone () const override { return make_unique<ProcessInstrumentRep_> (_fOptions, _fContext.load ()); }
-        ProcessMapType           _InternalCapture ()
+        virtual unique_ptr<IRep> Clone () const override
+        {
+            return make_unique<ProcessInstrumentRep_> (_fOptions, _fContext.load ());
+        }
+        ProcessMapType _InternalCapture ()
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

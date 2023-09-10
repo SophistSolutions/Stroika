@@ -99,7 +99,10 @@ void Partition::FinalConstruct ()
     Assert (fPartitionMarkerLast == pm);
 }
 
-TextStore* Partition::PeekAtTextStore () const { return &fTextStore; }
+TextStore* Partition::PeekAtTextStore () const
+{
+    return &fTextStore;
+}
 
 /*
         @METHOD:        Partition::GetPartitionMarkerContainingPosition
@@ -356,7 +359,10 @@ PartitioningTextImager::PartitioningTextImager ()
 {
 }
 
-PartitioningTextImager::~PartitioningTextImager () { Require (fPartition.get () == nullptr); }
+PartitioningTextImager::~PartitioningTextImager ()
+{
+    Require (fPartition.get () == nullptr);
+}
 
 /*
 @METHOD:        PartitioningTextImager::SetPartition
@@ -811,7 +817,10 @@ void PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) con
     fCache.clear ([pm] (const CacheElt::COMPARE_ITEM& c) { return pm == c.fPM; });
 }
 
-TextStore* PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const { return fPartition->PeekAtTextStore (); }
+TextStore* PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const
+{
+    return fPartition->PeekAtTextStore ();
+}
 
 void PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept
 {

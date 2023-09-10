@@ -181,7 +181,7 @@ public:
     virtual void OnFileOpen () override
     {
         ::CString fileName;
-        CodePage       codePage = 0;
+        CodePage  codePage = 0;
         if (LedLineItDocument::DoPromptOpenFileName (&fileName, &codePage)) {
             OpenDocumentFile (fileName, codePage);
         }
@@ -644,7 +644,10 @@ void LedLineItApplication::OnCheckForUpdatesWebPageCommand ()
     Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/CheckForUpdates.asp", kAppName));
 }
 
-void LedLineItApplication::OnGotoSophistsWebPageCommand () { Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/", kAppName)); }
+void LedLineItApplication::OnGotoSophistsWebPageCommand ()
+{
+    Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/", kAppName));
+}
 
 void LedLineItApplication::OnToggleAutoIndentOptionCommand ()
 {

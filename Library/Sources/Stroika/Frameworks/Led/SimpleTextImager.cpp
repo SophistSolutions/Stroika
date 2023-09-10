@@ -101,7 +101,10 @@ SimpleTextImager::SimpleTextImager ()
 {
 }
 
-SimpleTextImager::~SimpleTextImager () { Assert (fTopLinePartitionMarkerInWindow == NULL); }
+SimpleTextImager::~SimpleTextImager ()
+{
+    Assert (fTopLinePartitionMarkerInWindow == NULL);
+}
 
 void SimpleTextImager::HookLosingTextStore ()
 {
@@ -168,7 +171,10 @@ PartitioningTextImager::PartitionPtr SimpleTextImager::MakeDefaultPartition () c
             By default this simple uses MeasureSegmentHeight_ (GetDefaultFont (), 0, 0) to establish the per-row
             height. You can override this to provide whatever height you wish. But anything smaller will look cut-off.</p>
 */
-DistanceType SimpleTextImager::ReCalcRowHeight () const { return MeasureSegmentHeight_ (GetDefaultFont (), 0, 0); }
+DistanceType SimpleTextImager::ReCalcRowHeight () const
+{
+    return MeasureSegmentHeight_ (GetDefaultFont (), 0, 0);
+}
 
 DistanceType SimpleTextImager::MeasureSegmentHeight (size_t /*from*/, size_t /*to*/) const
 {
@@ -248,7 +254,10 @@ size_t SimpleTextImager::GetTopRowInWindow () const
     return (GetRowNumber (GetTopRowReferenceInWindow ()));
 }
 
-size_t SimpleTextImager::GetTotalRowsInWindow () const { return GetTotalRowsInWindow_ (); }
+size_t SimpleTextImager::GetTotalRowsInWindow () const
+{
+    return GetTotalRowsInWindow_ ();
+}
 
 size_t SimpleTextImager::GetLastRowInWindow () const
 {
@@ -268,13 +277,25 @@ void SimpleTextImager::SetTopRowInWindow (size_t newTopRow)
     // as well check we have our definitions straight...
 }
 
-void SimpleTextImager::AssureWholeWindowUsedIfNeeded () { SetTopRowInWindow (GetTopRowReferenceInWindow ()); }
+void SimpleTextImager::AssureWholeWindowUsedIfNeeded ()
+{
+    SetTopRowInWindow (GetTopRowReferenceInWindow ());
+}
 
-size_t SimpleTextImager::GetMarkerPositionOfStartOfWindow () const { return (GetStartOfRow (GetTopRowReferenceInWindow ())); }
+size_t SimpleTextImager::GetMarkerPositionOfStartOfWindow () const
+{
+    return (GetStartOfRow (GetTopRowReferenceInWindow ()));
+}
 
-size_t SimpleTextImager::GetMarkerPositionOfEndOfWindow () const { return GetEndOfRow (GetLastRowReferenceInWindow ()); }
+size_t SimpleTextImager::GetMarkerPositionOfEndOfWindow () const
+{
+    return GetEndOfRow (GetLastRowReferenceInWindow ());
+}
 
-size_t SimpleTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const { return GetStartOfRow (GetLastRowReferenceInWindow ()); }
+size_t SimpleTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const
+{
+    return GetStartOfRow (GetLastRowReferenceInWindow ());
+}
 
 ptrdiff_t SimpleTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const
 {
@@ -815,7 +836,10 @@ Led_Rect SimpleTextImager::GetCharLocationRowRelativeByPosition (size_t afterPos
     return GetCharLocationRowRelative (afterPosition, GetRowReferenceContainingPosition (positionOfTopRow), maxRowsToCheck);
 }
 
-DistanceType SimpleTextImager::GetRowHeight (size_t /*rowNumber*/) const { return (GetRowHeight ()); }
+DistanceType SimpleTextImager::GetRowHeight (size_t /*rowNumber*/) const
+{
+    return (GetRowHeight ());
+}
 
 /*
 @METHOD:        SimpleTextImager::GetRowRelativeBaselineOfRowContainingPosition
@@ -910,7 +934,10 @@ DistanceType SimpleTextImager::GetHeightOfRows (RowReference startingRow, size_t
 @DESCRIPTION:   <p>Set the interline space associated for the entire text buffer. Call the
             no-arg version of @'SimpleTextImager::GetInterLineSpace' to get the currently set value.</p>
 */
-void SimpleTextImager::SetInterLineSpace (DistanceType interlineSpace) { fInterlineSpace = interlineSpace; }
+void SimpleTextImager::SetInterLineSpace (DistanceType interlineSpace)
+{
+    fInterlineSpace = interlineSpace;
+}
 
 /*
 @METHOD:        SimpleTextImager::GetInterLineSpace
@@ -920,7 +947,10 @@ void SimpleTextImager::SetInterLineSpace (DistanceType interlineSpace) { fInterl
             @'SimpleTextImager::SetInterLineSpace' and returned by the no-arg version of
             @'SimpleTextImager::GetInterLineSpace'.</p>
 */
-DistanceType SimpleTextImager::GetInterLineSpace (PartitionMarker* /*pm*/) const { return GetInterLineSpace (); }
+DistanceType SimpleTextImager::GetInterLineSpace (PartitionMarker* /*pm*/) const
+{
+    return GetInterLineSpace ();
+}
 
 /*
 @METHOD:        SimpleTextImager::ChangedInterLineSpace

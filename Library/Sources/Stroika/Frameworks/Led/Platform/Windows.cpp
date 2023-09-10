@@ -22,7 +22,9 @@ CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qHookIMEEndCo
 namespace Stroika::Frameworks::Led::Platform {
 
     namespace Private {
-        IdleMangerLinkerSupport::IdleMangerLinkerSupport () {}
+        IdleMangerLinkerSupport::IdleMangerLinkerSupport ()
+        {
+        }
     }
 
     /*
@@ -66,8 +68,14 @@ namespace Stroika::Frameworks::Led::Platform {
             *  Code to automatically install and remove our idle manager.
             */
         struct IdleMangerSetter {
-            IdleMangerSetter () { IdleManager::SetIdleManagerOSImpl (&fIdleManagerOSImpl); }
-            ~IdleMangerSetter () { IdleManager::SetIdleManagerOSImpl (NULL); }
+            IdleMangerSetter ()
+            {
+                IdleManager::SetIdleManagerOSImpl (&fIdleManagerOSImpl);
+            }
+            ~IdleMangerSetter ()
+            {
+                IdleManager::SetIdleManagerOSImpl (NULL);
+            }
             IdleManagerOSImpl_Win32 fIdleManagerOSImpl;
         };
         struct IdleMangerSetter sIdleMangerSetter;
@@ -237,7 +245,10 @@ namespace Stroika::Frameworks::Led::Platform {
         }
     }
 
-    Foundation::Time::DurationSecondsType IdleManagerOSImpl_Win32::GetSuggestedFrequency () const { return fSuggestedFrequency; }
+    Foundation::Time::DurationSecondsType IdleManagerOSImpl_Win32::GetSuggestedFrequency () const
+    {
+        return fSuggestedFrequency;
+    }
 
     void IdleManagerOSImpl_Win32::SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency)
     {

@@ -631,7 +631,10 @@ namespace {
                     }
                 }
             }
-            void DoRegressionTests_ForConnectionFactory_ (function<Connection::Ptr ()> factory) { SimpleGetFetch_T1 (factory ()); }
+            void DoRegressionTests_ForConnectionFactory_ (function<Connection::Ptr ()> factory)
+            {
+                SimpleGetFetch_T1 (factory ());
+            }
         }
         void DoTests_ ()
         {

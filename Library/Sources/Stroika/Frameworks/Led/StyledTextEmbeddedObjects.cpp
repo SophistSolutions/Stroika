@@ -107,7 +107,10 @@ bool EmbeddedObjectCreatorRegistry::Lookup (const char* embeddingTag, Assoc* res
 SimpleEmbeddedObjectStyleMarker::CommandNames SimpleEmbeddedObjectStyleMarker::sCommandNames =
     SimpleEmbeddedObjectStyleMarker::MakeDefaultCommandNames ();
 
-int SimpleEmbeddedObjectStyleMarker::GetPriority () const { return eEmbeddedObjectPriority; }
+int SimpleEmbeddedObjectStyleMarker::GetPriority () const
+{
+    return eEmbeddedObjectPriority;
+}
 
 DistanceType SimpleEmbeddedObjectStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement,
                                                                       size_t from, size_t to) const
@@ -148,7 +151,10 @@ bool SimpleEmbeddedObjectStyleMarker::HandleClick (Led_Point /*clickedAt*/, unsi
     return true;
 }
 
-bool SimpleEmbeddedObjectStyleMarker::HandleOpen () { return true; }
+bool SimpleEmbeddedObjectStyleMarker::HandleOpen ()
+{
+    return true;
+}
 
 /*
 @METHOD:        SimpleEmbeddedObjectStyleMarker::GetCmdNumbers
@@ -337,7 +343,10 @@ void StandardMacPictureStyleMarker::ExternalizeFlavors (WriterFlavorPackage& fla
     flavorPackage.AddFlavorData (kClipFormat, GetPictureByteSize (), (Led_Picture*)locker.GetPointer ());
 }
 
-const char* StandardMacPictureStyleMarker::GetTag () const { return kEmbeddingTag; }
+const char* StandardMacPictureStyleMarker::GetTag () const
+{
+    return kEmbeddingTag;
+}
 #endif
 
 /*
@@ -462,7 +471,10 @@ void StandardDIBStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPack
     flavorPackage.AddFlavorData (kClipFormat, dibSize, dib);
 }
 
-const char* StandardDIBStyleMarker::GetTag () const { return kEmbeddingTag; }
+const char* StandardDIBStyleMarker::GetTag () const
+{
+    return kEmbeddingTag;
+}
 
 /*
  ********************************************************************************
@@ -503,7 +515,9 @@ StandardURLStyleMarker::StandardURLStyleMarker (const Led_URLD& urlData)
 #endif
 }
 
-StandardURLStyleMarker::~StandardURLStyleMarker () {}
+StandardURLStyleMarker::~StandardURLStyleMarker ()
+{
+}
 
 SimpleEmbeddedObjectStyleMarker* StandardURLStyleMarker::mk ([[maybe_unused]] const char* embeddingTag, const void* data, size_t len)
 {
@@ -784,7 +798,10 @@ DistanceType StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextImage
 #endif
 }
 
-void StandardURLStyleMarker::Write (SinkStream& sink) { sink.write (fURLData.PeekAtURLD (), fURLData.GetURLDLength ()); }
+void StandardURLStyleMarker::Write (SinkStream& sink)
+{
+    sink.write (fURLData.PeekAtURLD (), fURLData.GetURLDLength ());
+}
 
 void StandardURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
 {
@@ -798,7 +815,10 @@ void StandardURLStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPack
 #endif
 }
 
-const char* StandardURLStyleMarker::GetTag () const { return kEmbeddingTag; }
+const char* StandardURLStyleMarker::GetTag () const
+{
+    return kEmbeddingTag;
+}
 
 bool StandardURLStyleMarker::HandleOpen ()
 {
@@ -824,9 +844,15 @@ bool StandardURLStyleMarker::IsCmdEnabled (PrivateCmdNumber cmd) const
     }
 }
 
-const Led_URLD& StandardURLStyleMarker::GetURLData () const { return fURLData; }
+const Led_URLD& StandardURLStyleMarker::GetURLData () const
+{
+    return fURLData;
+}
 
-void StandardURLStyleMarker::SetURLData (const Led_URLD& urlData) { fURLData = urlData; }
+void StandardURLStyleMarker::SetURLData (const Led_URLD& urlData)
+{
+    fURLData = urlData;
+}
 
 Led_tString StandardURLStyleMarker::GetDisplayString () const
 {
@@ -1051,11 +1077,20 @@ bool StandardMacPictureWithURLStyleMarker::IsCmdEnabled (PrivateCmdNumber cmd) c
     }
 }
 
-const Led_URLD& StandardMacPictureWithURLStyleMarker::GetURLData () const { return fURLData; }
+const Led_URLD& StandardMacPictureWithURLStyleMarker::GetURLData () const
+{
+    return fURLData;
+}
 
-void StandardMacPictureWithURLStyleMarker::SetURLData (const Led_URLD& urlData) { fURLData = urlData; }
+void StandardMacPictureWithURLStyleMarker::SetURLData (const Led_URLD& urlData)
+{
+    fURLData = urlData;
+}
 
-const char* StandardMacPictureWithURLStyleMarker::GetTag () const { return kEmbeddingTag; }
+const char* StandardMacPictureWithURLStyleMarker::GetTag () const
+{
+    return kEmbeddingTag;
+}
 #endif
 
 /*
@@ -1228,11 +1263,20 @@ bool StandardDIBWithURLStyleMarker::IsCmdEnabled (PrivateCmdNumber cmd) const
     }
 }
 
-const Led_URLD& StandardDIBWithURLStyleMarker::GetURLData () const { return fURLData; }
+const Led_URLD& StandardDIBWithURLStyleMarker::GetURLData () const
+{
+    return fURLData;
+}
 
-void StandardDIBWithURLStyleMarker::SetURLData (const Led_URLD& urlData) { fURLData = urlData; }
+void StandardDIBWithURLStyleMarker::SetURLData (const Led_URLD& urlData)
+{
+    fURLData = urlData;
+}
 
-const char* StandardDIBWithURLStyleMarker::GetTag () const { return kEmbeddingTag; }
+const char* StandardDIBWithURLStyleMarker::GetTag () const
+{
+    return kEmbeddingTag;
+}
 
 /*
  ********************************************************************************
@@ -1277,7 +1321,10 @@ StandardUnknownTypeStyleMarker::StandardUnknownTypeStyleMarker (Led_ClipFormat f
     fShownSize = CalcDefaultShownSize ();
 }
 
-StandardUnknownTypeStyleMarker::~StandardUnknownTypeStyleMarker () { delete[] (char*)fData; }
+StandardUnknownTypeStyleMarker::~StandardUnknownTypeStyleMarker ()
+{
+    delete[] (char*)fData;
+}
 
 /*
 @METHOD:        StandardUnknownTypeStyleMarker::SetShownSize
@@ -1287,7 +1334,10 @@ StandardUnknownTypeStyleMarker::~StandardUnknownTypeStyleMarker () { delete[] (c
             TextInteractors/TextImagers are notified to adjust any caching of size information they may have. This can be avoided
             by setting this value BEFORE adding the embedding to the TextStore.</p>
 */
-void StandardUnknownTypeStyleMarker::SetShownSize (TWIPS_Point size) { fShownSize = size; }
+void StandardUnknownTypeStyleMarker::SetShownSize (TWIPS_Point size)
+{
+    fShownSize = size;
+}
 
 /*
 @METHOD:        StandardUnknownTypeStyleMarker::CalcDefaultShownSize
@@ -1384,14 +1434,20 @@ DistanceType StandardUnknownTypeStyleMarker::MeasureSegmentHeight (const StyledT
     return tablet->CvtFromTWIPSV (fShownSize.v) + 2 * kDefaultEmbeddingMargin.v;
 }
 
-void StandardUnknownTypeStyleMarker::Write (SinkStream& sink) { sink.write (fData, fLength); }
+void StandardUnknownTypeStyleMarker::Write (SinkStream& sink)
+{
+    sink.write (fData, fLength);
+}
 
 void StandardUnknownTypeStyleMarker::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
 {
     flavorPackage.AddFlavorData (fFormat, fLength, fData);
 }
 
-const char* StandardUnknownTypeStyleMarker::GetTag () const { return fEmbeddingTag; }
+const char* StandardUnknownTypeStyleMarker::GetTag () const
+{
+    return fEmbeddingTag;
+}
 
 /*
  ********************************************************************************
@@ -1475,7 +1531,10 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
     // So we simply staticly link, and only call QTInitialize() as needed. And then call
     // QTTerminate at exit (via static DTOR hack), as needed.
     struct QTIniter {
-        QTIniter () { fGood = (::QTInitialize (nullptr) == 0); }
+        QTIniter ()
+        {
+            fGood = (::QTInitialize (nullptr) == 0);
+        }
         ~QTIniter ()
         {
             if (fGood) {

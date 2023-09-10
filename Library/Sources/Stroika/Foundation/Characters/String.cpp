@@ -62,10 +62,10 @@ namespace {
         protected:
             span<const CHAR_T> _fData;
 
-        #if qDebug
+#if qDebug
         private:
-           mutable unsigned int fOutsandingIterators_{};
-            #endif
+            mutable unsigned int fOutsandingIterators_{};
+#endif
 
         protected:
             Rep () = default;
@@ -136,38 +136,39 @@ namespace {
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
                     span<const CHAR_T> fData_; // clone span (not underlying data)
                     size_t             fIdx_{0};
-                    #if qDebug
-                   const  Rep* fOwningRep_;
-                    #endif
+#if qDebug
+                    const Rep* fOwningRep_;
+#endif
                     MyIterRep_ (span<const CHAR_T> data
-                        #if qDebug
-                        , const Rep* dbgRep
-                    #endif
-                    )
-                        :  fData_{data}
+#if qDebug
+                                ,
+                                const Rep* dbgRep
+#endif
+                                )
+                        : fData_{data}
 #if qDebug
                         , fOwningRep_{dbgRep}
 #endif
                     {
 #if qDebug
                         ++fOwningRep_->fOutsandingIterators_;
-                        #endif
+#endif
                     }
 #if qDebug
-                    virtual ~MyIterRep_() override
-                    { 
-                        Require (fOwningRep_->fOutsandingIterators_ > 0);   // if this fails, probably cuz fOwningRep_ destroyed
+                    virtual ~MyIterRep_ () override
+                    {
+                        Require (fOwningRep_->fOutsandingIterators_ > 0); // if this fails, probably cuz fOwningRep_ destroyed
                         --fOwningRep_->fOutsandingIterators_;
-
                     }
 #endif
-                    
-                    virtual unique_ptr < Iterator < Character> ::IRep> Clone() const override
+
+                    virtual unique_ptr<Iterator<Character>::IRep> Clone () const override
                     {
                         return make_unique<MyIterRep_> (fData_.subspan (fIdx_)
-                        #if qDebug
-                                                            , fOwningRep_
-                            #endif
+#if qDebug
+                                                            ,
+                                                        fOwningRep_
+#endif
                         );
                     }
                     virtual void More (optional<Character>* result, bool advance) override
@@ -193,18 +194,28 @@ namespace {
                         return fData_.data () == rrhs->fData_.data () and fIdx_ == rrhs->fIdx_;
                     }
                 };
-                return Iterator<Character>{make_unique<MyIterRep_> ( this->_fData
-                
-                   #if qDebug
+                return Iterator<Character>
+                {
+                    make_unique<MyIterRep_> (this->_fData
+
+#if qDebug
                                              ,
                                              this
 #endif
-                
-                )};
+
+                    )
+                };
             }
-            virtual size_t                          size () const override { return _fData.size (); }
-            virtual bool                            empty () const override { return _fData.empty (); }
-            virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
+            virtual size_t size () const override
+            {
+                return _fData.size ();
+            }
+            virtual bool empty () const override
+            {
+                return _fData.empty ();
+            }
+            virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that,
+                                                          Execution::SequencePolicy seq) const override
             {
                 return inherited::Find (that, seq); // @todo rewrite to operatoe of fData_
             }
@@ -233,7 +244,10 @@ namespace {
             nonvirtual Rep& operator= (const Rep&) = delete;
 
         public:
-            virtual ~Rep () override { delete[] this->_fData.data (); }
+            virtual ~Rep () override
+            {
+                delete[] this->_fData.data ();
+            }
 
         private:
             static span<CHAR_T> mkBuf_ (size_t length)
@@ -454,32 +468,44 @@ namespace {
                 fCString_.assign (wideSpan.begin (), wideSpan.end ());
             }
 
-        // Overrides for Iterable<Character>
+            // Overrides for Iterable<Character>
         public:
-            virtual shared_ptr<Iterable<Character>::_IRep> Clone () const override { return fUnderlyingRep_->Clone (); }
+            virtual shared_ptr<Iterable<Character>::_IRep> Clone () const override
+            {
+                return fUnderlyingRep_->Clone ();
+            }
             virtual Traversal::Iterator<value_type> MakeIterator () const override
             {
                 return fUnderlyingRep_->MakeIterator ();
             }
-            virtual size_t                          size () const override { return fUnderlyingRep_->size (); }
-            virtual bool                            empty () const override { return fUnderlyingRep_->empty (); }
-            virtual Traversal::Iterator<value_type> Find (
-                                                          const function<bool (Configuration::ArgByValueType<value_type> item)>& that,
+            virtual size_t size () const override
+            {
+                return fUnderlyingRep_->size ();
+            }
+            virtual bool empty () const override
+            {
+                return fUnderlyingRep_->empty ();
+            }
+            virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that,
                                                           [[maybe_unused]] Execution::SequencePolicy seq) const override
             {
-                return fUnderlyingRep_->Find ( that, seq);
+                return fUnderlyingRep_->Find (that, seq);
             }
 
             // String::_IRep overrides - delegate
         public:
-            virtual Character GetAt (size_t index) const noexcept override { return fUnderlyingRep_->GetAt (index); }
+            virtual Character GetAt (size_t index) const noexcept override
+            {
+                return fUnderlyingRep_->GetAt (index);
+            }
             virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override
             {
                 return fUnderlyingRep_->PeekData (preferred);
             }
-            virtual const wchar_t* c_str_peek () const noexcept override { return fCString_.c_str (); }
-
-
+            virtual const wchar_t* c_str_peek () const noexcept override
+            {
+                return fCString_.c_str ();
+            }
         };
     };
 }
@@ -492,7 +518,9 @@ namespace {
             : FACET{forward<Args> (args)...}
         {
         }
-        ~deletable_facet_ () {}
+        ~deletable_facet_ ()
+        {
+        }
     };
 }
 
@@ -501,7 +529,10 @@ namespace {
  ******* Characters::Private_::RegularExpression_GetCompiled ********************
  ********************************************************************************
  */
-const wregex& Characters::Private_::RegularExpression_GetCompiled (const RegularExpression& regExp) { return regExp.GetCompiled (); }
+const wregex& Characters::Private_::RegularExpression_GetCompiled (const RegularExpression& regExp)
+{
+    return regExp.GetCompiled ();
+}
 
 /*
  ********************************************************************************
@@ -509,10 +540,11 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  ********************************************************************************
  */
 #if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
-template<>
+template <>
 #endif
 String::String (const basic_string_view<char>& str)
-    : String{(Require (Character::IsASCII (span{str.data (), str.size ()})),Memory::MakeSharedPtr<StringConstant_::Rep<ASCII>> (span{str.data (), str.size ()}))}
+    : String{(Require (Character::IsASCII (span{str.data (), str.size ()})),
+              Memory::MakeSharedPtr<StringConstant_::Rep<ASCII>> (span{str.data (), str.size ()}))}
 {
 }
 
@@ -673,16 +705,16 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
             static_assert (kNElts2_ == 72);
             static_assert (kNElts3_ == 104);
         }
-        if constexpr ( sizeof (void*) == 8) {
+        if constexpr (sizeof (void*) == 8) {
             static_assert (kNElts1_ == 24);
             static_assert (kNElts2_ == 56);
             static_assert (kNElts3_ == 88);
         }
     }
 
-    static_assert(qDebug or kNElts1_ >= 6);           // crazy otherwise
-    static_assert (kNElts2_ > kNElts1_); // ""
-    static_assert (kNElts3_ > kNElts2_); // ""
+    static_assert (qDebug or kNElts1_ >= 6); // crazy otherwise
+    static_assert (kNElts2_ > kNElts1_);     // ""
+    static_assert (kNElts3_ > kNElts2_);     // ""
 
     static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>) == 64 - kOverheadSizeForMakeShared_); // not quite guaranteed but close
     static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>) == 96 - kOverheadSizeForMakeShared_);  // ""
@@ -1149,10 +1181,10 @@ String String::ReplaceAll (const Containers::Set<Character>& charSet, const Stri
 
 String String::NoramlizeTextToNL () const
 {
-    PeekSpanData pds = GetPeekSpanData<char> ();
+    PeekSpanData                   pds = GetPeekSpanData<char> ();
     Memory::StackBuffer<Character> maybeIgnoreBuf;
     span<const Character>          charSpan = GetData (pds, &maybeIgnoreBuf);
-    StringBuilder sb;
+    StringBuilder                  sb;
     bool                           everChanged{false};
     for (auto ci = charSpan.begin (); ci != charSpan.end (); ++ci) {
         Character c = *ci;
@@ -1163,7 +1195,7 @@ String String::NoramlizeTextToNL () const
                 ++ci;
             }
             everChanged = true;
-            c = '\n';
+            c           = '\n';
         }
         sb += c;
     }
@@ -1458,11 +1490,11 @@ string String::AsNarrowString (const locale& l) const
     Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
     span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
     // http://en.cppreference.com/w/cpp/locale/codecvt/out
-    mbstate_t      mbstate{};
-    const wchar_t* from_next;
-    char*          to_next;
+    mbstate_t                 mbstate{};
+    const wchar_t*            from_next;
+    char*                     to_next;
     Memory::StackBuffer<char> into{Memory::eUninitialized, thisData.size () * 5}; // not sure what size is always big enuf
-    codecvt_base::result result =
+    codecvt_base::result      result =
         cvt.out (mbstate, thisData.data (), thisData.data () + thisData.size (), from_next, into.data (), into.end (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         static const auto kException_ = Execution::RuntimeErrorException{"Error converting locale multibyte string to UNICODE"sv};
@@ -1485,17 +1517,16 @@ string String::AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag)
     // http://en.cppreference.com/w/cpp/locale/codecvt/out
     mbstate_t                 mbstate{};
     Memory::StackBuffer<char> into{Memory::eUninitialized, thisData.size () * 5}; // not sure what size is always big enuf
-    const wchar_t* readFrom = thisData.data ();
-    char* intoIndex = into.data ();
-    Again:
-    const wchar_t*            from_next{nullptr};
-    char*                     to_next{nullptr};
-    codecvt_base::result      result =
-        cvt.out (mbstate, readFrom, thisData.data () + thisData.size (), from_next, intoIndex, into.end (), to_next);
+    const wchar_t*            readFrom  = thisData.data ();
+    char*                     intoIndex = into.data ();
+Again:
+    const wchar_t* from_next{nullptr};
+    char*          to_next{nullptr};
+    codecvt_base::result result = cvt.out (mbstate, readFrom, thisData.data () + thisData.size (), from_next, intoIndex, into.end (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         if (from_next != thisData.data () + thisData.size ()) {
-            readFrom = from_next + 1;   // unclear how much to skip (due to surrogates) - but likely this is a good guess
-            *to_next = '?';           // write 'bad' character
+            readFrom  = from_next + 1; // unclear how much to skip (due to surrogates) - but likely this is a good guess
+            *to_next  = '?';           // write 'bad' character
             intoIndex = to_next + 1;
             goto Again;
         }
@@ -1503,9 +1534,9 @@ string String::AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag)
     return string{into.data (), to_next};
 }
 
-void String::erase (size_t from) 
+void String::erase (size_t from)
 {
-    *this = RemoveAt (from, size ()); 
+    *this = RemoveAt (from, size ());
 }
 
 void String::erase (size_t from, size_t count)
@@ -1530,16 +1561,16 @@ const wchar_t* String::c_str ()
     _SafeReadRepAccessor accessor{this};
     const wchar_t*       result = accessor._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
-        _fRep                         = Memory::MakeSharedPtr<StringWithCStr_::Rep> (accessor._ConstGetRepSharedPtr ());
+        _fRep  = Memory::MakeSharedPtr<StringWithCStr_::Rep> (accessor._ConstGetRepSharedPtr ());
         result = _SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
         AssertNotNull (result);
     }
     EnsureNotNull (result);
-    Ensure (result[size ()] == '\0' or (::wcslen (result) > size () and sizeof(wchar_t) == 2)); // if there are surrogates, wcslen () might be larger than size
+    Ensure (result[size ()] == '\0' or (::wcslen (result) > size () and sizeof (wchar_t) == 2)); // if there are surrogates, wcslen () might be larger than size
     return result;
 }
 
- [[noreturn]] void String::ThrowInvalidAsciiException_ ()
+[[noreturn]] void String::ThrowInvalidAsciiException_ ()
 {
     static const auto kException_ = Execution::RuntimeErrorException{"Error converting non-ascii text to string"sv};
     Execution::Throw (kException_);

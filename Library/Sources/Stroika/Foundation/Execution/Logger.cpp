@@ -355,7 +355,10 @@ Logger::SysLogAppender::SysLogAppender (const String& applicationName, int facil
     ::openlog (fApplicationName_.c_str (), 0, facility);
 }
 
-Logger::SysLogAppender::~SysLogAppender () { ::closelog (); }
+Logger::SysLogAppender::~SysLogAppender ()
+{
+    ::closelog ();
+}
 
 void Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 {
@@ -427,7 +430,10 @@ Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Characters::
 {
 }
 
-void Logger::StreamAppender::Log (Priority logLevel, const String& message) { fRep_->Log (logLevel, message); }
+void Logger::StreamAppender::Log (Priority logLevel, const String& message)
+{
+    fRep_->Log (logLevel, message);
+}
 
 /*
  ********************************************************************************
@@ -442,7 +448,10 @@ public:
         : fOut_ (StreamAppender (FileOutputStream::New (fileName, truncateOnOpen ? FileOutputStream::eStartFromStart : FileOutputStream::eAppend)))
     {
     }
-    void Log (Priority logLevel, const String& message) { fOut_.Log (logLevel, message); }
+    void Log (Priority logLevel, const String& message)
+    {
+        fOut_.Log (logLevel, message);
+    }
 
 private:
     StreamAppender fOut_; // no need to synchronize since our Logger::StreamAppender class is internally synchronized
@@ -453,7 +462,10 @@ Logger::FileAppender::FileAppender (const filesystem::path& fileName, bool trunc
 {
 }
 
-void Logger::FileAppender::Log (Priority logLevel, const String& message) { fRep_->Log (logLevel, message); }
+void Logger::FileAppender::Log (Priority logLevel, const String& message)
+{
+    fRep_->Log (logLevel, message);
+}
 
 #if qPlatform_Windows
 /*

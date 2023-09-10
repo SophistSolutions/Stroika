@@ -386,6 +386,12 @@ LinkMonitor::LinkMonitor ()
 {
 }
 
-void LinkMonitor::AddCallback (const Callback& callback) { fRep_->AddCallback (callback); }
+void LinkMonitor::AddCallback (const Callback& callback)
+{
+    fRep_->AddCallback (callback);
+}
 
-void LinkMonitor::RemoveCallback (const Callback& callback) { fRep_->RemoveCallback (callback); }
+void LinkMonitor::RemoveCallback (const Callback& callback)
+{
+    fRep_->RemoveCallback (callback);
+}

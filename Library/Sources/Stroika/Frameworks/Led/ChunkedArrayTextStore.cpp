@@ -55,9 +55,15 @@ inline ChunkedArrayTextStore::TextChunk::TextChunk (const Led_tChar* copyFrom, s
     AssertNotNull (copyFrom);
     (void)::memcpy (fData, copyFrom, bytesToCopy * sizeof (Led_tChar));
 }
-inline size_t ChunkedArrayTextStore::TextChunk::GetLength () const noexcept { return (fTotalTcharsUsed); }
-inline size_t ChunkedArrayTextStore::TextChunk::GetBytesCanAccommodate () const noexcept { return (kTextChunkSize - fTotalTcharsUsed); }
-inline void   ChunkedArrayTextStore::TextChunk::CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept
+inline size_t ChunkedArrayTextStore::TextChunk::GetLength () const noexcept
+{
+    return (fTotalTcharsUsed);
+}
+inline size_t ChunkedArrayTextStore::TextChunk::GetBytesCanAccommodate () const noexcept
+{
+    return (kTextChunkSize - fTotalTcharsUsed);
+}
+inline void ChunkedArrayTextStore::TextChunk::CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept
 {
     AssertNotNull (buffer);
     Assert (from + count <= fTotalTcharsUsed);
@@ -248,15 +254,24 @@ static inline size_t GetMarkerStart_ (Marker* m)
     Ensure (OurStuff (m)->fStart == m->GetStart ());
     return OurStuff (m)->fStart;
 }
-static inline void   SetMarkerStart_ (Marker* m, size_t s) { OurStuff (m)->fStart = s; }
+static inline void SetMarkerStart_ (Marker* m, size_t s)
+{
+    OurStuff (m)->fStart = s;
+}
 static inline size_t GetMarkerLength_ (Marker* m)
 {
     RequireNotNull (m);
     Ensure (OurStuff (m)->fLength == m->GetLength ());
     return OurStuff (m)->fLength;
 }
-static inline void SetMarkerLength_ (Marker* m, size_t s) { OurStuff (m)->fLength = s; }
-static inline void SetMarkerOwner_ (Marker* m, MarkerOwner* o) { OurStuff (m)->fOwner = o; }
+static inline void SetMarkerLength_ (Marker* m, size_t s)
+{
+    OurStuff (m)->fLength = s;
+}
+static inline void SetMarkerOwner_ (Marker* m, MarkerOwner* o)
+{
+    OurStuff (m)->fOwner = o;
+}
 
 static inline bool QUICK_Overlap (ChunkedArrayMarkerHook* h, size_t from, size_t to)
 {
@@ -336,8 +351,14 @@ struct ChunkedArrayTextStore::CollectLookupCacheElt {
         size_t fTo;
     };
 
-    nonvirtual void Clear () { fFrom = static_cast<size_t> (-1); }
-    static bool Equal (const CollectLookupCacheElt& lhs, const COMPARE_ITEM& rhs) { return lhs.fFrom == rhs.fFrom and lhs.fTo == rhs.fTo; }
+    nonvirtual void Clear ()
+    {
+        fFrom = static_cast<size_t> (-1);
+    }
+    static bool Equal (const CollectLookupCacheElt& lhs, const COMPARE_ITEM& rhs)
+    {
+        return lhs.fFrom == rhs.fFrom and lhs.fTo == rhs.fTo;
+    }
 };
 #endif
 
@@ -420,12 +441,18 @@ public:
         Foundation::Cache::LRUCache<CollectLookupCacheElt, Cache::LRUCacheDefaultTraits<CollectLookupCacheElt, CollectLookupCacheElt::COMPARE_ITEM>>;
 
 public:
-    nonvirtual void                   ClearCache () { fCache.ClearCache (); }
+    nonvirtual void ClearCache ()
+    {
+        fCache.ClearCache ();
+    }
     nonvirtual CollectLookupCacheElt* LookupElement (const CollectLookupCacheElt::COMPARE_ITEM& item)
     {
         return fCache.LookupElement (item);
     }
-    nonvirtual CollectLookupCacheElt* AddNew (const CollectLookupCacheElt::COMPARE_ITEM& item) { return fCache.AddNew (item); }
+    nonvirtual CollectLookupCacheElt* AddNew (const CollectLookupCacheElt::COMPARE_ITEM& item)
+    {
+        return fCache.AddNew (item);
+    }
 
 private:
     CACHE_TYPE fCache;
@@ -567,7 +594,10 @@ inline ChunkedArrayMarkerOwnerHook* GetAMOH (ChunkedArrayMarkerHook* moh)
     RequireNotNull (moh);
     return GetAMOH (moh->fOwner);
 }
-inline ChunkedArrayMarkerOwnerHook* GetAMOH (Marker* m) { return GetAMOH (OurStuff (m)); }
+inline ChunkedArrayMarkerOwnerHook* GetAMOH (Marker* m)
+{
+    return GetAMOH (OurStuff (m));
+}
 
 /*
  ********************************************************************************
@@ -618,7 +648,10 @@ ChunkedArrayTextStore::~ChunkedArrayTextStore ()
 @METHOD:        ChunkedArrayTextStore::ConstructNewTextStore
 @DESCRIPTION:   <p>See @'TextStore::ConstructNewTextStore' ().</p>
 */
-TextStore* ChunkedArrayTextStore::ConstructNewTextStore () const { return new ChunkedArrayTextStore (); }
+TextStore* ChunkedArrayTextStore::ConstructNewTextStore () const
+{
+    return new ChunkedArrayTextStore ();
+}
 
 void ChunkedArrayTextStore::AddMarkerOwner (MarkerOwner* owner)
 {

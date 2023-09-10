@@ -69,4 +69,7 @@ namespace {
     }
 }
 
-void Samples::Containers::Set::RunDemo () { SimplestSetTest_ (); }
+void Samples::Containers::Set::RunDemo ()
+{
+    SimplestSetTest_ ();
+}

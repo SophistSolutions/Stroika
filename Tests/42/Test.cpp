@@ -130,7 +130,10 @@ namespace {
             namespace T1_ {
                 static const String                    x{L"3"};
                 const Common::ConstantProperty<String> kX = [] () { return x; };
-                void                                   DoIt () { const String a = kX; }
+                void                                   DoIt ()
+                {
+                    const String a = kX;
+                }
             }
             namespace T2_ {
                 const Common::ConstantProperty<String> kX = [] () { return L"6"; };
@@ -144,7 +147,10 @@ namespace {
                 // @todo get constexpr working - see docs for Common::ConstantProperty
                 //constexpr Common::ConstantProperty<int> kX = [] () { return 3; };
                 const Common::ConstantProperty<int> kX = [] () { return 3; };
-                void                                DoIt () { const int a [[maybe_unused]] = kX; }
+                void                                DoIt ()
+                {
+                    const int a [[maybe_unused]] = kX;
+                }
             }
             namespace T4_ {
                 const Common::ConstantProperty<int> kX = [] () { return 4; };
@@ -191,8 +197,11 @@ namespace {
                 {
                     Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
                 }
-                MyData_ Get () const { return fActualCurrentConfigData_; }
-                void    Set (const MyData_& v)
+                MyData_ Get () const
+                {
+                    return fActualCurrentConfigData_;
+                }
+                void Set (const MyData_& v)
                 {
                     fActualCurrentConfigData_ = v;
                     fOptionsFile_.Write (v);

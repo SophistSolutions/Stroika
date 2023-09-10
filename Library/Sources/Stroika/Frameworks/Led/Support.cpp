@@ -7,8 +7,8 @@
 #include <cstdarg>
 
 #include "../../Foundation/Characters/CString/Utilities.h"
-#include "../../Foundation/Characters/CodePage.h"
 #include "../../Foundation/Characters/CodeCvt.h"
+#include "../../Foundation/Characters/CodePage.h"
 #include "../../Foundation/Characters/Format.h"
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Execution/Throw.h"
@@ -53,9 +53,15 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
 #if !qWideCharacters
-Led_tString Led::Led_WideString2tString (const wstring& s) { return Wide2ACPString (s); }
+Led_tString Led::Led_WideString2tString (const wstring& s)
+{
+    return Wide2ACPString (s);
+}
 
-wstring Led::Led_tString2WideString (const Led_tString& s) { return ACP2WideString (s); }
+wstring Led::Led_tString2WideString (const Led_tString& s)
+{
+    return ACP2WideString (s);
+}
 #endif
 
 #if qWideCharacters != qTargetPlatformSDKUseswchar_t
@@ -164,7 +170,10 @@ void Led::SyncronizeLedXTickCount (unsigned long xTickCount)
 @DESCRIPTION:   <p>X-Windows specific. See also @'SyncronizeLedXTickCount' and @'Time::GetTickCount'. Maps Time::GetTickCount ()
             result to the sort of time value you can stick into an XEvent record.</p>
 */
-unsigned long Led::LedTickCount2XTime (float ledTickCount) { return static_cast<unsigned long> (ledTickCount * 1000.0f); }
+unsigned long Led::LedTickCount2XTime (float ledTickCount)
+{
+    return static_cast<unsigned long> (ledTickCount * 1000.0f);
+}
 #endif
 
 /*
@@ -230,7 +239,10 @@ void Led::Led_ThrowOSErr (OSErr err)
     }
 }
 
-void (*Led::Led_Get_ThrowOSErrException_Handler ()) (OSErr err) { return sLedThrowOSErrExceptionCallback; }
+void (*Led::Led_Get_ThrowOSErrException_Handler ()) (OSErr err)
+{
+    return sLedThrowOSErrExceptionCallback;
+}
 
 void Led::Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallback) (OSErr err))
 {
@@ -363,7 +375,10 @@ VariantArrayPacker::~VariantArrayPacker ()
     ::SafeArrayUnaccessData (fSafeArrayVariant->parray);
 }
 
-void* VariantArrayPacker::PokeAtData () const { return fPtr; }
+void* VariantArrayPacker::PokeAtData () const
+{
+    return fPtr;
+}
 
 /*
  ********************************************************************************
@@ -391,7 +406,10 @@ VariantArrayUnpacker::~VariantArrayUnpacker ()
     ::SafeArrayUnaccessData (fSafeArray);
 }
 
-const void* VariantArrayUnpacker::PeekAtData () const { return fPtr; }
+const void* VariantArrayUnpacker::PeekAtData () const
+{
+    return fPtr;
+}
 
 VARTYPE VariantArrayUnpacker::GetArrayElementType () const
 {
@@ -721,18 +739,30 @@ size_t Led_URLD::GetTitleLength () const
     return 0;
 }
 
-char* Led_URLD::PeekAtURLD () const { return (&const_cast<Led_URLD*> (this)->fData.front ()); }
+char* Led_URLD::PeekAtURLD () const
+{
+    return (&const_cast<Led_URLD*> (this)->fData.front ());
+}
 
-char* Led_URLD::PeekAtURL () const { return (&const_cast<Led_URLD*> (this)->fData.front ()); }
+char* Led_URLD::PeekAtURL () const
+{
+    return (&const_cast<Led_URLD*> (this)->fData.front ());
+}
 
 char* Led_URLD::PeekAtTitle () const
 {
     return PeekAtURL () + GetURLLength () + 1; // skip URL and '\r'
 }
 
-string Led_URLD::GetTitle () const { return string{PeekAtTitle (), GetTitleLength ()}; }
+string Led_URLD::GetTitle () const
+{
+    return string{PeekAtTitle (), GetTitleLength ()};
+}
 
-string Led_URLD::GetURL () const { return string{PeekAtURL (), GetURLLength ()}; }
+string Led_URLD::GetURL () const
+{
+    return string{PeekAtURL (), GetURLLength ()};
+}
 
 /*
  ********************************************************************************
@@ -744,7 +774,9 @@ DWORD Led_URLManager::sDDEMLInstance = 0; //  The DDEML instance identifier.
 #endif
 Led_URLManager* Led_URLManager::sThe = nullptr;
 
-Led_URLManager::Led_URLManager () {}
+Led_URLManager::Led_URLManager ()
+{
+}
 
 Led_URLManager& Led_URLManager::Get ()
 {

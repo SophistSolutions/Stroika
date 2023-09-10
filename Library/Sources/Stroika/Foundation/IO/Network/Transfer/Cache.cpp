@@ -169,9 +169,15 @@ namespace {
             }
         }
 
-        virtual void ClearCache () override { fCache_.clear (); }
+        virtual void ClearCache () override
+        {
+            fCache_.clear ();
+        }
 
-        virtual optional<Element> Lookup (const URI& url) const override { return fCache_.Lookup (url); }
+        virtual optional<Element> Lookup (const URI& url) const override
+        {
+            return fCache_.Lookup (url);
+        }
 
         DefaultOptions fOptions_;
 
@@ -319,5 +325,11 @@ String Transfer::Cache::Element::ToString () const
  **************************** Transfer::Cache ***********************************
  ********************************************************************************
  */
-Transfer::Cache::Ptr Transfer::Cache::CreateDefault () { return CreateDefault (DefaultOptions{}); }
-Transfer::Cache::Ptr Transfer::Cache::CreateDefault (const DefaultOptions& options) { return Ptr{make_shared<DefaultCacheRep_> (options)}; }
+Transfer::Cache::Ptr Transfer::Cache::CreateDefault ()
+{
+    return CreateDefault (DefaultOptions{});
+}
+Transfer::Cache::Ptr Transfer::Cache::CreateDefault (const DefaultOptions& options)
+{
+    return Ptr{make_shared<DefaultCacheRep_> (options)};
+}

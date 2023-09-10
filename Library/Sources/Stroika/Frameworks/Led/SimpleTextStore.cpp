@@ -34,7 +34,10 @@ public:
     MarkerOwner* fOwner;
     bool         fIsPreRemoved;
 };
-MarkerOwner* SimpleTextStoreMarkerHook::GetOwner () const { return fOwner; }
+MarkerOwner* SimpleTextStoreMarkerHook::GetOwner () const
+{
+    return fOwner;
+}
 
 size_t SimpleTextStoreMarkerHook::GetStart () const
 {
@@ -109,7 +112,10 @@ SimpleTextStore::~SimpleTextStore ()
 @METHOD:        SimpleTextStore::ConstructNewTextStore
 @DESCRIPTION:   <p>See @'TextStore::ConstructNewTextStore' ().</p>
 */
-TextStore* SimpleTextStore::ConstructNewTextStore () const { return new SimpleTextStore (); }
+TextStore* SimpleTextStore::ConstructNewTextStore () const
+{
+    return new SimpleTextStore ();
+}
 
 void SimpleTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept
 {

@@ -41,7 +41,10 @@ namespace {
     struct EventFD_Based_ : public EventFD {
 
         EventFD_Based_ () = default;
-        virtual bool IsSet () const override { return fIsSet_; }
+        virtual bool IsSet () const override
+        {
+            return fIsSet_;
+        }
         virtual void Set () override
         {
             // If already set, nothing todo. To set, we set flag, and write so anybody selecting will wakeup
@@ -103,7 +106,10 @@ namespace {
             while (fReadSocket_.ReadNonBlocking (begin (buf), end (buf)))
                 ;
         }
-        virtual void _WriteOne () override { fWriteSocket_.Write (sSingleEltDatum); }
+        virtual void _WriteOne () override
+        {
+            fWriteSocket_.Write (sSingleEltDatum);
+        }
     };
 
 }

@@ -47,9 +47,9 @@ void Characters::Private_::ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCha
  ************** Private_::ThrowCodePageNotSupportedException_ *******************
  ********************************************************************************
  */
-void Characters::Private_::ThrowCodePageNotSupportedException_ (CodePage cp) 
+void Characters::Private_::ThrowCodePageNotSupportedException_ (CodePage cp)
 {
-    Execution::Throw (CodePageNotSupportedException{cp}); 
+    Execution::Throw (CodePageNotSupportedException{cp});
 }
 
 /*
@@ -59,7 +59,8 @@ void Characters::Private_::ThrowCodePageNotSupportedException_ (CodePage cp)
  */
 void Characters::Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ()
 {
-    static const auto kException_ = Execution::RuntimeErrorException{"Cannot construct CodeCvt with provided std::code_cvt and provided 'invalid character'"sv};
+    static const auto kException_ =
+        Execution::RuntimeErrorException{"Cannot construct CodeCvt with provided std::code_cvt and provided 'invalid character'"sv};
     Execution::Throw (kException_);
 }
 
@@ -68,7 +69,7 @@ void Characters::Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCod
  ********************** Private_::AsNarrowSDKString_ ****************************
  ********************************************************************************
  */
-string Characters::Private_::AsNarrowSDKString_ (const String& s) 
+string Characters::Private_::AsNarrowSDKString_ (const String& s)
 {
     return s.AsNarrowSDKString ();
 }
@@ -291,10 +292,9 @@ Characters::Private_::BuiltinSingleByteTableCodePageRep_::BuiltinSingleByteTable
     AssertNotNull (fMap_);
     if (invalidCharacterReplacement) {
         if (auto pi = std::find (fMap_, fMap_ + 256, invalidCharacterReplacement->As<char32_t> ()); pi != fMap_ + 256) {
-            fInvalidCharacterReplacementByte_ = static_cast<byte> ( pi - fMap_);
+            fInvalidCharacterReplacementByte_ = static_cast<byte> (pi - fMap_);
         }
     }
-
 }
 
 span<char16_t> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Bytes2Characters (span<const byte>* from, span<char16_t> to) const
@@ -433,9 +433,10 @@ size_t Characters::Private_::WindowsNative_::ComputeTargetByteBufferSize (varian
         return *i * kMaxBytesPerCharWAG_;
     }
     else {
-        auto                   s       = get<span<const char16_t>> (src);
+        auto s = get<span<const char16_t>> (src);
         static constexpr DWORD kFLAGS_ = 0; // WC_ERR_INVALID_CHARS doesn't work (https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-widechartomultibyte)
-        int  r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0, nullptr, nullptr);
+        int r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0,
+                                       nullptr, nullptr);
         Assert (r >= 0);
         if (r == 0) {
             if (s.size () == 0) {

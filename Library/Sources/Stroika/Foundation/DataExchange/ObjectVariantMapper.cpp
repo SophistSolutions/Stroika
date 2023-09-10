@@ -452,7 +452,10 @@ ObjectVariantMapper::ObjectVariantMapper ()
 {
 }
 
-void ObjectVariantMapper::Add (const TypeMappingDetails& s) { fTypeMappingRegistry_.Add (s); }
+void ObjectVariantMapper::Add (const TypeMappingDetails& s)
+{
+    fTypeMappingRegistry_.Add (s);
+}
 
 void ObjectVariantMapper::Add (const Traversal::Iterable<TypeMappingDetails>& s)
 {
@@ -464,9 +467,15 @@ void ObjectVariantMapper::Add (const TypesRegistry& s)
     s.GetMappers ().Apply ([this] (const TypeMappingDetails& arg) { Add (arg); });
 }
 
-void ObjectVariantMapper::Add (const ObjectVariantMapper& s) { Add (s.fTypeMappingRegistry_); }
+void ObjectVariantMapper::Add (const ObjectVariantMapper& s)
+{
+    Add (s.fTypeMappingRegistry_);
+}
 
-void ObjectVariantMapper::ResetToDefaultTypeRegistry () { fTypeMappingRegistry_ = GetDefaultTypeMappers_ (); }
+void ObjectVariantMapper::ResetToDefaultTypeRegistry ()
+{
+    fTypeMappingRegistry_ = GetDefaultTypeMappers_ ();
+}
 
 ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const
 {

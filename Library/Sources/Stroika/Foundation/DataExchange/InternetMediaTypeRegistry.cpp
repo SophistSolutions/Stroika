@@ -213,9 +213,15 @@ namespace {
     }
 }
 
-InternetMediaTypeRegistry InternetMediaTypeRegistry::Get () { return sThe_ ().load (); }
+InternetMediaTypeRegistry InternetMediaTypeRegistry::Get ()
+{
+    return sThe_ ().load ();
+}
 
-void InternetMediaTypeRegistry::Set (const InternetMediaTypeRegistry& r) { sThe_ ().store (r); }
+void InternetMediaTypeRegistry::Set (const InternetMediaTypeRegistry& r)
+{
+    sThe_ ().store (r);
+}
 
 auto InternetMediaTypeRegistry::GetOverrides () const -> Mapping<InternetMediaType, OverrideRecord>
 {
@@ -546,7 +552,10 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
         {
             return Containers::Set<String>{};
         }
-        virtual optional<String>            GetAssociatedPrettyName (const InternetMediaType& /*ct*/) const override { return nullopt; }
+        virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& /*ct*/) const override
+        {
+            return nullopt;
+        }
         virtual optional<InternetMediaType> GetAssociatedContentType ([[maybe_unused]] const FileSuffixType& fileSuffix) const override
         {
             Require (fileSuffix[0] == '.');

@@ -47,11 +47,11 @@ void StyledTextIOReader_PlainText::Read ()
         }
     }
 #if qWideCharacters
-    span<const byte>   rawByteSpan{reinterpret_cast<const byte*> (buf.data ()), len};
+    span<const byte>               rawByteSpan{reinterpret_cast<const byte*> (buf.data ()), len};
     CodeCvt<Led_tChar>             converter{&rawByteSpan, CodeCvt<Led_tChar>{locale{}}};
-    size_t             outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
+    size_t                         outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
     Memory::StackBuffer<Led_tChar> wbuf{outCharCnt};
-    outCharCnt = converter.Bytes2Characters (&rawByteSpan, span{wbuf}).size ();
+    outCharCnt       = converter.Bytes2Characters (&rawByteSpan, span{wbuf}).size ();
     size_t charsRead = outCharCnt;
     Assert (charsRead <= len);
     Led_tChar* useBuf = wbuf.data ();
@@ -103,7 +103,7 @@ void StyledTextIOWriter_PlainText::Write ()
         Streams::MemoryStream<byte>::Ptr memStream = Streams::MemoryStream<byte>::New ();
         Streams::TextWriter::New (memStream, Characters::CodeCvt<>{static_cast<CodePage> (CP_ACP)}).Write (buf2, buf2 + bytesRead);
         auto b = memStream.As<Memory::BLOB> ();
-        write (b.data (), b.size());
+        write (b.data (), b.size ());
 #else
         write (buf2.data (), bytesRead);
 #endif

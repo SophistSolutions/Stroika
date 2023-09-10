@@ -59,7 +59,10 @@ namespace {
 namespace {
     class LibCurl_error_category_ : public error_category {
     public:
-        virtual const char*     name () const noexcept override { return "LibCurl error"; }
+        virtual const char* name () const noexcept override
+        {
+            return "LibCurl error";
+        }
         virtual error_condition default_error_condition ([[maybe_unused]] int ev) const noexcept override
         {
             switch (ev) {
@@ -79,7 +82,10 @@ namespace {
             //}
             return error_condition{errc::bad_message}; // no idea what to return here
         }
-        virtual string message (int ccode) const override { return ::curl_easy_strerror (static_cast<CURLcode> (ccode)); }
+        virtual string message (int ccode) const override
+        {
+            return ::curl_easy_strerror (static_cast<CURLcode> (ccode));
+        }
     };
 }
 
@@ -88,7 +94,10 @@ namespace {
  ************************ Transfer::LibCurl_error_category **********************
  ********************************************************************************
  */
-const std::error_category& Transfer::LibCurl_error_category () noexcept { return Common::Immortalize<LibCurl_error_category_> (); }
+const std::error_category& Transfer::LibCurl_error_category () noexcept
+{
+    return Common::Immortalize<LibCurl_error_category_> ();
+}
 #endif
 
 #if qHasFeature_LibCurl
@@ -109,7 +118,10 @@ public:
     nonvirtual Rep_& operator= (const Rep_&) = delete;
 
 public:
-    virtual Options             GetOptions () const override { return fOptions_; }
+    virtual Options GetOptions () const override
+    {
+        return fOptions_;
+    }
     virtual DurationSecondsType GetTimeout () const override;
     virtual void                SetTimeout (DurationSecondsType timeout) override;
     virtual URI                 GetSchemeAndAuthority () const override;
@@ -177,7 +189,10 @@ void Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
 }
 
-URI Connection_LibCurl::Rep_::GetSchemeAndAuthority () const { return fURL_.GetSchemeAndAuthority (); }
+URI Connection_LibCurl::Rep_::GetSchemeAndAuthority () const
+{
+    return fURL_.GetSchemeAndAuthority ();
+}
 
 void Connection_LibCurl::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
 {
@@ -451,5 +466,8 @@ void Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
  ********************** Transfer::Connection_LibCurl ****************************
  ********************************************************************************
  */
-Connection::Ptr Connection_LibCurl::New (const Options& options) { return Connection::Ptr{make_shared<Rep_> (options)}; }
+Connection::Ptr Connection_LibCurl::New (const Options& options)
+{
+    return Connection::Ptr{make_shared<Rep_> (options)};
+}
 #endif

@@ -173,8 +173,14 @@ inline OSType MapFormatToOSType (FileFormat fileFormat)
  */
 class Led_BusyCursor {
 public:
-    Led_BusyCursor () { ::SetCursor (*::GetCursor (watchCursor)); }
-    ~Led_BusyCursor () { ::InitCursor (); }
+    Led_BusyCursor ()
+    {
+        ::SetCursor (*::GetCursor (watchCursor));
+    }
+    ~Led_BusyCursor ()
+    {
+        ::InitCursor ();
+    }
 };
 #endif
 
@@ -307,7 +313,10 @@ void LedItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept
     }
 }
 
-TextStore* LedItDocument::PeekAtTextStore () const { return &const_cast<LedItDocument*> (this)->fTextStore; }
+TextStore* LedItDocument::PeekAtTextStore () const
+{
+    return &const_cast<LedItDocument*> (this)->fTextStore;
+}
 
 #if qStroika_FeatureSupported_XWindows
 void LedItDocument::LoadFromFile (const string& fileName, FileFormat fileFormat)
@@ -494,7 +503,10 @@ void LedItDocument::Save ()
 #endif
 
 #if qPlatform_MacOS
-const vector<LWindow*>& LedItDocument::GetDocumentWindows () { return LedItDocumentWindow::sWindowList; }
+const vector<LWindow*>& LedItDocument::GetDocumentWindows ()
+{
+    return LedItDocumentWindow::sWindowList;
+}
 
 void LedItDocument::DoSaveHelper ()
 {
@@ -677,7 +689,10 @@ void LedItDocument::OpenFile (const FSSpec& inFileSpec)
 }
 
 //  Return whether the Document is has changed since the last save
-Boolean LedItDocument::IsModified () { return mIsModified; }
+Boolean LedItDocument::IsModified ()
+{
+    return mIsModified;
+}
 
 //  Save Document in the specified file with the specified file type
 //
@@ -1153,7 +1168,10 @@ BOOL LedItDocument::DoSave (LPCTSTR lpszPathName, BOOL bReplace)
         if (!OnSaveDocument (newName)) {
             if (lpszPathName == NULL) {
                 // be sure to delete the file
-                TRY { CFile::Remove (newName); }
+                TRY
+                {
+                    CFile::Remove (newName);
+                }
                 CATCH_ALL (e)
                 {
                     TRACE0 ("Warning: failed to delete file after failed SaveAs.\n");
@@ -1442,7 +1460,10 @@ void LedItDocument::OnFileSaveCopyAs ()
     fFileFormat = savedFileFormat;
 }
 
-void LedItDocument::DeleteContents () { fTextStore.Replace (fTextStore.GetStart (), fTextStore.GetEnd (), LED_TCHAR_OF (""), 0); }
+void LedItDocument::DeleteContents ()
+{
+    fTextStore.Replace (fTextStore.GetStart (), fTextStore.GetEnd (), LED_TCHAR_OF (""), 0);
+}
 
 bool LedItDocument::DoPromptSaveAsFileName (CString& fileName, FileFormat* fileFormat)
 {

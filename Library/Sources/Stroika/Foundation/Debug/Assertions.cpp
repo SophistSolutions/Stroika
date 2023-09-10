@@ -85,14 +85,20 @@ namespace {
  **************************** Debug::GetAssertionHandler ************************
  ********************************************************************************
  */
-AssertionHandlerType Stroika::Foundation::Debug::GetAssertionHandler () { return sAssertFailureHandler_; }
+AssertionHandlerType Stroika::Foundation::Debug::GetAssertionHandler ()
+{
+    return sAssertFailureHandler_;
+}
 
 /*
  ********************************************************************************
  ************************** Debug::GetDefaultAssertionHandler *******************
  ********************************************************************************
  */
-AssertionHandlerType Stroika::Foundation::Debug::GetDefaultAssertionHandler () { return DefaultAssertionHandler_; }
+AssertionHandlerType Stroika::Foundation::Debug::GetDefaultAssertionHandler ()
+{
+    return DefaultAssertionHandler_;
+}
 
 /*
  ********************************************************************************
@@ -109,14 +115,20 @@ void Stroika::Foundation::Debug::SetAssertionHandler (AssertionHandlerType asser
  ************************** Debug::GetWeakAssertionHandler **********************
  ********************************************************************************
  */
-WeakAssertionHandlerType Stroika::Foundation::Debug::GetWeakAssertionHandler () { return sWeakAssertFailureHandler_; }
+WeakAssertionHandlerType Stroika::Foundation::Debug::GetWeakAssertionHandler ()
+{
+    return sWeakAssertFailureHandler_;
+}
 
 /*
  ********************************************************************************
  ********************** Debug::GetDefaultWeakAssertionHandler *******************
  ********************************************************************************
  */
-WeakAssertionHandlerType Stroika::Foundation::Debug::GetDefaultWeakAssertionHandler () { return DefaultWeakAssertionHandler_; }
+WeakAssertionHandlerType Stroika::Foundation::Debug::GetDefaultWeakAssertionHandler ()
+{
+    return DefaultWeakAssertionHandler_;
+}
 
 /*
  ********************************************************************************

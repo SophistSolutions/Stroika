@@ -22,7 +22,9 @@ using ColoredStyleMarker    = SyntaxColoringMarkerOwner::ColoredStyleMarker;
  ******************************** TrivialRGBSyntaxAnalyzer **********************
  ********************************************************************************
  */
-void TrivialRGBSyntaxAnalyzer::AdjustLookBackRange (TextStore* /*ts*/, size_t* /*lookBackStart*/, size_t* /*lookBackTo*/) const {}
+void TrivialRGBSyntaxAnalyzer::AdjustLookBackRange (TextStore* /*ts*/, size_t* /*lookBackStart*/, size_t* /*lookBackTo*/) const
+{
+}
 
 void TrivialRGBSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor* /*interactor*/, MarkerOwner* owner, size_t lookBackStart,
                                            size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const
@@ -458,11 +460,20 @@ SyntaxColoringMarkerOwner::SyntaxColoringMarkerOwner (TextInteractor& interactor
     fTextStore.AddMarkerOwner (this);
 }
 
-SyntaxColoringMarkerOwner::~SyntaxColoringMarkerOwner () { fTextStore.RemoveMarkerOwner (this); }
+SyntaxColoringMarkerOwner::~SyntaxColoringMarkerOwner ()
+{
+    fTextStore.RemoveMarkerOwner (this);
+}
 
-TextStore* SyntaxColoringMarkerOwner::PeekAtTextStore () const { return &fTextStore; }
+TextStore* SyntaxColoringMarkerOwner::PeekAtTextStore () const
+{
+    return &fTextStore;
+}
 
-void SyntaxColoringMarkerOwner::RecheckAll () { RecheckRange (fTextStore.GetStart (), fTextStore.GetEnd ()); }
+void SyntaxColoringMarkerOwner::RecheckAll ()
+{
+    RecheckRange (fTextStore.GetStart (), fTextStore.GetEnd ());
+}
 
 /*
  ********************************************************************************

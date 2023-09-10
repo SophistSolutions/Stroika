@@ -68,7 +68,10 @@ namespace {
             Require (not IsAtEOF ());
             Seek (Streams::Whence::eFromCurrent, 1);
         }
-        inline void BackupOne () { Seek (Streams::Whence::eFromCurrent, -1); }
+        inline void BackupOne ()
+        {
+            Seek (Streams::Whence::eFromCurrent, -1);
+        }
     };
 
     VariantValue Reader_value_ (MyBufferedStreamReader_& in);

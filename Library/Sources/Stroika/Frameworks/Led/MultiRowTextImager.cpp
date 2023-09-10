@@ -29,7 +29,10 @@ MultiRowTextImager::MultiRowTextImager ()
 {
 }
 
-MultiRowTextImager::~MultiRowTextImager () { Assert (fTopLinePartitionMarkerInWindow == nullptr); }
+MultiRowTextImager::~MultiRowTextImager ()
+{
+    Assert (fTopLinePartitionMarkerInWindow == nullptr);
+}
 
 void MultiRowTextImager::HookLosingTextStore ()
 {
@@ -37,7 +40,10 @@ void MultiRowTextImager::HookLosingTextStore ()
     HookLosingTextStore_ ();
 }
 
-void MultiRowTextImager::HookLosingTextStore_ () { SetPartition (PartitionPtr ()); }
+void MultiRowTextImager::HookLosingTextStore_ ()
+{
+    SetPartition (PartitionPtr ());
+}
 
 void MultiRowTextImager::HookGainedNewTextStore ()
 {
@@ -186,7 +192,10 @@ size_t MultiRowTextImager::GetTopRowInWindow () const
     return (GetRowNumber (GetTopRowReferenceInWindow ()));
 }
 
-size_t MultiRowTextImager::GetTotalRowsInWindow () const { return GetTotalRowsInWindow_ (); }
+size_t MultiRowTextImager::GetTotalRowsInWindow () const
+{
+    return GetTotalRowsInWindow_ ();
+}
 
 size_t MultiRowTextImager::GetLastRowInWindow () const
 {
@@ -208,21 +217,33 @@ void MultiRowTextImager::SetTopRowInWindow (size_t newTopRow)
     // as well check we have our definitions straight...
 }
 
-void MultiRowTextImager::AssureWholeWindowUsedIfNeeded () { SetTopRowInWindow (GetTopRowReferenceInWindow ()); }
+void MultiRowTextImager::AssureWholeWindowUsedIfNeeded ()
+{
+    SetTopRowInWindow (GetTopRowReferenceInWindow ());
+}
 
 /*
     @METHOD:        MultiRowTextImager::GetMarkerPositionOfStartOfWindow
     @DESCRIPTION:   <p>Efficient implementation of @'TextImager::GetMarkerPositionOfStartOfWindow'</p>
     */
-size_t MultiRowTextImager::GetMarkerPositionOfStartOfWindow () const { return (GetStartOfRow (GetTopRowReferenceInWindow ())); }
+size_t MultiRowTextImager::GetMarkerPositionOfStartOfWindow () const
+{
+    return (GetStartOfRow (GetTopRowReferenceInWindow ()));
+}
 
 /*
     @METHOD:        MultiRowTextImager::GetMarkerPositionOfEndOfWindow
     @DESCRIPTION:   <p>Efficient implementation of @'TextImager::GetMarkerPositionOfEndOfWindow'</p>
     */
-size_t MultiRowTextImager::GetMarkerPositionOfEndOfWindow () const { return GetEndOfRow (GetLastRowReferenceInWindow ()); }
+size_t MultiRowTextImager::GetMarkerPositionOfEndOfWindow () const
+{
+    return GetEndOfRow (GetLastRowReferenceInWindow ());
+}
 
-size_t MultiRowTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const { return GetStartOfRow (GetLastRowReferenceInWindow ()); }
+size_t MultiRowTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const
+{
+    return GetStartOfRow (GetLastRowReferenceInWindow ());
+}
 
 ptrdiff_t MultiRowTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const
 {
@@ -1252,7 +1273,10 @@ size_t MultiRowTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, s
         ******************* MultiRowTextImager::PartitionElementCacheInfo **************
         ********************************************************************************
         */
-void MultiRowTextImager::PartitionElementCacheInfo::Clear () { fRep = make_shared<Rep> (); }
+void MultiRowTextImager::PartitionElementCacheInfo::Clear ()
+{
+    fRep = make_shared<Rep> ();
+}
 
 void MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, DistanceType newRowsHeight)
 {
@@ -1367,7 +1391,10 @@ MultiRowTextImager::PartitionElementCacheInfo MultiRowTextImager::PMInfoCacheMgr
     return i->second;
 }
 
-void MultiRowTextImager::PMInfoCacheMgr::ClearCache () { fPMCache.clear (); }
+void MultiRowTextImager::PMInfoCacheMgr::ClearCache ()
+{
+    fPMCache.clear ();
+}
 
 void MultiRowTextImager::PMInfoCacheMgr::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const noexcept
 {

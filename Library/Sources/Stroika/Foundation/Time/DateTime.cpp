@@ -94,7 +94,10 @@ namespace {
 }
 
 namespace {
-    inline constexpr uint32_t GetSecondCount_ (const optional<TimeOfDay>& tod) { return tod.has_value () ? tod->GetAsSecondsCount () : 0; }
+    inline constexpr uint32_t GetSecondCount_ (const optional<TimeOfDay>& tod)
+    {
+        return tod.has_value () ? tod->GetAsSecondsCount () : 0;
+    }
 }
 
 namespace {
@@ -276,7 +279,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
 
 DateTime DateTime::Parse (const String& rep, const String& formatPattern)
 {
-    return Parse (rep, locale{}, formatPattern); 
+    return Parse (rep, locale{}, formatPattern);
 }
 
 optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentFormat format, size_t* consumedCharacters)
@@ -740,7 +743,10 @@ String DateTime::Format (const locale& l) const
     }
 }
 
-String DateTime::Format (const String& formatPattern) const { return Format (locale{}, formatPattern); }
+String DateTime::Format (const String& formatPattern) const
+{
+    return Format (locale{}, formatPattern);
+}
 
 String DateTime::Format (const locale& l, const String& formatPattern) const
 {
@@ -877,9 +883,15 @@ namespace Stroika::Foundation::Time {
     }
 }
 
-DateTime DateTime::Add (const Duration& d) const { return AddSeconds (d.As<int64_t> ()); }
+DateTime DateTime::Add (const Duration& d) const
+{
+    return AddSeconds (d.As<int64_t> ());
+}
 
-DateTime DateTime::AddDays (int days) const { return DateTime{GetDate ().Add (days), GetTimeOfDay (), GetTimezone ()}; }
+DateTime DateTime::AddDays (int days) const
+{
+    return DateTime{GetDate ().Add (days), GetTimeOfDay (), GetTimezone ()};
+}
 
 DateTime DateTime::AddSeconds (int64_t seconds) const
 {
@@ -995,7 +1007,10 @@ Duration Time::operator- (const DateTime& lhs, const DateTime& rhs)
  ************************** Math::NearlyEquals **********************************
  ********************************************************************************
  */
-bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r) { return NearlyEquals (l, r, static_cast<Time::DurationSecondsType> (1.0)); }
+bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r)
+{
+    return NearlyEquals (l, r, static_cast<Time::DurationSecondsType> (1.0));
+}
 
 bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon)
 {

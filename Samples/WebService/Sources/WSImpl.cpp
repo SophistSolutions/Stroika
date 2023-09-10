@@ -32,7 +32,10 @@ namespace {
  ************************************* WSImpl ***********************************
  ********************************************************************************
  */
-Collection<String> WSImpl::Variables_GET () const { return sVariables_.cget ()->Keys (); }
+Collection<String> WSImpl::Variables_GET () const
+{
+    return sVariables_.cget ()->Keys ();
+}
 
 Number WSImpl::Variables_GET (const String& variable) const
 {
@@ -42,15 +45,30 @@ Number WSImpl::Variables_GET (const String& variable) const
     Execution::Throw (ClientErrorException{"no such variable"sv});
 }
 
-void WSImpl::Variables_DELETE (const String& variable) const { sVariables_.rwget ()->Remove (variable); }
+void WSImpl::Variables_DELETE (const String& variable) const
+{
+    sVariables_.rwget ()->Remove (variable);
+}
 
-void WSImpl::Variables_SET (const String& variable, const Number& value) { sVariables_.rwget ()->Add (variable, value); }
+void WSImpl::Variables_SET (const String& variable, const Number& value)
+{
+    sVariables_.rwget ()->Add (variable, value);
+}
 
-Number WSImpl::plus (Number lhs, Number rhs) const { return lhs + rhs; }
+Number WSImpl::plus (Number lhs, Number rhs) const
+{
+    return lhs + rhs;
+}
 
-Number WSImpl::minus (Number lhs, Number rhs) const { return lhs - rhs; }
+Number WSImpl::minus (Number lhs, Number rhs) const
+{
+    return lhs - rhs;
+}
 
-Number WSImpl::times (Number lhs, Number rhs) const { return lhs * rhs; }
+Number WSImpl::times (Number lhs, Number rhs) const
+{
+    return lhs * rhs;
+}
 
 Number WSImpl::divide (Number lhs, Number rhs) const
 {

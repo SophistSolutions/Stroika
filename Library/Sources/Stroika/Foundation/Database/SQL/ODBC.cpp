@@ -127,8 +127,14 @@ struct Connection::Rep_ final : IRep {
                 AssertNotImplemented ();
                 return String{};
             }
-            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override { return false; }
-            virtual bool SupportsNestedTransactions () const override { return false; }
+            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override
+            {
+                return false;
+            }
+            virtual bool SupportsNestedTransactions () const override
+            {
+                return false;
+            }
         };
         return make_shared<const MyEngineProperties_> (); // dynamic info based on connection/dsn
     }
@@ -142,7 +148,10 @@ struct Connection::Rep_ final : IRep {
         Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
         return ODBC::Transaction{conn};
     }
-    virtual void Exec (const String& /*sql*/) override { AssertNotImplemented (); }
+    virtual void Exec (const String& /*sql*/) override
+    {
+        AssertNotImplemented ();
+    }
 };
 
 /*
@@ -193,7 +202,10 @@ struct Statement::MyRep_ : IRep {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         AssertNotImplemented ();
     }
-    ~MyRep_ () { AssertExternallySynchronizedMutex::WriteContext declareContext{*this}; }
+    ~MyRep_ ()
+    {
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    }
     virtual String GetSQL ([[maybe_unused]] WhichSQLFlag whichSQL) const override
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};

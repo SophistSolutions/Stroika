@@ -46,8 +46,6 @@ void Characters::Private_::ThrowNotIsLatin1_ ()
     Execution::Throw (kException_);
 }
 
-
-
 /*
  ********************************************************************************
  ************************************ Character *********************************
@@ -57,9 +55,9 @@ template <>
 void Character::AsHelper_ (Memory::StackBuffer<char8_t>* buf) const
 {
     RequireNotNull (buf);
-    buf->resize_uninitialized (4);  // enuf
+    buf->resize_uninitialized (4); // enuf
     char32_t thisC = GetCharacterCode ();
-    auto s = UTFConvert::kThe.ConvertSpan (span{&thisC, 1}, span{*buf});
+    auto     s     = UTFConvert::kThe.ConvertSpan (span{&thisC, 1}, span{*buf});
     buf->ShrinkTo (s.size ());
 }
 

@@ -33,7 +33,10 @@ using std::byte;
 #if qHasFeature_LZMA
 namespace {
     struct InitOnce_ {
-        InitOnce_ () { ::CrcGenerateTable (); }
+        InitOnce_ ()
+        {
+            ::CrcGenerateTable ();
+        }
     } sInitOnce_;
 }
 
@@ -45,7 +48,10 @@ private:
         Require (size > 0);
         return new byte[size];
     }
-    static void Free_ (void* /*p*/, void* address) { delete[] reinterpret_cast<byte*> (address); }
+    static void Free_ (void* /*p*/, void* address)
+    {
+        delete[] reinterpret_cast<byte*> (address);
+    }
 
 private:
     mutable ISzAlloc fAllocImp_{};
@@ -108,7 +114,10 @@ public:
             throw "bad";
         }
     }
-    ~Rep_ () { ::SzArEx_Free (&fDB_, &fAllocImp_); }
+    ~Rep_ ()
+    {
+        ::SzArEx_Free (&fDB_, &fAllocImp_);
+    }
     virtual Set<String> GetContainedFiles () const override
     {
         Set<String> result;

@@ -14,8 +14,8 @@
 #endif
 
 #include "../../../Foundation/Characters/CString/Utilities.h"
-#include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/CodeCvt.h"
+#include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/LineEndings.h"
 #include "../../../Foundation/Characters/String.h"
 #include "../../../Foundation/DataExchange/BadFormatException.h"
@@ -429,7 +429,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
 #if qWideCharacters
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
-        #if qPlatform_Windows
+#if qPlatform_Windows
         auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}),
                                                                                          span{unicodeText});
 #else
@@ -534,7 +534,8 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
-        auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}), span{unicodeText});
+        auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}),
+                                                                                         span{unicodeText});
 #else
         auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}), span{unicodeText});
 #endif
@@ -648,7 +649,8 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
-        auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}), span{unicodeText});
+        auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}),
+                                                                                         span{unicodeText});
 #else
         auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}), span{unicodeText});
 #endif
@@ -777,7 +779,10 @@ StyledTextIOWriter_LedNativeFileFormat::StyledTextIOWriter_LedNativeFileFormat (
 {
 }
 
-void StyledTextIOWriter_LedNativeFileFormat::Write () { Write_Version6 (); }
+void StyledTextIOWriter_LedNativeFileFormat::Write ()
+{
+    Write_Version6 ();
+}
 
 #if !qWideCharacters
 void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
@@ -882,7 +887,9 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
         size_t            nChars = totalTextLength * sizeof (wchar_t);
         StackBuffer<char> result{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
-        nChars = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Characters2Bytes (span{buf}, Memory::SpanReInterpretCast<byte> (span{result})).size ();
+        nChars = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}
+                     .Characters2Bytes (span{buf}, Memory::SpanReInterpretCast<byte> (span{result}))
+                     .size ();
 #else
         nChars    = CodeCvt<Led_tChar>{locale{}}.Characters2Bytes (span{buf}, Memory::SpanReInterpretCast<byte> (span{result})).size ();
 #endif

@@ -174,6 +174,7 @@ namespace Stroika::Foundation::Memory {
          */
         LeakTrackingGeneralPurposeAllocator ();
         LeakTrackingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator);
+
     public:
         ~LeakTrackingGeneralPurposeAllocator ();
 

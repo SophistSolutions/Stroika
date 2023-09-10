@@ -1061,7 +1061,10 @@ namespace {
             }
         }
 
-        void DoAll_ () { Test_01_FirstPlayingAroundTest_::DoIt (); }
+        void DoAll_ ()
+        {
+            Test_01_FirstPlayingAroundTest_::DoIt ();
+        }
     }
 }
 
@@ -1072,7 +1075,9 @@ namespace {
          *  and the default XML readers/writers (with no mods)
          */
 
-        void DoAll_ () {}
+        void DoAll_ ()
+        {
+        }
     }
 }
 
@@ -1139,7 +1144,10 @@ namespace {
             roundTripCheck (VariantValue (Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"n", L"34"}}));
         }
 
-        void Tests_ () { T1_ (); }
+        void Tests_ ()
+        {
+            T1_ ();
+        }
     }
 }
 

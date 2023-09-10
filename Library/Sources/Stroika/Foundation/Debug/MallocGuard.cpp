@@ -238,7 +238,10 @@ extern "C" void* calloc (size_t __nmemb, size_t __size)
     return p;
 }
 
-extern "C" void cfree (void* __ptr) { free (__ptr); }
+extern "C" void cfree (void* __ptr)
+{
+    free (__ptr);
+}
 
 extern "C" void free (void* __ptr)
 {

@@ -7,7 +7,6 @@
 #include <mutex>
 #include <set>
 
-
 #include "../Configuration/Common.h"
 #include "../Containers/Common.h"
 #include "../Execution/Common.h"
@@ -61,10 +60,22 @@ using namespace Characters;
 
 #if qPlatform_Windows
 namespace {
-    inline const wchar_t*  SAFE_WIN_WCHART_CAST_ (const char16_t* t) { return reinterpret_cast<const wchar_t*> (t); }
-    inline wchar_t*        SAFE_WIN_WCHART_CAST_ (char16_t* t) { return reinterpret_cast<wchar_t*> (t); }
-    inline const char16_t* SAFE_WIN_WCHART_CAST_ (const wchar_t* t) { return reinterpret_cast<const char16_t*> (t); }
-    inline char16_t*       SAFE_WIN_WCHART_CAST_ (wchar_t* t) { return reinterpret_cast<char16_t*> (t); }
+    inline const wchar_t* SAFE_WIN_WCHART_CAST_ (const char16_t* t)
+    {
+        return reinterpret_cast<const wchar_t*> (t);
+    }
+    inline wchar_t* SAFE_WIN_WCHART_CAST_ (char16_t* t)
+    {
+        return reinterpret_cast<wchar_t*> (t);
+    }
+    inline const char16_t* SAFE_WIN_WCHART_CAST_ (const wchar_t* t)
+    {
+        return reinterpret_cast<const char16_t*> (t);
+    }
+    inline char16_t* SAFE_WIN_WCHART_CAST_ (wchar_t* t)
+    {
+        return reinterpret_cast<char16_t*> (t);
+    }
 }
 #endif
 
@@ -530,7 +541,10 @@ CodePageNotSupportedException::CodePageNotSupportedException (CodePage codePage)
 {
 }
 
-const char* CodePageNotSupportedException::what () const noexcept { return fMsg_.c_str (); }
+const char* CodePageNotSupportedException::what () const noexcept
+{
+    return fMsg_.c_str ();
+}
 
 /*
  ********************************************************************************
@@ -801,7 +815,7 @@ void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCn
 {
     char*  useOutChars     = outChars;
     size_t useOutCharCount = *outCharCnt;
-    bool addBOM = GetHandleBOM () and useOutCharCount >= 3;
+    bool   addBOM          = GetHandleBOM () and useOutCharCount >= 3;
     if (addBOM) {
         useOutChars += 3; // skip BOM
         useOutCharCount -= 3;
@@ -1047,7 +1061,8 @@ void Characters::NarrowStringToWide (const char* sStart, const char* sEnd, CodeP
 #if qPlatform_Windows
     Platform::Windows::NarrowStringToWide (sStart, sEnd, codePage, intoResult);
 #else
-    *intoResult = CodeCvt<wchar_t>{codePage}.Bytes2String<wstring> (span{reinterpret_cast<const byte*> (sStart), static_cast<size_t>(sEnd - sStart)});
+    *intoResult =
+        CodeCvt<wchar_t>{codePage}.Bytes2String<wstring> (span{reinterpret_cast<const byte*> (sStart), static_cast<size_t> (sEnd - sStart)});
 #endif
 }
 

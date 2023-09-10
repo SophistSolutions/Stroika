@@ -351,7 +351,10 @@ String TimeOfDay::Format (NonStandardPrintFormat pf) const
     }
 }
 
-String TimeOfDay::Format (const locale& l) const { return Format (l, kLocaleStandardFormat); }
+String TimeOfDay::Format (const locale& l) const
+{
+    return Format (l, kLocaleStandardFormat);
+}
 
 String TimeOfDay::Format (const String& formatPattern) const
 {
@@ -390,5 +393,8 @@ void TimeOfDay::ClearSecondsField ()
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
-String TimeOfDay::ToString () const { return Format (); }
+String TimeOfDay::ToString () const
+{
+    return Format ();
+}
 #endif

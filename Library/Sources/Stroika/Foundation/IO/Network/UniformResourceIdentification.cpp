@@ -158,7 +158,10 @@ String Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
     }
 }
 
-String Host::ToString () const { return Characters::ToString (AsDecoded ()); }
+String Host::ToString () const
+{
+    return Characters::ToString (AsDecoded ());
+}
 
 /*
  ********************************************************************************
@@ -251,9 +254,9 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
     return Authority{host, port, userInfo};
 }
 
-Authority Authority::Normalize () const 
-{ 
-    return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fUserInfo_}; 
+Authority Authority::Normalize () const
+{
+    return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fUserInfo_};
 }
 
 template <>
@@ -272,9 +275,9 @@ String Authority::As () const
     return sb.str ();
 }
 
-String Authority::ToString () const 
-{ 
-    return Characters::ToString (As<String> ()); 
+String Authority::ToString () const
+{
+    return Characters::ToString (As<String> ());
 }
 
 /*
@@ -290,9 +293,9 @@ namespace {
     {
         size_t utfqLen = utf8Query.length ();
         for (size_t i = 0; i < utfqLen;) {
-            size_t e   = utf8Query.find ('&', i);
+            size_t   e   = utf8Query.find ('&', i);
             u8string elt = utf8Query.substr (i, e - i);
-            size_t brk = elt.find ('=');
+            size_t   brk = elt.find ('=');
             if (brk != string::npos) {
                 u8string val = elt.substr (brk + 1);
                 for (auto p = val.begin (); p != val.end (); ++p) {
@@ -331,7 +334,10 @@ Query::Query (const u8string& query)
     InitURLQueryDecoder_ (&fMap_, query);
 }
 
-void Query::RemoveFieldIfAny (const String& idx) { fMap_.Remove (idx); }
+void Query::RemoveFieldIfAny (const String& idx)
+{
+    fMap_.Remove (idx);
+}
 
 String Query::ComputeQueryString () const
 {
@@ -420,7 +426,7 @@ u8string UniformResourceIdentification::EncodeURLQueryStringField (const String&
 u8string UniformResourceIdentification::PCTEncode (const u8string& s, const PCTEncodeOptions& options)
 {
     u8string result;
-    size_t sLength = s.length ();
+    size_t   sLength = s.length ();
     result.reserve (sLength);
 
     PCTEncodeOptions useOptions = options;
@@ -550,9 +556,9 @@ String UniformResourceIdentification::PCTDecode2String (const u8string& s)
     return String::FromUTF8 (PCTDecode (s));
 }
 
-String UniformResourceIdentification::PCTDecode2String (const String& s) 
-{ 
-    return String::FromUTF8 (PCTDecode (s.AsASCII <u8string> ()));
+String UniformResourceIdentification::PCTDecode2String (const String& s)
+{
+    return String::FromUTF8 (PCTDecode (s.AsASCII<u8string> ()));
 }
 
 /*

@@ -407,11 +407,13 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          * See https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
+         * 
+         *  \note - would be nice to use DiscreteRange for these, but hard todo given deadly embrace, plus constexpr issues
          */
-        static constexpr char16_t UNI_SUR_HIGH_START{0xD800};
-        static constexpr char16_t UNI_SUR_HIGH_END{0xDBFF};
-        static constexpr char16_t UNI_SUR_LOW_START{0xDC00};
-        static constexpr char16_t UNI_SUR_LOW_END{0xDFFF};
+        static constexpr char16_t kUNICODESurrogate_High_Start{0xD800}; // was UNI_SUR_HIGH_START
+        static constexpr char16_t kUNICODESurrogate_High_End{0xDBFF};   // was UNI_SUR_HIGH_END
+        static constexpr char16_t kUNICODESurrogate_Low_Start{0xDC00};  // was UNI_SUR_LOW_START
+        static constexpr char16_t kUNICODESurrogate_Low_End{0xDFFF};    // was UNI_SUR_LOW_END
 
     public:
         /**

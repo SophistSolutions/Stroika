@@ -30,8 +30,14 @@ using namespace Stroika::Frameworks::Led::Platform;
 #if qLedAssertsDefaultToMFCAsserts && qDebug
 static class OneTimeLedMFCAssertionFunctionSetter {
 public:
-    static void MFCAssertionHandler (const char* fileName, int lineNum) { ::AfxAssertFailedLine (fileName, lineNum); }
-    OneTimeLedMFCAssertionFunctionSetter () { Led_SetAssertionHandler (MFCAssertionHandler); }
+    static void MFCAssertionHandler (const char* fileName, int lineNum)
+    {
+        ::AfxAssertFailedLine (fileName, lineNum);
+    }
+    OneTimeLedMFCAssertionFunctionSetter ()
+    {
+        Led_SetAssertionHandler (MFCAssertionHandler);
+    }
 } sOneTimeLedMFCAssertionFunctionSetter;
 #endif
 
@@ -162,7 +168,10 @@ size_t Led_MFCReaderDAndDFlavorPackage::ReadFlavorData (Led_ClipFormat clipForma
     return sizeCopied;
 }
 
-COleDataObject* Led_MFCReaderDAndDFlavorPackage::GetOleDataObject () const { return fDataObject; }
+COleDataObject* Led_MFCReaderDAndDFlavorPackage::GetOleDataObject () const
+{
+    return fDataObject;
+}
 
 /*
  ********************************************************************************
@@ -192,7 +201,10 @@ void Led_MFCWriterDAndDFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, 
     // LGP 960412
 }
 
-COleDataSource* Led_MFCWriterDAndDFlavorPackage::GetOleDataSource () const { return fDataObject; }
+COleDataSource* Led_MFCWriterDAndDFlavorPackage::GetOleDataSource () const
+{
+    return fDataObject;
+}
 
 /*
  ********************************************************************************
@@ -216,9 +228,15 @@ MFC_CommandNumberMapping::MFC_CommandNumberMapping ()
  ****************************** Led_MFC_TmpCmdUpdater ***************************
  ********************************************************************************
  */
-Led_MFC_TmpCmdUpdater::CommandNumber Led_MFC_TmpCmdUpdater::GetCmdID () const { return fCmdNum; }
+Led_MFC_TmpCmdUpdater::CommandNumber Led_MFC_TmpCmdUpdater::GetCmdID () const
+{
+    return fCmdNum;
+}
 
-bool Led_MFC_TmpCmdUpdater::GetEnabled () const { return fEnabled; }
+bool Led_MFC_TmpCmdUpdater::GetEnabled () const
+{
+    return fEnabled;
+}
 
 void Led_MFC_TmpCmdUpdater::SetEnabled (bool enabled)
 {

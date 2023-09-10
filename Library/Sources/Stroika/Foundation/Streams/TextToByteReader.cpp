@@ -41,7 +41,10 @@ protected:
         fSrc_.Close ();
         Assert (fSrc_ == nullptr);
     }
-    virtual bool IsOpenRead () const override { return fSrc_ != nullptr; }
+    virtual bool IsOpenRead () const override
+    {
+        return fSrc_ != nullptr;
+    }
 
     virtual size_t Read (byte* intoStart, byte* intoEnd) override
     {
@@ -108,4 +111,7 @@ protected:
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 
-auto TextToByteReader::New (InputStream<Character>::Ptr srcStream) -> Ptr { return _mkPtr (make_shared<Rep_> (srcStream)); }
+auto TextToByteReader::New (InputStream<Character>::Ptr srcStream) -> Ptr
+{
+    return _mkPtr (make_shared<Rep_> (srcStream));
+}

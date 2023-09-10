@@ -23,7 +23,10 @@ LedLineItServerItem::LedLineItServerItem (LedLineItDocument* pContainerDoc)
 {
 }
 
-LedLineItDocument* LedLineItServerItem::GetDocument () const { return (LedLineItDocument*)COleServerItem::GetDocument (); }
+LedLineItDocument* LedLineItServerItem::GetDocument () const
+{
+    return (LedLineItDocument*)COleServerItem::GetDocument ();
+}
 
 void LedLineItServerItem::Serialize (CArchive& ar)
 {
@@ -95,7 +98,13 @@ BOOL LedLineItServerItem::OnDraw (CDC* pDC, CSize& /*rSize*/)
 }
 
 #ifdef _DEBUG
-void LedLineItServerItem::AssertValid () const { COleServerItem::AssertValid (); }
+void LedLineItServerItem::AssertValid () const
+{
+    COleServerItem::AssertValid ();
+}
 
-void LedLineItServerItem::Dump (CDumpContext& dc) const { COleServerItem::Dump (dc); }
+void LedLineItServerItem::Dump (CDumpContext& dc) const
+{
+    COleServerItem::Dump (dc);
+}
 #endif

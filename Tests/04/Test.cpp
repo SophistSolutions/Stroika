@@ -166,15 +166,13 @@ namespace {
                 static_assert (not IOperatorLt<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
             }
             {
-                static_assert (IEqualToOptimizable<int> );
+                static_assert (IEqualToOptimizable<int>);
                 static_assert (IEqualToOptimizable<pair<int, int>>);
-                static_assert (IEqualToOptimizable<SimpleClass> );
-                static_assert (IEqualToOptimizable<pair<SimpleClass, SimpleClass>> );
-                static_assert (not IEqualToOptimizable<SimpleClassWithoutComparisonOperators> );
+                static_assert (IEqualToOptimizable<SimpleClass>);
+                static_assert (IEqualToOptimizable<pair<SimpleClass, SimpleClass>>);
+                static_assert (not IEqualToOptimizable<SimpleClassWithoutComparisonOperators>);
                 static_assert (not IOperatorEq<SimpleClassWithoutComparisonOperators>);
                 static_assert (not IOperatorEq<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
-
-
 
                 //tmphack static_assert (not IEqualToOptimizable<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
                 {
@@ -215,7 +213,7 @@ namespace {
             }
             {
                 // Test from https://stackoverflow.com/questions/7943525/is-it-possible-to-figure-out-the-parameter-type-and-return-type-of-a-lambda
-                auto                                       lambda = [] (int i) { return long (i * 10); };
+                auto lambda  = [] (int i) { return long (i * 10); };
                 using traits = FunctionTraits<decltype (lambda)>;
                 static_assert (traits::kArity == 1);
                 static_assert (std::is_same<long, traits::result_type>::value);

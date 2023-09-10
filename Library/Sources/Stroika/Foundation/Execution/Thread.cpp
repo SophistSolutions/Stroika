@@ -92,7 +92,10 @@ namespace {
     set<Thread::IDType> sRunningThreads_; // protected by sThreadSupportStatsMutex_
 
     struct AllThreadsDeadDetector_ {
-        AllThreadsDeadDetector_ () { Require (sRunningThreads_.empty ()); }
+        AllThreadsDeadDetector_ ()
+        {
+            Require (sRunningThreads_.empty ());
+        }
         ~AllThreadsDeadDetector_ ()
         {
             if constexpr (qDebug) {
@@ -175,7 +178,10 @@ SignalHandler kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
  ************** Thread::SuppressInterruptionInContext ***************************
  ********************************************************************************
  */
-Thread::SuppressInterruptionInContext::SuppressInterruptionInContext () { ++t_InterruptionSuppressDepth_; }
+Thread::SuppressInterruptionInContext::SuppressInterruptionInContext ()
+{
+    ++t_InterruptionSuppressDepth_;
+}
 
 Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
 {
@@ -786,7 +792,7 @@ void Thread::Ptr::Rep_::InterruptionSignalHandler_ (SignalID signal) noexcept
 #elif qPlatform_Windows
 void CALLBACK Thread::Ptr::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
-    TraceContextBumper ctx{"Thread::Ptr::Rep_::CalledInRepThreadAbortProc_"};
+    TraceContextBumper          ctx{"Thread::Ptr::Rep_::CalledInRepThreadAbortProc_"};
     [[maybe_unused]] Ptr::Rep_* rep = reinterpret_cast<Ptr::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
     if (rep->fThrowInterruptExceptionInsideUserAPC_) [[unlikely]] {
@@ -1124,7 +1130,10 @@ Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, const optional<C
     return ptr;
 }
 
-Thread::Configuration Thread::DefaultConfiguration () noexcept { return sDefaultConfiguration_.load (); }
+Thread::Configuration Thread::DefaultConfiguration () noexcept
+{
+    return sDefaultConfiguration_.load ();
+}
 
 Thread::Configuration Thread::DefaultConfiguration (const optional<Configuration>& newConfiguration)
 {
@@ -1213,7 +1222,10 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::Du
 namespace {
     SignalID sSignalUsedForThreadInterrupt_ = SIGUSR2;
 }
-SignalID Thread::SignalUsedForThreadInterrupt () noexcept { return sSignalUsedForThreadInterrupt_; }
+SignalID Thread::SignalUsedForThreadInterrupt () noexcept
+{
+    return sSignalUsedForThreadInterrupt_;
+}
 SignalID Thread::SignalUsedForThreadInterrupt (optional<SignalID> signalNumber)
 {
     SignalID result = sSignalUsedForThreadInterrupt_;

@@ -7,8 +7,8 @@
 #include <cstdio> // for sprintf()
 
 #include "../../../Foundation/Characters/CString/Utilities.h"
-#include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/CodeCvt.h"
+#include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/LineEndings.h"
 
 #include "../Config.h"
@@ -40,7 +40,10 @@ namespace {
         }
     }
 
-    inline bool IsASCIISpace_ (Led_tChar c) { return isascii (c) and isspace (c); }
+    inline bool IsASCIISpace_ (Led_tChar c)
+    {
+        return isascii (c) and isspace (c);
+    }
 
     constexpr pair<string_view, string_view> kColorNameTable_[] = {
         {"black", "000000"},  {"silver", "C0C0C0"},  {"gray", "808080"},  {"white", "FFFFFF"}, {"maroon", "800000"}, {"red", "FF0000"},
@@ -1129,10 +1132,9 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
             if (EmbeddedObjectCreatorRegistry::Get ().Lookup (StandardURLStyleMarker::kEmbeddingTag, &assoc)) {
                 AssertNotNull (assoc.fReadFromMemory);
 #if qWideCharacters
-                Led_URLD urld = Led_URLD{
-                    tagValue.c_str (), 
-                    CodeCvt<Led_tChar>{WellKnownCodePages::kANSI}.String2Bytes<string> (span{fHiddenTextAccumulation}).c_str ()
-                };
+                Led_URLD urld =
+                    Led_URLD{tagValue.c_str (),
+                             CodeCvt<Led_tChar>{WellKnownCodePages::kANSI}.String2Bytes<string> (span{fHiddenTextAccumulation}).c_str ()};
 #else
                 Led_URLD urld = Led_URLD{tagValue.c_str (), fHiddenTextAccumulation.c_str ()};
 #endif
@@ -1769,7 +1771,10 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTagUnknown ([[maybe_unused]] bool 
 #endif
 }
 
-void StyledTextIOReader_HTML::EmitForcedLineBreak () { EmitText (LED_TCHAR_OF ("\n"), 1, true); }
+void StyledTextIOReader_HTML::EmitForcedLineBreak ()
+{
+    EmitText (LED_TCHAR_OF ("\n"), 1, true);
+}
 
 void StyledTextIOReader_HTML::BasicFontStackOperation (bool start)
 {
@@ -1972,7 +1977,10 @@ void StyledTextIOReader_HTML::SetHTMLFontSize (int to)
  ********************************************************************************
  */
 
-size_t StyledTextIOWriter_HTML::WriterContext::GetCurSrcOffset () const { return GetSrcStream ().current_offset (); }
+size_t StyledTextIOWriter_HTML::WriterContext::GetCurSrcOffset () const
+{
+    return GetSrcStream ().current_offset ();
+}
 
 SimpleEmbeddedObjectStyleMarker* StyledTextIOWriter_HTML::WriterContext::GetCurSimpleEmbeddedObjectStyleMarker () const
 {
@@ -2002,7 +2010,9 @@ StyledTextIOWriter_HTML::StyledTextIOWriter_HTML (SrcStream* srcStream, SinkStre
 {
 }
 
-StyledTextIOWriter_HTML::~StyledTextIOWriter_HTML () {}
+StyledTextIOWriter_HTML::~StyledTextIOWriter_HTML ()
+{
+}
 
 /*
 @METHOD:        StyledTextIOReader_HTML::GetEntityRefMapTable

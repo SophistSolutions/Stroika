@@ -43,4 +43,7 @@ ActiveLedItPropPage::ActiveLedItPropPage ()
 {
 }
 
-void ActiveLedItPropPage::DoDataExchange (CDataExchange* pDX) { DDP_PostProcessing (pDX); }
+void ActiveLedItPropPage::DoDataExchange (CDataExchange* pDX)
+{
+    DDP_PostProcessing (pDX);
+}

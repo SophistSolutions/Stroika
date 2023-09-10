@@ -52,9 +52,15 @@ Capturer::Capturer (const CaptureSet& cs)
     AddCaptureSet (cs);
 }
 
-void Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType& cb) { fCallbacks_.rwget ()->Add (cb); }
+void Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType& cb)
+{
+    fCallbacks_.rwget ()->Add (cb);
+}
 
-void Capturer::RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb) { fCallbacks_.rwget ()->Remove (cb); }
+void Capturer::RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb)
+{
+    fCallbacks_.rwget ()->Remove (cb);
+}
 
 void Capturer::AddCaptureSet (const CaptureSet& cs)
 {

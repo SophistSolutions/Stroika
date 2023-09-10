@@ -10,7 +10,6 @@
 
 #include "Utilities.h"
 
-
 // FILE DEPRECATED IN STROIKA v3.0d2
 
 using std::byte;
@@ -22,7 +21,6 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::iostream;
-
 
 DISABLE_COMPILER_MSC_WARNING_START (4996);
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");

@@ -13,8 +13,14 @@ namespace {
      */
     bool sKnownBadBeforeMainOrAfterMain_{true};
     struct MainDetector_ {
-        MainDetector_ () { sKnownBadBeforeMainOrAfterMain_ = false; }
-        ~MainDetector_ () { sKnownBadBeforeMainOrAfterMain_ = true; }
+        MainDetector_ ()
+        {
+            sKnownBadBeforeMainOrAfterMain_ = false;
+        }
+        ~MainDetector_ ()
+        {
+            sKnownBadBeforeMainOrAfterMain_ = true;
+        }
     };
     MainDetector_ sMainDetector_;
 }
@@ -24,4 +30,7 @@ namespace {
  ************************ Debug::AppearsDuringMainLifetime **********************
  ********************************************************************************
  */
-bool Debug::AppearsDuringMainLifetime () { return not sKnownBadBeforeMainOrAfterMain_; }
+bool Debug::AppearsDuringMainLifetime ()
+{
+    return not sKnownBadBeforeMainOrAfterMain_;
+}

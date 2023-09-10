@@ -34,9 +34,15 @@ namespace {
     }
     void (*sFatalErrorHandler_) (const SDKChar* msg) noexcept = nullptr; // our handlers can never get called until  RegisterDefaultFatalErrorHandlers () is called
 
-    void TerminateHandler_ () { (sFatalErrorHandler_) (SDKSTR ("std::terminate () called")); }
+    void TerminateHandler_ ()
+    {
+        (sFatalErrorHandler_) (SDKSTR ("std::terminate () called"));
+    }
 #if qPlatform_Windows
-    void PurecallHandler_ () { (sFatalErrorHandler_) (SDKSTR ("purecall_handler_ () called")); }
+    void PurecallHandler_ ()
+    {
+        (sFatalErrorHandler_) (SDKSTR ("purecall_handler_ () called"));
+    }
 #endif
 }
 

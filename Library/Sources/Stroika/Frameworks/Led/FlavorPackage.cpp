@@ -45,7 +45,10 @@ using namespace Stroika::Frameworks::Led;
  ********************************************************************************
  */
 
-TextStore* FlavorPackageExternalizer::PeekAtTextStore () const { return &fTextStore; }
+TextStore* FlavorPackageExternalizer::PeekAtTextStore () const
+{
+    return &fTextStore;
+}
 
 /*
 @METHOD:        FlavorPackageExternalizer::ExternalizeFlavors
@@ -118,7 +121,10 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
  *************************** FlavorPackageInternalizer **************************
  ********************************************************************************
  */
-TextStore* FlavorPackageInternalizer::PeekAtTextStore () const { return &fTextStore; }
+TextStore* FlavorPackageInternalizer::PeekAtTextStore () const
+{
+    return &fTextStore;
+}
 
 bool FlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
@@ -211,7 +217,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     const Characters::SDKChar* fileName,
 #endif
-    Led_ClipFormat* suggestedClipFormat, optional < CodePage> suggestedCodePage, size_t from, size_t to)
+    Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage, size_t from, size_t to)
 {
     Memory::BLOB b       = IO::FileSystem::FileInputStream::New (filesystem::path (fileName)).ReadAll ();
     const byte*  fileBuf = b.begin ();
@@ -235,7 +241,7 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     const Characters::SDKChar* fileName,
 #endif
-    Led_ClipFormat* suggestedClipFormat, [[maybe_unused]]optional < CodePage> suggestedCodePage)
+    Led_ClipFormat* suggestedClipFormat, [[maybe_unused]] optional<CodePage> suggestedCodePage)
 {
 #if qPlatform_MacOS
 // Should add code here to grab file-type from OS. If called from XXX - then thats already done, but in case
@@ -254,8 +260,8 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
 #endif
 }
 
-void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat,
-                                                                                   [[maybe_unused]] optional < CodePage> suggestedCodePage,
+void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat*                     suggestedClipFormat,
+                                                                                   [[maybe_unused]] optional<CodePage> suggestedCodePage,
                                                                                    const byte* /*fileStart*/, const byte* /*fileEnd*/
 )
 {
@@ -268,7 +274,7 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfDat
     }
 }
 
-bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, optional < CodePage> suggestedCodePage,
+bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage,
                                                                     size_t from, size_t to, const void* rawBytes, size_t nRawBytes)
 {
     /*
@@ -295,13 +301,13 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
      *  prefered code page - so just do the read/replace here...
      */
 #if qWideCharacters
-    span<const byte>   rawByteSpan{reinterpret_cast<const byte*> (rawBytes), nRawBytes};
+    span<const byte> rawByteSpan{reinterpret_cast<const byte*> (rawBytes), nRawBytes};
 #if qPlatform_Windows
     CodeCvt<Led_tChar> converter{&rawByteSpan, CodeCvt<Led_tChar>{suggestedCodePage.value_or (CP_ACP)}};
 #else
     CodeCvt<Led_tChar> converter{&rawByteSpan, suggestedCodePage? CodeCvt<Led_tChar>{suggestedCodePage)}: CodeCvt<Led_tChar>{locale{})}};
 #endif
-    size_t             outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
+    size_t                         outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
     Memory::StackBuffer<Led_tChar> fileData2{outCharCnt};
     auto                           charsRead = converter.Bytes2Characters (&rawByteSpan, span{fileData2}).size ();
 #else
@@ -441,7 +447,9 @@ ReadWriteMemBufferPackage::ReadWriteMemBufferPackage ()
     fPackages.reserve (1);
 }
 
-ReadWriteMemBufferPackage::~ReadWriteMemBufferPackage () {}
+ReadWriteMemBufferPackage::~ReadWriteMemBufferPackage ()
+{
+}
 
 bool ReadWriteMemBufferPackage::GetFlavorAvailable (Led_ClipFormat clipFormat) const
 {

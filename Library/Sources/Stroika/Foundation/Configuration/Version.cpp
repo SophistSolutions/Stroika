@@ -164,4 +164,7 @@ Characters::String Version::AsPrettyVersionString () const
     return Characters::Format (L"%d.%d%s%s", fMajorVer, fMinorVer, stageStr.c_str (), verSubStagStr.c_str ());
 }
 
-Characters::String Version::AsMajorMinorString () const { return Characters::Format (L"%d.%d", fMajorVer, fMinorVer); }
+Characters::String Version::AsMajorMinorString () const
+{
+    return Characters::Format (L"%d.%d", fMajorVer, fMinorVer);
+}

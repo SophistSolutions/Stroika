@@ -88,7 +88,10 @@ namespace {
             return string{result, e};
         }
     };
-    const error_category& DNS_error_category () noexcept { return Common::Immortalize<getaddrinfo_error_category_> (); }
+    const error_category& DNS_error_category () noexcept
+    {
+        return Common::Immortalize<getaddrinfo_error_category_> ();
+    }
 }
 
 /*

@@ -71,7 +71,8 @@ u8string Characters::CString::FormatV (const char8_t* format, va_list argsList)
     va_copy (argListCopy, argsList);
 
 #if __STDC_WANT_SECURE_LIB__
-    while (::vsnprintf_s (reinterpret_cast<char*> (msgBuf.data ()), msgBuf.GetSize (), msgBuf.GetSize () - 1, reinterpret_cast<const char*> (format), argListCopy) < 0) {
+    while (::vsnprintf_s (reinterpret_cast<char*> (msgBuf.data ()), msgBuf.GetSize (), msgBuf.GetSize () - 1,
+                          reinterpret_cast<const char*> (format), argListCopy) < 0) {
         msgBuf.GrowToSize_uninitialized (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
@@ -265,9 +266,15 @@ namespace {
     }
 }
 
-string Characters::CString::StripTrailingCharIfAny (const string& s, char c) { return StripTrailingCharIfAny_HLPR_ (s, c); }
+string Characters::CString::StripTrailingCharIfAny (const string& s, char c)
+{
+    return StripTrailingCharIfAny_HLPR_ (s, c);
+}
 
-wstring Characters::CString::StripTrailingCharIfAny (const wstring& s, wchar_t c) { return StripTrailingCharIfAny_HLPR_ (s, c); }
+wstring Characters::CString::StripTrailingCharIfAny (const wstring& s, wchar_t c)
+{
+    return StripTrailingCharIfAny_HLPR_ (s, c);
+}
 
 /*
  ********************************************************************************

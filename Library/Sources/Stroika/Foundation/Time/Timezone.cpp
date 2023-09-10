@@ -489,5 +489,8 @@ namespace {
         return result;
     }
 
-    time_t GetLocaltimeToGMTOffset_ (const DateTime& forTime) { return GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (forTime)); }
+    time_t GetLocaltimeToGMTOffset_ (const DateTime& forTime)
+    {
+        return GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (forTime));
+    }
 }

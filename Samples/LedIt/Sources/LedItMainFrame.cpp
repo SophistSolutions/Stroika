@@ -74,7 +74,10 @@ LedItMainFrame::LedItMainFrame ()
     fFormatBar = new FormatToolbar (*this);
 }
 
-LedItMainFrame::~LedItMainFrame () { delete fFormatBar; }
+LedItMainFrame::~LedItMainFrame ()
+{
+    delete fFormatBar;
+}
 
 int LedItMainFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
 {
@@ -146,7 +149,10 @@ void LedItMainFrame::OnClose ()
     inherited::OnClose ();
 }
 
-BOOL LedItMainFrame::PreCreateWindow (CREATESTRUCT& cs) { return inherited::PreCreateWindow (cs); }
+BOOL LedItMainFrame::PreCreateWindow (CREATESTRUCT& cs)
+{
+    return inherited::PreCreateWindow (cs);
+}
 
 IncrementalFontSpecification LedItMainFrame::GetCurFont () const
 {
@@ -252,7 +258,13 @@ void LedItMainFrame::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysM
 }
 
 #ifdef _DEBUG
-void LedItMainFrame::AssertValid () const { inherited::AssertValid (); }
+void LedItMainFrame::AssertValid () const
+{
+    inherited::AssertValid ();
+}
 
-void LedItMainFrame::Dump (CDumpContext& dc) const { inherited::Dump (dc); }
+void LedItMainFrame::Dump (CDumpContext& dc) const
+{
+    inherited::Dump (dc);
+}
 #endif //_DEBUG

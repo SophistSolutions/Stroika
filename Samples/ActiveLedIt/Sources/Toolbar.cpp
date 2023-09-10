@@ -80,8 +80,14 @@ namespace {
                 return E_FAIL;
             }
         }
-        static void init (VARIANT* p) { p->vt = VT_EMPTY; }
-        static void destroy (VARIANT* p) { ::VariantClear (p); }
+        static void init (VARIANT* p)
+        {
+            p->vt = VT_EMPTY;
+        }
+        static void destroy (VARIANT* p)
+        {
+            ::VariantClear (p);
+        }
     };
 }
 
@@ -135,11 +141,18 @@ ActiveLedIt_IconButtonToolbarElement::ActiveLedIt_IconButtonToolbarElement ()
 {
 }
 
-ActiveLedIt_IconButtonToolbarElement::~ActiveLedIt_IconButtonToolbarElement () {}
+ActiveLedIt_IconButtonToolbarElement::~ActiveLedIt_IconButtonToolbarElement ()
+{
+}
 
-HRESULT ActiveLedIt_IconButtonToolbarElement::FinalConstruct () { return S_OK; }
+HRESULT ActiveLedIt_IconButtonToolbarElement::FinalConstruct ()
+{
+    return S_OK;
+}
 
-void ActiveLedIt_IconButtonToolbarElement::FinalRelease () {}
+void ActiveLedIt_IconButtonToolbarElement::FinalRelease ()
+{
+}
 
 LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam,
                                                              [[maybe_unused]] LPARAM lParam, BOOL& bHandled)
@@ -578,11 +591,18 @@ ActiveLedIt_ComboBoxToolbarElement::ActiveLedIt_ComboBoxToolbarElement ()
 {
 }
 
-ActiveLedIt_ComboBoxToolbarElement::~ActiveLedIt_ComboBoxToolbarElement () {}
+ActiveLedIt_ComboBoxToolbarElement::~ActiveLedIt_ComboBoxToolbarElement ()
+{
+}
 
-HRESULT ActiveLedIt_ComboBoxToolbarElement::FinalConstruct () { return S_OK; }
+HRESULT ActiveLedIt_ComboBoxToolbarElement::FinalConstruct ()
+{
+    return S_OK;
+}
 
-void ActiveLedIt_ComboBoxToolbarElement::FinalRelease () {}
+void ActiveLedIt_ComboBoxToolbarElement::FinalRelease ()
+{
+}
 
 LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBDropDown ([[maybe_unused]] USHORT uMsg, [[maybe_unused]] USHORT wParam,
                                                           [[maybe_unused]] HWND ctlHandle, BOOL& bHandled)
@@ -913,11 +933,18 @@ ActiveLedIt_SeparatorToolbarElement::ActiveLedIt_SeparatorToolbarElement ()
 {
 }
 
-ActiveLedIt_SeparatorToolbarElement::~ActiveLedIt_SeparatorToolbarElement () {}
+ActiveLedIt_SeparatorToolbarElement::~ActiveLedIt_SeparatorToolbarElement ()
+{
+}
 
-HRESULT ActiveLedIt_SeparatorToolbarElement::FinalConstruct () { return S_OK; }
+HRESULT ActiveLedIt_SeparatorToolbarElement::FinalConstruct ()
+{
+    return S_OK;
+}
 
-void ActiveLedIt_SeparatorToolbarElement::FinalRelease () {}
+void ActiveLedIt_SeparatorToolbarElement::FinalRelease ()
+{
+}
 
 STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_PreferredHeight (UINT* pVal)
 {
@@ -1029,7 +1056,9 @@ ActiveLedIt_Toolbar::ActiveLedIt_Toolbar ()
 {
 }
 
-ActiveLedIt_Toolbar::~ActiveLedIt_Toolbar () {}
+ActiveLedIt_Toolbar::~ActiveLedIt_Toolbar ()
+{
+}
 
 LRESULT ActiveLedIt_Toolbar::OnCommand ([[maybe_unused]] UINT uMsg, WPARAM wParam, [[maybe_unused]] LPARAM lParam, BOOL& bHandled)
 {
@@ -1128,7 +1157,10 @@ HRESULT ActiveLedIt_Toolbar::FinalConstruct ()
     return S_OK;
 }
 
-void ActiveLedIt_Toolbar::FinalRelease () { IdleManager::Get ().RemoveEnterIdler (this); }
+void ActiveLedIt_Toolbar::FinalRelease ()
+{
+    IdleManager::Get ().RemoveEnterIdler (this);
+}
 
 void ActiveLedIt_Toolbar::OnEnterIdle ()
 {
@@ -1407,9 +1439,14 @@ ActiveLedIt_ToolbarList::~ActiveLedIt_ToolbarList ()
     }
 }
 
-HRESULT ActiveLedIt_ToolbarList::FinalConstruct () { return S_OK; }
+HRESULT ActiveLedIt_ToolbarList::FinalConstruct ()
+{
+    return S_OK;
+}
 
-void ActiveLedIt_ToolbarList::FinalRelease () {}
+void ActiveLedIt_ToolbarList::FinalRelease ()
+{
+}
 
 LRESULT ActiveLedIt_ToolbarList::OnPaint ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam,
                                           [[maybe_unused]] BOOL& bHandled)

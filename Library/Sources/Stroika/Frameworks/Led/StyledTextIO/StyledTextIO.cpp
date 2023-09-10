@@ -47,25 +47,33 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 @METHOD:        StyledTextIOReader::SinkStream::StartTable
 @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
 */
-void StyledTextIOReader::SinkStream::StartTable () {}
+void StyledTextIOReader::SinkStream::StartTable ()
+{
+}
 
 /*
 @METHOD:        StyledTextIOReader::SinkStream::EndTable
 @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
 */
-void StyledTextIOReader::SinkStream::EndTable () {}
+void StyledTextIOReader::SinkStream::EndTable ()
+{
+}
 
 /*
 @METHOD:        StyledTextIOReader::SinkStream::StartTableRow
 @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
 */
-void StyledTextIOReader::SinkStream::StartTableRow () {}
+void StyledTextIOReader::SinkStream::StartTableRow ()
+{
+}
 
 /*
 @METHOD:        StyledTextIOReader::SinkStream::EndTableRow
 @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
 */
-void StyledTextIOReader::SinkStream::EndTableRow () {}
+void StyledTextIOReader::SinkStream::EndTableRow ()
+{
+}
 
 /*
 @METHOD:        StyledTextIOReader::SinkStream::StartTableCell
@@ -78,13 +86,17 @@ void StyledTextIOReader::SinkStream::EndTableRow () {}
             @'StyledTextIOReader::SinkStream::SetCellWidths' argument.
             </p>
 */
-void StyledTextIOReader::SinkStream::StartTableCell (size_t /*colSpan*/) {}
+void StyledTextIOReader::SinkStream::StartTableCell (size_t /*colSpan*/)
+{
+}
 
 /*
 @METHOD:        StyledTextIOReader::SinkStream::EndTableCell
 @DESCRIPTION:   <p>Default is to do ignore. Override to implement tables.</p>
 */
-void StyledTextIOReader::SinkStream::EndTableCell () {}
+void StyledTextIOReader::SinkStream::EndTableCell ()
+{
+}
 
 void StyledTextIOReader::SinkStream::SetJustification (Justification /*justification*/)
 {
@@ -258,19 +270,28 @@ void StyledTextIOReader::BadInputHandler::HandleBadlyFormattedInput (const Style
 @METHOD:        StyledTextIOWriter::SrcStream::GetJustification
 @DESCRIPTION:
 */
-Justification StyledTextIOWriter::SrcStream::GetJustification () const { return eLeftJustify; }
+Justification StyledTextIOWriter::SrcStream::GetJustification () const
+{
+    return eLeftJustify;
+}
 
 /*
 @METHOD:        StyledTextIOWriter::SrcStream::GetStandardTabStopList
 @DESCRIPTION:
 */
-TextImager::StandardTabStopList StyledTextIOWriter::SrcStream::GetStandardTabStopList () const { return StandardTabStopList (); }
+TextImager::StandardTabStopList StyledTextIOWriter::SrcStream::GetStandardTabStopList () const
+{
+    return StandardTabStopList ();
+}
 
 /*
 @METHOD:        StyledTextIOWriter::SrcStream::GetFirstIndent
 @DESCRIPTION:
 */
-TWIPS StyledTextIOWriter::SrcStream::GetFirstIndent () const { return TWIPS{0}; }
+TWIPS StyledTextIOWriter::SrcStream::GetFirstIndent () const
+{
+    return TWIPS{0};
+}
 
 /*
 @METHOD:        StyledTextIOWriter::SrcStream::GetMargins
@@ -288,19 +309,28 @@ void StyledTextIOWriter::SrcStream::GetMargins (TWIPS* lhs, TWIPS* rhs) const
 @METHOD:        StyledTextIOWriter::SrcStream::GetSpaceBefore
 @DESCRIPTION:
 */
-TWIPS StyledTextIOWriter::SrcStream::GetSpaceBefore () const { return TWIPS{0}; }
+TWIPS StyledTextIOWriter::SrcStream::GetSpaceBefore () const
+{
+    return TWIPS{0};
+}
 
 /*
 @METHOD:        StyledTextIOWriter::SrcStream::GetSpaceAfter
 @DESCRIPTION:
 */
-TWIPS StyledTextIOWriter::SrcStream::GetSpaceAfter () const { return TWIPS{0}; }
+TWIPS StyledTextIOWriter::SrcStream::GetSpaceAfter () const
+{
+    return TWIPS{0};
+}
 
 /*
 @METHOD:        StyledTextIOWriter::SrcStream::GetLineSpacing
 @DESCRIPTION:
 */
-LineSpacing StyledTextIOWriter::SrcStream::GetLineSpacing () const { return LineSpacing (); }
+LineSpacing StyledTextIOWriter::SrcStream::GetLineSpacing () const
+{
+    return LineSpacing ();
+}
 
 /*
 @METHOD:        StyledTextIOWriter::SrcStream::GetListStyleInfo
@@ -328,7 +358,10 @@ Led_tChar StyledTextIOWriter::SrcStream::GetSoftLineBreakCharacter () const
 @METHOD:        StyledTextIOWriter::SrcStream::GetHidableTextRuns
 @DESCRIPTION:
 */
-DiscontiguousRun<bool> StyledTextIOWriter::SrcStream::GetHidableTextRuns () const { return DiscontiguousRun<bool> (); }
+DiscontiguousRun<bool> StyledTextIOWriter::SrcStream::GetHidableTextRuns () const
+{
+    return DiscontiguousRun<bool> ();
+}
 
 /*
  ********************************************************************************
@@ -353,7 +386,10 @@ StyledTextIOSrcStream_Memory::StyledTextIOSrcStream_Memory (const void* data, si
 {
 }
 
-size_t StyledTextIOSrcStream_Memory::current_offset () const { return (((char*)fCurPtr - (char*)fData)); }
+size_t StyledTextIOSrcStream_Memory::current_offset () const
+{
+    return (((char*)fCurPtr - (char*)fData));
+}
 
 void StyledTextIOSrcStream_Memory::seek_to (size_t to)
 {
@@ -397,7 +433,10 @@ size_t StyledTextIOSrcStream_Memory::read1 (char* c)
 }
 
 #if qPlatform_MacOS
-Handle StyledTextIOSrcStream_Memory::GetAUXResourceHandle () const { return fResourceHandle; }
+Handle StyledTextIOSrcStream_Memory::GetAUXResourceHandle () const
+{
+    return fResourceHandle;
+}
 #endif
 
 /*
@@ -424,9 +463,15 @@ StyledTextIOSrcStream_FileDescriptor::StyledTextIOSrcStream_FileDescriptor (int 
 {
 }
 
-StyledTextIOSrcStream_FileDescriptor::~StyledTextIOSrcStream_FileDescriptor () { delete[] fInputBuffer; }
+StyledTextIOSrcStream_FileDescriptor::~StyledTextIOSrcStream_FileDescriptor ()
+{
+    delete[] fInputBuffer;
+}
 
-size_t StyledTextIOSrcStream_FileDescriptor::current_offset () const { return fCurSeekPos; }
+size_t StyledTextIOSrcStream_FileDescriptor::current_offset () const
+{
+    return fCurSeekPos;
+}
 
 void StyledTextIOSrcStream_FileDescriptor::seek_to (size_t to)
 {
@@ -543,7 +588,10 @@ void StyledTextIOSrcStream_FileDescriptor::ReadInWindow ([[maybe_unused]] size_t
 }
 
 #if qPlatform_MacOS
-Handle StyledTextIOSrcStream_FileDescriptor::GetAUXResourceHandle () const { return fResourceHandle; }
+Handle StyledTextIOSrcStream_FileDescriptor::GetAUXResourceHandle () const
+{
+    return fResourceHandle;
+}
 #endif
 
 /*
@@ -560,9 +608,15 @@ StyledTextIOWriterSinkStream_Memory::StyledTextIOWriterSinkStream_Memory ()
 {
 }
 
-StyledTextIOWriterSinkStream_Memory::~StyledTextIOWriterSinkStream_Memory () { delete[] fData; }
+StyledTextIOWriterSinkStream_Memory::~StyledTextIOWriterSinkStream_Memory ()
+{
+    delete[] fData;
+}
 
-size_t StyledTextIOWriterSinkStream_Memory::current_offset () const { return (fCurPtr - fData); }
+size_t StyledTextIOWriterSinkStream_Memory::current_offset () const
+{
+    return (fCurPtr - fData);
+}
 
 void StyledTextIOWriterSinkStream_Memory::seek_to (size_t to)
 {
@@ -655,7 +709,10 @@ StyledTextIOWriterSinkStream_FileDescriptor::~StyledTextIOWriterSinkStream_FileD
     }
 }
 
-size_t StyledTextIOWriterSinkStream_FileDescriptor::current_offset () const { return fCurSeekPos; }
+size_t StyledTextIOWriterSinkStream_FileDescriptor::current_offset () const
+{
+    return fCurSeekPos;
+}
 
 void StyledTextIOWriterSinkStream_FileDescriptor::seek_to (size_t to)
 {
@@ -793,9 +850,15 @@ string StyledTextIOReader::GrabString (size_t from, size_t to)
  ******************************* StyledTextIOWriter *****************************
  ********************************************************************************
  */
-void StyledTextIOWriter::write (const void* data, size_t nBytes) { GetSinkStream ().write (data, nBytes); }
+void StyledTextIOWriter::write (const void* data, size_t nBytes)
+{
+    GetSinkStream ().write (data, nBytes);
+}
 
-void StyledTextIOWriter::write (char c) { GetSinkStream ().write (&c, 1); }
+void StyledTextIOWriter::write (char c)
+{
+    GetSinkStream ().write (&c, 1);
+}
 
 void StyledTextIOWriter::write (const char* str)
 {
@@ -803,7 +866,10 @@ void StyledTextIOWriter::write (const char* str)
     GetSinkStream ().write (str, strlen (str));
 }
 
-void StyledTextIOWriter::write (const string& str) { GetSinkStream ().write (str.c_str (), str.length ()); }
+void StyledTextIOWriter::write (const string& str)
+{
+    GetSinkStream ().write (str.c_str (), str.length ());
+}
 
 /*
  ********************************************************************************
@@ -815,4 +881,7 @@ EmbeddingSinkStream::EmbeddingSinkStream (StyledTextIOWriter::SinkStream& realSi
 {
 }
 
-void EmbeddingSinkStream::write (const void* buffer, size_t bytes) { fRealSinkStream.write (buffer, bytes); }
+void EmbeddingSinkStream::write (const void* buffer, size_t bytes)
+{
+    fRealSinkStream.write (buffer, bytes);
+}

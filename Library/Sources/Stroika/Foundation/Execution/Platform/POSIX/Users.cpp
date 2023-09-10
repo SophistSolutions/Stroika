@@ -72,11 +72,17 @@ String Platform::POSIX::uid_t2UserName (uid_t uid)
  ****************************** Platform::POSIX::GetUID *************************
  ********************************************************************************
  */
-uid_t Platform::POSIX::GetUID () { return ::getuid (); }
+uid_t Platform::POSIX::GetUID ()
+{
+    return ::getuid ();
+}
 
 /*
  ********************************************************************************
  ********************* Platform::POSIX::GetEffectiveUID *************************
  ********************************************************************************
  */
-uid_t Platform::POSIX::GetEffectiveUID () { return ::geteuid (); }
+uid_t Platform::POSIX::GetEffectiveUID ()
+{
+    return ::geteuid ();
+}

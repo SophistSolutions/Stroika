@@ -28,7 +28,9 @@ LedItServerItem::LedItServerItem (LedItDocument* pContainerDoc)
     //  (eg, adding additional clipboard formats to the item's data source)
 }
 
-LedItServerItem::~LedItServerItem () {}
+LedItServerItem::~LedItServerItem ()
+{
+}
 
 void LedItServerItem::Serialize (CArchive& ar)
 {
@@ -100,7 +102,13 @@ BOOL LedItServerItem::OnDraw (CDC* pDC, CSize& /*rSize*/)
 }
 
 #ifdef _DEBUG
-void LedItServerItem::AssertValid () const { COleServerItem::AssertValid (); }
+void LedItServerItem::AssertValid () const
+{
+    COleServerItem::AssertValid ();
+}
 
-void LedItServerItem::Dump (CDumpContext& dc) const { COleServerItem::Dump (dc); }
+void LedItServerItem::Dump (CDumpContext& dc) const
+{
+    COleServerItem::Dump (dc);
+}
 #endif

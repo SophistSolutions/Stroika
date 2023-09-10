@@ -31,8 +31,14 @@ public:
     {
         return make_shared<Rep_> (); // no instance data
     }
-    virtual String       GetDefaultFileSuffix () const override { return ".ini"sv; }
-    virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override { return Read (Streams::TextReader::New (in)); }
+    virtual String GetDefaultFileSuffix () const override
+    {
+        return ".ini"sv;
+    }
+    virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
+    {
+        return Read (Streams::TextReader::New (in));
+    }
     virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

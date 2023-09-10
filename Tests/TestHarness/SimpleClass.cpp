@@ -62,11 +62,20 @@ size_t SimpleClass::GetValue () const
     return (fValue_);
 }
 
-size_t SimpleClass::GetTotalLiveCount () { return sTotalLiveObjects_; }
+size_t SimpleClass::GetTotalLiveCount ()
+{
+    return sTotalLiveObjects_;
+}
 
-SimpleClass SimpleClass::operator+ (const SimpleClass& rhs) const { return SimpleClass (fValue_ + rhs.fValue_); }
+SimpleClass SimpleClass::operator+ (const SimpleClass& rhs) const
+{
+    return SimpleClass (fValue_ + rhs.fValue_);
+}
 
-SimpleClass::operator size_t () const { return fValue_; }
+SimpleClass::operator size_t () const
+{
+    return fValue_;
+}
 
 bool SimpleClass::operator== (const SimpleClass& rhs) const
 {
@@ -75,7 +84,7 @@ bool SimpleClass::operator== (const SimpleClass& rhs) const
     return fValue_ == rhs.fValue_;
 }
 
-bool SimpleClass::operator<(const SimpleClass& rhs) const
+bool SimpleClass::operator< (const SimpleClass& rhs) const
 {
     VerifyTestResult (fConstructed_ == kKnownGoodBitPatternValue_);
     VerifyTestResult (rhs.fConstructed_ == kKnownGoodBitPatternValue_);
@@ -127,7 +136,10 @@ size_t SimpleClassWithoutComparisonOperators::GetValue () const
     return fValue_;
 }
 
-size_t SimpleClassWithoutComparisonOperators::GetTotalLiveCount () { return sTotalLiveObjects_; }
+size_t SimpleClassWithoutComparisonOperators::GetTotalLiveCount ()
+{
+    return sTotalLiveObjects_;
+}
 
 SimpleClassWithoutComparisonOperators SimpleClassWithoutComparisonOperators::operator+ (const SimpleClassWithoutComparisonOperators& rhs) const
 {

@@ -184,7 +184,10 @@ Cookie Cookie::Parse (Streams::InputStream<Character>::Ptr src)
     return Cookie{key, value, attributes};
 }
 
-Cookie Cookie::Parse (const String& src) { return Parse (TextReader::New (src)); }
+Cookie Cookie::Parse (const String& src)
+{
+    return Parse (TextReader::New (src));
+}
 
 /*
  ********************************************************************************

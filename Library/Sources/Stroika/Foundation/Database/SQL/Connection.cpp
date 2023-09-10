@@ -20,6 +20,12 @@ using namespace Database::SQL;
  ****************************** SQL::Connection::Ptr ****************************
  ********************************************************************************
  */
-Statement Connection::Ptr::mkStatement (const String& sql) { return _fRep->mkStatement (sql); }
+Statement Connection::Ptr::mkStatement (const String& sql)
+{
+    return _fRep->mkStatement (sql);
+}
 
-Transaction Connection::Ptr::mkTransaction () { return _fRep->mkTransaction (); }
+Transaction Connection::Ptr::mkTransaction ()
+{
+    return _fRep->mkTransaction ();
+}

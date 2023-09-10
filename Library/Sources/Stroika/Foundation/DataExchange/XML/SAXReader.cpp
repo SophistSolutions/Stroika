@@ -167,8 +167,11 @@ namespace {
 #endif
 
     public:
-        virtual MemoryManager* getExceptionMemoryManager () override { return this; }
-        virtual void*          allocate (XMLSize_t size) override
+        virtual MemoryManager* getExceptionMemoryManager () override
+        {
+            return this;
+        }
+        virtual void* allocate (XMLSize_t size) override
         {
             try {
 #if qXMLDBTrackAllocs
@@ -188,7 +191,7 @@ namespace {
 #if qXMLDBTrackAllocs
                 return fAllocator.Deallocate (p);
 #else
-                ::       operator delete (p);
+                ::operator delete (p);
 #endif
             }
         }
@@ -220,7 +223,9 @@ public:
         Execution::Throw (BadFormatException{xercesString2String_ (errorText), static_cast<unsigned int> (lineNum),
                                              static_cast<unsigned int> (colNum), 0});
     }
-    virtual void resetErrors () override {}
+    virtual void resetErrors () override
+    {
+    }
 
     // ErrorHandler
 public:
@@ -329,11 +334,16 @@ namespace {
 
         UsingLibInterHelper ();
     };
-    UsingLibInterHelper::UsingLibInterHelper () {}
+    UsingLibInterHelper::UsingLibInterHelper ()
+    {
+    }
 }
 
 namespace {
-    inline void AssureXercesInitialized_ () { static UsingLibInterHelper sUsingLibInterHelper_; }
+    inline void AssureXercesInitialized_ ()
+    {
+        static UsingLibInterHelper sUsingLibInterHelper_;
+    }
 }
 #endif
 
@@ -359,12 +369,18 @@ namespace {
             }
 
         public:
-            virtual XMLFilePos curPos () const override { return fSource.GetOffset (); }
-            virtual XMLSize_t  readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
+            virtual XMLFilePos curPos () const override
+            {
+                return fSource.GetOffset ();
+            }
+            virtual XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
             {
                 return fSource.Read (reinterpret_cast<byte*> (toFill), reinterpret_cast<byte*> (toFill) + maxToRead);
             }
-            virtual const XMLCh* getContentType () const override { return nullptr; }
+            virtual const XMLCh* getContentType () const override
+            {
+                return nullptr;
+            }
 
         protected:
             InputStream<byte>::Ptr fSource;
@@ -376,7 +392,10 @@ namespace {
             , fSource{in}
         {
         }
-        virtual BinInputStream* makeStream () const override { return new (getMemoryManager ()) StdIStream_InputStream{fSource}; }
+        virtual BinInputStream* makeStream () const override
+        {
+            return new (getMemoryManager ()) StdIStream_InputStream{fSource};
+        }
 
     protected:
         InputStream<byte>::Ptr fSource;
@@ -436,7 +455,10 @@ namespace {
             , fProgressCallback{progressCallback}
         {
         }
-        virtual BinInputStream* makeStream () const override { return new (getMemoryManager ()) ISWithProg{fSource, fProgressCallback}; }
+        virtual BinInputStream* makeStream () const override
+        {
+            return new (getMemoryManager ()) ISWithProg{fSource, fProgressCallback};
+        }
 
     private:
         ProgressMonitor::Updater fProgressCallback;
@@ -463,8 +485,14 @@ namespace {
         }
 
     public:
-        virtual void startDocument () override { fCallback.StartDocument (); }
-        virtual void endDocument () override { fCallback.EndDocument (); }
+        virtual void startDocument () override
+        {
+            fCallback.StartDocument ();
+        }
+        virtual void endDocument () override
+        {
+            fCallback.EndDocument ();
+        }
         virtual void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const /*qname*/, const Attributes& attributes) override
         {
             Require (uri != nullptr);

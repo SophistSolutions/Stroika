@@ -108,7 +108,9 @@ void StandardStyledTextImager::SetStyleDatabase (const StyleDatabasePtr& styleDa
     is changed. This means when a new one is provided, created, or disassociated. It does NOT mean that its called when any of the
     data in the style database changes.</p>
 */
-void StandardStyledTextImager::HookStyleDatabaseChanged () {}
+void StandardStyledTextImager::HookStyleDatabaseChanged ()
+{
+}
 
 FontMetrics StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos) const
 {
@@ -366,7 +368,9 @@ void StandardStyledTextImager::Invariant_ () const
  ********************************************************************************
  */
 #if qDebug
-void StandardStyledTextImager::AbstractStyleDatabaseRep::Invariant_ () const {}
+void StandardStyledTextImager::AbstractStyleDatabaseRep::Invariant_ () const
+{
+}
 #endif
 
 /*
@@ -440,5 +444,8 @@ void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowin
 }
 
 #if qDebug
-void StyleDatabaseRep::Invariant_ () const { inheritedMC::Invariant_ (); }
+void StyleDatabaseRep::Invariant_ () const
+{
+    inheritedMC::Invariant_ ();
+}
 #endif

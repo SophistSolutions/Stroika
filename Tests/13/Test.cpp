@@ -103,7 +103,7 @@ namespace {
 
 namespace {
     namespace SB_SEPARETEFILE_CONTAINERS_MISC_Adder {
-        void DoTest()
+        void DoTest ()
         {
             using namespace Containers::Adapters;
             static_assert (IAddableTo<set<int>>);
@@ -119,7 +119,10 @@ namespace {
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
             using value_type = SimpleClassWithoutComparisonOperators;
-            static bool Equals (value_type v1, value_type v2) { return v1.GetValue () == v2.GetValue (); }
+            static bool Equals (value_type v1, value_type v2)
+            {
+                return v1.GetValue () == v2.GetValue ();
+            }
         };
         struct MySimpleClassWithoutComparisonOperators_LESS_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const

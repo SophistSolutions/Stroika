@@ -103,8 +103,11 @@ namespace {
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
-        MyData_ Get () const { return fActualCurrentConfigData_; }
-        void    Set (const MyData_& v)
+        MyData_ Get () const
+        {
+            return fActualCurrentConfigData_;
+        }
+        void Set (const MyData_& v)
         {
             fActualCurrentConfigData_ = v;
             fOptionsFile_.Write (v);
@@ -148,8 +151,7 @@ namespace {
                 VerifyTestResult (ct0.GetSuffix () == nullopt);
 
                 InternetMediaType ct1{L"text/plain;charset=ascii"};
-                VerifyTestResult (
-                    (ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{"charset", "ascii"}}));
+                VerifyTestResult ((ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{"charset", "ascii"}}));
                 VerifyTestResult (ct1.GetSuffix () == nullopt);
 
                 InternetMediaType ct2{"text/plain; charset = ascii"};

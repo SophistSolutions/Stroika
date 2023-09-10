@@ -81,8 +81,11 @@ struct VariantValue::TIRep_ final : VariantValue::IRep_, public Memory::UseBlock
         : fVal{forward<FWD> (v)}
     {
     }
-    virtual Type GetType () const override { return TN_<T>::kTYPEENUM; }
-    T            fVal;
+    virtual Type GetType () const override
+    {
+        return TN_<T>::kTYPEENUM;
+    }
+    T fVal;
 };
 
 /*
@@ -90,7 +93,7 @@ struct VariantValue::TIRep_ final : VariantValue::IRep_, public Memory::UseBlock
  ******************************** VariantValue **********************************
  ********************************************************************************
  */
-const shared_ptr<VariantValue::IRep_>     VariantValue::kFalseRep_ = MakeSharedPtr_<TIRep_<bool>> (false);
+const shared_ptr<VariantValue::IRep_> VariantValue::kFalseRep_ = MakeSharedPtr_<TIRep_<bool>> (false);
 const shared_ptr<VariantValue::IRep_> VariantValue::kTrueRep_  = MakeSharedPtr_<TIRep_<bool>> (true);
 
 VariantValue::VariantValue (bool val)
@@ -315,7 +318,10 @@ bool VariantValue::empty () const
     }
 }
 
-String VariantValue::ToString () const { return As<String> (); }
+String VariantValue::ToString () const
+{
+    return As<String> ();
+}
 
 template <>
 bool VariantValue::As () const

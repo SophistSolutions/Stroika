@@ -82,12 +82,18 @@ namespace {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
             : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () == v2.GetValue (); }
+            bool operator() (const value_type& v1, const value_type& v2) const
+            {
+                return v1.GetValue () == v2.GetValue ();
+            }
         };
         struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
             : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () < v2.GetValue (); }
+            bool operator() (const value_type& v1, const value_type& v2) const
+            {
+                return v1.GetValue () < v2.GetValue ();
+            }
         };
 
         DoTestForConcreteContainer_<SortedAssociation<size_t, size_t>> ();

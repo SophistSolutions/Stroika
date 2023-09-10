@@ -214,7 +214,10 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
 }
 
 #if qDefaultTracingOn
-ConnectionManager::~ConnectionManager () { DbgTrace (L"Starting destructor for WebServer::ConnectionManager (%p)", this); }
+ConnectionManager::~ConnectionManager ()
+{
+    DbgTrace (L"Starting destructor for WebServer::ConnectionManager (%p)", this);
+}
 #endif
 
 void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
@@ -370,7 +373,10 @@ void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>&
     FixupInterceptorChain_ ();
 }
 
-void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/) { AssertNotImplemented (); }
+void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
+{
+    AssertNotImplemented ();
+}
 
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)
 {

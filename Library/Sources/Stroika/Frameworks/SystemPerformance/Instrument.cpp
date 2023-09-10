@@ -18,15 +18,15 @@ using Debug::AssertExternallySynchronizedMutex;
 Instrument::Instrument (InstrumentNameType instrumentName, unique_ptr<IRep>&& capturer, const Set<MeasurementType>& capturedMeasurements,
                         const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper)
     : context{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-                   const Instrument* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::context);
-                   AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
-                   return thisObj->fCaptureRep_->GetContext ();
-               },
-               [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& context) {
-                   Instrument* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::context);
-                   AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-                   thisObj->fCaptureRep_->SetContext (context);
-               }}
+                  const Instrument* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::context);
+                  AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};
+                  return thisObj->fCaptureRep_->GetContext ();
+              },
+              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& context) {
+                  Instrument* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::context);
+                  AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+                  thisObj->fCaptureRep_->SetContext (context);
+              }}
     , instrumentName{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Instrument* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Instrument::instrumentName);
         AssertExternallySynchronizedMutex::ReadContext readLock{thisObj->fThisAssertExternallySynchronized_};

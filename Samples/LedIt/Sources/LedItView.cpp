@@ -798,9 +798,15 @@ void LedItView::OnShowHideGlyphCommand (CommandNumber cmdNum)
     Options{}.SetShowSpaceGlyphs (GetShowSpaceGlyphs ());
 }
 
-LedItView::SearchParameters LedItView::GetSearchParameters () const { return Options{}.GetSearchParameters (); }
+LedItView::SearchParameters LedItView::GetSearchParameters () const
+{
+    return Options{}.GetSearchParameters ();
+}
 
-void LedItView::SetSearchParameters (const SearchParameters& sp) { Options{}.SetSearchParameters (sp); }
+void LedItView::SetSearchParameters (const SearchParameters& sp)
+{
+    Options{}.SetSearchParameters (sp);
+}
 
 void LedItView::SetShowHiddenText (bool showHiddenText)
 {
@@ -909,11 +915,17 @@ void LedItView::OnSize (UINT nType, int cx, int cy)
     }
 }
 
-void LedItView::OnCancelEditSrvr () { GetDocument ().OnDeactivateUI (FALSE); }
+void LedItView::OnCancelEditSrvr ()
+{
+    GetDocument ().OnDeactivateUI (FALSE);
+}
 #endif
 
 #if qPlatform_Windows
-LedItControlItem* LedItView::GetSoleSelectedOLEEmbedding () const { return dynamic_cast<LedItControlItem*> (GetSoleSelectedEmbedding ()); }
+LedItControlItem* LedItView::GetSoleSelectedOLEEmbedding () const
+{
+    return dynamic_cast<LedItControlItem*> (GetSoleSelectedEmbedding ());
+}
 
 void LedItView::OnBarReturn (NMHDR*, LRESULT*)
 {
@@ -923,9 +935,15 @@ void LedItView::OnBarReturn (NMHDR*, LRESULT*)
 }
 
 #ifdef _DEBUG
-void LedItView::AssertValid () const { inherited::AssertValid (); }
+void LedItView::AssertValid () const
+{
+    inherited::AssertValid ();
+}
 
-void LedItView::Dump (CDumpContext& dc) const { inherited::Dump (dc); }
+void LedItView::Dump (CDumpContext& dc) const
+{
+    inherited::Dump (dc);
+}
 
 LedItDocument& LedItView::GetDocument () const // non-debug version is inline
 {

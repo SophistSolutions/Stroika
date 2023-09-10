@@ -95,8 +95,11 @@ namespace {
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
-        Options_ Get () const { return fActualCurrentConfigData_; }
-        void     Set (const Options_& v)
+        Options_ Get () const
+        {
+            return fActualCurrentConfigData_;
+        }
+        void Set (const Options_& v)
         {
             fActualCurrentConfigData_ = v;
             fOptionsFile_.Write (v);
@@ -115,7 +118,10 @@ namespace {
  *********************************** Options ************************************
  ********************************************************************************
  */
-SearchParameters Options::GetSearchParameters () const { return sOptions_.Get ().fSearchParameters; }
+SearchParameters Options::GetSearchParameters () const
+{
+    return sOptions_.Get ().fSearchParameters;
+}
 
 void Options::SetSearchParameters (const SearchParameters& searchParameters)
 {
@@ -165,7 +171,10 @@ void Options::SetDocBarState (const CDockState& dockState)
 }
 #endif
 
-bool Options::GetSmartCutAndPaste () const { return sOptions_.Get ().fSmartCutAndPaste; }
+bool Options::GetSmartCutAndPaste () const
+{
+    return sOptions_.Get ().fSmartCutAndPaste;
+}
 
 void Options::SetSmartCutAndPaste (bool smartCutAndPaste)
 {
@@ -175,7 +184,10 @@ void Options::SetSmartCutAndPaste (bool smartCutAndPaste)
     });
 }
 
-bool Options::GetAutoIndent () const { return sOptions_.Get ().fAutoIndent; }
+bool Options::GetAutoIndent () const
+{
+    return sOptions_.Get ().fAutoIndent;
+}
 
 void Options::SetAutoIndent (bool autoIndent)
 {
@@ -185,7 +197,10 @@ void Options::SetAutoIndent (bool autoIndent)
     });
 }
 
-bool Options::GetTreatTabAsIndentChar () const { return sOptions_.Get ().fTabsAutoShiftsText; }
+bool Options::GetTreatTabAsIndentChar () const
+{
+    return sOptions_.Get ().fTabsAutoShiftsText;
+}
 
 void Options::SetTreatTabAsIndentChar (bool tabAsIndentChar)
 {
@@ -196,7 +211,10 @@ void Options::SetTreatTabAsIndentChar (bool tabAsIndentChar)
 }
 
 #if qSupportSyntaxColoring
-Options::SyntaxColoringOption Options::GetSyntaxColoringOption () const { return sOptions_.Get ().fSyntaxColoring; }
+Options::SyntaxColoringOption Options::GetSyntaxColoringOption () const
+{
+    return sOptions_.Get ().fSyntaxColoring;
+}
 
 void Options::SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption)
 {
@@ -208,7 +226,10 @@ void Options::SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption
 #endif
 
 #if qPlatform_Windows
-bool Options::GetCheckFileAssocsAtStartup () const { return sOptions_.Get ().fCheckFileAssocAtStartup; }
+bool Options::GetCheckFileAssocsAtStartup () const
+{
+    return sOptions_.Get ().fCheckFileAssocAtStartup;
+}
 
 void Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 {

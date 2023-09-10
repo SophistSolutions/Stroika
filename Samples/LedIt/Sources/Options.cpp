@@ -92,8 +92,11 @@ namespace {
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
-        Options_ Get () const { return fActualCurrentConfigData_; }
-        void     Set (const Options_& v)
+        Options_ Get () const
+        {
+            return fActualCurrentConfigData_;
+        }
+        void Set (const Options_& v)
         {
             fActualCurrentConfigData_ = v;
             fOptionsFile_.Write (v);
@@ -112,7 +115,10 @@ namespace {
  *********************************** Options ************************************
  ********************************************************************************
  */
-SearchParameters Options::GetSearchParameters () const { return sOptions_.Get ().fSearchParameters; }
+SearchParameters Options::GetSearchParameters () const
+{
+    return sOptions_.Get ().fSearchParameters;
+}
 
 void Options::SetSearchParameters (const SearchParameters& searchParameters)
 {
@@ -162,7 +168,10 @@ void Options::SetDocBarState (const CDockState& dockState)
 }
 #endif
 
-bool Options::GetSmartCutAndPaste () const { return sOptions_.Get ().fSmartCutAndPaste; }
+bool Options::GetSmartCutAndPaste () const
+{
+    return sOptions_.Get ().fSmartCutAndPaste;
+}
 
 void Options::SetSmartCutAndPaste (bool smartCutAndPaste)
 {
@@ -172,7 +181,10 @@ void Options::SetSmartCutAndPaste (bool smartCutAndPaste)
     });
 }
 
-bool Options::GetWrapToWindow () const { return sOptions_.Get ().fWrapToWindow; }
+bool Options::GetWrapToWindow () const
+{
+    return sOptions_.Get ().fWrapToWindow;
+}
 
 void Options::SetWrapToWindow (bool wrapToWindow)
 {
@@ -182,7 +194,10 @@ void Options::SetWrapToWindow (bool wrapToWindow)
     });
 }
 
-bool Options::GetShowHiddenText () const { return sOptions_.Get ().fShowHiddenText; }
+bool Options::GetShowHiddenText () const
+{
+    return sOptions_.Get ().fShowHiddenText;
+}
 
 void Options::SetShowHiddenText (bool showHiddenText)
 {
@@ -192,7 +207,10 @@ void Options::SetShowHiddenText (bool showHiddenText)
     });
 }
 
-bool Options::GetShowParagraphGlyphs () const { return sOptions_.Get ().fShowParagraphGlyphs; }
+bool Options::GetShowParagraphGlyphs () const
+{
+    return sOptions_.Get ().fShowParagraphGlyphs;
+}
 
 void Options::SetShowParagraphGlyphs (bool showParagraphGlyphs)
 {
@@ -202,7 +220,10 @@ void Options::SetShowParagraphGlyphs (bool showParagraphGlyphs)
     });
 }
 
-bool Options::GetShowTabGlyphs () const { return sOptions_.Get ().fShowTabGlyphs; }
+bool Options::GetShowTabGlyphs () const
+{
+    return sOptions_.Get ().fShowTabGlyphs;
+}
 
 void Options::SetShowTabGlyphs (bool showTabGlyphs)
 {
@@ -212,7 +233,10 @@ void Options::SetShowTabGlyphs (bool showTabGlyphs)
     });
 }
 
-bool Options::GetShowSpaceGlyphs () const { return sOptions_.Get ().fShowSpaceGlyphs; }
+bool Options::GetShowSpaceGlyphs () const
+{
+    return sOptions_.Get ().fShowSpaceGlyphs;
+}
 
 void Options::SetShowSpaceGlyphs (bool showSpaceGlyphs)
 {
@@ -223,7 +247,10 @@ void Options::SetShowSpaceGlyphs (bool showSpaceGlyphs)
 }
 
 #if qPlatform_Windows
-bool Options::GetCheckFileAssocsAtStartup () const { return sOptions_.Get ().fCheckFileAssocAtStartup; }
+bool Options::GetCheckFileAssocsAtStartup () const
+{
+    return sOptions_.Get ().fCheckFileAssocAtStartup;
+}
 
 void Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 {
