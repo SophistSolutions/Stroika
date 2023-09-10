@@ -426,7 +426,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 				echo -n "  $PREFIX_OUT_LABEL" "$EXE_RUN_..." >>$TEST_OUT_FILE 2>&1
 				STAGE_STARTAT_INT=$(date +%s)
 				tmpfile=$(mktemp /tmp/stkregtst.XXXXXX)
-				if eval "$EXE_RUN_" >$tmpfile 2>&1  ; then
+				if eval "($EXE_RUN_)" >$tmpfile 2>&1  ; then
 					echo -n "SUCCESS..." >>$TEST_OUT_FILE
 				else
 					echo "**FAILED**" >>$TEST_OUT_FILE
