@@ -2170,7 +2170,7 @@ sub PostProcessOptions_ ()
 					}
 					FillInToolsPathAdditionsIfNeeded_();
 					my $dir2Add  = GetMSVCVarName_ ("ASAN_DLL_DIR");;
-					$RUN_PREFIX = "ASAN_DLL_DIR_=\$\$(cygpath --unix \"$dir2Add\"); PATH=\"\$\$PATH:\$\$ASAN_DLL_DIR_\"" . $RUN_PREFIX;
+					$RUN_PREFIX = "ASAN_DLL_DIR_=\$(cygpath --unix \"$dir2Add\"); PATH=\"\$PATH:\$ASAN_DLL_DIR_\"" . $RUN_PREFIX;
 				}
 			}
 			push @CFLAGS, $crap2Add2CZZFlags;
