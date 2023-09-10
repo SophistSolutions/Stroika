@@ -191,7 +191,7 @@ namespace Stroika::Foundation::Memory {
          */
         class Snapshot {
         public:
-            Snapshot () = delete;
+            Snapshot () = default;
             explicit Snapshot (const PTRMAP& m);
 
         public:
@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Memory {
 
     public:
         nonvirtual Snapshot GetSnapshot () const;
-        nonvirtual void     DUMPCurMemStats (const Snapshot& sinceSnapshot = Snapshot ());
+        nonvirtual void     DUMPCurMemStats (const Snapshot& sinceSnapshot = Snapshot{});
 
     private:
         mutable recursive_mutex          fCritSection_;
