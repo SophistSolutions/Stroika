@@ -295,6 +295,7 @@ endif
 # However, adding all of CFLAGs to the arguments of openssl configure didn't work. But looking through the code for configure, it appears to respect the passed in CFLAGS (as do most
 # configure processes) - so use that trick here.
 #
+export CPPFLAGS
 export CFLAGS
 export CXXFLAGS
 export LDFLAGS
