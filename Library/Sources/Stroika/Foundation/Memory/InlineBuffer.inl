@@ -384,9 +384,48 @@ namespace Stroika::Foundation::Memory {
     template <ISpanOfT<T> SPAN_T>
     void InlineBuffer<T, BUF_SIZE>::push_back (const SPAN_T& copyFrom)
     {
-        // super simple first draft impl
-        for (auto i : copyFrom) {
-            push_back (i);
+        size_t s    = size ();
+        size_t newS = s + copyFrom.size ();
+        if (not this->HasEnoughCapacity_ (newS)) {
+            if constexpr (is_trivially_copyable_v<T>) {
+                resize_uninitialized (newS);
+            }
+            else {
+                resize (newS);
+            }
+        }
+        Assert (this->HasEnoughCapacity_ (newS));
+        if constexpr (is_trivially_copyable_v<T>) {
+            copy (copyFrom.begin (), copyFrom.end (), this->begin () + s);
+        }
+        else {
+            uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin () + s);
+        }
+    }
+    template <typename T, size_t BUF_SIZE>
+    template <ISpanT SPAN_T>
+    void InlineBuffer<T, BUF_SIZE>::push_back_coerced (const SPAN_T& copyFrom)
+    {
+        size_t s    = size ();
+        size_t newS = s + copyFrom.size ();
+        if (not this->HasEnoughCapacity_ (newS)) {
+            if constexpr (is_trivially_copyable_v<T>) {
+                resize_uninitialized (newS);
+            }
+            else {
+                resize (newS);
+            }
+        }
+        Assert (this->HasEnoughCapacity_ (newS));
+        if constexpr (is_trivially_copyable_v<T>) {
+            auto outPtr = this->begin () + s;
+            for (auto c : copyFrom) {
+                *outPtr = static_cast<value_type> (c);
+                ++outPtr;
+            }
+        }
+        else {
+            uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin () + s);
         }
     }
     template <typename T, size_t BUF_SIZE>

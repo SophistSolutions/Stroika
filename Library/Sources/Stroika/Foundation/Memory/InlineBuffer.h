@@ -289,10 +289,19 @@ namespace Stroika::Foundation::Memory {
          *  With a single T argument, this is somewhat STLISH, but also takes overload of a span, so you can append multiple.
          * 
          *  \note ALIAS: Append
+         * 
+         *  \see also push_back_coerced ()
          */
         nonvirtual void push_back (Configuration::ArgByValueType<T> e);
         template <ISpanOfT<T> SPAN_T>
         nonvirtual void push_back (const SPAN_T& copyFrom);
+
+    public:
+        /**
+         *  \brief same as push_back (span{}) except that the span type doesn't need to match exactly, so long as indirected items can be copied to destination (with static_cast).
+         */
+        template <ISpanT SPAN_T>
+        nonvirtual void push_back_coerced (const SPAN_T& copyFrom);
 
     public:
         /**
@@ -373,6 +382,7 @@ namespace Stroika::Foundation::Memory {
     private:
         static void DestroyElts_ (T* start, T* end) noexcept;
     };
+
 }
 
 /*
