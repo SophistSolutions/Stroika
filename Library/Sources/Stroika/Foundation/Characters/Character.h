@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Characters {
      *  For example, ASCII, Latin1, wchar_t, and obviously char32_t, etc...
      */
     template <typename T>
-    concept IPossibleCharacterRepresentation = convertible_to<T, char32_t>;
+    concept IPossibleCharacterRepresentation = convertible_to<T, char32_t> or same_as<remove_cv_t<T>, Character>;
     static_assert (IPossibleCharacterRepresentation<char8_t>);
     static_assert (IPossibleCharacterRepresentation<char16_t>);
     static_assert (IPossibleCharacterRepresentation<char32_t>);
@@ -235,6 +235,8 @@ namespace Stroika::Foundation::Characters {
          *        and you need some way to check a bunch of 'char' elements and see if they are ascii.
          */
         constexpr bool IsASCII () const noexcept;
+        template <IPossibleCharacterRepresentation CHAR_T>
+        static constexpr bool IsASCII (CHAR_T c) noexcept;
         template <IPossibleCharacterRepresentation CHAR_T>
         static constexpr bool IsASCII (span<const CHAR_T> s) noexcept;
 

@@ -193,6 +193,19 @@ namespace Stroika::Foundation::Characters {
         return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f;
     }
     template <IPossibleCharacterRepresentation CHAR_T>
+    constexpr bool Character::IsASCII (CHAR_T c) noexcept
+    {
+        if constexpr (same_as<remove_cv_t<CHAR_T>, Character>) {
+            return c.IsASCII ();
+        }
+        else if constexpr (same_as<remove_cv_t<CHAR_T>, Latin1>) {
+            return static_cast<uint8_t> (c) <= 127;
+        }
+        else {
+            return static_cast<make_unsigned_t<CHAR_T>> (c) <= 127;
+        }
+    }
+    template <IPossibleCharacterRepresentation CHAR_T>
     constexpr bool Character::IsASCII (span<const CHAR_T> fromS) noexcept
     {
         constexpr auto charComparer = [] () noexcept {
