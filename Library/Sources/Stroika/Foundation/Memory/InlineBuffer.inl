@@ -363,24 +363,17 @@ namespace Stroika::Foundation::Memory {
     inline void InlineBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
     {
         size_t s = size ();
-        if (this->HasEnoughCapacity_ (s + 1)) [[likely]] {
-            if constexpr (is_trivially_copyable_v<T>) {
-                fLiveData_[s] = e;
-            }
-            else {
-                uninitialized_copy (&e, &e + 1, this->end ());
-            }
-            ++this->fSize_;
+        size_t newS = s + 1;
+        if (not this->HasEnoughCapacity_ (newS)) {
+            reserve (newS);
         }
-        else {
-            if constexpr (is_trivially_copyable_v<T>) {
-                resize_uninitialized (s + 1);
-            }
-            else {
-                resize (s + 1);
-            }
+        if constexpr (is_trivially_copyable_v<T>) {
             fLiveData_[s] = e;
         }
+        else {
+            uninitialized_copy (&e, &e + 1, this->begin () + s);
+        }
+        ++this->fSize_;
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
@@ -390,12 +383,7 @@ namespace Stroika::Foundation::Memory {
         size_t s    = size ();
         size_t newS = s + copyFrom.size ();
         if (not this->HasEnoughCapacity_ (newS)) {
-            if constexpr (is_trivially_copyable_v<T>) {
-                resize_uninitialized (newS);
-            }
-            else {
-                resize (newS);
-            }
+            reserve (newS);
         }
         Assert (this->HasEnoughCapacity_ (newS));
         if constexpr (is_trivially_copyable_v<T>) {
@@ -404,6 +392,7 @@ namespace Stroika::Foundation::Memory {
         else {
             uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin () + s);
         }
+        this->fSize_ = newS;
     }
     template <typename T, size_t BUF_SIZE>
     template <ISpanT SPAN_T>
@@ -411,13 +400,8 @@ namespace Stroika::Foundation::Memory {
     {
         size_t s    = size ();
         size_t newS = s + copyFrom.size ();
-        if (not this->HasEnoughCapacity_ (newS)) {
-            if constexpr (is_trivially_copyable_v<T>) {
-                resize_uninitialized (newS);
-            }
-            else {
-                resize (newS);
-            }
+        if (this->HasEnoughCapacity_ (newS)) {
+            reserve (newS);
         }
         Assert (this->HasEnoughCapacity_ (newS));
         if constexpr (is_trivially_copyable_v<T>) {
@@ -430,6 +414,7 @@ namespace Stroika::Foundation::Memory {
         else {
             uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin () + s);
         }
+        this->fSize_ = newS;
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::clear () noexcept
