@@ -54,15 +54,40 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_same_v<CHAR_T, ASCII>) {
                 Character::CheckASCII (s);
             }
-            if constexpr (is_same_v<CHAR_T, BufferElementType>) {
+            if constexpr (sizeof (CHAR_T) == sizeof (BufferElementType)) {
                 size_t i = fData_.size ();
                 fData_.GrowToSize_uninitialized (i + spanSize);
-                Memory::CopySpanData_StaticCast (s, span<CHAR_T>{fData_}.subspan (i));
+                if constexpr (is_same_v<CHAR_T, BufferElementType>) {
+                    Memory::CopySpanData_StaticCast (s, span<CHAR_T>{fData_}.subspan (i));
+                }
+                else {
+                    Memory::CopySpanData_StaticCast (Memory::SpanReInterpretCast<const BufferElementType> (s),
+                                                     span<BufferElementType>{fData_}.subspan (i));
+                }
             }
             else {
                 // @todo  OPTIMIZATION OPPORTUNITY - if given an ascii span, can just do those chars one at a time...
-                Memory::StackBuffer<BufferElementType> buf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<BufferElementType> (s)};
-                Append (UTFConvert::kThe.ConvertSpan (s, span{buf}));
+                // Walk through span, and if can definitely short-cut, do so, and when we first find we cannot, convert the balance of the span
+                // this slower way.
+                // If char is ASCII, it can always be copied as-is
+                // if BufferElementType != char8_t, then we can always just blindly copy up to 0xff (Latin1).
+                // If BufferElementType (size) == char16_t, ... well - more complicated here - these cases due to surroages.
+                auto charITodoHardWay = s.begin ();
+                for (; charITodoHardWay != s.end (); ++charITodoHardWay) {
+                    // for now - KISS - and just check ASCII case
+                    if (not Character::IsASCII (*charITodoHardWay)) [[unlikely]] {
+                        break;
+                    }
+                }
+                if (s.begin () != charITodoHardWay) [[likely]] {
+                    this->fData_.push_back_coerced (s.subspan (0, charITodoHardWay - s.begin ()));
+                }
+                if (charITodoHardWay != s.end ()) [[unlikely]] {
+                    auto                                   hardWaySpan = span{charITodoHardWay, s.end ()};
+                    Memory::StackBuffer<BufferElementType> buf{Memory::eUninitialized,
+                                                               UTFConvert::ComputeTargetBufferSize<BufferElementType> (hardWaySpan)};
+                    Append (UTFConvert::kThe.ConvertSpan (hardWaySpan, span{buf}));
+                }
             }
         }
     }
