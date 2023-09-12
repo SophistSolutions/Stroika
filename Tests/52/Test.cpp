@@ -779,7 +779,6 @@ namespace {
     }
 }
 
-
 namespace {
     namespace Test_JSONReadWriteFile_ {
         constexpr uint8_t kSAMPLE_FILE_[] = "{\
