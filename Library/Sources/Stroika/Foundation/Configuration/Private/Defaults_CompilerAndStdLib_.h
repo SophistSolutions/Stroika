@@ -1576,6 +1576,21 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCol
 
 #endif
 
+
+
+#ifndef qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__)
+// appears still broken in clang++-13
+#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+#else
+#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
+#endif
+
+#endif
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
