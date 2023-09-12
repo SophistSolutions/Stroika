@@ -73,10 +73,10 @@ namespace Stroika::Foundation::Characters {
             return optional<size_t>{};
         }
         // Logic based on table from https://en.wikipedia.org/wiki/UTF-8#Encoding
-        if constexpr (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1>) {
+        if constexpr (same_as<CHAR_T, ASCII> or same_as<CHAR_T, Latin1>) {
             return 1;
         }
-        else if constexpr (is_same_v<CHAR_T, char8_t>) {
+        else if constexpr (same_as<CHAR_T, char8_t>) {
             auto i = s.begin ();
             // starting first byte
             uint8_t firstByte = static_cast<uint8_t> (*i);
@@ -125,17 +125,19 @@ namespace Stroika::Foundation::Characters {
         else {
             size_t charCount{};
             size_t i = 0;
-            while (auto nc = NextCharacter (s.subspan (i))) {
+            while (optional<size_t> nOctets = NextCharacter (s.subspan (i))) {
                 ++charCount;
-                i += *nc;
-                if (i == s.size ()) {
-                    return charCount;
+                i += *nOctets;
+                if (i == s.size ()) [[unlikely]] {
+                    break;  // used up all the input span, so we're done
                 }
             }
-            if (s.size () == 0) {
-                return 0;   // empty span is not an error - just zero characters
+            if (s.size () == i) [[likely]] {
+                return charCount;
             }
-            return nullopt; // didn't end evenly at end of span, so something went wrong
+            else {
+                return nullopt; // didn't end evenly at end of span, so something went wrong
+            }
         }
     }
     template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
