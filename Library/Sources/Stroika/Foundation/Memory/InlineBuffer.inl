@@ -407,8 +407,7 @@ namespace Stroika::Foundation::Memory {
         auto outPtr = this->begin () + s;
         if constexpr (is_trivially_copyable_v<T>) {
             for (auto c : copyFrom) {
-                *outPtr = static_cast<value_type> (c);
-                ++outPtr;
+                *outPtr++ = static_cast<value_type> (c);
             }
         }
         else {
