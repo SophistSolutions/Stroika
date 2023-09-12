@@ -362,7 +362,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
     {
-        size_t s = size ();
+        size_t s    = size ();
         size_t newS = s + 1;
         if (not this->HasEnoughCapacity_ (newS)) {
             reserve (newS);
@@ -400,7 +400,7 @@ namespace Stroika::Foundation::Memory {
     {
         size_t s    = size ();
         size_t newS = s + copyFrom.size ();
-        if (this->HasEnoughCapacity_ (newS)) {
+        if (not this->HasEnoughCapacity_ (newS)) {
             reserve (newS);
         }
         Assert (this->HasEnoughCapacity_ (newS));
