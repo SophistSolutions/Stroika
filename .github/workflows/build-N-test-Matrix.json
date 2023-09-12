@@ -25,11 +25,11 @@
         "run_on_branch": "v3-Release"
     },
     {
-        "comment": "ubuntu-20.04-clang++-13"
+        "comment": "ubuntu-22.04-clang++-13"
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-20.04-clang++-13",
+        "displayTargetName": "ubuntu-22.04-clang++-13",
         "compiler": "clang++-13",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
@@ -98,7 +98,7 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "clang++-15-debug-libc++",
+        "displayTargetName": "ubuntu-22.04-clang++-15-debug-libc++",
         "compiler": "clang++-15",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
@@ -109,7 +109,7 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "clang++-15-release-libstdc++",
+        "displayTargetName": "ubuntu-22.04-clang++-15-release-libstdc++",
         "compiler": "clang++-15",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
@@ -120,7 +120,7 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "clang++-15-debug-libc++-c++23",
+        "displayTargetName": "ubuntu-22.04-clang++-15-debug-libc++-c++23",
         "compiler": "clang++-15",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
@@ -131,7 +131,7 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "clang++-15-release-libstdc++-c++23",
+        "displayTargetName": "ubuntu-22.04-clang++-15-release-libstdc++-c++23",
         "compiler": "clang++-15",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
