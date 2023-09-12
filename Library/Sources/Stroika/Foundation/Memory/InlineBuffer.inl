@@ -15,10 +15,10 @@
 
 #include "../Containers/Support/ReserveTweaks.h"
 #include "../Debug/Assertions.h"
-//#include "../Execution/Throw.h"
 #include "Common.h"
 
 namespace Stroika::Foundation::Execution {
+    // Instead of #include "../Execution/Throw.h"
     void ThrowIfNull (const void* p); // avoid include which is creating deadly embrace
 }
 namespace Stroika::Foundation::Memory {
@@ -277,12 +277,11 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     void InlineBuffer<T, BUF_SIZE>::reserve (size_t newCapacity, bool atLeast)
     {
-        Require (atLeast or newCapacity >= size ());
+        Require (newCapacity >= size ());
         size_t useNewCapacity = newCapacity;
         size_t oldCapacity    = capacity ();
         if (atLeast) {
-            if (useNewCapacity < oldCapacity) {
-                // useNewCapacity = oldCapacity;
+            if (useNewCapacity <= oldCapacity) {
                 return; // no work todo here....
             }
             // if fits in inline buffer, round up to that size. If exceeding that, use ScalledUpCapcity exponential growth algorithm
@@ -322,7 +321,7 @@ namespace Stroika::Foundation::Memory {
                 }
             }
         }
-        Ensure ((useNewCapacity <= BUF_SIZE && capacity () == BUF_SIZE) or (useNewCapacity > BUF_SIZE and useNewCapacity == capacity ()));
+        Ensure ((useNewCapacity <= BUF_SIZE and capacity () == BUF_SIZE) or (useNewCapacity > BUF_SIZE and useNewCapacity == capacity ()));
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
@@ -466,8 +465,10 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::DestroyElts_ (T* start, T* end) noexcept
     {
-        for (auto i = start; i != end; ++i) {
-            destroy_at (i);
+        if constexpr (not is_trivially_destructible_v<T>) {
+            for (auto i = start; i != end; ++i) {
+                destroy_at (i);
+            }
         }
     }
     template <typename T, size_t BUF_SIZE>
