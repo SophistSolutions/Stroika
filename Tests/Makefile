@@ -232,7 +232,7 @@ else
 			if [ "$$DIFFTIME" -lt "10" ]; then\
 			    DIFFTIME=$$DIFFTIME" ";\
 			fi;\
-			$(ECHO) "$$PREFIX[$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
+			$(ECHO) "$$PREFIX[$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 		done;\
 		if [ "$$FAILED" -ne 0 ]; then\
 			if [ "$$TEST_FAILURES_CAUSE_FAILED_MAKE" -ne 0 ]; then\
