@@ -1793,6 +1793,12 @@ namespace {
                 VerifyTestResult (latin1AsStr[i] == static_cast<unsigned char> (nonAsciiLatin1Test[i]));
             }
         }
+        {
+            String aaa = L"\u00b5"; // see https://www.cogsci.ed.ac.uk/~richard/utf-8.cgi?input=b5&mode=hex
+            Assert (aaa.length () == 1);
+            u8string aaa8 = aaa.As<u8string> ();
+            Assert (aaa8.length () == 2 and aaa8[0] == 0xc2 and aaa8[1] == 0xb5);
+        }
     }
 }
 
