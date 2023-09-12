@@ -1116,7 +1116,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Span.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.inl" />

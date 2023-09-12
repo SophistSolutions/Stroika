@@ -15,9 +15,12 @@
 
 #include "../Containers/Support/ReserveTweaks.h"
 #include "../Debug/Assertions.h"
-#include "../Execution/Throw.h"
+//#include "../Execution/Throw.h"
 #include "Common.h"
 
+namespace Stroika::Foundation::Execution {
+    void ThrowIfNull (const void* p); // avoid include which is creating deadly embrace
+}
 namespace Stroika::Foundation::Memory {
 
     /*

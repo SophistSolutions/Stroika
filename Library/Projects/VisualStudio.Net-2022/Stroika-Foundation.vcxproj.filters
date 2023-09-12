@@ -2138,9 +2138,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.inl">
-      <Filter>Sources\Memory</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
       <Filter>Sources\Debug</Filter>
     </None>
