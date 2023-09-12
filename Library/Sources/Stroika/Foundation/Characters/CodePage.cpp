@@ -575,7 +575,7 @@ size_t CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
             break;
             break; // ITHINK thats right... BOM appears to be 5 chars long? LGP 2001-09-11
         case WellKnownCodePages::kUTF8:
-            resultSize = UTFConvert::ComputeTargetBufferSize<char> (span{inChars, inChars + inCharCnt});
+            resultSize = UTFConvert::ComputeTargetBufferSize<char8_t> (span{inChars, inChars + inCharCnt});
         default:
             resultSize = inCharCnt * 8;
             break; // I THINK that should always be enough - but who knows...
@@ -777,7 +777,8 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                     useOutCharCount = 0;
                 }
             }
-            useOutCharCount = UTFConvert::kThe.Convert (span{inChars, inCharCnt}, span{useOutChars, useOutCharCount}).fTargetProduced;
+            useOutCharCount =
+                UTFConvert::kThe.Convert (span{inChars, inCharCnt}, span{reinterpret_cast<char8_t*> (useOutChars), useOutCharCount}).fTargetProduced;
             if (GetHandleBOM ()) {
                 useOutCharCount += 3;
             }
@@ -823,7 +824,7 @@ void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCn
         reinterpret_cast<unsigned char*> (outChars)[1] = 0xbb;
         reinterpret_cast<unsigned char*> (outChars)[2] = 0xbf;
     }
-    *outCharCnt = UTFConvert::kThe.Convert (span{inChars, inCharCnt}, span{useOutChars, useOutCharCount}).fTargetProduced;
+    *outCharCnt = UTFConvert::kThe.Convert (span{inChars, inCharCnt}, span{reinterpret_cast<char8_t*> (useOutChars), useOutCharCount}).fTargetProduced;
     if (addBOM) {
         *outCharCnt += 3;
     }

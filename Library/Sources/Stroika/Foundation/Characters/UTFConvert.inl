@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
+    template <IUNICODECanUnambiguouslyConvertTo TO, IUNICODECanUnambiguouslyConvertFrom FROM>
     constexpr size_t UTFConvert::ComputeTargetBufferSize (size_t srcSize)
     {
         if constexpr (sizeof (FROM) == sizeof (TO)) {
@@ -189,7 +189,7 @@ namespace Stroika::Foundation::Characters {
             return 0;
         }
     }
-    template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
+    template <IUNICODECanUnambiguouslyConvertTo TO, IUNICODECanUnambiguouslyConvertFrom FROM>
     constexpr size_t UTFConvert::ComputeTargetBufferSize (span<const FROM> src)
         requires (not is_const_v<TO>)
     {
@@ -237,7 +237,7 @@ namespace Stroika::Foundation::Characters {
         }
         return ComputeTargetBufferSize<TO, FROM> (src.size ());
     }
-    template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
+    template <IUNICODECanUnambiguouslyConvertTo TO, IUNICODECanUnambiguouslyConvertFrom FROM>
     constexpr size_t UTFConvert::ComputeTargetBufferSize (span<FROM> src)
         requires (not is_const_v<TO>)
     {
@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Characters {
         }
         return true;
     }
-    template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
+    template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertTo TRG_T>
     inline auto UTFConvert::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
     {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
@@ -291,7 +291,7 @@ namespace Stroika::Foundation::Characters {
         ThrowIf_ (result.fStatus, result.fSourceConsumed);
         return result; // slice - no need to return 'status' - we throw on any status but success
     }
-    template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
+    template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertTo TRG_T>
     inline auto UTFConvert::Convert (span<SRC_T> source, span<TRG_T> target) const -> ConversionResult
     {
         return Convert (Memory::ConstSpan (source), target);
@@ -310,19 +310,19 @@ namespace Stroika::Foundation::Characters {
             return TO{buf.begin (), get<1> (Convert (span{from}, span{buf}))};
         }
     }
-    template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
+    template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertTo TRG_T>
     inline span<TRG_T> UTFConvert::ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
         requires (not is_const_v<TRG_T>)
     {
         return span{target.data (), Convert (source, target).fTargetProduced};
     }
-    template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
+    template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertTo TRG_T>
     inline span<TRG_T> UTFConvert::ConvertSpan (span<SRC_T> source, span<TRG_T> target) const
         requires (not is_const_v<TRG_T>)
     {
         return ConvertSpan (Memory::ConstSpan (source), target);
     }
-    template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
+    template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertTo TRG_T>
     inline auto UTFConvert::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResultWithStatus
         requires (not is_const_v<TRG_T>)
     {
@@ -360,14 +360,6 @@ namespace Stroika::Foundation::Characters {
                 return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
             }
         }
-#if 0
-        else if constexpr (same_as<TRG_T, Latin1>) {
-            // ALL TRG_T (but maybe ASCII?) have Latin1 as a strict subset so simply copy
-            AssertNotImplemented ();
-            Memory::CopySpanData_StaticCast (source, target);
-            return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
-        }
-#endif
         else {
             switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
                 case Options::Implementation::eStroikaPortable: {
@@ -401,7 +393,7 @@ namespace Stroika::Foundation::Characters {
                                                     ConvertToPrimitiveSpan_ (target)); // default if preferred not available
         }
     }
-    template <IUNICODECanUnambiguouslyConvertFrom TRG_T, IUNICODECanUnambiguouslyConvertFrom SRC_T>
+    template <IUNICODECanUnambiguouslyConvertTo TRG_T, IUNICODECanUnambiguouslyConvertFrom SRC_T>
     size_t UTFConvert::ConvertOffset (span<const SRC_T> source, size_t srcIndex) const
     {
         static_assert (not is_const_v<TRG_T>);

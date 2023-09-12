@@ -168,13 +168,13 @@ namespace Stroika::Foundation::Characters {
          *  @See Convert ()
          *  \Alias used to be called QuickComputeConversionOutputBufferSize
          */
-        template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
+        template <IUNICODECanUnambiguouslyConvertTo TO, IUNICODECanUnambiguouslyConvertFrom FROM>
         static constexpr size_t ComputeTargetBufferSize (span<const FROM> src)
             requires (not is_const_v<TO>);
-        template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
+        template <IUNICODECanUnambiguouslyConvertTo TO, IUNICODECanUnambiguouslyConvertFrom FROM>
         static constexpr size_t ComputeTargetBufferSize (span<FROM> src)
             requires (not is_const_v<TO>);
-        template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
+        template <IUNICODECanUnambiguouslyConvertTo TO, IUNICODECanUnambiguouslyConvertFrom FROM>
         static constexpr size_t ComputeTargetBufferSize (size_t srcSize);
 
     public:
@@ -201,10 +201,10 @@ namespace Stroika::Foundation::Characters {
          *          return String{spanOfTargetBufferUsed};
          *      \endcode
          */
-        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertTo TRG_T>
         nonvirtual span<TRG_T> ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
-        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertTo TRG_T>
         nonvirtual span<TRG_T> ConvertSpan (span<SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
 
@@ -257,9 +257,9 @@ namespace Stroika::Foundation::Characters {
          *          u16string u16_fred = UTFConvert::kThe.Convert<u16string> (U"fred");
          *      \endcode
          */
-        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertTo TRG_T>
         nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const;
-        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertTo TRG_T>
         nonvirtual ConversionResult Convert (span<SRC_T> source, span<TRG_T> target) const;
         template <typename TO, typename FROM>
         nonvirtual TO Convert (const FROM& from) const
@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Characters {
          *  \note multibyteConversionState is often ignored, but since some implementations may use it, it is required (to allow
          *        interface as a whole to always work without knowing which implementations require it).
          */
-        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertTo TRG_T>
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
 
@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Characters {
          *  UTF32 text would start at offset 3, but in the corresponding UTF8 text it might
          *  start at offset 6.
          */
-        template <IUNICODECanUnambiguouslyConvertFrom TRG_T, IUNICODECanUnambiguouslyConvertFrom SRC_T>
+        template <IUNICODECanUnambiguouslyConvertTo TRG_T, IUNICODECanUnambiguouslyConvertFrom SRC_T>
         nonvirtual size_t ConvertOffset (span<const SRC_T> source, size_t srcIndex) const;
 
     public:
@@ -490,7 +490,7 @@ namespace Stroika::Foundation::Characters {
      *  This utility wrapper funciton is meant to capture what you can easily put together from a (configured or default) UTFConvert,
      *  but in a form more easily used/consumed by a the TextReader code.
      * 
-     *  @todo NEED EXAMPLE OR TO LOSE THIS...
+     *  @todo NEED EXAMPLE OR TO LOSE THIS... -- LGP 2023-09-12
      */
     template <typename OUTPUT_CHAR_T>
     using UTFCodeConverter = function<UTFConvert::ConversionResult (span<const std::byte> source, span<OUTPUT_CHAR_T> targetBuffer)>;

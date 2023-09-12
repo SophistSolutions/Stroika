@@ -162,6 +162,8 @@ namespace Stroika::Foundation::Characters {
      *  \note Possible alias for this - Character_CanConditionallyConvertUNICODEStringToArrayOfThese
      *        for example, ASCII is one of these - any depending on what is in the UNICODE string
      *        you maybe able to (unambiguously) covnert to a string of this type.
+     * 
+     *  \see also IUNICODECanUnambiguouslyConvertTo
      */
     template <typename T>
     concept IUNICODECanUnambiguouslyConvertFrom =
@@ -173,6 +175,29 @@ namespace Stroika::Foundation::Characters {
     //static_assert (IUNICODECanUnambiguouslyConvertFrom<Character>); true but not defined yet, so cannot assert here
     static_assert (IUNICODECanUnambiguouslyConvertFrom<ASCII>);
     static_assert (IUNICODECanUnambiguouslyConvertFrom<Latin1>);
+
+    /**
+     *  \brief IUNICODECanUnambiguouslyConvertTo is any 'character representation type' you can unambiguously convert a UNICODE string into.
+     *
+     *  IUNICODECanUnambiguouslyConvertTo:
+     *      o   char8_t             IUNICODECodePoint
+     *      o   char16_t            ""
+     *      o   char32_t            ""
+     *      o   wchar_t             ""
+     *      o   Character           added
+     * 
+     *  \see also IUNICODECanUnambiguouslyConvertFrom
+     */
+    template <typename T>
+    concept IUNICODECanUnambiguouslyConvertTo =
+        IUNICODECanUnambiguouslyConvertFrom<T> and not same_as<remove_cv_t<T>, ASCII> and not same_as<remove_cv_t<T>, Latin1>;
+    static_assert (IUNICODECanUnambiguouslyConvertTo<char8_t>);
+    static_assert (IUNICODECanUnambiguouslyConvertTo<char16_t>);
+    static_assert (IUNICODECanUnambiguouslyConvertTo<char32_t>);
+    static_assert (IUNICODECanUnambiguouslyConvertTo<wchar_t>);
+    //static_assert (IUNICODECanUnambiguouslyConvertTo<Character>); true but not defined yet, so cannot assert here
+    static_assert (not IUNICODECanUnambiguouslyConvertTo<ASCII>);
+    static_assert (not IUNICODECanUnambiguouslyConvertTo<Latin1>);
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
