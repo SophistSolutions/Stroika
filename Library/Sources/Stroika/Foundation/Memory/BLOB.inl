@@ -18,7 +18,7 @@
 
 namespace Stroika::Foundation::Memory {
 
-    struct BLOB::BasicRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<BasicRep_> {
+    struct BLOB::BasicRep_ final : public _IRep, public Memory::UseBlockAllocationIfAppropriate<BasicRep_> {
         //  really not sure what size to use???
         //  May not be any universal, good answer...
         //  Remember - users can subclass BLOB, and provider their own
@@ -39,14 +39,14 @@ namespace Stroika::Foundation::Memory {
         virtual span<const byte> GetBounds () const override;
     };
 
-    struct BLOB::ZeroRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<ZeroRep_> {
+    struct BLOB::ZeroRep_ final : public _IRep, public Memory::UseBlockAllocationIfAppropriate<ZeroRep_> {
         virtual span<const byte> GetBounds () const override;
         ZeroRep_ ()                           = default;
         ZeroRep_ (const ZeroRep_&)            = delete;
         ZeroRep_& operator= (const ZeroRep_&) = delete;
     };
 
-    struct BLOB::AdoptRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptRep_> {
+    struct BLOB::AdoptRep_ final : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptRep_> {
         const byte* fStart;
         const byte* fEnd;
 
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Memory {
         virtual span<const byte> GetBounds () const override;
     };
 
-    struct BLOB::AdoptAppLifetimeRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptAppLifetimeRep_> {
+    struct BLOB::AdoptAppLifetimeRep_ final : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptAppLifetimeRep_> {
         const byte* fStart;
         const byte* fEnd;
 
@@ -77,8 +77,7 @@ namespace Stroika::Foundation::Memory {
     inline shared_ptr<T> BLOB::_MakeSharedPtr (ARGS_TYPE&&... args)
     {
         if constexpr (Memory::UsesBlockAllocation<T> ()) {
-            // almost as good, but still does two allocs, above does one shared alloc of the block allocated controlblock+T
-            //return shared_ptr<T> (new T {forward<ARGS_TYPE> (args)...});
+            // use allocate_shared so one allocation for both data and control block (shared ref count) but still use block-allocation)
             return allocate_shared<T> (Memory::BlockAllocator<T>{}, forward<ARGS_TYPE> (args)...);
         }
         else {
