@@ -132,6 +132,9 @@ namespace Stroika::Foundation::Characters {
                     return charCount;
                 }
             }
+            if (s.size () == 0) {
+                return 0;   // empty span is not an error - just zero characters
+            }
             return nullopt; // didn't end evenly at end of span, so something went wrong
         }
     }
