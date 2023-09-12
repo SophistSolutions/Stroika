@@ -137,14 +137,14 @@ namespace Stroika::Foundation::Characters {
 #endif
 
         // clang-format off
-        public:
-            /**
-             *  Alias for Append
-             */
-            template <typename APPEND_ARG_T>
-            nonvirtual auto
-            operator<< (APPEND_ARG_T&& a)
-                -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
+    public:
+        /**
+         *  Alias for Append
+         */
+        template <typename APPEND_ARG_T>
+        nonvirtual auto
+        operator<< (APPEND_ARG_T&& a)
+            -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         {
             Append (forward<APPEND_ARG_T> (a));
@@ -189,6 +189,9 @@ namespace Stroika::Foundation::Characters {
          * Only specifically specialized variants are supported. Convert String losslessly into a
          *      o   String or
          *      o   wstring
+         *      o   u8string
+         *      o   u16string
+         *      o   u32string
          */
         template <typename RESULT_T>
         nonvirtual RESULT_T As () const
@@ -220,7 +223,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  STL-ish alias for size ()
+         *  STL-ish alias for size () - number of characters, not bytes or code-points...
          */
         nonvirtual size_t length () const noexcept;
 

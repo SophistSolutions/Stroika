@@ -55,7 +55,8 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_same_v<CHAR_T, ASCII>) {
                 Character::CheckASCII (s);
             }
-            if constexpr (sizeof (CHAR_T) == sizeof (BufferElementType)) {
+            if constexpr (same_as<CHAR_T, BufferElementType> or (same_as<BufferElementType, char8_t> and same_as<CHAR_T, ASCII>) or
+                          (sizeof (CHAR_T) == sizeof (BufferElementType) and (same_as<CHAR_T, wchar_t> or same_as<BufferElementType, wchar_t>))) {
                 // easy case - just resize buffer, and copy data in
                 size_t i = fData_.size ();
                 fData_.GrowToSize_uninitialized (i + spanSize);
