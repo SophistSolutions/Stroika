@@ -727,6 +727,60 @@ namespace {
 }
 
 namespace {
+    namespace Test_BLOB_Versus_Vector_Byte_2_DETAILS {
+        static constexpr byte kCArr_32b_[32] = {
+            0x1_b,
+            0x2_b,
+            0x3_b,
+        };
+        static constexpr byte kCArr_4k_[4 * 1024] = {
+            0x1_b,
+            0x2_b,
+            0x3_b,
+        };
+
+        template <typename BLOBISH_IMPL>
+        size_t T1_SIZER_ (BLOBISH_IMPL b)
+        {
+            return b.size ();
+        }
+        template <typename BLOBISH_IMPL>
+        void T1_ ()
+        {
+            BLOBISH_IMPL bn;
+            for (int i = 0; i < 100; ++i) {
+                BLOBISH_IMPL bl = BLOBISH_IMPL{begin (kCArr_4k_), end (kCArr_4k_)};
+                BLOBISH_IMPL b2 = bl;
+                BLOBISH_IMPL b3 = bl;
+                BLOBISH_IMPL b4 = bl;
+                bn              = b4;
+            }
+            VerifyTestResult (T1_SIZER_ (bn) == sizeof (kCArr_4k_));
+        }
+        template <typename BLOBISH_IMPL>
+        void T2_ ()
+        {
+            BLOBISH_IMPL bn; // run test with smaller blobs more times, on theorey you construct more small ones than big ones?
+            for (int i = 0; i < 5 * 100; ++i) {
+                BLOBISH_IMPL bl = BLOBISH_IMPL{begin (kCArr_32b_), end (kCArr_32b_)};
+                BLOBISH_IMPL b2 = bl;
+                BLOBISH_IMPL b3 = bl;
+                BLOBISH_IMPL b4 = bl;
+                bn              = b4;
+            }
+            VerifyTestResult (T1_SIZER_ (bn) == sizeof (kCArr_32b_));
+        }
+    }
+    template <typename BLOBISH_IMPL>
+    void Test_BLOB_Versus_Vector_Byte_2 ()
+    {
+        Test_BLOB_Versus_Vector_Byte_2_DETAILS::T1_<BLOBISH_IMPL> ();
+        Test_BLOB_Versus_Vector_Byte_2_DETAILS::T2_<BLOBISH_IMPL> ();
+    }
+}
+
+
+namespace {
     namespace Test_JSONReadWriteFile_ {
         constexpr uint8_t kSAMPLE_FILE_[] = "{\
     \"Aux-Data\" : {\
@@ -1435,6 +1489,8 @@ namespace {
                 L"String Characters::Format", 2100000, 1.5, &failedTests);
         Tester (L"BLOB versus vector<byte>", Test_BLOB_Versus_Vector_Byte<vector<byte>>, L"vector<byte>",
                 Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB", 13000, 0.55, &failedTests);
+        Tester (L"BLOB versus vector<byte> ver#2", Test_BLOB_Versus_Vector_Byte_2<vector<byte>>, L"vector<byte>",
+                Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, L"BLOB", 5000, 0.55, &failedTests);
         Tester (L"Test_JSONReadWriteFile", Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
                 Debug::IsRunningUnderValgrind () ? 2 : 64, 0.1, &failedTests);
         Tester (L"Test_Optional_", Test_Optional_::DoRunPerfTest, L"Test_Optional_", 4875, 0.5, &failedTests);
