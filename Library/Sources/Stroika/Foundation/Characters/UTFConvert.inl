@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Characters {
                 ++charCount;
                 i += *nOctets;
                 if (i == s.size ()) [[unlikely]] {
-                    break;  // used up all the input span, so we're done
+                    break; // used up all the input span, so we're done
                 }
             }
             if (s.size () == i) [[likely]] {
@@ -144,7 +144,13 @@ namespace Stroika::Foundation::Characters {
     constexpr size_t UTFConvert::ComputeTargetBufferSize (size_t srcSize)
     {
         if constexpr (sizeof (FROM) == sizeof (TO)) {
-            return srcSize; // not super useful to do this conversion, but given how if constexpr works/evaluates, its often important than this code compiles, even if it doesn't execute
+            if constexpr (same_as<FROM, TO>) {
+                return srcSize; // not super useful to do this conversion, but given how if constexpr works/evaluates, its often important than this code compiles, even if it doesn't execute
+            }
+            if constexpr (same_as<FROM, Latin1> and same_as<TO, char8_t>) {
+                return srcSize * 2; // some latin1 characters - such as 0xb5 -  MICRO SIGN - goto two UTF bytes
+            }
+            return srcSize; // I think this is right, but less certain than before I noticed the Latin1/UTF issue above
         }
         if constexpr (sizeof (FROM) == 1) {
             // worst case is each src byte is a character: for small buffers, not worth computing tighter limit but for larger, could
@@ -240,24 +246,24 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr bool UTFConvert::AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept
     {
-        if constexpr (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1>) {
+        if constexpr (same_as<CHAR_T, ASCII> or same_as<CHAR_T, Latin1>) {
             return true;
         }
         // see https://en.wikipedia.org/wiki/UTF-16
         // @todo - THIS IS VERY WRONG - and MUCH MORE COMPLEX - but will only return false negatives so OK to start
 
         // note - tried to simplify with conditional_t but both sides evaluated
-        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+        if constexpr (same_as<remove_cv_t<CHAR_T>, Character>) {
             for (Character c : s) {
                 if (c.GetCharacterCode () > 0xd7ff) [[unlikely]] {
                     return false;
                 }
             }
         }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Latin1>) {
+        else if constexpr (same_as<remove_cv_t<CHAR_T>, Latin1>) {
             return true;
         }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_T>, char8_t>) {
+        else if constexpr (same_as<remove_cv_t<CHAR_T>, char8_t>) {
             const char8_t* b = s.data ();
             const char8_t* e = b + s.size ();
             for (const char8_t* i = b; i < e;) {
@@ -292,11 +298,10 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename TO, typename FROM>
     inline TO UTFConvert::Convert (const FROM& from) const
-        requires ((is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
-                  (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or
-                   is_same_v<FROM, u32string>))
+        requires ((same_as<TO, string> or same_as<TO, wstring> or same_as<TO, u8string> or same_as<TO, u16string> or same_as<TO, u32string>) and
+                  (same_as<FROM, string> or same_as<FROM, wstring> or same_as<FROM, u8string> or same_as<FROM, u16string> or same_as<FROM, u32string>))
     {
-        if constexpr (is_same_v<TO, FROM>) {
+        if constexpr (same_as<TO, FROM>) {
             return from;
         }
         else {
@@ -324,20 +329,45 @@ namespace Stroika::Foundation::Characters {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
         using PRIMITIVE_SRC_T = typename decltype (this->ConvertToPrimitiveSpan_ (source))::value_type;
         using PRIMITIVE_TRG_T = typename decltype (this->ConvertToPrimitiveSpan_ (target))::value_type;
-        if constexpr (is_same_v<PRIMITIVE_SRC_T, PRIMITIVE_TRG_T>) {
+        if constexpr (same_as<PRIMITIVE_SRC_T, PRIMITIVE_TRG_T> and sizeof (PRIMITIVE_SRC_T) != 1) {
             Memory::CopySpanData_StaticCast (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
-        else if constexpr (is_same_v<SRC_T, Latin1>) {
+        else if constexpr (same_as<SRC_T, TRG_T>) {
+            Memory::CopySpanData_StaticCast (source, target);
+            return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
+        }
+        else if constexpr (same_as<SRC_T, Latin1>) {
+            if constexpr (same_as<TRG_T, char8_t>) {
+                // Based on https://stackoverflow.com/questions/4059775/convert-iso-8859-1-strings-to-utf-8-in-c-c
+                char8_t* outPtr = target.data ();
+                for (const SRC_T ch : source) {
+                    if (ch < 0x80) {
+                        *outPtr++ = ch;
+                    }
+                    else {
+                        *outPtr++ = 0xc0 | ch >> 6;
+                        *outPtr++ = 0x80 | (ch & 0x3f);
+                    }
+                }
+                Assert (outPtr <= target.data () + target.size ());
+                return ConversionResultWithStatus{
+                    {.fSourceConsumed = source.size (), .fTargetProduced = static_cast<size_t> (outPtr - target.data ())}, ConversionStatusFlag::ok};
+            }
+            else {
+                // ALL TRG_T (but UTF8 and ASCII) have Latin1 as a strict subset so simply copy
+                Memory::CopySpanData_StaticCast (source, target);
+                return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
+            }
+        }
+#if 0
+        else if constexpr (same_as<TRG_T, Latin1>) {
             // ALL TRG_T (but maybe ASCII?) have Latin1 as a strict subset so simply copy
+            AssertNotImplemented ();
             Memory::CopySpanData_StaticCast (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
-        else if constexpr (is_same_v<TRG_T, Latin1>) {
-            // ALL TRG_T (but maybe ASCII?) have Latin1 as a strict subset so simply copy
-            Memory::CopySpanData_StaticCast (source, target);
-            return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
-        }
+#endif
         else {
             switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
                 case Options::Implementation::eStroikaPortable: {
@@ -353,16 +383,16 @@ namespace Stroika::Foundation::Characters {
 #endif
 #if __has_include("boost/locale/encoding_utf.hpp")
                 case Options::Implementation::eBoost_Locale: {
-                    if constexpr (is_same_v<SRC_T, char8_t> and is_same_v<TRG_T, char16_t>) {
+                    if constexpr (same_as<SRC_T, char8_t> and same_as<TRG_T, char16_t>) {
                         return ConvertQuietly_boost_locale_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
                     }
                 }
 #endif
                 case Options::Implementation::eCodeCVT: {
-                    if constexpr ((is_same_v<SRC_T, char16_t> or is_same_v<SRC_T, char32_t>)and is_same_v<TRG_T, char8_t>) {
+                    if constexpr ((same_as<SRC_T, char16_t> or same_as<SRC_T, char32_t>)and same_as<TRG_T, char8_t>) {
                         return ConvertQuietly_codeCvt_ (source, target);
                     }
-                    if constexpr (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<SRC_T, char32_t>)) {
+                    if constexpr (same_as<SRC_T, char8_t> and (same_as<TRG_T, char16_t> or same_as<SRC_T, char32_t>)) {
                         return ConvertQuietly_codeCvt_ (source, target);
                     }
                 }

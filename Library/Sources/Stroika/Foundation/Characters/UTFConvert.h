@@ -263,9 +263,8 @@ namespace Stroika::Foundation::Characters {
         nonvirtual ConversionResult Convert (span<SRC_T> source, span<TRG_T> target) const;
         template <typename TO, typename FROM>
         nonvirtual TO Convert (const FROM& from) const
-            requires ((is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
-                      (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or
-                       is_same_v<FROM, u32string>));
+            requires ((same_as<TO, string> or same_as<TO, wstring> or same_as<TO, u8string> or same_as<TO, u16string> or same_as<TO, u32string>) and
+                      (same_as<FROM, string> or same_as<FROM, wstring> or same_as<FROM, u8string> or same_as<FROM, u16string> or same_as<FROM, u32string>));
 
     public:
         /**
@@ -377,7 +376,7 @@ namespace Stroika::Foundation::Characters {
         using AddConstIfMatching_ = conditional_t<is_const_v<SRC_OF_CONSTNESS_T>, add_const_t<TYPE_T>, TYPE_T>;
         template <typename TYPE_T>
         using MapSizes_ =
-            conditional_t<sizeof (TYPE_T) == 1, conditional_t<is_same_v<TYPE_T, Latin1>, TYPE_T, char8_t>, conditional_t<sizeof (TYPE_T) == 2, char16_t, char32_t>>;
+            conditional_t<sizeof (TYPE_T) == 1, conditional_t<same_as<TYPE_T, Latin1>, TYPE_T, char8_t>, conditional_t<sizeof (TYPE_T) == 2, char16_t, char32_t>>;
         template <typename TYPE_T>
         using CompatibleT_ = AddConstIfMatching_<TYPE_T, MapSizes_<TYPE_T>>;
 
