@@ -37,12 +37,22 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief rarely used - defaults generally fine
      * 
+     *  BUF_CHAR_T of char32_t probably does better if definitely using alot of wide unicode characters.
+     *  BUF_CHAR_T of char8_t probably best for mostly ASCII text. Note - GetCharAt/SetCharAt very slow
+     *  unless using char32_t.
+     * 
      *  Maybe easy to support all at once.
      */
-    template <IUNICODECanAlwaysConvertTo BUF_CHAR_T = char32_t, size_t INLINE_BUF_SIZE = 128>
+    template <IUNICODECanAlwaysConvertTo BUF_CHAR_T = char8_t, size_t INLINE_BUF_SIZE = 128>
     struct StringBuilder_Options {
+        /**
+         *  Note that kInlineBufferSize is measured in 'buffer elements' - not (ncessarily the same as) bytes or Characters.
+         */
         static constexpr size_t kInlineBufferSize = INLINE_BUF_SIZE;
-        using BufferElementType                   = BUF_CHAR_T;
+
+        /**
+         */
+        using BufferElementType = BUF_CHAR_T;
     };
 
     /**
@@ -126,7 +136,8 @@ namespace Stroika::Foundation::Characters {
         ;
 #endif
 
-        public :
+        // clang-format off
+        public:
             /**
              *  Alias for Append
              */
@@ -143,10 +154,11 @@ namespace Stroika::Foundation::Characters {
         ;
 #endif
 
-            public :
-            /**
+    public:
+        /**
          */
-            nonvirtual void push_back (Character c);
+        nonvirtual void push_back (Character c);
+        // clang-format on
 
     public:
         /**
@@ -162,11 +174,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \note - this can be very slow if OPTIONS::BufferElementType != char32_t
          */
         nonvirtual Character GetAt (size_t index) const noexcept;
 
     public:
         /**
+         *  \note - this can be very slow if OPTIONS::BufferElementType != char32_t
          */
         nonvirtual void SetAt (Character item, size_t index) noexcept;
 
@@ -296,12 +310,9 @@ namespace Stroika::Foundation::Characters {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
 
     private:
-        // Super unclear what size to use. Default is 1024 characters.
-        // Using smaller may provide better processor cache friendliness
-        // and frequently its enuf. And when not, could be much more
-        // @todo maybe expose this parameter in StringBuilder TEMPLATE
         mutable Memory::InlineBuffer<BufferElementType, kInlineBufferSize> fData_{}; // not nul-terminated
     };
+
 }
 
 /*

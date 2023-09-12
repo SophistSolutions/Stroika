@@ -13,6 +13,7 @@
 
 #include "../Debug/Assertions.h"
 #include "../Execution/Common.h"
+#include "../Memory/Optional.h"
 
 #include "CString/Utilities.h"
 #include "UTFConvert.h"
@@ -80,7 +81,14 @@ namespace Stroika::Foundation::Characters {
                     }
                 }
                 if (s.begin () != charITodoHardWay) [[likely]] {
-                    this->fData_.push_back_coerced (s.subspan (0, charITodoHardWay - s.begin ()));
+                    if constexpr (same_as<CHAR_T, Character>) {
+                        for (auto c : s.subspan (0, charITodoHardWay - s.begin ())) {
+                            this->fData_.push_back (static_cast<ASCII> (c.GetCharacterCode ()));
+                        }
+                    }
+                    else {
+                        this->fData_.push_back_coerced (s.subspan (0, charITodoHardWay - s.begin ()));
+                    }
                 }
                 if (charITodoHardWay != s.end ()) [[unlikely]] {
                     auto                                   hardWaySpan = span{charITodoHardWay, s.end ()};
@@ -193,7 +201,7 @@ namespace Stroika::Foundation::Characters {
             return fData_.size ();
         }
         else {
-            return UTFConvert::kThe.ComputeCharacterLength (fData_);
+            return Memory::ValueOf (UTFConvert::kThe.ComputeCharacterLength<BufferElementType> (span<BufferElementType>{fData_}));
         }
     }
     template <typename OPTIONS>
@@ -206,14 +214,15 @@ namespace Stroika::Foundation::Characters {
     inline Character StringBuilder<OPTIONS>::GetAt (size_t index) const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        if constexpr (is_same_v<BufferElementType, char32_t>) {
+        if constexpr (same_as<BufferElementType, char32_t>) {
             Require (index < fData_.size ());
-            // @todo fix for mutli-code-point case
             return fData_[index];
         }
         else {
-            AssertNotImplemented ();
-            return 0;
+            // inefficient, but rarely used API
+            Memory::StackBuffer<char32_t> probablyIgnoredBuf;
+            span<const char32_t>          sp = this->GetData (&probablyIgnoredBuf);
+            return sp[index];
         }
     }
     template <typename OPTIONS>
@@ -222,11 +231,17 @@ namespace Stroika::Foundation::Characters {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         if constexpr (is_same_v<BufferElementType, char32_t>) {
             Require (index < fData_.size ());
-            // @todo fix for mutli-code-point case
             fData_[index] = item.GetCharacterCode ();
         }
         else {
-            AssertNotImplemented ();
+            // inefficient, but rarely used API
+            Memory::StackBuffer<char32_t> probablyIgnoredBuf;
+            span<const char32_t>          sp = this->GetData (&probablyIgnoredBuf);
+            Require (index < sp.size ());
+            char32_t* p = const_cast<char32_t*> (sp.data ()) + index;
+            *p          = item.GetCharacterCode ();
+            this->fData_.clear ();
+            this->Append (sp);
         }
     }
     template <typename OPTIONS>
