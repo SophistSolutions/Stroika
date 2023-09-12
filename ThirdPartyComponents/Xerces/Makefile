@@ -132,10 +132,10 @@ endif
 ## But there is no need for any of the /I parameters, as none were supported before Stroika 2.1a2, so strip them all for now
 ##		-- LGP 2019-09-26
 ##
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CFLAGS:=$(call STRIP_INCLUDE_COMPILER_FLAGS,$(CFLAGS))
-CXXFLAGS:=$(call STRIP_INCLUDE_COMPILER_FLAGS,$(CXXFLAGS))
-endif
+# ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+# CFLAGS:=$(call STRIP_INCLUDE_COMPILER_FLAGS,$(CFLAGS))
+# CXXFLAGS:=$(call STRIP_INCLUDE_COMPILER_FLAGS,$(CXXFLAGS))
+# endif
 
 
 # Avoid having warnings leak from here to linking code when Xerces is used --LGP 2022-01-18
@@ -255,8 +255,8 @@ CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 ###  -- LGP 2019-09-26
 ##
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CFLAGS += /DWIN32
-CXXFLAGS += /DWIN32
+CFLAGS += -DWIN32
+CXXFLAGS += -DWIN32
 endif
 
 
