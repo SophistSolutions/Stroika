@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Characters {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
 
     private:
-        mutable Memory::InlineBuffer<BufferElementType, kInlineBufferSize> fData_{}; // not nul-terminated
+        Memory::InlineBuffer<BufferElementType, kInlineBufferSize> fData_{}; // not nul-terminated
     };
 
 }

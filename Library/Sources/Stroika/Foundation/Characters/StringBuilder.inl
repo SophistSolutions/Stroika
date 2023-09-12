@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Characters {
             return fData_.size ();
         }
         else {
-            return Memory::ValueOf (UTFConvert::kThe.ComputeCharacterLength<BufferElementType> (span<BufferElementType>{fData_}));
+            return Memory::ValueOf (UTFConvert::kThe.ComputeCharacterLength<BufferElementType> (fData_));
         }
     }
     template <typename OPTIONS>
@@ -254,7 +254,8 @@ namespace Stroika::Foundation::Characters {
     inline String StringBuilder<OPTIONS>::str () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        return String{Memory::ConstSpan (span{fData_.data (), fData_.size ()})};
+        return String{span{fData_}};
+        //return String{Memory::ConstSpan (span{fData_.data (), fData_.size ()})};
     }
     template <typename OPTIONS>
     template <typename RESULT_T>
@@ -300,7 +301,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename OPTIONS>
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-    span<const CHAR_T> StringBuilder<OPTIONS>::GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
+    inline span<const CHAR_T> StringBuilder<OPTIONS>::GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
         requires (not is_const_v<CHAR_T>)
     {
         RequireNotNull (probablyIgnoredBuf); // required param even if not used
