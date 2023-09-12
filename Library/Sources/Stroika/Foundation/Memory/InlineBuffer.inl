@@ -482,13 +482,13 @@ namespace Stroika::Foundation::Memory {
     {
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"") // crazy warning from g++-11
         void* p = ::malloc (bytes);
-        #if qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
-      if (p == nullptr) {
-        throw bad_alloc{};
-      }
-        #else
+#if qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
+        if (p == nullptr) {
+            throw bad_alloc{};
+        }
+#else
         Execution::ThrowIfNull (p);
-        #endif
+#endif
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"") // crazy warning from g++-11
         return reinterpret_cast<byte*> (p);
     }
