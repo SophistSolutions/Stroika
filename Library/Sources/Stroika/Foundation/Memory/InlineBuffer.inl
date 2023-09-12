@@ -404,15 +404,15 @@ namespace Stroika::Foundation::Memory {
             reserve (newS);
         }
         Assert (this->HasEnoughCapacity_ (newS));
+        auto outPtr = this->begin () + s;
         if constexpr (is_trivially_copyable_v<T>) {
-            auto outPtr = this->begin () + s;
             for (auto c : copyFrom) {
                 *outPtr = static_cast<value_type> (c);
                 ++outPtr;
             }
         }
         else {
-            uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin () + s);
+            uninitialized_copy (copyFrom.begin (), copyFrom.end (), outPtr);
         }
         this->fSize_ = newS;
     }
