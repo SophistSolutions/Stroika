@@ -56,6 +56,7 @@ namespace Stroika::Foundation::Characters {
                 Character::CheckASCII (s);
             }
             if constexpr (sizeof (CHAR_T) == sizeof (BufferElementType)) {
+                // easy case - just resize buffer, and copy data in
                 size_t i = fData_.size ();
                 fData_.GrowToSize_uninitialized (i + spanSize);
                 if constexpr (is_same_v<CHAR_T, BufferElementType>) {
@@ -67,12 +68,18 @@ namespace Stroika::Foundation::Characters {
                 }
             }
             else {
-                // @todo  OPTIMIZATION OPPORTUNITY - if given an ascii span, can just do those chars one at a time...
-                // Walk through span, and if can definitely short-cut, do so, and when we first find we cannot, convert the balance of the span
-                // this slower way.
-                // If char is ASCII, it can always be copied as-is
-                // if BufferElementType != char8_t, then we can always just blindly copy up to 0xff (Latin1).
-                // If BufferElementType (size) == char16_t, ... well - more complicated here - these cases due to surroages.
+                //
+                // This case is more complicated. we must 'transcode' from one 'unicode' character type to another.
+                //
+                // But before falling back on the expensive UTFConvert call, first try some special cases.
+                //      (1) src is ASCII - can just be copied in
+                //      (2) NYI, but if src is char16_t (or equiv) and target is char32_t or equiv, can just look for if is surroage or not.
+                //
+                //  In both cases, walk source - and find first non-complaint character. Use quick algorithm for compliant ones
+                //  and if needed, slow algorithm for the rest.
+                //
+                //  For now, only the ASCII case is optimized --LGP 2023-09-12
+                //
                 auto charITodoHardWay = s.begin ();
                 for (; charITodoHardWay != s.end (); ++charITodoHardWay) {
                     // for now - KISS - and just check ASCII case
@@ -129,7 +136,7 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder<OPTIONS>::Append (const String& s)
     {
         Memory::StackBuffer<BufferElementType> ignored; // could use char8_t maybe here - optimizing for ASCII case or BufferElementType
-        span                                   p = s.GetData (&ignored);
+        span<const BufferElementType>          p = s.GetData (&ignored);
         if (not p.empty ()) {
             Append (p);
         }
@@ -255,33 +262,35 @@ namespace Stroika::Foundation::Characters {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return String{span{fData_}};
-        //return String{Memory::ConstSpan (span{fData_.data (), fData_.size ()})};
     }
     template <typename OPTIONS>
     template <typename RESULT_T>
     inline RESULT_T StringBuilder<OPTIONS>::As () const
-        requires (is_same_v<RESULT_T, String> or is_same_v<RESULT_T, wstring>)
+        requires (same_as<RESULT_T, String> or same_as<RESULT_T, wstring> or same_as<RESULT_T, u8string> or same_as<RESULT_T, u16string> or
+                  same_as<RESULT_T, u32string>)
     {
-        if constexpr (is_same_v<RESULT_T, String>) {
+        if constexpr (same_as<RESULT_T, String>) {
             return str ();
         }
-        if constexpr (is_same_v<RESULT_T, wstring>) {
-            return str ().template As<wstring> ();
+        if constexpr (same_as<RESULT_T, wstring>) {
+            Memory::StackBuffer<wchar_t> maybeIngored;
+            span<const wchar_t>          p = this->GetData (&maybeIngored);
+            return wstring{p.data (), p.size ()};
         }
-    }
-    template <typename OPTIONS>
-    template <typename RESULT_T>
-    inline void StringBuilder<OPTIONS>::As (RESULT_T* into) const
-        requires (is_same_v<RESULT_T, String> or is_same_v<RESULT_T, wstring>)
-    {
-        RequireNotNull (into);
-        // @todo could do more efficiently
-        *into = str ();
-        if constexpr (is_same_v<RESULT_T, String>) {
-            *into = str ();
+        if constexpr (same_as<RESULT_T, u8string>) {
+            Memory::StackBuffer<char8_t> maybeIngored;
+            span<const char8_t>          p = this->GetData (&maybeIngored);
+            return u8string{p.data (), p.size ()};
         }
-        if constexpr (is_same_v<RESULT_T, wstring>) {
-            *into = str ().template As<wstring> ();
+        if constexpr (same_as<RESULT_T, u16string>) {
+            Memory::StackBuffer<char16_t> maybeIngored;
+            span<const char16_t>          p = this->GetData (&maybeIngored);
+            return u16string{p.data (), p.size ()};
+        }
+        if constexpr (same_as<RESULT_T, u32string>) {
+            Memory::StackBuffer<char32_t> maybeIngored;
+            span<const char32_t>          p = this->GetData (&maybeIngored);
+            return u32string{p.data (), p.size ()};
         }
     }
     template <typename OPTIONS>
@@ -293,6 +302,21 @@ namespace Stroika::Foundation::Characters {
     inline StringBuilder<OPTIONS>::operator wstring () const
     {
         return As<wstring> ();
+    }
+    template <typename OPTIONS>
+    inline StringBuilder<OPTIONS>::operator u8string () const
+    {
+        return As<u8string> ();
+    }
+    template <typename OPTIONS>
+    inline StringBuilder<OPTIONS>::operator u16string () const
+    {
+        return As<u16string> ();
+    }
+    template <typename OPTIONS>
+    inline StringBuilder<OPTIONS>::operator u32string () const
+    {
+        return As<u32string> ();
     }
     template <typename OPTIONS>
     inline size_t StringBuilder<OPTIONS>::length () const noexcept

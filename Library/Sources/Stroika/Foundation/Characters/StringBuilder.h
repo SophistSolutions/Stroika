@@ -192,10 +192,8 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename RESULT_T>
         nonvirtual RESULT_T As () const
-            requires (is_same_v<RESULT_T, String> or is_same_v<RESULT_T, wstring>);
-        template <typename RESULT_T>
-        nonvirtual void As (RESULT_T* into) const
-            requires (is_same_v<RESULT_T, String> or is_same_v<RESULT_T, wstring>);
+            requires (same_as<RESULT_T, String> or same_as<RESULT_T, wstring> or same_as<RESULT_T, u8string> or
+                      same_as<RESULT_T, u16string> or same_as<RESULT_T, u32string>);
 
     public:
         /*
@@ -205,6 +203,9 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual explicit operator String () const;
         nonvirtual explicit operator wstring () const;
+        nonvirtual explicit operator u8string () const;
+        nonvirtual explicit operator u16string () const;
+        nonvirtual explicit operator u32string () const;
 
     public:
         /**
@@ -304,6 +305,18 @@ namespace Stroika::Foundation::Characters {
         [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] void Append (const Character* s, const Character* e)
         {
             Append (span{s, e});
+        }
+        template <typename RESULT_T>
+        [[deprecated ("Since Stroika v3.0d2 - use As/0")]] void As (RESULT_T* into) const
+            requires (is_same_v<RESULT_T, String> or is_same_v<RESULT_T, wstring>)
+        {
+            RequireNotNull (into);
+            if constexpr (is_same_v<RESULT_T, String>) {
+                *into = str ();
+            }
+            if constexpr (is_same_v<RESULT_T, wstring>) {
+                *into = str ().template As<wstring> ();
+            }
         }
 
     private:
