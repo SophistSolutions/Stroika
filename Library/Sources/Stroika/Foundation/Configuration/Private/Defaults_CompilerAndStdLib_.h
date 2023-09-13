@@ -1588,6 +1588,7 @@ ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserve
 
 */
 
+#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
 #ifndef qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
