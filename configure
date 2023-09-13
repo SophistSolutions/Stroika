@@ -848,6 +848,11 @@ sub	SetDefaultForCompilerDriver_
 		$CXXWARNING_FLAGS = '';
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 			$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_GCC;
+			# avoid release (FTO) warnings like this:
+			#/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2004_x86_64/IntermediateFiles/g++-12-release++2b/ThirdPartyComponents/Xerces/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp:319:12: warning: function may return address of local variable [-Wreturn-local-addr]
+			if (getUbuntuVersion() == 20.04) {
+				$EXTRA_PREFIX_LINKER_ARGS = $EXTRA_PREFIX_LINKER_ARGS  . "-Wno-return-local-addr ";
+			}
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_CLANG;
