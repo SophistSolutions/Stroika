@@ -1587,8 +1587,6 @@ ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm8192EE7re
 ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb]+0xae): undefined reference to `Stroika::Foundation::Execution::ThrowIfNull(void const*)'
 
 */
-
-#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
 #ifndef qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
