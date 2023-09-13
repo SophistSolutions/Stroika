@@ -2145,10 +2145,15 @@ sub PostProcessOptions_ ()
 		$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
 	}
 	if ($ENABLE_LTO == true) {
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-flto=auto";
 			push @CXXFLAGS, "-flto=auto";
 			$EXTRA_PREFIX_LINKER_ARGS .= " -flto=auto";
+		}
+		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			push @CFLAGS, "-flto";
+			push @CXXFLAGS, "-flto";
+			$EXTRA_PREFIX_LINKER_ARGS .= " -flto";
 		}
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-GL";			#	Whole Program Optimization
