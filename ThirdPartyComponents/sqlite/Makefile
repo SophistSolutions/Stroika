@@ -158,7 +158,7 @@ CFLAGS	+= -DSQLITE_ENABLE_JSON1
 
 # See https://stroika.atlassian.net/browse/STK-753 and https://sqlite.org/forum/forumpost/cc6668e7b3 - avoid TSAN/Valgrind issues 
 ifeq (1,$(ENABLE_ASSERTIONS))
-ifeq (,$(findstring qStroika_FeatureSupported_Valgrind,$(CFLAGS)))
+ifeq (,$(findstring qStroika_FeatureSupported_Valgrind,$(CPPFLAGS)))
 ifeq (,$(findstring thread,$(SanitizerFlags)))
 CFLAGS	+= -DSQLITE_ENABLE_API_ARMOR
 CFLAGS	+= -DSQLITE_DEBUG
