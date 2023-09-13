@@ -76,9 +76,9 @@ namespace {
                 {
                     try {
 #if __cpp_designated_initializers
-                        fDB_ = Connection::New (Options{.fInMemoryDB = L""});
+                        fDB_ = Connection::New (Options{.fInMemoryDB = ""});
 #else
-                        fDB_ = Connection::New (Options{nullopt, true, nullopt, L""});
+                        fDB_ = Connection::New (Options{nullopt, true, nullopt, ""});
 #endif
                         InitialSetup_ (fDB_);
                     }
@@ -95,49 +95,49 @@ namespace {
                     // @todo write rawSpectrum isntead o fhardwired string...
                     constexpr bool kUseBind_ = true;
                     if (kUseBind_) {
-                        Statement s{fDB_, L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel) Values (:StartAt, "
-                                          L":EndAt, :ScanTypeIDRef, :RawScanData, :ScanLabel);"};
-                        s.Bind (L":StartAt", ScanStart.AsUTC ().Format (DateTime::kISO8601Format));
-                        s.Bind (L":EndAt", ScanEnd.AsUTC ().Format (DateTime::kISO8601Format));
-                        s.Bind (L":ScanTypeIDRef", (int)scanKind);
+                        Statement s{fDB_, "insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel) Values (:StartAt, "
+                                          ":EndAt, :ScanTypeIDRef, :RawScanData, :ScanLabel);"};
+                        s.Bind (":StartAt", ScanStart.AsUTC ().Format (DateTime::kISO8601Format));
+                        s.Bind (":EndAt", ScanEnd.AsUTC ().Format (DateTime::kISO8601Format));
+                        s.Bind (":ScanTypeIDRef", (int)scanKind);
                         if (rawSpectrum) {
-                            s.Bind (L":RawScanData",
-                                    VariantValue{L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"});
+                            s.Bind (":RawScanData",
+                                    VariantValue{"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"});
                         }
                         if (ScanLabel) {
-                            s.Bind (L":ScanLabel", VariantValue{*ScanLabel});
+                            s.Bind (":ScanLabel", VariantValue{*ScanLabel});
                         }
                         s.GetNextRow ();
                     }
                     else {
                         String insertSQL = [&] () {
                             StringBuilder sb;
-                            sb += L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)";
-                            sb += L"select ";
-                            sb += L"'" + ScanStart.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
-                            sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
-                            sb += Characters::Format (L"%d", scanKind) + L",";
+                            sb += "insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)";
+                            sb += "select ";
+                            sb += "'" + ScanStart.AsUTC ().Format (DateTime::kISO8601Format) + "',";
+                            sb += "'" + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + "',";
+                            sb += Characters::Format (L"%d", scanKind) + ",";
                             if (rawSpectrum) {
-                                sb += L"'" + Database::SQL::Utils::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") +
-                                      L"',";
+                                sb += "'" + Database::SQL::Utils::QuoteStringForDB ("SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") +
+                                      "',";
                             }
                             else {
-                                sb += L"NULL,";
+                                sb += "NULL,";
                             }
                             if (ScanLabel) {
-                                sb += L"'" + Database::SQL::Utils::QuoteStringForDB (*ScanLabel) + L"'";
+                                sb += "'" + Database::SQL::Utils::QuoteStringForDB (*ScanLabel) + "'";
                             }
                             else {
-                                sb += L"NULL";
+                                sb += "NULL";
                             }
-                            sb += L";";
+                            sb += ";";
                             return sb.str ();
                         }();
                         fDB_.Exec (insertSQL);
                     }
-                    Statement s{fDB_, L"SELECT MAX(ScanId) FROM Scans;"};
+                    Statement s{fDB_, "SELECT MAX(ScanId) FROM Scans;"};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
-                    return s.GetNextRow ()->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
+                    return s.GetNextRow ()->Lookup ("MAX(ScanId)")->As<ScanIDType_> ();
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
                 {
@@ -154,20 +154,20 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
 #endif
-                        return r->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
+                        return r->Lookup ("MAX(ScanId)")->As<ScanIDType_> ();
                     }
                     return nullopt;
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan_Bind_ (ScanKindType_ scanKind)
                 {
-                    Statement s{fDB_, L"select MAX(ScanId) from Scans where  ScanTypeIDRef=:ScanKind;"};
-                    s.Bind (L":ScanKind", VariantValue{(int)scanKind});
+                    Statement s{fDB_, "select MAX(ScanId) from Scans where  ScanTypeIDRef=:ScanKind;"};
+                    s.Bind (":ScanKind", VariantValue{(int)scanKind});
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
                     if (optional<Statement::Row> r = s.GetNextRow ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
 #endif
-                        return r->Lookup (L"MAX(ScanId)")->As<ScanIDType_> ();
+                        return r->Lookup ("MAX(ScanId)")->As<ScanIDType_> ();
                     }
                     return nullopt;
                 }
@@ -180,16 +180,16 @@ namespace {
                     SQL::ORM::ProvisionForVersion (
                         db, kCurrentVersion_,
                         initializer_list<SQL::ORM::TableProvisioner>{
-                            {L"ScanTypes"sv,
+                            {"ScanTypes"sv,
                              [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                                  // for now no upgrade support
                                  if (not v) {
                                      created = true;
-                                     c.Exec (L"create table 'ScanTypes' "
-                                             L"("
-                                             L"ScanTypeId tinyint Primary Key,"
-                                             L"TypeName varchar(255) not null"
-                                             L");");
+                                     c.Exec ("create table 'ScanTypes' "
+                                             "("
+                                             "ScanTypeId tinyint Primary Key,"
+                                             "TypeName varchar(255) not null"
+                                             ");");
                                      c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';",
                                                                  ScanKindType_::Reference));
                                      c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';",
@@ -198,48 +198,48 @@ namespace {
                                                                  ScanKindType_::Background));
                                  }
                              }},
-                            {L"Scans"sv,
+                            {"Scans"sv,
                              [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                                  // for now no upgrade support
                                  if (not v) {
                                      created = true;
-                                     c.Exec (L"create table 'Scans'"
-                                             L"("
-                                             L"ScanId integer Primary Key AUTOINCREMENT,"
-                                             L"StartAt Datetime not null,"
-                                             L"EndAt Datetime not null,"
-                                             L"ScanTypeIDRef tinyint not null,"
-                                             L"ScanLabel varchar,"
-                                             L"Foreign key (ScanTypeIDRef) References ScanTypes (ScanTypeId)"
-                                             L");");
-                                     c.Exec (L"Alter table Scans add column RawScanData BLOB;");
+                                     c.Exec ("create table 'Scans'"
+                                             "("
+                                             "ScanId integer Primary Key AUTOINCREMENT,"
+                                             "StartAt Datetime not null,"
+                                             "EndAt Datetime not null,"
+                                             "ScanTypeIDRef tinyint not null,"
+                                             "ScanLabel varchar,"
+                                             "Foreign key (ScanTypeIDRef) References ScanTypes (ScanTypeId)"
+                                             ");");
+                                     c.Exec ("Alter table Scans add column RawScanData BLOB;");
                                  }
                              }},
-                            {L"ScanSet"sv,
+                            {"ScanSet"sv,
                              [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                                  // for now no upgrade support
                                  if (not v) {
                                      created = true;
-                                     c.Exec (L"Create table ScanSet"
-                                             L"("
-                                             L"ScanSetID bigint,"
-                                             L"ScanIDRef integer,"
-                                             L"Foreign key (ScanIdRef) References Scans(ScanId)"
-                                             L");");
-                                     c.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references ScanSet(ScanSetID);");
+                                     c.Exec ("Create table ScanSet"
+                                             "("
+                                             "ScanSetID bigint,"
+                                             "ScanIDRef integer,"
+                                             "Foreign key (ScanIdRef) References Scans(ScanId)"
+                                             ");");
+                                     c.Exec ("Alter table Scans add column DependsOnScanSetIdRef bigint references ScanSet(ScanSetID);");
                                  }
                              }},
-                            {L"AuxData"sv,
+                            {"AuxData"sv,
                              [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                                  // for now no upgrade support
                                  if (not v) {
                                      created = true;
-                                     c.Exec (L"Create table AuxData"
-                                             L"("
-                                             L"ScanSetIDRef bigint Primary Key,"
-                                             L"Results varchar,"
-                                             L"Foreign key (ScanSetIDRef) References ScanSet(ScanSetID)"
-                                             L");");
+                                     c.Exec ("Create table AuxData"
+                                             "("
+                                             "ScanSetIDRef bigint Primary Key,"
+                                             "Results varchar,"
+                                             "Foreign key (ScanSetIDRef) References ScanSet(ScanSetID)"
+                                             ");");
                                  }
                              }},
                         });
@@ -260,9 +260,9 @@ namespace {
             using namespace PRIVATE_;
             TraceContextBumper ctx{"ScanDB::DB::RunTest"};
             auto               test = [] (PRIVATE_::DB& db, unsigned nTimesRanBefore) {
-                db.fDB_->Exec (L"select * from ScanTypes;");
+                db.fDB_->Exec ("select * from ScanTypes;");
                 {
-                    Statement s{db.fDB_, L"select * from ScanTypes;"};
+                    Statement s{db.fDB_, "select * from ScanTypes;"};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
                     while (optional<Statement::Row> r = s.GetNextRow ()) {
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
@@ -274,7 +274,7 @@ namespace {
                 for (int i = 0; i < kNRecordsAddedPerTestCall; ++i) {
                     DateTime scanStartTime = kScanStartTime4Reference_ - 100ms;
                     DateTime scanEndTime   = kScanStartTime4Reference_;
-                    ScanIDType_ sid = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String{L"Hi Mom"}, ScanKindType_::Reference, spectrum);
+                    ScanIDType_ sid = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String{"Hi Mom"}, ScanKindType_::Reference, spectrum);
                     Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
                     Verify (sid == nTimesRanBefore * kNRecordsAddedPerTestCall + i + 1);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -316,30 +316,30 @@ namespace {
                 SQL::ORM::ProvisionForVersion (
                     conn, kCurrentVersion_,
                     initializer_list<SQL::ORM::TableProvisioner>{
-                        {L"EMPLOYEES"sv,
+                        {"EMPLOYEES"sv,
                          [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                              // for now no upgrade support
                              if (not v) {
-                                 c.Exec (L"CREATE TABLE EMPLOYEES("
-                                         L"ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                                         L"NAME           TEXT    NOT NULL,"
-                                         L"AGE            INT     NOT NULL,"
-                                         L"ADDRESS        CHAR(50),"
-                                         L"SALARY         REAL,"
-                                         L"STILL_EMPLOYED INT"
-                                         L");");
+                                 c.Exec ("CREATE TABLE EMPLOYEES("
+                                         "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                         "NAME           TEXT    NOT NULL,"
+                                         "AGE            INT     NOT NULL,"
+                                         "ADDRESS        CHAR(50),"
+                                         "SALARY         REAL,"
+                                         "STILL_EMPLOYED INT"
+                                         ");");
                              }
                          }},
-                        {L"PAYCHECKS"sv,
+                        {"PAYCHECKS"sv,
                          [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                              // for now no upgrade support
                              if (not v) {
-                                 c.Exec (L"CREATE TABLE PAYCHECKS("
-                                         L"ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                                         L"EMPLOYEEREF INT NOT NULL,"
-                                         L"AMOUNT REAL,"
-                                         L"DATE TEXT"
-                                         L");");
+                                 c.Exec ("CREATE TABLE PAYCHECKS("
+                                         "ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                                         "EMPLOYEEREF INT NOT NULL,"
+                                         "AMOUNT REAL,"
+                                         "DATE TEXT"
+                                         ");");
                              }
                          }},
                     });
@@ -350,74 +350,74 @@ namespace {
             {
                 TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::PeriodicallyUpdateEmployeesTable_"};
 
-                Statement addEmployeeStatement{conn, L"INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, "
-                                                     L":ADDRESS, :SALARY, :STILL_EMPLOYED);"};
+                Statement addEmployeeStatement{conn, "INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, "
+                                                     ":ADDRESS, :SALARY, :STILL_EMPLOYED);"};
 
                 // Add Initial Employees
                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {L":NAME", L"Paul"},
-                    {L":AGE", 32},
-                    {L":ADDRESS", L"California"},
-                    {L":SALARY", 20000.00},
-                    {L":STILL_EMPLOYED", 1},
+                    {":NAME", "Paul"},
+                    {":AGE", 32},
+                    {":ADDRESS", "California"},
+                    {":SALARY", 20000.00},
+                    {":STILL_EMPLOYED", 1},
                 });
                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {L":NAME", L"Allen"},
-                    {L":AGE", 25},
-                    {L":ADDRESS", L"Texas"},
-                    {L":SALARY", 15000.00},
-                    {L":STILL_EMPLOYED", 1},
+                    {":NAME", "Allen"},
+                    {":AGE", 25},
+                    {":ADDRESS", "Texas"},
+                    {":SALARY", 15000.00},
+                    {":STILL_EMPLOYED", 1},
                 });
                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {L":NAME", L"Teddy"},
-                    {L":AGE", 23},
-                    {L":ADDRESS", L"Norway"},
-                    {L":SALARY", 20000.00},
-                    {L":STILL_EMPLOYED", 1},
+                    {":NAME", "Teddy"},
+                    {":AGE", 23},
+                    {":ADDRESS", "Norway"},
+                    {":SALARY", 20000.00},
+                    {":STILL_EMPLOYED", 1},
                 });
                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {L":NAME", L"Mark"},
-                    {L":AGE", 25},
-                    {L":ADDRESS", L"Rich-Mond"},
-                    {L":SALARY", 65000.00},
-                    {L":STILL_EMPLOYED", 1},
+                    {":NAME", "Mark"},
+                    {":AGE", 25},
+                    {":ADDRESS", "Rich-Mond"},
+                    {":SALARY", 65000.00},
+                    {":STILL_EMPLOYED", 1},
                 });
                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {L":NAME", L"David"},
-                    {L":AGE", 27},
-                    {L":ADDRESS", L"Texas"},
-                    {L":SALARY", 85000.00},
-                    {L":STILL_EMPLOYED", 1},
+                    {":NAME", "David"},
+                    {":AGE", 27},
+                    {":ADDRESS", "Texas"},
+                    {":SALARY", 85000.00},
+                    {":STILL_EMPLOYED", 1},
                 });
                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {L":NAME", L"Kim"},
-                    {L":AGE", 22},
-                    {L":ADDRESS", L"South-Hall"},
-                    {L":SALARY", 45000.00},
-                    {L":STILL_EMPLOYED", 1},
+                    {":NAME", "Kim"},
+                    {":AGE", 22},
+                    {":ADDRESS", "South-Hall"},
+                    {":SALARY", 45000.00},
+                    {":STILL_EMPLOYED", 1},
                 });
                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                    {L":NAME", L"James"},
-                    {L":AGE", 24},
-                    {L":ADDRESS", L"Houston"},
-                    {L":SALARY", 10000.00},
-                    {L":STILL_EMPLOYED", 1},
+                    {":NAME", "James"},
+                    {":AGE", 24},
+                    {":ADDRESS", "Houston"},
+                    {":SALARY", 10000.00},
+                    {":STILL_EMPLOYED", 1},
                 });
 
                 default_random_engine         generator;
                 uniform_int_distribution<int> distribution{1, 6};
 
-                Statement getAllActiveEmployees{conn, L"Select ID,NAME from EMPLOYEES where STILL_EMPLOYED=1;"};
+                Statement getAllActiveEmployees{conn, "Select ID,NAME from EMPLOYEES where STILL_EMPLOYED=1;"};
 
-                Statement fireEmployee{conn, L"Update EMPLOYEES Set STILL_EMPLOYED=0 where ID=:ID;"};
+                Statement fireEmployee{conn, "Update EMPLOYEES Set STILL_EMPLOYED=0 where ID=:ID;"};
 
                 // then keep adding/removing people randomly (but dont really remove just mark no longer employed so we
                 // can REF in paycheck table
                 while (true) {
-                    static const Sequence<String>    kNames_{L"Joe", L"Phred", L"Barny", L"Sue", L"Anne"};
+                    static const Sequence<String>    kNames_{"Joe", "Phred", "Barny", "Sue", "Anne"};
                     uniform_int_distribution<int>    namesDistr{0, static_cast<int> (kNames_.size () - 1)};
                     uniform_int_distribution<int>    ageDistr{25, 50};
-                    static const Sequence<String>    kAddresses{L"Houston", L"Pittsburg", L"New York", L"Paris", L"California"};
+                    static const Sequence<String>    kAddresses{"Houston", "Pittsburg", "New York", "Paris", "California"};
                     uniform_int_distribution<int>    addressesDistr{0, static_cast<int> (kAddresses.size () - 1)};
                     uniform_real_distribution<float> salaryDistr{10000.00, 50000.00};
 
@@ -429,11 +429,11 @@ namespace {
                                 String name = kNames_[namesDistr (generator)];
                                 DbgTrace (L"Adding employee %s", name.c_str ());
                                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                                    {L":NAME", name},
-                                    {L":AGE", ageDistr (generator)},
-                                    {L":ADDRESS", kAddresses[addressesDistr (generator)]},
-                                    {L":SALARY", salaryDistr (generator)},
-                                    {L":STILL_EMPLOYED", 1},
+                                    {":NAME", name},
+                                    {":AGE", ageDistr (generator)},
+                                    {":ADDRESS", kAddresses[addressesDistr (generator)]},
+                                    {":SALARY", salaryDistr (generator)},
+                                    {":STILL_EMPLOYED", 1},
                                 });
                             } break;
                             case 2: {
@@ -443,7 +443,7 @@ namespace {
                                     uniform_int_distribution<int>     empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                                     tuple<VariantValue, VariantValue> killMe = activeEmps[empDistr (generator)];
                                     DbgTrace (L"Firing employee: %d, %s", get<0> (killMe).As<int> (), get<1> (killMe).As<String> ().c_str ());
-                                    fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{{L":ID", get<0> (killMe).As<int> ()}});
+                                    fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{{":ID", get<0> (killMe).As<int> ()}});
                                 }
                             } break;
                         }
@@ -462,8 +462,8 @@ namespace {
             {
                 TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::PeriodicallyWriteChecksForEmployeesTable_"};
                 Statement          addPaycheckStatement{conn,
-                                               L"INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"};
-                Statement          getAllActiveEmployees{conn, L"Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"};
+                                               "INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"};
+                Statement          getAllActiveEmployees{conn, "Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"};
 
                 while (true) {
                     try {
@@ -473,9 +473,9 @@ namespace {
                             double salary = get<2> (employee).As<double> ();
                             DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", id, name.c_str (), salary);
                             addPaycheckStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                                {L":EMPLOYEEREF", id},
-                                {L":AMOUNT", salary / 12},
-                                {L":DATE", DateTime::Now ().Format (DateTime::kISO8601Format)},
+                                {":EMPLOYEEREF", id},
+                                {":AMOUNT", salary / 12},
+                                {":DATE", DateTime::Now ().Format (DateTime::kISO8601Format)},
                             });
                         }
                     }
@@ -499,10 +499,10 @@ namespace {
                 Connection::Ptr    conn2 = SetupDB_ (options);
                 Thread::CleanupPtr updateEmpDBThread{
                     Thread::CleanupPtr::eAbortBeforeWaiting,
-                    Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
+                    Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, "Update Employee Table")};
                 Thread::CleanupPtr writeChecks{
                     Thread::CleanupPtr::eAbortBeforeWaiting,
-                    Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
+                    Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks")};
                 Execution::WaitableEvent{}.WaitQuietly (15s);
             }
 
@@ -543,12 +543,12 @@ namespace {
                 ObjectVariantMapper mapper;
                 mapper.AddCommonType<optional<int>> ();
                 mapper.AddClass<Employee> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                    {L"id", StructFieldMetaInfo{&Employee::ID}},
-                    {L"Name", StructFieldMetaInfo{&Employee::fName}},
-                    {L"Age", StructFieldMetaInfo{&Employee::fAge}},
-                    {L"Address", StructFieldMetaInfo{&Employee::fAddress}},
-                    {L"Salary", StructFieldMetaInfo{&Employee::fSalary}},
-                    {L"Still-Employed", StructFieldMetaInfo{&Employee::fStillEmployed}},
+                    {"id", StructFieldMetaInfo{&Employee::ID}},
+                    {"Name", StructFieldMetaInfo{&Employee::fName}},
+                    {"Age", StructFieldMetaInfo{&Employee::fAge}},
+                    {"Address", StructFieldMetaInfo{&Employee::fAddress}},
+                    {"Salary", StructFieldMetaInfo{&Employee::fSalary}},
+                    {"Still-Employed", StructFieldMetaInfo{&Employee::fStillEmployed}},
                 });
                 return mapper;
             }};
@@ -565,10 +565,10 @@ namespace {
                 ObjectVariantMapper mapper;
                 mapper.AddCommonType<optional<int>> ();
                 mapper.AddClass<Paycheck> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                    {L"id", StructFieldMetaInfo{&Paycheck::ID}},
-                    {L"Employee-Ref", StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
-                    {L"Amount", StructFieldMetaInfo{&Paycheck::fAmount}},
-                    {L"Date", StructFieldMetaInfo{&Paycheck::fDate}},
+                    {"id", StructFieldMetaInfo{&Paycheck::ID}},
+                    {"Employee-Ref", StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
+                    {"Amount", StructFieldMetaInfo{&Paycheck::fAmount}},
+                    {"Date", StructFieldMetaInfo{&Paycheck::fDate}},
                 });
                 return mapper;
             }};
@@ -590,7 +590,7 @@ namespace {
              * for the EMPLOYEES table.
              */
             const Schema::Table kEmployeesTableSchema_{
-                L"EMPLOYEES",
+                "EMPLOYEES",
                 /*
                  *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
                  *  for ID, just as an example.
@@ -598,19 +598,20 @@ namespace {
                 // clang-format off
                 Collection<Schema::Field>{
 #if __cpp_designated_initializers
-                {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-                , {.fName = L"NAME", .fVariantValueName = L"Name"sv, .fVariantValueType = VariantValue::eString}
-                , {.fName = L"AGE", .fVariantValueName = L"Age"sv, .fVariantValueType = VariantValue::eInteger}
-                , {.fName = L"ADDRESS", .fVariantValueName = L"Address"sv, .fVariantValueType = VariantValue::eString}
-                , {.fName = L"SALARY", .fVariantValueName = L"Salary"sv, .fVariantValueType = VariantValue::eFloat}
-                , {.fName = L"STILL_EMPLOYED", .fVariantValueName = L"Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}
+                {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+                , {.fName = "NAME", .fVariantValueName = "Name"sv, .fVariantValueType = VariantValue::eString}
+                , {.fName = "AGE", .fVariantValueName = "Age"sv, .fVariantValueType = VariantValue::eInteger}
+                , {.fName = "ADDRESS", .fVariantValueName = "Address"sv, .fVariantValueType = VariantValue::eString}
+                , {.fName = "SALARY", .fVariantValueName = "Salary"sv, .fVariantValueType = VariantValue::eFloat}
+                , {.fName = "STILL_EMPLOYED", .fVariantValueName = "Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}
 #else
-                {L"ID", L"id"sv, true, VariantValue::eInteger, nullopt, true, nullopt, Schema::Field::kDefaultExpression_AutoIncrement}
-                , {L"name", L"Name"sv, false, VariantValue::eString}
-                , {L"AGE", L"Age"sv, false, VariantValue::eInteger}
-                , {L"ADDRESS", L"Address"sv, false, VariantValue::eString}
-                , {L"SALARY", L"Salary"sv, false, VariantValue::eFloat}
-                , {L"STILL_EMPLOYED", L"Still-Employed"sv, false, VariantValue::eInteger}
+&&&&;... see if any of supported compilers still have this false
+                {"ID", "id"sv, true, VariantValue::eInteger, nullopt, true, nullopt, Schema::Field::kDefaultExpression_AutoIncrement}
+                , {"name", "Name"sv, false, VariantValue::eString}
+                , {"AGE", "Age"sv, false, VariantValue::eInteger}
+                , {"ADDRESS", "Address"sv, false, VariantValue::eString}
+                , {"SALARY", "Salary"sv, false, VariantValue::eFloat}
+                , {"STILL_EMPLOYED", "Still-Employed"sv, false, VariantValue::eInteger}
 #endif
                 },
                 Schema::CatchAllField{}};
@@ -620,18 +621,18 @@ namespace {
              * for the PAYCHECKS table.
              */
             const Schema::Table kPaychecksTableSchema_{
-                L"PAYCHECKS",
+                "PAYCHECKS",
                 Collection<Schema::Field>{
 #if __cpp_designated_initializers
-                {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-                , {.fName = L"EMPLOYEEREF", .fVariantValueName = L"Employee-Ref"sv,.fRequired = true,  .fVariantValueType = VariantValue::eInteger}
-                , {.fName = L"AMOUNT", .fVariantValueName = L"Amount"sv, .fVariantValueType = VariantValue::eFloat}
-                , {.fName = L"DATE", .fVariantValueName = L"Date"sv, .fVariantValueType = VariantValue::eDate}
+                {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+                , {.fName = "EMPLOYEEREF", .fVariantValueName = "Employee-Ref"sv,.fRequired = true,  .fVariantValueType = VariantValue::eInteger}
+                , {.fName = "AMOUNT", .fVariantValueName = "Amount"sv, .fVariantValueType = VariantValue::eFloat}
+                , {.fName = "DATE", .fVariantValueName = "Date"sv, .fVariantValueType = VariantValue::eDate}
 #else
-                {L"ID", L"id"sv, true, VariantValue::eInteger, nullopt, true, nullopt, Schema::Field::kDefaultExpression_AutoIncrement}
-                , {L"EMPLOYEEREF", L"Employee-Ref"sv, true, VariantValue::eInteger}
-                , {L"AMOUNT", L"Amount"sv, false, VariantValue::eFloat}
-                , {L"DATE", L"Date"sv, false, VariantValue::eDate}
+                {"ID", "id"sv, true, VariantValue::eInteger, nullopt, true, nullopt, Schema::Field::kDefaultExpression_AutoIncrement}
+                , {"EMPLOYEEREF", "Employee-Ref"sv, true, VariantValue::eInteger}
+                , {"AMOUNT", "Amount"sv, false, VariantValue::eFloat}
+                , {"DATE", "Date"sv, false, VariantValue::eDate}
 #endif
              }};
             // clang-format on
@@ -664,13 +665,13 @@ namespace {
 
                 // Add Initial Employees
                 // @todo use __cpp_designated_initializers when we can assume it
-                employeeTableConnection->AddNew (Employee{nullopt, L"Paul", 32, L"California", 20000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, L"Allen", 25, L"Texas", 15000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, L"Teddy", 23, L"Norway", 20000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, L"Mark", 25, L"Rich-Mond", 65000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, L"David", 27, L"Texas", 85000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, L"Kim", 22, L"South-Hall", 45000.00, true});
-                employeeTableConnection->AddNew (Employee{nullopt, L"James", 24, L"Houston", 10000.00, true});
+                employeeTableConnection->AddNew (Employee{nullopt, "Paul", 32, "California", 20000.00, true});
+                employeeTableConnection->AddNew (Employee{nullopt, "Allen", 25, "Texas", 15000.00, true});
+                employeeTableConnection->AddNew (Employee{nullopt, "Teddy", 23, "Norway", 20000.00, true});
+                employeeTableConnection->AddNew (Employee{nullopt, "Mark", 25, "Rich-Mond", 65000.00, true});
+                employeeTableConnection->AddNew (Employee{nullopt, "David", 27, "Texas", 85000.00, true});
+                employeeTableConnection->AddNew (Employee{nullopt, "Kim", 22, "South-Hall", 45000.00, true});
+                employeeTableConnection->AddNew (Employee{nullopt, "James", 24, "Houston", 10000.00, true});
 
                 default_random_engine         generator;
                 uniform_int_distribution<int> distribution{1, 6};
@@ -678,10 +679,10 @@ namespace {
                 // then keep adding/removing people randomly (but dont really remove just mark no longer employed so we
                 // can REF in paycheck table
                 while (true) {
-                    static const Sequence<String>    kNames_{L"Joe", L"Phred", L"Barny", L"Sue", L"Anne"};
+                    static const Sequence<String>    kNames_{"Joe", "Phred", "Barny", "Sue", "Anne"};
                     uniform_int_distribution<int>    namesDistr{0, static_cast<int> (kNames_.size () - 1)};
                     uniform_int_distribution<int>    ageDistr{25, 50};
-                    static const Sequence<String>    kAddresses{L"Houston", L"Pittsburg", L"New York", L"Paris", L"California"};
+                    static const Sequence<String>    kAddresses{"Houston", "Pittsburg", "New York", "Paris", "California"};
                     uniform_int_distribution<int>    addressesDistr{0, static_cast<int> (kAddresses.size () - 1)};
                     uniform_real_distribution<float> salaryDistr{10000.00, 50000.00};
 
@@ -756,10 +757,10 @@ namespace {
                 Connection::Ptr    conn2 = SetupDB_ (options);
                 Thread::CleanupPtr updateEmpDBThread{
                     Thread::CleanupPtr::eAbortBeforeWaiting,
-                    Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
+                    Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, "Update Employee Table")};
                 Thread::CleanupPtr writeChecks{
                     Thread::CleanupPtr::eAbortBeforeWaiting,
-                    Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
+                    Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks")};
                 Execution::WaitableEvent{}.WaitQuietly (15s);
             }
         }
