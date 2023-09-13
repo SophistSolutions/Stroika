@@ -1576,8 +1576,6 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCol
 
 #endif
 
-
-
 /*
 
 /usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
