@@ -1571,6 +1571,8 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  The concept IConvertibleToString is satisfied iff the argument type can be used to construct a (Stroika) String.
+     *  Note subtly, const char* is treated (as of Stroika v3) as convertible to String, but the characters must be ASCII, or
+     *  an exception will be generated in the constructor.
      */
     template <typename T>
     concept IConvertibleToString = requires (T t) {

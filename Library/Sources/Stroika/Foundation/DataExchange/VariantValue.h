@@ -235,9 +235,6 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (const boost::json::value& val);
 #endif
 
-    private:
-        VariantValue (const char* val) = delete;
-
     public:
         /**
          *  Assign anything to a VariantValue you can construct a VariantValue with.

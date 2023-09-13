@@ -152,7 +152,7 @@ namespace Stroika::Foundation::Characters {
      *      o   char32_t            ""
      *      o   wchar_t             ""
      *      o   Character           added
-     *      o   ASCII               added
+     *      o   ASCII               added               (NOTE - this is a typedef for char - so CHAR* interpretted as ASCII ONLY)
      *      o   Latin1              added
      * 
      *  \note IUNICODECanUnambiguouslyConvertFrom means any 'basic character type' - size <= 4 bytes, which
