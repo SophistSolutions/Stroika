@@ -1576,11 +1576,25 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCol
 
 #endif
 
+
+
+/*
+
+/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
+/tmp/lto-llvm-f3876d.o: in function `Stroika::Foundation::Memory::InlineBuffer<wchar_t, 2048ul>::reserve(unsigned long, bool)':
+ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIwLm2048EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIwLm2048EE7reserveEmb]+0xb6): undefined reference to `Stroika::Foundation::Execution::ThrowIfNull(void const*)'
+/usr/bin/ld: /tmp/lto-llvm-f3876d.o: in function `Stroika::Foundation::Memory::InlineBuffer<std::byte, 8192ul>::reserve(unsigned long, bool)':
+ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm8192EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferISt4byteLm8192EE7reserveEmb]+0xb1): undefined reference to `Stroika::Foundation::Execution::ThrowIfNull(void const*)'
+/usr/bin/ld: /tmp/lto-llvm-f3876d.o: in function `Stroika::Foundation::Memory::InlineBuffer<char, 10240ul>::reserve(unsigned long, bool)':
+ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb[_ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserveEmb]+0xae): undefined reference to `Stroika::Foundation::Execution::ThrowIfNull(void const*)'
+
+*/
+
 #ifndef qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__)
-// appears still broken in clang++-13
-#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+// appears still broken in clang++-13 and -clang++-14-release-libstdc++
+#define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
 #endif
