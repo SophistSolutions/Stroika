@@ -148,6 +148,7 @@ struct Connection::Rep_ final : IRep {
 
         int flags = 0;
         if (options.fThreadingMode) {
+            // https://www.sqlite.org/threadsafe.html expalins the threadsafety stuff. Not sure I have it right, but hopefully --LGP 2023-09-13
             switch (*options.fThreadingMode) {
                 case Options::ThreadingMode::eSingleThread:
                     break;
