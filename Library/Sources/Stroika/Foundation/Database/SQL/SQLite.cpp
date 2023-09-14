@@ -451,7 +451,7 @@ struct Statement::MyRep_ : IRep {
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{L"SQLite::Statement::MyRep_::CTOR",
-                               Stroika_Foundation_Debug_OptionalizeTraceArgs (L"db=%p, query='%s'", db.Peek (), query.As<wstring>().c_str ())};
+                               Stroika_Foundation_Debug_OptionalizeTraceArgs (L"db=%p, query='%s'", db.Peek (), query.As<wstring> ().c_str ())};
 #endif
         RequireNotNull (db);
         RequireNotNull (db->Peek ());

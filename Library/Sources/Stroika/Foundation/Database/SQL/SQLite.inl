@@ -17,45 +17,23 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      ****************************** SQLite::CompiledOptions *************************
      ********************************************************************************
      */
-    inline constexpr CompiledOptions CompiledOptions::kThe
-    {
-#if __cpp_designated_initializers
+    inline constexpr CompiledOptions CompiledOptions::kThe{
 #ifdef SQLITE_ENABLE_NORMALIZE
         .ENABLE_NORMALIZE = true
 #else
         .ENABLE_NORMALIZE = false
 #endif
 #ifdef SQLITE_THREADSAFE
-            ,
+        ,
         .THREADSAFE = SQLITE_THREADSAFE
 #elif defined(THREADSAFE)
-            ,
+        ,
         .THREADSAFE = THREADSAFE
 #else
         , .THREADSAFE = 1
 #endif
-            ,
-        .ENABLE_JSON1 = true
-
-#else
-#ifdef SQLITE_ENABLE_NORMALIZE
-        , SQLITE_ENABLE_NORMALIZE
-#else
-        false
-#endif
-#ifdef SQLITE_THREADSAFE
-            ,
-            SQLITE_THREADSAFE
-#elif defined(THREADSAFE)
-            ,
-            THREADSAFE
-#else
-        , 1
-#endif
-            ,
-            true
-#endif
-    };
+        ,
+        .ENABLE_JSON1 = true};
 
     /*
      ********************************************************************************

@@ -59,11 +59,7 @@ namespace {
                 DB (const filesystem::path& testDBFile)
                 {
                     try {
-#if __cpp_designated_initializers
                         fDB_ = Connection::New (Options{.fDBPath = testDBFile});
-#else
-                        fDB_ = Connection::New (Options{testDBFile});
-#endif
                         InitialSetup_ (fDB_);
                     }
                     catch (...) {
@@ -75,11 +71,7 @@ namespace {
                 DB ()
                 {
                     try {
-#if __cpp_designated_initializers
                         fDB_ = Connection::New (Options{.fInMemoryDB = ""});
-#else
-                        fDB_ = Connection::New (Options{nullopt, true, nullopt, ""});
-#endif
                         InitialSetup_ (fDB_);
                     }
                     catch (...) {
@@ -514,11 +506,7 @@ namespace {
             using namespace Database::SQL::SQLite;
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
             (void)std::filesystem::remove (dbPath);
-#if __cpp_designated_initializers
             PRIVATE_::ThreadTest_ (Options{.fDBPath = dbPath, .fThreadingMode = Options::ThreadingMode::eMultiThread});
-#else
-            PRIVATE_::ThreadTest_ (Options{dbPath, true, nullopt, nullopt, Options::ThreadingMode::eMultiThread});
-#endif
         }
     }
 
@@ -597,22 +585,12 @@ namespace {
                  */
                 // clang-format off
                 Collection<Schema::Field>{
-#if __cpp_designated_initializers
                 {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
                 , {.fName = "NAME", .fVariantValueName = "Name"sv, .fVariantValueType = VariantValue::eString}
                 , {.fName = "AGE", .fVariantValueName = "Age"sv, .fVariantValueType = VariantValue::eInteger}
                 , {.fName = "ADDRESS", .fVariantValueName = "Address"sv, .fVariantValueType = VariantValue::eString}
                 , {.fName = "SALARY", .fVariantValueName = "Salary"sv, .fVariantValueType = VariantValue::eFloat}
                 , {.fName = "STILL_EMPLOYED", .fVariantValueName = "Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}
-#else
-&&&&;... see if any of supported compilers still have this false
-                {"ID", "id"sv, true, VariantValue::eInteger, nullopt, true, nullopt, Schema::Field::kDefaultExpression_AutoIncrement}
-                , {"name", "Name"sv, false, VariantValue::eString}
-                , {"AGE", "Age"sv, false, VariantValue::eInteger}
-                , {"ADDRESS", "Address"sv, false, VariantValue::eString}
-                , {"SALARY", "Salary"sv, false, VariantValue::eFloat}
-                , {"STILL_EMPLOYED", "Still-Employed"sv, false, VariantValue::eInteger}
-#endif
                 },
                 Schema::CatchAllField{}};
 
@@ -623,17 +601,10 @@ namespace {
             const Schema::Table kPaychecksTableSchema_{
                 "PAYCHECKS",
                 Collection<Schema::Field>{
-#if __cpp_designated_initializers
                 {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
                 , {.fName = "EMPLOYEEREF", .fVariantValueName = "Employee-Ref"sv,.fRequired = true,  .fVariantValueType = VariantValue::eInteger}
                 , {.fName = "AMOUNT", .fVariantValueName = "Amount"sv, .fVariantValueType = VariantValue::eFloat}
                 , {.fName = "DATE", .fVariantValueName = "Date"sv, .fVariantValueType = VariantValue::eDate}
-#else
-                {"ID", "id"sv, true, VariantValue::eInteger, nullopt, true, nullopt, Schema::Field::kDefaultExpression_AutoIncrement}
-                , {"EMPLOYEEREF", "Employee-Ref"sv, true, VariantValue::eInteger}
-                , {"AMOUNT", "Amount"sv, false, VariantValue::eFloat}
-                , {"DATE", "Date"sv, false, VariantValue::eDate}
-#endif
              }};
             // clang-format on
 
@@ -771,11 +742,7 @@ namespace {
             using namespace Database::SQL::SQLite;
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-and-orm-test.db";
             (void)std::filesystem::remove (dbPath);
-#if __cpp_designated_initializers
             PRIVATE_::ThreadTest_ (Options{.fDBPath = dbPath, .fThreadingMode = Options::ThreadingMode::eMultiThread});
-#else
-            PRIVATE_::ThreadTest_ (Options{dbPath, true, nullopt, nullopt, Options::ThreadingMode::eMultiThread});
-#endif
         }
     }
 }
