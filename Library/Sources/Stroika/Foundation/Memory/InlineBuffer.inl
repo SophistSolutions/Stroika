@@ -280,12 +280,12 @@ namespace Stroika::Foundation::Memory {
         Require (newCapacity >= size ());
         size_t useNewCapacity = newCapacity;
         size_t oldCapacity    = capacity ();
-        if (atLeast) {
-            if (useNewCapacity <= oldCapacity) {
+        if (atLeast) [[likely]] {
+            if (useNewCapacity <= oldCapacity) [[likely]] {
                 return; // no work todo here....
             }
             // if fits in inline buffer, round up to that size. If exceeding that, use ScalledUpCapcity exponential growth algorithm
-            if (useNewCapacity < BUF_SIZE) {
+            if (useNewCapacity < BUF_SIZE) [[likely]] {
                 useNewCapacity = BUF_SIZE;
             }
             else {
@@ -363,7 +363,7 @@ namespace Stroika::Foundation::Memory {
     {
         size_t s    = size ();
         size_t newS = s + 1;
-        if (not this->HasEnoughCapacity_ (newS)) {
+        if (not this->HasEnoughCapacity_ (newS)) [[unlikely]] {
             reserve (newS);
         }
         if constexpr (is_trivially_copyable_v<T>) {
@@ -381,7 +381,7 @@ namespace Stroika::Foundation::Memory {
     {
         size_t s    = size ();
         size_t newS = s + copyFrom.size ();
-        if (not this->HasEnoughCapacity_ (newS)) {
+        if (not this->HasEnoughCapacity_ (newS)) [[unlikely]] {
             reserve (newS);
         }
         Assert (this->HasEnoughCapacity_ (newS));
@@ -399,7 +399,7 @@ namespace Stroika::Foundation::Memory {
     {
         size_t s    = size ();
         size_t newS = s + copyFrom.size ();
-        if (not this->HasEnoughCapacity_ (newS)) {
+        if (not this->HasEnoughCapacity_ (newS)) [[unlikely]] {
             reserve (newS);
         }
         Assert (this->HasEnoughCapacity_ (newS));
