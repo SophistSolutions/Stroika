@@ -37,8 +37,6 @@ namespace Stroika::Foundation::Characters {
     template <>
     String ToString (const type_index& t);
 
-    String ToString (const char* t);
-
     /*
      * From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
      *      There are five standard signed integer types : signed char, short int, int,

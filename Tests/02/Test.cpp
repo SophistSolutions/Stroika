@@ -1702,7 +1702,7 @@ namespace {
 namespace {
     void Test53_vswprintf_on_2_strings_longish_Buggy_ ()
     {
-        String b = "…";
+        String b = L"…";
         if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
             try {
                 String x = Characters::Format (L"%s", b.c_str ());
