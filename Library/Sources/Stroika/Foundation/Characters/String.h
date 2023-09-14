@@ -450,6 +450,9 @@ namespace Stroika::Foundation::Characters {
          *  \em Note that it is legal, but pointless to pass in an empty string to insert
          *
          *  @see    Concatenate() for a similar function that doesn't modify the source
+         * 
+         *  \todo CONSIDER DEPRECATING/LOSING THIS API - right now its NOT performant, but could easily be tweaked. Just better to use StringBuilder... Also API could
+         *        be generalized like CTOR - with appenbding any 'convertible to string' type, like char16_t, etc...
          */
         nonvirtual void Append (Character c);
         nonvirtual void Append (const String& s);
