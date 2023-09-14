@@ -466,7 +466,7 @@ namespace {
 #endif
             constexpr int kRecurseDepth = (kArm_ and Debug::kBuiltWithAddressSanitizer) ? 7 : 8; // reduction only needed with sanitizer on rasberrypi
 #endif
-            STRING testString = "some dump test";
+            STRING testString = L"some dump test";
 #if qPrintTimings
             cout << "\tTYPE=" << testMessage << ": Recursive build test with depth " << kRecurseDepth << endl;
             Time::DurationSecondsType t = Time::GetTickCount ();
@@ -571,7 +571,7 @@ namespace {
             {
                 STRING t1 = s;
                 for (size_t i = 0; i < 100; ++i) {
-                    t1 += "X";
+                    t1 += L"X";
                 }
                 STRING t2 = t1;
                 if (t1 != t2) {
@@ -1260,7 +1260,7 @@ namespace {
         Debug::TraceContextBumper ctx{"Test31_OperatorINSERT_ostream_"};
         wstringstream             out;
         out << String{"abc"};
-        VerifyTestResult (out.str () == "abc");
+        VerifyTestResult (out.str () == L"abc");
     }
 }
 
@@ -1372,7 +1372,7 @@ namespace {
     void Test46_CompareLHSRHS_ ()
     {
         Debug::TraceContextBumper ctx{"Test46_CompareLHSRHS_"};
-        const wchar_t*            i = "One";
+        const wchar_t*            i = L"One";
         Characters::String        n = "Two";
         if (i == n) {
             VerifyTestResult (false);
@@ -1749,7 +1749,7 @@ namespace {
     void Test56_StdStringMoveCTORs_ ()
     {
         {
-            wstring stuff{"abc"};
+            wstring stuff{L"abc"};
             String  a{move (stuff)};
             VerifyTestResult (a == "abc");
         }
