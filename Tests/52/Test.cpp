@@ -85,11 +85,13 @@ using std::byte;
 // My performance expectation numbers are calibrated for MSVC (2k13.net)
 // Don't print when they differ on other platforms.
 // This is only intended to alert me when something changes GROSSLY.
+namespace {
 #if (!qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64) && qAllowBlockAllocation && !qDefaultTracingOn)
-#define qPrintOutIfFailsToMeetPerformanceExpectations 1
+    constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ = true;
 #else
-#define qPrintOutIfFailsToMeetPerformanceExpectations 0
+    constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ = false;
 #endif
+}
 
 // Use this so when running #if qDebug case - we don't waste a ton of time with this test
 #define qDebugCaseRuncountRatio (.01)
@@ -155,13 +157,13 @@ namespace {
         else if (performanceScore > 1) {
             outTo << compareWithTName.AsNarrowSDKString () << " is ***SLOWER***" << endl;
         }
-#if qPrintOutIfFailsToMeetPerformanceExpectations
-        if (performanceScore > warnIfPerformanceScoreHigherThan) {
-            outTo << kOneTab_ << "                 " << kOneTab_;
-            outTo << "{{{WARNING - expected performance score less than " << warnIfPerformanceScoreHigherThan << " and got "
-                  << performanceScore << "}}}" << endl;
+        if constexpr (kPrintOutIfFailsToMeetPerformanceExpectations_) {
+            if (performanceScore > warnIfPerformanceScoreHigherThan) {
+                outTo << kOneTab_ << "                 " << kOneTab_;
+                outTo << "{{{WARNING - expected performance score less than " << warnIfPerformanceScoreHigherThan << " and got "
+                      << performanceScore << "}}}" << endl;
+            }
         }
-#endif
         outTo << endl;
     }
 
@@ -206,12 +208,13 @@ namespace {
         }
 #endif
         printResults (testName, baselineTName, compareWithTName, warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
-#if qPrintOutIfFailsToMeetPerformanceExpectations
-        double ratio = compareWithTime / baselineTime;
-        return ratio > warnIfPerformanceScoreHigherThan;
-#else
-        return false;
-#endif
+        if constexpr (kPrintOutIfFailsToMeetPerformanceExpectations_) {
+            double ratio = compareWithTime / baselineTime;
+            return ratio > warnIfPerformanceScoreHigherThan;
+        }
+        else {
+            return false;
+        }
     }
     bool Tester (String testName, DurationSecondsType baselineTime, function<void ()> compareWithT, String compareWithTName,
                  unsigned int runCount, double warnIfPerformanceScoreHigherThan,
@@ -233,12 +236,13 @@ namespace {
 #endif
         printResults (testName, Characters::Format (L"%f seconds", baselineTime), compareWithTName, warnIfPerformanceScoreHigherThan,
                       baselineTime, compareWithTime);
-#if qPrintOutIfFailsToMeetPerformanceExpectations
-        double ratio = compareWithTime / baselineTime;
-        return ratio > warnIfPerformanceScoreHigherThan;
-#else
-        return false;
-#endif
+        if constexpr (kPrintOutIfFailsToMeetPerformanceExpectations_) {
+            double ratio = compareWithTime / baselineTime;
+            return ratio > warnIfPerformanceScoreHigherThan;
+        }
+        else {
+            return false;
+        }
     }
 
     void Tester (String testName, function<void ()> compareWithT, String compareWithTName, unsigned int runCount,
@@ -270,26 +274,24 @@ namespace {
     template <typename WIDESTRING_IMPL>
     void Test_StructWithStringsFillingAndCopying ()
     {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
+        //DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
         struct S {
             WIDESTRING_IMPL fS1;
             WIDESTRING_IMPL fS2;
             WIDESTRING_IMPL fS3;
             WIDESTRING_IMPL fS4;
-            S ()
-            {
-            }
+            S () = default;
             S (const WIDESTRING_IMPL& w1, const WIDESTRING_IMPL& w2, const WIDESTRING_IMPL& w3, const WIDESTRING_IMPL& w4)
-                : fS1 (w1)
-                , fS2 (w2)
-                , fS3 (w3)
-                , fS4 (w4)
+                : fS1{w1}
+                , fS2{w2}
+                , fS3{w3}
+                , fS4{w4}
             {
             }
         };
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
+        //DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
         S s1;
-        S s2 (L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144");
+        S s2{L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144"};
         s1 = s2;
         vector<S> v;
         for (size_t i = 1; i < 10; ++i) {
@@ -304,7 +306,7 @@ namespace {
     template <typename WIDESTRING_IMPL>
     void Test_StructWithStringsFillingAndCopying2 ()
     {
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
+        //DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
         struct S {
             WIDESTRING_IMPL fS1;
             WIDESTRING_IMPL fS2;
@@ -312,20 +314,16 @@ namespace {
             WIDESTRING_IMPL fS4;
             WIDESTRING_IMPL fS5;
             WIDESTRING_IMPL fS6;
-            S ()
-            {
-            }
+            S () = default;
             S (const WIDESTRING_IMPL& w1, const WIDESTRING_IMPL& w2, const WIDESTRING_IMPL& w3, const WIDESTRING_IMPL& w4)
-                : fS1 (w1)
-                , fS2 (w2)
-                , fS3 (w3)
-                , fS4 (w4)
-                , fS5 ()
-                , fS6 ()
+                : fS1{w1}
+                , fS2{w2}
+                , fS3{w3}
+                , fS4{w4}
             {
             }
         };
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
+        //DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
         S s1;
         S s2{L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144"};
         s1 = s2;
