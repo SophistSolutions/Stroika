@@ -76,7 +76,7 @@ namespace {
      *          that IF this code is problematic, it will fail on at least one platform.
      */
     String s_TestEmptyString_;
-    String s_TestStringInit_{L"my very good test"};
+    String s_TestStringInit_{"my very good test"};
     String s_TestStringConstantInit_{String::FromStringConstant (L"my very very good test")};
     String s_TestStringAssignInit_{s_TestStringInit_};
 
@@ -84,8 +84,8 @@ namespace {
         RunTest_VerifyStatics_ ()
         {
             VerifyTestResult (s_TestEmptyString_.empty ());
-            VerifyTestResult (s_TestStringInit_ == L"my very good test");
-            VerifyTestResult (s_TestStringConstantInit_ == L"my very very good test");
+            VerifyTestResult (s_TestStringInit_ == "my very good test");
+            VerifyTestResult (s_TestStringConstantInit_ == "my very very good test");
             VerifyTestResult (s_TestStringAssignInit_ == s_TestStringInit_);
         }
     } _s_RunTest_VerifyStaticAssigns_;
@@ -115,7 +115,7 @@ namespace {
         void StressTest1_ (String big)
         {
             for (size_t j = 1; j <= kLoopEnd / 50; j++) {
-                String a = L"a"_k;
+                String a = "a"_k;
                 for (size_t i = 0; i <= kLoopEnd; ++i) {
                     big += a;
                     VerifyTestResult ((big.size () - 1) == i);
@@ -124,7 +124,7 @@ namespace {
                 big.clear ();
             }
 
-            String s1 = L"test strings";
+            String s1 = "test strings";
             for (int i = 1; i <= kLoopEnd; ++i) {
                 big += s1;
                 VerifyTestResult (big.size () == s1.size () * i);
@@ -132,7 +132,7 @@ namespace {
         }
         void StressTest2_ (String big)
         {
-            String s1 = L"test strings";
+            String s1 = "test strings";
             for (int i = 1; i <= kLoopEnd; ++i) {
                 big = big + s1;
                 VerifyTestResult (big.size () == s1.size () * i);
@@ -152,7 +152,7 @@ namespace {
 #endif
 
             {
-                String s (L"");
+                String s ("");
                 StressTest1_ (s);
             }
 
@@ -163,7 +163,7 @@ namespace {
 #endif
 
             {
-                String s (L"");
+                String s ("");
                 StressTest2_ (s);
             }
 
@@ -181,7 +181,7 @@ namespace {
 #endif
 
             {
-                String_BufferedArray s (L"");
+                String_BufferedArray s ("");
                 StressTest1_ (s);
             }
 
@@ -192,7 +192,7 @@ namespace {
 #endif
 
             {
-                String_BufferedArray s (L"");
+                String_BufferedArray s ("");
                 StressTest2_ (s);
             }
 
@@ -222,31 +222,31 @@ namespace {
         s3 += s1;
         s3 += s2;
 
-        s1 += L"\n";
+        s1 += "\n";
         VerifyTestResult (s1.size () == 13);
     }
 
     void Test1_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test1_"};
+        Debug::TraceContextBumper ctx{"Test1_"};
         /*
          * Some simple tests to start off with.
          */
         {
-            VerifyTestResult (String{L"a"}.length () == 1);
-            VerifyTestResult (String{String{L"fred"} + String{L"joe"}}.size () == 7);
+            VerifyTestResult (String{"a"}.length () == 1);
+            VerifyTestResult (String{String{"fred"} + String{"joe"}}.size () == 7);
 
-            VerifyTestResult (String{L"fred"} + String{L"joe"} == String{L"fredjoe"});
+            VerifyTestResult (String{"fred"} + String{"joe"} == String{"fredjoe"});
 
             {
-                String s1 = String{L"test strings"};
-                String s2 = String{L"test strings"};
+                String s1 = String{"test strings"};
+                String s2 = String{"test strings"};
                 Test2_Helper_ (s1, s2);
             }
 
             {
-                String s1{L"test strings"};
-                String s2{L"test strings"};
+                String s1{"test strings"};
+                String s2{"test strings"};
 
                 VerifyTestResult (Character{'a'} == 'a');
 
@@ -255,7 +255,7 @@ namespace {
 
             {
                 String s1 = String::FromStringConstant (L"test strings");
-                String s2 = String::FromStringConstant (L"test strings");
+                String s2 = String::FromStringConstant ("test strings");
                 Test2_Helper_ (s1, s2);
             }
         }
@@ -263,7 +263,7 @@ namespace {
 
     void Test2_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test2_"};
+        Debug::TraceContextBumper ctx{"Test2_"};
         Test2Helpers_::StressTestStrings ();
 #if 0
         Test2Helpers_::StressTestBufferedStrings ();
@@ -272,19 +272,19 @@ namespace {
 
     void Test3_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test3_"};
+        Debug::TraceContextBumper ctx{"Test3_"};
         String                    t1;
         String                    t2 = t1;
-        String                    t3 = L"a";
-        String                    t4 = L"a";
+        String                    t3 = "a";
+        String                    t4 = "a";
 
-        VerifyTestResult (t1 == L"");
+        VerifyTestResult (t1 == "");
         VerifyTestResult (t1 == String{});
-        VerifyTestResult (t1 == String{L""});
+        VerifyTestResult (t1 == String{""});
         VerifyTestResult (t1 == t2);
-        VerifyTestResult (t3 == L"a");
-        VerifyTestResult (t3 == String{L"a"});
-        VerifyTestResult (t4 == L"a");
+        VerifyTestResult (t3 == "a");
+        VerifyTestResult (t3 == String{"a"});
+        VerifyTestResult (t4 == "a");
 #if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable of type 'Stroika::Foundation::Characters::String' to itself
@@ -294,26 +294,26 @@ namespace {
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
 #endif
-        VerifyTestResult (t1 == L"");
+        VerifyTestResult (t1 == "");
 
         t1 += 'F';
         t1 += 'r';
         t1 += 'e';
         t1 += 'd';
-        t1 += L" Flintstone";
-        VerifyTestResult (t1 == L"Fred Flintstone");
-        VerifyTestResult (String{L"Fred Flintstone"} == t1);
-        VerifyTestResult (String{L"Fred Flintstone"} == t1);
-        VerifyTestResult (t1 == String{L"Fred Flintstone"});
-        VerifyTestResult (t2 != L"Fred Flintstone");
-        VerifyTestResult (String{L"Fred Flintstone"} != t2);
-        VerifyTestResult (String{L"Fred Flintstone"} != t2);
+        t1 += " Flintstone";
+        VerifyTestResult (t1 == "Fred Flintstone");
+        VerifyTestResult (String{"Fred Flintstone"} == t1);
+        VerifyTestResult (String{"Fred Flintstone"} == t1);
+        VerifyTestResult (t1 == String{"Fred Flintstone"});
+        VerifyTestResult (t2 != "Fred Flintstone");
+        VerifyTestResult (String{"Fred Flintstone"} != t2);
+        VerifyTestResult (String{"Fred Flintstone"} != t2);
         VerifyTestResult (t2 != String{L"Fred Flintstone"});
 
         VerifyTestResult (t1.size () == 15);
         t1.erase (4);
         VerifyTestResult (t1.size () == 4);
-        VerifyTestResult (t1 == L"Fred");
+        VerifyTestResult (t1 == "Fred");
 
         VerifyTestResult (t1[0] == 'F');
         VerifyTestResult (t1[1] == 'r');
@@ -326,21 +326,21 @@ namespace {
         VerifyTestResult (t1[3] == 'd');
 
         String a[10];
-        VerifyTestResult (a[2] == L"");
-        a[3] = L"Fred";
-        VerifyTestResult (a[3] == L"Fred");
-        VerifyTestResult (a[2] != L"Fred");
+        VerifyTestResult (a[2] == "");
+        a[3] = "Fred";
+        VerifyTestResult (a[3] == "Fred");
+        VerifyTestResult (a[2] != "Fred");
     }
 
     void Test4_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test4_"};
+        Debug::TraceContextBumper ctx{"Test4_"};
         const wchar_t             frobaz[] = L"abc";
 
         String  t1;
-        String  t3 = L"a";
+        String  t3 = "a";
         String  t5 = String{frobaz};
-        String* t6 = new String{L"xyz"};
+        String* t6 = new String{"xyz"};
         delete (t6);
 
         t5 = t1;
@@ -354,21 +354,21 @@ namespace {
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
 #endif
-        VerifyTestResult (t1 == L"");
-        VerifyTestResult (t5 == L"");
+        VerifyTestResult (t1 == "");
+        VerifyTestResult (t5 == "");
 
         t1 += 'F';
         t1 += 'r';
         t1 += 'e';
         t1 += 'd';
-        t1 += L" Flintstone";
-        VerifyTestResult (t1 == L"Fred Flintstone");
+        t1 += " Flintstone";
+        VerifyTestResult (t1 == "Fred Flintstone");
         t5 = t1.SubString (5, 5 + 10);
-        VerifyTestResult (t5 == L"Flintstone");
-        VerifyTestResult (not t5.Find (L"STONE").has_value ());
-        VerifyTestResult (not t5.Contains (L"SToNE"));
-        VerifyTestResult (t5.Find (L"STONE", CompareOptions::eCaseInsensitive) == 5u);
-        VerifyTestResult (t5.Contains (L"SToNE", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (t5 == "Flintstone");
+        VerifyTestResult (not t5.Find ("STONE").has_value ());
+        VerifyTestResult (not t5.Contains ("SToNE"));
+        VerifyTestResult (t5.Find ("STONE", CompareOptions::eCaseInsensitive) == 5u);
+        VerifyTestResult (t5.Contains ("SToNE", CompareOptions::eCaseInsensitive));
 
         t1.erase (4);
         VerifyTestResult (t1.length () == 4);
@@ -384,40 +384,40 @@ namespace {
         VerifyTestResult (t5[2] == 'E');
         VerifyTestResult (t5[3] == 'D');
         VerifyTestResult (t5.Find ('f') == 0u);
-        VerifyTestResult (t5.Find (L"f") == 0u);
-        VerifyTestResult (t5.Find (L"fR") == 0u);
-        VerifyTestResult (t5.Find (L"fRE") == 0u);
-        VerifyTestResult (t5.Find (L"fRED") == 0u);
-        VerifyTestResult (not t5.Find (L"fRD").has_value ());
+        VerifyTestResult (t5.Find ("f") == 0u);
+        VerifyTestResult (t5.Find ("fR") == 0u);
+        VerifyTestResult (t5.Find ("fRE") == 0u);
+        VerifyTestResult (t5.Find ("fRED") == 0u);
+        VerifyTestResult (not t5.Find ("fRD").has_value ());
         VerifyTestResult (t5.Find ('R') == 1u);
         VerifyTestResult (t5.Find ('E') == 2u);
         VerifyTestResult (t5.Find ('D') == 3u);
-        VerifyTestResult (t5.Find (L"D") == 3u);
+        VerifyTestResult (t5.Find ("D") == 3u);
 
         VerifyTestResult (t5.RFind ('f') == 0u);
         VerifyTestResult (t5.RFind ('R') == 1u);
         VerifyTestResult (t5.RFind ('E') == 2u);
         VerifyTestResult (t5.RFind ('D') == 3u);
-        VerifyTestResult (t5.RFind (L"D") == 3u);
-        VerifyTestResult (t5.RFind (L"ED") == 2u);
-        VerifyTestResult (t5.RFind (L"RED") == 1u);
-        VerifyTestResult (t5.RFind (L"fRED") == 0u);
-        VerifyTestResult (not t5.RFind (L"fr").has_value ());
-        VerifyTestResult (t5.RFind (L"f") == 0u);
+        VerifyTestResult (t5.RFind ("D") == 3u);
+        VerifyTestResult (t5.RFind ("ED") == 2u);
+        VerifyTestResult (t5.RFind ("RED") == 1u);
+        VerifyTestResult (t5.RFind ("fRED") == 0u);
+        VerifyTestResult (not t5.RFind ("fr").has_value ());
+        VerifyTestResult (t5.RFind ("f") == 0u);
 
         t5.SetCharAt ('D', 0);
         t5.SetCharAt ('D', 1);
         t5.SetCharAt ('D', 2);
         t5.SetCharAt ('D', 3);
         VerifyTestResult (t5.Find ('D') == 0u);
-        VerifyTestResult (t5.Find (L"D") == 0u);
+        VerifyTestResult (t5.Find ("D") == 0u);
         VerifyTestResult (t5.RFind ('D') == 3u);
-        VerifyTestResult (t5.RFind (L"D") == 3u);
+        VerifyTestResult (t5.RFind ("D") == 3u);
 
         VerifyTestResult (not t5.Find ('f').has_value ());
-        VerifyTestResult (not t5.Find (L"f").has_value ());
+        VerifyTestResult (not t5.Find ("f").has_value ());
         VerifyTestResult (not t5.RFind ('f').has_value ());
-        VerifyTestResult (not t5.RFind (L"f").has_value ());
+        VerifyTestResult (not t5.RFind ("f").has_value ());
 
         VerifyTestResult (t5[0] == 'D');
         VerifyTestResult (t5[1] == 'D');
@@ -427,14 +427,14 @@ namespace {
 
     void Test5_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test5_"};
+        Debug::TraceContextBumper ctx{"Test5_"};
         String                    arr[100];
-        arr[3] = L"fred";
-        VerifyTestResult (arr[3] == L"fred");
+        arr[3] = "fred";
+        VerifyTestResult (arr[3] == "fred");
         String* l = new String[100];
-        l[3]      = L"FRED";
-        VerifyTestResult (l[3] == L"FRED");
-        VerifyTestResult (l[99] == L"");
+        l[3]      = "FRED";
+        VerifyTestResult (l[3] == "FRED");
+        VerifyTestResult (l[99] == "");
         delete[] (l);
         size_t nSlots = 100;
         l             = new String[size_t (nSlots)];
@@ -455,7 +455,7 @@ namespace {
         template <typename STRING>
         void Test6_Helper_ ([[maybe_unused]] const char* testMessage)
         {
-            Debug::TraceContextBumper ctx{L"Test6_Helper_"};
+            Debug::TraceContextBumper ctx{"Test6_Helper_"};
 #if qPrintTimings
             constexpr int kRecurseDepth = 10;
 #else
@@ -466,7 +466,7 @@ namespace {
 #endif
             constexpr int kRecurseDepth = (kArm_ and Debug::kBuiltWithAddressSanitizer) ? 7 : 8; // reduction only needed with sanitizer on rasberrypi
 #endif
-            STRING testString = L"some dump test";
+            STRING testString = "some dump test";
 #if qPrintTimings
             cout << "\tTYPE=" << testMessage << ": Recursive build test with depth " << kRecurseDepth << endl;
             Time::DurationSecondsType t = Time::GetTickCount ();
@@ -484,19 +484,19 @@ namespace {
     void Test6_ ()
     {
         using namespace Test6_PRIVATE_;
-        Debug::TraceContextBumper ctx{L"Test6_"};
+        Debug::TraceContextBumper ctx{"Test6_"};
         Test6_Helper_<String> ("Characters::String");
         Test6_Helper_<wstring> ("std::wstring");
     }
     void Test7_Comparisons_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test7_Comparisons_"};
+        Debug::TraceContextBumper ctx{"Test7_Comparisons_"};
         VerifyTestResult (String{"1"} <= String{"1"});
         VerifyTestResult ("1" <= String{"1"});
         VerifyTestResult (String{"1"} <= "1");
         VerifyTestResult (String{"1"} <= String{"10"});
         VerifyTestResult (not(String{"1"} > String{"10"}));
-        VerifyTestResult (not(String{L"1"} > String{L"10"}));
+        VerifyTestResult (not(String{"1"} > String{"10"}));
         VerifyTestResult (not(String{"1"} >= String{"10"}));
         VerifyTestResult (String{"1"} < String{"10"});
 
@@ -504,10 +504,10 @@ namespace {
         VerifyTestResult (String{"20"} >= String{"11"});
         VerifyTestResult (not(String{"20"} < String{"11"}));
         VerifyTestResult (not(String{"20"} <= String{"11"}));
-        VerifyTestResult (String{"11"} < String{L"20"});
-        VerifyTestResult (String{"11"} <= String{L"20"});
-        VerifyTestResult (not(String{"11"} > String{L"20"}));
-        VerifyTestResult (not(String{"11"} >= String{L"20"}));
+        VerifyTestResult (String{"11"} < String{"20"});
+        VerifyTestResult (String{"11"} <= String{"20"});
+        VerifyTestResult (not(String{"11"} > String{"20"}));
+        VerifyTestResult (not(String{"11"} >= String{"20"}));
 
         VerifyTestResult (String{"aac"} > String{"aab"});
         VerifyTestResult (String{"aac"} >= String{"aab"});
@@ -522,46 +522,46 @@ namespace {
 
     void Test8_ReadOnlyStrings_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test8_ReadOnlyStrings_"};
+        Debug::TraceContextBumper ctx{"Test8_ReadOnlyStrings_"};
         // NOTE - THIS TESTS String_Constant
         //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime;
-        String s = String::FromStringConstant (L"fred");
+        String s = String::FromStringConstant ("fred");
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');
         VerifyTestResult (s.size () == 3);
-        VerifyTestResult (s == L"fre");
-        s += L"x";
+        VerifyTestResult (s == "fre");
+        s += "x";
         VerifyTestResult (s.size () == 4);
         VerifyTestResult (s[3] == 'x');
-        VerifyTestResult (s == L"frex");
+        VerifyTestResult (s == "frex");
         s = s.InsertAt ('x', 2);
-        VerifyTestResult (s == L"frxex");
+        VerifyTestResult (s == "frxex");
         {
             wchar_t kZero[] = L"";
             s               = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 0);
-            VerifyTestResult (s == L"frxex");
+            VerifyTestResult (s == "frxex");
             s = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 1);
-            VerifyTestResult (s == L"frxex");
+            VerifyTestResult (s == "frxex");
             s = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 5);
-            VerifyTestResult (s == L"frxex");
+            VerifyTestResult (s == "frxex");
         }
     }
 
     void Test8_ExternalMemoryOwnershipStrings_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test8_ExternalMemoryOwnershipStrings_"};
-        String                    s = String::FromStringConstant (L"fred");
+        Debug::TraceContextBumper ctx{"Test8_ExternalMemoryOwnershipStrings_"};
+        String                    s = String::FromStringConstant ("fred");
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');
         VerifyTestResult (s.size () == 3);
-        s += L"x";
+        s += "x";
         VerifyTestResult (s.size () == 4);
         VerifyTestResult (s[3] == 'x');
-        VerifyTestResult (s == L"frex");
+        VerifyTestResult (s == "frex");
         s = s.InsertAt ('x', 2);
-        VerifyTestResult (s == L"frxex");
+        VerifyTestResult (s == "frxex");
     }
 
     namespace {
@@ -571,7 +571,7 @@ namespace {
             {
                 STRING t1 = s;
                 for (size_t i = 0; i < 100; ++i) {
-                    t1 += L"X";
+                    t1 += "X";
                 }
                 STRING t2 = t1;
                 if (t1 != t2) {
@@ -582,16 +582,16 @@ namespace {
     }
     void Test9_StringVersusStdCString_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test9_StringVersusStdCString_"};
+        Debug::TraceContextBumper ctx{"Test9_StringVersusStdCString_"};
         // EMBELLISH THIS MORE ONCE WE HAVE TIMING SUPPORT WORKING - SO WE CNA COMPARE PERFORMANCE - AND COME UP WITH MORE REASONABLE TESTS
         //
         //      -- LGP 2011-09-01
-        Test9Support::DoTest1<String> (L"Hello");
+        Test9Support::DoTest1<String> ("Hello");
         Test9Support::DoTest1<std::wstring> (L"Hello");
     }
     void Test10_ConvertToFromSTDStrings_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test10_ConvertToFromSTDStrings_"};
+        Debug::TraceContextBumper ctx{"Test10_ConvertToFromSTDStrings_"};
         const wstring             kT1 = L"abcdefh124123985213129314234";
         String                    t1  = kT1;
         VerifyTestResult (t1.As<wstring> () == kT1);
@@ -602,22 +602,22 @@ namespace {
 namespace {
     void Test11_Trim_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test11_Trim_"};
-        const String              kT1 = L"  abc";
+        Debug::TraceContextBumper ctx{"Test11_Trim_"};
+        const String              kT1 = "  abc";
         VerifyTestResult (kT1.RTrim () == kT1);
         VerifyTestResult (kT1.LTrim () == kT1.Trim ());
-        VerifyTestResult (kT1.Trim () == L"abc");
-        VerifyTestResult (String{L" abc "}.Trim () == L"abc");
+        VerifyTestResult (kT1.Trim () == "abc");
+        VerifyTestResult (String{" abc "}.Trim () == "abc");
 
         VerifyTestResult (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
-        VerifyTestResult (String{L"/\n"}.Trim () == L"/");
+        VerifyTestResult (String{"/\n"}.Trim () == "/");
     }
 }
 
 namespace {
     void Test12_CodePageConverter_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test12_CodePageConverter_"};
+        Debug::TraceContextBumper ctx{"Test12_CodePageConverter_"};
         wstring                   w = L"<PHRMode";
         using namespace Characters;
         using namespace Memory;
@@ -628,30 +628,30 @@ namespace {
 namespace {
     void Test13_ToLowerUpper_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test13_ToLowerUpper_"};
-        String                    w = L"Lewis";
-        VerifyTestResult (w.ToLowerCase () == L"lewis");
-        VerifyTestResult (w.ToUpperCase () == L"LEWIS");
-        VerifyTestResult (w == L"Lewis");
+        Debug::TraceContextBumper ctx{"Test13_ToLowerUpper_"};
+        String                    w = "Lewis";
+        VerifyTestResult (w.ToLowerCase () == "lewis");
+        VerifyTestResult (w.ToUpperCase () == "LEWIS");
+        VerifyTestResult (w == "Lewis");
     }
 }
 
 namespace {
     void Test15_StripAll_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test15_StripAll_"};
-        String                    w = L"Le wis";
-        VerifyTestResult (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == L"Lewis");
+        Debug::TraceContextBumper ctx{"Test15_StripAll_"};
+        String                    w = "Le wis";
+        VerifyTestResult (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == "Lewis");
 
-        w = L"This is a very good test    ";
-        VerifyTestResult (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == L"Thisisaverygoodtest");
+        w = "This is a very good test    ";
+        VerifyTestResult (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == "Thisisaverygoodtest");
     }
 }
 
 namespace {
     void Test16_Format_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test16_Format_"};
+        Debug::TraceContextBumper ctx{"Test16_Format_"};
         VerifyTestResult (CString::Format ("%d", 123) == "123");
         VerifyTestResult (CString::Format ("%s", "123") == "123");
 
@@ -675,71 +675,71 @@ namespace {
     namespace Test17_Private_ {
         void Test17_Find_ ()
         {
-            VerifyTestResult (String{L"abc"}.Find (L"b") == 1u);
-            VerifyTestResult (not String{L"abc"}.Find (L"x").has_value ());
-            VerifyTestResult (not String{L"abc"}.Find (L"b", 2).has_value ());
+            VerifyTestResult (String{"abc"}.Find ("b") == 1u);
+            VerifyTestResult (not String{"abc"}.Find ("x").has_value ());
+            VerifyTestResult (not String{"abc"}.Find ("b", 2).has_value ());
         }
         void Test17_FindEach_ ()
         {
             {
                 // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-                VerifyTestResult (String{L"abc"}.FindEach (L"b") == Containers::Sequence<size_t> ({1}).As<vector<size_t>> ());
+                VerifyTestResult (String{"abc"}.FindEach ("b") == Containers::Sequence<size_t> ({1}).As<vector<size_t>> ());
             }
             // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-            VerifyTestResult (String{L"01-23-45-67-89"}.FindEach (L"-") == Containers::Sequence<size_t> ({2, 5, 8, 11}).As<vector<size_t>> ());
+            VerifyTestResult (String{"01-23-45-67-89"}.FindEach ("-") == Containers::Sequence<size_t> ({2, 5, 8, 11}).As<vector<size_t>> ());
             // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-            VerifyTestResult (String{L"AAAA"}.FindEach (L"AA") == Containers::Sequence<size_t> ({0, 2}).As<vector<size_t>> ());
+            VerifyTestResult (String{"AAAA"}.FindEach ("AA") == Containers::Sequence<size_t> ({0, 2}).As<vector<size_t>> ());
         }
         void Test17_ReplaceAll_ ()
         {
-            VerifyTestResult (String{L"01-23-45-67-89"}.ReplaceAll (L"-", L"") == L"0123456789");
-            VerifyTestResult (String{L"01-23-45-67-89"}.ReplaceAll (L"-", L"x") == L"01x23x45x67x89");
-            VerifyTestResult (String{L"01-23-45-67-89"}.ReplaceAll (L"-", L"--") == L"01--23--45--67--89");
+            VerifyTestResult (String{"01-23-45-67-89"}.ReplaceAll ("-", "") == "0123456789");
+            VerifyTestResult (String{"01-23-45-67-89"}.ReplaceAll ("-", "x") == "01x23x45x67x89");
+            VerifyTestResult (String{"01-23-45-67-89"}.ReplaceAll ("-", "--") == "01--23--45--67--89");
         }
         void Test17_Replace_ ()
         {
-            VerifyTestResult (String{u8"abc"}.Replace (1, 2, L"B") == L"aBc");
+            VerifyTestResult (String{u8"abc"}.Replace (1, 2, "B") == "aBc");
         }
         void Test17_RegExpMatch_ ()
         {
             {
-                for (String i : Sequence<String>{L"01-23-45-67-89", L"", L"a"}) {
+                for (String i : Sequence<String>{"01-23-45-67-89", "", "a"}) {
                     VerifyTestResult (not i.Matches (RegularExpression::kNONE));
                     VerifyTestResult (i.Matches (RegularExpression::kAny));
                 }
             }
             {
                 // Test from String::Match () docs
-                static const RegularExpression kSonosRE_{L"([0-9.:]*)( - .*)"_RegEx};
-                static const String            kTestStr_{L"192.168.244.104 - Sonos Play:5"};
+                static const RegularExpression kSonosRE_{"([0-9.:]*)( - .*)"_RegEx};
+                static const String            kTestStr_{"192.168.244.104 - Sonos Play:5"};
                 VerifyTestResult (kTestStr_.Matches (kSonosRE_));
                 optional<String> match1;
-                VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1) and match1 == L"192.168.244.104");
+                VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1) and match1 == "192.168.244.104");
                 optional<String> match2;
-                VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == L"192.168.244.104" and match2 == L" - Sonos Play:5");
+                VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == "192.168.244.104" and match2 == " - Sonos Play:5");
             }
         }
         void Test17_RegExp_Search_ ()
         {
             {
-                RegularExpression regExp (L"abc");
-                String            testStr2Search = String{L"abc"};
+                RegularExpression regExp{"abc"};
+                String            testStr2Search = String{"abc"};
                 VerifyTestResult (testStr2Search.FindEach (regExp).size () == 1);
                 VerifyTestResult ((testStr2Search.FindEach (regExp)[0] == pair<size_t, size_t> (0, 3)));
             }
             {
                 // Test replace crlfs
-                String stringWithCRLFs = L"abc\r\ndef\r\n";
+                String stringWithCRLFs = "abc\r\ndef\r\n";
 #if !qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
-                String replaced = stringWithCRLFs.ReplaceAll (RegularExpression{L"[\r\n]*"}, L"");
-                VerifyTestResult (replaced == L"abcdef");
+                String replaced = stringWithCRLFs.ReplaceAll (RegularExpression{"[\r\n]*"}, "");
+                VerifyTestResult (replaced == "abcdef");
 #endif
             }
 #if 0
 // not sure why this didn't work! -
             {
-                String  abc     =   String {L"abc"};
-                String  abcabc  =   String {L"abc abc"};
+                String  abc     =   String {"abc"};
+                String  abcabc  =   String {"abc abc"};
                 VerifyTestResult (abcabc.Search (abc).size () == 2);
                 VerifyTestResult ((abcabc.Search (abc)[0] == pair<size_t, size_t> (0, abc.length ())));
                 VerifyTestResult ((abcabc.Search (abc)[1] == pair<size_t, size_t> (3, abc.length ())));
@@ -753,21 +753,21 @@ namespace {
             Test17_RegExp_Search_ ();
             Test17_RegExpMatch_ ();
             Test17_Replace_ ();
-            VerifyTestResult ((String{L"Hello world"}.Find (RegularExpression{L"ello"}) == pair<size_t, size_t> (1, 5)));
-            vector<RegularExpressionMatch> r = String{L"<h2>Egg prices</h2>"}.FindEachMatch (RegularExpression{L"<h(.)>([^<]+)"});
-            VerifyTestResult (r.size () == 1 and r[0].GetSubMatches ()[0] == L"2" and r[0].GetSubMatches ()[1] == L"Egg prices");
-            VerifyTestResult (String{L"Hello world"}.ReplaceAll (RegularExpression{L"world"}, L"Planet") == L"Hello Planet");
+            VerifyTestResult ((String{"Hello world"}.Find (RegularExpression{"ello"}) == pair<size_t, size_t> (1, 5)));
+            vector<RegularExpressionMatch> r = String{"<h2>Egg prices</h2>"}.FindEachMatch (RegularExpression{"<h(.)>([^<]+)"});
+            VerifyTestResult (r.size () == 1 and r[0].GetSubMatches ()[0] == "2" and r[0].GetSubMatches ()[1] == "Egg prices");
+            VerifyTestResult (String{"Hello world"}.ReplaceAll (RegularExpression{"world"}, "Planet") == "Hello Planet");
         }
         void docsTests_ ()
         {
             {
-                const String kTest_ = String::FromStringConstant (L"a=b");
-                const String kLbl2LookFor_{L"a="_k};
+                const String kTest_ = String::FromStringConstant ("a=b");
+                const String kLbl2LookFor_{"a="_k};
                 String       tmp;
                 if (kTest_.Find (kLbl2LookFor_)) {
                     tmp = String{kTest_.SubString (kLbl2LookFor_.length ())};
                 }
-                VerifyTestResult (tmp == L"b");
+                VerifyTestResult (tmp == "b");
             }
             {
 // SEE http://en.cppreference.com/w/cpp/regex/match_results/operator_at
@@ -799,34 +799,34 @@ namespace {
                 }
 #endif
                 {
-                    const String            kTest_{L"a=b,"_k};
-                    const RegularExpression kRE_{L"a=(.*)"};
+                    const String            kTest_{"a=b,"_k};
+                    const RegularExpression kRE_{"a=(.*)"};
                     Sequence<String>        tmp1{kTest_.FindEachString (kRE_)};
-                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == L"a=b,");
+                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == "a=b,");
                     Sequence<RegularExpressionMatch> tmp2{kTest_.FindEachMatch (kRE_)};
-                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String>{L"b,"});
+                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String>{"b,"});
                 }
                 {
-                    const String            kTest_ = String::FromStringConstant (L"a=b,");
-                    const RegularExpression kRE_{L"a=(.*),"};
+                    const String            kTest_ = String::FromStringConstant ("a=b,");
+                    const RegularExpression kRE_{"a=(.*),"};
                     Sequence<String>        tmp1{kTest_.FindEachString (kRE_)};
-                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == L"a=b,");
+                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == "a=b,");
                     Sequence<RegularExpressionMatch> tmp2{kTest_.FindEachMatch (kRE_)};
-                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String>{L"b"});
+                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String>{"b"});
                 }
 
                 {
-                    const String            kTest_ = String::FromStringConstant (L"a=b,");
-                    const RegularExpression kRE_{L"a=(.*)[, ]"};
+                    const String            kTest_ = String::FromStringConstant ("a=b,");
+                    const RegularExpression kRE_{"a=(.*)[, ]"};
                     Sequence<String>        tmp1{kTest_.FindEachString (kRE_)};
-                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == L"a=b,");
+                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == "a=b,");
                     Sequence<RegularExpressionMatch> tmp2{kTest_.FindEachMatch (kRE_)};
-                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String>{L"b"});
+                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String>{"b"});
                 }
                 {
-                    const String            kTest_{L"a=b, c=d"sv};
-                    const RegularExpression kRE_{L"(.)=(.)"};
-                    VerifyTestResult ((kTest_.FindEachString (kRE_) == vector<String>{L"a=b", L"c=d"}));
+                    const String            kTest_{"a=b, c=d"sv};
+                    const RegularExpression kRE_{"(.)=(.)"};
+                    VerifyTestResult ((kTest_.FindEachString (kRE_) == vector<String>{"a=b", "c=d"}));
                 }
             }
         }
@@ -834,7 +834,7 @@ namespace {
 
     void Test17_Find_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test17_Find_"};
+        Debug::TraceContextBumper ctx{"Test17_Find_"};
         Test17_Private_::Test17_ReplaceAll_ ();
         Test17_Private_::Test17_ReplaceAll_ ();
         Test17_Private_::Test17_RegExp_ ();
@@ -845,34 +845,34 @@ namespace {
 namespace {
     void Test18_Compare_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test18_Compare_"};
-        const String              kHELLOWorld = String{L"Hello world"};
+        Debug::TraceContextBumper ctx{"Test18_Compare_"};
+        const String              kHELLOWorld = String{"Hello world"};
         VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, kHELLOWorld) == 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, String{L"Hello world"}) == 0));
+        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, String{"Hello world"}) == 0));
         VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) <= 0));
         VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) == 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(L"fred", L"fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(L"fred", L"Fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(L"Fred", L"fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(L"fred", L"fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(L"fred", L"Fredy") > 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(L"Fred", L"fredy") < 0));
+        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}("fred", "fredy") < 0));
+        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}("fred", "Fredy") < 0));
+        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}("Fred", "fredy") < 0));
+        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}("fred", "fredy") < 0));
+        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}("fred", "Fredy") > 0));
+        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}("Fred", "fredy") < 0));
     }
 }
 
 namespace {
     void Test19_ConstCharStar_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test19_ConstCharStar_"};
-        VerifyTestResult (wcscmp (String (L"fred").c_str (), L"fred") == 0);
-        VerifyTestResult (wcscmp (String (L"0123456789abcde").c_str (), L"0123456789abcde") == 0);   // 15 chars
-        VerifyTestResult (wcscmp (String (L"0123456789abcdef").c_str (), L"0123456789abcdef") == 0); // 16 chars
-        VerifyTestResult (wcscmp (String (L"0123456789abcdef0123456789abcde").c_str (), L"0123456789abcdef0123456789abcde") == 0); // 31 chars
-        VerifyTestResult (wcscmp (String (L"0123456789abcdef0123456789abcdef").c_str (), L"0123456789abcdef0123456789abcdef") == 0); // 32 chars
+        Debug::TraceContextBumper ctx{"Test19_ConstCharStar_"};
+        VerifyTestResult (wcscmp (String{"fred"}.c_str (), L"fred") == 0);
+        VerifyTestResult (wcscmp (String{"0123456789abcde"}.c_str (), L"0123456789abcde") == 0);                                    // 15 chars
+        VerifyTestResult (wcscmp (String{"0123456789abcdef"}.c_str (), L"0123456789abcdef") == 0);                                  // 16 chars
+        VerifyTestResult (wcscmp (String{"0123456789abcdef0123456789abcde"}.c_str (), L"0123456789abcdef0123456789abcde") == 0);    // 31 chars
+        VerifyTestResult (wcscmp (String{"0123456789abcdef0123456789abcdef"}.c_str (), L"0123456789abcdef0123456789abcdef") == 0);  // 32 chars
         {
-            String tmp = L"333";
+            String tmp = "333";
             VerifyTestResult (wcscmp (tmp.c_str (), L"333") == 0);
-            tmp = L"Barny";
+            tmp = "Barny";
             VerifyTestResult (wcscmp (tmp.c_str (), L"Barny") == 0);
             tmp.SetCharAt ('c', 2);
             VerifyTestResult (wcscmp (tmp.c_str (), L"Bacny") == 0);
@@ -886,7 +886,7 @@ namespace {
 namespace {
     void Test20_CStringHelpers_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test20_CStringHelpers_"};
+        Debug::TraceContextBumper ctx{"Test20_CStringHelpers_"};
         VerifyTestResult (CString::Length ("hi") == 2);
         VerifyTestResult (CString::Length (L"hi") == 2);
         {
@@ -935,16 +935,16 @@ namespace {
     }
     void Test21_StringNumericConversions_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test21_StringNumericConversions_"};
+        Debug::TraceContextBumper ctx{"Test21_StringNumericConversions_"};
         {
             VerifyTestResult (CString::String2Int<int> ("-3") == -3);
             VerifyTestResult (CString::String2Int<int> ("3") == 3);
             VerifyTestResult (CString::String2Int<int> (wstring{L"3"}) == 3);
-            VerifyTestResult (String2Int<int> (String{L"3"}) == 3);
+            VerifyTestResult (String2Int<int> (String{"3"}) == 3);
         }
         {
             VerifyTestResult (CString::String2Int<int> ("") == 0);
-            VerifyTestResult (String2Int<int> (L"") == 0);
+            VerifyTestResult (String2Int<int> ("") == 0);
             VerifyTestResult (CString::String2Int<int> (wstring{L""}) == 0);
             VerifyTestResult (String2Int<int> (String{}) == 0);
             VerifyTestResult (CString::String2Int<int> ("     ") == 0);
@@ -1050,8 +1050,8 @@ namespace {
                     // See https://docs.oracle.com/cd/E19455-01/806-0169/overview-9/index.html
                     if (auto ln = Configuration::FindLocaleNameQuietly (L"en", L"US")) {
                         Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
-                        VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"100.1"), 100.1));
-                        [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> (L"967,295.01");
+                        VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> ("100.1"), 100.1));
+                        [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> ("967,295.01");
                         //VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967,295.01") , 967295.01));     -- https://stroika.atlassian.net/browse/STK-748
                     }
                     if (auto ln = Configuration::FindLocaleNameQuietly (L"es", L"ES")) {
@@ -1095,8 +1095,8 @@ namespace {
             VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (String{L"44.4333"}), 44.4333));
         }
         [[maybe_unused]] auto runLocaleIndepTest = [] () {
-            VerifyTestResult (FloatConversion::ToString (3000.5) == L"3000.5");
-            VerifyTestResult (FloatConversion::ToString (30000.5) == L"30000.5");
+            VerifyTestResult (FloatConversion::ToString (3000.5) == "3000.5");
+            VerifyTestResult (FloatConversion::ToString (30000.5) == "30000.5");
         };
         {
             // Verify change of locale has no effect on results
@@ -1106,11 +1106,11 @@ namespace {
         }
         {
             // Verify change of locale has no effect on results
-            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
+            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
             runLocaleIndepTest ();
         }
         {
-            VerifyTestResult (String2Int (L"0587:c413:5500:0000:0000:0000:0001]:60000") == 0);
+            VerifyTestResult (String2Int ("0587:c413:5500:0000:0000:0000:0001]:60000") == 0);
         }
     }
 }
@@ -1118,18 +1118,18 @@ namespace {
 namespace {
     void Test22_StartsWithEndsWithMatch_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test22_StartsWithEndsWithMatch_"};
-        VerifyTestResult (String{L"abc"}.Matches (RegularExpression{L"abc"}));
-        VerifyTestResult (not(String{L"abc"}.Matches (RegularExpression{L"bc"})));
-        VerifyTestResult (String{L"abc"}.Matches (RegularExpression{L".*bc"}));
-        VerifyTestResult (not String{L"abc"}.Matches (RegularExpression{L"b.*c"}));
-        VerifyTestResult (not String{L"Hello world"}.Matches (RegularExpression{L"ello"}));
-        VerifyTestResult (String{L"abc"}.StartsWith (L"AB", CompareOptions::eCaseInsensitive));
-        VerifyTestResult (not String{L"abc"}.StartsWith (L"AB", CompareOptions::eWithCase));
-        VerifyTestResult (String{L"abc"}.EndsWith (L"bc", CompareOptions::eCaseInsensitive));
-        VerifyTestResult (String{L"abc"}.EndsWith (L"bc", CompareOptions::eWithCase));
-        VerifyTestResult (String{L"abc"}.EndsWith (L"BC", CompareOptions::eCaseInsensitive));
-        VerifyTestResult (not String{L"abc"}.EndsWith (L"BC", CompareOptions::eWithCase));
+        Debug::TraceContextBumper ctx{"Test22_StartsWithEndsWithMatch_"};
+        VerifyTestResult (String{"abc"}.Matches (RegularExpression{"abc"}));
+        VerifyTestResult (not(String{"abc"}.Matches (RegularExpression{"bc"})));
+        VerifyTestResult (String{"abc"}.Matches (RegularExpression{".*bc"}));
+        VerifyTestResult (not String{"abc"}.Matches (RegularExpression{"b.*c"}));
+        VerifyTestResult (not String{"Hello world"}.Matches (RegularExpression{"ello"}));
+        VerifyTestResult (String{"abc"}.StartsWith ("AB", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (not String{"abc"}.StartsWith ("AB", CompareOptions::eWithCase));
+        VerifyTestResult (String{"abc"}.EndsWith ("bc", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (String{"abc"}.EndsWith ("bc", CompareOptions::eWithCase));
+        VerifyTestResult (String{"abc"}.EndsWith ("BC", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (not String{"abc"}.EndsWith ("BC", CompareOptions::eWithCase));
     }
 }
 
@@ -1151,7 +1151,7 @@ namespace {
     void Test23_FormatV_ ()
     {
         using namespace Test23_PRIVATE_;
-        Debug::TraceContextBumper ctx{L"Test23_FormatV_"};
+        Debug::TraceContextBumper ctx{"Test23_FormatV_"};
         VerifyTestResult (Test23_help1_HELPER (L"joe%sx", L"1") == L"joe1x");
     }
 }
@@ -1159,24 +1159,24 @@ namespace {
 namespace {
     void Test24_Float2String ()
     {
-        Debug::TraceContextBumper ctx{L"Test24_Float2String"};
-        VerifyTestResult (FloatConversion::ToString (0.0) == L"0");
-        VerifyTestResult (FloatConversion::ToString (3000.5) == L"3000.5");
-        VerifyTestResult (FloatConversion::ToString (3000.500) == L"3000.5");
-        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{2}) == L"3.1");
-        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{3}) == L"3.12");
-        VerifyTestResult (FloatConversion::ToString (31.234, Characters::FloatConversion::Precision{3}) == L"31.2");
-        VerifyTestResult (FloatConversion::ToString (30707548160.0) == L"3.07075e+10");
+        Debug::TraceContextBumper ctx{"Test24_Float2String"};
+        VerifyTestResult (FloatConversion::ToString (0.0) == "0");
+        VerifyTestResult (FloatConversion::ToString (3000.5) == "3000.5");
+        VerifyTestResult (FloatConversion::ToString (3000.500) == "3000.5");
+        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{2}) == "3.1");
+        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{3}) == "3.12");
+        VerifyTestResult (FloatConversion::ToString (31.234, Characters::FloatConversion::Precision{3}) == "31.2");
+        VerifyTestResult (FloatConversion::ToString (30707548160.0) == "3.07075e+10");
     }
 }
 
 namespace {
     void Test25_RemoveAt_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test25_RemoveAt_"};
-        String                    x = L"123";
+        Debug::TraceContextBumper ctx{"Test25_RemoveAt_"};
+        String                    x = "123";
         x                           = x.RemoveAt (1);
-        VerifyTestResult (x == L"13");
+        VerifyTestResult (x == "13");
         x = x.RemoveAt (0, 2);
         VerifyTestResult (x.empty ());
     }
@@ -1185,9 +1185,9 @@ namespace {
 namespace {
     void Test26_Iteration_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test26_Iteration_"};
+        Debug::TraceContextBumper ctx{"Test26_Iteration_"};
         {
-            String x = L"123";
+            String x = "123";
             int    i = 0;
             for (auto c : x) {
                 VerifyTestResult (c == x[i]);
@@ -1201,17 +1201,17 @@ namespace {
 namespace {
     void Test27_Repeat_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test27_Repeat_"};
+        Debug::TraceContextBumper ctx{"Test27_Repeat_"};
         {
             String x;
             String r = x.Repeat (5);
             VerifyTestResult (r.length () == 0);
         }
         {
-            String x = L"123";
+            String x = "123";
             String r = x.Repeat (3);
             VerifyTestResult (r.length () == 9);
-            VerifyTestResult (r.SubString (3, 6) == L"123");
+            VerifyTestResult (r.SubString (3, 6) == "123");
         }
     }
 }
@@ -1219,23 +1219,23 @@ namespace {
 namespace {
     void Test28_ReplacementForStripTrailingCharIfAny_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test28_ReplacementForStripTrailingCharIfAny_"};
+        Debug::TraceContextBumper ctx{"Test28_ReplacementForStripTrailingCharIfAny_"};
         auto StripTrailingCharIfAny = [] (const String& s, const Character& c) -> String { return s.EndsWith (c) ? s.SubString (0, -1) : s; };
-        VerifyTestResult (StripTrailingCharIfAny (L"xxx", '.') == L"xxx");
-        VerifyTestResult (StripTrailingCharIfAny (L"xxx.", '.') == L"xxx");
-        VerifyTestResult (StripTrailingCharIfAny (L"xxx..", '.') == L"xxx.");
+        VerifyTestResult (StripTrailingCharIfAny ("xxx", '.') == "xxx");
+        VerifyTestResult (StripTrailingCharIfAny ("xxx.", '.') == "xxx");
+        VerifyTestResult (StripTrailingCharIfAny ("xxx..", '.') == "xxx.");
     }
 }
 
 namespace {
     void Test29_StringWithSequenceOfCharacter_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test29_StringWithSequenceOfCharacter_"};
+        Debug::TraceContextBumper ctx{"Test29_StringWithSequenceOfCharacter_"};
         {
-            String              initialString = L"012345";
+            String              initialString = "012345";
             Sequence<Character> s1            = Sequence<Character> (initialString); // THIS NEEDS TO BE MORE SEEMLESS
             s1.SetAt (3, 'E');
-            VerifyTestResult (String (s1) == L"012E45");
+            VerifyTestResult (String{s1} == "012E45");
         }
     }
 }
@@ -1243,43 +1243,43 @@ namespace {
 namespace {
     void Test30_LimitLength_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test30_LimitLength_"};
+        Debug::TraceContextBumper ctx{"Test30_LimitLength_"};
         if constexpr (qCompiler_vswprintf_on_elispisStr_Buggy) {
-            VerifyTestResult (String{L"12345"}.LimitLength (3) == L"...");
+            VerifyTestResult (String{"12345"}.LimitLength (3) == "...");
         }
         else {
-            VerifyTestResult (String{L"12345"}.LimitLength (3) == L"12\u2026");
+            VerifyTestResult (String{"12345"}.LimitLength (3) == L"12\u2026");
         }
-        VerifyTestResult (String{L"12345"}.LimitLength (5) == L"12345");
+        VerifyTestResult (String{"12345"}.LimitLength (5) == "12345");
     }
 }
 
 namespace {
     void Test31_OperatorINSERT_ostream_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test31_OperatorINSERT_ostream_"};
+        Debug::TraceContextBumper ctx{"Test31_OperatorINSERT_ostream_"};
         wstringstream             out;
-        out << String{L"abc"};
-        VerifyTestResult (out.str () == L"abc");
+        out << String{"abc"};
+        VerifyTestResult (out.str () == "abc");
     }
 }
 
 namespace {
     void Test32_StringBuilder_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test32_StringBuilder_"};
+        Debug::TraceContextBumper ctx{"Test32_StringBuilder_"};
         {
             StringBuilder out;
             out << L"hi mom";
-            VerifyTestResult (out.str () == L"hi mom");
-            out += L".";
-            VerifyTestResult (out.str () == L"hi mom.");
-            VerifyTestResult (out.As<String> () == L"hi mom.");
+            VerifyTestResult (out.str () == "hi mom");
+            out += ".";
+            VerifyTestResult (out.str () == "hi mom.");
+            VerifyTestResult (out.As<String> () == "hi mom.");
             VerifyTestResult (out.As<wstring> () == L"hi mom.");
         }
         {
-            StringBuilder out{L"x"};
-            VerifyTestResult (out.As<String> () == L"x");
+            StringBuilder out{"x"};
+            VerifyTestResult (out.As<String> () == "x");
         }
     }
 }
@@ -1287,22 +1287,22 @@ namespace {
 namespace {
     void Test33_Append_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test33_Append_"};
+        Debug::TraceContextBumper ctx{"Test33_Append_"};
         String                    result;
         Character                 buf[]{'a', 'b', 'c', 'd'};
         for (int i = 0; i < 10; ++i) {
             result.Append (std::begin (buf), std::begin (buf) + Memory::NEltsOf (buf));
         }
         VerifyTestResult (result.size () == 4 * 10);
-        VerifyTestResult (result == L"abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
-        Verify (L"a" + String () == L"a"); // we had bug in v2.0a100 and earlier with null string on RHS of operator+
+        VerifyTestResult (result == "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
+        Verify (L"a" + String{} == "a"); // we had bug in v2.0a100 and earlier with null string on RHS of operator+
     }
 }
 
 namespace {
     void Test44_LocaleUNICODEConversions_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test44_LocaleUNICODEConversions_"};
+        Debug::TraceContextBumper ctx{"Test44_LocaleUNICODEConversions_"};
         VerifyTestResult (String{"abcdefgjij"}.AsNarrowSDKString () == "abcdefgjij"); // Failed due to bug in CodePageConverter::MapFromUNICODE before v3.0d2
         auto testRoundtrip = [] (const char* localName, const string& localMBString, const wstring& wideStr) {
             bool initializedLocale = false;
@@ -1336,34 +1336,34 @@ namespace {
 namespace {
     void Test45_Tokenize_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test45_Tokenize_"};
+        Debug::TraceContextBumper ctx{"Test45_Tokenize_"};
         using Containers::Set;
         {
-            String           t{L"ABC DEF G"};
+            String           t{"ABC DEF G"};
             Sequence<String> tt{t.Tokenize ()};
             VerifyTestResult (tt.size () == 3);
-            VerifyTestResult (tt[1] == L"DEF");
+            VerifyTestResult (tt[1] == "DEF");
         }
         {
-            String t{L"foo=   7"};
+            String t{"foo=   7"};
             auto   tt = t.Tokenize (Containers::Set<Character>{'='});
             VerifyTestResult (tt.length () == 2);
-            VerifyTestResult (tt[0] == L"foo");
-            VerifyTestResult (tt[1] == L"7");
+            VerifyTestResult (tt[0] == "foo");
+            VerifyTestResult (tt[1] == "7");
         }
         {
-            String t{L"           \n foo=   7"};
+            String t{"           \n foo=   7"};
             auto   tt = t.Tokenize ({'='});
             VerifyTestResult (tt.length () == 2);
-            VerifyTestResult (tt[1] == L"7");
+            VerifyTestResult (tt[1] == "7");
         }
         {
-            String t{L"MemTotal:        3082000 kB"};
+            String t{"MemTotal:        3082000 kB"};
             auto   tt = t.Tokenize ({':', ' ', '\t'});
             VerifyTestResult (tt.length () == 3);
-            VerifyTestResult (tt[0] == L"MemTotal");
-            VerifyTestResult (tt[1] == L"3082000");
-            VerifyTestResult (tt[2] == L"kB");
+            VerifyTestResult (tt[0] == "MemTotal");
+            VerifyTestResult (tt[1] == "3082000");
+            VerifyTestResult (tt[2] == "kB");
         }
     }
 }
@@ -1371,9 +1371,9 @@ namespace {
 namespace {
     void Test46_CompareLHSRHS_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test46_CompareLHSRHS_"};
-        const wchar_t*            i = L"One";
-        Characters::String        n = L"Two";
+        Debug::TraceContextBumper ctx{"Test46_CompareLHSRHS_"};
+        const wchar_t*            i = "One";
+        Characters::String        n = "Two";
         if (i == n) {
             VerifyTestResult (false);
         }
@@ -1388,19 +1388,19 @@ namespace {
 namespace {
     void Test47_SubString_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test47_SubString_"};
+        Debug::TraceContextBumper ctx{"Test47_SubString_"};
         {
-            String tmp{L"This is good"};
-            VerifyTestResult (tmp.SubString (5) == L"is good");
+            String tmp{"This is good"};
+            VerifyTestResult (tmp.SubString (5) == "is good");
         }
         {
-            const String kTest_{L"a=b"_k};
-            const String kLbl2LookFor_{L"a="_k};
+            const String kTest_{"a=b"_k};
+            const String kLbl2LookFor_{"a="_k};
             String       tmp;
             if (kTest_.Find (kLbl2LookFor_)) {
                 tmp = String{kTest_.SubString (kLbl2LookFor_.length ())};
             }
-            VerifyTestResult (tmp == L"b");
+            VerifyTestResult (tmp == "b");
         }
     }
 }
@@ -1408,26 +1408,26 @@ namespace {
 namespace {
     void Test48_ToString_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test48_ToString_"};
-        VerifyTestResult (ToString (3) == L"3");
-        VerifyTestResult (ToString (3u, ios_base::hex) == L"0x3");
-        VerifyTestResult (ToString (3u) == L"3");
-        VerifyTestResult (ToString (1.0).StartsWith (L"1"));
-        VerifyTestResult (ToString (L"abc") == L"'abc'");
-        VerifyTestResult (ToString (String{L"abc"}) == L"'abc'");
-        VerifyTestResult (ToString (initializer_list<int>{3, 4, 5}) == L"[ 3, 4, 5 ]");
+        Debug::TraceContextBumper ctx{"Test48_ToString_"};
+        VerifyTestResult (ToString (3) == "3");
+        VerifyTestResult (ToString (3u, ios_base::hex) == "0x3");
+        VerifyTestResult (ToString (3u) == "3");
+        VerifyTestResult (ToString (1.0).StartsWith ("1"));
+        VerifyTestResult (ToString ("abc") == "'abc'");
+        VerifyTestResult (ToString (String{"abc"}) == "'abc'");
+        VerifyTestResult (ToString (initializer_list<int>{3, 4, 5}) == "[ 3, 4, 5 ]");
         {
             using namespace Memory;
             constexpr byte kSample_[] = {0x34_b, 0x55_b, 0x1f_b};
             Memory::BLOB   b{begin (kSample_), end (kSample_)};
-            VerifyTestResult (b.ToString () == L"[3 bytes: 34551f]");
-            VerifyTestResult (Characters::ToString (b) == L"[3 bytes: 34551f]");
+            VerifyTestResult (b.ToString () == "[3 bytes: 34551f]");
+            VerifyTestResult (Characters::ToString (b) == "[3 bytes: 34551f]");
         }
         {
             constexpr int ca[3]{1, 3, 5};
             int           a[3]{1, 3, 5};
-            VerifyTestResult (Characters::ToString (ca) == L"[ 1, 3, 5 ]");
-            VerifyTestResult (Characters::ToString (a) == L"[ 1, 3, 5 ]");
+            VerifyTestResult (Characters::ToString (ca) == "[ 1, 3, 5 ]");
+            VerifyTestResult (Characters::ToString (a) == "[ 1, 3, 5 ]");
         }
     }
 }
@@ -1435,7 +1435,7 @@ namespace {
 namespace {
     void Test49_SetOfStringCTORIssue_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test49_SetOfStringCTORIssue_"};
+        Debug::TraceContextBumper ctx{"Test49_SetOfStringCTORIssue_"};
         optional<String>          optString{String{}};
         Containers::Set<String>   s{*optString};
     }
@@ -1480,11 +1480,11 @@ namespace {
 namespace {
     void Test50_Utf8Conversions_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test50_Utf8Conversions_"};
+        Debug::TraceContextBumper ctx{"Test50_Utf8Conversions_"};
         {
-            VerifyTestResult (String::FromUTF8 (u8"phred") == String{L"phred"});
+            VerifyTestResult (String::FromUTF8 (u8"phred") == String{"phred"});
             // Need char8_t to use this constructor
-            VerifyTestResult (String{u8"phred"} == String{L"phred"});
+            VerifyTestResult (String{u8"phred"} == String{"phred"});
         }
         {
             StringBuilder tmp;
@@ -1580,7 +1580,7 @@ namespace {
 namespace {
     void Test51_Utf16Conversions_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test51_Utf16Conversions_"};
+        Debug::TraceContextBumper ctx{"Test51_Utf16Conversions_"};
         {
             VerifyTestResult (u16string{u"phred"} == String{u16string{u"phred"}}.AsUTF16 ());
             VerifyTestResult (u16string{u"שלום"} == String{u16string{u"שלום"}}.AsUTF16 ()); // @todo CORRECT but misleading since file encoding doesnt match these characters
@@ -1659,7 +1659,7 @@ namespace {
 namespace {
     void Test52_Utf32Conversions_ ()
     {
-        Debug::TraceContextBumper ctx{L"Test52_Utf32Conversions_"};
+        Debug::TraceContextBumper ctx{"Test52_Utf32Conversions_"};
         {
             VerifyTestResult (u32string{U"phred"} == String{u32string{U"phred"}}.AsUTF32 ());
             VerifyTestResult (u32string{U"שלום"} == String{u32string{U"שלום"}}.AsUTF32 ());
@@ -1702,7 +1702,7 @@ namespace {
 namespace {
     void Test53_vswprintf_on_2_strings_longish_Buggy_ ()
     {
-        String b = L"…";
+        String b = "…";
         if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
             try {
                 String x = Characters::Format (L"%s", b.c_str ());
@@ -1718,7 +1718,7 @@ namespace {
 namespace {
     void Test54_StringAs_ ()
     {
-        VerifyTestResult (String{L"hi mom"}.AsASCII () == "hi mom");
+        VerifyTestResult (String{"hi mom"}.AsASCII () == "hi mom");
         {
             try {
                 string a2 = String{u"שלום"}.AsASCII (); // throws
@@ -1749,7 +1749,7 @@ namespace {
     void Test56_StdStringMoveCTORs_ ()
     {
         {
-            wstring stuff{L"abc"};
+            wstring stuff{"abc"};
             String  a{move (stuff)};
             VerifyTestResult (a == "abc");
         }
@@ -1859,7 +1859,7 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        Debug::TraceContextBumper ctx{L"DoRegressionTests_"};
+        Debug::TraceContextBumper ctx{"DoRegressionTests_"};
         Test1_ ();
         Test2_ ();
         Test3_ ();
