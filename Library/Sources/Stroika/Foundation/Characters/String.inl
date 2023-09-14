@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Characters {
                 }
                 else {
                     // Copy to smaller buffer (e.g. utf16_t to char)
-                    Memory::StackBuffer<ASCII, Memory::kStackBuffer_SizeIfLargerStackGuardCalled/4 - 20> buf{Memory::eUninitialized, s.size ()};
+                    Memory::StackBuffer<ASCII, Memory::kStackBuffer_SizeIfLargerStackGuardCalled / 4 - 20> buf{Memory::eUninitialized, s.size ()};
                     Private_::CopyAsASCIICharacters_ (s, span{buf});
                     return mk_nocheck_ (span<const ASCII>{buf});
                 }
