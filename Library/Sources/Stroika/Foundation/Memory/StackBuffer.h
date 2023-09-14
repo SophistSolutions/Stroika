@@ -18,12 +18,21 @@ namespace Stroika::Foundation::Memory {
 
     using std::byte;
 
+
+    /**
+     *  On Windows, there is _chkstk which shows up in alot of profiles. Perhaps something similar for UNIX? Or just kernel does this automatically?
+     *  Anyhow - target number we try - for performance reasons - to avoid more than this much in a stack frame.
+     * 
+     *      https://www.codeguru.com/visual-studio/adventures-with-_chkstk/
+     */
+    constexpr size_t kStackBuffer_SizeIfLargerStackGuardCalled = qPlatform_Windows ? (sizeof(int) == 4? 4: 8) * 1024 : 16 * 1024;
+
     /**
      *  \note good to keep this small (around 2k) for Windows, cuz else _chkstack calls end up litering profiles in alot of functions
      *        even if along paths not actually used. COULD optimize those paths with specific value in usages, but seems reasonable to keep
      *        to 2k for now --LGP 2023-09-12
      */
-    static constexpr size_t kStackBuffer_TargetInlineByteBufferSize = qPlatform_Windows ? 2 * 1024 : 4 * 1024;
+    constexpr size_t kStackBuffer_TargetInlineByteBufferSize = qPlatform_Windows ? 2 * 1024 : 4 * 1024;
 
     /**
      */

@@ -143,6 +143,7 @@ namespace Stroika::Foundation::Characters {
             Character::CheckLatin1 (s);
             return mk_nocheck_ (s);
         }
+        // NOTE: StackBuffer <,SIZE> parameters heuristic - to avoid _chkstk calls and performance impact - for most common string cases.
         switch (Character::IsASCIIOrLatin1 (s)) {
             case Character::ASCIIOrLatin1Result::eASCII: {
                 if constexpr (sizeof (CHAR_T) == 1) {
@@ -150,7 +151,7 @@ namespace Stroika::Foundation::Characters {
                 }
                 else {
                     // Copy to smaller buffer (e.g. utf16_t to char)
-                    Memory::StackBuffer<ASCII> buf{Memory::eUninitialized, s.size ()};
+                    Memory::StackBuffer<ASCII, Memory::kStackBuffer_SizeIfLargerStackGuardCalled/4 - 20> buf{Memory::eUninitialized, s.size ()};
                     Private_::CopyAsASCIICharacters_ (s, span{buf});
                     return mk_nocheck_ (span<const ASCII>{buf});
                 }
@@ -161,7 +162,7 @@ namespace Stroika::Foundation::Characters {
                 }
                 else {
                     // Copy to smaller buffer (e.g. utf32_t to Latin1)
-                    Memory::StackBuffer<Latin1> buf{Memory::eUninitialized, s.size ()};
+                    Memory::StackBuffer<Latin1, Memory::kStackBuffer_SizeIfLargerStackGuardCalled / 8 - 20> buf{Memory::eUninitialized, s.size ()};
                     Private_::CopyAsLatin1Characters_ (s, span{buf});
                     return mk_nocheck_ (span<const Latin1>{buf});
                 }
@@ -175,7 +176,8 @@ namespace Stroika::Foundation::Characters {
             }
             else {
                 // complex case - could be utf8 src, utf16, or utf32, so must transcode to char16_t
-                Memory::StackBuffer<char16_t> wideUnicodeBuf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<char16_t> (s)};
+                Memory::StackBuffer<char16_t, Memory::kStackBuffer_SizeIfLargerStackGuardCalled / 16> wideUnicodeBuf{
+                    Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<char16_t> (s)};
                 return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
             }
         }
@@ -186,7 +188,8 @@ namespace Stroika::Foundation::Characters {
         }
         else {
             // converting utf8 or utf16 with surrogates to utf32
-            Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<char32_t> (s)};
+            Memory::StackBuffer<char32_t, Memory::kStackBuffer_SizeIfLargerStackGuardCalled / 32> wideUnicodeBuf{
+                Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<char32_t> (s)};
             return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
         }
     }
