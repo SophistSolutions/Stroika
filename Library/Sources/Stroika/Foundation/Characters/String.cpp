@@ -774,6 +774,19 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>
     }
 }
 
+String String::Concatenate_ (const String& rhs) const
+{
+    // KISS, simple default 'fallthru' case
+    Memory::StackBuffer<char32_t> ignoredA;
+    span                          leftSpan = GetData (&ignoredA);
+    Memory::StackBuffer<char32_t> ignoredB;
+    span                          rightSpan = rhs.GetData (&ignoredB);
+    Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, leftSpan.size () + rightSpan.size ()};
+    copy (leftSpan.begin (), leftSpan.end (), buf.data ());
+    copy (rightSpan.begin (), rightSpan.end (), buf.data () + leftSpan.size ());
+    return mk_ (span{buf});
+}
+
 void String::SetCharAt (Character c, size_t i)
 {
     // @Todo - redo with check if char is acttually chanigng and if so use
@@ -841,7 +854,7 @@ String String::Remove (Character c) const
 
 optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) const
 {
-    PeekSpanData pds = GetPeekSpanData<char> ();
+    PeekSpanData pds = GetPeekSpanData<ASCII> ();
     // OPTIMIZED PATHS: Common case(s) and should be fast
     if (pds.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
         if (c.IsASCII ()) {

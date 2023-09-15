@@ -382,6 +382,9 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String Concatenate (T&& rhs) const
             requires (is_convertible_v<T, String>);
 
+    private:
+        nonvirtual String Concatenate_ (const String& rhs) const;
+
     public:
         /**
          *  Returns the number of characters in the String. Note that this may not be the same as bytes,

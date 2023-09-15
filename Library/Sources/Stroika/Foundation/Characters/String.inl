@@ -410,19 +410,25 @@ namespace Stroika::Foundation::Characters {
         return FromNarrowSDKString (span{from.c_str (), from.length ()});
     }
     template <typename T>
-    String String::Concatenate (T&& rhs) const
+    inline String String::Concatenate (T&& rhs) const
         requires (is_convertible_v<T, String>)
     {
-        // KISS for now - but this can and should be much more complex, dealing with ascii cases, etc...
-        String                        rrhs = rhs;
-        Memory::StackBuffer<char32_t> ignoredA;
-        span                          leftSpan = GetData (&ignoredA);
-        Memory::StackBuffer<char32_t> ignoredB;
-        span                          rightSpan = rrhs.GetData (&ignoredB);
-        Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, leftSpan.size () + rightSpan.size ()};
-        copy (leftSpan.begin (), leftSpan.end (), buf.data ());
-        copy (rightSpan.begin (), rightSpan.end (), buf.data () + leftSpan.size ());
-        return mk_ (span{buf});
+        PeekSpanData lhsPSD = GetPeekSpanData<ASCII> ();
+        // OPTIMIZED PATHS: Common case(s) and should be fast
+        if (lhsPSD.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
+            if constexpr (same_as<remove_cvref_t<T>, String>) {
+                PeekSpanData rhsPSD = rhs.GetPeekSpanData<ASCII> ();
+                if (lhsPSD.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
+                    Memory::StackBuffer<ASCII, 512> buf{Memory::eUninitialized, lhsPSD.fAscii.size () + rhsPSD.fAscii.size ()};
+                    copy (lhsPSD.fAscii.begin (), lhsPSD.fAscii.end (), buf.data ());
+                    copy (rhsPSD.fAscii.begin (), rhsPSD.fAscii.end (), buf.data () + lhsPSD.fAscii.size ());
+                    return this->mk_nocheck_ (span<const ASCII>{buf}); // no check needed cuz combining all ASCII sources
+                }
+            }
+            // @todo lots of other easy cases to optimize, but this came up first...
+        }
+        // simple default fallthru implementation
+        return Concatenate_ (forward<T> (rhs));
     }
     inline void String::_AssertRepValidType () const
     {
@@ -1191,17 +1197,20 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <IConvertibleToString LHS_T, IConvertibleToString RHS_T>
-    String operator+ (LHS_T&& lhs, RHS_T&& rhs)
+    inline String operator+ (LHS_T&& lhs, RHS_T&& rhs)
         requires (derived_from<remove_cvref_t<LHS_T>, String> or derived_from<remove_cvref_t<RHS_T>, String>)
     {
-        if constexpr (Private_::ICanBeTreatedAsSpanOfCharacter_<LHS_T> and Private_::ICanBeTreatedAsSpanOfCharacter_<RHS_T>) {
+        if constexpr (derived_from<remove_cvref_t<LHS_T>, String>) {
+            return lhs.Concatenate (forward<RHS_T> (rhs));
+        }
+        else if constexpr (Private_::ICanBeTreatedAsSpanOfCharacter_<LHS_T> and Private_::ICanBeTreatedAsSpanOfCharacter_<RHS_T>) {
             // maybe always true?
-            Memory::StackBuffer<Character> ignored1;
-            span<const Character>          lSpan = Private_::AsSpanOfCharacters_ (forward<LHS_T> (lhs), &ignored1);
-            Memory::StackBuffer<Character> ignored2;
-            span<const Character>          rSpan = Private_::AsSpanOfCharacters_ (forward<RHS_T> (rhs), &ignored2);
-            Memory::StackBuffer<Character> buf{Memory::eUninitialized, lSpan.size () + rSpan.size ()};
-            span                           bufSpan{buf};
+            Memory::StackBuffer<Character, 256> ignored1;
+            span<const Character>               lSpan = Private_::AsSpanOfCharacters_ (forward<LHS_T> (lhs), &ignored1);
+            Memory::StackBuffer<Character, 256> ignored2;
+            span<const Character>               rSpan = Private_::AsSpanOfCharacters_ (forward<RHS_T> (rhs), &ignored2);
+            Memory::StackBuffer<Character, 512> buf{Memory::eUninitialized, lSpan.size () + rSpan.size ()};
+            span                                bufSpan{buf};
             Memory::CopySpanData (lSpan, bufSpan);
             Memory::CopySpanData (rSpan, bufSpan.subspan (lSpan.size ()));
             return String{bufSpan};
