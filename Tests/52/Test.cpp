@@ -82,12 +82,15 @@ using std::byte;
 // Turn this on rarely to calibrate so # runs a good test
 //#define   qPrintOutIfBaselineOffFromOneSecond (!qDebug && defined (_MSC_VER) && defined (WIN32) && !defined (_WIN64))
 
-// My performance expectation numbers are calibrated for MSVC (2k13.net)
+// My performance expectation numbers WERE calibrated for MSVC (2k13.net) and 32-bit code - until Stroika v3. Now
+// still using visual studio.net as warning baseline, but using 64-bit tests.
+//
 // Don't print when they differ on other platforms.
 // This is only intended to alert me when something changes GROSSLY.
 namespace {
-#if (!qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64) && qAllowBlockAllocation && !qDefaultTracingOn)
-    constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ = true;
+#if defined(_MSC_VER)
+    constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ =
+        not qDebug and qAllowBlockAllocation and not qDefaultTracingOn and sizeof (void*) == sizeof (int64_t);
 #else
     constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ = false;
 #endif
@@ -114,7 +117,7 @@ namespace {
 }
 
 namespace {
-#if !qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64)
+#if !qDebug
     double sTimeMultiplier_ = 5.0; // default larger so on reg-tests we get more consistent percentages
 #else
     double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .001 : 1.0;
@@ -1358,22 +1361,22 @@ namespace {
         Set<String> failedTests;
 
         Tester (L"Test of simple locking strategies (mutex v shared_ptr copy)", Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
-                Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy", 24500, .65, &failedTests);
+                Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy", 24500, .86, &failedTests);
         Tester (L"Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
-                Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, .5, &failedTests);
+                Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, .51, &failedTests);
         Tester (L"Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
-                Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String", 65000, 0.48, &failedTests);
+                Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String", 65000, 0.34, &failedTests);
         Tester (L"Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
-                Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String", 66000, 0.57, &failedTests);
+                Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String", 66000, 0.39, &failedTests);
         Tester (L"Simple String append test (+='string object') 10x", Test_SimpleStringAppends1_<wstring>, L"wstring",
-                Test_SimpleStringAppends1_<String>, L"Charactes::String", 1350000, 2.9, &failedTests);
+                Test_SimpleStringAppends1_<String>, L"Charactes::String", 1350000, 4.8, &failedTests);
         Tester (L"Simple String append test (+=wchar_t[]) 10x", Test_SimpleStringAppends2_<wstring>, L"wstring",
-                Test_SimpleStringAppends2_<String>, L"Charactes::String", 1500000, 2.9, &failedTests);
+                Test_SimpleStringAppends2_<String>, L"Charactes::String", 1500000, 4.0, &failedTests);
         Tester (L"Simple String append test (+=wchar_t[]) 100x", Test_SimpleStringAppends3_<wstring>, L"wstring",
-                Test_SimpleStringAppends3_<String>, L"Charactes::String", 360000, 24, &failedTests);
-        Tester (L"String a + b", Test_SimpleStringConCat1_<wstring>, L"wstring", Test_SimpleStringConCat1_<String>, L"String", 2200000, 1.7, &failedTests);
+                Test_SimpleStringAppends3_<String>, L"Charactes::String", 360000, 75, &failedTests);
+        Tester (L"String a + b", Test_SimpleStringConCat1_<wstring>, L"wstring", Test_SimpleStringConCat1_<String>, L"String", 2200000, 2.1, &failedTests);
         Tester (L"wstringstream << test", Test_OperatorINSERT_ostream_<wstring>, L"wstring", Test_OperatorINSERT_ostream_<String>,
-                L"Charactes::String", 6000, 1.5, &failedTests);
+                L"Charactes::String", 6000, 1.4, &failedTests);
         Tester (L"String::substr()", Test_StringSubStr_<wstring>, L"wstring", Test_StringSubStr_<String>, L"Charactes::String", 2700000, 2.1, &failedTests);
         struct MemStreamOfChars_ : public MemoryStream<Characters::Character>::Ptr {
             MemStreamOfChars_ ()
@@ -1387,41 +1390,41 @@ namespace {
             [] () {
                 Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([] (const MemStreamOfChars_& w) { return w.As<String> (); });
             },
-            L"MemoryStream<Characters::Character>", 210000, 1.6, &failedTests);
+            L"MemoryStream<Characters::Character>", 210000, 0.8, &failedTests);
         Tester (
             L"wstringstream versus StringBuilder",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             [] () {
                 Test_StreamBuilderStringBuildingWithExtract_<StringBuilder<>> ([] (const StringBuilder<>& w) { return w.As<String> (); });
             },
-            L"StringBuilder", 220000, .23, &failedTests);
+            L"StringBuilder", 220000, .29, &failedTests);
         Tester (L"Simple c_str() test", Test_String_cstr_call_<wstring>, L"wstring", Test_String_cstr_call_<String>, L"Charactes::String",
                 51000, 1.3, &failedTests);
         Tester (L"Sequence<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
-                Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>", 125000, 1.2, &failedTests);
+                Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>", 125000, 0.6, &failedTests);
         Tester (L"Sequence<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
                 Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>", 9900, 0.33, &failedTests);
         Tester (L"Sequence_DoublyLinkedList<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<int>>,
-                L"Sequence_DoublyLinkedList<int>", 120000, 6.0, &failedTests);
+                L"Sequence_DoublyLinkedList<int>", 120000, 4.0, &failedTests);
         Tester (L"Sequence_Array<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
-                Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_Array<int>>, L"Sequence_Array<int>", 120000, 0.8, &failedTests);
+                Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_Array<int>>, L"Sequence_Array<int>", 120000, 0.6, &failedTests);
         Tester (L"Sequence_stdvector<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_stdvector<int>>, L"Sequence_stdvector<int>", 120000,
-                1.4, &failedTests);
+                0.85, &failedTests);
         Tester (L"Sequence_DoublyLinkedList<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<string>>,
-                L"Sequence_DoublyLinkedList<string>", 9900, 0.65, &failedTests);
+                L"Sequence_DoublyLinkedList<string>", 9900, 0.55, &failedTests);
         Tester (
             L"Collection<int> basics",
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([] (vector<int>* c) { c->push_back (2); }); }, L"vector<int>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([] (Collection<int>* c) { c->Add (2); }); },
-            L"Collection<int>", 113000, 4.4, &failedTests);
+            L"Collection<int>", 113000, 4.0, &failedTests);
         Tester (
             L"Collection<string> basics",
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([] (Collection<string>* c) { c->Add (string{}); }); },
-            L"Collection<string>", 9600, 0.6, &failedTests);
+            L"Collection<string>", 9600, 0.79, &failedTests);
         {
             // In Stroika 2.1b15, we changed the default Collection factory to use Collection_stdmultiset. This is probably a good choice,
             // but is a small pessimization so include original Collection_stdforward_list for comparison (maybe orig was something else but this works).
@@ -1451,7 +1454,7 @@ namespace {
                     Test_CollectionVectorAdditionsAndCopies_<Collection_stdmultiset<string>> (
                         [] (Collection_stdmultiset<string>* c) { c->Add (string{}); });
                 },
-                L"Collection_stdmultiset<string>", 9600, 1.3, &failedTests);
+                L"Collection_stdmultiset<string>", 9600, 1.0, &failedTests);
         }
         {
             using Containers::Concrete::Collection_stdmultiset;
@@ -1481,15 +1484,15 @@ namespace {
                 },
                 L"Collection_stdmultiset<string>", 9600, 1.3, &failedTests);
         }
-        Tester (L"std::set<int> vs Set<int>", Test_SetvsSet_<set<int>>, L"set<int>", Test_SetvsSet_<Set<int>>, L"Set<int>", 13000, 0.3, &failedTests);
+        Tester (L"std::set<int> vs Set<int>", Test_SetvsSet_<set<int>>, L"set<int>", Test_SetvsSet_<Set<int>>, L"Set<int>", 13000, 0.21, &failedTests);
         Tester (L"String Characters::Format ()", Test_String_Format_<wstring>, L"sprintf", Test_String_Format_<String>,
-                L"String Characters::Format", 2100000, 1.5, &failedTests);
+                L"String Characters::Format", 2100000, 1.8, &failedTests);
         Tester (L"BLOB versus vector<byte>", Test_BLOB_Versus_Vector_Byte<vector<byte>>, L"vector<byte>",
-                Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB", 13000, 0.55, &failedTests);
+                Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB", 13000, 0.99, &failedTests);
         Tester (L"BLOB versus vector<byte> ver#2", Test_BLOB_Versus_Vector_Byte_2<vector<byte>>, L"vector<byte>",
-                Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, L"BLOB", 5000, 0.55, &failedTests);
+                Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, L"BLOB", 5000, 0.85, &failedTests);
         Tester (L"Test_JSONReadWriteFile", Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
-                Debug::IsRunningUnderValgrind () ? 2 : 64, 0.1, &failedTests);
+                Debug::IsRunningUnderValgrind () ? 2 : 640, 0.5, &failedTests);
         Tester (L"Test_Optional_", Test_Optional_::DoRunPerfTest, L"Test_Optional_", 4875, 0.5, &failedTests);
         JSONTests_::Run ();
 
