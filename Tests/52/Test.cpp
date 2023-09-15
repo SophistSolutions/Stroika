@@ -118,7 +118,7 @@ namespace {
 
 namespace {
 #if !qDebug
-    double sTimeMultiplier_ = 5.0; // default larger so on reg-tests we get more consistent percentages
+    double sTimeMultiplier_ = 2.5; // default larger so on reg-tests we get more consistent percentages
 #else
     double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .001 : 1.0;
 #endif
