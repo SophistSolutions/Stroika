@@ -1252,33 +1252,33 @@ Containers::Sequence<String> String::Tokenize (const Containers::Set<Character>&
     return Tokenize ([delimiters] (Character c) -> bool { return delimiters.Contains (c); }, trim);
 }
 
-String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to) const
+String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from, size_t to) const
 {
     Require (from <= to);
-    Require (to <= thisLen);
-    Require (thisLen == this->size ());
+    Require (to <= this->size ());
 
-    // @todo REWRITE ALL THIS MESS
-    Memory::StackBuffer<wchar_t> ignored1;
-
-    const wchar_t* thisStrStart = thisAccessor._ConstGetRep ().c_str_peek ();
-    if (thisStrStart == nullptr) {
-        thisStrStart = GetData (&ignored1).data ();
-    }
-
-    const wchar_t* start = reinterpret_cast<const wchar_t*> (thisStrStart) + from;
-    size_t         len   = to - from;
-    const wchar_t* end   = start + len;
-    Assert (start <= end);
-    // Slightly faster to re-use pre-built empty string
-    if (start == end) {
+    // Could do this more simply, but since this function is a bottleneck, handle each representation case separately
+    if (from == to) [[unlikely]] {
         return mkEmpty_ ();
     }
-    if (len == thisLen) {
-        Assert (from == 0); // because we require from/to subrange of thisLen, so if equal, must be full range
-        return *this;
+    PeekSpanData psd = thisAccessor._ConstGetRep ().PeekData (nullopt);
+    switch (psd.fInCP) {
+        case PeekSpanData::eAscii: {
+            return mk_ (psd.fAscii.subspan (from, to - from));
+        }
+        case PeekSpanData::eSingleByteLatin1: {
+            return mk_ (psd.fSingleByteLatin1.subspan (from, to - from)); // note still needs to re-examine text, cuz subset maybe pure ascii (etc)
+        }
+        case PeekSpanData::eChar16: {
+            return mk_ (psd.fChar16.subspan (from, to - from)); // note still needs to re-examine text, cuz subset maybe pure ascii (etc)
+        }
+        case PeekSpanData::eChar32: {
+            return mk_ (psd.fChar32.subspan (from, to - from)); // note still needs to re-examine text, cuz subset maybe pure ascii (etc)
+        }
+        default:
+            AssertNotReached ();
+            return String{};
     }
-    return mk_ (span{start, end});
 }
 
 String String::Repeat (unsigned int count) const

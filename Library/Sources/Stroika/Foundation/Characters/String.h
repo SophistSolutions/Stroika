@@ -1520,7 +1520,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual size_t SubString_adjust_ (long long fromOrTo, size_t myLength) const;
 
     private:
-        nonvirtual String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to) const;
+        nonvirtual String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from, size_t to) const;
 
     protected:
         nonvirtual void _AssertRepValidType () const;

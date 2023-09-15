@@ -489,7 +489,7 @@ namespace Stroika::Foundation::Characters {
         size_t               f = SubString_adjust_ (from, myLength);
         size_t               t = myLength;
         Require (f <= myLength);
-        return SubString_ (accessor, myLength, f, t);
+        return SubString_ (accessor, f, t);
     }
     template <typename SZ1, typename SZ2>
     inline String String::SubString (SZ1 from, SZ2 to) const
@@ -500,7 +500,7 @@ namespace Stroika::Foundation::Characters {
         size_t               t = SubString_adjust_ (to, myLength);
         Require (f <= t);
         Require (t <= myLength);
-        return SubString_ (accessor, myLength, f, t);
+        return SubString_ (accessor, f, t);
     }
     template <typename SZ>
     inline String String::SafeSubString (SZ from) const
@@ -511,7 +511,7 @@ namespace Stroika::Foundation::Characters {
         f                      = min (f, myLength);
         Assert (f <= myLength);
         size_t useLength{myLength - f};
-        return SubString_ (accessor, myLength, f, f + useLength);
+        return SubString_ (accessor, f, f + useLength);
     }
     template <typename SZ1, typename SZ2>
     inline String String::SafeSubString (SZ1 from, SZ2 to) const
@@ -526,7 +526,7 @@ namespace Stroika::Foundation::Characters {
         Assert (f <= t);
         Assert (t <= myLength);
         size_t useLength = (t - f);
-        return SubString_ (accessor, myLength, f, f + useLength);
+        return SubString_ (accessor, f, f + useLength);
     }
     inline String String::RemoveAt (size_t charAt) const
     {
@@ -1017,7 +1017,7 @@ namespace Stroika::Foundation::Characters {
         // @todo
         // Not QUITE correct - due to overflow issues, but pragmaitcally this is probably close enough
         size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));
-        return SubString_ (accessor, thisLen, from, to);
+        return SubString_ (accessor, from, to);
     }
     inline strong_ordering String::operator<=> (const String& rhs) const
     {
