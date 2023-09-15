@@ -1290,10 +1290,10 @@ namespace Stroika::Foundation::Characters {
          *        just add a Memory::StackBuffer<T> b; and pass &b to GetData(); And the return span is not the same as pair<> but
          *        easily convertible.
          */
-        template <IUNICODECanAlwaysConvertTo CHAR_TYPE>
-        static span<const CHAR_TYPE> GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer);
-        template <IUNICODECanAlwaysConvertTo CHAR_TYPE>
-        nonvirtual span<const CHAR_TYPE> GetData (Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const;
+        template <IUNICODECanAlwaysConvertTo CHAR_TYPE, size_t STACK_BUFFER_SZ>
+        static span<const CHAR_TYPE> GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE, STACK_BUFFER_SZ>* possiblyUsedBuffer);
+        template <IUNICODECanAlwaysConvertTo CHAR_TYPE, size_t STACK_BUFFER_SZ>
+        nonvirtual span<const CHAR_TYPE> GetData (Memory::StackBuffer<CHAR_TYPE, STACK_BUFFER_SZ>* possiblyUsedBuffer) const;
 
     public:
         struct EqualsComparer;
@@ -1620,8 +1620,8 @@ namespace Stroika::Foundation::Characters {
             ;
         // clang-format on
 
-        template <ICanBeTreatedAsSpanOfCharacter_ USTRING>
-        span<const Character> AsSpanOfCharacters_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf);
+        template <ICanBeTreatedAsSpanOfCharacter_ USTRING, size_t STACK_BUFFER_SZ>
+        span<const Character> AsSpanOfCharacters_ (USTRING&& s, Memory::StackBuffer<Character, STACK_BUFFER_SZ>* mostlyIgnoredBuf);
     }
 
     /**

@@ -68,8 +68,8 @@ namespace Stroika::Foundation::Characters {
                 }
             }
         }
-        template <ICanBeTreatedAsSpanOfCharacter_ USTRING>
-        inline span<const Character> AsSpanOfCharacters_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
+        template <ICanBeTreatedAsSpanOfCharacter_ USTRING, size_t STACK_BUFFER_SZ>
+        inline span<const Character> AsSpanOfCharacters_ (USTRING&& s, Memory::StackBuffer<Character, STACK_BUFFER_SZ>* mostlyIgnoredBuf)
         {
             /*
              * Genericly convert the argument to a span<const Character> object; for a string, complex and requires
@@ -890,23 +890,23 @@ namespace Stroika::Foundation::Characters {
     {
         return PeekData<CHAR_TYPE> (GetPeekSpanData<CHAR_TYPE> ());
     }
-    template <IUNICODECanAlwaysConvertTo CHAR_TYPE>
-    span<const CHAR_TYPE> String::GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer)
+    template <IUNICODECanAlwaysConvertTo CHAR_TYPE, size_t STACK_BUFFER_SZ>
+    span<const CHAR_TYPE> String::GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE, STACK_BUFFER_SZ>* possiblyUsedBuffer)
     {
         RequireNotNull (possiblyUsedBuffer);
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
         if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (CHAR_TYPE) == 2) {
-                auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
+                auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char16_t, STACK_BUFFER_SZ>*> (possiblyUsedBuffer));
                 return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (p.data ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
+                auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char32_t, STACK_BUFFER_SZ>*> (possiblyUsedBuffer));
                 return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (p.data ()), p.size ()};
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, Character>) {
-            auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
+            auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char32_t, STACK_BUFFER_SZ>*> (possiblyUsedBuffer));
             return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (p.data ()), p.size ()};
         }
         if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
@@ -969,8 +969,8 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    template <IUNICODECanAlwaysConvertTo CHAR_TYPE>
-    inline span<const CHAR_TYPE> String::GetData (Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const
+    template <IUNICODECanAlwaysConvertTo CHAR_TYPE, size_t STACK_BUFFER_SZ>
+    inline span<const CHAR_TYPE> String::GetData (Memory::StackBuffer<CHAR_TYPE, STACK_BUFFER_SZ>* possiblyUsedBuffer) const
     {
         RequireNotNull (possiblyUsedBuffer);
         return GetData (GetPeekSpanData<CHAR_TYPE> (), possiblyUsedBuffer);
