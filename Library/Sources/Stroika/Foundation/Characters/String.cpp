@@ -716,7 +716,7 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
     static_assert (kNElts2_ > kNElts1_);     // ""
     static_assert (kNElts3_ > kNElts2_);     // ""
 
-    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>) == 64 - kOverheadSizeForMakeShared_); // not quite guaranteed but close
+    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>) == 64 - kOverheadSizeForMakeShared_);  // not quite guaranteed but close
     static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>) == 96 - kOverheadSizeForMakeShared_);  // ""
     static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts3_>) == 128 - kOverheadSizeForMakeShared_); // ""
 
@@ -1264,7 +1264,7 @@ String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from
     PeekSpanData psd = thisAccessor._ConstGetRep ().PeekData (nullopt);
     switch (psd.fInCP) {
         case PeekSpanData::eAscii: {
-            return mk_ (psd.fAscii.subspan (from, to - from));
+            return mk_nocheck_ (psd.fAscii.subspan (from, to - from));  // no check cuz we already know its all ASCII and nothing smaller
         }
         case PeekSpanData::eSingleByteLatin1: {
             return mk_ (psd.fSingleByteLatin1.subspan (from, to - from)); // note still needs to re-examine text, cuz subset maybe pure ascii (etc)
