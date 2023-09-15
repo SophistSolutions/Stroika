@@ -417,7 +417,7 @@ namespace Stroika::Foundation::Characters {
         // OPTIMIZED PATHS: Common case(s) and should be fast
         if (lhsPSD.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
             if constexpr (same_as<remove_cvref_t<T>, String>) {
-                PeekSpanData rhsPSD = rhs.GetPeekSpanData<ASCII> ();
+                PeekSpanData rhsPSD = rhs.template GetPeekSpanData<ASCII> ();
                 if (lhsPSD.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
                     Memory::StackBuffer<ASCII, 512> buf{Memory::eUninitialized, lhsPSD.fAscii.size () + rhsPSD.fAscii.size ()};
                     copy (lhsPSD.fAscii.begin (), lhsPSD.fAscii.end (), buf.data ());

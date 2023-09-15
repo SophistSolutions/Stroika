@@ -1194,7 +1194,7 @@ String String::ReplaceAll (const Containers::Set<Character>& charSet, const Stri
 
 String String::NoramlizeTextToNL () const
 {
-    PeekSpanData                   pds = GetPeekSpanData<char> ();
+    PeekSpanData                   pds = GetPeekSpanData<ASCII> ();
     Memory::StackBuffer<Character> maybeIgnoreBuf;
     span<const Character>          charSpan = GetData (pds, &maybeIgnoreBuf);
     StringBuilder                  sb;
