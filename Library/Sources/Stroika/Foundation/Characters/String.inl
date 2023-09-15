@@ -1101,8 +1101,9 @@ namespace Stroika::Foundation::Characters {
     {
         // separate function - cuz large stackframe and on windows generates chkstk calls, so dont have in
         // same frame where we do optimizations
-        Memory::StackBuffer<Character> ignore1;
-        Memory::StackBuffer<Character> ignore2;
+        // and use smaller 'stackbuffer' size to avoid invoking _chkstk on VisualStudio (could do patform specific, but not clear there is a need) --LGP 2023-09-15
+        Memory::StackBuffer<Character, 256> ignore1;
+        Memory::StackBuffer<Character, 256> ignore2;
         return Character::Compare (Private_::AsSpanOfCharacters_ (forward<LT> (lhs), &ignore1),
                                    Private_::AsSpanOfCharacters_ (forward<RT> (rhs), &ignore2), fCompareOptions) == 0;
     }
@@ -1116,7 +1117,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
         if constexpr (Private_::ICanBeTreatedAsSpanOfCharacter_<LT> and Private_::ICanBeTreatedAsSpanOfCharacter_<RT>) {
-            return Cmp_ (lhs, rhs);
+            return Cmp_ (forward<LT> (lhs), forward<RT> (rhs));
         }
         else {
             // should almost never happen, but if it does, fall back on using String
@@ -1138,8 +1139,8 @@ namespace Stroika::Foundation::Characters {
     {
         // optimize very common case of ASCII String vs ASCII String
         if constexpr (is_same_v<remove_cvref_t<LT>, String> and is_same_v<remove_cvref_t<RT>, String>) {
-            if (auto lhsAsciiSpan = lhs.template PeekData<char> ()) {
-                if (auto rhsAsciiSpan = rhs.template PeekData<char> ()) {
+            if (auto lhsAsciiSpan = lhs.template PeekData<ASCII> ()) {
+                if (auto rhsAsciiSpan = rhs.template PeekData<ASCII> ()) {
                     return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, fCompareOptions);
                 }
             }
@@ -1151,8 +1152,9 @@ namespace Stroika::Foundation::Characters {
     {
         // separate function - cuz large stackframe and on windows generates chkstk calls, so dont have in
         // same frame where we do optimizations
-        Memory::StackBuffer<Character> ignore1;
-        Memory::StackBuffer<Character> ignore2;
+        // and use smaller 'stackbuffer' size to avoid invoking _chkstk on VisualStudio (could do patform specific, but not clear there is a need) --LGP 2023-09-15
+        Memory::StackBuffer<Character, 256> ignore1;
+        Memory::StackBuffer<Character, 256> ignore2;
         return Character::Compare (Private_::AsSpanOfCharacters_ (forward<LT> (lhs), &ignore1),
                                    Private_::AsSpanOfCharacters_ (forward<RT> (rhs), &ignore2), fCompareOptions);
     }
@@ -1160,7 +1162,7 @@ namespace Stroika::Foundation::Characters {
     inline strong_ordering String::ThreeWayComparer::operator() (LT&& lhs, RT&& rhs) const
     {
         if constexpr (Private_::ICanBeTreatedAsSpanOfCharacter_<LT> and Private_::ICanBeTreatedAsSpanOfCharacter_<RT>) {
-            return Cmp_ (lhs, rhs);
+            return Cmp_ (forward<LT> (lhs), forward<RT> (rhs));
         }
         else {
             // should almost never happen, but if it does, fall back on using String
