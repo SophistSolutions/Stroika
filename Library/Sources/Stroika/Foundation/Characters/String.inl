@@ -416,9 +416,9 @@ namespace Stroika::Foundation::Characters {
         PeekSpanData lhsPSD = GetPeekSpanData<ASCII> ();
         // OPTIMIZED PATHS: Common case(s) and should be fast
         if (lhsPSD.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
-            if constexpr (same_as<remove_cvref_t<T>, String>) {
+            if constexpr (derived_from<remove_cvref_t<T>, String>) {
                 PeekSpanData rhsPSD = rhs.template GetPeekSpanData<ASCII> ();
-                if (lhsPSD.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
+                if (rhsPSD.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
                     Memory::StackBuffer<ASCII, 512> buf{Memory::eUninitialized, lhsPSD.fAscii.size () + rhsPSD.fAscii.size ()};
                     copy (lhsPSD.fAscii.begin (), lhsPSD.fAscii.end (), buf.data ());
                     copy (rhsPSD.fAscii.begin (), rhsPSD.fAscii.end (), buf.data () + lhsPSD.fAscii.size ());
@@ -1203,6 +1203,7 @@ namespace Stroika::Foundation::Characters {
         if constexpr (derived_from<remove_cvref_t<LHS_T>, String>) {
             return lhs.Concatenate (forward<RHS_T> (rhs));
         }
+        #if 0
         else if constexpr (Private_::ICanBeTreatedAsSpanOfCharacter_<LHS_T> and Private_::ICanBeTreatedAsSpanOfCharacter_<RHS_T>) {
             // maybe always true?
             Memory::StackBuffer<Character, 256> ignored1;
@@ -1215,6 +1216,7 @@ namespace Stroika::Foundation::Characters {
             Memory::CopySpanData (rSpan, bufSpan.subspan (lSpan.size ()));
             return String{bufSpan};
         }
+        #endif
         else {
             return String{forward<LHS_T> (lhs)}.Concatenate (forward<RHS_T> (rhs));
         }
