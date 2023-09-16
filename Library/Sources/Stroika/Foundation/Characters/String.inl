@@ -413,6 +413,8 @@ namespace Stroika::Foundation::Characters {
     inline String String::Concatenate (T&& rhs) const
         requires (is_convertible_v<T, String>)
     {
+        // @todo more work needed optimizing this - esp for other arguments like const char*, and string_view etc...
+        // and even can optimize for case where storing char16_t or LATIN1 types...
         PeekSpanData lhsPSD = GetPeekSpanData<ASCII> ();
         // OPTIMIZED PATHS: Common case(s) and should be fast
         if (lhsPSD.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
@@ -1203,7 +1205,7 @@ namespace Stroika::Foundation::Characters {
         if constexpr (derived_from<remove_cvref_t<LHS_T>, String>) {
             return lhs.Concatenate (forward<RHS_T> (rhs));
         }
-        #if 0
+#if 0
         else if constexpr (Private_::ICanBeTreatedAsSpanOfCharacter_<LHS_T> and Private_::ICanBeTreatedAsSpanOfCharacter_<RHS_T>) {
             // maybe always true?
             Memory::StackBuffer<Character, 256> ignored1;
@@ -1216,7 +1218,7 @@ namespace Stroika::Foundation::Characters {
             Memory::CopySpanData (rSpan, bufSpan.subspan (lSpan.size ()));
             return String{bufSpan};
         }
-        #endif
+#endif
         else {
             return String{forward<LHS_T> (lhs)}.Concatenate (forward<RHS_T> (rhs));
         }
