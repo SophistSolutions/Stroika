@@ -28,229 +28,63 @@ especially those they need to be aware of when upgrading.
 - Documentation
   - design overview docs tweaks
 
-
-#if 0
-commit 30f53308545578c1bddf5f194ffa34fe0039884a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 13:07:46 2023 -0400
-
+- Characters::CodePage
     changed CodePage declaration from int to uint32_t (closer to what windows does); and document a bit better; and start migrating CodePage support into CodeCvt so we can deprecate the CodePageConverter code
 
-commit 21129898192644e95ffb17d823010932aa3b6247
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 19:13:41 2023 -0400
-
     Characters::Private_::WindowsNative_::WindowsNative_; and CodePageNotSupportedException cleanups to CodePage and CodeCvt code
-
-commit 3764317ed200c0d5ecb7ddf51e2f8eff3d1168ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 23 06:29:36 2023 -0400
-
-    hard to have name used in two places with gcc, so lose nested CodePageNotSupportedException
-
-commit 8eff1ec3f4312377749a8cb690c9f45c6032a47b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 23 08:05:54 2023 -0400
-
-    hard to have name used in two places with gcc, so lose nested CodePageNotSupportedException
-
-commit 27e643fb3a36f8318a197967812387e3a6297112
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 23 08:55:34 2023 -0400
-
-    Minor cleanups to recent CodePage/CodeCvt code
-
-commit 1e9f6002d0a0f6e039a03b30cf2d93ac36fcaeb5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 23 13:50:47 2023 -0400
-
     new CharacterEncodingException and used in a few places
-
-commit e8a843e4e3f7cbed9973e12e60db16909e4dd32f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 23 16:51:50 2023 -0400
-
     qGenTableDumper_ for CodeCvt; fixed typo/regression, and cosmetic
 
-commit b274ce43cfe38243eab484acb54586b166f86326
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 23 17:05:21 2023 -0400
-
-    use a bit more of CharacterEncodingException
-
-commit 43b0b6835c5805f82c35dcffdd5fac417e780093
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 23 19:59:45 2023 -0400
-
-    fixed forgotten checkin
-
-commit 491cfbefaaf268f58f72886116861fc7fe69dd2e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 23 20:38:08 2023 -0400
-
     lose/deprecate UTF-7 support
-
-commit 4d2d80a645a50bca3b9760ff3683dadf40988570
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 06:41:22 2023 -0400
-
-    kMaxBOMSize TextConvert
-
-commit 5414570f88e32a5a6430e273e88b6d7995a84f1c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 06:57:32 2023 -0400
-
-    CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom)
-
-commit 1a589cd00c771563ca73ad80f9221d5a82dc1866
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 07:18:15 2023 -0400
-
-    tweak CodeCvt (span<const byte>* guessFormatFrom, const optional<CodeCvt>& useElse) CTOR
-
-commit 727d406afc558d0548bacf2d755c9bfb7adcb50b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 07:53:23 2023 -0400
-
-    use more concepts cleanup CodeCvt<CHAR_T> (private)
-
-commit 59690709e434e4038ccfe1c71d9fe85846ed30c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 12:49:58 2023 -0400
-
-    Attempt workaround for qCompilerAndStdLib_template_second_concept_Buggy
-
-commit 6459accc490d7587acfae4c37fbd40acfdd36d64
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 12:56:02 2023 -0400
-
     Deprecate kCodePage_HEBREW ETC names and replace with WellKnownCodePages::kHebrew etc
-
-commit f2b4e90c6b951c6b6eaf0716b7b8fde34dea7710
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 16:25:21 2023 -0400
-
     deprecated CodePageConverter; and renamed (through deprecation)  kCodePage_UTF8 (ETC) to WellKnownCodePages::kUTF8 (ETC)
 
-commit 4ba91e1992a8964ed0efe62c292ac5bce75d1c3f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 19:46:26 2023 -0400
-
-    deprecate code in Streams/iostream/Utilities - use Stroika streams from now on, and use adapter from iostream to Stroika streams if you want utilities to access CodeCvt logic
-
-commit f98f9fcb4272579a97261f8e0adb0a734d6b7c38
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 21:15:36 2023 -0400
-
-    start reactoring/reinterpreation of SDKString stuff - explicit Narrow2SDKString and SDKString2Narrow functions and use of them from String
-
-commit 4c7e1c7bc2c469ef65515bb186c3419eadaf4294
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 10:26:48 2023 -0400
-
-    fixed small regression in recent SDKString changes by introducing new AllowMissingCharacterErrorsFlag and a few overloads using it
-
-commit ea2f5a40108021951203e9cf0d3735aaa0ba0f6c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Jul 25 11:28:33 2023 -0400
-
-    fixed string String::AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag) handling of bad characters
-
-commit 8053c705aa7b33fd9af0d7ee3243881e9425f25d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 14:32:32 2023 -0400
-
+Characters::SDKChar/SDKString
     fixed a few minor recent regressions edge conditions on ACP SDKString code, and better docs on said
-
-commit 821a56e98dde7bd6f2de3e4f504b407ac5f52c4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 22:48:31 2023 -0400
-
-    new CodeCvt methods Bytes2String and String2Bytes (DRAFT) - but used in a few places to silcence deprecation warnigns - test
-
-commit bae68f0963a9651e798dfdd0a92c9fde7d8f5325
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 07:13:53 2023 -0400
-
     concepts for CodeCvt<CHAR_T>::Bytes2String and CodeCvt<CHAR_T>::String2Bytes
-
-commit 12dfbc67f003f1f996808e0ad4f1408bfe2f86f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 08:05:06 2023 -0400
-
-    More CodeCvt / CodePageConverter cleanups/conversions
-
-commit 2aea167b81cdc6ca99398735d76d8fc04cd71779
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 08:52:36 2023 -0400
-
-    more cleanups of CodePageConverter usawge - using CodeCvt directly
-
-commit 38fb48519a2d22d07c6261fdfa47703b8b0a1b4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 09:19:06 2023 -0400
-
     cleanups to recent chagnes and deprecated ASCIIStringToWide and WideStringToASCII
 
-commit ce29639677e7a3632bcd8003cc692f7e0c06ca57
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 20:40:01 2023 -0400
+- Characters::String
+  -  new function String::NoramlizeTextToNL ()
 
-    more upgrading code to use CodeCvt instead of CodePageConverter
 
-commit fe20a53b4ff3560e0dff8483ced3d5dcd32ccb4e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 21:05:51 2023 -0400
 
-    **not backward compatible** change to some Led frameworks APIs - that used CodePage* - use optional<CodePage> instead; especailly unsafe cuz one place *codePage=x - and unsure if anyting counted on that but I dont think so
+  Characters:
+    kMaxBOMSize TextConvert
+    CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom)
+    use more concepts cleanup CodeCvt<CHAR_T> (private)
+    start reactoring/reinterpreation of SDKString stuff - explicit Narrow2SDKString and SDKString2Narrow functions and use of them from String
+    fixed small regression in recent SDKString changes by introducing new AllowMissingCharacterErrorsFlag and a few overloads using it
+    fixed string String::AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag) handling of bad characters
 
-commit 99b173c4b771b80691ae5001a4a3555328151c1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 27 08:17:20 2023 -0400
+  Characters::CodeCvt:
+    new CodeCvt methods Bytes2String and String2Bytes (DRAFT) - but used in a few places to silcence deprecation warnigns - test
+    More CodeCvt / CodePageConverter cleanups/conversions
+    more cleanups of CodePageConverter usawge - using CodeCvt directly
 
-    More CodePageConverter deprecation cleanups
+Configuraiton:
+    Attempt workaround for qCompilerAndStdLib_template_second_concept_Buggy
 
-commit 89020eadb1a7af0cbff8db12399c80a9a4028f60
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 27 08:43:36 2023 -0400
-
-    More CodeCvt cleanups
-
-commit 8e3b107653f4ccadfe14881fdd777cbaf83a3673
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 27 09:45:03 2023 -0400
-
-    cosmetic Led cleanups; and CodePageConverter->CodeCvt replacements
-
-commit e86b3f19b69b6b38e7b025938d355f6d7a4fbd1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 27 20:27:05 2023 -0400
-
-    more CodePageConverter -> CodeCvt conversions
-
-commit 9384a6a92f36953fc1993d50b395f3fbb931d88d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 28 08:21:50 2023 -0400
-
+Streams
+-     deprecate code in Streams/iostream/Utilities - use Stroika streams from now on, and use adapter from iostream to Stroika streams if you want utilities to access CodeCvt logic
     convert use of deprecated iostream::ReadTextStream to TextReader::New (Streams::iostream::InputStreamFromStdIStream<std::byte>::New (in)).ReadAll ().As<wstring> ()
 
-commit 4e474447709aeedb7bea3c57aa20724acae8996d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 08:33:02 2023 -0400
 
-    new function String::NoramlizeTextToNL ()
+- Foundation::Memory
+  - minor fix to Memory::MemoryAllocator
 
-commit 96111f43e38351ef73108bd24b4a82959fcfbd58
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 08:35:57 2023 -0400
+- Foundation::Streams
+  -     reorder seekable/not seekable so GetSeekable() type punning works more intuitively
 
-    reorder seekable/not seekable so GetSeekable() type punning works more intuitively
 
-commit e612cab2e8e0051eea084a74f9f1d1bb6ed97e01
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 08:37:34 2023 -0400
+- Frameworks::Led
+  -     **not backward compatible** change to some Led frameworks APIs - that used CodePage* - use optional<CodePage> instead; especailly unsafe cuz one place *codePage=x - and unsure if anyting counted on that but I dont think so
 
-    slight cleanup to asserts and document requires on CodeCvt function calls
+- MISC
+  -     tweaked clang-format configuraiton settings
+
+
+#if 0
 
 commit 7b322a849b9799a4a0cbb3fcf924460cb0380bb4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -270,71 +104,17 @@ Date:   Mon Jul 31 19:03:35 2023 -0400
 
     new explicit overload of TextReader::New for only input stream and no specified seekability (copy from in stream by default)
 
-commit 1c8a7e3893589a4780234a02f2a171432c269db0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 1 17:13:07 2023 -0400
-
-    cosmetic
-
-commit 6851abe428fb4c9a967a6f996ef7c49c65d3a87f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 1 17:13:35 2023 -0400
-
-    samples cosemetic, and switch from deprecated CodePageConverter to CodeCvt
-
 commit 4c540ba1dd57e4388b78f8272e1faae7d53421ac
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Aug 1 21:27:56 2023 -0400
 
     more SDKString cleanups - deprecating GetDefaultSDKCodePage; deprecating *into overloads of various string functions;
 
-commit fab9b6e9e5de6ef47110d1ee5230173e3f935c99
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 1 22:28:10 2023 -0400
-
-    bad checkin fixed missing file
-
-commit e6a50a6a5ad8a930abecd747b84e3a7ffff34f64
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 1 22:32:14 2023 -0400
-
-    fixed typo
-
 commit 96be9732bfa44d05e084731011090325759cb2a7
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Aug 2 09:27:50 2023 -0400
 
     fix several of the recent regressions in SDKString code I've done - and started on celanup to fix rest
-
-commit 3fadf3890deaa0e0c54b363618f4bc948568cdd1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 10:40:40 2023 -0400
-
-    fixed typo in last checkin
-
-commit 80c5d1ca6a000fd156d3f675005a1c881d29fca5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 10:43:10 2023 -0400
-
-    cosmetic
-
-commit 4a5a6c6a416bf8becb5b8b8ad646ce6d58c142f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 11:03:47 2023 -0400
-
-    SDKString convert utility cleanups
-
-commit 3edf50b78eaed613e09923573d674b0324c53c2c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 13:38:50 2023 -0400
-
-    hopefully fixed typo in last checkin
-
-commit 7656cbab44ddeb178625bb6c951834a45707f064
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 13:43:14 2023 -0400
-
-    tweaked clang-format configuraiton settings
 
 commit f385d546c0eab297a9a073911afb0465d01500aa
 Author: Lewis Pringle <lewis@sophists.com>
@@ -348,30 +128,6 @@ Date:   Wed Aug 2 18:45:57 2023 -0400
 
     more progress celaning up SDKString conversion utilities
 
-commit 496b492bf11a4015b9d2da6c8a8ea7131b39af14
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 18:47:00 2023 -0400
-
-    Fixed typo
-
-commit be9da50ca5f52047a72e3421a8b339a9b1238e22
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 18:48:01 2023 -0400
-
-    Fixed typo
-
-commit 39d046de216990857dbbc32fe94c787754f5754b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 18:49:07 2023 -0400
-
-    Fixed typo
-
-commit baf641175f5db757c9e00c8e72d08250bbdba38e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 18:50:34 2023 -0400
-
-    Fixed typo
-
 commit c57a7d00884c035fd1b5612a1177a60c7d96b002
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 2 19:08:07 2023 -0400
@@ -383,12 +139,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Aug 6 08:28:13 2023 -0400
 
     String AsASCII and AsASCIIQuietly /1 overloads deprecated
-
-commit 5c02823dbecfc8a01044e7c7a368df573cc2d965
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 6 08:44:48 2023 -0400
-
-    comments
 
 commit 0fc4936378b5e7710522f9ff9eeb85d4d5c909c3
 Author: Lewis Pringle <lewis@sophists.com>
@@ -420,12 +170,6 @@ Date:   Mon Aug 7 16:58:00 2023 -0400
 
     more cleanups to CodeCvt UTFConverter changes
 
-commit 2df3b84139d3fe65ae03771e22feeb3c0153d54b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 17:04:04 2023 -0400
-
-    tweaked project file
-
 commit ab9883ee26057c2c6fcd323efcc2d51ec67a843e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 7 17:18:20 2023 -0400
@@ -444,23 +188,11 @@ Date:   Mon Aug 7 21:21:57 2023 -0400
 
     More invalid character support for CodeCvt - esp BuiltinSingleByteTableCodePageRep_, and related cleanups
 
-commit f1c75a0db6436f1ea445166ca99ef182a8da66e5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 21:34:15 2023 -0400
-
-    Added assert to recent CodeCvt code
-
 commit 10e42b6d2689dbf7cf69e7bb04873577ad2b0e6e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 7 23:15:23 2023 -0400
 
     Fixed missing CodeCvt GetOptions
-
-commit ce23f9156da4aa25e7e199382dbd60d5454fcf8d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 23:16:27 2023 -0400
-
-    Comment
 
 commit 1262de36cf72fe6679257337c06bb6b00a4e7257
 Author: Lewis Pringle <lewis@sophists.com>
@@ -570,29 +302,11 @@ Date:   Wed Aug 9 22:49:12 2023 -0400
 
     lose qCompilerAndStdLib_spanOfContainer_Buggy and all the bug workarounds - really still there - but only affects LIBC++ 14, and not macos version, and I have no more test cases where I can reproduce that (could if I worked at it but little point); could get the workaroudn back, but since unless/until I have a need/sitaution to test, no point
 
-commit e40d3aa2ed9df91352ef296df143664307ad07f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 10 14:02:24 2023 -0400
-
-    maybe_unused
-
-commit b32388868063ab91368e3802e485c5a482c56040
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 10 14:03:04 2023 -0400
-
-    [[maybe_unused]]
-
 commit 1a71fae5dd53b21f9e6c2ffbe5bc164b2283f326
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Aug 10 14:03:28 2023 -0400
 
     DbgTrace logginmg code - use AsNarrowSDKString (AllowMissingCharacterErrorsFlag
-
-commit 1806d6f14fc87600f18e0b5f84abd8f94658f56d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 10 14:03:53 2023 -0400
-
-    Comments
 
 commit 6e1d67b79f482a19884199cdafb91ab3eb2368f9
 Author: Lewis Pringle <lewis@sophists.com>
@@ -612,24 +326,6 @@ Date:   Sun Aug 13 22:20:55 2023 -0400
 
     boost 1.83.0
 
-commit b85f56fe0d6a7f1602a3d4bde05edee720966887
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 13 22:21:07 2023 -0400
-
-    Comments
-
-commit f29e5e20a7c1944ee95df753c25944fa14831e17
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 14 17:13:19 2023 -0400
-
-    docs on CodeCvt stuff (and a but UTFConvert)
-
-commit dac5d971fc8b9d04c70cd8975f246211e37e5a9e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 14 17:21:03 2023 -0400
-
-    Comments
-
 commit 1b185af999c8ff9da3d75ac4dd7250d8b4915690
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 14 20:47:29 2023 -0400
@@ -647,12 +343,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 16 20:22:59 2023 -0400
 
     Minor cleanups to IteratorImplHelper.h
-
-commit 5c1c1599f35902330973c9a3863ff91f88b5d086
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 18 10:49:06 2023 -0400
-
-    fixed typo
 
 commit 10710d030d8fd6e6066545f5887b1f069e020234
 Author: Lewis Pringle <lewis@sophists.com>
@@ -756,65 +446,17 @@ Date:   Sun Aug 20 20:16:39 2023 -0400
 
     disable --ftemplate-depth hacks for Memory::OffsetOf() since not needed at this stage
 
-commit 376fd23ca742a8948e4681bd64c9bf369fc022df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 21 16:49:01 2023 -0400
-
-    Comments
-
-commit e6d163ce5f5544b3e88af99edb9834c47df7edbc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 22 10:12:50 2023 -0400
-
-    Comments
-
-commit 01ba371dc5f0fb37f3bb343725f0057e0f275d1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 23 17:16:46 2023 -0400
-
-    env:VS_17_7_1 in docker container
-
-commit 0cebde494bbae6ddc9423f280ecb86d8dd66883b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Aug 24 21:20:17 2023 -0400
-
-    Minor celanup to MemoryAllocator utils
-
-commit 13f340f54c7c1ece0d70f9ef36c048771331205b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 8 10:15:01 2023 -0400
-
-    merge in v2.1.14 changes
-
-commit 5c64e36e6459841d7038b6211905d25932533bb3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 8 11:54:19 2023 -0400
-
-    cosmetic test cleanups
-
 commit 75331c213eaf48f7e0175f96a1c276214fab1186
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 8 11:54:40 2023 -0400
 
     VS_17_7_3 in docker containers
 
-commit a54a8124f6d0dd39460fc52f7ddc5f1dda7cd717
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 8 13:53:13 2023 -0400
-
-    fixed bad checkin
-
 commit f378bcdcc2f52bd59f09cfcbd99441587df5c208
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 8 14:23:14 2023 -0400
 
     VERSION=3430000 sqlite
-
-commit 4a14b6db977af10dcd963e6ef5a72f4edfaccc97
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 8 14:25:04 2023 -0400
-
-    cosmetic configure cleanup
 
 commit 4df022695ff296b592aa22945d1ab0912ef6eefd
 Author: Lewis Pringle <lewis@sophists.com>
@@ -828,36 +470,12 @@ Date:   Sun Sep 10 07:51:16 2023 -0400
 
     because of warnings from configure in libcurl, I moved the -D compile flags to CPPFLAGS (from CFLAGS/CXXFLAGS) and same with -I flags - testing
 
-commit 85a4806fadb0349d0bcc291873147a19f8b80956
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 10 07:51:56 2023 -0400
-
-    see if small change to regresiontest eval EXE_RUN_ allows it to work with recent RUN_PREFIX change for windows
-
-commit 57dc5251edbae29cb2e3b196a65b58506f09d285
-Merge: 0cebde494b 85a4806fad
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Sep 10 07:55:23 2023 -0400
-
-    Merge branch 'v3-Dev' of github.com:SophistSolutions/Stroika into v3-Dev
-
-commit dbd41a1b6690c4d0823d19c6b4302629cffd2212
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Sep 10 08:40:07 2023 -0400
-
-    minor fix to Memory::MemoryAllocator
 
 commit ea95eff80833af47c73045156fb6cf676916a9d0
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 10 08:57:25 2023 -0400
 
     fixed ScriptsLib/Makefile-CMake-Common.mk for recent CPPFLAGS change
-
-commit 198892cf68e2a05dc015b800490c9c22ede8a55e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 10 08:57:34 2023 -0400
-
-    readme
 
 commit 71926bd6af2c993c35e3abd3a48896eb74ff8646
 Author: Lewis Pringle <lewis@sophists.com>
@@ -882,18 +500,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Sep 10 16:40:17 2023 -0400
 
     Minor cleanup of Character::Latin1 code
-
-commit ccb475394d7ca0be6f4b512663e177e2381e47e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 10 16:56:35 2023 -0400
-
-    mostly cosmetioc and fixes to make format-code
-
-commit 5e0924d738dcbad12c7249d4d9d68c6eea8fa58b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 10 18:20:43 2023 -0400
-
-    Comments
 
 commit 7d982ab7207dca98b20c0755ddc957f0c1baf6df
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -957,29 +563,11 @@ Date:   Mon Sep 11 23:23:32 2023 -0400
 
     qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy workaround
 
-commit f508b341160b86368dbfb387189059e752db362e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 11 23:35:43 2023 -0400
-
-    mostly cosmetic
-
 commit 12f041c047f7a805e9d5e5038ca1125c3518e889
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Sep 11 23:36:15 2023 -0400
 
     progress performance tweaking StringBuilder::Append()
-
-commit 61561641b3a0ee2f014626dde4d15d8deacc3960
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 11 23:40:31 2023 -0400
-
-    cosmetic
-
-commit 8711b8ba7f6f5558d3be2de00cb205aacb4c9fdc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 10:11:07 2023 -0400
-
-    minor cleanup to InlineBuffer
 
 commit 40236e2fb16dc629b85259d0eb4e7e8f92c0406e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1053,24 +641,6 @@ Date:   Tue Sep 12 14:04:50 2023 -0400
 
     fixed bug with ComputeCharacterLength for zero length span
 
-commit c5aabd5c7a4f7bd53a13fb839953ba5fdafab52f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 14:17:02 2023 -0400
-
-    UTFConvert code cleanups
-
-commit d24f298010baefb6ac826946e26d48e4125fa7d7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 14:17:15 2023 -0400
-
-    cosmetic
-
-commit f07e7cbcafd5c0fd0bcad2d741f8ba71eeff65f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 14:17:27 2023 -0400
-
-    cosmetic
-
 commit 84ca8d38ad3b6494acf0e70379ed344c40c633f8
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 12 17:21:36 2023 -0400
@@ -1100,12 +670,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue Sep 12 20:47:31 2023 -0400
 
     qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken in clang++-14 as well
-
-commit aed7bb1058e19661c2a9600410034dce4fceb1e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 21:00:10 2023 -0400
-
-    cosmetic
 
 commit 586c3f4397f268987da0c5ac4f68ad488cd815f8
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -1137,29 +701,11 @@ Date:   Wed Sep 13 10:58:07 2023 -0400
 
     Allow VariantValue CTOR {ASCII}
 
-commit 43e8a05f837961948f34187f72020a29dba55e60
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Sep 13 11:07:59 2023 -0400
-
-    minor cleanups
-
 commit 4e382650f242b9e95fadf640492abaacf55eba41
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Sep 13 12:41:14 2023 -0400
 
     fix  https://stroika.atlassian.net/browse/STK-753  agaain for changes to CFLAGS vs CPPFLAGS for qStroika_FeatureSupported_Valgrind define - now silenced this mistaken valgrind report again
-
-commit 550a3777ec476055501f8adb72f31d53462480a7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Sep 13 12:41:30 2023 -0400
-
-    Comment
-
-commit 1c7a1b374b57f9647db7db4ff39e108a1e9a8200
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 13 12:43:01 2023 -0400
-
-    improved DbgTrace log line
 
 commit a40822a21f0a27de7fb8d8a34923edd7a647468f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1191,24 +737,6 @@ Date:   Thu Sep 14 10:22:26 2023 -0400
 
     docker container VS_17_7_4
 
-commit e279b68fd0a04a29e21775b0dcf16f19c4fe7497
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 14 10:56:12 2023 -0400
-
-    minor cleanup of performance regtests
-
-commit c49ce79f5df2628f4ce527bbb7869c4790f6cc32
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 14 12:42:07 2023 -0400
-
-    docs
-
-commit 6678b9c6bacb6975215a25d28cb8f77e6712ec3e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 14 12:42:29 2023 -0400
-
-    InlineBuffer [[likely]] etc tweaks
-
 commit 33f8175a6fedb74b9113d4fb0b42e9825cbe7374
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 14 13:08:45 2023 -0400
@@ -1220,12 +748,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 14 13:29:53 2023 -0400
 
     fix minor regresison on overzealopus cleanup of String L usage; and fixed Characters::ToString() - no longer needs const char* overload explicitly
-
-commit 5e0cf9c0072ee4ab4b39191e8ff7a202df9b3d3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 14 13:30:12 2023 -0400
-
-    cosmetic
 
 commit acd51c3cdb3529dba52dddab582d6445e56eb1a4
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1280,30 +802,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 15 17:39:28 2023 -0400
 
     ScriptsLib/Vs2kASANBugWorkaround as tmphack workaroudn for vs2k22 asan bug
-
-commit 760920c40f7934e7151d53878e1e2c1e6c3bc012
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 15 17:40:50 2023 -0400
-
-    start doing v2.0d2 release
-
-commit 9f7d5b37fc0d355f711a4d9edb8f98753ccc398b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 15 18:26:59 2023 -0400
-
-    fixed typo
-
-commit d4d7b8f4749bc77142db26a824821e06f3793ff0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 15 20:53:05 2023 -0400
-
-    fixed minor bug in recent String optimization
-
-commit b1fd97fc914db77dffb63f17dbd5787d3d85ca3c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Sep 16 09:18:37 2023 -0400
-
-    cosmetic
 #endif
 
 
