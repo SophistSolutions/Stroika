@@ -39,3 +39,29 @@
    ...
    fun:_ZN12_GLOBAL__N_132Test21_StringNumericConversions_Ev.lto_priv.*
 }
+{
+   <insert_a_suppression_name_here>_THIS_CODE_APPEARS_FINE_AND_ONLY_FAILS_ON_LTO_MEMCHK
+   Memcheck:Cond
+   fun:_ZN12_GLOBAL__N_120UTFConvert_libutfxx_20ConvertUTF32toUTF16_EPPKDiS2_PPDsS4_St8optionalIDiE.lto_priv.0
+   ...
+   fun:_ZN12_GLOBAL__N_110JSON_ONLY_27Test_04_CheckStringQuoting_4*
+   fun:_ZN12_GLOBAL__N_118DoRegressionTests_Ev
+   fun:UnknownInlinedFun
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>_THIS_CODE_APPEARS_FINE_AND_ONLY_FAILS_ON_LTO_MEMCHK
+   Memcheck:Cond
+   fun:_ZN12_GLOBAL__N_120UTFConvert_libutfxx_20ConvertUTF32toUTF16_*
+   ...
+   fun:_ZN7Stroika10Foundation10Characters6StringC1IwEEPKT_
+   fun:_ZN12_GLOBAL__N_118DoRegressionTests_Ev
+}
+{
+   <insert_a_suppression_name_here>_THIS_CODE_APPEARS_FINE_AND_ONLY_FAILS_ON_LTO_MEMCHK
+   Memcheck:Cond
+   fun:_ZN12_GLOBAL__N_120UTFConvert_libutfxx_20ConvertUTF32toUTF16_*
+   ...
+   fun:_ZN7Stroika10Foundation12DataExchange11OptionsFile4ReadIN12_GLOBAL__N_125Test5_ModuleGetterSetter_8PRIVATE_7MyData_EEESt8optional*
+   ...
+}
