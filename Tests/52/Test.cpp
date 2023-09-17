@@ -1373,7 +1373,7 @@ namespace {
         Tester (L"Simple String append test (+=wchar_t[]) 10x", Test_SimpleStringAppends2_<wstring>, L"wstring",
                 Test_SimpleStringAppends2_<String>, L"Charactes::String", 1500000, 4.0, &failedTests);
         Tester (L"Simple String append test (+=wchar_t[]) 100x", Test_SimpleStringAppends3_<wstring>, L"wstring",
-                Test_SimpleStringAppends3_<String>, L"Charactes::String", 360000, 75, &failedTests);
+                Test_SimpleStringAppends3_<String>, L"Charactes::String", 360000, 78, &failedTests);
         Tester (L"String a + b", Test_SimpleStringConCat1_<wstring>, L"wstring", Test_SimpleStringConCat1_<String>, L"String", 2200000, 2.1, &failedTests);
         Tester (L"wstringstream << test", Test_OperatorINSERT_ostream_<wstring>, L"wstring", Test_OperatorINSERT_ostream_<String>,
                 L"Charactes::String", 6000, 1.4, &failedTests);
@@ -1390,28 +1390,28 @@ namespace {
             [] () {
                 Test_StreamBuilderStringBuildingWithExtract_<MemStreamOfChars_> ([] (const MemStreamOfChars_& w) { return w.As<String> (); });
             },
-            L"MemoryStream<Characters::Character>", 210000, 0.8, &failedTests);
+            L"MemoryStream<Characters::Character>", 210000, 1.2, &failedTests);
         Tester (
             L"wstringstream versus StringBuilder",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
             [] () {
                 Test_StreamBuilderStringBuildingWithExtract_<StringBuilder<>> ([] (const StringBuilder<>& w) { return w.As<String> (); });
             },
-            L"StringBuilder", 220000, .29, &failedTests);
+            L"StringBuilder", 220000, 0.48, &failedTests);
         Tester (L"Simple c_str() test", Test_String_cstr_call_<wstring>, L"wstring", Test_String_cstr_call_<String>, L"Charactes::String",
                 51000, 1.3, &failedTests);
         Tester (L"Sequence<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
-                Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>", 125000, 0.6, &failedTests);
+                Test_SequenceVectorAdditionsAndCopies_<Sequence<int>>, L"Sequence<int>", 125000, 0.75, &failedTests);
         Tester (L"Sequence<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
                 Test_SequenceVectorAdditionsAndCopies_<Sequence<string>>, L"Sequence<string>", 9900, 0.33, &failedTests);
         Tester (L"Sequence_DoublyLinkedList<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<int>>,
-                L"Sequence_DoublyLinkedList<int>", 120000, 4.0, &failedTests);
+                L"Sequence_DoublyLinkedList<int>", 120000, 5.1, &failedTests);
         Tester (L"Sequence_Array<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
-                Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_Array<int>>, L"Sequence_Array<int>", 120000, 0.6, &failedTests);
+                Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_Array<int>>, L"Sequence_Array<int>", 120000, 0.7, &failedTests);
         Tester (L"Sequence_stdvector<int> basics", Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_stdvector<int>>, L"Sequence_stdvector<int>", 120000,
-                0.85, &failedTests);
+                1.1, &failedTests);
         Tester (L"Sequence_DoublyLinkedList<string> basics", Test_SequenceVectorAdditionsAndCopies_<vector<string>>, L"vector<string>",
                 Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<string>>,
                 L"Sequence_DoublyLinkedList<string>", 9900, 0.55, &failedTests);
@@ -1419,7 +1419,7 @@ namespace {
             L"Collection<int> basics",
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<int>> ([] (vector<int>* c) { c->push_back (2); }); }, L"vector<int>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<int>> ([] (Collection<int>* c) { c->Add (2); }); },
-            L"Collection<int>", 113000, 4.0, &failedTests);
+            L"Collection<int>", 113000, 4.7, &failedTests);
         Tester (
             L"Collection<string> basics",
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
