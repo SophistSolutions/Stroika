@@ -28,6 +28,9 @@ especially those they need to be aware of when upgrading.
 - Documentation
   - design overview docs tweaks
 
+- Characters::Character
+  - Character::As<> constexpr
+
 - Characters::CodePage
     changed CodePage declaration from int to uint32_t (closer to what windows does); and document a bit better; and start migrating CodePage support into CodeCvt so we can deprecate the CodePageConverter code
 
@@ -43,10 +46,20 @@ Characters::SDKChar/SDKString
     fixed a few minor recent regressions edge conditions on ACP SDKString code, and better docs on said
     concepts for CodeCvt<CHAR_T>::Bytes2String and CodeCvt<CHAR_T>::String2Bytes
     cleanups to recent chagnes and deprecated ASCIIStringToWide and WideStringToASCII
+    more SDKString cleanups - deprecating GetDefaultSDKCodePage; deprecating *into overloads of various string functions;
+    fix several of the recent regressions in SDKString code I've done - and started on celanup to fix rest
+    SDKString function/method cleanups
+    more progress celaning up SDKString conversion utilities
+    Cosmetic/docs on new SDKSTring converters and fixed one case of AllowMissingCharacterErrorsFlag but two more todo
 
 - Characters::String
   -  new function String::NoramlizeTextToNL ()
+    String AsASCII and AsASCIIQuietly /1 overloads deprecated
 
+  Characters::UTFConvert
+    -     renamed UTFConverter to (better name) UTFConvert cuz I found a way to merge old UTFConver namespae code into this class (deprecated stuff)
+    begingings of support for fInvalidCharacterReplacement on CodeCvt and UTFConverter
+    Moved UnicodeExternalEncodings to UTFConvert.h; and changed option in UTFConvert fStrictMode to fInvalidCharacterReplacement, and started adding same to CodeCvt (incomplete)
 
 
   Characters:
@@ -61,6 +74,7 @@ Characters::SDKChar/SDKString
     new CodeCvt methods Bytes2String and String2Bytes (DRAFT) - but used in a few places to silcence deprecation warnigns - test
     More CodeCvt / CodePageConverter cleanups/conversions
     more cleanups of CodePageConverter usawge - using CodeCvt directly
+    Added CodeCvt::GetOptions() function
 
 Configuraiton:
     Attempt workaround for qCompilerAndStdLib_template_second_concept_Buggy
@@ -68,6 +82,9 @@ Configuraiton:
 Streams
 -     deprecate code in Streams/iostream/Utilities - use Stroika streams from now on, and use adapter from iostream to Stroika streams if you want utilities to access CodeCvt logic
     convert use of deprecated iostream::ReadTextStream to TextReader::New (Streams::iostream::InputStreamFromStdIStream<std::byte>::New (in)).ReadAll ().As<wstring> ()
+- Streams::TextReader
+  -     new overloads of TextReader::New (AutomaticCodeCvtFlags); and use a bit in replacing obsolete use of CodePageGuesser and CodePageConverter with TextReader
+  - new explicit overload of TextReader::New for only input stream and no specified seekability (copy from in stream by default)
 
 
 - Foundation::Memory
@@ -81,16 +98,35 @@ Streams
   -     **not backward compatible** change to some Led frameworks APIs - that used CodePage* - use optional<CodePage> instead; especailly unsafe cuz one place *codePage=x - and unsure if anyting counted on that but I dont think so
 
 - MISC
-  -     tweaked clang-format configuraiton settings
+  -     tweaked clang-format configuraiton settings; and new  clang-format (version 16.0.5)
+
+- ThirdPartyComponents
+  - boost
+    -     boost 1.83.0
+  - curl
+    -     curl 8.2.1
+  - openssl
+    -     openssl 3.1.2
+
+  - sqlite
+    -     VERSION=3430000 sqlite
+
+
+
+  - BuildScripts
+    - configure
+
+      -     because of warnings from configure in libcurl, I moved the -D compile flags to CPPFLAGS (from CFLAGS/CXXFLAGS) and same with -I flags - testing
+        - bubbled into many other componets, like had to fix 
+          - ScriptsLib/Makefile-CMake-Common.mk for recent CPPFLAGS change
+          - export CPPFLAGS too in building openssl
+
+
+    docker container VS_17_7_4
+
 
 
 #if 0
-
-commit 7b322a849b9799a4a0cbb3fcf924460cb0380bb4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 31 08:54:06 2023 -0400
-
-    fixecd GetByteOrderMark to return static constexpr pointer; new overloads of TextReader::New (AutomaticCodeCvtFlags); and use a bit in replacing obsolete use of CodePageGuesser and CodePageConverter with TextReader
 
 commit faf6ad71421ff82cc51977a8778519939352a80d
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -98,83 +134,11 @@ Date:   Mon Jul 31 18:36:52 2023 -0400
 
     improved docs on InputStream ReadLine and rewrote ReadLines() so works if seekable or not
 
-commit c7239ddb848d90ac1a219ebc72ea8dc72fa68fbe
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jul 31 19:03:35 2023 -0400
-
-    new explicit overload of TextReader::New for only input stream and no specified seekability (copy from in stream by default)
-
-commit 4c540ba1dd57e4388b78f8272e1faae7d53421ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 1 21:27:56 2023 -0400
-
-    more SDKString cleanups - deprecating GetDefaultSDKCodePage; deprecating *into overloads of various string functions;
-
-commit 96be9732bfa44d05e084731011090325759cb2a7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Aug 2 09:27:50 2023 -0400
-
-    fix several of the recent regressions in SDKString code I've done - and started on celanup to fix rest
-
-commit f385d546c0eab297a9a073911afb0465d01500aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 15:48:01 2023 -0400
-
-    SDKString function/method cleanups
-
-commit 61bb3f6b14fc604037440f1c3d65a3c6b0eee155
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 18:45:57 2023 -0400
-
-    more progress celaning up SDKString conversion utilities
-
-commit c57a7d00884c035fd1b5612a1177a60c7d96b002
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 2 19:08:07 2023 -0400
-
-    Cosmetic/docs on new SDKSTring converters and fixed one case of AllowMissingCharacterErrorsFlag but two more todo
-
-commit afee64645566f6e29398041e98dc36b7fd8f733b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 6 08:28:13 2023 -0400
-
-    String AsASCII and AsASCIIQuietly /1 overloads deprecated
-
-commit 0fc4936378b5e7710522f9ff9eeb85d4d5c909c3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 6 20:21:05 2023 -0400
-
-    Moved UnicodeExternalEncodings to UTFConvert.h; and changed option in UTFConvert fStrictMode to fInvalidCharacterReplacement, and started adding same to CodeCvt (incomplete)
-
-commit c4ccefbb6d52f6ce31900b4950bf6baeba5a3b11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 15:21:09 2023 -0400
-
-    begingings of support for fInvalidCharacterReplacement on CodeCvt and UTFConverter
-
 commit b02d961d076753fe3c32257c3d8fb73203ea5e50
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 7 15:21:55 2023 -0400
 
     begingings of support for fInvalidCharacterReplacement on CodeCvt and UTFConverter; and other CodePage cleanups
-
-commit a287a856d10d1e1a1d6bbc90c711d5db7845ff6e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 16:32:57 2023 -0400
-
-    More CodeCvt and related CodePage deprecation cleanups
-
-commit 732c6af4ce3e9090fd0d3574e62c7042dc1282fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 16:58:00 2023 -0400
-
-    more cleanups to CodeCvt UTFConverter changes
-
-commit ab9883ee26057c2c6fcd323efcc2d51ec67a843e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 17:18:20 2023 -0400
-
-    renamed UTFConverter to (better name) UTFConvert cuz I found a way to merge old UTFConver namespae code into this class (deprecated stuff)
 
 commit df8b7b6a17d057771b07e1c5f5b5f15af6549e6c
 Author: Lewis Pringle <lewis@sophists.com>
@@ -188,23 +152,11 @@ Date:   Mon Aug 7 21:21:57 2023 -0400
 
     More invalid character support for CodeCvt - esp BuiltinSingleByteTableCodePageRep_, and related cleanups
 
-commit 10e42b6d2689dbf7cf69e7bb04873577ad2b0e6e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 23:15:23 2023 -0400
-
-    Fixed missing CodeCvt GetOptions
-
 commit 1262de36cf72fe6679257337c06bb6b00a4e7257
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Aug 8 00:22:17 2023 -0400
 
     GetOptions and more fInvalidCharacterReplacement_ support for CodeCvt (maybe done but little tested)
-
-commit 359fb893eccbfe86f3ef9f27205362c83c704fd1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 09:36:10 2023 -0400
-
-    Character::As<> constexpr
 
 commit 4a3ce760dbf6218bc78735bff2ef6b0fe2150efa
 Author: Lewis Pringle <lewis@sophists.com>
@@ -242,24 +194,6 @@ Date:   Tue Aug 8 21:38:33 2023 -0400
 
     replace deprecated UTF8StringToWide use
 
-commit 74370a4fd6c532aaf4d18141c796ed77ac1eb40a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 21:43:44 2023 -0400
-
-    new version of clang-format
-
-commit cc1d0e482d9ed2718215bed85389d7a071267525
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 21:47:30 2023 -0400
-
-    lose regtest for deprecated API
-
-commit 1e50156ad0c4dc6c8f301ee0e2ca75b7bc76712d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 21:54:29 2023 -0400
-
-    try VS_17_7_0 in vis studio docker container
-
 commit 6c798320db3920201347fdb84b3d1e9a2117d4bb
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Aug 8 22:54:45 2023 -0400
@@ -271,12 +205,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 9 00:17:19 2023 -0400
 
     SynchronizedLRUCache call to base class needs () not {} to allow narrowing of args
-
-commit 5b3edb3344573715a3d76cec692a9d3797b1ed04
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Aug 9 07:28:12 2023 -0400
-
-    cosmetic
 
 commit 965efdc2f797ef7970d62076e912395b85874d41
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -308,23 +236,11 @@ Date:   Thu Aug 10 14:03:28 2023 -0400
 
     DbgTrace logginmg code - use AsNarrowSDKString (AllowMissingCharacterErrorsFlag
 
-commit 6e1d67b79f482a19884199cdafb91ab3eb2368f9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 10 16:59:29 2023 -0400
-
-    Support vs2k22 17.7.0 compiler
-
 commit 1eefd9e69a1433feb952f737384e3b37db7bd776
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Aug 10 20:01:01 2023 -0400
 
     silence a few warnings, lose errc::stream_timeout support cuz deprecated in C++23
-
-commit c79aaa66da40d7130cba26dae7f2d1a1d44d75c8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 13 22:20:55 2023 -0400
-
-    boost 1.83.0
 
 commit 1b185af999c8ff9da3d75ac4dd7250d8b4915690
 Author: Lewis Pringle <lewis@sophists.com>
@@ -356,12 +272,6 @@ Date:   Fri Aug 18 22:00:09 2023 -0400
 
     more cleanusp to recent ConvertPointerToDataMemberToOffset code changes
 
-commit b4f26c459bd2dc78e82bb31700a5b9943f73e49e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 18 22:05:53 2023 -0400
-
-    curl 8.2.1
-
 commit 478d12008b03a9cd490dabc5db493c8197cff107
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Aug 18 22:39:33 2023 -0400
@@ -385,12 +295,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Aug 19 23:52:56 2023 -0400
 
     appears clang++15 using libstdc++ also requires upped ftemplate-depth to compile
-
-commit 29927881d4be45c8ce27908669ce7751332e488f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Aug 20 00:09:41 2023 -0400
-
-    openssl 3.1.2
 
 commit b62d4b021a41be8938ab8254aae6e6fbb753ed1a
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -446,36 +350,11 @@ Date:   Sun Aug 20 20:16:39 2023 -0400
 
     disable --ftemplate-depth hacks for Memory::OffsetOf() since not needed at this stage
 
-commit 75331c213eaf48f7e0175f96a1c276214fab1186
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 8 11:54:40 2023 -0400
-
-    VS_17_7_3 in docker containers
-
-commit f378bcdcc2f52bd59f09cfcbd99441587df5c208
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 8 14:23:14 2023 -0400
-
-    VERSION=3430000 sqlite
-
 commit 4df022695ff296b592aa22945d1ab0912ef6eefd
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 9 10:03:35 2023 -0400
 
     experimental better fix for  https://stroika.atlassian.net/browse/STK-984 ASAN VisStudio issue
-
-commit 41402ca7043bf216f250d0b9c8b1c55d567ff6a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 10 07:51:16 2023 -0400
-
-    because of warnings from configure in libcurl, I moved the -D compile flags to CPPFLAGS (from CFLAGS/CXXFLAGS) and same with -I flags - testing
-
-
-commit ea95eff80833af47c73045156fb6cf676916a9d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 10 08:57:25 2023 -0400
-
-    fixed ScriptsLib/Makefile-CMake-Common.mk for recent CPPFLAGS change
 
 commit 71926bd6af2c993c35e3abd3a48896eb74ff8646
 Author: Lewis Pringle <lewis@sophists.com>
@@ -506,12 +385,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Sep 11 09:48:12 2023 -0400
 
     for unubtu 20.04 - disable tsan and leak san since no longer working on that OS - in configure - if --only-if flag passed
-
-commit b521ee529daaf897d7d9d7a215c322cfb75f13d7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Sep 11 09:48:29 2023 -0400
-
-    export CPPFLAGS too in building openssl
 
 commit b5c78239f964646f2bfd4b7c118b88e1bd693d63
 Author: Lewis Pringle <lewis@sophists.com>
@@ -735,7 +608,6 @@ commit a0f8164ca4944945c52dd2abaf182ebd6eea3dbb
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 14 10:22:26 2023 -0400
 
-    docker container VS_17_7_4
 
 commit 33f8175a6fedb74b9113d4fb0b42e9825cbe7374
 Author: Lewis Pringle <lewis@sophists.com>
