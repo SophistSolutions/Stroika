@@ -22,12 +22,18 @@ especially those they need to be aware of when upgrading.
 - Documentation
   - design overview docs tweaks
 
+- Cache
+  -     SynchronizedLRUCache call to base class needs () not {} to allow narrowing of args
+
+
 - Characters::Character
   - Character::As<> constexpr
   - fixed IPossibleCharacterRepresentation to include Character class; and added static overload of Character::IsASCII
+  -  new IUNICODECanUnambiguouslyConvertTo concept  (and used to cleanup UTFConvert logic slightly)
 
 - Characters::CodePage
     changed CodePage declaration from int to uint32_t (closer to what windows does); and document a bit better; and start migrating CodePage support into CodeCvt so we can deprecate the CodePageConverter code
+    more CodePage module cleanups and deprecations of most of the remaining CodePage code
 
     Characters::Private_::WindowsNative_::WindowsNative_; and CodePageNotSupportedException cleanups to CodePage and CodeCvt code
     new CharacterEncodingException and used in a few places
@@ -41,12 +47,14 @@ Characters::SDKChar/SDKString
     fixed a few minor recent regressions edge conditions on ACP SDKString code, and better docs on said
     concepts for CodeCvt<CHAR_T>::Bytes2String and CodeCvt<CHAR_T>::String2Bytes
     cleanups to recent chagnes and deprecated ASCIIStringToWide and WideStringToASCII
+    - new optional AllowMissingCharacterErrorsFlag flags in new String APIs in Characters::SDKString
     more SDKString cleanups - deprecating GetDefaultSDKCodePage; deprecating *into overloads of various string functions;
     fix several of the recent regressions in SDKString code I've done - and started on celanup to fix rest
     SDKString function/method cleanups
     more progress celaning up SDKString conversion utilities
-    Cosmetic/docs on new SDKSTring converters and fixed one case of AllowMissingCharacterErrorsFlag but two more todo
     replace deprecated UTF8StringToWide use
+    - simpliified / refactored APIs into stuff like Wide2SDK SDK2Wide in SDKString module...
+
 
   Characters::MISC
     kMaxBOMSize TextConvert
@@ -63,6 +71,7 @@ Characters::SDKChar/SDKString
     Added CodeCvt::GetOptions() function
     More invalid character support for CodeCvt - esp BuiltinSingleByteTableCodePageRep_, and related cleanups
      support for Options::fInvalidCharacterReplacement
+    note https://stroika.atlassian.net/browse/STK-983 and CodeCvt cleanups (obsoelte WindStringToNarrow)
 
 
 - Characters::String
@@ -70,6 +79,11 @@ Characters::SDKChar/SDKString
     String AsASCII and AsASCIIQuietly /1 overloads deprecated
     String::SubString_ () optimizations - and updated performance tests expectation numbers
     String ASCII constant cleanups
+    New overload of Character::As - allowing producing more UTF char codes (utf_16 array or utf8 array)
+    - Minor performance tweaks to String code - EqualsComparer::Cmp_Generic_ and ThreeWayComparer::Cmp_Generic_ use smaller StackBuffer (only important on windoz) cuz of chkstk optimization
+    - optimize operator+ and String::Concatenate for String (for benchmark simple ascii - almost twice as fast)
+    - adjust template overload for String class so GetData can be called with different stackbuffer builtin sizes
+    - added regtest for converting ISOLATIN1 characters to UTF-8
 
   - Characters::StringBuilder
     fixed bugs with StringBuilder supportin char8_t BufferElementType and switched that to the default since it seems to perform better for (so far few) test cases
@@ -85,6 +99,7 @@ Characters::SDKChar/SDKString
     begingings of support for fInvalidCharacterReplacement on CodeCvt and UTFConverter
     Moved UnicodeExternalEncodings to UTFConvert.h; and changed option in UTFConvert fStrictMode to fInvalidCharacterReplacement, and started adding same to CodeCvt (incomplete)
      support for Options::fInvalidCharacterReplacement
+   -  fixed bug with ComputeCharacterLength for zero length span
 
 
 Configuraiton:
@@ -94,6 +109,9 @@ Configuraiton:
 - DataExchange
   - VariantValue
     -     Allow VariantValue CTOR {ASCII}
+
+- IO::Network
+  -     not totally backward compatible - change to IO::Network::UniformResourceIdentification Query etc - to use u8string instead of string for utf8 strings
 
 
 Streams
@@ -172,66 +190,31 @@ Streams
 - Compiler support
   -     fixed compiler bug defines for gcc 12.3
 
+  - Compiler Bug Defines
+    -     qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy seems still broken with clang++-14/15  - but may need more workarounds
+    - Avoid no-return-local-addr warning on ubuntu 20.02 in configure script (LTO issue)
+
+
 - -flto=auto fix?
   - set -flto=auto when using lto to silence compiler warnings on gcc, but CANNOT do likewise for clang - generates error (related to qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy)
     configure: use -flto=auto to silence warning - https://stackoverflow.com/questions/72218980/gcc-v12-1-warning-about-serial-compilation
 
+- Docker
+  - Windows
+    -     better docs/commetns on https://stroika.atlassian.net/browse/STK-742 and hints on workarounds
+
+- Regression Tests
+  - Performance
+    - tweaked limits on expected regtests results for recent string optimizations
+    - changed default for release performance builds to 2.5 instead of 5x for performance regtest
+
 
 #if 0
-
-commit df8b7b6a17d057771b07e1c5f5b5f15af6549e6c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 20:00:08 2023 -0400
-
-    fixed bug in Configuration/Platform/Windows/Registry due to changes in String code usage
-
-commit 4a3ce760dbf6218bc78735bff2ef6b0fe2150efa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 09:38:10 2023 -0400
-
-    minor fix to support AllowMissingCharacterErrorsFlag in Characters::Wide2SDK SDK2Wide
-
-commit bce9d8b101b2d542bdcdb8866579ca0e597503f0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 12:40:59 2023 -0400
-
-    New overload of Character::As - allowing producing more UTF char codes (utf_16 array or utf8 array)
-
-commit cda0529d03b6225164a8c0fda41cb12beb4d2fa5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 21:02:46 2023 -0400
-
-    more CodePage module cleanups and deprecations of most of the remaining CodePage code
-
-commit 24f50191071949c64624542484eeded47ade3ca7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 21:38:05 2023 -0400
-
-    note https://stroika.atlassian.net/browse/STK-983 and CodeCvt cleanups (obsoelte WindStringToNarrow)
-
-commit 6c798320db3920201347fdb84b3d1e9a2117d4bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 22:54:45 2023 -0400
-
-    better docs/commetns on https://stroika.atlassian.net/browse/STK-742 and hints on workarounds
-
-commit 73d1d06965b3d02f9fed24a300d708276c49ebff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 9 00:17:19 2023 -0400
-
-    SynchronizedLRUCache call to base class needs () not {} to allow narrowing of args
-
 commit c9498ea56a3142f773f120b4780e88c418004f3e
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 9 20:58:29 2023 -0400
 
     workaround https://stroika.atlassian.net/browse/STK-984 ASAN issue with 17.7.0 release of vis studio
-
-commit 4922a6f95618efa20a95707b9c812545555d591a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 9 21:59:14 2023 -0400
-
-    docs about docker issues/faq
 
 commit 25bd62b83556b0cc3e24bd2d37fc60148ca2a18d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -251,12 +234,6 @@ Date:   Mon Aug 14 20:47:29 2023 -0400
 
     Characters/CString/Utilities support for char8_t and u8string; Characters::AsASCII support for u8string; and String::AsASCII and AsASCIIQuietly support for u8string
 
-commit 380bfb0d48350f129b516ea79269d490a50e4800
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 14 20:48:26 2023 -0400
-
-    not totally backward compatible - change to IO::Network::UniformResourceIdentification Query etc - to use u8string instead of string for utf8 strings
-
 commit 4df022695ff296b592aa22945d1ab0912ef6eefd
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 9 10:03:35 2023 -0400
@@ -275,71 +252,17 @@ Date:   Mon Sep 11 09:48:12 2023 -0400
 
     for unubtu 20.04 - disable tsan and leak san since no longer working on that OS - in configure - if --only-if flag passed
 
-commit ce523cb0517db4f573b50dde6d0a9b666c4469d6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 14:04:50 2023 -0400
-
-    fixed bug with ComputeCharacterLength for zero length span
-
 commit 84ca8d38ad3b6494acf0e70379ed344c40c633f8
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Sep 12 17:21:36 2023 -0400
 
     various fixes to UTFConverter code - MOSTLY - fixing the conversion from Latin1 to char8_t - that was fairly broken  (and now at least minimally working)
 
-commit e56f807a14a6f51d50863475064e02f4af709c31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 17:22:11 2023 -0400
-
-    added regtest for converting ISOLATIN1 characters to UTF-8
-
-commit a581053c49c11dee40a9fb96364b35e1659611d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 17:57:54 2023 -0400
-
-    new IUNICODECanUnambiguouslyConvertTo concept and used to cleanup UTFConvert logic slightly
-
-commit 6b700721e530c7743f71e47a519eb553fbda2e10
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Sep 12 20:46:59 2023 -0400
-
-    Avoid no-return-local-addr warning on ubuntu 20.02 in configure script (LTO issue)
-
-commit 22ac6f59e9cf22520dd5dade5b0b4d4f82efa8b7
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Sep 12 20:47:31 2023 -0400
-
-    qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy broken in clang++-14 as well
-
-commit 586c3f4397f268987da0c5ac4f68ad488cd815f8
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Sep 12 21:21:02 2023 -0400
-
-    qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy seems still broken with clang++-15  - but may need more workarounds
-
 commit 4e382650f242b9e95fadf640492abaacf55eba41
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Sep 13 12:41:14 2023 -0400
 
     fix  https://stroika.atlassian.net/browse/STK-753  agaain for changes to CFLAGS vs CPPFLAGS for qStroika_FeatureSupported_Valgrind define - now silenced this mistaken valgrind report again
-
-commit a40822a21f0a27de7fb8d8a34923edd7a647468f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 14 08:56:28 2023 -0400
-
-    tweak return-local-addr suppression for ubuntu 22.04 (also an LTO only thing I HTHINK)
-
-commit 1eafb1456f6f0284e9a87fb7785f316aabc90748
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 14 09:05:51 2023 -0400
-
-    cosmetic String use cleanups in regtest (lose unneeded L)
-
-commit 33f8175a6fedb74b9113d4fb0b42e9825cbe7374
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 14 13:08:45 2023 -0400
-
-    minor string kStackBuffer_SizeIfLargerStackGuardCalled performance tweak
 
 commit fb21f35549ede5061f297644d6548f44e81499df
 Author: Lewis Pringle <lewis@sophists.com>
@@ -358,36 +281,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 15 10:30:36 2023 -0400
 
     clenaup kPrintOutIfFailsToMeetPerformanceExpectations_ in preformance regtests stuff and switch to only warning on 64 bit not 32 bit, and re-tuned performance regtest WARNING values (didnt affect comparabiliyt of results - just when we warn) - for 32bits and current statsu quo
-
-commit 70f3f1241f750689ec24a4a88cb0b17a4736002a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 15 11:52:37 2023 -0400
-
-    tweaked limits on expected regtests results for recent string optimizations
-
-commit 5aea9f5757358e91cc3e7d4d5a0911ce885c9896
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 15 14:17:18 2023 -0400
-
-    adjust template overload for String class so GetData can be called with different stackbuffer builtin sizes
-
-commit 3775c06b82aba3ad25b6d7edcea9ad5f2ca17344
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 15 15:25:25 2023 -0400
-
-    changed default for release performance builds to 2.5 instead of 5x for performance regtest
-
-commit f233753c47960fbd7d8c0aff4a72a382bb89946b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 15 15:54:49 2023 -0400
-
-    Minor performance tweaks to String code - EqualsComparer::Cmp_Generic_ and ThreeWayComparer::Cmp_Generic_ use smaller StackBuffer (only important on windoz) cuz of chkstk optimization
-
-commit ebb38f496c574d2a0b6f304ba028657b086a7457
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 15 17:08:23 2023 -0400
-
-    optimize operator+ and String::Concatenate for String (for benchmark simple ascii - almost twice as fast)
 
 commit 25e1945011e1bba4998c4063a03c7f7dd07c9a95
 Author: Lewis Pringle <lewis@sophists.com>
