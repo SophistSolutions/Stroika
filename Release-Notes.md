@@ -12,12 +12,6 @@ especially those they need to be aware of when upgrading.
 
 ### PREP FOR v3.0d2 release
 
-- ThirdPartyComponents
-  - openssl
-    - openssl 3.1.1
-  - Xerces
-    - Minor xerces third party component makefile simplifcation - no logner workaround issue with older xerces makefiles
-
 -  regtests to expose regression in Iterable<>::First, and a fix for it
 - regtest for issue with String{..AsNarrowSDKString()
 
@@ -30,6 +24,7 @@ especially those they need to be aware of when upgrading.
 
 - Characters::Character
   - Character::As<> constexpr
+  - fixed IPossibleCharacterRepresentation to include Character class; and added static overload of Character::IsASCII
 
 - Characters::CodePage
     changed CodePage declaration from int to uint32_t (closer to what windows does); and document a bit better; and start migrating CodePage support into CodeCvt so we can deprecate the CodePageConverter code
@@ -51,18 +46,9 @@ Characters::SDKChar/SDKString
     SDKString function/method cleanups
     more progress celaning up SDKString conversion utilities
     Cosmetic/docs on new SDKSTring converters and fixed one case of AllowMissingCharacterErrorsFlag but two more todo
+    replace deprecated UTF8StringToWide use
 
-- Characters::String
-  -  new function String::NoramlizeTextToNL ()
-    String AsASCII and AsASCIIQuietly /1 overloads deprecated
-
-  Characters::UTFConvert
-    -     renamed UTFConverter to (better name) UTFConvert cuz I found a way to merge old UTFConver namespae code into this class (deprecated stuff)
-    begingings of support for fInvalidCharacterReplacement on CodeCvt and UTFConverter
-    Moved UnicodeExternalEncodings to UTFConvert.h; and changed option in UTFConvert fStrictMode to fInvalidCharacterReplacement, and started adding same to CodeCvt (incomplete)
-
-
-  Characters:
+  Characters::MISC
     kMaxBOMSize TextConvert
     CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom)
     use more concepts cleanup CodeCvt<CHAR_T> (private)
@@ -75,9 +61,40 @@ Characters::SDKChar/SDKString
     More CodeCvt / CodePageConverter cleanups/conversions
     more cleanups of CodePageConverter usawge - using CodeCvt directly
     Added CodeCvt::GetOptions() function
+    More invalid character support for CodeCvt - esp BuiltinSingleByteTableCodePageRep_, and related cleanups
+     support for Options::fInvalidCharacterReplacement
+
+
+- Characters::String
+  -  new function String::NoramlizeTextToNL ()
+    String AsASCII and AsASCIIQuietly /1 overloads deprecated
+    String::SubString_ () optimizations - and updated performance tests expectation numbers
+    String ASCII constant cleanups
+
+  - Characters::StringBuilder
+    fixed bugs with StringBuilder supportin char8_t BufferElementType and switched that to the default since it seems to perform better for (so far few) test cases
+    Minor celanups to StringBuilder
+    StringBuilder tweaks - As() overloads etc
+    mostly StringBuilder comments, but one tweak to Append() method
+    progress performance tweaking StringBuilder::Append()
+
+
+
+  Characters::UTFConvert
+    -     renamed UTFConverter to (better name) UTFConvert cuz I found a way to merge old UTFConver namespae code into this class (deprecated stuff)
+    begingings of support for fInvalidCharacterReplacement on CodeCvt and UTFConverter
+    Moved UnicodeExternalEncodings to UTFConvert.h; and changed option in UTFConvert fStrictMode to fInvalidCharacterReplacement, and started adding same to CodeCvt (incomplete)
+     support for Options::fInvalidCharacterReplacement
+
 
 Configuraiton:
     Attempt workaround for qCompilerAndStdLib_template_second_concept_Buggy
+    fixes to Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS and Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED for VS
+
+- DataExchange
+  - VariantValue
+    -     Allow VariantValue CTOR {ASCII}
+
 
 Streams
 -     deprecate code in Streams/iostream/Utilities - use Stroika streams from now on, and use adapter from iostream to Stroika streams if you want utilities to access CodeCvt logic
@@ -85,10 +102,31 @@ Streams
 - Streams::TextReader
   -     new overloads of TextReader::New (AutomaticCodeCvtFlags); and use a bit in replacing obsolete use of CodePageGuesser and CodePageConverter with TextReader
   - new explicit overload of TextReader::New for only input stream and no specified seekability (copy from in stream by default)
+- InputStream
+  -  improved docs on InputStream ReadLine and rewrote ReadLines() so works if seekable or not
 
 
 - Foundation::Memory
+  - BLOB
+    -     new BLOB regtest
+    - minor tweaks to BLOB code - using final in rep instances
+
+  - OffsetOf
+    - use  https://gist.github.com/graphitemaster/494f21190bb2c63c5516 to maybe makeConvertPointerToDataMemberToOffset work properly iwth non standard layout objects, and constexpr
+    renamed  ConvertPointerToDataMemberToOffset -> OffsetOf (deprecated ConvertPointerToDataMemberToOffset name)
+    refactored OffsetOf to be constexpr, but needed todo workarounds for various compilers like:
+      - -ftemplate-depth=5000 for g++ and similar for clang
+
   - minor fix to Memory::MemoryAllocator
+  - InlineBuffer
+    -     speed tweak InlineBuffer push_back span() overload and added push_back_coerced variant methods
+    - clenaup docs and minor tweaks to impl of InlineBuffer especailly reserve() code
+
+  - StackBuffer
+    - StackBuffer now reimplemented totally on top of InlineBuffer (only with different default sizes)
+    - kStackBuffer_TargetInlineByteBufferSize tweaks
+  - Span support code cleanups
+
 
 - Foundation::Streams
   -     reorder seekable/not seekable so GetSeekable() type punning works more intuitively
@@ -110,6 +148,8 @@ Streams
 
   - sqlite
     -     VERSION=3430000 sqlite
+  - Xerces
+    - minor makefile simplifcations/cleanups
 
 
 
@@ -119,44 +159,31 @@ Streams
       -     because of warnings from configure in libcurl, I moved the -D compile flags to CPPFLAGS (from CFLAGS/CXXFLAGS) and same with -I flags - testing
         - bubbled into many other componets, like had to fix 
           - ScriptsLib/Makefile-CMake-Common.mk for recent CPPFLAGS change
-          - export CPPFLAGS too in building openssl
 
 
     docker container VS_17_7_4
 
+- Github Actions
+  -     cleanup a few github action display names
+
+- Misc Code Cleanups
+  -     lose __cpp_designated_initializers workarounds and make format-code
+
+- Compiler support
+  -     fixed compiler bug defines for gcc 12.3
+
+- -flto=auto fix?
+  - set -flto=auto when using lto to silence compiler warnings on gcc, but CANNOT do likewise for clang - generates error (related to qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy)
+    configure: use -flto=auto to silence warning - https://stackoverflow.com/questions/72218980/gcc-v12-1-warning-about-serial-compilation
 
 
 #if 0
-
-commit faf6ad71421ff82cc51977a8778519939352a80d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jul 31 18:36:52 2023 -0400
-
-    improved docs on InputStream ReadLine and rewrote ReadLines() so works if seekable or not
-
-commit b02d961d076753fe3c32257c3d8fb73203ea5e50
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 15:21:55 2023 -0400
-
-    begingings of support for fInvalidCharacterReplacement on CodeCvt and UTFConverter; and other CodePage cleanups
 
 commit df8b7b6a17d057771b07e1c5f5b5f15af6549e6c
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Aug 7 20:00:08 2023 -0400
 
     fixed bug in Configuration/Platform/Windows/Registry due to changes in String code usage
-
-commit fdd9e21ee387e746dd9b79f264e0e4470de10a98
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Aug 7 21:21:57 2023 -0400
-
-    More invalid character support for CodeCvt - esp BuiltinSingleByteTableCodePageRep_, and related cleanups
-
-commit 1262de36cf72fe6679257337c06bb6b00a4e7257
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 00:22:17 2023 -0400
-
-    GetOptions and more fInvalidCharacterReplacement_ support for CodeCvt (maybe done but little tested)
 
 commit 4a3ce760dbf6218bc78735bff2ef6b0fe2150efa
 Author: Lewis Pringle <lewis@sophists.com>
@@ -170,12 +197,6 @@ Date:   Tue Aug 8 12:40:59 2023 -0400
 
     New overload of Character::As - allowing producing more UTF char codes (utf_16 array or utf8 array)
 
-commit 63f115f04cd54b8b624744fd0098a5b140e726dc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 13:24:40 2023 -0400
-
-    more cleanups to CodeCvt fInvalidCharacterReplacement support - now  I think fully working but still not really much at all tested
-
 commit cda0529d03b6225164a8c0fda41cb12beb4d2fa5
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Aug 8 21:02:46 2023 -0400
@@ -188,12 +209,6 @@ Date:   Tue Aug 8 21:38:05 2023 -0400
 
     note https://stroika.atlassian.net/browse/STK-983 and CodeCvt cleanups (obsoelte WindStringToNarrow)
 
-commit c4baa75a983ae66fa8eab8a20afbb8b3b31cb080
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Aug 8 21:38:33 2023 -0400
-
-    replace deprecated UTF8StringToWide use
-
 commit 6c798320db3920201347fdb84b3d1e9a2117d4bb
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Aug 8 22:54:45 2023 -0400
@@ -205,12 +220,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Aug 9 00:17:19 2023 -0400
 
     SynchronizedLRUCache call to base class needs () not {} to allow narrowing of args
-
-commit 965efdc2f797ef7970d62076e912395b85874d41
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Aug 9 08:00:36 2023 -0400
-
-    fixed compiler bug defines for gcc 12.3
 
 commit c9498ea56a3142f773f120b4780e88c418004f3e
 Author: Lewis Pringle <lewis@sophists.com>
@@ -230,12 +239,6 @@ Date:   Wed Aug 9 22:49:12 2023 -0400
 
     lose qCompilerAndStdLib_spanOfContainer_Buggy and all the bug workarounds - really still there - but only affects LIBC++ 14, and not macos version, and I have no more test cases where I can reproduce that (could if I worked at it but little point); could get the workaroudn back, but since unless/until I have a need/sitaution to test, no point
 
-commit 1a71fae5dd53b21f9e6c2ffbe5bc164b2283f326
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Aug 10 14:03:28 2023 -0400
-
-    DbgTrace logginmg code - use AsNarrowSDKString (AllowMissingCharacterErrorsFlag
-
 commit 1eefd9e69a1433feb952f737384e3b37db7bd776
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Aug 10 20:01:01 2023 -0400
@@ -254,102 +257,6 @@ Date:   Mon Aug 14 20:48:26 2023 -0400
 
     not totally backward compatible - change to IO::Network::UniformResourceIdentification Query etc - to use u8string instead of string for utf8 strings
 
-commit e243341e27cd0443e911bd169d5cae49550be061
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Aug 16 20:22:59 2023 -0400
-
-    Minor cleanups to IteratorImplHelper.h
-
-commit 10710d030d8fd6e6066545f5887b1f069e020234
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 18 21:14:27 2023 -0400
-
-    use  https://gist.github.com/graphitemaster/494f21190bb2c63c5516 to maybe makeConvertPointerToDataMemberToOffset work properly iwth non standard layout objects, and constexpr
-
-commit caaaa199405c0710f8872209eb4daec9afe9ebb1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 18 22:00:09 2023 -0400
-
-    more cleanusp to recent ConvertPointerToDataMemberToOffset code changes
-
-commit 478d12008b03a9cd490dabc5db493c8197cff107
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Aug 18 22:39:33 2023 -0400
-
-    experiemntal -ftemplate-depth=5000 for g++
-
-commit 6cbd2d2ff66a0ab103c5daa3ef96e4c1a7fd90ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 19 22:22:26 2023 -0400
-
-    2/3 template arg versions of ConvertPointerToDataMemberToOffset, better docs, and testing
-
-commit a18ef81e5354017e54809fd48b5d68bbf582a688
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 19 23:18:11 2023 -0400
-
-    more ConvertPointerToDataMemberToOffset () tweaks
-
-commit a9af4855c0d4f25f04566fdfb9447e2425a28f63
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Aug 19 23:52:56 2023 -0400
-
-    appears clang++15 using libstdc++ also requires upped ftemplate-depth to compile
-
-commit b62d4b021a41be8938ab8254aae6e6fbb753ed1a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Aug 20 00:10:09 2023 -0400
-
-    more tweaks to clang++15 workaround in configure for -ftemplate-depth=5000
-
-commit 0214d529b822c2dc5ba6ce283db41fc8c53046fb
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Aug 20 00:10:42 2023 -0400
-
-    attribute no sanitzie for recent Library/Sources/Stroika/Foundation/Memory/ObjectFieldUtilities.inl changes
-
-commit 813472693369179fa24b65032f75c68cffefa430
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 20 07:43:20 2023 -0400
-
-    fixed compipler compat issues with Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
-
-commit 2dbb22575f5e49e2d9e94ee5c53710f7fe16c0b9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 20 08:08:17 2023 -0400
-
-    fixes to Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS and Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED for VS
-
-commit a2faf91c116975f924e5e08a1ba89f61a2666da0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 20 08:08:44 2023 -0400
-
-    /ObjectFieldUtilities sanitzer fixes
-
-commit d6e4e9daf5fca528ce006b02c3bcb6f89aa7c5b2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 20 17:29:34 2023 -0400
-
-    migrate recent changest to ConvertPointerToDataMemberToOffset to Memory::OffsetOf() - and deprecated ConvertPointerToDataMemberToOffset name; that new algorithm not working - maybe I have one to replace - at least to test it now...
-
-commit c19b22bc3f2128607ad9a2ddf43459f0ecd7694f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 20 19:47:36 2023 -0400
-
-    String ASCII constant cleanups
-
-commit 18550c360876b032a87c8f92a0b06da6d4884b85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Aug 20 20:13:26 2023 -0400
-
-    mostly comsetic string literal cleanup and lose some deprecated code
-
-commit 75c1afca82fc566a6884441bfcd4b6c95cd47182
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Aug 20 20:16:39 2023 -0400
-
-    disable --ftemplate-depth hacks for Memory::OffsetOf() since not needed at this stage
-
 commit 4df022695ff296b592aa22945d1ab0912ef6eefd
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Sep 9 10:03:35 2023 -0400
@@ -362,151 +269,11 @@ Date:   Sun Sep 10 16:25:42 2023 -0400
 
     fixed RUN_PREFIX stuff to note have double $ in configure script/xml file, and fixed ApplyConfiguraiton to double dollar-signs so they are quoted in the makefile variable output
 
-commit 938d546e8c4491d62c762a897a833ef796e7e148
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 10 16:26:25 2023 -0400
-
-    tweak comment in makefile so easier to comment in for Windows worakroudn
-
-commit c2acfcc96b981ebeb50f7f1cd52e9de13c208a89
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 10 16:32:48 2023 -0400
-
-    configure: use -flto=auto to silence warning - https://stackoverflow.com/questions/72218980/gcc-v12-1-warning-about-serial-compilation
-
-commit 22daf364e46eae855ae8ae741f62f51da3a8d370
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Sep 10 16:40:17 2023 -0400
-
-    Minor cleanup of Character::Latin1 code
-
 commit 7d982ab7207dca98b20c0755ddc957f0c1baf6df
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Sep 11 09:48:12 2023 -0400
 
     for unubtu 20.04 - disable tsan and leak san since no longer working on that OS - in configure - if --only-if flag passed
-
-commit b5c78239f964646f2bfd4b7c118b88e1bd693d63
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 11 17:26:43 2023 -0400
-
-    speed tweak InlineBuffer/StackBuffer push_back span() overload and added push_back_coerced variant method
-
-commit 5383ddcc1695953db0032564f52301f692f96a89
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 11 19:44:06 2023 -0400
-
-    Revert "export CPPFLAGS too in building openssl"
-    
-    This reverts commit b521ee529daaf897d7d9d7a215c322cfb75f13d7.
-
-commit fed4aa19b0190058d1bcc9fe775b4c7ce3e46186
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 11 19:45:34 2023 -0400
-
-    fixed IPossibleCharacterRepresentation to include Character class; and added static overload of Character::IsASCII
-
-commit db6106c68c6b37a27618b122c05a49c9632d98ca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 11 20:22:21 2023 -0400
-
-    StackBuffer now reimplemented totally on top of InlineBuffer (only with different default sizes)
-
-commit 4d2efaafa97e091ec67688a3640b792c48b029fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 11 22:27:15 2023 -0400
-
-    cleanup a few github action display names
-
-commit 0e09b4787c12b3b60b7a3edb6cf4003ffabcb421
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 11 22:39:00 2023 -0400
-
-    fixed small regressions in span overload of InlineBuffer::push_back and related performance tweaks
-
-commit ee83440231bcc15658677e9dca45c3a47aab510c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 11 22:57:22 2023 -0400
-
-    fixed another InlineBuffer push_back typo
-
-commit 9cc836ec96a71f8d400efc7d71158b826bc00d9f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Sep 11 23:23:32 2023 -0400
-
-    qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy workaround
-
-commit 12f041c047f7a805e9d5e5038ca1125c3518e889
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Sep 11 23:36:15 2023 -0400
-
-    progress performance tweaking StringBuilder::Append()
-
-commit 40236e2fb16dc629b85259d0eb4e7e8f92c0406e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 10:18:02 2023 -0400
-
-    adjust kStackBuffer_TargetInlineByteBufferSize and comment for speed tweak
-
-commit bde6e6e5843936e086a03ebc8cce207c778222b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 10:18:52 2023 -0400
-
-    minor tweaks for windows to Xerces makefile
-
-commit bba808f33d0e72ed8af5b80a571b2ccbc9a45c23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 10:19:31 2023 -0400
-
-    minor tweak to tests makefile
-
-commit a5d49aaa9fc41684dc1fa608e4250e9946fd2bea
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 10:36:47 2023 -0400
-
-    fixed bugs with StringBuilder supportin char8_t BufferElementType and switched that to the default since it seems to perform better for (so far few) test cases
-
-commit 23e5ed1da7fb7286baea090232878b29bf0bb31c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 10:56:36 2023 -0400
-
-    Minor celanups to StringBuilder
-
-commit a02d5c18d014c76b6d5f4126aa3d9f1771e8fc16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 11:51:48 2023 -0400
-
-    StringBuilder tweaks - As() overloads etc
-
-commit 964818dbbaadc26cf5650031971a0965907f8464
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 12:34:24 2023 -0400
-
-    mostly StringBuilder comments, but one tweak to Append() method
-
-commit 858d9624f67188b8d47c17cdf58c38b5c863f8b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 13:47:11 2023 -0400
-
-    minor tweaks to BLOB code - using final in rep instances
-
-commit 7836dd7cdaf536f52005a6e5f0c8c0920fe8e49e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 13:47:38 2023 -0400
-
-    cleanups to Span INL code
-
-commit 8cb08c13e16e029397e1b1f2fc57a945c3dede77
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 13:48:23 2023 -0400
-
-    clenaup docs and minor tweaks to impl of InlineBuffer especailly reserve() code
-
-commit 377ee188605fb24214d87a630cc26fccbbade829
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Sep 12 13:55:37 2023 -0400
-
-    new BLOB regtest
 
 commit ce523cb0517db4f573b50dde6d0a9b666c4469d6
 Author: Lewis Pringle <lewis@sophists.com>
@@ -550,30 +317,6 @@ Date:   Tue Sep 12 21:21:02 2023 -0400
 
     qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy seems still broken with clang++-15  - but may need more workarounds
 
-commit 18bf9d95c03623e9a9c32343af1cd0aba8cd53cf
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Sep 12 22:35:57 2023 -0400
-
-    dont do fto=auto on clang++ - causes qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy : ARF error: invalid or unhandled FORM value: 0x23...
-
-commit 8d54e81438c0a793201222c771cf71f03bc439df
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Sep 12 22:40:08 2023 -0400
-
-    experiment turning qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy off
-
-commit bcddf1cbd951a1f87a5a23ff7e8be9ae9c8e629b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Sep 13 08:34:07 2023 -0400
-
-    turn qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy back on
-
-commit 01bf6f50d661a9cdbc6f5fa9fb3a94596aa73821
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Sep 13 10:58:07 2023 -0400
-
-    Allow VariantValue CTOR {ASCII}
-
 commit 4e382650f242b9e95fadf640492abaacf55eba41
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Sep 13 12:41:14 2023 -0400
@@ -591,23 +334,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Sep 14 09:05:51 2023 -0400
 
     cosmetic String use cleanups in regtest (lose unneeded L)
-
-commit 65ef7b3a695a07defdda2e91f9a12f0005f07d9d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 14 09:14:15 2023 -0400
-
-    lose __cpp_designated_initializers workarounds and make format-code
-
-commit c8bf58872a1403dcdfad36ec729666f6080fca2b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 14 09:17:42 2023 -0400
-
-    fixed typos in recent cleanups
-
-commit a0f8164ca4944945c52dd2abaf182ebd6eea3dbb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Sep 14 10:22:26 2023 -0400
-
 
 commit 33f8175a6fedb74b9113d4fb0b42e9825cbe7374
 Author: Lewis Pringle <lewis@sophists.com>
@@ -632,12 +358,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Sep 15 10:30:36 2023 -0400
 
     clenaup kPrintOutIfFailsToMeetPerformanceExpectations_ in preformance regtests stuff and switch to only warning on 64 bit not 32 bit, and re-tuned performance regtest WARNING values (didnt affect comparabiliyt of results - just when we warn) - for 32bits and current statsu quo
-
-commit 62b0b44fcb948fd9187a7564eb710d2c4e0e11c4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Sep 15 11:29:09 2023 -0400
-
-    String::SubString_ () optimizations - and updated performance tests expectation numbers
 
 commit 70f3f1241f750689ec24a4a88cb0b17a4736002a
 Author: Lewis Pringle <lewis@sophists.com>
