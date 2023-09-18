@@ -112,7 +112,9 @@ especially those they need to be aware of when upgrading.
       - StackBuffer
         - StackBuffer now reimplemented totally on top of InlineBuffer (only with different default sizes)
         - kStackBuffer_TargetInlineByteBufferSize tweaks
-      - Span support code cleanups
+      - Span
+        - Span support code cleanups
+        - fixed bug with Memory::Intersects(spans) - handling of overlapping and documented and added regtest
     - IO::Network
       - not totally backward compatible - change to IO::Network::UniformResourceIdentification Query etc - to use u8string instead of string for utf8 strings
     - Streams
@@ -154,6 +156,8 @@ especially those they need to be aware of when upgrading.
       - bubbled into many other componets, like had to fix 
       - ScriptsLib/Makefile-CMake-Common.mk for recent CPPFLAGS change
       - for unubtu 20.04 - disable tsan and leak san since no longer working on that OS - in configure - if --only-if flag passed
+    - default to -j8 instead of -j10 due to -flto=auto thing (may not help but test)
+    - fixed serveral scripts to not default branch to v2.1-Dev or v3-Dev, but $(git symbolic-ref --short HEAD)
   - Misc
     - -flto=auto fix?
       - set -flto=auto when using lto to silence compiler warnings on gcc, but CANNOT do likewise for clang - generates error (related to qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy)
