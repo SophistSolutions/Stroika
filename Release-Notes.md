@@ -10,223 +10,209 @@ especially those they need to be aware of when upgrading.
 
 
 
-### PREP FOR v3.0d2 release
+### PREP FOR v3.0d2 release (DRAFT)
 
+#### TLDR
+- More String cleanups
+  - SDKString now much cleaner/better documented, and more orthaganal, and uses span, and indirected to in other SDK routines, AllowMissingCharacterErrorsFlag
+  - performance
+  - more deprecations of older APIs, and cleanups to CodeCvt logic, and related TextReader/Writer/BOM code
+-  constexpr Memory::OffsetOf() - at a cost...
+- merged (in a sense) StackBuffer/InlineBuffer (at least impls), and tweaked InlineBuffer more
 
-- Library
-  - Miscelaneous
-    - various template cleanups to use perfect forwarding
-  - Foundation
-    - Traveral
-      - Iterable
-        - regtests to expose regression in Iterable<>::First, and a fix for it
-- regtest for issue with String{..AsNarrowSDKString()
-
-
--  **not backward comaptible** - several properties named starting with 'p' renamed to just lower case prefix name as new (already documented) convention; - no need for backward compat here cuz not widely used interfaces and PITA to be backward compat and pretty obvious how it fails/updates
+#### Change Details
 
 - Documentation
   - design overview docs tweaks
-
-- Cache
-  -     SynchronizedLRUCache call to base class needs () not {} to allow narrowing of args
-
-
-- Characters::Character
-  - Character::As<> constexpr
-  - fixed IPossibleCharacterRepresentation to include Character class; and added static overload of Character::IsASCII
-  -  new IUNICODECanUnambiguouslyConvertTo concept  (and used to cleanup UTFConvert logic slightly)
-
-- Characters::CodePage
-    changed CodePage declaration from int to uint32_t (closer to what windows does); and document a bit better; and start migrating CodePage support into CodeCvt so we can deprecate the CodePageConverter code
-    more CodePage module cleanups and deprecations of most of the remaining CodePage code
-
-    Characters::Private_::WindowsNative_::WindowsNative_; and CodePageNotSupportedException cleanups to CodePage and CodeCvt code
-    new CharacterEncodingException and used in a few places
-    qGenTableDumper_ for CodeCvt; fixed typo/regression, and cosmetic
-
-    lose/deprecate UTF-7 support
-    Deprecate kCodePage_HEBREW ETC names and replace with WellKnownCodePages::kHebrew etc
-    deprecated CodePageConverter; and renamed (through deprecation)  kCodePage_UTF8 (ETC) to WellKnownCodePages::kUTF8 (ETC)
-
-Characters::SDKChar/SDKString
-    fixed a few minor recent regressions edge conditions on ACP SDKString code, and better docs on said
-    concepts for CodeCvt<CHAR_T>::Bytes2String and CodeCvt<CHAR_T>::String2Bytes
-    cleanups to recent chagnes and deprecated ASCIIStringToWide and WideStringToASCII
-    - new optional AllowMissingCharacterErrorsFlag flags in new String APIs in Characters::SDKString
-    more SDKString cleanups - deprecating GetDefaultSDKCodePage; deprecating *into overloads of various string functions;
-    fix several of the recent regressions in SDKString code I've done - and started on celanup to fix rest
-    SDKString function/method cleanups
-    more progress celaning up SDKString conversion utilities
-    replace deprecated UTF8StringToWide use
-    - simpliified / refactored APIs into stuff like Wide2SDK SDK2Wide in SDKString module...
-
-
-  Characters::MISC
-    kMaxBOMSize TextConvert
-    CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom)
-    use more concepts cleanup CodeCvt<CHAR_T> (private)
-    start reactoring/reinterpreation of SDKString stuff - explicit Narrow2SDKString and SDKString2Narrow functions and use of them from String
-    fixed small regression in recent SDKString changes by introducing new AllowMissingCharacterErrorsFlag and a few overloads using it
-    fixed string String::AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag) handling of bad characters
-    Characters/CString/Utilities support for char8_t and u8string; Characters::AsASCII support for u8string; and String::AsASCII and AsASCIIQuietly support for u8string
-
-  Characters::CodeCvt:
-    new CodeCvt methods Bytes2String and String2Bytes (DRAFT) - but used in a few places to silcence deprecation warnigns - test
-    More CodeCvt / CodePageConverter cleanups/conversions
-    more cleanups of CodePageConverter usawge - using CodeCvt directly
-    Added CodeCvt::GetOptions() function
-    More invalid character support for CodeCvt - esp BuiltinSingleByteTableCodePageRep_, and related cleanups
-     support for Options::fInvalidCharacterReplacement
-    note https://stroika.atlassian.net/browse/STK-983 and CodeCvt cleanups (obsoelte WindStringToNarrow)
-
-
-- Characters::String
-  -  new function String::NoramlizeTextToNL ()
-    String AsASCII and AsASCIIQuietly /1 overloads deprecated
-    String::SubString_ () optimizations - and updated performance tests expectation numbers
-    String ASCII constant cleanups
-    New overload of Character::As - allowing producing more UTF char codes (utf_16 array or utf8 array)
-    - Minor performance tweaks to String code - EqualsComparer::Cmp_Generic_ and ThreeWayComparer::Cmp_Generic_ use smaller StackBuffer (only important on windoz) cuz of chkstk optimization
-    - optimize operator+ and String::Concatenate for String (for benchmark simple ascii - almost twice as fast)
-    - adjust template overload for String class so GetData can be called with different stackbuffer builtin sizes
-    - added regtest for converting ISOLATIN1 characters to UTF-8
-
-  - Characters::StringBuilder
-    fixed bugs with StringBuilder supportin char8_t BufferElementType and switched that to the default since it seems to perform better for (so far few) test cases
-    Minor celanups to StringBuilder
-    StringBuilder tweaks - As() overloads etc
-    mostly StringBuilder comments, but one tweak to Append() method
-    progress performance tweaking StringBuilder::Append()
-
-
-
-  Characters::UTFConvert
-    -     renamed UTFConverter to (better name) UTFConvert cuz I found a way to merge old UTFConver namespae code into this class (deprecated stuff)
-    begingings of support for fInvalidCharacterReplacement on CodeCvt and UTFConverter
-    Moved UnicodeExternalEncodings to UTFConvert.h; and changed option in UTFConvert fStrictMode to fInvalidCharacterReplacement, and started adding same to CodeCvt (incomplete)
-     support for Options::fInvalidCharacterReplacement
-   -  fixed bug with ComputeCharacterLength for zero length span
-    various fixes to UTFConverter code - MOSTLY - fixing the conversion from Latin1 to char8_t - that was fairly broken  (and now at least minimally working)
-
-Configuraiton:
-    Attempt workaround for qCompilerAndStdLib_template_second_concept_Buggy
-    fixes to Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS and Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED for VS
-
-- DataExchange
-  - VariantValue
-    -     Allow VariantValue CTOR {ASCII}
-
-- IO::Network
-  -     not totally backward compatible - change to IO::Network::UniformResourceIdentification Query etc - to use u8string instead of string for utf8 strings
-
-
-Streams
--     deprecate code in Streams/iostream/Utilities - use Stroika streams from now on, and use adapter from iostream to Stroika streams if you want utilities to access CodeCvt logic
-    convert use of deprecated iostream::ReadTextStream to TextReader::New (Streams::iostream::InputStreamFromStdIStream<std::byte>::New (in)).ReadAll ().As<wstring> ()
-- Streams::TextReader
-  -     new overloads of TextReader::New (AutomaticCodeCvtFlags); and use a bit in replacing obsolete use of CodePageGuesser and CodePageConverter with TextReader
-  - new explicit overload of TextReader::New for only input stream and no specified seekability (copy from in stream by default)
-- InputStream
-  -  improved docs on InputStream ReadLine and rewrote ReadLines() so works if seekable or not
-
-
-- Foundation::Memory
-  - BLOB
-    -     new BLOB regtest
-    - minor tweaks to BLOB code - using final in rep instances
-
-  - OffsetOf
-    - use  https://gist.github.com/graphitemaster/494f21190bb2c63c5516 to maybe makeConvertPointerToDataMemberToOffset work properly iwth non standard layout objects, and constexpr
-    renamed  ConvertPointerToDataMemberToOffset -> OffsetOf (deprecated ConvertPointerToDataMemberToOffset name)
-    refactored OffsetOf to be constexpr, but needed todo workarounds for various compilers like:
-      - -ftemplate-depth=5000 for g++ and similar for clang
-
-  - minor fix to Memory::MemoryAllocator
-  - InlineBuffer
-    -     speed tweak InlineBuffer push_back span() overload and added push_back_coerced variant methods
-    - clenaup docs and minor tweaks to impl of InlineBuffer especailly reserve() code
-
-  - StackBuffer
-    - StackBuffer now reimplemented totally on top of InlineBuffer (only with different default sizes)
-    - kStackBuffer_TargetInlineByteBufferSize tweaks
-  - Span support code cleanups
-
-
-- Foundation::Streams
-  -     reorder seekable/not seekable so GetSeekable() type punning works more intuitively
-
-
-- Frameworks::Led
-  -     **not backward compatible** change to some Led frameworks APIs - that used CodePage* - use optional<CodePage> instead; especailly unsafe cuz one place *codePage=x - and unsure if anyting counted on that but I dont think so
-
-- MISC
-  -     tweaked clang-format configuraiton settings; and new  clang-format (version 16.0.5)
-
+- Library
+  - Foundation
+    - Cache
+      - SynchronizedLRUCache call to base class needs () not {} to allow narrowing of args
+    - Characters
+      - Characters::Character
+        - Character::As<> constexpr
+        - fixed IPossibleCharacterRepresentation to include Character class; and added static overload of Character::IsASCII
+        - new IUNICODECanUnambiguouslyConvertTo concept  (and used to cleanup UTFConvert logic slightly)
+      - Characters::CodeCvt:
+        - CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom)
+        - use more concepts cleanup CodeCvt<CHAR_T> (private)
+        - new CodeCvt methods Bytes2String and String2Bytes (DRAFT) - but used in a few places to silcence deprecation warnigns - test
+        - More CodeCvt / CodePageConverter cleanups/conversions
+        - more cleanups of CodePageConverter usawge - using CodeCvt directly
+        - Added CodeCvt::GetOptions() function
+        - More invalid character support for CodeCvt - esp BuiltinSingleByteTableCodePageRep_, and related cleanups
+        - support for Options::fInvalidCharacterReplacement
+        - note https://stroika.atlassian.net/browse/STK-983 and CodeCvt cleanups (obsoelte WindStringToNarrow)
+      - Characters::CodePage
+        - changed CodePage declaration from int to uint32_t (closer to what windows does); and document a bit better; and start migrating CodePage support into CodeCvt so we can deprecate the CodePageConverter code
+        - more CodePage module cleanups and deprecations of most of the remaining CodePage code
+        - Characters::Private_::WindowsNative_::WindowsNative_; and CodePageNotSupportedException cleanups to CodePage and CodeCvt code
+        - new CharacterEncodingException and used in a few places
+        - qGenTableDumper_ for CodeCvt; fixed typo/regression, and cosmetic
+        - lose/deprecate UTF-7 support
+        - Deprecate kCodePage_HEBREW ETC names and replace with WellKnownCodePages::kHebrew etc
+        - deprecated CodePageConverter; and renamed (through deprecation)  kCodePage_UTF8 (ETC) to WellKnownCodePages::kUTF8 (ETC)
+      - Characters MISC
+        - kMaxBOMSize TextConvert
+        - start reactoring/reinterpreation of SDKString stuff - explicit Narrow2SDKString and SDKString2Narrow functions and use of them from String
+        - Characters/CString/Utilities support for char8_t and u8string; Characters::AsASCII support for u8string; and String::AsASCII and AsASCIIQuietly support for u8string
+      - Characters::SDKChar/SDKString
+        - fixed a few minor recent regressions edge conditions on ACP SDKString code, and better docs on said
+        - concepts for CodeCvt<CHAR_T>::Bytes2String and CodeCvt<CHAR_T>::String2Bytes
+        - cleanups to recent chagnes and deprecated ASCIIStringToWide and WideStringToASCII
+        - new optional AllowMissingCharacterErrorsFlag flags in new String APIs in Characters::SDKString
+        - more SDKString cleanups - deprecating GetDefaultSDKCodePage; deprecating *into overloads of various string functions;
+        - fix several of the recent regressions in SDKString code I've done - and started on celanup to fix rest
+        - SDKString function/method cleanups
+        - more progress celaning up SDKString conversion utilities
+        - replace deprecated UTF8StringToWide use
+        - simpliified / refactored APIs into stuff like Wide2SDK SDK2Wide in SDKString module...
+      - Characters::String
+        - new function String::NoramlizeTextToNL ()
+        - String AsASCII and AsASCIIQuietly /1 overloads deprecated
+        - String::SubString_ () optimizations - and updated performance tests expectation numbers
+        - String ASCII constant cleanups
+        - New overload of Character::As - allowing producing more UTF char codes (utf_16 array or utf8 array)
+        - Minor performance tweaks to String code - EqualsComparer::Cmp_Generic_ and ThreeWayComparer::Cmp_Generic_ use smaller StackBuffer (only important on windoz) cuz of chkstk optimization
+        - optimize operator+ and String::Concatenate for String (for benchmark simple ascii - almost twice as fast)
+        - adjust template overload for String class so GetData can be called with different stackbuffer builtin sizes
+        - added regtest for converting ISOLATIN1 characters to UTF-8
+        - regtest for issue with String{..AsNarrowSDKString()
+      - Characters::StringBuilder
+        - fixed bugs with StringBuilder supportin char8_t BufferElementType and switched that to the default since it seems to perform better for (so far few) test cases
+        - Minor celanups to StringBuilder
+        - StringBuilder tweaks - As() overloads etc
+        - mostly StringBuilder comments, but one tweak to Append() method
+        - progress performance tweaking StringBuilder::Append()
+      - Characters::UTFConvert
+        - renamed UTFConverter to (better name) UTFConvert cuz I found a way to merge old UTFConver namespae code into this class (deprecated stuff)
+        - begingings of support for fInvalidCharacterReplacement on CodeCvt and UTFConverter
+        - Moved UnicodeExternalEncodings to UTFConvert.h; and changed option in UTFConvert fStrictMode to fInvalidCharacterReplacement, and started adding same to CodeCvt (incomplete)
+        - support for Options::fInvalidCharacterReplacement
+        - fixed bug with ComputeCharacterLength for zero length span
+        - various fixes to UTFConverter code - MOSTLY - fixing the conversion from Latin1 to char8_t - that was fairly broken  (and now at least minimally working)
+    - Common
+      - Properties
+        - **not backward comaptible** - several properties named starting with 'p' renamed to just lower case prefix name as new (already documented) convention; - no need for backward compat here cuz not widely used interfaces and PITA to be backward compat and pretty obvious how it fails/updates
+    - Configuraiton:
+      - Attempt workaround for qCompilerAndStdLib_template_second_concept_Buggy
+      - fixes to Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS and Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED for VS
+    - DataExchange
+      - VariantValue
+      - Allow VariantValue CTOR {ASCII}
+    - Memory
+      - BLOB
+        - new BLOB regtest
+        - minor tweaks to BLOB code - using final in rep instances
+      - OffsetOf
+        - use https://gist.github.com/graphitemaster/494f21190bb2c63c5516 to maybe makeConvertPointerToDataMemberToOffset work properly iwth non standard layout objects, and constexpr
+        - renamed  ConvertPointerToDataMemberToOffset -> OffsetOf (deprecated ConvertPointerToDataMemberToOffset name)
+        - refactored OffsetOf to be constexpr, but needed todo workarounds for various compilers like:
+        - -ftemplate-depth=5000 for g++ and similar for clang
+      - minor fix to Memory::MemoryAllocator
+      - InlineBuffer
+        - speed tweak InlineBuffer push_back span() overload and added push_back_coerced variant methods
+        - clenaup docs and minor tweaks to impl of InlineBuffer especailly reserve() code
+      - StackBuffer
+        - StackBuffer now reimplemented totally on top of InlineBuffer (only with different default sizes)
+        - kStackBuffer_TargetInlineByteBufferSize tweaks
+      - Span support code cleanups
+    - IO::Network
+      - not totally backward compatible - change to IO::Network::UniformResourceIdentification Query etc - to use u8string instead of string for utf8 strings
+    - Streams
+      - reorder seekable/not seekable so GetSeekable() type punning works more intuitively
+      - iostreams
+        - deprecate code in Streams/iostream/Utilities - use Stroika streams from now on, and use adapter from iostream to Stroika streams if you want utilities to access CodeCvt logic
+        - convert use of deprecated iostream::ReadTextStream to TextReader::New (Streams::iostream::InputStreamFromStdIStream<std::byte>::New (in)).ReadAll ().As<wstring> ()
+      - TextReader
+        - new overloads of TextReader::New (AutomaticCodeCvtFlags); and use a bit in replacing obsolete use of CodePageGuesser and CodePageConverter with TextReader
+        - new explicit overload of TextReader::New for only input stream and no specified seekability (copy from in stream by default)
+      - InputStream
+        -  improved docs on InputStream ReadLine and rewrote ReadLines() so works if seekable or not
+    - Traveral
+      - Iterable
+        - regtests to expose regression in Iterable<>::First, and a fix for it
+  - Frameworks
+    - Led
+      - **not backward compatible** change to some Led frameworks APIs - that used CodePage* - use optional<CodePage> instead; especailly unsafe cuz one place *codePage=x - and unsure if anyting counted on that but I dont think so
+- Miscelaneous Coding
+  - various template cleanups to use perfect forwarding
+  - lose qCompilerAndStdLib_spanOfContainer_Buggy and all the bug workarounds - really still there - but only affects LIBC++ 14, and not macos version, and I have no more test cases where I can reproduce that (could if I worked at it but little point); could get the workaroudn back, but since unless/until I have a need/sitaution to test, no point
+  - tweaked clang-format configuraiton settings; and new  clang-format (version 16.0.5)
+  - lose __cpp_designated_initializers workarounds and make format-code
 - ThirdPartyComponents
   - boost
-    -     boost 1.83.0
+    - 1.83.0
   - curl
-    -     curl 8.2.1
+    - 8.2.1
   - openssl
-    -     openssl 3.1.2
-
+    - 3.1.2
   - sqlite
-    -     VERSION=3430000 sqlite
+    - 3430000
   - Xerces
     - minor makefile simplifcations/cleanups
-
-
-
-  - BuildScripts
-    - configure
-
-      -     because of warnings from configure in libcurl, I moved the -D compile flags to CPPFLAGS (from CFLAGS/CXXFLAGS) and same with -I flags - testing
+  - Build System and Testing
+    - Scripts
+      - configure
+        - because of warnings from configure in libcurl, I moved the -D compile flags to CPPFLAGS (from CFLAGS/CXXFLAGS) and same with -I flags - testing
         - bubbled into many other componets, like had to fix 
-          - ScriptsLib/Makefile-CMake-Common.mk for recent CPPFLAGS change
-
-
-    docker container VS_17_7_4
-
-- Github Actions
-  -     cleanup a few github action display names
-
-- Misc Code Cleanups
-  -     lose __cpp_designated_initializers workarounds and make format-code
-
+        - ScriptsLib/Makefile-CMake-Common.mk for recent CPPFLAGS change
+        - for unubtu 20.04 - disable tsan and leak san since no longer working on that OS - in configure - if --only-if flag passed
+    - VS2k2023 ASAN issue
+      - workaround https://stroika.atlassian.net/browse/STK-984 ASAN issue with 17.7.0 release of vis studio
+      - fix configure patch for working around ASAN MSVC bug - assume broken for any version past 193732822 til I see its fixed
+      - ScriptsLib/Vs2kASANBugWorkaround as tmphack workaroudn for vs2k22 asan bug
+  - Misc
+    - -flto=auto fix?
+      - set -flto=auto when using lto to silence compiler warnings on gcc, but CANNOT do likewise for clang - generates error (related to qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy)
+        configure: use -flto=auto to silence warning - https://stackoverflow.com/questions/72218980/gcc-v12-1-warning-about-serial-compilation
+  - Docker
+    - Windows
+      - docker container VS_17_7_4
+      - better docs/commetns on https://stroika.atlassian.net/browse/STK-742 and hints on workarounds
+  - Github Actions
+    - cleanup a few github action display names
+  - Regression Tests
+    - Performance
+      - tweaked limits on expected regtests results for recent string optimizations
+      - changed default for release performance builds to 2.5 instead of 5x for performance regtest
+    - fixed RUN_PREFIX stuff to note have double $ in configure script/xml file, and fixed ApplyConfiguraiton to double dollar-signs so they are quoted in the makefile variable output
+      clenaup kPrintOutIfFailsToMeetPerformanceExpectations_ in preformance regtests stuff and switch to only warning on 64 bit not 32 bit, and re-tuned performance regtest WARNING values (didnt affect comparabiliyt of results - just when we warn) - for 32bits and current statsu quo
+- Samples
+- Tests
 - Compiler support
-  -     fixed compiler bug defines for gcc 12.3
+  - fixed compiler bug defines for gcc 12.3
   - Vs2k2023 compiler support
-     -     silence a few warnings, lose errc::stream_timeout support cuz deprecated in C++23
-
+    - silence a few warnings, lose errc::stream_timeout support cuz deprecated in C++23
   - Compiler Bug Defines
-    -     qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy seems still broken with clang++-14/15  - but may need more workarounds
+    - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy seems still broken with clang++-14/15  - but may need more workarounds
     - Avoid no-return-local-addr warning on ubuntu 20.02 in configure script (LTO issue)
-    - lose qCompilerAndStdLib_spanOfContainer_Buggy and all the bug workarounds - really still there - but only affects LIBC++ 14, and not macos version, and I have no more test cases where I can reproduce that (could if I worked at it but little point); could get the workaroudn back, but since unless/until I have a need/sitaution to test, no point
 
-
-- -flto=auto fix?
-  - set -flto=auto when using lto to silence compiler warnings on gcc, but CANNOT do likewise for clang - generates error (related to qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy)
-    configure: use -flto=auto to silence warning - https://stackoverflow.com/questions/72218980/gcc-v12-1-warning-about-serial-compilation
-
-- Docker
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 11, 12 }
+  - Clang++ { unix: 13, 14, 15; XCode: 14.3 }
+  - MSVC: { 17.7.4 }
+- OS/Platforms Tested/Supported
   - Windows
-    -     better docs/commetns on https://stroika.atlassian.net/browse/STK-742 and hints on workarounds
-
-- Regression Tests
-  - Performance
-    - tweaked limits on expected regtests results for recent string optimizations
-    - changed default for release performance builds to 2.5 instead of 5x for performance regtest
-  - fixed RUN_PREFIX stuff to note have double $ in configure script/xml file, and fixed ApplyConfiguraiton to double dollar-signs so they are quoted in the makefile variable output
-    clenaup kPrintOutIfFailsToMeetPerformanceExpectations_ in preformance regtests stuff and switch to only warning on 64 bit not 32 bit, and re-tuned performance regtest WARNING values (didnt affect comparabiliyt of results - just when we warn) - for 32bits and current statsu quo
-
-
-- VS2k2023 ASAN issue
-  -     workaround https://stroika.atlassian.net/browse/STK-984 ASAN issue with 17.7.0 release of vis studio
-    fix configure patch for working around ASAN MSVC bug - assume broken for any version past 193732822 til I see its fixed
-    ScriptsLib/Vs2kASANBugWorkaround as tmphack workaroudn for vs2k22 asan bug
-
--     for unubtu 20.04 - disable tsan and leak san since no longer working on that OS - in configure - if --only-if flag passed
+    - Windows 11 version 22H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 13.0 (Ventura) - arm64/m1 chip
+  - Linux: { Ubuntu: [20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
 
 
 
