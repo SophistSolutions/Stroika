@@ -47,10 +47,10 @@ namespace Stroika::Foundation::Memory {
             return false;
         }
         if (rhsEnd == lhsStart) {
-            return true;
+            return false;
         }
         if (rhsStart == lhsEnd) {
-            return true;
+            return false;
         }
         return true;
     }

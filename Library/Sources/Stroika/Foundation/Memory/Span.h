@@ -72,7 +72,9 @@ namespace Stroika::Foundation::Memory {
     static_assert (not ISpanT<std::string>); // we don't include <string> in this module, but sometimes helpful to test/debug/document
 
     /**
-     * \brief return true iff intersection of the two spans is non-empty
+     * \brief return true iff intersection of the two spans is non-empty (contains any bytes)
+     * 
+     *  Note this is similar to Range::Intersects, except for the buiness about openness/closedness and details at the edge conditions
      * 
      *  The only known use for this is assertions in CopySpanData that the spans don't overlap (memcpy vs memmove)
      */

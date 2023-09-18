@@ -552,6 +552,21 @@ namespace {
 }
 
 namespace {
+    namespace Test15_Span_ {
+        void DoTest ()
+        {
+            {
+                char buf1[1024];
+                char buf2[1024];
+                VerifyTestResult (not Intersects (span{buf1}, span{buf2}));
+                VerifyTestResult (Intersects (span{buf1}, span{buf1}));
+                VerifyTestResult (Intersects (span{buf1}.subspan (3, 10), span{buf1}.subspan (4, 10)));
+            }
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -567,6 +582,7 @@ namespace {
         Test12_OffsetOf_::DoTest ();
         Test13_Resize_::DoTest ();
         Test14_OffsetOf_::DoTest ();
+        Test15_Span_::DoTest ();
     }
 }
 
