@@ -185,9 +185,11 @@ especially those they need to be aware of when upgrading.
   - Windows
     - Windows 11 version 22H2
     - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
     - WSL v2
   - MacOS
-    - 13.0 (Ventura) - arm64/m1 chip
+    - 13.0.1 - arm64/m1 chip
   - Linux: { Ubuntu: [20.04, 22.04], Raspbian(cross-compiled) }
 - Hardware Tested/Supported
   - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
