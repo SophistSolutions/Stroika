@@ -14,10 +14,10 @@ especially those they need to be aware of when upgrading.
 
 #### TLDR
 - More String cleanups
-  - SDKString now much cleaner/better documented, and more orthaganal, and uses span, and indirected to in other SDK routines, AllowMissingCharacterErrorsFlag
+  - SDKString now much cleaner/better documented, and more orthaganal, and uses span, and String SDKString related routines now indirected to, AllowMissingCharacterErrorsFlag support
   - performance
   - more deprecations of older APIs, and cleanups to CodeCvt logic, and related TextReader/Writer/BOM code
--  constexpr Memory::OffsetOf() - at a cost...
+- constexpr Memory::OffsetOf() - at a cost...
 - merged (in a sense) StackBuffer/InlineBuffer (at least impls), and tweaked InlineBuffer more
 
 #### Change Details
@@ -36,9 +36,8 @@ especially those they need to be aware of when upgrading.
       - Characters::CodeCvt:
         - CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom)
         - use more concepts cleanup CodeCvt<CHAR_T> (private)
-        - new CodeCvt methods Bytes2String and String2Bytes (DRAFT) - but used in a few places to silcence deprecation warnigns - test
-        - More CodeCvt / CodePageConverter cleanups/conversions
-        - more cleanups of CodePageConverter usawge - using CodeCvt directly
+        - new CodeCvt methods Bytes2String and String2Bytes
+        - Various cleanups
         - Added CodeCvt::GetOptions() function
         - More invalid character support for CodeCvt - esp BuiltinSingleByteTableCodePageRep_, and related cleanups
         - support for Options::fInvalidCharacterReplacement
@@ -51,22 +50,15 @@ especially those they need to be aware of when upgrading.
         - qGenTableDumper_ for CodeCvt; fixed typo/regression, and cosmetic
         - lose/deprecate UTF-7 support
         - Deprecate kCodePage_HEBREW ETC names and replace with WellKnownCodePages::kHebrew etc
-        - deprecated CodePageConverter; and renamed (through deprecation)  kCodePage_UTF8 (ETC) to WellKnownCodePages::kUTF8 (ETC)
+        - deprecated CodePageConverter (and use CodeCvt instead); and renamed (through deprecation)  kCodePage_UTF8 (ETC) to WellKnownCodePages::kUTF8 (ETC)
       - Characters MISC
         - kMaxBOMSize TextConvert
-        - start reactoring/reinterpreation of SDKString stuff - explicit Narrow2SDKString and SDKString2Narrow functions and use of them from String
         - Characters/CString/Utilities support for char8_t and u8string; Characters::AsASCII support for u8string; and String::AsASCII and AsASCIIQuietly support for u8string
       - Characters::SDKChar/SDKString
-        - fixed a few minor recent regressions edge conditions on ACP SDKString code, and better docs on said
-        - concepts for CodeCvt<CHAR_T>::Bytes2String and CodeCvt<CHAR_T>::String2Bytes
-        - cleanups to recent chagnes and deprecated ASCIIStringToWide and WideStringToASCII
+        - simpliified / refactored APIs into stuff like Wide2SDK SDK2Wide in SDKString module... major cleanup
+        - cleanups to recent chagnes and deprecated ASCIIStringToWide and WideStringToASCII and UTF8StringToWide use etc
         - new optional AllowMissingCharacterErrorsFlag flags in new String APIs in Characters::SDKString
         - more SDKString cleanups - deprecating GetDefaultSDKCodePage; deprecating *into overloads of various string functions;
-        - fix several of the recent regressions in SDKString code I've done - and started on celanup to fix rest
-        - SDKString function/method cleanups
-        - more progress celaning up SDKString conversion utilities
-        - replace deprecated UTF8StringToWide use
-        - simpliified / refactored APIs into stuff like Wide2SDK SDK2Wide in SDKString module...
       - Characters::String
         - new function String::NoramlizeTextToNL ()
         - String AsASCII and AsASCIIQuietly /1 overloads deprecated
@@ -80,22 +72,26 @@ especially those they need to be aware of when upgrading.
         - regtest for issue with String{..AsNarrowSDKString()
       - Characters::StringBuilder
         - fixed bugs with StringBuilder supportin char8_t BufferElementType and switched that to the default since it seems to perform better for (so far few) test cases
-        - Minor celanups to StringBuilder
         - StringBuilder tweaks - As() overloads etc
-        - mostly StringBuilder comments, but one tweak to Append() method
-        - progress performance tweaking StringBuilder::Append()
+        - performance tweaking Append()
       - Characters::UTFConvert
         - renamed UTFConverter to (better name) UTFConvert cuz I found a way to merge old UTFConver namespae code into this class (deprecated stuff)
-        - begingings of support for fInvalidCharacterReplacement on CodeCvt and UTFConverter
         - Moved UnicodeExternalEncodings to UTFConvert.h; and changed option in UTFConvert fStrictMode to fInvalidCharacterReplacement, and started adding same to CodeCvt (incomplete)
         - support for Options::fInvalidCharacterReplacement
         - fixed bug with ComputeCharacterLength for zero length span
-        - various fixes to UTFConverter code - MOSTLY - fixing the conversion from Latin1 to char8_t - that was fairly broken  (and now at least minimally working)
+        - various fixes to UTFConverter code - MOSTLY - fixing the conversion from Latin1 to char8_t - that was fairly broken
     - Common
       - Properties
         - **not backward comaptible** - several properties named starting with 'p' renamed to just lower case prefix name as new (already documented) convention; - no need for backward compat here cuz not widely used interfaces and PITA to be backward compat and pretty obvious how it fails/updates
     - Configuraiton:
-      - Attempt workaround for qCompilerAndStdLib_template_second_concept_Buggy
+      - Compiler support
+        - Attempt workaround for qCompilerAndStdLib_template_second_concept_Buggy
+        - fixed compiler bug defines for gcc 12.3
+        - Vs2k2023 compiler support
+          - silence a few warnings, lose errc::stream_timeout support cuz deprecated in C++23
+        - Compiler Bug Defines
+          - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy seems still broken with clang++-14/15  - but may need more workarounds
+          - Avoid no-return-local-addr warning on ubuntu 20.02 in configure script (LTO issue)
       - fixes to Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS and Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED for VS
     - DataExchange
       - VariantValue
@@ -151,42 +147,34 @@ especially those they need to be aware of when upgrading.
     - 3430000
   - Xerces
     - minor makefile simplifcations/cleanups
-  - Build System and Testing
-    - Scripts
-      - configure
-        - because of warnings from configure in libcurl, I moved the -D compile flags to CPPFLAGS (from CFLAGS/CXXFLAGS) and same with -I flags - testing
-        - bubbled into many other componets, like had to fix 
-        - ScriptsLib/Makefile-CMake-Common.mk for recent CPPFLAGS change
-        - for unubtu 20.04 - disable tsan and leak san since no longer working on that OS - in configure - if --only-if flag passed
-    - VS2k2023 ASAN issue
-      - workaround https://stroika.atlassian.net/browse/STK-984 ASAN issue with 17.7.0 release of vis studio
-      - fix configure patch for working around ASAN MSVC bug - assume broken for any version past 193732822 til I see its fixed
-      - ScriptsLib/Vs2kASANBugWorkaround as tmphack workaroudn for vs2k22 asan bug
+- Build System and Testing
+  - Scripts
+    - configure
+      - because of warnings from configure in libcurl, I moved the -D compile flags to CPPFLAGS (from CFLAGS/CXXFLAGS) and same with -I flags - testing
+      - bubbled into many other componets, like had to fix 
+      - ScriptsLib/Makefile-CMake-Common.mk for recent CPPFLAGS change
+      - for unubtu 20.04 - disable tsan and leak san since no longer working on that OS - in configure - if --only-if flag passed
   - Misc
     - -flto=auto fix?
       - set -flto=auto when using lto to silence compiler warnings on gcc, but CANNOT do likewise for clang - generates error (related to qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy)
         configure: use -flto=auto to silence warning - https://stackoverflow.com/questions/72218980/gcc-v12-1-warning-about-serial-compilation
+    - VS2k2023 ASAN issue
+      - workaround https://stroika.atlassian.net/browse/STK-984 ASAN issue with 17.7.0 release of vis studio
+      - fix configure patch for working around ASAN MSVC bug - assume broken for any version past 193732822 til I see its fixed
+      - ScriptsLib/Vs2kASANBugWorkaround as tmphack workaroudn for vs2k22 asan bug
   - Docker
     - Windows
       - docker container VS_17_7_4
       - better docs/commetns on https://stroika.atlassian.net/browse/STK-742 and hints on workarounds
   - Github Actions
     - cleanup a few github action display names
-  - Regression Tests
-    - Performance
-      - tweaked limits on expected regtests results for recent string optimizations
-      - changed default for release performance builds to 2.5 instead of 5x for performance regtest
-    - fixed RUN_PREFIX stuff to note have double $ in configure script/xml file, and fixed ApplyConfiguraiton to double dollar-signs so they are quoted in the makefile variable output
-      clenaup kPrintOutIfFailsToMeetPerformanceExpectations_ in preformance regtests stuff and switch to only warning on 64 bit not 32 bit, and re-tuned performance regtest WARNING values (didnt affect comparabiliyt of results - just when we warn) - for 32bits and current statsu quo
-- Samples
-- Tests
-- Compiler support
-  - fixed compiler bug defines for gcc 12.3
-  - Vs2k2023 compiler support
-    - silence a few warnings, lose errc::stream_timeout support cuz deprecated in C++23
-  - Compiler Bug Defines
-    - qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy seems still broken with clang++-14/15  - but may need more workarounds
-    - Avoid no-return-local-addr warning on ubuntu 20.02 in configure script (LTO issue)
+  - Tests
+    - Regression Tests
+      - Performance
+        - tweaked limits on expected regtests results for recent string optimizations
+        - changed default for release performance builds to 2.5 instead of 5x for performance regtest
+      - fixed RUN_PREFIX stuff to note have double $ in configure script/xml file, and fixed ApplyConfiguraiton to double dollar-signs so they are quoted in the makefile variable output
+        clenaup kPrintOutIfFailsToMeetPerformanceExpectations_ in preformance regtests stuff and switch to only warning on 64 bit not 32 bit, and re-tuned performance regtest WARNING values (didnt affect comparabiliyt of results - just when we warn) - for 32bits and current statsu quo
 
 #### Release-Validation
 - Compilers Tested/Supported
