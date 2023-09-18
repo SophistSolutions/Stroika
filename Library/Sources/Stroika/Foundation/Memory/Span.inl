@@ -32,24 +32,18 @@ namespace Stroika::Foundation::Memory {
     template <typename T1, typename T2, size_t E1, size_t E2>
     constexpr bool Intersects (std::span<T1, E1> lhs, std::span<T2, E2> rhs)
     {
-        // See Range<T, TRAITS>::Intersects for explanation - avoid direct call here to avoid include file refrence
+        // See Range<T, TRAITS>::Intersects for explanation - avoid direct call here to avoid include file reference
         auto lhsStart = as_bytes (lhs).data ();
         auto rhsStart = as_bytes (rhs).data ();
         auto lhsEnd   = lhsStart + lhs.size_bytes ();
         auto rhsEnd   = rhsStart + rhs.size_bytes ();
-        if (rhsEnd < lhsStart) {
+        if (rhsEnd <= lhsStart) {
             return false;
         }
-        if (rhsStart > lhsEnd) {
+        if (rhsStart >= lhsEnd) {
             return false;
         }
         if (lhs.empty () or rhs.empty ()) {
-            return false;
-        }
-        if (rhsEnd == lhsStart) {
-            return false;
-        }
-        if (rhsStart == lhsEnd) {
             return false;
         }
         return true;
