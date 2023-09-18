@@ -1,7 +1,9 @@
 #!/bin/bash
 
 export USE_TEST_BASENAME="${USE_TEST_BASENAME:-WSL_Ubuntu_Simple}"
-BRANCH="${BRANCH:-v2.1-Dev}"
+if [ "$BRANCH" == "" ] ; then
+    BRANCH=$(git symbolic-ref --short HEAD)
+fi
 VERSION=`./ScriptsLib/ExtractVersionInformation STROIKA_VERSION FullVersionString`
 
 echo "Clearing and checking out $BRANCH"

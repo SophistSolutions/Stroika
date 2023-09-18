@@ -7,11 +7,13 @@
 : ${RUN_IN_DOCKER:=0}
 : ${SSH_TARGET:=$LOGIN@$MACHINE}
 : ${BUILD_DIR:=Sandbox/Stroika-Build-Dir-$USE_TEST_BASENAME}
-: ${BRANCH:=v3-Dev}
+if [ "$BRANCH" == "" ] ; then
+    BRANCH=$(git symbolic-ref --short HEAD)
+fi
 : ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=default-configurations}
 : ${PRIVATE_COMPILER_BUILDS_DIR:-/private-compiler-builds}
 : ${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests}
-: ${PARALELLMAKEFLAG:=-j10}
+: ${PARALELLMAKEFLAG:=-j8}
 : ${RASPBERRYPI_REMOTE_MACHINE:=raspberrypi.local}
 
 if [ "$USE_TEST_BASENAME" == "" ] ; then 
