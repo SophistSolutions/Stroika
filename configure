@@ -139,9 +139,10 @@ my $WinFlag_DebugProgramDatabase = false;	# ignored except for visual studio (ma
 ### @todo finish review of what warnings we still want - disable a few more... --LGP 2019-08-29
 ### FOR COMMON ONES - SEE IF THEY SHOULD REALLY BE GCC SPECIFIC
 my $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ = '-Wall ';
-$DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ . '-Wno-switch ';			# This warning needed because of pattern with eEnd being injected into enums but not looked for in switch
+$DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ . '-Wno-switch ';				# This warning needed because of pattern with eEnd being injected into enums but not looked for in switch
 $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ . '-Wno-sign-compare ';		# someday tackle this, but I'm not sure its helpful
-$DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-function ';	# we have many of these - review if makes sense warning?
+$DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-function ';		# we have many of these - review if makes sense warning?
+$DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_ . '-Wno-psabi ';				# never want to see "note: parameter passing for argument" cuz we statically link
 
 my $DEFAULT_CXXWARNING_FLAGS_GCC		= $DEFAULT_CXXWARNING_FLAGS_SAFE_COMMON_;
 
