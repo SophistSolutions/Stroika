@@ -74,7 +74,7 @@ checkin from one spot.
   ```bash
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2204-Cross-Compile2RaspberryPi \
-      RASPBERRYPI_REMOTE_MACHINE=192.168.244.52 \
+      RASPBERRYPI_REMOTE_MACHINE=192.168.244.46 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
       MACHINE=Hercules \
