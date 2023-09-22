@@ -7,10 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-
-
-
-### 3.0d2 {2023-09-22} [diff](../compare/v3.0d1...v3.0d2)
+### 3.0d2 {2023-09-22} {[diff](../../compare/v3.0d1...v3.0d2)}
 
 #### TLDR
 - More String cleanups
@@ -211,7 +208,7 @@ especially those they need to be aware of when upgrading.
 
 ---
 
-### 3.0d1 {2023-07-18}  [diff](../compare/v2.1-Release...v3.0d1)
+### 3.0d1 {2023-07-18} {[diff](../../compare/v2.1-Release...v3.0d1)}
 
 #### TLDR
 - Major changes, and much work-in-progress. Probably not stable.
