@@ -10,13 +10,14 @@ especially those they need to be aware of when upgrading.
 
 
 
-### PREP FOR v3.0d2 release (DRAFT)
+### 3.0d2 {2023-09-22}  DRAFT
 
 #### TLDR
 - More String cleanups
   - SDKString now much cleaner/better documented, and more orthaganal, and uses span, and String SDKString related routines now indirected to, AllowMissingCharacterErrorsFlag support
   - performance
   - more deprecations of older APIs, and cleanups to CodeCvt logic, and related TextReader/Writer/BOM code
+  - Improved UNICODE
 - constexpr Memory::OffsetOf() - at a cost...
 - merged (in a sense) StackBuffer/InlineBuffer (at least impls), and tweaked InlineBuffer more
 
@@ -208,11 +209,7 @@ especially those they need to be aware of when upgrading.
   - raspberrypi
     - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
 
-
-
-
-
-
+---
 
 ### 3.0d1 {2023-07-18}
 

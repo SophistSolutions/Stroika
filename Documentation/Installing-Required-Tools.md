@@ -9,7 +9,7 @@ Note also - much of this (in perhaps more detail) can be gleaned (programaticall
 
 ## What all build platforms require (overview)
 
-- c++ compiler supporting C++17 or later
+- c++ compiler supporting C++20 or later
 - make (gnu make)
 - patch
 - perl
@@ -26,7 +26,7 @@ Note also - much of this (in perhaps more detail) can be gleaned (programaticall
 
 ## For MacOS
 
-- XCode (13 or later, but only tested with 13 and 14)
+- XCode (14 or later)
   - install from appstore
   - Then from command line
     - xcode-select –install
