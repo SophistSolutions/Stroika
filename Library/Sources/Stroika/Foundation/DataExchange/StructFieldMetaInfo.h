@@ -39,39 +39,27 @@ namespace Stroika::Foundation::DataExchange {
         type_index fTypeInfo; // type of FIELD_VALUE_TYPE
 
     private:
-        // @todo FOR PERFORMANCE - probably avoid shared_ptr and instaead use inlinebuffer
-        // save type-erased copy of pointer-to-member
-        // just virtual DTOR so it can free used memory? NOt sure needed
-        struct IRep {
-            virtual ~IRep ()                               = default;
-            virtual span<const std::byte> AsBytes () const = 0;
-        };
-        shared_ptr<IRep> fPointerToMember;
+        Memory::InlineBuffer<std::byte, 2 * sizeof (void*)> fPTR2MEM_; // type-erased FIELD_VALUE_TYPE OWNING_OBJECT::*fMember;
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-        struct X : IRep {
-            X (const X&) = default;
-            X (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
-                : fMember{member}
-            {
-            }
-            FIELD_VALUE_TYPE OWNING_OBJECT::*fMember;
-            virtual span<const std::byte>    AsBytes () const override
-            {
-                return std::as_bytes (span{&fMember, 1});
-            }
-        };
+        inline FIELD_VALUE_TYPE OWNING_OBJECT::*GetP2M_ () const
+        {
+            Require (sizeof (FIELD_VALUE_TYPE OWNING_OBJECT::*) == fPTR2MEM_.size ());
+            using X = FIELD_VALUE_TYPE OWNING_OBJECT::*;
+            //return *reinterpret_cast<X*> (fPTR2MEM_.data ());
+            return *(X*)(fPTR2MEM_.data ());
+        }
 
     public:
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
         inline const FIELD_VALUE_TYPE* GetAddressOfMember (const OWNING_OBJECT* object) const
         {
-            auto p2m = reinterpret_cast<X<FIELD_VALUE_TYPE, OWNING_OBJECT>*> (fPointerToMember.get ())->fMember;
+            auto p2m = GetP2M_<FIELD_VALUE_TYPE, OWNING_OBJECT> ();
             return &(object->*p2m);
         }
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
         inline FIELD_VALUE_TYPE* GetAddressOfMember (OWNING_OBJECT* object) const
         {
-            auto p2m = reinterpret_cast<X<FIELD_VALUE_TYPE, OWNING_OBJECT>*> (fPointerToMember.get ())->fMember;
+            auto p2m = GetP2M_<FIELD_VALUE_TYPE, OWNING_OBJECT> ();
             return &(object->*p2m);
         }
         template <typename OWNING_OBJECT>

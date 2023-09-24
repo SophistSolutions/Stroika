@@ -21,12 +21,12 @@ namespace Stroika::Foundation::DataExchange {
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
     inline StructFieldMetaInfo::StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
         : fTypeInfo{typeid (FIELD_VALUE_TYPE)}
-        , fPointerToMember{make_shared<X<FIELD_VALUE_TYPE, OWNING_OBJECT>> (member)}
     {
+        fPTR2MEM_.push_back (as_bytes (span{&member, 1}));
     }
     inline strong_ordering StructFieldMetaInfo::operator<=> (const StructFieldMetaInfo& rhs) const
     {
-        strong_ordering r = Memory::MemCmp (this->fPointerToMember->AsBytes (), rhs.fPointerToMember->AsBytes ());
+        strong_ordering r = Memory::MemCmp (span{this->fPTR2MEM_}, span{rhs.fPTR2MEM_});
         if (r == strong_ordering::equal) {
             if (fTypeInfo < rhs.fTypeInfo) {
                 r = strong_ordering::less;
@@ -42,8 +42,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool StructFieldMetaInfo::operator== (const StructFieldMetaInfo& rhs) const
     {
-        return fTypeInfo == rhs.fTypeInfo and
-               Memory::MemCmp (this->fPointerToMember->AsBytes (), rhs.fPointerToMember->AsBytes ()) == strong_ordering::equal;
+        return fTypeInfo == rhs.fTypeInfo and Memory::MemCmp (span{this->fPTR2MEM_}, span{rhs.fPTR2MEM_}) == strong_ordering::equal;
     }
 
 }
