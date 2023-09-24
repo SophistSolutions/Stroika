@@ -410,8 +410,8 @@ namespace Stroika::Foundation::Memory {
         size_t                                                nCommonBytes = min (lSize, rSize);
         if (nCommonBytes != 0) {
             // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
-            if (int tmp = MemCmp (l.subspan (0, nCommonBytes), r.subspan (0, nCommonBytes))) {
-                return tmp <=> 0;
+            if (strong_ordering tmp = MemCmp (l.subspan (0, nCommonBytes), r.subspan (0, nCommonBytes)); tmp != strong_ordering::equal) {
+                return tmp;
             }
         }
         // if tmp is zero, and same size - its really zero. But if lhs shorter than right, say lhs < right

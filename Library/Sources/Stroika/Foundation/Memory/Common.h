@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <compare>
 #include <memory>
 #include <span>
 
@@ -56,13 +57,16 @@ namespace Stroika::Foundation::Memory {
      * 
      *  Span Overload: 
      *      \req  lhs.size () == rhs.size ()
+     * 
+     *  \note - like std::memcmp() it returns an int < 0 for less, == 0 for equal, and > 0 for greater, but that corresponds
+     *          backward compatably to the strong_ordering C++20 type, so we use that for clarity going forward.
      */
     template <typename T>
-    constexpr int MemCmp (const T* lhs, const T* rhs, size_t count);
+    constexpr strong_ordering MemCmp (const T* lhs, const T* rhs, size_t count);
     template <typename T>
-    constexpr int MemCmp (span<const T> lhs, span<const T> rhs);
+    constexpr strong_ordering MemCmp (span<const T> lhs, span<const T> rhs);
     template <typename T>
-    constexpr int MemCmp (span<T> lhs, span<T> rhs);
+    constexpr strong_ordering MemCmp (span<T> lhs, span<T> rhs);
 
     /**
      *  \brief use Memory::OffsetOf(&CLASS::MEMBER) in place of offsetof(CLASS,MEMBER) to avoid compiler warnings, and cuz easier to 

@@ -11,6 +11,7 @@
  */
 #include <cstring>
 
+#include "../Common/Compare.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Sanitizer.h"
 
@@ -35,7 +36,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <>
-    constexpr int MemCmp (const uint8_t* lhs, const uint8_t* rhs, std::size_t count)
+    constexpr strong_ordering MemCmp (const uint8_t* lhs, const uint8_t* rhs, std::size_t count)
     {
         DISABLE_COMPILER_MSC_WARNING_START (5063)
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wconstant-evaluated\"");
@@ -47,34 +48,34 @@ namespace Stroika::Foundation::Memory {
             const uint8_t* ri = rhs;
             for (; count--; ++li, ++ri) {
                 if (int cmp = static_cast<int> (*li) - static_cast<int> (*ri)) {
-                    return cmp;
+                    return Common::CompareResultNormalizer (cmp);
                 }
             }
-            return 0;
+            return strong_ordering::equal;
         }
         else {
             if (count == 0) {
-                return 0;
+                return strong_ordering::equal;
             }
-            return std::memcmp (lhs, rhs, count);
+            return Common::CompareResultNormalizer (std::memcmp (lhs, rhs, count));
         }
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wtautological-compare\"");
         DISABLE_COMPILER_MSC_WARNING_END (5063)
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wconstant-evaluated\"");
     }
     template <typename T>
-    constexpr int MemCmp (const T* lhs, const T* rhs, size_t count)
+    constexpr strong_ordering MemCmp (const T* lhs, const T* rhs, size_t count)
     {
         return MemCmp (reinterpret_cast<const uint8_t*> (lhs), reinterpret_cast<const uint8_t*> (rhs), count * sizeof (T));
     }
     template <typename T>
-    constexpr int MemCmp (span<const T> lhs, span<const T> rhs)
+    constexpr strong_ordering MemCmp (span<const T> lhs, span<const T> rhs)
     {
         Require (lhs.size () == rhs.size ());
         return MemCmp (lhs.data (), rhs.data (), lhs.size ());
     }
     template <typename T>
-    constexpr int MemCmp (span<T> lhs, span<T> rhs)
+    constexpr strong_ordering MemCmp (span<T> lhs, span<T> rhs)
     {
         return MemCmp (ConstSpan (lhs), ConstSpan (rhs));
     }
