@@ -264,13 +264,13 @@ String Authority::As () const
 {
     StringBuilder sb;
     if (fUserInfo_) {
-        sb += fUserInfo_->AsEncoded () + "@"sv;
+        sb << fUserInfo_->AsEncoded () << "@"sv;
     }
     if (fHost_) {
-        sb += fHost_->AsEncoded ();
+        sb << fHost_->AsEncoded ();
     }
     if (fPort_) {
-        sb += Format (L":%d", *fPort_);
+        sb << Format (L":%d", *fPort_);
     }
     return sb.str ();
 }

@@ -43,17 +43,17 @@ using namespace Stroika::Frameworks::NetworkMonitor::Ping;
 String Ping::Options::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
+    sb << "{";
     if (fMaxHops) {
-        sb += "Max-Hops: " + Characters::Format (L"%d", *fMaxHops) + ", ";
+        sb << "Max-Hops: " << Characters::Format (L"%d", *fMaxHops) << ", ";
     }
     if (fTimeout) {
-        sb += "Timeout: " + Characters::ToString (*fTimeout) + ", ";
+        sb << "Timeout: " << Characters::ToString (*fTimeout) << ", ";
     }
     if (fPacketPayloadSize) {
-        sb += "Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize) + ", ";
+        sb << "Packet-Payload-Size: " << Characters::Format (L"%d", *fPacketPayloadSize) << ", ";
     }
-    sb += "}";
+    sb << "}";
     return sb.str ();
 }
 
@@ -65,10 +65,10 @@ String Ping::Options::ToString () const
 String Pinger::ResultType::ToString () const
 {
     StringBuilder sb;
-    sb += "{"sv;
-    sb += "Ping-Time: "sv + Characters::ToString (fPingTime) + ", ";
-    sb += "Hop-Count: "sv + Characters::Format (L"%d", fHopCount) + ", ";
-    sb += "}"sv;
+    sb << "{"sv;
+    sb << "Ping-Time: "sv << Characters::ToString (fPingTime) << ", ";
+    sb << "Hop-Count: "sv << Characters::Format (L"%d", fHopCount);
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -219,10 +219,10 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 Characters::String SampleOptions::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Interval: " + Characters::ToString (fInterval) + ", ";
-    sb += "Count: " + Characters::Format (L"%d", fSampleCount) + ", ";
-    sb += "}";
+    sb << "{";
+    sb << "Interval: " << Characters::ToString (fInterval) << ", ";
+    sb << "Count: " << Characters::Format (L"%d", fSampleCount);
+    sb << "}";
     return sb.str ();
 }
 
@@ -234,17 +234,17 @@ Characters::String SampleOptions::ToString () const
 String SampleResults::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
+    sb << "{";
     if (fMedianPingTime) {
-        sb += "Median-Ping-Time: " + Characters::ToString (*fMedianPingTime) + ", ";
+        sb << "Median-Ping-Time: " << Characters::ToString (*fMedianPingTime) << ", ";
     }
     if (fMedianHopCount) {
-        sb += "Median-Hop-Count: " + Characters::Format (L"%d", *fMedianHopCount) + ", ";
+        sb << "Median-Hop-Count: " << Characters::Format (L"%d", *fMedianHopCount) << ", ";
     }
     if (fExceptionCount != 0) {
-        sb += "Exception-Count: " + Characters::Format (L"%d", fExceptionCount) + ", "; // to see exceptions - run with sample-count = 1
+        sb << "Exception-Count: " << Characters::Format (L"%d", fExceptionCount) << ", "; // to see exceptions - run with sample-count = 1
     }
-    sb += "}";
+    sb << "}";
     return sb.str ();
 }
 

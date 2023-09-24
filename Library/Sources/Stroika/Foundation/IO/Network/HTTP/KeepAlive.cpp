@@ -62,21 +62,20 @@ optional<KeepAlive> KeepAlive::Merge (const optional<KeepAlive>& lhs, const opti
 
 String KeepAlive::AsValue () const
 {
-    StringBuilder sb;
-
+    StringBuilder sb; // ? is this a BUG or needs some explanation - LGP 2023-09-24
     return sb.str ();
 }
 
 String KeepAlive::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
+    sb << "{";
     if (fMessages) {
-        sb += "Messages: " + Characters::ToString (*fMessages) + ", ";
+        sb << "Messages: " << Characters::ToString (*fMessages) << ", ";
     }
     if (fTimeoutAt) {
-        sb += "Timeout-At: " + Characters::ToString (*fTimeoutAt) + ", ";
+        sb << "Timeout-At: " << Characters::ToString (*fTimeoutAt) << ", ";
     }
-    sb += "}";
+    sb << "}";
     return sb.str ();
 }

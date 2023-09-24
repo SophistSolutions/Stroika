@@ -57,7 +57,7 @@ namespace {
                 segments.push_back (accumulatingSegment.str ());
                 accumulatingSegment.clear ();
             }
-            accumulatingSegment += c;
+            accumulatingSegment << c;
         }
         if (not accumulatingSegment.empty ()) {
             segments.push_back (accumulatingSegment.str ());
@@ -87,10 +87,10 @@ namespace {
 
         StringBuilder result;
         for (const String& segment : segments2) {
-            result += segment;
+            result << segment;
         }
         if (lastSegmentShouldHaveSlash and not result.str ().EndsWith ("/"sv)) {
-            result += "/"sv;
+            result << "/"sv;
         }
         return result.str ();
     };
@@ -135,11 +135,11 @@ String URI::AsString_ () const
         //      scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
         // no need to pct encode this
         Assert (fScheme_->All ([] (Character c) { return c.IsASCII (); }));
-        result += *fScheme_ + ":";
+        result << *fScheme_ << ":";
     }
     if (fAuthority_) {
         Assert (fAuthority_->As<String> ().All ([] (Character c) { return c.IsASCII (); }));
-        result += "//"sv + fAuthority_->As<String> (); // this already produces 'raw' (pct encoded) format
+        result << "//"sv << fAuthority_->As<String> (); // this already produces 'raw' (pct encoded) format
     }
 
     if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith ("/"sv))) {
@@ -148,14 +148,14 @@ String URI::AsString_ () const
     }
 
     static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
-    result += UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
+    result << UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
     if (fQuery_) {
         static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
-        result += "?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
+        result << "?"sv << UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
     }
     if (fFragment_) {
         static constexpr UniformResourceIdentification::PCTEncodeOptions kFragmentEncodeOptiosn_{false, false, false, true};
-        result += "#"sv + UniformResourceIdentification::PCTEncode2String (*fFragment_, kFragmentEncodeOptiosn_);
+        result << "#"sv + UniformResourceIdentification::PCTEncode2String (*fFragment_, kFragmentEncodeOptiosn_);
     }
     Ensure (result.str ().All ([] (Character c) { return c.IsASCII (); }));
     return result.str ();
@@ -213,17 +213,17 @@ String URI::ToString () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     StringBuilder                                  result;
     if (fScheme_) {
-        result += *fScheme_ + ":"sv;
+        result << *fScheme_ << ":"sv;
     }
     if (fAuthority_) {
-        result += "//"sv + fAuthority_->As<String> ();
+        result << "//"sv << fAuthority_->As<String> ();
     }
-    result += fPath_;
+    result << fPath_;
     if (fQuery_) {
-        result += "?"sv + *fQuery_;
+        result << "?"sv << *fQuery_;
     }
     if (fFragment_) {
-        result += "#"sv + *fFragment_;
+        result << "#"sv << *fFragment_;
     }
     return Characters::ToString (result.str ());
 }

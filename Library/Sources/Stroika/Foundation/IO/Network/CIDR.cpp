@@ -58,12 +58,16 @@ CIDR::CIDR (const String& cidrNotation, InternetAddress::AddressFamily addressFa
 template <>
 String CIDR::As<String> () const
 {
-    return fBaseAddress_.As<String> () + "/"sv + Characters::ToString ((int)fSignificantBits_);
+    StringBuilder sb;
+    sb << fBaseAddress_.As<String> () << "/"sv << Characters::ToString ((int)fSignificantBits_);
+    return sb.str ();
 }
 
 String Network::CIDR::ToString () const
 {
-    return Characters::ToString (fBaseAddress_) + "/"sv + Characters::ToString ((int)fSignificantBits_);
+    StringBuilder sb;
+    sb << Characters::ToString (fBaseAddress_) << "/"sv << Characters::ToString ((int)fSignificantBits_);
+    return sb.str ();
 }
 
 Traversal::DiscreteRange<InternetAddress> Network::CIDR::GetRange () const

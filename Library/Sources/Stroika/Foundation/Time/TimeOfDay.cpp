@@ -9,7 +9,6 @@
 #include <sstream>
 
 #include "../Characters/Format.h"
-#include "../Characters/StringBuilder.h"
 #if qPlatform_Windows
 #include "../Characters/Platform/Windows/SmartBSTR.h"
 #endif

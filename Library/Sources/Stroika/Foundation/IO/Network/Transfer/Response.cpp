@@ -31,12 +31,12 @@ using namespace Stroika::Foundation::Memory;
 String Response::SSLResultInfo::ToString () const
 {
     StringBuilder sb;
-    sb += "{"sv;
-    sb += "Subject-Common-Name: "sv + Characters::ToString (fSubjectCommonName) + ","sv;
-    sb += "Subject-Company-Name: "sv + Characters::ToString (fSubjectCompanyName) + ","sv;
-    sb += "Issuer: "sv + Characters::ToString (fIssuer) + ","sv;
-    sb += "Validation-Status: "sv + Characters::ToString (fValidationStatus) + ","sv;
-    sb += "}"sv;
+    sb << "{"sv;
+    sb << "Subject-Common-Name: "sv << Characters::ToString (fSubjectCommonName) << ","sv;
+    sb << "Subject-Company-Name: "sv << Characters::ToString (fSubjectCompanyName) << ","sv;
+    sb << "Issuer: "sv << Characters::ToString (fIssuer) << ","sv;
+    sb << "Validation-Status: "sv << Characters::ToString (fValidationStatus) << ","sv;
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -67,11 +67,11 @@ optional<String> Response::GetCharset () const
 String Response::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Headers: " + Characters::ToString (fHeaders_) + ",";
-    sb += "Status: " + Characters::ToString (fStatus_) + ",";
-    sb += "ServerEndpointSSLInfo_: " + Characters::ToString (fServerEndpointSSLInfo_) + ",";
-    sb += "}";
+    sb << "{";
+    sb << "Headers: " << Characters::ToString (fHeaders_) << ",";
+    sb << "Status: " << Characters::ToString (fStatus_) << ",";
+    sb << "ServerEndpointSSLInfo_: " << Characters::ToString (fServerEndpointSSLInfo_) << ",";
+    sb << "}";
     return sb.str ();
 }
 

@@ -106,35 +106,35 @@ public:
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         StringBuilder                                  sb;
-        sb += "{";
-        sb += "Offset: " + Characters::Format (L"%d", fOffset_) + ", ";
-        sb += "HighWaterMark: " + Characters::Format (L"%d", fBufferFilledUpValidBytes_) + ", ";
-        sb += "TEXT: ";
+        sb << "{";
+        sb << "Offset: " << Characters::Format (L"%d", fOffset_) << ", ";
+        sb << "HighWaterMark: " << Characters::Format (L"%d", fBufferFilledUpValidBytes_) << ", ";
+        sb << "TEXT: ";
         switch (format) {
             case ToStringFormat::eAsBytes: {
                 for (size_t i = 0; i < fBufferFilledUpValidBytes_; ++i) {
-                    sb += Characters::Format (L"x%x, ", fAllDataReadBuf_[i]);
+                    sb << Characters::Format (L"x%x, ", fAllDataReadBuf_[i]);
                 }
             } break;
             case ToStringFormat::eAsString: {
-                sb += "'"sv;
+                sb << "'"sv;
                 for (Character c : String::FromLatin1 (span{reinterpret_cast<const char*> (begin (fAllDataReadBuf_)), fBufferFilledUpValidBytes_})) {
                     switch (c.GetCharacterCode ()) {
                         case '\r':
-                            sb += "\\r";
+                            sb << "\\r";
                             break;
                         case '\n':
-                            sb += "\\n";
+                            sb << "\\n";
                             break;
                         default:
-                            sb += c.GetCharacterCode ();
+                            sb << c.GetCharacterCode ();
                             break;
                     }
                 }
-                sb += "'";
+                sb << "'";
             } break;
         }
-        sb += "}";
+        sb << "}";
         return sb.str ();
     }
 

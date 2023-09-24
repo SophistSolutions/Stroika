@@ -28,9 +28,9 @@ String SQL::Utils::QuoteStringForDB (const String& s)
         StringBuilder sb;
         for (Character c : s) {
             if (c == '\'') {
-                sb += '\'';
+                sb << '\'';
             }
-            sb += c;
+            sb << c;
         }
         return sb.str ();
     }

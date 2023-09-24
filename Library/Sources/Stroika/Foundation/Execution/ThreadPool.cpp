@@ -418,14 +418,14 @@ String ThreadPool::ToString () const
 {
     [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
     StringBuilder           sb;
-    sb += "{";
+    sb << "{";
     if (fThreadPoolName_) {
-        sb += Characters::Format (L"pool-name: '%s'", fThreadPoolName_->As<wstring> ().c_str ()) + ", ";
+        sb << Characters::Format (L"pool-name: '%s'", fThreadPoolName_->As<wstring> ().c_str ()) << ", ";
     }
-    sb += Characters::Format (L"pending-task-count: %d", GetPendingTasksCount ()) + L", ";
-    sb += Characters::Format (L"running-task-count: %d", GetRunningTasks ().size ()) + L", ";
-    sb += Characters::Format (L"pool-thread-count: %d", fThreads_.size ()) + L", ";
-    sb += "}";
+    sb << Characters::Format (L"pending-task-count: %d", GetPendingTasksCount ()) << ", ";
+    sb << Characters::Format (L"running-task-count: %d", GetRunningTasks ().size ()) << ", ";
+    sb << Characters::Format (L"pool-thread-count: %d", fThreads_.size ()) << ", ";
+    sb << "}";
     return sb.str ();
 }
 

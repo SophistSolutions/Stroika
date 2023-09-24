@@ -86,10 +86,10 @@ String SystemConfiguration::BootInformation::ToString () const
 String SystemConfiguration::CPU::CoreDetails::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Socket-ID: " + Characters::ToString (fSocketID) + ", ";
-    sb += "Model-Name: " + Characters::ToString (fModelName);
-    sb += "}";
+    sb << "{";
+    sb << "Socket-ID: " << Characters::ToString (fSocketID) << ", ";
+    sb << "Model-Name: " << Characters::ToString (fModelName);
+    sb << "}";
     return sb.str ();
 }
 
@@ -101,9 +101,9 @@ String SystemConfiguration::CPU::CoreDetails::ToString () const
 String SystemConfiguration::CPU::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Cores: " + Characters::ToString (fCores);
-    sb += "}";
+    sb << "{";
+    sb << "Cores: " << Characters::ToString (fCores);
+    sb << "}";
     return sb.str ();
 };
 
@@ -115,11 +115,11 @@ String SystemConfiguration::CPU::ToString () const
 String SystemConfiguration::Memory::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Page-Size: " + Characters::ToString (fPageSize) + ", ";
-    sb += "Total-Physical-RAM: " + Characters::ToString (fTotalPhysicalRAM) + ", ";
-    sb += "Total-Virtual-RAM: " + Characters::ToString (fTotalVirtualRAM);
-    sb += "}";
+    sb << "{";
+    sb << "Page-Size: " << Characters::ToString (fPageSize) << ", ";
+    sb << "Total-Physical-RAM: " << Characters::ToString (fTotalPhysicalRAM) << ", ";
+    sb << "Total-Virtual-RAM: " << Characters::ToString (fTotalVirtualRAM);
+    sb << "}";
     return sb.str ();
 };
 
@@ -131,9 +131,9 @@ String SystemConfiguration::Memory::ToString () const
 String SystemConfiguration::ComputerNames::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Hostname: " + Characters::ToString (fHostname) + ", ";
-    sb += "}";
+    sb << "{";
+    sb << "Hostname: " << Characters::ToString (fHostname) << +", ";
+    sb << "}";
     return sb.str ();
 };
 

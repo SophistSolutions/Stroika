@@ -402,13 +402,13 @@ String Connection::ToString (bool abbreviatedOutput) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb;
-    sb += "{";
-    sb += "Socket: " + Characters::ToString (fSocket_) + ", ";
+    sb << "{";
+    sb << "Socket: " << Characters::ToString (fSocket_) << ", ";
     if (not abbreviatedOutput) {
-        sb += "Message: " + Characters::ToString (fMessage_) + ", ";
-        sb += "Remaining: " + Characters::ToString (fRemaining_) + ", ";
+        sb << "Message: " << Characters::ToString (fMessage_) << ", ";
+        sb << "Remaining: " << Characters::ToString (fRemaining_) << ", ";
     }
-    sb += "Connection-Started-At: " + Characters::ToString (fConnectionStartedAt_);
-    sb += "}";
+    sb << "Connection-Started-At: " << Characters::ToString (fConnectionStartedAt_);
+    sb << "}";
     return sb.str ();
 }

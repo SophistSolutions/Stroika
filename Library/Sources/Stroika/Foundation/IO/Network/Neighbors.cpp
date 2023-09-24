@@ -180,11 +180,11 @@ namespace {
 String NeighborsMonitor::Neighbor::ToString () const
 {
     StringBuilder sb;
-    sb += "{"sv;
-    sb += "InternetAddress:"sv + Characters::ToString (fInternetAddress) + ",";
-    sb += "HardwareAddress:"sv + Characters::ToString (fHardwareAddress) + ",";
-    sb += "InterfaceID:"sv + Characters::ToString (fInterfaceID);
-    sb += "}"sv;
+    sb << "{"sv;
+    sb << "InternetAddress:"sv << Characters::ToString (fInternetAddress) << ",";
+    sb << "HardwareAddress:"sv << Characters::ToString (fHardwareAddress) << ",";
+    sb << "InterfaceID:"sv << Characters::ToString (fInterfaceID);
+    sb << "}"sv;
     return sb.str ();
 }
 

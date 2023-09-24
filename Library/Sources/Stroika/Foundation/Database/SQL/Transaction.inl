@@ -56,9 +56,9 @@ namespace Stroika::Foundation::Database::SQL {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         RequireNotNull (_fRep);
         Characters::StringBuilder sb;
-        sb += "{";
-        sb += " disposition: " + Characters::ToString (_fRep->GetDisposition ());
-        sb += "}";
+        sb << "{";
+        sb << " disposition: " << Characters::ToString (_fRep->GetDisposition ());
+        sb << "}";
         return sb.str ();
     }
 

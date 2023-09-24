@@ -511,7 +511,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                     virtual void TextInsideElement (const String& t) override
                     {
                         if (onContentElt) {
-                            fAccum += t;
+                            fAccum << t;
                         }
                     }
                 };

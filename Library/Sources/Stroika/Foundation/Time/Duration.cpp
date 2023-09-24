@@ -184,10 +184,10 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         unsigned int nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear_);
         if (nYears != 0) {
             if (not result.empty ()) {
-                result += kCommaSpace_;
+                result << kCommaSpace_;
             }
-            result += Characters::Format (L"%d", nYears) + kSpaceBeforeUnit_ +
-                      lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears, static_cast<int> (nYears));
+            result << Characters::Format (L"%d", nYears) << kSpaceBeforeUnit_
+                   << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears, static_cast<int> (nYears));
             timeLeft -= nYears * kSecondsPerYear_;
         }
     }
@@ -195,10 +195,10 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         unsigned int nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth_);
         if (nMonths != 0) {
             if (not result.empty ()) {
-                result += kCommaSpace_;
+                result << kCommaSpace_;
             }
-            result += Characters::Format (L"%d", nMonths) + kSpaceBeforeUnit_ +
-                      lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths, static_cast<int> (nMonths));
+            result << Characters::Format (L"%d", nMonths) << kSpaceBeforeUnit_
+                   << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths, static_cast<int> (nMonths));
             timeLeft -= nMonths * kSecondsPerMonth_;
         }
     }
@@ -206,10 +206,10 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay_);
         if (nDays != 0) {
             if (not result.empty ()) {
-                result += kCommaSpace_;
+                result << kCommaSpace_;
             }
-            result += Characters::Format (L"%d", nDays) + kSpaceBeforeUnit_ +
-                      lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays, static_cast<int> (nDays));
+            result << Characters::Format (L"%d", nDays) << kSpaceBeforeUnit_
+                   << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays, static_cast<int> (nDays));
             timeLeft -= nDays * kSecondsPerDay_;
         }
     }
@@ -218,10 +218,10 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour_);
             if (nHours != 0) {
                 if (not result.empty ()) {
-                    result += kCommaSpace_;
+                    result << kCommaSpace_;
                 }
-                result += Characters::Format (L"%d", nHours) + kSpaceBeforeUnit_ +
-                          lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours, static_cast<int> (nHours));
+                result << Characters::Format (L"%d", nHours) << kSpaceBeforeUnit_
+                       << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours, static_cast<int> (nHours));
                 timeLeft -= nHours * kSecondsPerHour_;
             }
         }
@@ -229,10 +229,10 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             unsigned int nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute_);
             if (nMinutes != 0) {
                 if (not result.empty ()) {
-                    result += kCommaSpace_;
+                    result << kCommaSpace_;
                 }
-                result += Characters::Format (L"%d", nMinutes) + kSpaceBeforeUnit_ +
-                          lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes, static_cast<int> (nMinutes));
+                result << Characters::Format (L"%d", nMinutes) << kSpaceBeforeUnit_
+                       << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes, static_cast<int> (nMinutes));
                 timeLeft -= nMinutes * kSecondsPerMinute_;
             }
         }

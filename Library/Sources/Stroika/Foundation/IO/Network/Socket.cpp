@@ -165,16 +165,16 @@ String Socket::Ptr::ToString () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb;
     if (fRep_ == nullptr) {
-        sb += "nullptr"sv;
+        sb << "nullptr"sv;
     }
     else {
-        sb += "{"sv;
-        sb += "Native-Socket: "sv +
-              ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? "CLOSED"sv : Characters::ToString (fRep_->GetNativeSocket ())) + ", "sv;
+        sb << "{"sv;
+        sb << "Native-Socket: "sv
+           << ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? "CLOSED"sv : Characters::ToString (fRep_->GetNativeSocket ())) << ", "sv;
         if (auto ola = GetLocalAddress ()) {
-            sb += "Local-Address: "sv + Characters::ToString (*ola);
+            sb << "Local-Address: "sv << Characters::ToString (*ola);
         }
-        sb += "}";
+        sb << "}";
     }
     return sb.str ();
 }

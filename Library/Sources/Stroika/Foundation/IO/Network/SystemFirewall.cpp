@@ -52,22 +52,22 @@ using namespace Stroika::Foundation::IO::Network::SystemFirewall;
 String Rule::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Name: " + Characters::ToString (fName) + ",";
-    sb += "Description: " + Characters::ToString (fDescription) + ",";
-    sb += "Application: " + Characters::ToString (fApplication) + ",";
+    sb << "{";
+    sb << "Name: " << Characters::ToString (fName) << ",";
+    sb << "Description: " << Characters::ToString (fDescription) << ",";
+    sb << "Application: " << Characters::ToString (fApplication) << ",";
 #if qPlatform_Windows
-    sb += "ProfileMask: " + Characters::ToString ((int)fProfileMask) + ",";
-    sb += "Direction: " + Characters::ToString ((int)fDirection) + ",";
-    sb += "Protocol: " + Characters::ToString ((int)fProtocol) + ",";
+    sb << "ProfileMask: " << Characters::ToString ((int)fProfileMask) << ",";
+    sb << "Direction: " << Characters::ToString ((int)fDirection) << ",";
+    sb << "Protocol: " << Characters::ToString ((int)fProtocol) << ",";
 #endif
-    sb += "LocalPorts: " + Characters::ToString (fLocalPorts) + ",";
-    sb += "RemotePorts: " + Characters::ToString (fRemotePorts) + ",";
+    sb << "LocalPorts: " << Characters::ToString (fLocalPorts) << ",";
+    sb << "RemotePorts: " << Characters::ToString (fRemotePorts) << ",";
 #if qPlatform_Windows
-    sb += "Action: " + Characters::ToString ((int)fAction) + ",";
+    sb << "Action: " << Characters::ToString ((int)fAction) << ",";
 #endif
-    sb += "Enabled: " + Characters::ToString (fEnabled) + ",";
-    sb += "}";
+    sb << "Enabled: " << Characters::ToString (fEnabled) << ",";
+    sb << "}";
     return sb.str ();
 }
 

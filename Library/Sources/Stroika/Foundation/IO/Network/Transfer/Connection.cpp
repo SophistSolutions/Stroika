@@ -54,16 +54,16 @@ String Connection::Options::Authentication::GetAuthToken () const
 String Connection::Options::Authentication::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "options: " + Characters::ToString (fOptions_);
+    sb << "{";
+    sb << "options: " << Characters::ToString (fOptions_);
     if (fExplicitAuthToken_) {
-        sb += ", Explicit-Auth-Token: " + Characters::ToString (*fExplicitAuthToken_);
+        sb << ", Explicit-Auth-Token: " << Characters::ToString (*fExplicitAuthToken_);
     }
     else if (fUsernamePassword_) {
-        sb += ", username: " + fUsernamePassword_->first;
-        sb += ", password: " + fUsernamePassword_->second;
+        sb << ", username: " << fUsernamePassword_->first;
+        sb << ", password: " << fUsernamePassword_->second;
     }
-    sb += "}";
+    sb << "}";
     return sb.str ();
 }
 

@@ -20,9 +20,9 @@ using namespace Stroika::Frameworks::SystemPerformance;
 String Measurement::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Type: " + Characters::ToString (fType) + ", ";
-    sb += "Value: " + Characters::ToString (fValue);
-    sb += "}";
+    sb << "{";
+    sb << "Type: " << Characters::ToString (fType) << ", ";
+    sb << "Value: " << Characters::ToString (fValue);
+    sb << "}";
     return sb.str ();
 }

@@ -82,50 +82,50 @@ String CacheControl::As () const
     StringBuilder sb;
     auto          handleComma = [&] () {
         if (not sb.empty ()) {
-            sb += ", "sv;
+            sb << ", "sv;
         }
     };
     if (fCacheability) {
-        sb += DefaultNames<Cacheability>{}.GetName (*fCacheability);
+        sb << DefaultNames<Cacheability>{}.GetName (*fCacheability);
     }
     if (fMustRevalidate) {
         handleComma ();
-        sb += "must-revalidate"sv;
+        sb << "must-revalidate"sv;
     }
     if (fImmutable) {
         handleComma ();
-        sb += "immutable"sv;
+        sb << "immutable"sv;
     }
     if (fNoTransform) {
         handleComma ();
-        sb += "no-transform"sv;
+        sb << "no-transform"sv;
     }
     if (fOnlyIfCached) {
         handleComma ();
-        sb += "only-if-cached"sv;
+        sb << "only-if-cached"sv;
     }
     if (fAge) {
         handleComma ();
-        sb += Characters::Format (L"age=%d", *fAge);
+        sb << Characters::Format (L"age=%d", *fAge);
     }
     if (fMaxAge) {
         handleComma ();
-        sb += Characters::Format (L"max-age=%d", *fMaxAge);
+        sb << Characters::Format (L"max-age=%d", *fMaxAge);
     }
     if (fSharedMaxAge) {
         handleComma ();
-        sb += Characters::Format (L"s-max-age=%d", *fSharedMaxAge);
+        sb << Characters::Format (L"s-max-age=%d", *fSharedMaxAge);
     }
     if (fMaxStale) {
         handleComma ();
-        sb += "max-stale";
+        sb << "max-stale";
         if (fMaxStale->fAmount) {
-            sb += Characters::Format (L"=%d", *fMaxStale->fAmount);
+            sb << Characters::Format (L"=%d", *fMaxStale->fAmount);
         }
     }
     if (fMinFresh) {
         handleComma ();
-        sb += Characters::Format (L"min-fresh=%d", *fMinFresh);
+        sb << Characters::Format (L"min-fresh=%d", *fMinFresh);
     }
     return sb.str ();
 }

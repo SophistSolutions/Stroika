@@ -105,9 +105,9 @@ String Response::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb;
-    sb += "{";
-    sb += "Status-And-Override-Reason: " + Characters::ToString (fStatusAndOverrideReason_) + ", ";
-    sb += "Headers: " + Characters::ToString (this->headers ()) + ", ";
-    sb += "}";
+    sb << "{";
+    sb << "Status-And-Override-Reason: " << Characters::ToString (fStatusAndOverrideReason_) << ", ";
+    sb << "Headers: " << Characters::ToString (this->headers ()) << ", ";
+    sb << "}";
     return sb.str ();
 }

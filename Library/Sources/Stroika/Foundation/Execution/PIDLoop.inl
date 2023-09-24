@@ -34,11 +34,11 @@ namespace Stroika::Foundation::Execution {
     inline Characters::String PIDLoop<CONTROL_VAR_TYPE>::ControlParams::ToString () const
     {
         Characters::StringBuilder out;
-        out += "{";
-        out += "P: " + Characters::ToString (P) + "',";
-        out += "I: " + Characters::ToString (I) + "',";
-        out += "D: " + Characters::ToString (D) + "',";
-        out += "}";
+        out << "{";
+        out << "P: " << Characters::ToString (P) << "',";
+        out << "I: " << Characters::ToString (I) << "',";
+        out << "D: " << Characters::ToString (D) << "',";
+        out << "}";
         return out.str ();
     }
 

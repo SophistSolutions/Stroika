@@ -96,11 +96,11 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     for (const WebServiceMethodDescription& i : operations) {
         StringBuilder tmpDocs;
         if (i.fDetailedDocs) {
-            i.fDetailedDocs->Apply ([&] (const String& i) { tmpDocs += L"<div>" + substVars (i) + L"</div>"; });
+            i.fDetailedDocs->Apply ([&] (const String& i) { tmpDocs << "<div>" << substVars (i) << "</div>"; });
         }
         StringBuilder tmpCurl;
         if (i.fCurlExample) {
-            i.fCurlExample->Apply ([&] (const String& i) { tmpCurl += L"<div>" + substVars (i) + L"</div>"; });
+            i.fCurlExample->Apply ([&] (const String& i) { tmpCurl << "<div>" << substVars (i) << "</div>"; });
         }
         writeDocs (i.fOperation, tmpDocs.str (), tmpCurl.str ());
     }

@@ -109,7 +109,7 @@ namespace Stroika::Foundation::IO::Network {
             Characters::StringBuilder result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
             if (fQuery_) {
                 static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
-                result += "?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
+                result << "?"sv << UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
             }
             return result.str ();
         }

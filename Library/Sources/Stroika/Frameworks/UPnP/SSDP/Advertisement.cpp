@@ -34,15 +34,15 @@ using namespace Stroika::Frameworks::UPnP::SSDP;
 String Advertisement::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += "{";
+    sb << "{";
     if (fAlive) {
-        sb += "Alive : " + Characters::ToString (fAlive) + ", ";
+        sb << "Alive : " << Characters::ToString (fAlive) << ", ";
     }
-    sb += "USN : " + Characters::ToString (fUSN) + ", ";
-    sb += "Location : " + Characters::ToString (fLocation) + ", ";
-    sb += "Server : " + Characters::ToString (fServer) + ", ";
-    sb += "Target : " + Characters::ToString (fTarget) + ", ";
-    sb += "Raw-Headers : " + Characters::ToString (fRawHeaders) + ", ";
+    sb << "USN : " << Characters::ToString (fUSN) << ", ";
+    sb << "Location : " << Characters::ToString (fLocation) << ", ";
+    sb << "Server : " << Characters::ToString (fServer) << ", ";
+    sb << "Target : " << Characters::ToString (fTarget) << ", ";
+    sb << "Raw-Headers : " << Characters::ToString (fRawHeaders);
     sb += "}";
     return sb.str ();
 }

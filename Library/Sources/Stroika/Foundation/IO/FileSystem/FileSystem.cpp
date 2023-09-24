@@ -17,7 +17,6 @@
 #include <linux/limits.h>
 #endif
 #include "../../Characters/Format.h"
-#include "../../Characters/StringBuilder.h"
 #include "../../Characters/ToString.h"
 #include "../../Containers/Collection.h"
 #include "../../Containers/Set.h"

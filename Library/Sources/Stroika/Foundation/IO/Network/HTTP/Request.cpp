@@ -127,11 +127,11 @@ String Request::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb;
-    sb += "{";
-    sb += "HTTPVersion: " + fHTTPVersion_ + ", ";
-    sb += "Method: " + fMethod_ + ", ";
-    sb += "URL: " + Characters::ToString (fURL_) + ", ";
-    sb += "Headers: " + Characters::ToString (fHeaders_) + ", ";
-    sb += "}";
+    sb << "{";
+    sb << "HTTPVersion: " << fHTTPVersion_ << ", ";
+    sb << "Method: " << fMethod_ << ", ";
+    sb << "URL: " << Characters::ToString (fURL_) << ", ";
+    sb << "Headers: " << Characters::ToString (fHeaders_) << ", ";
+    sb << "}";
     return sb.str ();
 }

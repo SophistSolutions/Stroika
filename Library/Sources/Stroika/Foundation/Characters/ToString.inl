@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Characters {
         {
             StringBuilder sb;
             sb << "{";
-            sb << ToString (get<0> (t)) + ", " + ToString (get<1> (t));
+            sb << ToString (get<0> (t)) << ", " << ToString (get<1> (t));
             sb << "}";
             return sb.str ();
         }
@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Characters {
         {
             StringBuilder sb;
             sb << "{";
-            sb << ToString (get<0> (t)) + ", " + ToString (get<1> (t)) + ", " + ToString (get<2> (t));
+            sb << ToString (get<0> (t)) << ", " << ToString (get<1> (t)) << ", " << ToString (get<2> (t));
             sb << "}";
             return sb.str ();
         }
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Characters {
         {
             StringBuilder sb;
             sb << "{";
-            sb << ToString (get<0> (t)) + ", " + ToString (get<1> (t)) + ", " + ToString (get<2> (t)) + ", " + ToString (get<3> (t));
+            sb << ToString (get<0> (t)) << ", " << ToString (get<1> (t)) << ", " + ToString (get<2> (t)) << ", " << ToString (get<3> (t));
             sb << "}";
             return sb.str ();
         }

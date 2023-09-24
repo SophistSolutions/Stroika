@@ -4,7 +4,6 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Characters/String2Int.h"
-#include "../../../Characters/StringBuilder.h"
 #include "../../../Characters/ToString.h"
 #include "../../../Containers/Set.h"
 #include "../../../Streams/TextReader.h"

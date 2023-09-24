@@ -372,16 +372,16 @@ void Thread::Ptr::Rep_::Run_ ()
 Characters::String Thread::Ptr::Rep_::ToString () const
 {
     StringBuilder sb;
-    sb += "{"sv;
-    sb += "id: " + Characters::ToString (GetID ()) + ", ";
+    sb << "{"sv;
+    sb << "id: " + Characters::ToString (GetID ()) << ", ";
     if (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
-        sb += "index: " + Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (GetID ()))) + ", ";
+        sb << "index: " + Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (GetID ()))) << ", ";
     }
     if (not fThreadName_.empty ()) {
-        sb += "name: '"_k + fThreadName_ + "', ";
+        sb << "name: '"_k + fThreadName_ << "', ";
     }
-    sb += "status: " + Characters::ToString (fStatus_.load ());
-    sb += "}"sv;
+    sb << "status: " << Characters::ToString (fStatus_.load ());
+    sb << "}"sv;
     return sb.str ();
 }
 
