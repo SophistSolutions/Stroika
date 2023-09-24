@@ -562,9 +562,9 @@ namespace {
             String     fSerializedFieldName;
 
             StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid (void), const String& serializedFieldName = String ())
-                : fOffset (fieldOffset)
-                , fTypeInfo (typeInfo)
-                , fSerializedFieldName (serializedFieldName)
+                : fOffset{fieldOffset}
+                , fTypeInfo{typeInfo}
+                , fSerializedFieldName{serializedFieldName}
             {
             }
         };
