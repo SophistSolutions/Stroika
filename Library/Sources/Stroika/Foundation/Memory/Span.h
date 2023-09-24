@@ -100,6 +100,8 @@ namespace Stroika::Foundation::Memory {
      *  \req not Intersects (src, target) - so non-overlapping
      *  
      *  Returns the subset of the target span filled (so a subspan of target).
+     * 
+     *          @todo MAYBE RENAME TO MemMove()????
      */
     template <typename T>
     constexpr std::span<T> CopySpanData (span<const T> src, span<T> target);
@@ -117,6 +119,8 @@ namespace Stroika::Foundation::Memory {
      *        to plain ASCII so long as the caller assures the source data is truely ascii first.
      * 
      *  \req not Intersects (src, target) - so non-overlapping
+     * 
+     *          @todo MAYBE RENAME TO MemMove()????- STATICCAST
      */
     template <typename FROM_T, typename TO_T>
     constexpr std::span<TO_T> CopySpanData_StaticCast (span<const FROM_T> src, span<TO_T> target);
