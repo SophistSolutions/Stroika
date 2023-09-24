@@ -22,34 +22,34 @@
 namespace Stroika::Foundation::DataExchange {
 
     /**
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *        o C++20 only (for c++17 only supported == and operator<)
-     * 
      *  \note This class is just a utility to capture information about fields relative to
-     *        a class for the purpose of serialization. It may not work for all class types
-     *        due to C++ issues with pointers to members.
-     *        @see Memory::OffsetOf() for details.
-     * 
-     *        But - when you cannot use this, you can still always use a custom serializer
-     *        within ObjectVariantMapper;
+     *        a class for the purpose of serialization.
      */
     struct StructFieldMetaInfo {
     public:
-        type_index fTypeInfo; // type of FIELD_VALUE_TYPE
-
-    private:
-        Memory::InlineBuffer<std::byte, 2 * sizeof (void*)> fPTR2MEM_; // type-erased FIELD_VALUE_TYPE OWNING_OBJECT::*fMember;
+        /**
+         *  This is only defined to be perfectly safe in C++ for classes of type is_standard_layout()
+         *  But that is uselessly insanely overly restricive (e.g. having private data members makes a
+         *  struct not standard_layout).
+         * 
+         *  This appears to always work for all cases I've tried (but avoid things like virtual base classes - that might not
+         *  work).
+         * 
+         *  @todo DOCS
+         */
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-        inline FIELD_VALUE_TYPE OWNING_OBJECT::*GetP2M_ () const
+        StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
+
+    public:
+        nonvirtual type_index GetTypeInfo () const
         {
-            Require (sizeof (FIELD_VALUE_TYPE OWNING_OBJECT::*) == fPTR2MEM_.size ());
-            using X = FIELD_VALUE_TYPE OWNING_OBJECT::*;
-            //return *reinterpret_cast<X*> (fPTR2MEM_.data ());
-            return *(X*)(fPTR2MEM_.data ());
+            return fTypeInfo_;
         }
 
     public:
+        /**
+         *  @todo DOCS
+         */
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
         inline const FIELD_VALUE_TYPE* GetAddressOfMember (const OWNING_OBJECT* object) const
         {
@@ -75,18 +75,6 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  This is only defined to be perfectly safe in C++ for classes of type is_standard_layout()
-         *  But that is uselessly insanely overly restricive (e.g. having private data members makes a
-         *  struct not standard_layout).
-         * 
-         *  This appears to always work for all cases I've tried (but avoid things like virtual base classes - that might not
-         *  work).
-         */
-        template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-        StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
-
-    public:
-        /**
          */
         nonvirtual strong_ordering operator<=> (const StructFieldMetaInfo& rhs) const;
 
@@ -100,6 +88,20 @@ namespace Stroika::Foundation::DataExchange {
          *  @see Characters::ToString ()
          */
         nonvirtual Characters::String ToString () const;
+
+    private:
+        type_index                                          fTypeInfo_; // type of FIELD_VALUE_TYPE
+        Memory::InlineBuffer<std::byte, 2 * sizeof (void*)> fPTR2MEM_;  // type-erased FIELD_VALUE_TYPE OWNING_OBJECT::*fMember;
+
+    private:
+        template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+        inline FIELD_VALUE_TYPE OWNING_OBJECT::*GetP2M_ () const
+        {
+            Require (sizeof (FIELD_VALUE_TYPE OWNING_OBJECT::*) == fPTR2MEM_.size ());
+            using X = FIELD_VALUE_TYPE OWNING_OBJECT::*;
+            //return *reinterpret_cast<X*> (fPTR2MEM_.data ());
+            return *(X*)(fPTR2MEM_.data ());
+        }
     };
 
 }

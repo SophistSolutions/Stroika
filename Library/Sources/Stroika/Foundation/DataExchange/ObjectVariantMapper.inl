@@ -252,7 +252,7 @@ namespace Stroika::Foundation::DataExchange {
             for (const auto& f : fieldDescriptions) {
                 Require (f.fOverrideTypeMapper or f.fFieldMetaInfo);
                 if (not f.fOverrideTypeMapper) {
-                    (void)Lookup_ (f.fFieldMetaInfo->fTypeInfo); // for side-effect of internal Require
+                    (void)Lookup_ (f.fFieldMetaInfo->GetTypeInfo ()); // for side-effect of internal Require
                 }
             }
         }
@@ -1071,7 +1071,7 @@ namespace Stroika::Foundation::DataExchange {
                     }
                     else {
                         Require (i.fFieldMetaInfo);
-                        return mapper.Lookup_ (i.fFieldMetaInfo->fTypeInfo).fFromObjectMapper (mapper, b);
+                        return mapper.Lookup_ (i.fFieldMetaInfo->GetTypeInfo ()).fFromObjectMapper (mapper, b);
                     }
                 }();
                 if (i.fNullFields == StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::eNull) [[likely]] {
@@ -1104,7 +1104,7 @@ namespace Stroika::Foundation::DataExchange {
                     }
                     else {
                         Require (i.fFieldMetaInfo);
-                        mapper.Lookup_ (i.fFieldMetaInfo->fTypeInfo).fToObjectMapper (mapper, *o, b);
+                        mapper.Lookup_ (i.fFieldMetaInfo->GetTypeInfo ()).fToObjectMapper (mapper, *o, b);
                     }
                 }
             }
@@ -1125,7 +1125,7 @@ namespace Stroika::Foundation::DataExchange {
                 Require (i.fOverrideTypeMapper or i.fFieldMetaInfo); // don't need to register the type mapper if its specified as a field
                 if (not i.fOverrideTypeMapper) {
                     Assert (i.fFieldMetaInfo); // cuz need type mapper if fFieldMetaInfo not present
-                    (void)Lookup_ (i.fFieldMetaInfo->fTypeInfo);
+                    (void)Lookup_ (i.fFieldMetaInfo->GetTypeInfo ());
                 }
             }
         }
