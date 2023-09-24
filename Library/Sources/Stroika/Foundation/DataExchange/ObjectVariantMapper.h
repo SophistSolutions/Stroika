@@ -11,6 +11,7 @@
 #include <filesystem>
 #include <type_traits>
 #include <typeindex>
+#include <variant>
 
 #include "../Characters/String.h"
 #include "../Characters/ToString.h"
@@ -868,11 +869,11 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename CLASS>
-        static TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n,
+        static TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t sizeofObj,
                                                                         const Traversal::Iterable<StructFieldInfo>& fields,
                                                                         const optional<TypeMappingDetails>&         extends);
         template <typename CLASS>
-        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, size_t n,
+        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, size_t sizeofObj,
                                                                                       const Traversal::Iterable<StructFieldInfo>& fields,
                                                                                       const optional<TypeMappingDetails>& extends) const;
 
@@ -980,6 +981,8 @@ namespace Stroika::Foundation::DataExchange {
         /*
          *  if fFieldMetaInfo == nullopt, fOverrideTypeMapper is required, and is the mapper used for the entire
          *  object.
+         * 
+         *  NOTE - fOverrideTypeMapper and fFieldMetaInfo can be combined, or used separately.
          */
         optional<TypeMappingDetails> fOverrideTypeMapper;
 

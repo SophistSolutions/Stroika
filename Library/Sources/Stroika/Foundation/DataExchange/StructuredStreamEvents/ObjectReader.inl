@@ -228,10 +228,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         RequireNotNull (fActiveContext_);
         optional<StructFieldMetaInfo> ti = fFieldNameToTypeMap_.Lookup (name);
         if (ti) {
-            std::byte*                operatingOnObj      = reinterpret_cast<std::byte*> (this->fValuePtr_);
-            std::byte*                operatingOnObjField = operatingOnObj + ti->fOffset;
+            std::byte*                operatingOnObjField = ti->GetAddressOfMember (this->fValuePtr_);
             ReaderFromVoidStarFactory factory             = LookupFactoryForName_ (name);
-            return (factory)(operatingOnObjField);
+            return factory (operatingOnObjField);
         }
         else if (fThrowOnUnrecongizedelts_) {
             ThrowUnRecognizedStartElt (name);
@@ -246,8 +245,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         RequireNotNull (fActiveContext_);
         if (fValueFieldMetaInfo_) {
             Assert (fValueFieldConsumer_ == nullptr);
-            std::byte*                operatingOnObj      = reinterpret_cast<std::byte*> (this->fValuePtr_);
-            std::byte*                operatingOnObjField = operatingOnObj + fValueFieldMetaInfo_->fOffset;
+            std::byte*                operatingOnObjField = fValueFieldMetaInfo_->GetAddressOfMember (this->fValuePtr_);
             ReaderFromVoidStarFactory factory             = LookupFactoryForName_ (Name{Name::NameType::eValue});
             fValueFieldConsumer_                          = (factory)(operatingOnObjField);
             fValueFieldConsumer_->Activated (*fActiveContext_);

@@ -1023,37 +1023,31 @@ namespace Stroika::Foundation::DataExchange {
     }
     template <typename CLASS>
     ObjectVariantMapper::TypeMappingDetails
-    ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n,
+    ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t sizeofObj,
                                                                const Traversal::Iterable<StructFieldInfo>& fields,
                                                                const optional<TypeMappingDetails>&         extends)
     {
         if constexpr (qDebug) {
             {
                 // assure each field unique
-                Containers::MultiSet<size_t> t;
+                Containers::MultiSet<StructFieldMetaInfo> t;
                 for (const auto& i : fields) {
                     if (i.fFieldMetaInfo) {
-                        t.Add (i.fFieldMetaInfo->fOffset);
+                        t.Add (*i.fFieldMetaInfo);
                     }
                 }
             }
             {
                 // assure each field unique
-                Containers::MultiSet<size_t> t;
+                Containers::MultiSet<StructFieldMetaInfo> t;
                 for (const auto& i : fields) {
                     if (i.fFieldMetaInfo) {
-                        t.Add (i.fFieldMetaInfo->fOffset);
+                        t.Add (*i.fFieldMetaInfo);
                     }
                 }
                 for (const auto& i : t) {
                     [[maybe_unused]] bool alreadyInListOfFields = not(i.fCount == 1);
                     WeakAssert (not alreadyInListOfFields); //  not necessarily something we want to prohibit, but overwhelmingly likely a bug/typo
-                }
-            }
-            for (const auto& i : fields) {
-                Require (i.fOverrideTypeMapper or i.fFieldMetaInfo); // don't need to register the type mapper if its specified as a field
-                if (i.fFieldMetaInfo) {
-                    Require (i.fFieldMetaInfo->fOffset < n);
                 }
             }
         }
@@ -1062,22 +1056,25 @@ namespace Stroika::Foundation::DataExchange {
             Debug::TraceContextBumper ctx{L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjectMapper"};
 #endif
             Mapping<String, VariantValue> m;
-            if (extends) {
+            if (extends) [[unlikely]] {
                 m = extends->fFromObjectMapper (mapper, fromObjOfTypeT).template As<Mapping<String, VariantValue>> (); // so we can extend
             }
             for (const auto& i : fields) {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo ? i.fFieldMetaInfo->fOffset : -1);
+                DbgTrace (L"fieldname = %s, offset=%s", i.fSerializedFieldName.c_str (), Characters::ToString (i.fFieldMetaInfo).c_str ());
 #endif
-                Require (i.fOverrideTypeMapper or i.fFieldMetaInfo);
-                FromGenericObjectMapperType toGenericVariantMapper =
-                    i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjectMapper : mapper.Lookup_ (i.fFieldMetaInfo->fTypeInfo).fFromObjectMapper;
-                // if no field info, then use object ptr itself
-                VariantValue vv = toGenericVariantMapper == nullptr
-                                      ? VariantValue{}
-                                      : toGenericVariantMapper (mapper, reinterpret_cast<const std::byte*> (fromObjOfTypeT) +
-                                                                            (i.fFieldMetaInfo ? i.fFieldMetaInfo->fOffset : 0));
-                if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::eNull) {
+                VariantValue vv = [&] () {
+                    const std::byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (fromObjOfTypeT)
+                                                          : reinterpret_cast<const std::byte*> (fromObjOfTypeT);
+                    if (i.fOverrideTypeMapper) [[unlikely]] {
+                        return i.fOverrideTypeMapper->fFromObjectMapper (mapper, b);
+                    }
+                    else {
+                        Require (i.fFieldMetaInfo);
+                        return mapper.Lookup_ (i.fFieldMetaInfo->fTypeInfo).fFromObjectMapper (mapper, b);
+                    }
+                }();
+                if (i.fNullFields == StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::eNull) [[likely]] {
                     m.Add (i.fSerializedFieldName, vv);
                 }
             }
@@ -1096,15 +1093,18 @@ namespace Stroika::Foundation::DataExchange {
             for (const auto& i : fields) {
                 optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (),
-                          i.fFieldMetaInfo ? i.fFieldMetaInfo->fOffset : -1, o.has_value ());
+                DbgTrace (L"fieldname = %s, offset=%s, present=%d", i.fSerializedFieldName.c_str (),
+                          Characters::ToString (i.fFieldMetaInfo).c_str (), o.has_value ());
 #endif
                 if (o) {
-                    Require (i.fOverrideTypeMapper or i.fFieldMetaInfo);
-                    ToGenericObjectMapperType toObjectMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fToObjectMapper
-                                                                                     : mapper.Lookup_ (i.fFieldMetaInfo->fTypeInfo).fToObjectMapper;
-                    if (toObjectMapper != nullptr) {
-                        toObjectMapper (mapper, *o, reinterpret_cast<std::byte*> (intoObjOfTypeT) + (i.fFieldMetaInfo ? i.fFieldMetaInfo->fOffset : 0));
+                    std::byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (intoObjOfTypeT)
+                                                    : reinterpret_cast<std::byte*> (intoObjOfTypeT);
+                    if (i.fOverrideTypeMapper) {
+                        i.fOverrideTypeMapper->fToObjectMapper (mapper, *o, b);
+                    }
+                    else {
+                        Require (i.fFieldMetaInfo);
+                        mapper.Lookup_ (i.fFieldMetaInfo->fTypeInfo).fToObjectMapper (mapper, *o, b);
                     }
                 }
             }
@@ -1113,7 +1113,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     template <typename CLASS>
     ObjectVariantMapper::TypeMappingDetails
-    ObjectVariantMapper::MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n,
+    ObjectVariantMapper::MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, [[maybe_unused]] size_t sizeofObj,
                                                                          const Traversal::Iterable<StructFieldInfo>& fields,
                                                                          const optional<TypeMappingDetails>&         extends) const
     {
@@ -1129,7 +1129,7 @@ namespace Stroika::Foundation::DataExchange {
                 }
             }
         }
-        return MakeCommonSerializer_ForClassObject_<CLASS> (forTypeInfo, n, fields, extends);
+        return MakeCommonSerializer_ForClassObject_<CLASS> (forTypeInfo, sizeofObj, fields, extends);
     }
 }
 

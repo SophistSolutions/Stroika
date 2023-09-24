@@ -18,22 +18,16 @@ namespace Stroika::Foundation::DataExchange {
      **************************** StructFieldMetaInfo *******************************
      ********************************************************************************
      */
-    inline StructFieldMetaInfo::StructFieldMetaInfo (size_t fieldOffset, type_index typeInfo)
-        : fOffset{fieldOffset}
-        , fTypeInfo{typeInfo}
-    {
-    }
     template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
     inline StructFieldMetaInfo::StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
-        : fOffset{Memory::OffsetOf (member)}
-        , fTypeInfo{typeid (FIELD_VALUE_TYPE)}
+        : fTypeInfo{typeid (FIELD_VALUE_TYPE)}
+        , fPointerToMember{make_shared<X<FIELD_VALUE_TYPE, OWNING_OBJECT>> (member)}
     {
     }
-#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
     inline strong_ordering StructFieldMetaInfo::operator<=> (const StructFieldMetaInfo& rhs) const
     {
-        auto r = fOffset <=> rhs.fOffset;
-        if (r == 0) {
+        strong_ordering r = Memory::MemCmp (this->fPointerToMember->AsBytes (), rhs.fPointerToMember->AsBytes ());
+        if (r == strong_ordering::equal) {
             if (fTypeInfo < rhs.fTypeInfo) {
                 r = strong_ordering::less;
             }
@@ -48,9 +42,9 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool StructFieldMetaInfo::operator== (const StructFieldMetaInfo& rhs) const
     {
-        return fOffset == rhs.fOffset and fTypeInfo == rhs.fTypeInfo;
+        return fTypeInfo == rhs.fTypeInfo and
+               Memory::MemCmp (this->fPointerToMember->AsBytes (), rhs.fPointerToMember->AsBytes ()) == strong_ordering::equal;
     }
-#endif
 
 }
 

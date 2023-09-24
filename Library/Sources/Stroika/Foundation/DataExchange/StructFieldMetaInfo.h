@@ -11,6 +11,7 @@
 #include <typeindex>
 
 #include "../Characters/String.h"
+#include "../Memory/BLOB.h"
 
 /**
  *
@@ -35,8 +36,54 @@ namespace Stroika::Foundation::DataExchange {
      */
     struct StructFieldMetaInfo {
     public:
-        size_t     fOffset;
-        type_index fTypeInfo;
+        type_index fTypeInfo; // type of FIELD_VALUE_TYPE
+
+    private:
+        // @todo FOR PERFORMANCE - probably avoid shared_ptr and instaead use inlinebuffer
+        // save type-erased copy of pointer-to-member
+        // just virtual DTOR so it can free used memory? NOt sure needed
+        struct IRep {
+            virtual ~IRep ()                               = default;
+            virtual span<const std::byte> AsBytes () const = 0;
+        };
+        shared_ptr<IRep> fPointerToMember;
+        template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+        struct X : IRep {
+            X (const X&) = default;
+            X (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
+                : fMember{member}
+            {
+            }
+            FIELD_VALUE_TYPE OWNING_OBJECT::*fMember;
+            virtual span<const std::byte>    AsBytes () const override
+            {
+                return std::as_bytes (span{&fMember, 1});
+            }
+        };
+
+    public:
+        template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+        inline const FIELD_VALUE_TYPE* GetAddressOfMember (const OWNING_OBJECT* object) const
+        {
+            auto p2m = reinterpret_cast<X<FIELD_VALUE_TYPE, OWNING_OBJECT>*> (fPointerToMember.get ())->fMember;
+            return &(object->*p2m);
+        }
+        template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+        inline FIELD_VALUE_TYPE* GetAddressOfMember (OWNING_OBJECT* object) const
+        {
+            auto p2m = reinterpret_cast<X<FIELD_VALUE_TYPE, OWNING_OBJECT>*> (fPointerToMember.get ())->fMember;
+            return &(object->*p2m);
+        }
+        template <typename OWNING_OBJECT>
+        inline const std::byte* GetAddressOfMember (const OWNING_OBJECT* object) const
+        {
+            return GetAddressOfMember<std::byte, OWNING_OBJECT> (object); // unsafe case
+        }
+        template <typename OWNING_OBJECT>
+        inline std::byte* GetAddressOfMember (OWNING_OBJECT* object) const
+        {
+            return GetAddressOfMember<std::byte, OWNING_OBJECT> (object); // unsafe case
+        }
 
     public:
         /**
@@ -47,18 +94,9 @@ namespace Stroika::Foundation::DataExchange {
          *  This appears to always work for all cases I've tried (but avoid things like virtual base classes - that might not
          *  work).
          */
-        StructFieldMetaInfo (size_t fieldOffset, type_index typeInfo);
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
         StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
 
-#if !qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
-    public:
-        /**
-         */
-        nonvirtual strong_ordering operator<=> (const StructFieldMetaInfo& rhs) const = default;
-#endif
-
-#if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
     public:
         /**
          */
@@ -68,7 +106,6 @@ namespace Stroika::Foundation::DataExchange {
         /**
          */
         nonvirtual bool operator== (const StructFieldMetaInfo& rhs) const;
-#endif
 
     public:
         /**
