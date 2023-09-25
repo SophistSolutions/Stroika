@@ -28,50 +28,43 @@ namespace Stroika::Foundation::DataExchange {
     struct StructFieldMetaInfo {
     public:
         /**
-         *  This is only defined to be perfectly safe in C++ for classes of type is_standard_layout()
-         *  But that is uselessly insanely overly restricive (e.g. having private data members makes a
-         *  struct not standard_layout).
+         *  Grab the meta info associated with a pointer to member - its type info, and its pointer to member address.
          * 
-         *  This appears to always work for all cases I've tried (but avoid things like virtual base classes - that might not
-         *  work).
-         * 
-         *  @todo DOCS
+         *  \note - unlike eariler versions of Stroika which used std::offsetof() (or similar) - and therefore only
+         *          worked (guaranteed) on std-layout objects, this should always work portably.
          */
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
         StructFieldMetaInfo (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
 
     public:
-        nonvirtual type_index GetTypeInfo () const
-        {
-            return fTypeInfo_;
-        }
+        /**
+         *  returns typeid (constructed FIELD_VALUE_TYPE)
+         */
+        nonvirtual type_index GetTypeInfo () const;
 
     public:
         /**
-         *  @todo DOCS
+         *  Given an object of the same type as the StructFieldMetaInfo was constructed with (or a subclass), return a pointer
+         *  to the field value corresponding to the field this StructFieldMetaInfo was constructed with. Note this is not checked
+         *  since no way to check subclassof from type_index.
+         * 
+         *  Respect const of the OWNING_OBJECT, propagating that to this functions result.
+         * 
+         *  If the FIELD_VALUE_TYPE is not known by the caller the actual address will be statically cast to std::byte* (or const of that).
+         * 
+         *  \note - doing THAT PROBABLY INVOKES C++ UNDEFINED BEHAVIOR - so just moves the 'hole' / 'issue' we had before Stroika v3.0
+         *          to this 'cast' (https://stackoverflow.com/questions/12141446/offset-from-member-pointer-without-temporary-instance). 
+         *          Still hunting for a good way around that. But where this is used in ObjectVariantMapper, we don't really
+         *          know those types. --LGP 2023-09=25
          */
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-        inline const FIELD_VALUE_TYPE* GetAddressOfMember (const OWNING_OBJECT* object) const
-        {
-            auto p2m = GetP2M_<FIELD_VALUE_TYPE, OWNING_OBJECT> ();
-            return &(object->*p2m);
-        }
+        nonvirtual const FIELD_VALUE_TYPE* GetAddressOfMember (const OWNING_OBJECT* object) const;
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-        inline FIELD_VALUE_TYPE* GetAddressOfMember (OWNING_OBJECT* object) const
-        {
-            auto p2m = GetP2M_<FIELD_VALUE_TYPE, OWNING_OBJECT> ();
-            return &(object->*p2m);
-        }
+        nonvirtual FIELD_VALUE_TYPE* GetAddressOfMember (OWNING_OBJECT* object) const;
         template <typename OWNING_OBJECT>
-        inline const std::byte* GetAddressOfMember (const OWNING_OBJECT* object) const
-        {
-            return GetAddressOfMember<std::byte, OWNING_OBJECT> (object); // unsafe case
-        }
+        nonvirtual const std::byte* GetAddressOfMember (const OWNING_OBJECT* object) const;
         template <typename OWNING_OBJECT>
-        inline std::byte* GetAddressOfMember (OWNING_OBJECT* object) const
-        {
-            return GetAddressOfMember<std::byte, OWNING_OBJECT> (object); // unsafe case
-        }
+        nonvirtual std::byte* GetAddressOfMember (OWNING_OBJECT* object) const;
 
     public:
         /**
@@ -95,13 +88,7 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-        inline FIELD_VALUE_TYPE OWNING_OBJECT::*GetP2M_ () const
-        {
-            Require (sizeof (FIELD_VALUE_TYPE OWNING_OBJECT::*) == fPTR2MEM_.size ());
-            using X = FIELD_VALUE_TYPE OWNING_OBJECT::*;
-            //return *reinterpret_cast<X*> (fPTR2MEM_.data ());
-            return *(X*)(fPTR2MEM_.data ());
-        }
+        inline FIELD_VALUE_TYPE OWNING_OBJECT::*const GetP2M_ () const;
     };
 
 }
