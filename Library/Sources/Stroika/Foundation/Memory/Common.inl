@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Memory {
                  */
                         return size_t (&(objAsUnion.obj.*member)) - size_t (&objAsUnion.obj);
                     }
-                };            
+                };
             }
 
             namespace UsingAlignedByteArrayBuf_ {
@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Memory {
                     return result;
                 }
             }
-            
+
             namespace UsingSimpleUnionToConstructActualObj_ {
 
                 template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
@@ -227,8 +227,6 @@ namespace Stroika::Foundation::Memory {
         }
     }
 
-
-   
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     inline constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember))
     {
@@ -242,8 +240,7 @@ namespace Stroika::Foundation::Memory {
         [[maybe_unused]] size_t r2 =
             Private_::OffsetOfImpl_::RequiringDefaultConstructibleObjectType_::offset_of<DATA_MEMBER_TYPE, OUTER_OBJECT>::offset (dataMember);
         [[maybe_unused]] size_t r3 = Private_::OffsetOfImpl_::UsingAlignedByteArrayBuf_::offset_of<DATA_MEMBER_TYPE, OUTER_OBJECT> (dataMember);
-        size_t r4 =
-            Private_::OffsetOfImpl_::UsingSimpleUnionToConstructActualObj_::offset_of<OUTER_OBJECT, DATA_MEMBER_TYPE> (dataMember);
+        size_t r4 = Private_::OffsetOfImpl_::UsingSimpleUnionToConstructActualObj_::offset_of<OUTER_OBJECT, DATA_MEMBER_TYPE> (dataMember);
         if (not is_constant_evaluated ()) {
             Assert (r1 == r4);
             Assert (r2 == r4);

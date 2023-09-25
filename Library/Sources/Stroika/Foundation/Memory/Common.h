@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Memory {
      * with:
      *       OffsetOf (&CLASS::MEMBER)
      * 
-     *  \note   This exploits UNDEFINED BEHAVIOR.
+     *  \note   The current implementation exploits UNDEFINED BEHAVIOR.
      * 
      *          expr.add-5.sentence-2
      *              "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
@@ -110,29 +110,7 @@ namespace Stroika::Foundation::Memory {
      *  @see https://en.cppreference.com/w/cpp/types/offsetof
      *  @see https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t
      * 
-     *  \note   Tricky to get this to work with constexpr. Experimenting with OffsetOf_Constexpr
-     * 
-     *  TODO:
-     *      @todo   Try to get this working more uniformly - regardless of is_default_constructible_v, and with constexpr, and
-     *              more reliably portably, and detect errors somehow for cases where this cannot work, but not as widely warning
-     *              as offsetof() - care about case of struct x { private: int a; public: int b; working}.
-     
-     &&&& lift docs from below
-     *  \brief convert the given pointer to data member to a size_t offset - like offsetof () macro, but with pointer to member and working for non-standard layout objects
-     *
-     *  This is similar to offsetof(), but with pointer to member objects.
-     * 
-     *  In fact, offsetof(X,Y) is equivilent to ConvertPointerToDataMemberToOffset (&X::Y)
-     * 
-     *  Since - according to https://en.cppreference.com/w/cpp/types/offsetof - offsetof is
-     *  not allowed on non-standard-layout objects, this attempts to workaround that, while remaining constexpr.
-     * 
-     *  See discussion in https://gist.github.com/graphitemaster/494f21190bb2c63c5516
-     * 
-     *  This function also (attempts) to support non-standard layout objects, where it needs to know the starting actual object, as well as the object
-     *  used in the X::Y base/member expression (this is the 3/type-argument template).
-
-     * 
+     *  \note   Tricky to get this to work with constexpr. See implemtnation for details.
      */
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember));
