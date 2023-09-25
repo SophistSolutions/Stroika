@@ -1063,6 +1063,8 @@ sub	SetDefaultForCompilerDriver_
 	
 	## DISABLE this hack for now - not (yet) needed since other problems with the (now renamed) Memory::OffsetOf() code.--LGP 2023-08-20
 	# ### Still experimental - needed for new ConvertPointerToDataMemberToOffset --LGP 2023-08-18
+	# SEE UsingRecursiveSideStruct_ code
+	#
 	# if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0)) {
 	# 	push @CXXFLAGS, '-ftemplate-depth=5000';
 	# }

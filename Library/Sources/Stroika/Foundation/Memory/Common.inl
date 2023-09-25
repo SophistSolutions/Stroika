@@ -152,6 +152,8 @@ namespace Stroika::Foundation::Memory {
             namespace RequiringDefaultConstructibleObjectType_ {
                 // @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516 for more info on maybe how to
                 // get this working with constexpr and without static object
+                //
+                // see -ftemplate-depth=5000  configure workaround to use this
                 template <typename T1, typename T2>
                 struct offset_of {
                     //     static inline constexpr T2 sObj_{};
@@ -230,6 +232,12 @@ namespace Stroika::Foundation::Memory {
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     inline constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember))
     {
+        /*
+         *  Setup to test/try each implementation. One with apparently best shot of working constexpr is UsingRecursiveSideStruct_
+         *  HOWEVER, it requires (on unix) setting -ftemplate-depth=5000 flags, and even then, doesn't really work constexpr (complains about dereferencing nullptr).
+         * 
+         *  Don't give up, but no success so far. MAYBE works OK/portably without the constexpr stuff. Dunno. Probably NOT for the same deref-nullptr reason.
+         */
         [[maybe_unused]] size_t r1 = Private_::OffsetOfImpl_::UsingRecursiveSideStruct_::offset_of<OUTER_OBJECT> (dataMember);
         [[maybe_unused]] size_t r2 =
             Private_::OffsetOfImpl_::RequiringDefaultConstructibleObjectType_::offset_of<DATA_MEMBER_TYPE, OUTER_OBJECT>::offset (dataMember);
