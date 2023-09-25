@@ -74,6 +74,8 @@ namespace Stroika::Foundation::Memory {
      *  \note - for this to work - OUTER_OBJECT (in the above example: Header) must be of stanard_layout type according
      *        to c++ standard, but I'm not sure what todo otherwise, it it seems to work otherwise.
      *        Posted to stackoverflow to find a better, more portable way: https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t
+     * 
+     *        See Docs on Memory::OffsetOf() - experiments to find a way to do this portably.
      */
     template <typename APPARENT_MEMBER_TYPE, typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
     OUTER_OBJECT* GetObjectOwningField (APPARENT_MEMBER_TYPE* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember));
