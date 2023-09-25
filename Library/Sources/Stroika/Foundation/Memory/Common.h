@@ -134,8 +134,6 @@ namespace Stroika::Foundation::Memory {
 
      * 
      */
-    template <typename OUTER_OBJECT, typename BASE_OBJECT, typename DATA_MEMBER_TYPE>
-    constexpr size_t OffsetOf (DATA_MEMBER_TYPE (BASE_OBJECT::*dataMember));
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember));
 

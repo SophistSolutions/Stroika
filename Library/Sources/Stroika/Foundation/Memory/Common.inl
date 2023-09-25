@@ -81,144 +81,167 @@ namespace Stroika::Foundation::Memory {
     }
 
     namespace Private_ {
-        namespace OffsetOfGistGitHubGraphiteMaster_ {
-            // OffsetOf_ BASED ON CODE FROM - https://gist.github.com/graphitemaster/494f21190bb2c63c5516
+        namespace OffsetOfImpl_ {
+            namespace UsingRecursiveSideStruct_ {
+                // OffsetOf_ BASED ON CODE FROM - https://gist.github.com/graphitemaster/494f21190bb2c63c5516
 #pragma pack(push, 1)
-            template <typename MEMBER, size_t N_PAD_BYTES>
-            struct Pad {
-                char   pad[N_PAD_BYTES];
-                MEMBER m;
-            };
-#pragma pack(pop)
-            template <typename MEMBER>
-            struct Pad<MEMBER, 0> {
-                MEMBER m;
-            };
-
-            DISABLE_COMPILER_MSC_WARNING_START (4324);
-            template <typename BASE, typename MEMBER, size_t O>
-            struct MakeUnion {
-                union U {
-                    char           c;
-                    BASE           base;
-                    Pad<MEMBER, O> pad;
-                    constexpr U () noexcept
-                        : c{} {};
-                    ~U () = delete;
+                template <typename MEMBER, size_t N_PAD_BYTES>
+                struct Pad {
+                    char   pad[N_PAD_BYTES];
+                    MEMBER m;
                 };
-                //constexpr static U* u{};      // old code did this, but doesn't work if MEMBER field has type which is not allowed to be constexpr --LGP 2023-08-20
-                constexpr static U* u{nullptr}; // don't actually allocate an object (maybe use declval instead?) - cuz else U not literal type sometimes if MEMBER obj type not literal
-            };
-            DISABLE_COMPILER_MSC_WARNING_END (4324);
+#pragma pack(pop)
+                template <typename MEMBER>
+                struct Pad<MEMBER, 0> {
+                    MEMBER m;
+                };
 
-            template <typename MEMBER, typename BASE_CLASS, typename ORIG_CLASS>
-            struct offset_of_impl {
-                template <size_t off, auto union_part = MakeUnion<BASE_CLASS, MEMBER, off>::u>
-                // This gets called with nullptr as 'object' for computing diff below to avoid ever building the object (cuz just computing offsets)
-                Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED static constexpr ptrdiff_t offset2 (MEMBER ORIG_CLASS::*member)
-                {
-                    if constexpr (off > sizeof (BASE_CLASS)) {
-                        throw 1;
-                    }
-                    else {
-                        const auto diff1 = &((static_cast<const ORIG_CLASS*> (&union_part->base))->*member);
-                        const auto diff2 = &union_part->pad.m;
-                        if (diff1 > diff2) {
-                            constexpr auto MIN = (sizeof (MEMBER) < alignof (ORIG_CLASS)) ? sizeof (MEMBER) : alignof (ORIG_CLASS);
-                            return offset2<off + MIN> (member);
+                DISABLE_COMPILER_MSC_WARNING_START (4324);
+                template <typename BASE, typename MEMBER, size_t O>
+                struct MakeUnion {
+                    union U {
+                        char           c;
+                        BASE           base;
+                        Pad<MEMBER, O> pad;
+                        constexpr U () noexcept
+                            : c{} {};
+                        ~U () = delete;
+                    };
+                    //constexpr static U* u{};      // old code did this, but doesn't work if MEMBER field has type which is not allowed to be constexpr --LGP 2023-08-20
+                    constexpr static U* u{nullptr}; // don't actually allocate an object (maybe use declval instead?) - cuz else U not literal type sometimes if MEMBER obj type not literal
+                };
+                DISABLE_COMPILER_MSC_WARNING_END (4324);
+
+                template <typename MEMBER, typename BASE_CLASS, typename ORIG_CLASS>
+                struct offset_of_impl {
+                    template <size_t off, auto union_part = MakeUnion<BASE_CLASS, MEMBER, off>::u>
+                    // This gets called with nullptr as 'object' for computing diff below to avoid ever building the object (cuz just computing offsets)
+                    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED static constexpr ptrdiff_t offset2 (MEMBER ORIG_CLASS::*member)
+                    {
+                        if constexpr (off > sizeof (BASE_CLASS)) {
+                            throw 1;
                         }
                         else {
-                            return off;
+                            const auto diff1 = &((static_cast<const ORIG_CLASS*> (&union_part->base))->*member);
+                            const auto diff2 = &union_part->pad.m;
+                            if (diff1 > diff2) {
+                                constexpr auto MIN = (sizeof (MEMBER) < alignof (ORIG_CLASS)) ? sizeof (MEMBER) : alignof (ORIG_CLASS);
+                                return offset2<off + MIN> (member);
+                            }
+                            else {
+                                return off;
+                            }
                         }
                     }
+                };
+
+                template <class MEMBER, class BASE_CLASS>
+                tuple<MEMBER, BASE_CLASS> get_types (MEMBER BASE_CLASS::*); // never defined, never really called, just used to extrac types with decltype()
+
+                template <class TheBase = void, class TT>
+                inline constexpr size_t offset_of (TT member)
+                {
+                    using T      = decltype (get_types (declval<TT> ()));
+                    using Member = tuple_element_t<0, T>;
+                    using Orig   = tuple_element_t<1, T>;
+                    using Base   = conditional_t<is_void_v<TheBase>, Orig, TheBase>;
+                    return static_cast<size_t> (offset_of_impl<Member, Base, Orig>::template offset2<0> (member));
                 }
-            };
-
-            template <class MEMBER, class BASE_CLASS>
-            tuple<MEMBER, BASE_CLASS> get_types (MEMBER BASE_CLASS::*); // never defined, never really called, just used to extrac types with decltype()
-
-            template <class TheBase = void, class TT>
-            inline constexpr size_t offset_of (TT member)
-            {
-                using T      = decltype (get_types (declval<TT> ()));
-                using Member = tuple_element_t<0, T>;
-                using Orig   = tuple_element_t<1, T>;
-                using Base   = conditional_t<is_void_v<TheBase>, Orig, TheBase>;
-                return static_cast<size_t> (offset_of_impl<Member, Base, Orig>::template offset2<0> (member));
             }
-        }
-    }
 
-    namespace PRIVATE_ {
-        // @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516 for more info on maybe how to
-        // get this working with constexpr and without static object
-        template <typename T1, typename T2>
-        struct OffsetOfRequiringDefaultConstructibleObjectType_ {
-            //     static inline constexpr T2 sObj_{};
-            static constexpr size_t offset (T1 T2::*member)
-            {
-                union X {
-                    array<char, sizeof (T2)> bytes;
-                    T2                       obj;
-                    X (){};
-                    ~X (){};
-                } objAsUnion;
+            namespace RequiringDefaultConstructibleObjectType_ {
+                // @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516 for more info on maybe how to
+                // get this working with constexpr and without static object
+                template <typename T1, typename T2>
+                struct offset_of {
+                    //     static inline constexpr T2 sObj_{};
+                    static constexpr size_t offset (T1 T2::*member)
+                    {
+                        union X {
+                            array<char, sizeof (T2)> bytes;
+                            T2                       obj;
+                            X (){};
+                            ~X (){};
+                        } objAsUnion;
 
-                /*
+                        /*
                 * &&& maybe not undefined anymore
                  *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2
                  * "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
                  * the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined."]
                  */
-                return size_t (&(objAsUnion.obj.*member)) - size_t (&objAsUnion.obj);
+                        return size_t (&(objAsUnion.obj.*member)) - size_t (&objAsUnion.obj);
+                    }
+                };            
             }
-        };
-        template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-        inline size_t OffsetOf_BACKCOMPAT_ (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
-        {
-            // Still not totally legal for non-std-layout classes, but seems to work, and I haven't found a better way
-            //      --LGP 2021-05-27
-            alignas (OWNING_OBJECT) std::byte buf[sizeof (OWNING_OBJECT)]{};
-            const OWNING_OBJECT&              o = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
-            auto result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
-            // Avoid #include - Ensure (result <= sizeof (OWNING_OBJECT));
-            return result;
+
+            namespace UsingAlignedByteArrayBuf_ {
+                template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
+                inline size_t offset_of (FIELD_VALUE_TYPE OWNING_OBJECT::*member)
+                {
+                    // Still not totally legal for non-std-layout classes, but seems to work, and I haven't found a better way
+                    //      --LGP 2021-05-27
+                    alignas (OWNING_OBJECT) std::byte buf[sizeof (OWNING_OBJECT)]{};
+                    const OWNING_OBJECT&              o = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
+                    auto result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
+                    // Avoid #include - Ensure (result <= sizeof (OWNING_OBJECT));
+                    return result;
+                }
+            }
+            
+            namespace UsingSimpleUnionToConstructActualObj_ {
+
+                template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
+                inline constexpr size_t offset_of (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember))
+                {
+                    // NOT real assert - just tmphack to test
+                    //   auto a1 = Private_::OffsetOfImpl_::UsingRecursiveSideStruct_::offset_of<OUTER_OBJECT> (dataMember);
+                    //    auto a2 = PRIVATE_::OffsetOfImpl_::UsingAlignedByteArrayBuf_ (dataMember);
+                    //   auto a3 = PRIVATE_::OffsetOfImpl_::RequiringDefaultConstructibleObjectType_::offset_of<DATA_MEMBER_TYPE, OUTER_OBJECT>::offset (dataMember);
+                    //WeakAssert (a1 == a2);
+
+                    union X {
+                        array<char, sizeof (OUTER_OBJECT)> bytes;
+                        OUTER_OBJECT                       obj;
+                        X (){};
+                        ~X (){};
+                    } objAsUnion;
+
+                    //     auto a4 = size_t (&(objAsUnion.obj.*dataMember)) - size_t (&objAsUnion.bytes);
+
+                    /*
+                * &&& maybe not undefined anymore
+                 *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2
+                 * "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
+                 * the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined."]
+                 */
+                    return size_t (&(objAsUnion.obj.*dataMember)) - size_t (&objAsUnion.obj);
+
+                    //https://stackoverflow.com/questions/12141446/offset-from-member-pointer-without-temporary-instance
+                    // return Private_::OffsetOf2_::offset_of<OUTER_OBJECT> (dataMember);
+                }
+
+            }
         }
     }
 
-    template <typename OUTER_OBJECT, typename BASE_OBJECT, typename DATA_MEMBER_TYPE>
-    inline constexpr size_t OffsetOf (DATA_MEMBER_TYPE (BASE_OBJECT::*dataMember))
-    {
-        return Private_::OffsetOfGistGitHubGraphiteMaster_::offset_of<OUTER_OBJECT> (dataMember);
-    }
+
+   
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     inline constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember))
     {
-        // NOT real assert - just tmphack to test
-        //   auto a1 = Private_::OffsetOfGistGitHubGraphiteMaster_::offset_of<OUTER_OBJECT> (dataMember);
-        //    auto a2 = PRIVATE_::OffsetOf_BACKCOMPAT_ (dataMember);
-        //   auto a3 = PRIVATE_::OffsetOfRequiringDefaultConstructibleObjectType_<DATA_MEMBER_TYPE, OUTER_OBJECT>::offset (dataMember);
-        //WeakAssert (a1 == a2);
-
-        union X {
-            array<char, sizeof (OUTER_OBJECT)> bytes;
-            OUTER_OBJECT                       obj;
-            X (){};
-            ~X (){};
-        } objAsUnion;
-
-        //     auto a4 = size_t (&(objAsUnion.obj.*dataMember)) - size_t (&objAsUnion.bytes);
-
-        /*
-                * &&& maybe not undefined anymore
-                 *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2
-                 * "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
-                 * the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined."]
-                 */
-        return size_t (&(objAsUnion.obj.*dataMember)) - size_t (&objAsUnion.obj);
-
-        //https://stackoverflow.com/questions/12141446/offset-from-member-pointer-without-temporary-instance
-        // return Private_::OffsetOf2_::offset_of<OUTER_OBJECT> (dataMember);
+        [[maybe_unused]] size_t r1 = Private_::OffsetOfImpl_::UsingRecursiveSideStruct_::offset_of<OUTER_OBJECT> (dataMember);
+        [[maybe_unused]] size_t r2 =
+            Private_::OffsetOfImpl_::RequiringDefaultConstructibleObjectType_::offset_of<DATA_MEMBER_TYPE, OUTER_OBJECT>::offset (dataMember);
+        [[maybe_unused]] size_t r3 = Private_::OffsetOfImpl_::UsingAlignedByteArrayBuf_::offset_of<DATA_MEMBER_TYPE, OUTER_OBJECT> (dataMember);
+        size_t r4 =
+            Private_::OffsetOfImpl_::UsingSimpleUnionToConstructActualObj_::offset_of<OUTER_OBJECT, DATA_MEMBER_TYPE> (dataMember);
+        if (not is_constant_evaluated ()) {
+            Assert (r1 == r4);
+            Assert (r2 == r4);
+            Assert (r3 == r4);
+        }
+        return r4;
     }
 
     /*
