@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Memory {
      *              String  lastName;
      *          };
      *          constexpr size_t kOffset_ = OffsetOf(&Person::lastName);
-     *          static_assert (OffsetOf (&Person::firstName) == 0);
+     *          static_assert (OffsetOf (&Person::firstName) == 0);         // NOTE - we WANT this to work, but for now cannot get constexpr stuff working
      *      \endcode
      * 
      *  \par Example Usage

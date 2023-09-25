@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Memory {
                 };
 
                 template <class MEMBER, class BASE_CLASS>
-                tuple<MEMBER, BASE_CLASS> get_types (MEMBER BASE_CLASS::*); // never defined, never really called, just used to extrac types with decltype()
+                tuple<MEMBER, BASE_CLASS> get_types (MEMBER BASE_CLASS::*); // never defined, never really called, just used to extract types with decltype()
 
                 template <class TheBase = void, class TT>
                 inline constexpr size_t offset_of (TT member)
@@ -151,12 +151,8 @@ namespace Stroika::Foundation::Memory {
 
             namespace RequiringDefaultConstructibleObjectType_ {
                 // @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516 for more info on maybe how to
-                // get this working with constexpr and without static object
-                //
-                // see -ftemplate-depth=5000  configure workaround to use this
                 template <typename T1, typename T2>
                 struct offset_of {
-                    //     static inline constexpr T2 sObj_{};
                     static constexpr size_t offset (T1 T2::*member)
                     {
                         union X {
@@ -165,13 +161,12 @@ namespace Stroika::Foundation::Memory {
                             X (){};
                             ~X (){};
                         } objAsUnion;
-
                         /*
-                * &&& maybe not undefined anymore
-                 *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2
-                 * "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
-                 * the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined."]
-                 */
+                         * &&& maybe not undefined anymore
+                         *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2
+                         * "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
+                         * the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined."]
+                         */
                         return size_t (&(objAsUnion.obj.*member)) - size_t (&objAsUnion.obj);
                     }
                 };
@@ -189,6 +184,24 @@ namespace Stroika::Foundation::Memory {
                     // Avoid #include - Ensure (result <= sizeof (OWNING_OBJECT));
                     return result;
                 }
+            }
+
+            namespace UseExplicitDefaultConstructibleStaticInstance_ {
+                // @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516 for more info on maybe how to
+                // get this working with constexpr and without static object
+                template <typename T1, typename T2>
+                struct offset_of_ {
+                    static inline constexpr T2 sObj_{};
+                    static constexpr size_t    offset (T1 T2::*member)
+                    {
+                        /*
+                         *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2
+                         * "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
+                         * the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined."]
+                         */
+                        return size_t (&(offset_of_<T1, T2>::sObj_.*member)) - size_t (&offset_of_<T1, T2>::sObj_);
+                    }
+                };
             }
 
             namespace UsingSimpleUnionToConstructActualObj_ {
@@ -230,23 +243,43 @@ namespace Stroika::Foundation::Memory {
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     inline constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember))
     {
-        /*
-         *  Setup to test/try each implementation. One with apparently best shot of working constexpr is UsingRecursiveSideStruct_
-         *  HOWEVER, it requires (on unix) setting -ftemplate-depth=5000 flags, and even then, doesn't really work constexpr (complains about dereferencing nullptr).
-         * 
-         *  Don't give up, but no success so far. MAYBE works OK/portably without the constexpr stuff. Dunno. Probably NOT for the same deref-nullptr reason.
-         */
-        [[maybe_unused]] size_t r1 = Private_::OffsetOfImpl_::UsingRecursiveSideStruct_::offset_of<OUTER_OBJECT> (dataMember);
-        [[maybe_unused]] size_t r2 =
-            Private_::OffsetOfImpl_::RequiringDefaultConstructibleObjectType_::offset_of<DATA_MEMBER_TYPE, OUTER_OBJECT>::offset (dataMember);
-        [[maybe_unused]] size_t r3 = Private_::OffsetOfImpl_::UsingAlignedByteArrayBuf_::offset_of<DATA_MEMBER_TYPE, OUTER_OBJECT> (dataMember);
-        size_t r4 = Private_::OffsetOfImpl_::UsingSimpleUnionToConstructActualObj_::offset_of<OUTER_OBJECT, DATA_MEMBER_TYPE> (dataMember);
-        if (not is_constant_evaluated ()) {
-            Assert (r1 == r4);
-            Assert (r2 == r4);
-            Assert (r3 == r4);
+        //constexpr bool          kTestAllWays_ = false;
+        constexpr bool          kTestAllWays_ = true;
+        [[maybe_unused]] size_t r1;
+        [[maybe_unused]] size_t r2;
+        [[maybe_unused]] size_t r3;
+        [[maybe_unused]] size_t r4;
+        if constexpr (kTestAllWays_) {
+            /*
+             *  Setup to test/try each implementation. One with apparently best shot of working constexpr is UsingRecursiveSideStruct_
+             *  HOWEVER, it requires (on unix) setting -ftemplate-depth=5000 flags, and even then, doesn't really work constexpr (complains about dereferencing nullptr).
+             * 
+             *  Don't give up, but no success so far. MAYBE works OK/portably without the constexpr stuff. Dunno. Probably NOT for the same deref-nullptr reason.
+             */
+#if defined(_MSC_VER)
+            // Don't bother compiling for gcc/clang cuz fails on some compilers without -fdepth= flag, and no point since wont really work right even
+            // if you provide that flag. REVISIT in the future maybe, but for now don't even bother calling
+            r1 = Private_::OffsetOfImpl_::UsingRecursiveSideStruct_::offset_of<OUTER_OBJECT> (dataMember);
+#endif
+            r2 = Private_::OffsetOfImpl_::RequiringDefaultConstructibleObjectType_::offset_of<DATA_MEMBER_TYPE, OUTER_OBJECT>::offset (dataMember);
+            r3 = Private_::OffsetOfImpl_::UsingAlignedByteArrayBuf_::offset_of<DATA_MEMBER_TYPE, OUTER_OBJECT> (dataMember);
+            if constexpr (is_trivially_default_constructible_v<OUTER_OBJECT>) {
+                r4 = Private_::OffsetOfImpl_::UseExplicitDefaultConstructibleStaticInstance_::offset_of_<DATA_MEMBER_TYPE, OUTER_OBJECT>::offset (dataMember);
+            }
         }
-        return r4;
+        size_t r5 = Private_::OffsetOfImpl_::UsingSimpleUnionToConstructActualObj_::offset_of<OUTER_OBJECT, DATA_MEMBER_TYPE> (dataMember);
+        size_t rr = r5;
+        if (not is_constant_evaluated () and kTestAllWays_) {
+#if defined(_MSC_VER)
+            Assert (r1 == rr);
+#endif
+            Assert (r2 == rr);
+            Assert (r3 == rr);
+            if constexpr (is_trivially_default_constructible_v<OUTER_OBJECT>) {
+                Assert (r4 == rr);
+            }
+        }
+        return rr;
     }
 
     /*
