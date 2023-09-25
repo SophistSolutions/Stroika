@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Memory {
         size_t origSize     = src.size ();
         size_t origCapacity = src.capacity ();
 #endif
-        if (src.UsingInlinePreallocatedBuffer_ ()) {
+        if (src.UsingInlinePreallocatedBuffer_ ()) [[likely]] {
             // then little to be saved from a move, and technically we really cannot do much, except that we can 'move' the data elements
             // This 'moving' is done via make_move_iterator () - rather that magically makes the uninitialized_copy really move instead of copying
             Assert (capacity () == src.capacity ());
@@ -150,8 +150,36 @@ namespace Stroika::Foundation::Memory {
     inline InlineBuffer<T, BUF_SIZE>& InlineBuffer<T, BUF_SIZE>::operator= (InlineBuffer&& rhs)
     {
         Invariant ();
-        WeakAssertNotImplemented (); // @todo this simple implementation could be more efficient (sb pretty easy based on existing move CTOR code...
-        operator= (rhs);             // call copy assign for now
+#if qDebug
+        size_t origFromSize     = rhs.size ();
+        size_t origFromCapacity = rhs.capacity ();
+#endif
+        // destroy any existing elts (dont bother resetting size til end), and deallocate any RAM in use
+        DestroyElts_ (this->begin (), this->end ());
+        if (not this->UsingInlinePreallocatedBuffer_ ()) [[unlikely]] {
+            Deallocate_ (LiveDataAsAllocatedBytes_ ());
+            fLiveData_ = BufferAsT_ ();
+        }
+
+        if (rhs.UsingInlinePreallocatedBuffer_ ()) [[likely]] {
+            // then little to be saved from a move, and technically we really cannot do much, except that we can 'move' the data elements
+            // This 'moving' is done via make_move_iterator () - rather that magically makes the uninitialized_copy really move instead of copying
+            Assert (capacity () == rhs.capacity ());
+            size_t sz = rhs.size ();
+            uninitialized_copy (std::make_move_iterator (rhs.begin ()), std::make_move_iterator (rhs.begin () + sz), this->begin ());
+            fSize_ = sz;
+        }
+        else {
+            // OK - we can do some trickery here to steal the underlying pointers
+            this->fLiveData_ = rhs.fLiveData_;
+            rhs.fLiveData_   = rhs.BufferAsT_ ();
+            this->fSize_     = rhs.fSize_;
+            rhs.fSize_       = 0;
+            Ensure (rhs.fSize_ == 0);
+            Ensure (rhs.capacity () == BUF_SIZE);
+        }
+        Ensure (this->size () == origFromSize);
+        Ensure (this->capacity () == origFromCapacity);
         return *this;
     }
     template <typename T, size_t BUF_SIZE>
