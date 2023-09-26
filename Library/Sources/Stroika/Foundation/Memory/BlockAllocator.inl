@@ -232,6 +232,10 @@ namespace Stroika::Foundation::Memory {
         static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
         RequireNotNull (p);
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+
+
+       constexpr bool kTryMemoryOrderOptimizations_ = true; // experiment as of 2023-09-26
+
         /*
          *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
          *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
@@ -259,7 +263,12 @@ namespace Stroika::Foundation::Memory {
         reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (newHead);
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (&sHeadLink_);
-        Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+        if constexpr (kTryMemoryOrderOptimizations_) {
+            Verify (sHeadLink_.exchange (newHead, memory_order_release) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+        }
+        else {
+            Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+        }
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (&sHeadLink_);
         Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated (p, SIZE);
 #else
