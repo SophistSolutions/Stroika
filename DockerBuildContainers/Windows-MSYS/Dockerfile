@@ -84,6 +84,8 @@ SHELL ["powershell"]
 RUN  \
     $env:PATH =  $env:PATH + ';C:\msys64\usr\bin;C:\msys64\mingw64\bin'; \
     [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
+RUN  \
+    [Environment]::SetEnvironmentVariable('HOME', 'c:\msys64\home', [EnvironmentVariableTarget]::Machine);
 
 # Install a bunch of components - mostly that Stroika builds will find handy
 SHELL ["cmd", "/S", "/C"]
@@ -91,8 +93,8 @@ RUN \
     pacman --noconfirm -S base-devel git unzip p7zip doxygen mingw-w64-x86_64-jq && \
     pacman --noconfirm -Syuu
 
-COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR
-COPY Windows-MSYS/.bash_profile $MSYS_DIR
+COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR/home/
+COPY Windows-MSYS/.bash_profile $MSYS_DIR/home/
 
 # Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
 # and much worse with windows (in part due to available shell commands)
