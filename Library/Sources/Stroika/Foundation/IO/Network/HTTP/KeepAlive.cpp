@@ -69,13 +69,13 @@ String KeepAlive::AsValue () const
 String KeepAlive::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
+    sb << "{"sv;
     if (fMessages) {
-        sb << "Messages: " << Characters::ToString (*fMessages) << ", ";
+        sb << "Messages: "sv << Characters::ToString (*fMessages) << ", "sv;
     }
     if (fTimeoutAt) {
-        sb << "Timeout-At: " << Characters::ToString (*fTimeoutAt) << ", ";
+        sb << "Timeout-At: "sv << Characters::ToString (*fTimeoutAt);
     }
-    sb << "}";
+    sb << "}"sv;
     return sb.str ();
 }

@@ -11,7 +11,6 @@
 #include <typeindex>
 
 #include "../../Characters/String.h"
-#include "../../Characters/StringBuilder.h"
 #include "../../Configuration/Enumeration.h"
 #include "../../Configuration/TypeHints.h"
 #include "../../Containers/Adapters/Adder.h"

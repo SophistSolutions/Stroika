@@ -375,20 +375,20 @@ namespace {
 Characters::String Network::ConnectionOrientedStreamSocket::KeepAliveOptions::ToString () const
 {
     Characters::StringBuilder sb;
-    sb << "{";
-    sb << "Enabled: " << Characters::ToString (fEnabled) << ",";
+    sb << "{"sv;
+    sb << "Enabled: "sv << Characters::ToString (fEnabled) << ","sv;
 #if qPlatform_Linux or qPlatform_Windows
     if (fMaxProbesSentBeforeDrop) {
-        sb << "Max-Probes-Sent-Before-Drop: " << Characters::ToString (fMaxProbesSentBeforeDrop) << ",";
+        sb << "Max-Probes-Sent-Before-Drop: "sv << Characters::ToString (fMaxProbesSentBeforeDrop) << ","sv;
     }
     if (fTimeIdleBeforeSendingKeepalives) {
-        sb << "Time-Idle-Before-Sending-Keepalives: " << Characters::ToString (fTimeIdleBeforeSendingKeepalives) << ",";
+        sb << "Time-Idle-Before-Sending-Keepalives: "sv << Characters::ToString (fTimeIdleBeforeSendingKeepalives) << ","sv;
     }
     if (fTimeBetweenIndividualKeepaliveProbes) {
-        sb << "Time-Between-Individual-Keepalive-Probes: " << Characters::ToString (fTimeBetweenIndividualKeepaliveProbes) << ",";
+        sb << "Time-Between-Individual-Keepalive-Probes: "sv << Characters::ToString (fTimeBetweenIndividualKeepaliveProbes) << ","sv;
     }
 #endif
-    sb << "}";
+    sb << "}"sv;
     return sb.str ();
 }
 

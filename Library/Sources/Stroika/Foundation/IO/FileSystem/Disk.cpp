@@ -49,15 +49,15 @@ DEFINE_GUID (GUID_DEVINTERFACE_DISK, 0x53f56307L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x
 String DiskInfoType::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
-    sb << "Device-Name: " << Characters::ToString (fDeviceName) << ", ";
+    sb << "{"sv;
+    sb << "Device-Name: "sv << Characters::ToString (fDeviceName) << ", "sv;
     if (fDeviceKind) {
-        sb << "Device-Kind: '" << Characters::ToString (*fDeviceKind) << "', ";
+        sb << "Device-Kind: '"sv << Characters::ToString (*fDeviceKind) << "', "sv;
     }
     if (fSizeInBytes) {
-        sb << "Size-In-Bytes: " << Characters::ToString (*fSizeInBytes) << ", ";
+        sb << "Size-In-Bytes: "sv << Characters::ToString (*fSizeInBytes) << ", "sv;
     }
-    sb << "}";
+    sb << "}"sv;
     return sb.str ();
 }
 

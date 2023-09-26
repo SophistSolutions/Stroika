@@ -25,7 +25,6 @@
 #endif
 
 #include "../Characters/LineEndings.h"
-#include "../Characters/StringBuilder.h"
 #include "../Execution/Finally.h"
 
 #include "BackTrace.h"

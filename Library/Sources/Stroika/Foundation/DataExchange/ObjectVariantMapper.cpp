@@ -49,10 +49,10 @@ namespace {
 String ObjectVariantMapper::TypeMappingDetails::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += "{";
-    sb += "for-type: " + Characters::ToString (fForType);
+    sb << "{"sv;
+    sb << "for-type: "sv << Characters::ToString (fForType);
     // @todo maybe also print function pointers? Not sure a good reason
-    sb += "}";
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -64,9 +64,9 @@ String ObjectVariantMapper::TypeMappingDetails::ToString () const
 String ObjectVariantMapper::TypesRegistry::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += "{";
-    sb += "type-mappers: " + Characters::ToString (fSerializers_.Keys ()); // for now the values are not interesting
-    sb += "}";
+    sb << "{"sv;
+    sb << "type-mappers: "sv << Characters::ToString (fSerializers_.Keys ()); // for now the values are not interesting
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -518,9 +518,9 @@ Time::TimeOfDay ObjectVariantMapper::ToObject (const ToObjectMapperType<Time::Ti
 String ObjectVariantMapper::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += "{";
-    sb += "type-map-registry: " + Characters::ToString (fTypeMappingRegistry_);
-    sb += "}";
+    sb << "{"sv;
+    sb << "type-map-registry: "sv << Characters::ToString (fTypeMappingRegistry_);
+    sb << "}";
     return sb.str ();
 }
 

@@ -66,21 +66,21 @@ using Time::DurationSecondsType;
 Characters::String SignalHandler::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += "{"sv;
-    sb += "type: "sv + Characters::ToString (GetType ()) + ", "sv;
+    sb << "{"sv;
+    sb << "type: "sv << Characters::ToString (GetType ()) << ", "sv;
     // rough guess what to print...
     Function<void (SignalID)>::STDFUNCTION stdFuncTarget = static_cast<Function<void (SignalID)>::STDFUNCTION> (fCall_);
     if (stdFuncTarget.target_type () == typeid (void (*) (SignalID))) {
-        sb += "target: "sv + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<void (*) (SignalID)> ()));
+        sb << "target: "sv << Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<void (*) (SignalID)> ()));
     }
     else if (stdFuncTarget.target_type () == typeid (Function<void (SignalID)>)) {
-        sb += "target: "sv + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<Function<void (SignalID)>> ()));
+        sb << "target: "sv << Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<Function<void (SignalID)>> ()));
     }
     else {
         // type only/mainly interesting if not one of the above so we're printing nullptr
-        sb += "target-type: "sv + Characters::ToString (stdFuncTarget.target_type ());
+        sb << "target-type: "sv << Characters::ToString (stdFuncTarget.target_type ());
     }
-    sb += "}";
+    sb << "}"sv;
     return sb.str ();
 }
 

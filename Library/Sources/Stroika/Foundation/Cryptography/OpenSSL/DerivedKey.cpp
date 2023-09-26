@@ -55,10 +55,10 @@ using Memory::StackBuffer;
 String DerivedKey::ToString () const
 {
     Characters::StringBuilder result;
-    result += "{";
-    result += "key: " + Characters::ToString (fKey) + ", ";
-    result += "IV: " + Characters::ToString (fIV);
-    result += "}";
+    result << "{"sv;
+    result << "key: "sv << Characters::ToString (fKey) << ", "sv;
+    result << "IV: "sv << Characters::ToString (fIV);
+    result << "}"sv;
     return result.str ();
 }
 #endif

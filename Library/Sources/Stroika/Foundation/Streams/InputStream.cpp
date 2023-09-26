@@ -16,7 +16,6 @@ using namespace Stroika::Foundation::Streams;
 
 using Characters::Character;
 using Characters::String;
-using Characters::StringBuilder;
 using Memory::BLOB;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module

@@ -31,14 +31,14 @@ String Section::ToString () const
 String Profile::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += "{";
+    sb << "{";
     if (not fUnnamedSection.fProperties.empty ()) {
-        sb += "fUnnamedSection: " + Characters::ToString (fUnnamedSection) + ",";
+        sb << "fUnnamedSection: "sv << Characters::ToString (fUnnamedSection) << ","sv;
     }
     if (not fNamedSections.empty ()) {
-        sb += "fNamedSections: " + Characters::ToString (fNamedSections) + ",";
+        sb << "fNamedSections: " << Characters::ToString (fNamedSections) << ","sv;
     }
-    sb += "}";
+    sb << "}"sv;
     return sb.str ();
 }
 

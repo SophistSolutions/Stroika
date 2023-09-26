@@ -55,8 +55,8 @@ namespace {
             nonvirtual String ToString () const
             {
                 StringBuilder sb = Element::ToString ().SubString (0, -1);
-                sb << ", fExpiresDefault: " << Characters::ToString (fExpiresDefault);
-                sb << "}";
+                sb << ", fExpiresDefault: "sv << Characters::ToString (fExpiresDefault);
+                sb << "}"sv;
                 return sb.str ();
             }
             optional<Time::DateTime> fExpiresDefault;
@@ -307,16 +307,16 @@ optional<DateTime> Transfer::Cache::Element::IsValidUntil () const
 String Transfer::Cache::Element::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
-    sb << ", ETag: " << Characters::ToString (fETag);
-    sb << ", Expires: " << Characters::ToString (fExpires);
-    sb << ", ExpiresDueToMaxAge: " << Characters::ToString (fExpiresDueToMaxAge);
-    sb << ", LastModified: " << Characters::ToString (fLastModified);
-    sb << ", CacheControl: " << Characters::ToString (fCacheControl);
-    sb << ", ContentType: " << Characters::ToString (fContentType);
-    sb << ", OtherHeaders: " << Characters::ToString (fOtherHeaders);
-    sb << ", Body: " << Characters::ToString (fBody);
-    sb << "}";
+    sb << "{"sv;
+    sb << ", ETag: "sv << Characters::ToString (fETag);
+    sb << ", Expires: "sv << Characters::ToString (fExpires);
+    sb << ", ExpiresDueToMaxAge: "sv << Characters::ToString (fExpiresDueToMaxAge);
+    sb << ", LastModified: "sv << Characters::ToString (fLastModified);
+    sb << ", CacheControl: "sv << Characters::ToString (fCacheControl);
+    sb << ", ContentType: "sv << Characters::ToString (fContentType);
+    sb << ", OtherHeaders: "sv << Characters::ToString (fOtherHeaders);
+    sb << ", Body: "sv << Characters::ToString (fBody);
+    sb << "}"sv;
     return sb.str ();
 }
 

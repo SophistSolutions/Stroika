@@ -164,11 +164,11 @@ namespace Stroika::Foundation::Traversal {
     Characters::String DisjointRange<T, RANGE_TYPE>::ToString (const function<Characters::String (T)>& elt2String) const
     {
         Characters::StringBuilder out;
-        out << "[";
+        out << "["sv;
         for (const RangeType& rri : SubRanges ()) {
             out << rri.ToString (elt2String);
         }
-        out << "]";
+        out << "]"sv;
         return out.str ();
     }
     template <typename T, typename RANGE_TYPE>

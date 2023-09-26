@@ -32,10 +32,10 @@ using namespace Time;
 String Statement::ColumnDescription::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "name: " + Characters::ToString (fName) + ", ";
-    sb += "type: " + Characters::ToString (fType);
-    sb += "}";
+    sb << "{"sv;
+    sb << "name: "sv << Characters::ToString (fName) << ", "sv;
+    sb << "type: "sv << Characters::ToString (fType);
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -47,10 +47,10 @@ String Statement::ColumnDescription::ToString () const
 String Statement::ParameterDescription::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "name: " + Characters::ToString (fName) + ", ";
-    sb += "value: " + Characters::ToString (fValue);
-    sb += "}";
+    sb << "{"sv;
+    sb << "name: "sv << Characters::ToString (fName) << ", "sv;
+    sb << "value: "sv << Characters::ToString (fValue);
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -180,10 +180,10 @@ String Statement::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb;
-    sb += "{";
-    sb += "Parameter-Bindings: " + Characters::ToString (GetParameters ()) + ", ";
-    sb += "Column-Descriptions: " + Characters::ToString (GetColumns ()) + ", ";
-    sb += "Original-SQL: " + Characters::ToString (GetSQL ());
-    sb += "}";
+    sb << "{"sv;
+    sb << "Parameter-Bindings: "sv << Characters::ToString (GetParameters ()) << ", "sv;
+    sb << "Column-Descriptions: "sv << Characters::ToString (GetColumns ()) << ", "sv;
+    sb << "Original-SQL: "sv << Characters::ToString (GetSQL ());
+    sb << "}"sv;
     return sb.str ();
 }

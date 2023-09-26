@@ -131,7 +131,13 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder<OPTIONS>::Append (const basic_string_view<CHAR_T>& s)
         requires (IUNICODECanUnambiguouslyConvertFrom<CHAR_T>)
     {
-        Append (span{s});
+        if constexpr (same_as<CHAR_T, ASCII>) {
+            Require (Character::IsASCII (span{s})); // Optimization here is just avoiding Character::CheckASCII (s); in release builds
+            this->fData_.push_back_coerced (span{s});
+        }
+        else {
+            Append (span{s});
+        }
     }
     template <typename OPTIONS>
     inline void StringBuilder<OPTIONS>::Append (const String& s)

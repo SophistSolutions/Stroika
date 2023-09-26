@@ -67,11 +67,11 @@ optional<String> Response::GetCharset () const
 String Response::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
-    sb << "Headers: " << Characters::ToString (fHeaders_) << ",";
-    sb << "Status: " << Characters::ToString (fStatus_) << ",";
-    sb << "ServerEndpointSSLInfo_: " << Characters::ToString (fServerEndpointSSLInfo_) << ",";
-    sb << "}";
+    sb << "{"sv;
+    sb << "Headers: "sv << Characters::ToString (fHeaders_) << ","sv;
+    sb << "Status: "sv << Characters::ToString (fStatus_) << ","sv;
+    sb << "ServerEndpointSSLInfo_: "sv << Characters::ToString (fServerEndpointSSLInfo_) << ","sv;
+    sb << "}"sv;
     return sb.str ();
 }
 

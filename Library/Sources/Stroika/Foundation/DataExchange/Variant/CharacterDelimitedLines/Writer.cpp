@@ -69,9 +69,9 @@ public:
         for (Iterator<String> i = line.begin (); i != line.end (); ++i) {
             sb += *i;
             if (i + 1 != line.end ()) {
-                sb += fOptions_.fSeparator;
+                sb << fOptions_.fSeparator;
                 if (fOptions_.fSpaceSeparate) {
-                    sb += " "sv;
+                    sb << " "sv;
                 }
             }
         }

@@ -212,7 +212,7 @@ auto ORM::Schema::Table::GetIDField () const -> optional<Field>
  ********************************************************************************
  */
 namespace {
-    String GetSQLiteFldType_ (const ORM::Schema::Field& f)
+    string_view GetSQLiteFldType_ (const ORM::Schema::Field& f)
     {
         // @todo - this must be factored through SQL::EngineProperties
         if (f.fVariantValueType) {
@@ -249,30 +249,30 @@ String ORM::Schema::StandardSQLStatements::CreateTable () const
      *      NAME           TEXT    NOT NULL
      *     );
      */
-    sb += "CREATE TABLE " + fTable.fName + " (";
+    sb << "CREATE TABLE "sv << fTable.fName << " ("sv;
     bool firstField = true;
     auto addField   = [&] (const Field& fi) {
         if (firstField) {
             firstField = false;
         }
         else {
-            sb += ", ";
+            sb << ", "sv;
         }
-        sb += fi.fName + " ";
-        sb += GetSQLiteFldType_ (fi) + " ";
+        sb << fi.fName << " "sv;
+        sb << GetSQLiteFldType_ (fi) << " "sv;
         if (fi.fIsKeyField == true) {
-            sb += " PRIMARY KEY"_k;
+            sb << " PRIMARY KEY"sv;
         }
         if (fi.fDefaultExpression) {
             if (*fi.fDefaultExpression == Field::kDefaultExpression_AutoIncrement) {
-                sb += " AUTOINCREMENT"_k;
+                sb << " AUTOINCREMENT"sv;
             }
             else {
-                sb += " DEFAULT(" + *fi.fDefaultExpression + ")";
+                sb << " DEFAULT("sv << *fi.fDefaultExpression << ")"sv;
             }
         }
         if (fi.fRequired) {
-            sb += " NOT NULL"_k;
+            sb << " NOT NULL"sv;
         }
     };
     for (const Field& i : fTable.fNamedFields) {
@@ -281,8 +281,7 @@ String ORM::Schema::StandardSQLStatements::CreateTable () const
     if (fTable.fSpecialCatchAll) {
         addField (*fTable.fSpecialCatchAll);
     }
-    sb += ");";
-
+    sb << ");"sv;
     return sb.str ();
 }
 
@@ -293,16 +292,16 @@ String ORM::Schema::StandardSQLStatements::Insert () const
     /*
      *   INSERT INTO DEVICES (name) values (:NAME);
      */
-    sb += "INSERT INTO "_k + fTable.fName + " ("_k;
+    sb << "INSERT INTO "sv + fTable.fName << " ("sv;
     bool firstField   = true;
     auto addFieldName = [&] (const Field& fi) {
         if (firstField) {
             firstField = false;
         }
         else {
-            sb += ", ";
+            sb << ", "sv;
         }
-        sb += fi.fName;
+        sb << fi.fName;
     };
     for (const Field& i : fTable.fNamedFields) {
         addFieldName (i);
@@ -310,16 +309,16 @@ String ORM::Schema::StandardSQLStatements::Insert () const
     if (fTable.fSpecialCatchAll) {
         addFieldName (*fTable.fSpecialCatchAll);
     }
-    sb += ") VALUES ("_k;
+    sb << ") VALUES ("sv;
     firstField                     = true;
     auto addFieldValueVariableName = [&] (const Field& fi) {
         if (firstField) {
             firstField = false;
         }
         else {
-            sb += ", ";
+            sb << ", "sv;
         }
-        sb += ":" + fi.fName;
+        sb << ":"sv << fi.fName;
     };
     for (const Field& i : fTable.fNamedFields) {
         addFieldValueVariableName (i);
@@ -327,7 +326,7 @@ String ORM::Schema::StandardSQLStatements::Insert () const
     if (fTable.fSpecialCatchAll) {
         addFieldValueVariableName (*fTable.fSpecialCatchAll);
     }
-    sb += ");"_k;
+    sb << ");"sv;
     return sb.str ();
 }
 
@@ -338,7 +337,7 @@ String ORM::Schema::StandardSQLStatements::DeleteByID () const
      *   Delete from DEVICES (ID) where ID=:ID;
      */
     Field indexField = Memory::ValueOf (fTable.GetIDField ());
-    sb += "DELETE FROM "_k + fTable.fName + " WHERE " + indexField.fName + "=:" + indexField.fName + ";";
+    sb << "DELETE FROM "sv + fTable.fName << " WHERE "sv << indexField.fName << "=:"sv << indexField.fName << ";"sv;
     return sb.str ();
 }
 
@@ -349,7 +348,7 @@ String ORM::Schema::StandardSQLStatements::GetByID () const
      *   SELECT * FROM DEVICES where ID=:ID;
      */
     Field indexField = Memory::ValueOf (fTable.GetIDField ());
-    sb += "SELECT * FROM "_k + fTable.fName + " WHERE " + indexField.fName + "=:" + indexField.fName + ";";
+    sb << "SELECT * FROM "sv + fTable.fName << " WHERE "sv + indexField.fName << "=:"sv << indexField.fName << ";"sv;
     return sb.str ();
 }
 
@@ -362,17 +361,17 @@ String ORM::Schema::StandardSQLStatements::UpdateByID () const
      *   WHERE ID=:ID;
      */
     Field indexField = Memory::ValueOf (fTable.GetIDField ());
-    sb += "UPDATE "_k + fTable.fName;
+    sb << "UPDATE "sv << fTable.fName;
     bool firstField  = true;
     auto addSetField = [&] (const Field& fi) {
         if (firstField) {
             firstField = false;
-            sb += " SET "_k;
+            sb << " SET "sv;
         }
         else {
-            sb += ", "_k;
+            sb << ", "sv;
         }
-        sb += fi.fName + "=:" + fi.fName;
+        sb << fi.fName << "=:"sv << fi.fName;
     };
     for (const Field& i : fTable.fNamedFields) {
         if (not i.fIsKeyField) {
@@ -382,7 +381,7 @@ String ORM::Schema::StandardSQLStatements::UpdateByID () const
     if (fTable.fSpecialCatchAll) {
         addSetField (*fTable.fSpecialCatchAll);
     }
-    sb += " WHERE "_k + indexField.fName + "=:" + indexField.fName + ";";
+    sb << " WHERE "sv << indexField.fName << "=:"sv << indexField.fName << ";"sv;
     return sb.str ();
 }
 
@@ -392,6 +391,6 @@ String ORM::Schema::StandardSQLStatements::GetAllElements () const
     /*
      *   Select * from DEVICES;
      */
-    sb += "SELECT * FROM " + fTable.fName + ";";
+    sb << "SELECT * FROM "sv + fTable.fName << ";"sv;
     return sb.str ();
 }

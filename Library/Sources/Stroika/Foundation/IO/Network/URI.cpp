@@ -135,7 +135,7 @@ String URI::AsString_ () const
         //      scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
         // no need to pct encode this
         Assert (fScheme_->All ([] (Character c) { return c.IsASCII (); }));
-        result << *fScheme_ << ":";
+        result << *fScheme_ << ":"sv;
     }
     if (fAuthority_) {
         Assert (fAuthority_->As<String> ().All ([] (Character c) { return c.IsASCII (); }));

@@ -30,14 +30,14 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
     Characters::String Options<FLOAT_TYPE>::ToString () const
     {
         Characters::StringBuilder sb;
-        sb += "{";
+        sb << "{"sv;
         if (fMaxIterations) {
-            sb += "Max-Iterations: " + Characters::ToString (fMaxIterations) + ",";
+            sb << "Max-Iterations: "sv << Characters::ToString (fMaxIterations) << ","sv;
         }
         if (fNoImprovementThreshold) {
-            sb += "No-Improvement-Threshold: " + Characters::ToString (fNoImprovementThreshold) + ",";
+            sb << "No-Improvement-Threshold: "sv << Characters::ToString (fNoImprovementThreshold) << ","sv;
         }
-        sb += "}";
+        sb += "}"sv;
         return sb.str ();
     }
 
@@ -50,11 +50,11 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
     Characters::String Results<FLOAT_TYPE>::ToString () const
     {
         Characters::StringBuilder sb;
-        sb += "{";
-        sb += "Optimized-Parameters: " + Characters::ToString (fOptimizedParameters) + ",";
-        sb += "Score: " + Characters::ToString (fScore) + ",";
-        sb += "Iteration-Count: " + Characters::Format (L"%d", fIterationCount) + ",";
-        sb += "}";
+        sb << "{"sv;
+        sb << "Optimized-Parameters: "sv << Characters::ToString (fOptimizedParameters) << ","sv;
+        sb << "Score: "sv << Characters::ToString (fScore) << ","sv;
+        sb << "Iteration-Count: "sv << Characters::Format (L"%d", fIterationCount);
+        sb << "}"sv;
         return sb.str ();
     }
 

@@ -178,7 +178,7 @@ namespace Stroika::Foundation::Characters {
          *  \req for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          * 
-         *  \note 'char' constructors:
+         *  \note 'char' (using ASCII = char) constructors:
          *        Becuase the characterset of strings of type 'char' is ambiguous, if you construct a String
          *        with char (char* etc) - it runtime checked that the characters are ASCII (except for the basic_string_view
          *        constructors where we check but with assertions).

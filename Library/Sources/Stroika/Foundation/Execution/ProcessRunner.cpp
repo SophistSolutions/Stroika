@@ -257,31 +257,31 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
                                          const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
 {
     Characters::StringBuilder sb;
-    sb += errorMessage;
-    sb += " '" + cmdLine + "' failed";
+    sb << errorMessage;
+    sb << " '"sv << cmdLine << "' failed"sv;
     {
         Characters::StringBuilder extraMsg;
         if (wExitStatus) {
-            extraMsg += Characters::Format (L"exit status %d", int (*wExitStatus));
+            extraMsg << Characters::Format (L"exit status %d", int (*wExitStatus));
         }
         if (wTermSig) {
             if (not extraMsg.empty ()) {
-                extraMsg += ", "sv;
+                extraMsg << ", "sv;
             }
-            extraMsg += Characters::Format (L"terminated by signal %d", int (*wTermSig));
+            extraMsg << Characters::Format (L"terminated by signal %d", int (*wTermSig));
         }
         if (wStopSig) {
             if (not extraMsg.empty ()) {
-                extraMsg += ", "sv;
+                extraMsg << ", "sv;
             }
-            extraMsg += Characters::Format (L"stopped by signal %d", int (*wStopSig));
+            extraMsg << Characters::Format (L"stopped by signal %d", int (*wStopSig));
         }
         if (not extraMsg.empty ()) {
-            sb += ": "sv + extraMsg.str ();
+            sb << ": "sv + extraMsg.str ();
         }
     }
     if (stderrSubset) {
-        sb += "; "sv + stderrSubset->LimitLength (100);
+        sb << "; "sv + stderrSubset->LimitLength (100);
     }
     return sb.str ();
 }
@@ -290,19 +290,19 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
                                          const optional<DWORD>& err)
 {
     Characters::StringBuilder sb;
-    sb += errorMessage;
-    sb += " '"sv + cmdLine + "' failed";
+    sb << errorMessage;
+    sb << " '"sv << cmdLine << "' failed"sv;
     {
         Characters::StringBuilder extraMsg;
         if (err) {
-            extraMsg += Characters::Format (L"error: %d", int (*err));
+            extraMsg << Characters::Format (L"error: %d", int (*err));
         }
         if (not extraMsg.empty ()) {
-            sb += ": " + extraMsg.str ();
+            sb << ": " << extraMsg.str ();
         }
     }
     if (stderrSubset) {
-        sb += "; " + stderrSubset->LimitLength (100);
+        sb << "; "sv << stderrSubset->LimitLength (100);
     }
     return sb.str ();
 }
@@ -424,9 +424,9 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
     if (not fExecutable_.has_value ()) [[unlikely]] {
         Execution::Throw (Execution::Exception{"need command-line or executable path to run a process"sv});
     }
-    sb += IO::FileSystem::FromPath (*fExecutable_);
+    sb << IO::FileSystem::FromPath (*fExecutable_);
     for (const String& i : fArgs_) {
-        sb += " "sv + i;
+        sb << " "sv << i;
     }
     return sb.str ();
 }
@@ -902,10 +902,10 @@ namespace {
                 if (processResult == nullptr) {
                     StringBuilder stderrMsg;
                     if (trailingStderrBufNWritten > Memory::NEltsOf (trailingStderrBuf)) {
-                        stderrMsg += "..."sv;
-                        stderrMsg += String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
+                        stderrMsg << "..."sv;
+                        stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
                     }
-                    stderrMsg += String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
+                    stderrMsg << String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
                     Throw (ProcessRunner::Exception{effectiveCmdLine, "Spawned program"sv, stderrMsg.str (),
                                                     WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
                                                     WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{},

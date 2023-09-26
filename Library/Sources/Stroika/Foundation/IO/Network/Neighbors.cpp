@@ -181,8 +181,8 @@ String NeighborsMonitor::Neighbor::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "InternetAddress:"sv << Characters::ToString (fInternetAddress) << ",";
-    sb << "HardwareAddress:"sv << Characters::ToString (fHardwareAddress) << ",";
+    sb << "InternetAddress:"sv << Characters::ToString (fInternetAddress) << ","sv;
+    sb << "HardwareAddress:"sv << Characters::ToString (fHardwareAddress) << ","sv;
     sb << "InterfaceID:"sv << Characters::ToString (fInterfaceID);
     sb << "}"sv;
     return sb.str ();

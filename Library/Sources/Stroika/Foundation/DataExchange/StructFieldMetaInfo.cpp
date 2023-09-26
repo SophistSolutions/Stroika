@@ -19,9 +19,9 @@ using namespace Stroika::Foundation::DataExchange;
 Characters::String StructFieldMetaInfo::ToString () const
 {
     Characters::StringBuilder sb;
-    sb << "{";
-    sb << "TypeInfo:" << Characters::ToString (fTypeInfo_);
-    sb << ",PointerToMember:" << Characters::ToString (fPTR2MEM_);
-    sb << "}";
+    sb << "{"sv;
+    sb << "TypeInfo:"sv << Characters::ToString (fTypeInfo_) << ", "sv;
+    sb << ",PointerToMember:"sv << Characters::ToString (fPTR2MEM_);
+    sb << "}"sv;
     return sb.str ();
 }

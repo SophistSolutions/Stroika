@@ -174,7 +174,7 @@ String Socket::Ptr::ToString () const
         if (auto ola = GetLocalAddress ()) {
             sb << "Local-Address: "sv << Characters::ToString (*ola);
         }
-        sb << "}";
+        sb << "}"sv;
     }
     return sb.str ();
 }

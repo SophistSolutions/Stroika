@@ -290,7 +290,7 @@ Characters::String BLOB::AsHex (size_t maxBytesToShow) const
         if (cnt++ > maxBytesToShow) {
             break;
         }
-        sb += Characters::Format (L"%02x", b);
+        sb << Characters::Format (L"%02x", b);
     }
     return sb.str ();
 }

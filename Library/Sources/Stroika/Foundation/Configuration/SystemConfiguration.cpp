@@ -71,9 +71,9 @@ using Memory::StackBuffer;
 String SystemConfiguration::BootInformation::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Booted-At: " + Characters::ToString (fBootedAt);
-    sb += "}";
+    sb += "{"sv;
+    sb += "Booted-At: "sv + Characters::ToString (fBootedAt);
+    sb += "}"sv;
     return sb.str ();
 };
 
@@ -86,10 +86,10 @@ String SystemConfiguration::BootInformation::ToString () const
 String SystemConfiguration::CPU::CoreDetails::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
-    sb << "Socket-ID: " << Characters::ToString (fSocketID) << ", ";
-    sb << "Model-Name: " << Characters::ToString (fModelName);
-    sb << "}";
+    sb << "{"sv;
+    sb << "Socket-ID: "sv << Characters::ToString (fSocketID) << ", "sv;
+    sb << "Model-Name: "sv << Characters::ToString (fModelName);
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -101,9 +101,9 @@ String SystemConfiguration::CPU::CoreDetails::ToString () const
 String SystemConfiguration::CPU::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
-    sb << "Cores: " << Characters::ToString (fCores);
-    sb << "}";
+    sb << "{"sv;
+    sb << "Cores: "sv << Characters::ToString (fCores);
+    sb << "}"sv;
     return sb.str ();
 };
 
@@ -115,10 +115,10 @@ String SystemConfiguration::CPU::ToString () const
 String SystemConfiguration::Memory::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
-    sb << "Page-Size: " << Characters::ToString (fPageSize) << ", ";
-    sb << "Total-Physical-RAM: " << Characters::ToString (fTotalPhysicalRAM) << ", ";
-    sb << "Total-Virtual-RAM: " << Characters::ToString (fTotalVirtualRAM);
+    sb << "{"sv;
+    sb << "Page-Size: "sv << Characters::ToString (fPageSize) << ", "sv;
+    sb << "Total-Physical-RAM: "sv << Characters::ToString (fTotalPhysicalRAM) << ", "sv;
+    sb << "Total-Virtual-RAM: "sv << Characters::ToString (fTotalVirtualRAM);
     sb << "}";
     return sb.str ();
 };
@@ -131,9 +131,9 @@ String SystemConfiguration::Memory::ToString () const
 String SystemConfiguration::ComputerNames::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
-    sb << "Hostname: " << Characters::ToString (fHostname) << +", ";
-    sb << "}";
+    sb << "{"sv;
+    sb << "Hostname: "sv << Characters::ToString (fHostname) << ", "sv;
+    sb << "}"sv;
     return sb.str ();
 };
 
@@ -145,18 +145,18 @@ String SystemConfiguration::ComputerNames::ToString () const
 String SystemConfiguration::OperatingSystem::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Token-Name: " + Characters::ToString (fTokenName) + ", ";
-    sb += "Short-Pretty-Name: " + Characters::ToString (fShortPrettyName) + ", ";
-    sb += "Pretty-Name-With-Major-Version: " + Characters::ToString (fPrettyNameWithMajorVersion) + ", ";
-    sb += "Pretty-Name-With-Details: " + Characters::ToString (fPrettyNameWithVersionDetails) + ", ";
-    sb += "Major-Minor-Version-String: " + Characters::ToString (fMajorMinorVersionString) + ", ";
-    sb += "RFC1945-Compat-Product-Token-With-Version: " + Characters::ToString (fRFC1945CompatProductTokenWithVersion) + ", ";
-    sb += "Bits: " + Characters::ToString (fBits) + ", ";
+    sb << "{"sv;
+    sb << "Token-Name: "sv + Characters::ToString (fTokenName) << ", "sv;
+    sb << "Short-Pretty-Name: "sv + Characters::ToString (fShortPrettyName) + ", "sv;
+    sb << "Pretty-Name-With-Major-Version: "sv + Characters::ToString (fPrettyNameWithMajorVersion) + ", "sv;
+    sb << "Pretty-Name-With-Details: "sv + Characters::ToString (fPrettyNameWithVersionDetails) + ", "sv;
+    sb << "Major-Minor-Version-String: "sv + Characters::ToString (fMajorMinorVersionString) + ", "sv;
+    sb << "RFC1945-Compat-Product-Token-With-Version: "sv + Characters::ToString (fRFC1945CompatProductTokenWithVersion) + ", "sv;
+    sb << "Bits: "sv << Characters::ToString (fBits) + ", "sv;
     if (fPreferedInstallerTechnology) {
-        sb += "Prefered-Installer-Technology: " + Characters::ToString (*fPreferedInstallerTechnology) + ", ";
+        sb << "Prefered-Installer-Technology: "sv + Characters::ToString (*fPreferedInstallerTechnology) + ", "sv;
     }
-    sb += "}";
+    sb << "}"sv;
     return sb.str ();
 };
 
@@ -168,14 +168,14 @@ String SystemConfiguration::OperatingSystem::ToString () const
 String SystemConfiguration::ToString () const
 {
     StringBuilder sb;
-    sb += "{";
-    sb += "Boot-Information: " + Characters::ToString (fBootInformation) + ", ";
-    sb += "CPU: " + Characters::ToString (fCPU) + ", ";
-    sb += "Memory: " + Characters::ToString (fMemory) + ", ";
-    sb += "Actual-Operating-System: " + Characters::ToString (fActualOperatingSystem) + ", ";
-    sb += "Apparent-Operating-System: " + Characters::ToString (fApparentOperatingSystem) + ", ";
-    sb += "Computer-Names: " + Characters::ToString (fComputerNames) + ", ";
-    sb += "}";
+    sb << "{"sv;
+    sb << "Boot-Information: " << Characters::ToString (fBootInformation) << ", "sv;
+    sb << "CPU: "sv << Characters::ToString (fCPU) << ", "sv;
+    sb << "Memory: "sv << Characters::ToString (fMemory) << ", "sv;
+    sb << "Actual-Operating-System: "sv << Characters::ToString (fActualOperatingSystem) << ", "sv;
+    sb << "Apparent-Operating-System: "sv << Characters::ToString (fApparentOperatingSystem) << ", "sv;
+    sb << "Computer-Names: "sv << Characters::ToString (fComputerNames) << ", "sv;
+    sb << "}"sv;
     return sb.str ();
 };
 
@@ -747,10 +747,10 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         {
             StringBuilder sb = tmp.fShortPrettyName;
             if (platformVersion) {
-                sb += " Version "sv + *platformVersion;
+                sb << " Version "sv + *platformVersion;
             }
             if (not kernelVersion.empty ()) {
-                sb += " (OS Build "sv + kernelOSBuildVersion + ")"sv;
+                sb << " (OS Build "sv + kernelOSBuildVersion + ")"sv;
             }
             tmp.fPrettyNameWithVersionDetails = sb.str ();
         }

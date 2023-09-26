@@ -50,8 +50,7 @@ String OptionsFile::LoggerMessage::FormatMessage () const
     String details{};
     if (fDetails) {
         StringBuilder sb;
-        sb += "; "sv;
-        sb += *fDetails;
+        sb << "; "sv << *fDetails;
         details = sb.str ();
     }
     switch (fMsg) {

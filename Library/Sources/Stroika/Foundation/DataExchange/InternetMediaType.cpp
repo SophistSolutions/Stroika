@@ -83,14 +83,12 @@ String InternetMediaType::As () const
         return String{};
     }
     StringBuilder sb;
-    sb << fType_.GetPrintName ();
-    sb << "/"_k;
-    sb << fSubType_.GetPrintName ();
+    sb << fType_.GetPrintName () << "/"sv << fSubType_.GetPrintName ();
     if (fSuffix_) {
-        sb << "+"_k << fSuffix_->GetPrintName ();
+        sb << "+"sv << fSuffix_->GetPrintName ();
     }
     for (const auto& p : fParameters_) {
-        sb << "; "_k << p.fKey << ": "_k << p.fValue;
+        sb << "; "sv << p.fKey << ": "sv << p.fValue;
     }
     return sb.str ();
 }

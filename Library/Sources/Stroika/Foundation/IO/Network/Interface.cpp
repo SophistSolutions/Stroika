@@ -99,20 +99,20 @@ namespace {
 String Interface::WirelessInfo::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += "{";
-    sb += "SSID: " + Characters::ToString (fSSID) + ", ";
-    sb += "State: " + Characters::ToString (fState) + ", ";
-    sb += "ConnectionMode: " + Characters::ToString (fConnectionMode) + ", ";
-    sb += "ProfileName: " + Characters::ToString (fProfileName) + ", ";
-    sb += "BSSType: " + Characters::ToString (fBSSType) + ", ";
-    sb += "MACAddress: " + Characters::ToString (fMACAddress) + ", ";
-    sb += "PhysicalConnectionType: " + Characters::ToString (fPhysicalConnectionType) + ", ";
-    sb += "SignalQuality: " + Characters::ToString (fSignalQuality) + ", ";
-    sb += "SecurityEnabled: " + Characters::ToString (fSecurityEnabled) + ", ";
-    sb += "8021XEnabled: " + Characters::ToString (f8021XEnabled) + ", ";
-    sb += "AuthAlgorithm: " + Characters::ToString (fAuthAlgorithm) + ", ";
-    sb += "Cipher: " + Characters::ToString (fCipher) + ", ";
-    sb += "}";
+    sb << "{"sv;
+    sb << "SSID: "sv << Characters::ToString (fSSID) << ", "sv;
+    sb << "State: "sv << Characters::ToString (fState) << ", "sv;
+    sb << "ConnectionMode: "sv << Characters::ToString (fConnectionMode) << ", "sv;
+    sb << "ProfileName: "sv << Characters::ToString (fProfileName) << ", "sv;
+    sb << "BSSType: "sv << Characters::ToString (fBSSType) << ", "sv;
+    sb << "MACAddress: "sv << Characters::ToString (fMACAddress) << ", "sv;
+    sb << "PhysicalConnectionType: "sv << Characters::ToString (fPhysicalConnectionType) << ", "sv;
+    sb << "SignalQuality: "sv << Characters::ToString (fSignalQuality) << ", "sv;
+    sb << "SecurityEnabled: "sv << Characters::ToString (fSecurityEnabled) << ", "sv;
+    sb << "8021XEnabled: "sv << Characters::ToString (f8021XEnabled) << ", "sv;
+    sb << "AuthAlgorithm: "sv << Characters::ToString (fAuthAlgorithm) << ", "sv;
+    sb << "Cipher: "sv << Characters::ToString (fCipher);
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -124,10 +124,10 @@ String Interface::WirelessInfo::ToString () const
 String Interface::Bindings::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += "{";
-    sb += "BoundAddressRanges: " + Characters::ToString (fAddressRanges) + ", ";
-    sb += "BoundAddresses: " + Characters::ToString (fAddresses) + ", ";
-    sb += "}";
+    sb << "{"sv;
+    sb << "BoundAddressRanges: "sv << Characters::ToString (fAddressRanges) << ", "sv;
+    sb << "BoundAddresses: "sv << Characters::ToString (fAddresses);
+    sb << "}"sv;
     return sb.str ();
 }
 /*
@@ -138,41 +138,41 @@ String Interface::Bindings::ToString () const
 String Interface::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += "{";
-    sb += "Internal-Interface-ID: " + Characters::ToString (fInternalInterfaceID) + ", ";
+    sb << "{"sv;
+    sb << "Internal-Interface-ID: "sv << Characters::ToString (fInternalInterfaceID) << ", "sv;
 #if qPlatform_POSIX
-    sb += "InterfaceName: " + Characters::ToString (GetInterfaceName ()) + ", ";
+    sb << "InterfaceName: "sv << Characters::ToString (GetInterfaceName ()) << ", "sv;
 #endif
-    sb += "Friendly-Name: " + Characters::ToString (fFriendlyName) + ", ";
+    sb << "Friendly-Name: "sv << Characters::ToString (fFriendlyName) << ", "sv;
     if (fDescription) {
-        sb += "Description: " + Characters::ToString (*fDescription) + ", ";
+        sb << "Description: "sv << Characters::ToString (*fDescription) << ", "sv;
     }
     if (fNetworkGUID) {
-        sb += "Network-GUID: " + Characters::ToString (*fNetworkGUID) + ", ";
+        sb << "Network-GUID: "sv << Characters::ToString (*fNetworkGUID) << ", "sv;
     }
     if (fType) {
-        sb += "Type: " + Characters::ToString (*fType) + ", ";
+        sb << "Type: "sv << Characters::ToString (*fType) << ", "sv;
     }
     if (fHardwareAddress) {
-        sb += "Hardware-Address: " + Characters::ToString (*fHardwareAddress) + ", ";
+        sb << "Hardware-Address: "sv << Characters::ToString (*fHardwareAddress) << ", "sv;
     }
     if (fTransmitSpeedBaud) {
-        sb += "Transmit-Speed-Baud: " + Characters::ToString (*fTransmitSpeedBaud) + ", ";
+        sb << "Transmit-Speed-Baud: "sv << Characters::ToString (*fTransmitSpeedBaud) << ", "sv;
     }
     if (fReceiveLinkSpeedBaud) {
-        sb += "Receive-Link-Speed-Baud: " + Characters::ToString (*fReceiveLinkSpeedBaud) + ", ";
+        sb << "Receive-Link-Speed-Baud: "sv << Characters::ToString (*fReceiveLinkSpeedBaud) << ", "sv;
     }
     if (fWirelessInfo) {
-        sb += "Wireless-Info: " + Characters::ToString (fWirelessInfo) + ", ";
+        sb << "Wireless-Info: "sv << Characters::ToString (fWirelessInfo) << ", "sv;
     }
-    sb += "Bindings: " + Characters::ToString (fBindings) + ", ";
+    sb << "Bindings: "sv << Characters::ToString (fBindings) << ", "sv;
 
-    sb += "Gateways: " + Characters::ToString (fGateways) + ", ";
-    sb += "DNS-Servers: " + Characters::ToString (fDNSServers) + ", ";
+    sb << "Gateways: "sv << Characters::ToString (fGateways) << ", "sv;
+    sb << "DNS-Servers: "sv << Characters::ToString (fDNSServers) << ", "sv;
     if (fStatus) {
-        sb += "Status: " + Characters::ToString (*fStatus) + ", ";
+        sb << "Status: "sv << Characters::ToString (*fStatus);
     }
-    sb += "}";
+    sb << "}"sv;
     return sb.str ();
 }
 
