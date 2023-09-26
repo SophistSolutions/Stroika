@@ -29,7 +29,9 @@
  *              https://stroika.atlassian.net/browse/STK-34
  *
  *      @todo   Think about how to add support for STL manipulator/inserters like endl;
- *
+ * 
+ *      @todo   Consider adding (back) reserve/capacity methods, but be sure to document these are in units of 
+ *              BufferElementType not characters.
  */
 
 namespace Stroika::Foundation::Characters {
@@ -265,25 +267,6 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual span<const CHAR_T> GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
             requires (not is_const_v<CHAR_T>);
-
-#if 0
-    public:
-        /**
-         *  Returns the amount of space reserved - before memory allocation will be needed to grow. 
-         *
-         *  @see reserve
-         */
-        nonvirtual size_t capacity () const noexcept;
-
-    public:
-        /**
-         *  Provide a hint as to how much (contiguous) space to reserve. There is no need to call
-         *  this but when the total size is known in advance, it can improve performance.
-         *
-         *  @see capacity
-         */
-        nonvirtual void reserve (size_t newCapacity);
-#endif
 
     public:
         [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* begin ();
