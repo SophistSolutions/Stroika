@@ -474,8 +474,14 @@ namespace Stroika::Foundation::Characters {
     template <signed_integral T>
     inline size_t String::SubString_adjust_ (T fromOrTo, size_t myLength) const
     {
-        using UT = make_unsigned_t<T>;
-        return SubString_adjust_<UT> (static_cast<UT> (fromOrTo < 0 ? (myLength + fromOrTo) : fromOrTo), myLength);
+        if (fromOrTo >= 0) [[likely]] {
+            Require (fromOrTo <= numeric_limits<ptrdiff_t>::max ());
+            return static_cast<size_t> (fromOrTo);
+        }
+        else {
+            Require (fromOrTo >= numeric_limits<ptrdiff_t>::min ());
+            return static_cast<size_t> (myLength + static_cast<ptrdiff_t> (fromOrTo));
+        }
     }
     template <typename SZ>
     inline String String::SubString (SZ from) const
