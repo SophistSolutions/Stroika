@@ -465,29 +465,17 @@ namespace Stroika::Foundation::Characters {
         _SafeReadRepAccessor accessor{this};
         return accessor._ConstGetRep ().size ();
     }
-    inline size_t String::SubString_adjust_ (unsigned int from, [[maybe_unused]] size_t myLength) const
+    template <unsigned_integral T>
+    inline size_t String::SubString_adjust_ (T fromOrTo, [[maybe_unused]] size_t myLength) const
     {
-        return static_cast<size_t> (from);
+        Require (fromOrTo <= numeric_limits<size_t>::max ());
+        return static_cast<size_t> (fromOrTo);
     }
-    inline size_t String::SubString_adjust_ (unsigned long from, [[maybe_unused]] size_t myLength) const
+    template <signed_integral T>
+    inline size_t String::SubString_adjust_ (T fromOrTo, size_t myLength) const
     {
-        return static_cast<size_t> (from);
-    }
-    inline size_t String::SubString_adjust_ (unsigned long long from, [[maybe_unused]] size_t myLength) const
-    {
-        return static_cast<size_t> (from);
-    }
-    inline size_t String::SubString_adjust_ (int from, size_t myLength) const
-    {
-        return static_cast<size_t> (from < 0 ? (myLength + from) : from);
-    }
-    inline size_t String::SubString_adjust_ (long from, size_t myLength) const
-    {
-        return static_cast<size_t> (from < 0 ? (myLength + from) : from);
-    }
-    inline size_t String::SubString_adjust_ (long long from, size_t myLength) const
-    {
-        return static_cast<size_t> (from < 0 ? (myLength + from) : from);
+        using UT = make_unsigned_t<T>;
+        return SubString_adjust_<UT> (static_cast<UT> (fromOrTo < 0 ? (myLength + fromOrTo) : fromOrTo), myLength);
     }
     template <typename SZ>
     inline String String::SubString (SZ from) const

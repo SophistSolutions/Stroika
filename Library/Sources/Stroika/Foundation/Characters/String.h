@@ -1531,12 +1531,10 @@ namespace Stroika::Foundation::Characters {
             requires (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
 
     private:
-        nonvirtual size_t SubString_adjust_ (unsigned int fromOrTo, size_t myLength) const;
-        nonvirtual size_t SubString_adjust_ (unsigned long fromOrTo, size_t myLength) const;
-        nonvirtual size_t SubString_adjust_ (unsigned long long fromOrTo, size_t myLength) const;
-        nonvirtual size_t SubString_adjust_ (int fromOrTo, size_t myLength) const;
-        nonvirtual size_t SubString_adjust_ (long fromOrTo, size_t myLength) const;
-        nonvirtual size_t SubString_adjust_ (long long fromOrTo, size_t myLength) const;
+        template <unsigned_integral T>
+        nonvirtual size_t SubString_adjust_ (T fromOrTo, size_t myLength) const;
+        template <signed_integral T>
+        nonvirtual size_t SubString_adjust_ (T fromOrTo, size_t myLength) const;
 
     private:
         nonvirtual String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from, size_t to) const;

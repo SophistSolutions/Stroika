@@ -1277,15 +1277,27 @@ String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from
     PeekSpanData psd = thisAccessor._ConstGetRep ().PeekData (nullopt);
     switch (psd.fInCP) {
         case PeekSpanData::eAscii: {
+            if (from == 0 and to == psd.fAscii.size ()) [[unlikely]] {
+                return *this; // unclear if this optimization is worthwhile
+            }
             return mk_nocheck_ (psd.fAscii.subspan (from, to - from)); // no check cuz we already know its all ASCII and nothing smaller
         }
         case PeekSpanData::eSingleByteLatin1: {
+            if (from == 0 and to == psd.fSingleByteLatin1.size ()) [[unlikely]] {
+                return *this; // unclear if this optimization is worthwhile
+            }
             return mk_ (psd.fSingleByteLatin1.subspan (from, to - from)); // note still needs to re-examine text, cuz subset maybe pure ascii (etc)
         }
         case PeekSpanData::eChar16: {
+            if (from == 0 and to == psd.fChar16.size ()) [[unlikely]] {
+                return *this; // unclear if this optimization is worthwhile
+            }
             return mk_ (psd.fChar16.subspan (from, to - from)); // note still needs to re-examine text, cuz subset maybe pure ascii (etc)
         }
         case PeekSpanData::eChar32: {
+            if (from == 0 and to == psd.fChar32.size ()) [[unlikely]] {
+                return *this; // unclear if this optimization is worthwhile
+            }
             return mk_ (psd.fChar32.subspan (from, to - from)); // note still needs to re-examine text, cuz subset maybe pure ascii (etc)
         }
         default:
