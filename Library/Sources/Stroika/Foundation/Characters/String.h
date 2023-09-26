@@ -1162,7 +1162,15 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T = string>
         nonvirtual T AsASCII () const
-            requires (is_same_v<T, string> or is_same_v<T, u8string> or is_same_v<T, Memory::StackBuffer<char>>);
+            requires requires (T* into) {
+                {
+                    into->empty ()
+                } -> same_as<bool>;
+                {
+                    into->push_back (ASCII{0})
+                };
+            };
+        ;
         template <typename T = string>
         [[deprecated ("Since v3.0d2 use /0")]] void AsASCII (T* into) const
             requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
@@ -1178,14 +1186,22 @@ namespace Stroika::Foundation::Characters {
          * Only specifically specialized variants are supported (right now just <string> supported).
          * If this source contains any invalid ASCII characters, this returns nullopt, and else a valid engaged string.
          * 
-         *  Supported Types:
+         *  Supported Types(T):
          *      o   Memory::StackBuffer<char>
          *      o   string
          *      o   u8string (note any valid ASCII string is also valid utf-8)
          */
         template <typename T = string>
         nonvirtual optional<T> AsASCIIQuietly () const
-            requires (is_same_v<T, string> or is_same_v<T, u8string> or is_same_v<T, Memory::StackBuffer<char>>);
+            requires requires (T* into) {
+                {
+                    into->empty ()
+                } -> same_as<bool>;
+                {
+                    into->push_back (ASCII{0})
+                };
+            };
+        ;
         template <typename T = string>
         [[deprecated ("Since v3.0d2 use /0 overload")]] bool AsASCIIQuietly (T* into) const
             requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)

@@ -473,10 +473,17 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename RESULT_T, IPossibleCharacterRepresentation CHAR_T>
     inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
-        requires (same_as<RESULT_T, string> or same_as<RESULT_T, u8string> or same_as<RESULT_T, Memory::StackBuffer<ASCII>>)
+        requires requires (RESULT_T* into) {
+            {
+                into->empty ()
+            } -> same_as<bool>;
+            {
+                into->push_back (ASCII{0})
+            };
+        }
     {
         RequireNotNull (into);
-        into->clear ();
+        Require (into->empty ());
         // note - tried to simplify with conditional_t but both sides evaluated
         if constexpr (same_as<remove_cv_t<CHAR_T>, Character>) {
             for (Character c : fromS) {

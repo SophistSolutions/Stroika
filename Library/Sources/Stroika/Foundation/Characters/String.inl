@@ -786,8 +786,16 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline T String::AsASCII () const
-        requires (is_same_v<T, string> or is_same_v<T, u8string> or is_same_v<T, Memory::StackBuffer<char>>)
+        requires requires (T* into) {
+            {
+                into->empty ()
+            } -> same_as<bool>;
+            {
+                into->push_back (ASCII{0})
+            };
+        }
     {
+        // @todo possibly rewrite/inline impl to avoid map to optional<T> which involves copying
         if (auto p = AsASCIIQuietly<T> ()) {
             return *p;
         }
@@ -797,8 +805,16 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline optional<T> String::AsASCIIQuietly () const
-        requires (is_same_v<T, string> or is_same_v<T, u8string> or is_same_v<T, Memory::StackBuffer<char>>)
+        requires requires (T* into) {
+            {
+                into->empty ()
+            } -> same_as<bool>;
+            {
+                into->push_back (ASCII{0})
+            };
+        }
     {
+        // @todo OPTIMIZE - PeekSpanData - may already be ASCII - OPTIMIZE THAT CASE!!!
         Memory::StackBuffer<wchar_t> ignored1;
         auto                         thisSpan = GetData (&ignored1);
         T                            s;

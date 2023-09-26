@@ -422,14 +422,23 @@ namespace Stroika::Foundation::Characters {
          * Convert String losslessly into a standard C++ type.
          * If this source contains any invalid ASCII characters, this returns false, and otherwise true (with set into).
          * 
-         *  Supported Types:
+         *  \req into->empty ()
+         * 
+         *  Supported Types (RESULT_T):
          *      o   Memory::StackBuffer<ASCII>
          *      o   string
          *      o   u8string
          */
         template <typename RESULT_T = string, IPossibleCharacterRepresentation CHAR_T>
         static bool AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
-            requires (same_as<RESULT_T, string> or same_as<RESULT_T, u8string> or same_as<RESULT_T, Memory::StackBuffer<ASCII>>);
+            requires requires (RESULT_T* into) {
+                {
+                    into->empty ()
+                } -> same_as<bool>;
+                {
+                    into->push_back (ASCII{0})
+                };
+            };
 
     public:
         /**
