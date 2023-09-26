@@ -100,7 +100,15 @@ CMAKE_CURRENT_SOURCE_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_CURREN
 CMAKE_CURRENT_SOURCE_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(CMAKE_CURRENT_SOURCE_DIR))
 endif
 
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
+### not sure why???
+#Building Stroika Tools {clang++-6-release-libstdc++}:
+#         Compiling {StroikaRoot}Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/HTMLViewCompiler.cpp ...
+#      Linking  $StroikaRoot/Builds/clang++-6-release-libstdc++/HTMLViewCompiler...
+#/usr/bin/ld: skipping incompatible /Sandbox/Stroika-Dev/Builds/clang++-6-release-libstdc++/ThirdPartyComponents/lib//libxerces-c.so when searching for -lxerces-c
+CFLAGS:=$(filter-out -flto, $(CFLAGS))
+CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
+else ifeq (Unix,$(ProjectPlatformSubdir))
 ## similar bug with g++ - but just warnings here (all regtests pass without this change)
 ##/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Builds/g++-optimized/ThirdPartyComponents/include/xercesc/util/BinInputStream.hpp:29:22: warning: type 'struct BinInputStream' violates the C++ One Definition Rule [-Wodr]
 CFLAGS:=$(filter-out -flto, $(CFLAGS))
