@@ -22,8 +22,7 @@ CharacterEncodingException::CharacterEncodingException (EncodingOrDecoding encod
         sb << (encodingOrDecoding == eEncoding ? "Encoding Exception: cannot construct code point for character"sv
                                                : "Decodiing Exception: cannot decode bytes to character"sv);
         if (atSourceOffset) {
-            sb << " at source offset "sv;
-            sb << Format (L"%d", *atSourceOffset);
+            sb << " at source offset "sv << Format (L"%d", *atSourceOffset);
         }
         if (encoding) {
             sb << " using "sv << *encoding << " encoding"sv;

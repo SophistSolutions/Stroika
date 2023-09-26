@@ -59,10 +59,10 @@ public:
     {
         StringBuilder sb;
         if (sectionName) {
-            sb << "[" << *sectionName << "]" << Characters::GetEOL<wchar_t> ();
+            sb << "["sv << *sectionName << "]"sv << Characters::GetEOL<wchar_t> ();
         }
         for (const Common::KeyValuePair<String, String>& kvp : profile.fProperties) {
-            sb << kvp.fKey << "=" << kvp.fValue << Characters::GetEOL<wchar_t> ();
+            sb << kvp.fKey << "="sv << kvp.fValue << Characters::GetEOL<wchar_t> ();
         }
         out.WriteLn (sb.str ());
     }

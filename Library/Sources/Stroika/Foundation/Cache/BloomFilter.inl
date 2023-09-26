@@ -37,14 +37,14 @@ namespace Stroika::Foundation::Cache {
     Characters::String BloomFilter<T>::Statistics::ToString () const
     {
         Characters::StringBuilder sb;
-        sb << "{";
+        sb << "{"sv;
         sb << "HashFunctions: "sv << Characters::ToString (fHashFunctions) << ", "sv;
         sb << "BitCount: "sv << Characters::ToString (fBitCount) << ", "sv;
         sb << "BitsSet: "sv << Characters::ToString (fBitsSet) << ", "sv;
         sb << "ActualAddCalls: "sv << Characters::ToString (fActualAddCalls) << ", "sv;
         sb << "ApparentlyDistinctAddCalls: "sv << Characters::ToString (fApparentlyDistinctAddCalls) << ", "sv;
         sb << "ProbabilityOfFalsePositive: "sv << Characters::ToString (ProbabilityOfFalsePositive ());
-        sb << "}";
+        sb << "}"sv;
         return sb.str ();
     }
 

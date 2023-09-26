@@ -42,17 +42,17 @@ namespace {
         }
         StringBuilder sb;
         auto          tmp = Linguistics::MessageUtiltiesManager::Get ()->RemoveTrailingSentencePunctuation (reasonForError);
-        sb += tmp.first;
-        sb += " while "sv;
+        sb << tmp.first;
+        sb << " while "sv;
         for (auto i = activities.begin (); i != activities.end ();) {
-            sb += i->AsString ();
+            sb << i->AsString ();
             ++i;
             if (i == activities.end ()) {
-                sb += tmp.second.value_or ("."sv);
+                sb << tmp.second.value_or ("."sv);
             }
             else {
                 // not clear yet what message will work here
-                sb += ", while "sv;
+                sb << ", while "sv;
             }
         }
         return sb.str ();

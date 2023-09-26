@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
         if (fNoImprovementThreshold) {
             sb << "No-Improvement-Threshold: "sv << Characters::ToString (fNoImprovementThreshold) << ","sv;
         }
-        sb += "}"sv;
+        sb << "}"sv;
         return sb.str ();
     }
 

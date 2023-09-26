@@ -32,25 +32,25 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
                 if (obj->imag () == 0) {
                     return obj->real (); // return a number in this case, not a string
                 }
-                sb += FloatConversion::ToString (obj->real (), kFloat2StringOptions_);
+                sb << FloatConversion::ToString (obj->real (), kFloat2StringOptions_);
             }
             if (obj->imag () != 0) {
                 if (not sb.empty ()) {
-                    sb += ' ';
+                    sb << ' ';
                 }
                 if (obj->imag () > 0 and sb.length () > 1) {
-                    sb += "+ "_k;
+                    sb << "+ "sv;
                 }
                 if (obj->imag () == 1) {
                     // skip
                 }
                 else if (obj->imag () == -1) {
-                    sb += "- "_k;
+                    sb << "- "sv;
                 }
                 else {
-                    sb += FloatConversion::ToString (obj->imag (), kFloat2StringOptions_);
+                    sb << FloatConversion::ToString (obj->imag (), kFloat2StringOptions_);
                 }
-                sb += "i"_k;
+                sb << "i"sv;
             }
             if (sb.empty ()) {
                 return "0"_k;

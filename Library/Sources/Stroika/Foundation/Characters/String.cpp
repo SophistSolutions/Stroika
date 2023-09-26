@@ -1169,10 +1169,10 @@ String String::ReplaceAll (const function<bool (Character)>& replaceCharP, const
     StringBuilder sb;
     for (Character i : *this) {
         if (replaceCharP (i)) {
-            sb += with;
+            sb << with;
         }
         else {
-            sb += i;
+            sb << i;
         }
     }
     return sb.str ();
@@ -1183,10 +1183,10 @@ String String::ReplaceAll (const Containers::Set<Character>& charSet, const Stri
     StringBuilder sb;
     for (Character i : *this) {
         if (charSet.Contains (i)) {
-            sb += with;
+            sb << with;
         }
         else {
-            sb += i;
+            sb << i;
         }
     }
     return sb.str ();
@@ -1210,7 +1210,7 @@ String String::NoramlizeTextToNL () const
             everChanged = true;
             c           = '\n';
         }
-        sb += c;
+        sb << c;
     }
     if (everChanged) {
         return sb.str ();
@@ -1244,7 +1244,7 @@ Containers::Sequence<String> String::Tokenize (const function<bool (Character)>&
             }
         }
         if (inToken) {
-            curToken += c;
+            curToken << c;
         }
     }
     if (inToken) {
@@ -1306,7 +1306,7 @@ String String::Repeat (unsigned int count) const
         default: {
             StringBuilder result;
             for (unsigned int i = 0; i < count; ++i) {
-                result += *this;
+                result << *this;
             }
             return result.str ();
         }
@@ -1400,8 +1400,7 @@ String String::Join (const Iterable<String>& list, const String& separator)
 {
     StringBuilder result;
     for (const String& i : list) {
-        result += i;
-        result += separator;
+        result << i << separator;
     }
     if (result.empty ()) {
         return result.str ();

@@ -16,7 +16,6 @@
 #include "CString/Utilities.h"
 #include "Format.h"
 #include "String.h"
-#include "StringBuilder.h"
 
 #include "CodeCvt.h"
 

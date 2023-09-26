@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Characters {
             requires (not has_ToStringMethod_v<T> and not is_convertible_v<T, String>)
         {
             StringBuilder sb;
-            sb << "[";
+            sb << "["sv;
             bool didFirst{false};
             for (const auto& i : t) {
                 if (didFirst) {
@@ -173,36 +173,32 @@ namespace Stroika::Foundation::Characters {
         String ToString_ (const tuple<T1>& t)
         {
             StringBuilder sb;
-            sb << "{";
-            sb << ToString (t);
-            sb << "}";
+            sb << "{"sv << ToString (t) << "}"sv;
             return sb.str ();
         }
         template <typename T1, typename T2>
         String ToString_ (const tuple<T1, T2>& t)
         {
             StringBuilder sb;
-            sb << "{";
-            sb << ToString (get<0> (t)) << ", " << ToString (get<1> (t));
-            sb << "}";
+            sb << "{"sv << ToString (get<0> (t)) << ", "sv << ToString (get<1> (t)) << "}"sv;
             return sb.str ();
         }
         template <typename T1, typename T2, typename T3>
         String ToString_ (const tuple<T1, T2, T3>& t)
         {
             StringBuilder sb;
-            sb << "{";
-            sb << ToString (get<0> (t)) << ", " << ToString (get<1> (t)) << ", " << ToString (get<2> (t));
-            sb << "}";
+            sb << "{"sv;
+            sb << ToString (get<0> (t)) << ", "sv << ToString (get<1> (t)) << ", "sv << ToString (get<2> (t));
+            sb << "}"sv;
             return sb.str ();
         }
         template <typename T1, typename T2, typename T3, typename T4>
         String ToString_ (const tuple<T1, T2, T3>& t)
         {
             StringBuilder sb;
-            sb << "{";
-            sb << ToString (get<0> (t)) << ", " << ToString (get<1> (t)) << ", " + ToString (get<2> (t)) << ", " << ToString (get<3> (t));
-            sb << "}";
+            sb << "{"sv;
+            sb << ToString (get<0> (t)) << ", "sv << ToString (get<1> (t)) << ", "sv + ToString (get<2> (t)) << ", "sv << ToString (get<3> (t));
+            sb << "}"sv;
             return sb.str ();
         }
         template <typename T>
@@ -210,9 +206,9 @@ namespace Stroika::Foundation::Characters {
             requires (has_pair_v<T>)
         {
             StringBuilder sb;
-            sb << "{";
-            sb << ToString (t.first) << ": " << ToString (t.second);
-            sb << "}";
+            sb << "{"sv;
+            sb << ToString (t.first) << ": "sv << ToString (t.second);
+            sb << "}"sv;
             return sb.str ();
         }
         template <typename T>
@@ -220,9 +216,9 @@ namespace Stroika::Foundation::Characters {
             requires (has_KeyValuePair_v<T>)
         {
             StringBuilder sb;
-            sb << "{";
-            sb << ToString (t.fKey) << ": " << ToString (t.fValue);
-            sb << "}";
+            sb << "{"sv;
+            sb << ToString (t.fKey) << ": "sv << ToString (t.fValue);
+            sb << "}"sv;
             return sb.str ();
         }
         template <typename T>
@@ -230,9 +226,9 @@ namespace Stroika::Foundation::Characters {
             requires (has_CountedValue_v<T>)
         {
             StringBuilder sb;
-            sb << "{";
-            sb << "'" << ToString (t.fValue) << "': " << ToString (t.fCount);
-            sb << "}";
+            sb << "{"sv;
+            sb << "'" << ToString (t.fValue) << "': "sv << ToString (t.fCount);
+            sb << "}"sv;
             return sb.str ();
         }
         template <typename T>

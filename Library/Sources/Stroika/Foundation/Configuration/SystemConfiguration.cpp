@@ -71,9 +71,9 @@ using Memory::StackBuffer;
 String SystemConfiguration::BootInformation::ToString () const
 {
     StringBuilder sb;
-    sb += "{"sv;
-    sb += "Booted-At: "sv + Characters::ToString (fBootedAt);
-    sb += "}"sv;
+    sb << "{"sv;
+    sb << "Booted-At: "sv << Characters::ToString (fBootedAt);
+    sb << "}"sv;
     return sb.str ();
 };
 

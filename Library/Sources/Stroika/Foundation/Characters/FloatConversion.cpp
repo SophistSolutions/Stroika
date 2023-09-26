@@ -32,23 +32,23 @@ using namespace Stroika::Foundation::Memory;
 String FloatConversion::ToStringOptions::ToString () const
 {
     StringBuilder sb;
-    sb += "{"_k;
+    sb << "{"sv;
     if (fPrecision_) {
-        sb += "Precision:"_k + Characters::ToString (*fPrecision_) + ",";
+        sb << "Precision:"sv << Characters::ToString (*fPrecision_) << ","sv;
     }
     if (fFmtFlags_) {
-        sb += "Fmt-Flags:"_k + Characters::ToString ((int)*fFmtFlags_, ios_base::hex) + ",";
+        sb << "Fmt-Flags:"sv << Characters::ToString ((int)*fFmtFlags_, ios_base::hex) << ","sv;
     }
     if (fUseLocale_) {
-        sb += "Use-Locale"_k + String::FromNarrowSDKString (fUseLocale_->name ()) + ",";
+        sb << "Use-Locale"sv << String::FromNarrowSDKString (fUseLocale_->name ()) << ","sv;
     }
     if (fTrimTrailingZeros_) {
-        sb += "Trim-Trailing-Zeros: "_k + Characters::ToString (*fTrimTrailingZeros_) + ",";
+        sb << "Trim-Trailing-Zeros: "sv << Characters::ToString (*fTrimTrailingZeros_) << ","sv;
     }
     if (fFloatFormat_) {
-        sb += "Scientific-Notation: "_k + Characters::ToString ((int)*fFloatFormat_) + ",";
+        sb << "Scientific-Notation: "sv << Characters::ToString ((int)*fFloatFormat_) << ","sv;
     }
-    sb += "}"_k;
+    sb << "}"sv;
     return sb.str ();
 }
 
