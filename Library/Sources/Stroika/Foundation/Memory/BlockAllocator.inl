@@ -163,6 +163,7 @@ namespace Stroika::Foundation::Memory {
         *
         *       hopefully no more --LGP 2020-11-08
         */
+       constexpr bool kTryMemoryOrderOptimizations_ = true; // experiment as of 2023-09-26
 
         /*
          *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
@@ -194,10 +195,16 @@ namespace Stroika::Foundation::Memory {
          */
         static_assert (sizeof (void*) == sizeof (atomic<void*>), "atomic doesn't change size");
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (p);
+        // even though we have 'acquired' a logical lock, the memory at address 'p' may not be syned to our local processor/thread
         void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (p);
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (&sHeadLink_);
-        Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+        if constexpr (kTryMemoryOrderOptimizations_) {
+            Verify (sHeadLink_.exchange (next, memory_order_release) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+        }
+        else {
+            Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+        }
         Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (&sHeadLink_);
         return result;
 #else
