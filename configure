@@ -2161,7 +2161,7 @@ sub PostProcessOptions_ ()
 			$EXTRA_PREFIX_LINKER_ARGS .= " -LTCG";
 		}
 	}
-	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ("$^O" eq "linux")) {
 		# As of 2023-09-26 - only seen with clang++-15 Ubuntu 22.04 and with boost library
 		#/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
 		#/tmp/lto-llvm-26a395.o: in function `Stroika::Foundation::DataExchange::Variant::JSON::Reader::BoostRep_::Read(Stroika::Foundation::Streams::InputStream<std::byte>::Ptr const&)':
