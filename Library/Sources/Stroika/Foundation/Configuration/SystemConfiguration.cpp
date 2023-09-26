@@ -119,7 +119,7 @@ String SystemConfiguration::Memory::ToString () const
     sb << "Page-Size: "sv << Characters::ToString (fPageSize) << ", "sv;
     sb << "Total-Physical-RAM: "sv << Characters::ToString (fTotalPhysicalRAM) << ", "sv;
     sb << "Total-Virtual-RAM: "sv << Characters::ToString (fTotalVirtualRAM);
-    sb << "}";
+    sb << "}"sv;
     return sb.str ();
 };
 

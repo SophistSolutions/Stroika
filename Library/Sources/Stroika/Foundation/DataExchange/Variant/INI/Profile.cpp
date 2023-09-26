@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::DataExchange::Variant::INI;
  */
 String Section::ToString () const
 {
-    return "{ properties: " + Characters::ToString (fProperties) + "}";
+    return "{ properties: "sv + Characters::ToString (fProperties) + "}"sv;
 }
 
 /*

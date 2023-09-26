@@ -520,7 +520,7 @@ String ObjectVariantMapper::ToString () const
     Characters::StringBuilder sb;
     sb << "{"sv;
     sb << "type-map-registry: "sv << Characters::ToString (fTypeMappingRegistry_);
-    sb << "}";
+    sb << "}"sv;
     return sb.str ();
 }
 

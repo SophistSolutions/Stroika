@@ -63,7 +63,7 @@ String Connection::Options::Authentication::ToString () const
         sb << ", username: "sv << fUsernamePassword_->first;
         sb << ", password: "sv << fUsernamePassword_->second;
     }
-    sb << "}";
+    sb << "}"sv;
     return sb.str ();
 }
 

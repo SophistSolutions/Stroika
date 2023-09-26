@@ -43,17 +43,17 @@ using namespace Stroika::Frameworks::NetworkMonitor::Ping;
 String Ping::Options::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
+    sb << "{"sv;
     if (fMaxHops) {
-        sb << "Max-Hops: " << Characters::Format (L"%d", *fMaxHops) << ", ";
+        sb << "Max-Hops: "sv << Characters::Format (L"%d", *fMaxHops) << ", "sv;
     }
     if (fTimeout) {
-        sb << "Timeout: " << Characters::ToString (*fTimeout) << ", ";
+        sb << "Timeout: "sv << Characters::ToString (*fTimeout) << ", "sv;
     }
     if (fPacketPayloadSize) {
-        sb << "Packet-Payload-Size: " << Characters::Format (L"%d", *fPacketPayloadSize) << ", ";
+        sb << "Packet-Payload-Size: "sv << Characters::Format (L"%d", *fPacketPayloadSize);
     }
-    sb << "}";
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -66,7 +66,7 @@ String Pinger::ResultType::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Ping-Time: "sv << Characters::ToString (fPingTime) << ", ";
+    sb << "Ping-Time: "sv << Characters::ToString (fPingTime) << ", "sv;
     sb << "Hop-Count: "sv << Characters::Format (L"%d", fHopCount);
     sb << "}"sv;
     return sb.str ();
@@ -219,10 +219,10 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 Characters::String SampleOptions::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
-    sb << "Interval: " << Characters::ToString (fInterval) << ", ";
-    sb << "Count: " << Characters::Format (L"%d", fSampleCount);
-    sb << "}";
+    sb << "{"sv;
+    sb << "Interval: "sv << Characters::ToString (fInterval) << ", "sv;
+    sb << "Count: "sv << Characters::Format (L"%d", fSampleCount);
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -234,17 +234,17 @@ Characters::String SampleOptions::ToString () const
 String SampleResults::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
+    sb << "{"sv;
     if (fMedianPingTime) {
-        sb << "Median-Ping-Time: " << Characters::ToString (*fMedianPingTime) << ", ";
+        sb << "Median-Ping-Time: "sv << Characters::ToString (*fMedianPingTime) << ", "sv;
     }
     if (fMedianHopCount) {
-        sb << "Median-Hop-Count: " << Characters::Format (L"%d", *fMedianHopCount) << ", ";
+        sb << "Median-Hop-Count: "sv << Characters::Format (L"%d", *fMedianHopCount) << ", "sv;
     }
     if (fExceptionCount != 0) {
-        sb << "Exception-Count: " << Characters::Format (L"%d", fExceptionCount) << ", "; // to see exceptions - run with sample-count = 1
+        sb << "Exception-Count: "sv << Characters::Format (L"%d", fExceptionCount) << ", "sv; // to see exceptions - run with sample-count = 1
     }
-    sb << "}";
+    sb << "}"sv;
     return sb.str ();
 }
 

@@ -403,13 +403,13 @@ String Response::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
-    sb << "Socket: " << Characters::ToString (fSocket_) << ", ";
-    sb << "InChunkedMode: " << Characters::ToString (fInChunkedModeCache_) << ", ";
-    sb << "State: " << Characters::ToString (fState_) << ", ";
-    sb << "CodePage: " << Characters::ToString (fCodePage_) << ", ";
-    sb << "BodyBytes: " << Characters::ToString (fBodyBytes_) << ", ";
-    sb << "HeadMode: " << Characters::ToString (fHeadMode_) << ", ";
-    sb << "ETagDigester: " << String{fETagDigester_ ? "true" : "false"} << ", ";
-    sb << "}";
+    sb << "Socket: "sv << Characters::ToString (fSocket_) << ", "sv;
+    sb << "InChunkedMode: "sv << Characters::ToString (fInChunkedModeCache_) << ", "sv;
+    sb << "State: "sv << Characters::ToString (fState_) << ", "sv;
+    sb << "CodePage: "sv << Characters::ToString (fCodePage_) << ", "sv;
+    sb << "BodyBytes: "sv << Characters::ToString (fBodyBytes_) << ", "sv;
+    sb << "HeadMode: "sv << Characters::ToString (fHeadMode_) << ", "sv;
+    sb << "ETagDigester: "sv << String{fETagDigester_ ? "true"sv : "false"sv} << ", "sv;
+    sb << "}"sv;
     return sb.str ();
 }

@@ -34,13 +34,13 @@ using namespace Stroika::Frameworks::UPnP;
 String DeviceDescription::Icon::ToString () const
 {
     Characters::StringBuilder sb;
-    sb << "{";
-    sb << "MimeType: " << Characters::ToString (fMimeType) << ", ";
-    sb << "HorizontalPixels: " << Characters::ToString (fHorizontalPixels) << ", ";
-    sb << "VerticalPixels: " << Characters::ToString (fVerticalPixels) << ", ";
-    sb << "ColorDepth : " << Characters::ToString (fColorDepth) << ", ";
-    sb << "URL: " << Characters::ToString (fURL);
-    sb << "}";
+    sb << "{"sv;
+    sb << "MimeType: "sv << Characters::ToString (fMimeType) << ", "sv;
+    sb << "HorizontalPixels: "sv << Characters::ToString (fHorizontalPixels) << ", "sv;
+    sb << "VerticalPixels: "sv << Characters::ToString (fVerticalPixels) << ", "sv;
+    sb << "ColorDepth : "sv << Characters::ToString (fColorDepth) << ", "sv;
+    sb << "URL: "sv << Characters::ToString (fURL);
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -52,12 +52,12 @@ String DeviceDescription::Icon::ToString () const
 String DeviceDescription::Service::ToString () const
 {
     Characters::StringBuilder sb;
-    sb << "{";
-    sb << "Service-ID: " << Characters::ToString (fServiceID) << ", ";
-    sb << "SCPD-URL: " << Characters::ToString (fSCPDURL) << ", ";
-    sb << "Control-URL: " << Characters::ToString (fControlURL) << ", ";
-    sb << "Event-Sub-URL: " << Characters::ToString (fEventSubURL);
-    sb << "}";
+    sb << "{"sv;
+    sb << "Service-ID: "sv << Characters::ToString (fServiceID) << ", "sv;
+    sb << "SCPD-URL: "sv << Characters::ToString (fSCPDURL) << ", "sv;
+    sb << "Control-URL: "sv << Characters::ToString (fControlURL) << ", "sv;
+    sb << "Event-Sub-URL: "sv << Characters::ToString (fEventSubURL);
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -69,40 +69,40 @@ String DeviceDescription::Service::ToString () const
 String DeviceDescription::ToString () const
 {
     Characters::StringBuilder sb;
-    sb << "{";
+    sb << "{"sv;
     if (fPresentationURL) {
-        sb << "Presentation-URL: " << Characters::ToString (fPresentationURL) << ", ";
+        sb << "Presentation-URL: "sv << Characters::ToString (fPresentationURL) << ", "sv;
     }
-    sb << "Device-Type: " << Characters::ToString (fDeviceType) << ", ";
-    sb << "Manufacture-Name: " << Characters::ToString (fManufactureName) << ", ";
-    sb << "Friendly-Name: " << Characters::ToString (fFriendlyName) << ", ";
+    sb << "Device-Type: "sv << Characters::ToString (fDeviceType) << ", "sv;
+    sb << "Manufacture-Name: "sv << Characters::ToString (fManufactureName) << ", "sv;
+    sb << "Friendly-Name: "sv << Characters::ToString (fFriendlyName) << ", "sv;
     if (fManufacturingURL) {
-        sb << "Manufacturing-URL: " << Characters::ToString (fManufacturingURL) << ", ";
+        sb << "Manufacturing-URL: "sv << Characters::ToString (fManufacturingURL) << ", "sv;
     }
     if (fModelDescription) {
-        sb << "Model-Description: " << Characters::ToString (fModelDescription) << ", ";
+        sb << "Model-Description: "sv << Characters::ToString (fModelDescription) << ", "sv;
     }
-    sb << "Model-Name: " << Characters::ToString (fModelName) << ", ";
+    sb << "Model-Name: "sv << Characters::ToString (fModelName) << ", "sv;
     if (fModelNumber) {
-        sb << "Model-Number: " << Characters::ToString (fModelNumber) << ", ";
+        sb << "Model-Number: "sv << Characters::ToString (fModelNumber) << ", "sv;
     }
     if (fModelURL) {
-        sb << "Model-URL: " << Characters::ToString (*fModelURL) << ", ";
+        sb << "Model-URL: "sv << Characters::ToString (*fModelURL) << ", "sv;
     }
     if (fSerialNumber) {
-        sb << "Serial-Number: " << Characters::ToString (fSerialNumber) << ", ";
+        sb << "Serial-Number: "sv << Characters::ToString (fSerialNumber) << ", "sv;
     }
-    sb << "UDN: " << Characters::ToString (fUDN) << ", ";
+    sb << "UDN: "sv << Characters::ToString (fUDN) << ", "sv;
     if (fUPC) {
-        sb << "UPC: " << Characters::ToString (fUPC) << ", ";
+        sb << "UPC: "sv << Characters::ToString (fUPC) << ", "sv;
     }
     if (fIcons) {
-        sb << "Icons: " << Characters::ToString (fIcons) << ", ";
+        sb << "Icons: "sv << Characters::ToString (fIcons) << ", "sv;
     }
     if (fServices) {
-        sb << "Services: " << Characters::ToString (fServices) << ", ";
+        sb << "Services: "sv << Characters::ToString (fServices);
     }
-    sb << "}";
+    sb << "}sv";
     return sb.str ();
 }
 

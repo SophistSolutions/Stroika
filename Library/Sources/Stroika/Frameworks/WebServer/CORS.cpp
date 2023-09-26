@@ -22,19 +22,19 @@ using namespace Stroika::Frameworks::WebServer;
 Characters::String CORSOptions::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
+    sb << "{"sv;
     if (fAllowCredentials) {
-        sb << "Allow-Credentials" << Characters::ToString (fAllowCredentials) << ", ";
+        sb << "Allow-Credentials"sv << Characters::ToString (fAllowCredentials) << ", "sv;
     }
     if (fAccessControlMaxAge) {
-        sb << "Access-Control-Max-Age" << Characters::ToString (fAccessControlMaxAge) << ", ";
+        sb << "Access-Control-Max-Age"sv << Characters::ToString (fAccessControlMaxAge) << ", "sv;
     }
     if (fAllowedOrigins) {
-        sb << "Allowed-Origins" << Characters::ToString (fAllowedOrigins) << ", ";
+        sb << "Allowed-Origins"sv << Characters::ToString (fAllowedOrigins) << ", "sv;
     }
     if (fAllowedHeaders) {
-        sb << "Allowed-Headers" << Characters::ToString (fAllowedHeaders);
+        sb << "Allowed-Headers"sv << Characters::ToString (fAllowedHeaders);
     }
-    sb << "}";
+    sb << "}"sv;
     return sb.str ();
 }

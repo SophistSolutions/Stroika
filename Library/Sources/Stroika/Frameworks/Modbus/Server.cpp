@@ -132,13 +132,13 @@ namespace Stroika::Foundation::Characters {
     String ToString (const MBAPHeaderIsh_& mh)
     {
         StringBuilder sb;
-        sb << "{";
-        sb << "TransactionID: " << Characters::ToString (mh.fTransactionID) << ", ";
-        sb << "ProtocolID: " << Characters::ToString (mh.fProtocolID) << ", ";
-        sb << "Length: " << Characters::ToString (mh.fLength) << ", ";
-        sb << "UnitID: " << Characters::ToString (mh.fUnitID) << ", ";
-        sb << "FunctionCode: " << Characters::ToString (mh.fFunctionCode) << ", ";
-        sb << "}";
+        sb << "{"sv;
+        sb << "TransactionID: "sv << Characters::ToString (mh.fTransactionID) << ", "sv;
+        sb << "ProtocolID: "sv << Characters::ToString (mh.fProtocolID) << ", "sv;
+        sb << "Length: "sv << Characters::ToString (mh.fLength) << ", "sv;
+        sb << "UnitID: "sv << Characters::ToString (mh.fUnitID) << ", "sv;
+        sb << "FunctionCode: "sv << Characters::ToString (mh.fFunctionCode);
+        sb << "}"sv;
         return sb.str ();
     }
 }

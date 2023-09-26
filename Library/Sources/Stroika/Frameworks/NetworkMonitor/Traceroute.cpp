@@ -43,10 +43,10 @@ using namespace Stroika::Frameworks::NetworkMonitor::Traceroute;
 Characters::String Traceroute::Options::SampleInfo::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
-    sb << "Interval: " << Characters::ToString (fInterval) << ", ";
-    sb << "Count: " << Characters::Format (L"%d", fSampleCount);
-    sb << "}";
+    sb << "{"sv;
+    sb << "Interval: "sv << Characters::ToString (fInterval) << ", "sv;
+    sb << "Count: "sv << Characters::Format (L"%d", fSampleCount);
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -58,20 +58,20 @@ Characters::String Traceroute::Options::SampleInfo::ToString () const
 String Traceroute::Options::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
+    sb << "{"sv;
     if (fMaxHops) {
-        sb << "Max-Hops: " << Characters::Format (L"%d", *fMaxHops) << ", ";
+        sb << "Max-Hops: "sv << Characters::Format (L"%d", *fMaxHops) << ", "sv;
     }
     if (fTimeout) {
-        sb << "Timeout: " << Characters::ToString (*fTimeout) << ", ";
+        sb << "Timeout: "sv << Characters::ToString (*fTimeout) << ", "sv;
     }
     if (fPacketPayloadSize) {
-        sb << "Packet-Payload-Size: " << Characters::Format (L"%d", *fPacketPayloadSize) << ", ";
+        sb << "Packet-Payload-Size: "sv << Characters::Format (L"%d", *fPacketPayloadSize) << ", "sv;
     }
     if (fSampleInfo) {
-        sb << "Sample: " << Characters::ToString (*fSampleInfo);
+        sb << "Sample: "sv << Characters::ToString (*fSampleInfo);
     }
-    sb << "}";
+    sb << "}"sv;
     return sb.str ();
 }
 
@@ -83,10 +83,10 @@ String Traceroute::Options::ToString () const
 String Hop::ToString () const
 {
     StringBuilder sb;
-    sb << "{";
-    sb << "Time: " << Characters::ToString (fTime) << ", ";
-    sb << "Address: " << Characters::ToString (fAddress);
-    sb << "}";
+    sb << "{"sv;
+    sb << "Time: "sv << Characters::ToString (fTime) << ", "sv;
+    sb << "Address: "sv << Characters::ToString (fAddress);
+    sb << "}"sv;
     return sb.str ();
 }
 

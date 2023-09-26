@@ -90,11 +90,11 @@ namespace {
             Characters::String ToString () const
             {
                 StringBuilder sb;
-                sb << "{";
-                sb << " Enabled: " << Characters::ToString (fEnabled) << ", ";
-                sb << " Last-Synchronized-At: " << Characters::ToString (fLastSynchronizedAt) << ", ";
-                sb << " This-PHRs-ID-To-Shared-Contact-ID: " << Characters::ToString (fThisPHRsIDToSharedContactID);
-                sb << "}";
+                sb << "{"sv;
+                sb << " Enabled: "sv << Characters::ToString (fEnabled) << ", "sv;
+                sb << " Last-Synchronized-At: "sv << Characters::ToString (fLastSynchronizedAt) << ", "sv;
+                sb << " This-PHRs-ID-To-Shared-Contact-ID: "sv << Characters::ToString (fThisPHRsIDToSharedContactID);
+                sb << "}"sv;
                 return sb.str ();
             }
         };
