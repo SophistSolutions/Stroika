@@ -1267,6 +1267,7 @@ Containers::Sequence<String> String::Tokenize (const Containers::Set<Character>&
 
 String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from, size_t to) const
 {
+    constexpr bool kWholeStringOptionization_ = false;  // empirically, this costs about 1%. My WAG is that 1% cost not a good tradeoff cuz I dont think this gets triggered that often - LGP 2023-09-26
     Require (from <= to);
     Require (to <= this->size ());
 
@@ -1277,26 +1278,34 @@ String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from
     PeekSpanData psd = thisAccessor._ConstGetRep ().PeekData (nullopt);
     switch (psd.fInCP) {
         case PeekSpanData::eAscii: {
-            if (from == 0 and to == psd.fAscii.size ()) [[unlikely]] {
-                return *this; // unclear if this optimization is worthwhile
+            if constexpr (kWholeStringOptionization_) {
+                if (from == 0 and to == psd.fAscii.size ()) [[unlikely]] {
+                    return *this; // unclear if this optimization is worthwhile
+                }
             }
             return mk_nocheck_ (psd.fAscii.subspan (from, to - from)); // no check cuz we already know its all ASCII and nothing smaller
         }
         case PeekSpanData::eSingleByteLatin1: {
-            if (from == 0 and to == psd.fSingleByteLatin1.size ()) [[unlikely]] {
-                return *this; // unclear if this optimization is worthwhile
+            if constexpr (kWholeStringOptionization_) {
+                if (from == 0 and to == psd.fSingleByteLatin1.size ()) [[unlikely]] {
+                    return *this; // unclear if this optimization is worthwhile
+                }
             }
             return mk_ (psd.fSingleByteLatin1.subspan (from, to - from)); // note still needs to re-examine text, cuz subset maybe pure ascii (etc)
         }
         case PeekSpanData::eChar16: {
-            if (from == 0 and to == psd.fChar16.size ()) [[unlikely]] {
-                return *this; // unclear if this optimization is worthwhile
+            if constexpr (kWholeStringOptionization_) {
+                if (from == 0 and to == psd.fChar16.size ()) [[unlikely]] {
+                    return *this; // unclear if this optimization is worthwhile
+                }
             }
             return mk_ (psd.fChar16.subspan (from, to - from)); // note still needs to re-examine text, cuz subset maybe pure ascii (etc)
         }
         case PeekSpanData::eChar32: {
-            if (from == 0 and to == psd.fChar32.size ()) [[unlikely]] {
-                return *this; // unclear if this optimization is worthwhile
+            if constexpr (kWholeStringOptionization_) {
+                if (from == 0 and to == psd.fChar32.size ()) [[unlikely]] {
+                    return *this; // unclear if this optimization is worthwhile
+                }
             }
             return mk_ (psd.fChar32.subspan (from, to - from)); // note still needs to re-examine text, cuz subset maybe pure ascii (etc)
         }
