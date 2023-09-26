@@ -141,6 +141,11 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 	@$(call DEFAULT_LINK_LINE,$(TARGETEXE)) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
 
 
+ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
+#@todo and figure out why we need -flto in library archive?? (need to filter it out)? - only for clang -- LGP 2019-01-10
+CFLAGS:=$(filter-out -flto, $(CFLAGS))
+endif
+
 #
 # NOTE: It appears to be OK to define these CFLAGS here, and not in the CONFIGURATION because these appear to only 
 # be used in the .c file, not in the .h file for sqlite
