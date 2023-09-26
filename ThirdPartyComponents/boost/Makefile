@@ -188,10 +188,10 @@ else
 	@cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP-OUT.txt 2>&1)
 endif
 
-# ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
-# CFLAGS:=$(filter-out -flto, $(CFLAGS))
-# CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
-# endif
+ifeq (true,$(HasMakefileBugWorkaround_lto_skipping_undefined_incompatible))
+CFLAGS:=$(filter-out -flto, $(CFLAGS))
+CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
+endif
 
 ### todo just for clang++-14 and this verison of boost
 ## /usr/bin/../lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/type_traits:1131:7: error: static_assert failed due to requirement 'std::__is_complete_or_unbounded(std::__type_identity<boost::spirit::info>{})' "template argument must be a complete class or an unbounded array"
