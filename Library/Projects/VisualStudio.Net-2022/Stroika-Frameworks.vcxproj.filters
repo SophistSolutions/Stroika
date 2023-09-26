@@ -586,9 +586,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.cpp">
       <Filter>WebServer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.cpp">
-      <Filter>WebService</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.cpp">
       <Filter>Led</Filter>
     </ClCompile>
