@@ -2144,9 +2144,6 @@ sub PostProcessOptions_ ()
 		}
 	}
 
-	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-		$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
-	}
 	if ($ENABLE_LTO == true) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-flto=auto";
@@ -2163,6 +2160,12 @@ sub PostProcessOptions_ ()
 			push @CXXFLAGS, "-GL";			#	Whole Program Optimization
 			$EXTRA_PREFIX_LINKER_ARGS .= " -LTCG";
 		}
+	}
+	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		# As of 2023-09-26 - only seen with clang++-15 Ubuntu 22.04 and with boost library
+		#/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
+		#/tmp/lto-llvm-26a395.o: in function `Stroika::Foundation::DataExchange::Variant::JSON::Reader::BoostRep_::Read(Stroika::Foundation::Streams::InputStream<std::byte>::Ptr const&)':
+		$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
 	}
 	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
 		{
