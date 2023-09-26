@@ -199,10 +199,10 @@ namespace Stroika::Foundation::Characters {
             return c.IsASCII ();
         }
         else if constexpr (same_as<remove_cv_t<CHAR_T>, Latin1>) {
-            return static_cast<uint8_t> (c) <= 127;
+            return static_cast<uint8_t> (c) <= 0x7f;
         }
         else {
-            return static_cast<make_unsigned_t<CHAR_T>> (c) <= 127;
+            return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0x7f;
         }
     }
     template <IPossibleCharacterRepresentation CHAR_T>
@@ -213,10 +213,10 @@ namespace Stroika::Foundation::Characters {
                 return [] (Character c) noexcept { return c.IsASCII (); };
             }
             else if constexpr (same_as<remove_cv_t<CHAR_T>, Latin1>) {
-                return [] (Latin1 c) noexcept { return static_cast<uint8_t> (c) <= 127; };
+                return [] (Latin1 c) noexcept { return static_cast<uint8_t> (c) <= 0x7f; };
             }
             else {
-                return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 127; };
+                return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0x7f; };
             }
         }();
 #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
@@ -490,7 +490,7 @@ namespace Stroika::Foundation::Characters {
         }
         else {
             for (CHAR_T c : fromS) {
-                if (static_cast<make_unsigned_t<CHAR_T>> (c) <= 127) [[likely]] {
+                if (static_cast<make_unsigned_t<CHAR_T>> (c) <= 0x7f) [[likely]] {
                     into->push_back (static_cast<char> (c));
                 }
                 else {
