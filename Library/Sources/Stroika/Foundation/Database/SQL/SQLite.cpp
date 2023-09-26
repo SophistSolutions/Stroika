@@ -6,7 +6,6 @@
 #include <system_error>
 
 #include "../../Characters/Format.h"
-#include "../../Characters/StringBuilder.h"
 #include "../../Characters/ToString.h"
 #include "../../Debug/Trace.h"
 #include "../../Time/Duration.h"
