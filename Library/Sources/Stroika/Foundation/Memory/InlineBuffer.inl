@@ -365,6 +365,11 @@ namespace Stroika::Foundation::Memory {
         return fSize_;
     }
     template <typename T, size_t BUF_SIZE>
+    inline bool InlineBuffer<T, BUF_SIZE>::empty () const noexcept
+    {
+        return fSize_ == 0;
+    }
+    template <typename T, size_t BUF_SIZE>
     inline typename InlineBuffer<T, BUF_SIZE>::reference InlineBuffer<T, BUF_SIZE>::at (size_t i) noexcept
     {
         Require (i < fSize_);

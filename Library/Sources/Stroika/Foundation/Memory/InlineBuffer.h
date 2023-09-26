@@ -241,6 +241,12 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         *  returns true iff size () == 0
+         */
+        nonvirtual bool empty () const noexcept;
+
+    public:
+        /**
          *  Grow or shrink the buffer. The 'size' is the number of constructed elements, and this function automatically
          *  assures the capacity is maintained at least as large as the size.
          *
