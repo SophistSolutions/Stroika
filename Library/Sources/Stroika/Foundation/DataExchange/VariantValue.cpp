@@ -785,29 +785,29 @@ String VariantValue::AsString_ () const
         case Type::eArray: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
             AssertNotNull (v);
-            wstringstream tmp;
-            tmp << L"[";
+            Characters::StringBuilder tmp;
+            tmp << "["sv;
             for (auto i = v->fVal.begin (); i != v->fVal.end (); ++i) {
                 if (i != v->fVal.begin ()) {
-                    tmp << L", ";
+                    tmp << ", "sv;
                 }
-                tmp << i->As<wstring> ();
+                tmp << i->As<String> ();
             }
-            tmp << L"]";
+            tmp << "]"sv;
             return tmp.str ();
         }
         case Type::eMap: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
             AssertNotNull (v);
-            wstringstream tmp;
-            tmp << L"{";
+            Characters::StringBuilder tmp;
+            tmp << "{"sv;
             for (auto i = v->fVal.begin (); i != v->fVal.end (); ++i) {
                 if (i != v->fVal.begin ()) {
-                    tmp << L", ";
+                    tmp << ", ";
                 }
-                tmp << i->fKey.As<wstring> () << L" -> " << i->fValue.As<wstring> ();
+                tmp << i->fKey << " -> "sv << i->fValue.As<String> ();
             }
-            tmp << L"}"sv;
+            tmp << "}"sv;
             return tmp.str ();
         }
         default: {
