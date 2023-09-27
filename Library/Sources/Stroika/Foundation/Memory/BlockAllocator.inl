@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Memory {
         *
         *       hopefully no more --LGP 2020-11-08
         */
-       constexpr bool kTryMemoryOrderOptimizations_ = true; // experiment as of 2023-09-26
+        constexpr bool kTryMemoryOrderOptimizations_ = true; // experiment as of 2023-09-26
 
         /*
          *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
@@ -233,8 +233,7 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (p);
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
 
-
-       constexpr bool kTryMemoryOrderOptimizations_ = true; // experiment as of 2023-09-26
+        constexpr bool kTryMemoryOrderOptimizations_ = true; // experiment as of 2023-09-26
 
         /*
          *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
