@@ -1267,7 +1267,8 @@ Containers::Sequence<String> String::Tokenize (const Containers::Set<Character>&
 
 String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t from, size_t to) const
 {
-    constexpr bool kWholeStringOptionization_ = false;  // empirically, this costs about 1%. My WAG is that 1% cost not a good tradeoff cuz I dont think this gets triggered that often - LGP 2023-09-26
+    constexpr bool kWholeStringOptionization_ =
+        false; // empirically, this costs about 1%. My WAG is that 1% cost not a good tradeoff cuz I dont think this gets triggered that often - LGP 2023-09-26
     Require (from <= to);
     Require (to <= this->size ());
 
