@@ -4,9 +4,11 @@
 #include "../../../StroikaPreComp.h"
 
 #include <optional>
+#include <stack>
 
 #if __has_include("boost/json.hpp")
 #include <boost/json.hpp>
+#include <boost/json/basic_parser_impl.hpp>
 #endif
 
 #include "../../../Characters/FloatConversion.h"
@@ -489,6 +491,281 @@ public:
     }
 };
 #if __has_include("boost/json.hpp")
+
+namespace {
+    // Based on example: https://www.boost.org/doc/libs/1_83_0/libs/json/doc/html/json/examples.html#json.examples.validate
+    struct BoostSAXHandler_ {
+        /// The maximum number of elements allowed in an array
+        static constexpr std::size_t max_array_size = static_cast<size_t> (-1);
+
+        /// The maximum number of elements allowed in an object
+        static constexpr std::size_t max_object_size = static_cast<size_t> (-1);
+
+        /// The maximum number of characters allowed in a string
+        static constexpr std::size_t max_string_size = static_cast<size_t> (-1);
+
+        /// The maximum number of characters allowed in a key
+        static constexpr std::size_t max_key_size = static_cast<size_t> (-1);
+
+        BoostSAXHandler_ ()                        = default;
+        BoostSAXHandler_ (const BoostSAXHandler_&) = delete;
+
+        bool on_document_begin ([[maybe_unused]] error_code& ec)
+        {
+            Assert (fStack_.empty ());
+            fStack_.emplace (Context_::eSimple);
+            return true;
+        }
+        bool on_document_end ([[maybe_unused]] error_code& ec)
+        {
+            Assert (fStack_.size () == 1);
+            this->PopContext_ ();
+            Assert (fStack_.empty ());
+            return true;
+        }
+
+        bool on_array_begin ([[maybe_unused]] error_code& ec)
+        {
+            fStack_.emplace (Context_::eArray);
+            return true;
+        }
+        bool on_array_end ([[maybe_unused]] std::size_t n, [[maybe_unused]] error_code& ec)
+        {
+            Assert (fStack_.top ().GetContextType () == Context_::eArray);
+            Assert (fStack_.top ().PeekAccumVector_ ().size () == n);
+            PopContext_ ();
+            return true;
+        }
+
+        bool on_object_begin ([[maybe_unused]] error_code& ec)
+        {
+            fStack_.emplace (Context_::eMap);
+            return true;
+        }
+        bool on_object_end ([[maybe_unused]] std::size_t n, [[maybe_unused]] error_code& ec)
+        {
+            Assert (fStack_.top ().GetContextType () == Context_::eMap);
+            Assert (fStack_.top ().PeekAccumObj_ ().size () == n);
+            PopContext_ ();
+            return true;
+        }
+
+        bool on_string_part (string_view s, [[maybe_unused]] std::size_t n, [[maybe_unused]] error_code& ec)
+        {
+            fPartSaver_.push_back (span{s});
+            return true;
+        }
+        bool on_string (string_view s, [[maybe_unused]] std::size_t n, [[maybe_unused]] error_code& ec)
+        {
+            // Tricky - not really documented (I can find) - but seems if n != s.size() - we must use fPartSaver from on_key_part
+            if (s.size () == n) {
+                AddCompleteValue_ (VariantValue{toStroikaString_ (s)});
+            }
+            else {
+                fPartSaver_.push_back (span{s});
+                String res = toStroikaString_ (fPartSaver_);
+                fPartSaver_.clear ();
+                AddCompleteValue_ (VariantValue{res});
+            }
+            return true;
+        }
+
+        bool on_key_part (string_view s, [[maybe_unused]] std::size_t n, [[maybe_unused]] error_code& ec)
+        {
+            // tricky - save text in buffer, for use on subsequent onKey
+            Assert (fStack_.top ().GetContextType () == Context_::eMap);
+            fPartSaver_.push_back (span{s});
+            return true;
+        }
+        bool on_key (string_view s, [[maybe_unused]] std::size_t n, [[maybe_unused]] error_code& ec)
+        {
+            Assert (fStack_.top ().GetContextType () == Context_::eMap);
+            Assert (s.size () <= n);
+            // Tricky - not really documented (I can find) - but seems if n != s.size() - we must use fPartSaver from on_key_part
+            if (s.size () == n) {
+                fStack_.top ().fKey = toStroikaString_ (s);
+            }
+            else {
+                fPartSaver_.push_back (span{s});
+                fStack_.top ().fKey = toStroikaString_ (fPartSaver_);
+                fPartSaver_.clear ();
+            }
+            return true;
+        }
+
+        bool on_number_part ([[maybe_unused]] string_view s, [[maybe_unused]] error_code& ec)
+        {
+            // No need to track anything for numbers, as boost appears to incrementally parse and keep its state internally
+            return true;
+        }
+        bool on_int64 (int64_t i, [[maybe_unused]] string_view s, [[maybe_unused]] error_code& ec)
+        {
+            AddCompleteValue_ (VariantValue{i});
+            return true;
+        }
+        bool on_uint64 (uint64_t u, [[maybe_unused]] string_view s, [[maybe_unused]] error_code& ec)
+        {
+            AddCompleteValue_ (VariantValue{u});
+            return true;
+        }
+        bool on_double (double d, [[maybe_unused]] string_view s, [[maybe_unused]] error_code& ec)
+        {
+            AddCompleteValue_ (VariantValue{d});
+            return true;
+        }
+
+        bool on_bool (bool b, [[maybe_unused]] error_code& ec)
+        {
+            AddCompleteValue_ (VariantValue{b});
+            return true;
+        }
+
+        bool on_null ([[maybe_unused]] error_code& ec)
+        {
+            AddCompleteValue_ (VariantValue{});
+            return true;
+        }
+
+        bool on_comment_part ([[maybe_unused]] string_view s, [[maybe_unused]] error_code& ec)
+        {
+            // ignore comments
+            return true;
+        }
+        bool on_comment ([[maybe_unused]] string_view s, [[maybe_unused]] error_code& ec)
+        {
+            // ignore comments
+            return true;
+        }
+
+        // Careful not to use string_view directly cuz Stroika assumes we can keep that pointer (String_Constant) - so map to span, and also character to use char8_t
+        // to signal character set, and not ASCII
+        template <typename CONTAINER_OF_CHAR_BUT_REALLY_UTF8>
+        static String toStroikaString_ (CONTAINER_OF_CHAR_BUT_REALLY_UTF8 sv)
+            requires requires (CONTAINER_OF_CHAR_BUT_REALLY_UTF8 t) {
+                {
+                    span<const char>{t}
+                };
+            }
+        {
+            return String{Memory::SpanReInterpretCast<const char8_t> (span{sv})};
+        }
+
+        VariantValue GetConstructedValue () const
+        {
+            return fCompletedFinalValue_;
+        }
+        void AddCompleteValue_ (VariantValue v)
+        {
+            Assert (not fStack_.empty ());
+            Context_& t = fStack_.top ();
+            switch (t.GetContextType ()) {
+                case Context_::eArray:
+                    t.PeekAccumVector_ ().push_back (v);
+                    break;
+                case Context_::eMap:
+                    t.PeekAccumObj_ ().insert ({t.fKey, v});
+                    break;
+                case Context_::eSimple:
+                    t.PeekSimpleValue_ () = v;
+                    break;
+                default:
+                    AssertNotReached ();
+            }
+        }
+        void PopContext_ ()
+        {
+            Assert (not fStack_.empty ());
+            // complete what is at the top of the stack and do AddCompleteValue_ to the new top of the stack
+            Context_&    t  = fStack_.top ();
+            VariantValue vv = [&t] () {
+                switch (t.GetContextType ()) {
+                    case Context_::eArray:
+                        return VariantValue{move (t.PeekAccumVector_ ())};
+                    case Context_::eMap:
+                        return VariantValue{Mapping_stdhashmap<String, VariantValue>{move (t.PeekAccumObj_ ())}};
+                    case Context_::eSimple:
+                        return t.PeekSimpleValue_ ();
+                    default:
+                        AssertNotReached ();
+                        return VariantValue{};
+                }
+            }();
+            fStack_.pop ();
+            if (fStack_.empty ()) {
+                fCompletedFinalValue_ = vv;
+            }
+            else {
+                AddCompleteValue_ (vv);
+            }
+        }
+
+        /*
+         *  We have a stack of context objects for in progress parses. This cheaply maintains the data at each point of the stack.
+         */
+        struct Context_ {
+
+            // NOTE - critical these enums correspond to index values of std::variant<> below
+            enum ContextType_ {
+                eSimple,
+                eArray,
+                eMap
+            };
+
+            Context_ () = delete;
+            Context_ (ContextType_ ct)
+            {
+                switch (ct) {
+                    case eSimple:
+                        fVV_ = VariantValue{};
+                        break;
+                    case eArray:
+                        fVV_ = vector<VariantValue>{};
+                        break;
+                    case eMap:
+                        fVV_ = Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<>{};
+                        break;
+                }
+                Ensure (ct == GetContextType ()); // ensure ContextType_ enum in same order as variant<> arguments
+            }
+            ~Context_ ()               = default;
+            Context_ (const Context_&) = delete;
+            Context_ (Context_&&)      = default;
+
+            ContextType_ GetContextType () const
+            {
+                return static_cast<ContextType_> (fVV_.index ());
+            }
+
+            vector<VariantValue>& PeekAccumVector_ ()
+            {
+                Require (GetContextType () == eArray);
+                return get<vector<VariantValue>> (fVV_);
+            }
+            Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<>& PeekAccumObj_ ()
+            {
+                Require (GetContextType () == eMap);
+                return get<Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<>> (fVV_);
+            }
+            VariantValue& PeekSimpleValue_ ()
+            {
+                Require (GetContextType () == eSimple);
+                return get<VariantValue> (fVV_);
+            }
+
+            // use variant to save construct/destruct of uneeded parts
+            variant<VariantValue, vector<VariantValue>, Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<>> fVV_;
+
+            String fKey; // only allowed of context type = eMap (so COULD embed in above variant, but KISS) - also could use optional<String> which would help some things and make others worse...
+        };
+
+        std::stack<Context_> fStack_;
+        VariantValue         fCompletedFinalValue_; // only filled in when stack is empty
+
+        // doesn't need to be in stack context cuz cannot fill partial string/key/etc with intervening pop/push
+        // Not using StringBuilder here cuz could contain partial strings
+        Memory::InlineBuffer<char, 512> fPartSaver_;
+    };
+}
 class Variant::JSON::Reader::BoostRep_ : public Variant::Reader::_IRep {
 public:
     virtual _SharedPtrIRep Clone () const override
@@ -507,33 +784,62 @@ public:
 #endif
         using namespace Streams;
         using namespace boost;
-        bool inSeekable = in.IsSeekable ();
-        // @todo consider rewrite using boost 'sax' json parser (i think it exists)
+        bool           inSeekable = in.IsSeekable ();
+        constexpr bool kUseSAX_   = true; // experimentally, on windows, sax about 10% faster than stream_parser/convert way
         try {
-            json::stream_parser p;
-            byte                buf[8 * 1024];
-            const size_t        targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
-            size_t              actualChunkSize;
-            while ((actualChunkSize = in.Read (begin (buf), begin (buf) + targetChunkSize)) != 0) {
-                boost::json::error_code ec;
-                size_t                  nParsed = p.write_some (reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
-                Assert (nParsed <= actualChunkSize);
-                if (nParsed < actualChunkSize) {
-                    in.Seek (Whence::eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
-                    break;
+            if constexpr (kUseSAX_) {
+                json::basic_parser<BoostSAXHandler_> p{json::parse_options{}};
+                byte                                 buf[8 * 1024]; // experimentally - larger buffers didn't help speed
+                const size_t                         targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
+                size_t                               actualChunkSize;
+                boost::json::error_code              ec;
+                while ((actualChunkSize = in.Read (begin (buf), begin (buf) + targetChunkSize)) != 0) {
+                    ec.clear ();
+                    size_t nParsed = p.write_some (true, reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
+                    Assert (nParsed <= actualChunkSize);
+                    if (nParsed < actualChunkSize) {
+                        in.Seek (Whence::eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
+                        break;
+                    }
+                    if (p.done ()) {
+                        break; // good parse
+                    }
+                    else if (ec) {
+                        Execution::Throw (DataExchange::BadFormatException{String::FromNarrowSDKString (ec.what ())});
+                    }
                 }
-                if (p.done ()) {
-                    break; // good parse
-                }
-                else if (ec) {
+                p.write_some (false, nullptr, 0, ec);
+                if (ec) {
                     Execution::Throw (DataExchange::BadFormatException{String::FromNarrowSDKString (ec.what ())});
                 }
+                return p.handler ().GetConstructedValue ();
             }
-            if (not p.done ()) {
-                p.finish (); // in case wrote text like '3' to buffer, ambiguous if done
+            else {
+                json::stream_parser p;
+                byte                buf[8 * 1024];
+                const size_t        targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
+                size_t              actualChunkSize;
+                while ((actualChunkSize = in.Read (begin (buf), begin (buf) + targetChunkSize)) != 0) {
+                    boost::json::error_code ec;
+                    size_t                  nParsed = p.write_some (reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
+                    Assert (nParsed <= actualChunkSize);
+                    if (nParsed < actualChunkSize) {
+                        in.Seek (Whence::eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
+                        break;
+                    }
+                    if (p.done ()) {
+                        break; // good parse
+                    }
+                    else if (ec) {
+                        Execution::Throw (DataExchange::BadFormatException{String::FromNarrowSDKString (ec.what ())});
+                    }
+                }
+                if (not p.done ()) {
+                    p.finish (); // in case wrote text like '3' to buffer, ambiguous if done
+                }
+                Assert (p.done ());
+                return DataExchange::VariantValue{p.release ()}; // Transform boost objects to Stroika objects
             }
-            Assert (p.done ());
-            return DataExchange::VariantValue{p.release ()}; // Transform boost objects to Stroika objects
         }
         catch (...) {
             Execution::Throw (DataExchange::BadFormatException{Characters::ToString (current_exception ())});
