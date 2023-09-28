@@ -7,6 +7,54 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+
+### DRAFT REL
+### 3.0d3 {2023-09-??} {[diff](../../compare/v3.0d2...v3.0d3)}
+
+- RegressionTests
+  - tweak perforamncetest sTimeMultiplier_ for running rleease under valgrind so runs faster
+  - tweak default performance regtest -x factor
+
+
+- Library
+  - Foundation
+    - Characters
+      - StringBuilder
+        - small speed tweak to StringBuilder<OPTIONS>::Append (const basic_string_view<CHAR_T>& s) ASCII 
+        - and use 'sv' suffix in tons of places calling APPEND on StringBuilder (trivial speed tweak)
+        - StringBuilder ussage: use << instead of operator+= so for lines with sb += a + b + c we can avoid creating temporary string objects, 
+          so should be more efficient (not important cuz mustly in ToString code but may help a little here and there)
+      - String
+        - cleanup template requires of String/Character AsASCII/AsASCIIQuietly (use require expression saying methods used); and change API from calling into->clear() to requiring 
+        - Minor cleanups to String::SubString_adjust_
+
+
+    - DataExchange
+      - StructFieldMetaInfo no longer uses fOffset internally - but instead a pointertomember (using inlinebuffer) - and now has member function GetAddressOfMember
+      - JSON
+        - kUseSAX_: SAX JSON reader support using boost JSON reader (about 10% speedup)
+      - minor VariantValue ToString() cleanups
+    - Memory
+      - BlockAllocation
+        - experimental kTryMemoryOrderOptimizations_ for block allocation
+      - MemCmp now returns strong_ordering
+      - InlineBuffer
+        - InlineBuffer tweak operator=(&&)
+        - Added InlineBuffer<>::empty method
+      - Memory::OffsetOf()
+        - many cleanups and attempts to get this working decently, portably, and constexpr. Essentially all failed,
+          but better documented the status quo and laid out several possible implementations (prototyped/implemented).
+      
+
+- HasMakefileBugWorkaround_lto_skipping_undefined_incompatible workaround cleanups (minor - needed less than before, but still needed)
+- fixed startup HOME directory in MSYS windows docker container (already had fixed for cygwin)
+
+
+
+
+---
+
 ### 3.0d2 {2023-09-22} {[diff](../../compare/v3.0d1...v3.0d2)}
 
 #### TLDR
