@@ -552,7 +552,7 @@ namespace {
 
         bool on_string_part (string_view s, [[maybe_unused]] std::size_t n, [[maybe_unused]] error_code& ec)
         {
-            fPartSaver_.push_back (span{s});
+            fPartSaver_.push_back (span<const char>{s});
             return true;
         }
         bool on_string (string_view s, [[maybe_unused]] std::size_t n, [[maybe_unused]] error_code& ec)
@@ -562,7 +562,7 @@ namespace {
                 AddCompleteValue_ (VariantValue{toStroikaString_ (s)});
             }
             else {
-                fPartSaver_.push_back (span{s});
+                fPartSaver_.push_back (span<const char>{s});
                 String res = toStroikaString_ (fPartSaver_);
                 fPartSaver_.clear ();
                 AddCompleteValue_ (VariantValue{res});
@@ -574,7 +574,7 @@ namespace {
         {
             // tricky - save text in buffer, for use on subsequent onKey
             Assert (fStack_.top ().GetContextType () == Context_::eMap);
-            fPartSaver_.push_back (span{s});
+            fPartSaver_.push_back (span<const char>{s});
             return true;
         }
         bool on_key (string_view s, [[maybe_unused]] std::size_t n, [[maybe_unused]] error_code& ec)
@@ -586,7 +586,7 @@ namespace {
                 fStack_.top ().fKey = toStroikaString_ (s);
             }
             else {
-                fPartSaver_.push_back (span{s});
+                fPartSaver_.push_back (span<const char>{s});
                 fStack_.top ().fKey = toStroikaString_ (fPartSaver_);
                 fPartSaver_.clear ();
             }
@@ -647,7 +647,7 @@ namespace {
                 };
             }
         {
-            return String{Memory::SpanReInterpretCast<const char8_t> (span{sv})};
+            return String{Memory::SpanReInterpretCast<const char8_t> (span<const char>{sv})};
         }
 
         VariantValue GetConstructedValue () const
