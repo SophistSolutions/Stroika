@@ -12,11 +12,14 @@ especially those they need to be aware of when upgrading.
 ### DRAFT REL
 ### 3.0d3 {2023-09-??} {[diff](../../compare/v3.0d2...v3.0d3)}
 
-- RegressionTests
-  - tweak perforamncetest sTimeMultiplier_ for running rleease under valgrind so runs faster
-  - tweak default performance regtest -x factor
+#### TLDR
+- Small cleanups to regression tests
+- Small performance tweaks (JSON reader, Strings, block allocator)
+- Memory::OffsetOf docs/white flag
 
+#### Change Details
 
+- Documentation
 - Library
   - Foundation
     - Characters
@@ -26,10 +29,9 @@ especially those they need to be aware of when upgrading.
         - StringBuilder ussage: use << instead of operator+= so for lines with sb += a + b + c we can avoid creating temporary string objects, 
           so should be more efficient (not important cuz mustly in ToString code but may help a little here and there)
       - String
-        - cleanup template requires of String/Character AsASCII/AsASCIIQuietly (use require expression saying methods used); and change API from calling into->clear() to requiring 
+        - cleanup template requires of String/Character AsASCII/AsASCIIQuietly (use require expression saying methods used); 
+          and change API from calling into->clear() to requiring it be empty on call.
         - Minor cleanups to String::SubString_adjust_
-
-
     - DataExchange
       - StructFieldMetaInfo no longer uses fOffset internally - but instead a pointertomember (using inlinebuffer) - and now has member function GetAddressOfMember
       - JSON
@@ -45,13 +47,46 @@ especially those they need to be aware of when upgrading.
       - Memory::OffsetOf()
         - many cleanups and attempts to get this working decently, portably, and constexpr. Essentially all failed,
           but better documented the status quo and laid out several possible implementations (prototyped/implemented).
-      
+        - just try avoiding use of this function (see StructFieldMetaInfo change)
+- ThirdPartyComponents
+- Build System and Testing
+  - RegressionTests
+    - tweak perforamncetest sTimeMultiplier_ for running rleease under valgrind so runs faster
+    - tweak default performance regtest -x factor
+  - Scripts
+    - configure
+      - HasMakefileBugWorkaround_lto_skipping_undefined_incompatible workaround cleanups (minor - needed less than before, but still needed)
+  - Docker
+    - Windows
+      - fixed startup HOME directory in MSYS windows docker container (already had fixed for cygwin)
 
-- HasMakefileBugWorkaround_lto_skipping_undefined_incompatible workaround cleanups (minor - needed less than before, but still needed)
-- fixed startup HOME directory in MSYS windows docker container (already had fixed for cygwin)
-
-
-
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 11, 12 }
+  - Clang++ { unix: 13, 14, 15; XCode: 14.3 }
+  - MSVC: { 17.7.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 22H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+      - cygwin (latest as of build-time from CHOCO)
+      - MSYS (msys2-base-x86_64-20230127.sfx.exe)
+    - WSL v2
+  - MacOS
+    - 13.0.1 - arm64/m1 chip
+  - Linux: { Ubuntu: [20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
 
 ---
 
