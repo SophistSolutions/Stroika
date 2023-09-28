@@ -808,9 +808,11 @@ public:
                         Execution::Throw (DataExchange::BadFormatException{String::FromNarrowSDKString (ec.what ())});
                     }
                 }
-                p.write_some (false, nullptr, 0, ec);
-                if (ec) {
-                    Execution::Throw (DataExchange::BadFormatException{String::FromNarrowSDKString (ec.what ())});
+                if (not p.done ()) {
+                    p.write_some (false, nullptr, 0, ec);
+                    if (ec and ec != boost::json::error::extra_data /*and ec != boost::json::error::incomplete*/) {
+                        Execution::Throw (DataExchange::BadFormatException{String::FromNarrowSDKString (ec.what ())});
+                    }
                 }
                 return p.handler ().GetConstructedValue ();
             }
