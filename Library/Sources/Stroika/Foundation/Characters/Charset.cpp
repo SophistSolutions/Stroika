@@ -15,6 +15,10 @@ using namespace Stroika::Foundation::Characters;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 struct Charset::Rep_ {
+    Rep_ (const String& v)
+        : fValue{v}
+    {
+    }
     String fValue;
 };
 
@@ -24,11 +28,11 @@ struct Charset::Rep_ {
  ********************************************************************************
  */
 Charset::Charset (const std::string& charsetName)
-    : fRep_{make_shared<Rep_> (String{charsetName})}
+    : fRep_{make_shared<Rep_> (String{charsetName})}    // conversion throws if not valid ascii
 {
 }
 Charset::Charset (const std::string_view& charsetName)
-    : fRep_{make_shared<Rep_> (String{charsetName})}
+    : fRep_{make_shared<Rep_> (String{charsetName})}        // conversion asserts valid ASCII
 {
 }
 Charset::Charset (const String& charsetName)
