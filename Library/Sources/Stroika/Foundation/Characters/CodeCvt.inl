@@ -139,6 +139,72 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     ********************* CodeCvt<CHAR_T>::Latin1ConvertRep_ ***********************
+     ********************************************************************************
+     */
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    struct CodeCvt<CHAR_T>::Latin1ConvertRep_ : CodeCvt<CHAR_T>::IRep {
+        using ConversionResult           = UTFConvert::ConversionResult;
+        using ConversionResultWithStatus = UTFConvert::ConversionResultWithStatus;
+        using ConversionStatusFlag       = UTFConvert::ConversionStatusFlag;
+        Latin1ConvertRep_ (const Options& o)
+            : fCodeConverter_{o.fInvalidCharacterReplacement
+                                  ? UTFConvert{UTFConvert::Options{.fInvalidCharacterReplacement = *o.fInvalidCharacterReplacement}}
+                                  : UTFConvert::kThe}
+        {
+        }
+        virtual Options GetOptions () const override
+        {
+            return Options{.fInvalidCharacterReplacement = fCodeConverter_.GetOptions ().fInvalidCharacterReplacement};
+        }
+        virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
+        {
+            RequireNotNull (from);
+            Require (to.size () >= ComputeTargetCharacterBufferSize (*from));
+            span<const Latin1> serializedFrom = ReinterpretBytes_ (*from);
+            Assert (serializedFrom.size_bytes () <= from->size ()); // note - serializedFrom could be smaller than from in bytespan
+            ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (serializedFrom, to);
+            if (r.fStatus == ConversionStatusFlag::sourceIllegal) {
+                UTFConvert::Throw (r.fStatus, r.fSourceConsumed);
+            }
+            *from = from->subspan (r.fSourceConsumed); // from updated to remaining data, if any
+            return to.subspan (0, r.fTargetProduced);  // point ACTUAL copied data
+        }
+        virtual span<byte> Characters2Bytes ([[maybe_unused]] span<const CHAR_T> from, [[maybe_unused]] span<byte> to) const override
+        {
+            RequireNotReached (); // doesn't work in general, so disallow
+            return span<byte>{};
+        }
+        virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
+        {
+            if (const size_t* i = get_if<size_t> (&src)) {
+                return UTFConvert::ComputeTargetBufferSize<CHAR_T, Latin1> (*i / sizeof (Latin1));
+            }
+            else {
+                return UTFConvert::ComputeTargetBufferSize<CHAR_T> (ReinterpretBytes_ (get<span<const byte>> (src)));
+            }
+        }
+        virtual size_t ComputeTargetByteBufferSize ([[maybe_unused]] variant<span<const CHAR_T>, size_t> src) const override
+        {
+            RequireNotReached (); // doesn't work in general, so disallow
+            return 0;
+        }
+        /*
+         *  essentially 'cast' from bytes to from Latin1 (could be char8_t, char16_t or whatever works with UTFConvert)
+         */
+        static span<const Latin1> ReinterpretBytes_ (span<const byte> s)
+        {
+            return span<const Latin1>{reinterpret_cast<const Latin1*> (s.data ()), s.size () / sizeof (Latin1)};
+        }
+        static span<Latin1> ReinterpretBytes_ (span<byte> s)
+        {
+            return span<Latin1>{reinterpret_cast<Latin1*> (s.data ()), s.size () / sizeof (Latin1)};
+        }
+        UTFConvert fCodeConverter_;
+    };
+
+    /*
+     ********************************************************************************
      ****************** CodeCvt<CHAR_T>::UTFConvertSwappedRep_ **********************
      ********************************************************************************
      */
@@ -559,8 +625,7 @@ namespace Stroika::Foundation::Characters {
     CodeCvt<CHAR_T>::CodeCvt (const Charset& charset, const Options& options)
     {
         if (charset == WellKnownCharsets::kISO_8859_1) {
-            AssertNotImplemented (); // KEY to do but not sure we support yet
-            *this = CodeCvt<CHAR_T>{UnicodeExternalEncodings::eUTF8};
+            fRep_ = make_shared<Latin1ConvertRep_> (options);
         }
         else if (charset == WellKnownCharsets::kUTF8) {
             *this = CodeCvt<CHAR_T>{UnicodeExternalEncodings::eUTF8};

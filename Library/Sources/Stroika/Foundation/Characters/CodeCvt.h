@@ -401,6 +401,9 @@ namespace Stroika::Foundation::Characters {
         struct UTFConvertRep_;
 
     private:
+        struct Latin1ConvertRep_;
+
+    private:
         template <typename SERIALIZED_CHAR_T>
         struct UTFConvertSwappedRep_;
 
@@ -411,6 +414,9 @@ namespace Stroika::Foundation::Characters {
     private:
         template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
         struct UTFConvertRep_;
+
+    private:
+        struct Latin1ConvertRep_;
 
     private:
         template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
