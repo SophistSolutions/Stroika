@@ -6,6 +6,7 @@
 
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Characters/Charset.h"
 #include "../../../Characters/String.h"
 #include "../../../Configuration/Common.h"
 #include "../../../Containers/Mapping.h"
@@ -37,11 +38,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     using std::byte;
 
-//avoid windows header clash...
-#if qPlatform_Windows
-//#undef DELETE
-#endif
-
+    using Characters::Charset;
     using Characters::String;
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
@@ -199,7 +196,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  Can be any name registered in https://www.iana.org/assignments/character-sets/character-sets.xhtml
          */
-        nonvirtual optional<String> GetCharset () const;
+        nonvirtual optional<Charset> GetCharset () const;
 
     public:
         /**

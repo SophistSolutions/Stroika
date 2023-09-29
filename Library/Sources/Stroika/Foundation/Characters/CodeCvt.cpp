@@ -54,6 +54,16 @@ void Characters::Private_::ThrowCodePageNotSupportedException_ (CodePage cp)
 
 /*
  ********************************************************************************
+ *************** Private_::ThrowCharsetNotSupportedException_ *******************
+ ********************************************************************************
+ */
+void Characters::Private_::ThrowCharsetNotSupportedException_ (const Charset& charset)
+{
+    Execution::Throw (Execution::RuntimeErrorException{"Cannot construct CodeCvt with provided charset': "sv + static_cast<String> (charset)});
+}
+
+/*
+ ********************************************************************************
  **** Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ******
  ********************************************************************************
  */

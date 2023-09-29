@@ -36,6 +36,7 @@ namespace Stroika::Foundation::Characters {
         void   ThrowErrorConvertingBytes2Characters_ (size_t nSrcCharsWhereError);
         void   ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCharsWhereError);
         void   ThrowCodePageNotSupportedException_ (CodePage cp);
+        void   ThrowCharsetNotSupportedException_ (const Charset& charset);
         void   ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ();
         string AsNarrowSDKString_ (const String& s);
     }
@@ -555,22 +556,22 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    CodeCvt<CHAR_T>::CodeCvt (const String& localeName, const Options& options)
+    CodeCvt<CHAR_T>::CodeCvt (const Charset& charset, const Options& options)
     {
-        string ln = Private_::AsNarrowSDKString_ (localeName);
-        if constexpr (is_same_v<CHAR_T, wchar_t>) {
-            *this = mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (options, ln);
+        if (charset == WellKnownCharsets::kISO_8859_1) {
+            AssertNotImplemented (); // KEY to do but not sure we support yet
+            *this = CodeCvt<CHAR_T>{UnicodeExternalEncodings::eUTF8};
         }
-        else if constexpr (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>) {
-            *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (options, ln);
+        else if (charset == WellKnownCharsets::kUTF8) {
+            *this = CodeCvt<CHAR_T>{UnicodeExternalEncodings::eUTF8};
         }
-        else if constexpr (is_same_v<CHAR_T, Character>) {
+        else if (is_same_v<CHAR_T, Character>) {
+            // best hope is to treat it as a locale name, and hope its found
             fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (
-                CodeCvt<char32_t>::Options::New<CHAR_T> (options), ln));
+                CodeCvt<char32_t>::Options::New<CHAR_T> (options), charset.AsNarrowSDKString ()));
         }
         else {
-            // CHAR_T COULD be UTF-8, but not clear if/why that would be useful.
-            AssertNotImplemented ();
+            Private_::ThrowCharsetNotSupportedException_ (charset);
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>

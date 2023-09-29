@@ -40,3 +40,18 @@ Charset::operator String () const
 {
     return fRep_->fValue;
 }
+
+string Charset::AsNarrowSDKString () const
+{
+    return fRep_->fValue.AsNarrowSDKString ();
+}
+
+strong_ordering Charset::operator<=> (const Charset& rhs) const
+{
+    return String ::ThreeWayComparer{CompareOptions::eCaseInsensitive}(fRep_->fValue, rhs.fRep_->fValue);
+}
+
+bool Charset::operator== (const Charset& rhs) const
+{
+    return String::EqualsComparer{CompareOptions::eCaseInsensitive}(fRep_->fValue, rhs.fRep_->fValue);
+}

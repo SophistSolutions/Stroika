@@ -13,6 +13,7 @@
 #include <variant>
 
 #include "Character.h"
+#include "Charset.h"
 #include "CodePage.h"
 #include "UTFConvert.h"
 
@@ -217,7 +218,7 @@ namespace Stroika::Foundation::Characters {
         CodeCvt (const CodeCvt& src) = default;
         CodeCvt (CodeCvt&& src)      = default;
         CodeCvt (const locale& l, const Options& options = Options{});
-        CodeCvt (const String& localeName, const Options& options = Options{});
+        CodeCvt (const Charset& charset, const Options& options = Options{});
         CodeCvt (UnicodeExternalEncodings e, const Options& options = Options{});
         CodeCvt (span<const byte>* guessFormatFrom, const optional<CodeCvt>& useElse = nullopt, const Options& options = Options{});
         CodeCvt (CodePage e, const Options& options = Options{});

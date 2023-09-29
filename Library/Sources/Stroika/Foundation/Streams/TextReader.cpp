@@ -663,7 +663,7 @@ auto TextReader::New (Execution::InternallySynchronized internallySynchronized, 
 
 auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& src, const optional<Characters::String>& charset) -> Ptr
 {
-    auto codeCvt = charset ? Characters::CodeCvt<>{charset->AsNarrowSDKString ()} : Characters::CodeCvt<>{};
+    auto codeCvt = charset ? Characters::CodeCvt<>{Characters::Charset{*charset}} : Characters::CodeCvt<>{};
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
@@ -696,7 +696,7 @@ auto TextReader::New (Execution::InternallySynchronized internallySynchronized, 
 auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
                       const optional<Characters::String>& charset, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
-    auto codeCvt = charset ? Characters::CodeCvt<>{charset->AsNarrowSDKString ()} : Characters::CodeCvt<>{};
+    auto codeCvt = charset ? Characters::CodeCvt<>{Characters::Charset{*charset}} : Characters::CodeCvt<>{};
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();

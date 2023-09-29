@@ -1839,11 +1839,11 @@ namespace {
                 CodeCvt<char16_t> codeCvt3c =
                     CodeCvt<char16_t>::mkFromStdCodeCvt<std::codecvt_byname<char16_t, char8_t, std::mbstate_t>> ({}, "en_US.UTF8");
                 codeCvtChar16Test (codeCvt3c);
-                CodeCvt<char16_t> codeCvt4c = CodeCvt<char16_t>{"en_US.UTF8"};
+                CodeCvt<char16_t> codeCvt4c = CodeCvt<char16_t>{locale{"en_US.UTF8"}};
                 codeCvtChar16Test (codeCvt4c);
             }
             if (hasLocale ("en_US.UTF8")) {
-                CodeCvt<>         cc{"en_US.UTF8"};
+                CodeCvt<>         cc{locale{"en_US.UTF8"}};
                 constexpr char8_t someRandomText[] = u8"hello mom";
                 span<const byte>  someRandomTextBinarySpan =
                     as_bytes (span<const char8_t>{someRandomText, Characters::CString::Length (someRandomText)});
