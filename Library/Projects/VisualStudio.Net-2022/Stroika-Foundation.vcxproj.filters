@@ -828,6 +828,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Charset.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2134,6 +2137,9 @@
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CharacterEncodingException.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Charset.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3517,6 +3523,9 @@
       <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Charset.inl">
       <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
