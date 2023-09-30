@@ -94,8 +94,6 @@ jobs:
           make clean
       - name: Make libraries
         run: make libraries
-      - name: Make Documentation
-        run: make documentation
       # DISABLED DUE TO SPACE ISSUES
       # - name: Make all
       #   run: make all
@@ -114,6 +112,8 @@ jobs:
           name: Sample apps (${{ matrix.displayTargetName }})
           path: |
             Builds/${{ matrix.config_name }}/Samples-*
+      - name: Make Documentation
+        run: make documentation
       - name: Archive Documentation Results
         uses: actions/upload-artifact@v3
         with:
