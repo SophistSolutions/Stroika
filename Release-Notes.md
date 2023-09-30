@@ -10,12 +10,13 @@ especially those they need to be aware of when upgrading.
 
 
 ### DRAFT REL
-### 3.0d3 {2023-09-??} {[diff](../../compare/v3.0d2...v3.0d3)}
+### 3.0d3 {2023-09-30??} {[diff](../../compare/v3.0d2...v3.0d3)}
 
 #### TLDR
 - Small cleanups to regression tests
 - Small performance tweaks (JSON reader, Strings, block allocator)
 - Memory::OffsetOf docs/white flag
+- CodeCvt/TextReader now uses Charset arg (minimal but critical Codeset/CodeCvt) support needed to fix critical regression in HTTP Response reading code (isolatin1 charset).
 
 #### Change Details
 
@@ -32,6 +33,8 @@ especially those they need to be aware of when upgrading.
         - cleanup template requires of String/Character AsASCII/AsASCIIQuietly (use require expression saying methods used); 
           and change API from calling into->clear() to requiring it be empty on call.
         - Minor cleanups to String::SubString_adjust_
+      - Charset class (new charset support)
+      - CodeCvt now uses Charset arg (minimal but critical Codeset/CodeCvt) support needed to fix critical regression in HTTP Response reading code (isolatin1 charset).
     - DataExchange
       - StructFieldMetaInfo no longer uses fOffset internally - but instead a pointertomember (using inlinebuffer) - and now has member function GetAddressOfMember
       - JSON
