@@ -101,15 +101,15 @@ jobs:
       - name: Run Tests
         run: |
           df -h
-          du -hs Builds/* IntermediateFiles/*
+          du -hs Builds/*/* IntermediateFiles/*/*
           make run-tests
           df -h
-          du -hs Builds/* IntermediateFiles/*
+          du -hs Builds/*/* IntermediateFiles/*/*
       - name: Save space
         run: |
           make --directory Tests clobber
           df -h
-          du -hs Builds/* IntermediateFiles/*
+          du -hs Builds/*/* IntermediateFiles/*/*
       - name: Make tools & samples
         run: |
           make tools samples
