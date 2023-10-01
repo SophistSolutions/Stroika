@@ -53,7 +53,6 @@
         "run_on_branch": "v3-Release"
     },
     {
-        "comment": "experiemnt with -g0 to address running out of space",
         "build_job": "Linux",
         "displayTargetName": "ubuntu-22.04-g++-12 (Debug)",
         "compiler": "g++-12",
@@ -61,7 +60,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
         "cpp_version": "c++20",
         "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --append-CXXFLAGS -g0",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false",
         "run_on_branch": "v3-Release"
     },
     {
