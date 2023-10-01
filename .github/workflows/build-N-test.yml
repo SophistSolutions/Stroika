@@ -110,9 +110,13 @@ jobs:
           make run-tests
       - name: Save space
         run: |
+          echo "before save space"
+          df -h
+          du -hs Builds/*/* IntermediateFiles/*/*
           make --directory Tests clobber
           df -h
           du -hs Builds/*/* IntermediateFiles/*/*
+          du -hs IntermediateFiles/*/Library/*
       - name: Make tools & samples
         run: |
           make tools samples
