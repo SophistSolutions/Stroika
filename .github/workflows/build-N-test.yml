@@ -73,6 +73,13 @@ jobs:
     steps:
       # NOTE - alot of these steps needlessly complicated by needing to do lots of cleans between steps
       # to reduce space usage, since often runs out of space
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
       - uses: actions/checkout@v3
       - name: Build System Info
         run: |
@@ -97,14 +104,9 @@ jobs:
       - name: Make libraries
         run: |
           make libraries
-          make clean
       - name: Run Tests
         run: |
-          df -h
-          du -hs Builds/*/* IntermediateFiles/*/*
           make run-tests
-          df -h
-          du -hs Builds/*/* IntermediateFiles/*/*
       - name: Save space
         run: |
           make --directory Tests clobber
