@@ -7,10 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-
-
-### DRAFT REL
-### 3.0d3 {2023-09-30??} {[diff](../../compare/v3.0d2...v3.0d3)}
+### 3.0d3 {2023-10-01} {[diff](../../compare/v3.0d2...v3.0d3)}
 
 #### TLDR
 - Small cleanups to regression tests
@@ -53,6 +50,8 @@ especially those they need to be aware of when upgrading.
         - just try avoiding use of this function (see StructFieldMetaInfo change)
 - ThirdPartyComponents
 - Build System and Testing
+  - Github Actions
+    - cleanups to save disk space since running out of space
   - RegressionTests
     - tweak perforamncetest sTimeMultiplier_ for running rleease under valgrind so runs faster
     - tweak default performance regtest -x factor

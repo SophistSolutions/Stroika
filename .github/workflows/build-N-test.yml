@@ -87,7 +87,6 @@ jobs:
           cat ConfigurationFiles/${{ matrix.config_name }}.xml
       # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
       # to show the summary time for each part
-      ### DFS TMPHACK TO TEST
       - name: Make third-party-components
         run: |
           make third-party-components
