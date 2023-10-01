@@ -73,14 +73,14 @@ jobs:
     steps:
       # NOTE - alot of these steps needlessly complicated by needing to do lots of cleans between steps
       # to reduce space usage, since often runs out of space
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          swap-size-mb: 1024
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
-          remove-codeql: 'true'
+      # - name: Maximize build space
+      #   uses: easimon/maximize-build-space@master
+      #   with:
+      #     swap-size-mb: 1024
+      #     remove-dotnet: 'true'
+      #     remove-android: 'true'
+      #     remove-haskell: 'true'
+      #     remove-codeql: 'true'
       - uses: actions/checkout@v3
       - name: Build System Info
         run: |
