@@ -175,9 +175,9 @@ int main (int argc, const char* argv[])
         .fSuppressDuplicatesThreshold = 15s,
     }};
 #if qHas_Syslog
-    Logger::sThe.SetAppender (make_shared<Logger::SysLogAppender> (L"Stroika-Sample-Service"));
+    Logger::sThe.SetAppender (make_shared<Logger::SysLogAppender> ("Stroika-Sample-Service"sv));
 #elif qPlatform_Windows
-    Logger::sThe.SetAppender (make_shared<Logger::WindowsEventLogAppender> (L"Stroika-Sample-Service"));
+    Logger::sThe.SetAppender (make_shared<Logger::WindowsEventLogAppender> ("Stroika-Sample-Service"sv));
 #endif
 #endif
 
@@ -199,16 +199,16 @@ int main (int argc, const char* argv[])
      *  Run request.
      */
     try {
-        if (Execution::MatchesCommandLineArgument (args, "status")) {
+        if (Execution::MatchesCommandLineArgument (args, "status"sv)) {
             cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
             return EXIT_SUCCESS;
         }
-        else if (Execution::MatchesCommandLineArgument (args, "help")) {
+        else if (Execution::MatchesCommandLineArgument (args, "help"sv)) {
             ShowUsage_ (m);
             return EXIT_SUCCESS;
         }
-        else if (Execution::MatchesCommandLineArgument (args, "version")) {
-            cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": "
+        else if (Execution::MatchesCommandLineArgument (args, "version"sv)) {
+            cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": "sv
                  << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
             return EXIT_SUCCESS;
         }

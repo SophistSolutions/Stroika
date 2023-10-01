@@ -79,19 +79,19 @@ namespace {
                 Usage_ ();
                 return optional<Options_>{};
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, "no-fail-on-missing-library")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "no-fail-on-missing-library"sv)) {
                 noFailOnMissingLibrary = true;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, "list")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "list"sv)) {
                 operation = Options_::Operation::eList;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, "create")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "create"sv)) {
                 operation = Options_::Operation::eCreate;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, "extract")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "extract"sv)) {
                 operation = Options_::Operation::eExtract;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, "update")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "update"sv)) {
                 operation = Options_::Operation::eUpdate;
             }
             else if (not archiveName.has_value ()) {

@@ -100,17 +100,17 @@ namespace {
      * for the EMPLOYEES table.
      */
     const Schema::Table kEmployeesTableSchema_{
-        "EMPLOYEES",
+        "EMPLOYEES"sv,
         /*
          *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
          *  for ID, just as an example.
          */
         // clang-format off
         Collection<Schema::Field>{
-            {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-            , {.fName = "NAME", .fVariantValueName = "Name"sv, .fVariantValueType = VariantValue::eString}
-            , {.fName = "AGE", .fVariantValueName = "Age"sv, .fVariantValueType = VariantValue::eInteger}, {.fName = "ADDRESS", .fVariantValueName = "Address"sv, .fVariantValueType = VariantValue::eString}
-            , {.fName = "SALARY", .fVariantValueName = "Salary"sv, .fVariantValueType = VariantValue::eFloat}, {.fName = "STILL_EMPLOYED", .fVariantValueName = "Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}},
+            {.fName = "ID"sv, .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+            , {.fName = "NAME"sv, .fVariantValueName = "Name"sv, .fVariantValueType = VariantValue::eString}
+            , {.fName = "AGE"sv, .fVariantValueName = "Age"sv, .fVariantValueType = VariantValue::eInteger}, {.fName = "ADDRESS"sv, .fVariantValueName = "Address"sv, .fVariantValueType = VariantValue::eString}
+            , {.fName = "SALARY"sv, .fVariantValueName = "Salary"sv, .fVariantValueType = VariantValue::eFloat}, {.fName = "STILL_EMPLOYED"sv, .fVariantValueName = "Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}},
         Schema::CatchAllField{}};
     // clang-format on
 
@@ -119,13 +119,13 @@ namespace {
      * for the PAYCHECKS table.
      */
     const Schema::Table kPaychecksTableSchema_{
-        L"PAYCHECKS",
+        L"PAYCHECKS"sv,
         Collection<Schema::Field>{
             // clang-format off
-            {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-            , {.fName = "EMPLOYEEREF", .fVariantValueName = "Employee-Ref"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger}
-            , {.fName = "AMOUNT", .fVariantValueName = "Amount"sv, .fVariantValueType = VariantValue::eFloat}
-            , {.fName = "DATE", .fVariantValueName = "Date"sv, .fVariantValueType = VariantValue::eDate}}};
+            {.fName = "ID"sv, .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+            , {.fName = "EMPLOYEEREF"sv, .fVariantValueName = "Employee-Ref"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger}
+            , {.fName = "AMOUNT"sv, .fVariantValueName = "Amount"sv, .fVariantValueType = VariantValue::eFloat}
+            , {.fName = "DATE"sv, .fVariantValueName = "Date"sv, .fVariantValueType = VariantValue::eDate}}};
     // clang-format on
 
     /*

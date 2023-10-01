@@ -71,7 +71,7 @@ namespace {
                 DB ()
                 {
                     try {
-                        fDB_ = Connection::New (Options{.fInMemoryDB = ""});
+                        fDB_ = Connection::New (Options{.fInMemoryDB = ""sv});
                         InitialSetup_ (fDB_);
                     }
                     catch (...) {
@@ -89,12 +89,12 @@ namespace {
                     if (kUseBind_) {
                         Statement s{fDB_, "insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel) Values (:StartAt, "
                                           ":EndAt, :ScanTypeIDRef, :RawScanData, :ScanLabel);"};
-                        s.Bind (":StartAt", ScanStart.AsUTC ().Format (DateTime::kISO8601Format));
-                        s.Bind (":EndAt", ScanEnd.AsUTC ().Format (DateTime::kISO8601Format));
-                        s.Bind (":ScanTypeIDRef", (int)scanKind);
+                        s.Bind (":StartAt"sv, ScanStart.AsUTC ().Format (DateTime::kISO8601Format));
+                        s.Bind (":EndAt"sv, ScanEnd.AsUTC ().Format (DateTime::kISO8601Format));
+                        s.Bind (":ScanTypeIDRef"sv, (int)scanKind);
                         if (rawSpectrum) {
-                            s.Bind (":RawScanData",
-                                    VariantValue{"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"});
+                            s.Bind (":RawScanData"sv,
+                                    VariantValue{"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"sv});
                         }
                         if (ScanLabel) {
                             s.Bind (":ScanLabel", VariantValue{*ScanLabel});
@@ -104,32 +104,32 @@ namespace {
                     else {
                         String insertSQL = [&] () {
                             StringBuilder sb;
-                            sb += "insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)";
-                            sb += "select ";
-                            sb += "'" + ScanStart.AsUTC ().Format (DateTime::kISO8601Format) + "',";
-                            sb += "'" + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + "',";
-                            sb += Characters::Format (L"%d", scanKind) + ",";
+                            sb += "insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel)"sv;
+                            sb += "select "sv;
+                            sb += "'"sv + ScanStart.AsUTC ().Format (DateTime::kISO8601Format) + "',"sv;
+                            sb += "'"sv + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + "',"sv;
+                            sb += Characters::Format (L"%d", scanKind) + ","sv;
                             if (rawSpectrum) {
-                                sb += "'" + Database::SQL::Utils::QuoteStringForDB ("SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") +
-                                      "',";
+                                sb += "'" + Database::SQL::Utils::QuoteStringForDB ("SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"sv) +
+                                      "',"sv;
                             }
                             else {
-                                sb += "NULL,";
+                                sb += "NULL,"sv;
                             }
                             if (ScanLabel) {
-                                sb += "'" + Database::SQL::Utils::QuoteStringForDB (*ScanLabel) + "'";
+                                sb += "'"sv + Database::SQL::Utils::QuoteStringForDB (*ScanLabel) + "'"sv;
                             }
                             else {
-                                sb += "NULL";
+                                sb += "NULL"sv;
                             }
                             sb += ";";
                             return sb.str ();
                         }();
                         fDB_.Exec (insertSQL);
                     }
-                    Statement s{fDB_, "SELECT MAX(ScanId) FROM Scans;"};
+                    Statement s{fDB_, "SELECT MAX(ScanId) FROM Scans;"sv};
                     DbgTrace (L"Statement: %s", Characters::ToString (s).c_str ());
-                    return s.GetNextRow ()->Lookup ("MAX(ScanId)")->As<ScanIDType_> ();
+                    return s.GetNextRow ()->Lookup ("MAX(ScanId)"sv)->As<ScanIDType_> ();
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
                 {
@@ -391,9 +391,9 @@ namespace {
                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
                     {":NAME", "James"},
                     {":AGE", 24},
-                    {":ADDRESS", "Houston"},
-                    {":SALARY", 10000.00},
-                    {":STILL_EMPLOYED", 1},
+                    {":ADDRESS"sv, "Houston"},
+                    {":SALARY"sv, 10000.00},
+                    {":STILL_EMPLOYED"sv, 1},
                 });
 
                 default_random_engine         generator;
@@ -421,11 +421,11 @@ namespace {
                                 String name = kNames_[namesDistr (generator)];
                                 DbgTrace (L"Adding employee %s", name.c_str ());
                                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                                    {":NAME", name},
-                                    {":AGE", ageDistr (generator)},
-                                    {":ADDRESS", kAddresses[addressesDistr (generator)]},
-                                    {":SALARY", salaryDistr (generator)},
-                                    {":STILL_EMPLOYED", 1},
+                                    {":NAME"sv, name},
+                                    {":AGE"sv, ageDistr (generator)},
+                                    {":ADDRESS"sv, kAddresses[addressesDistr (generator)]},
+                                    {":SALARY"sv, salaryDistr (generator)},
+                                    {":STILL_EMPLOYED"sv, 1},
                                 });
                             } break;
                             case 2: {
@@ -531,12 +531,12 @@ namespace {
                 ObjectVariantMapper mapper;
                 mapper.AddCommonType<optional<int>> ();
                 mapper.AddClass<Employee> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                    {"id", StructFieldMetaInfo{&Employee::ID}},
-                    {"Name", StructFieldMetaInfo{&Employee::fName}},
-                    {"Age", StructFieldMetaInfo{&Employee::fAge}},
-                    {"Address", StructFieldMetaInfo{&Employee::fAddress}},
-                    {"Salary", StructFieldMetaInfo{&Employee::fSalary}},
-                    {"Still-Employed", StructFieldMetaInfo{&Employee::fStillEmployed}},
+                    {"id"sv, StructFieldMetaInfo{&Employee::ID}},
+                    {"Name"sv, StructFieldMetaInfo{&Employee::fName}},
+                    {"Age"sv, StructFieldMetaInfo{&Employee::fAge}},
+                    {"Address"sv, StructFieldMetaInfo{&Employee::fAddress}},
+                    {"Salary"sv, StructFieldMetaInfo{&Employee::fSalary}},
+                    {"Still-Employed"sv, StructFieldMetaInfo{&Employee::fStillEmployed}},
                 });
                 return mapper;
             }};
@@ -553,10 +553,10 @@ namespace {
                 ObjectVariantMapper mapper;
                 mapper.AddCommonType<optional<int>> ();
                 mapper.AddClass<Paycheck> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                    {"id", StructFieldMetaInfo{&Paycheck::ID}},
-                    {"Employee-Ref", StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
-                    {"Amount", StructFieldMetaInfo{&Paycheck::fAmount}},
-                    {"Date", StructFieldMetaInfo{&Paycheck::fDate}},
+                    {"id"sv, StructFieldMetaInfo{&Paycheck::ID}},
+                    {"Employee-Ref"sv, StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
+                    {"Amount"sv, StructFieldMetaInfo{&Paycheck::fAmount}},
+                    {"Date"sv, StructFieldMetaInfo{&Paycheck::fDate}},
                 });
                 return mapper;
             }};
@@ -578,19 +578,19 @@ namespace {
              * for the EMPLOYEES table.
              */
             const Schema::Table kEmployeesTableSchema_{
-                "EMPLOYEES",
+                "EMPLOYEES"sv,
                 /*
                  *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
                  *  for ID, just as an example.
                  */
                 // clang-format off
                 Collection<Schema::Field>{
-                {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-                , {.fName = "NAME", .fVariantValueName = "Name"sv, .fVariantValueType = VariantValue::eString}
-                , {.fName = "AGE", .fVariantValueName = "Age"sv, .fVariantValueType = VariantValue::eInteger}
-                , {.fName = "ADDRESS", .fVariantValueName = "Address"sv, .fVariantValueType = VariantValue::eString}
-                , {.fName = "SALARY", .fVariantValueName = "Salary"sv, .fVariantValueType = VariantValue::eFloat}
-                , {.fName = "STILL_EMPLOYED", .fVariantValueName = "Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}
+                {.fName = "ID"sv, .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+                , {.fName = "NAME"sv, .fVariantValueName = "Name"sv, .fVariantValueType = VariantValue::eString}
+                , {.fName = "AGE"sv, .fVariantValueName = "Age"sv, .fVariantValueType = VariantValue::eInteger}
+                , {.fName = "ADDRESS"sv, .fVariantValueName = "Address"sv, .fVariantValueType = VariantValue::eString}
+                , {.fName = "SALARY"sv, .fVariantValueName = "Salary"sv, .fVariantValueType = VariantValue::eFloat}
+                , {.fName = "STILL_EMPLOYED"sv, .fVariantValueName = "Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}
                 },
                 Schema::CatchAllField{}};
 
@@ -599,12 +599,12 @@ namespace {
              * for the PAYCHECKS table.
              */
             const Schema::Table kPaychecksTableSchema_{
-                "PAYCHECKS",
+                "PAYCHECKS"sv,
                 Collection<Schema::Field>{
-                {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-                , {.fName = "EMPLOYEEREF", .fVariantValueName = "Employee-Ref"sv,.fRequired = true,  .fVariantValueType = VariantValue::eInteger}
-                , {.fName = "AMOUNT", .fVariantValueName = "Amount"sv, .fVariantValueType = VariantValue::eFloat}
-                , {.fName = "DATE", .fVariantValueName = "Date"sv, .fVariantValueType = VariantValue::eDate}
+                {.fName = "ID"sv, .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+                , {.fName = "EMPLOYEEREF"sv, .fVariantValueName = "Employee-Ref"sv, .fRequired = true,  .fVariantValueType = VariantValue::eInteger}
+                , {.fName = "AMOUNT"sv, .fVariantValueName = "Amount"sv, .fVariantValueType = VariantValue::eFloat}
+                , {.fName = "DATE"sv, .fVariantValueName = "Date"sv, .fVariantValueType = VariantValue::eDate}
              }};
             // clang-format on
 

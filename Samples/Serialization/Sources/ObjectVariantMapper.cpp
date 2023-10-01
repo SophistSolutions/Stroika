@@ -116,8 +116,8 @@ namespace {
         {
             bool newEnabled = true;
             tmp.fEnabled    = newEnabled;
-            tmp.fThisPHRsIDToSharedContactID.Add ("A", "B");
-            tmp.fLastSynchronizedAt = DateTime{1998y / Time::April / 11d, Time::TimeOfDay::Parse ("3pm", locale::classic ())};
+            tmp.fThisPHRsIDToSharedContactID.Add ("A"sv, "B"sv);
+            tmp.fLastSynchronizedAt = DateTime{1998y / Time::April / 11d, Time::TimeOfDay::Parse ("3pm"sv, locale::classic ())};
         }
 
         /// Map that object to a VariantValue
@@ -186,7 +186,7 @@ namespace {
             // And dump the results into a temporary memory-based stream
             Streams::MemoryStream<Character>::Ptr tmpStream = Streams::MemoryStream<Character>::New ();
             Variant::JSON::Writer{}.Write (vv, tmpStream);
-            DbgTrace (L"rendered as JSON: = %s", tmpStream.As<String> ().ReplaceAll (L"\n", L"").c_str ());
+            DbgTrace (L"rendered as JSON: = %s", tmpStream.As<String> ().ReplaceAll ("\n"sv, ""sv).c_str ());
         };
 
         // Create a test object to serialize

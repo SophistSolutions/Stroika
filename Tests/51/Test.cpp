@@ -33,7 +33,7 @@ namespace {
 
     void Test_1_BasicRange_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test_1_BasicRange_ ()"};
+        Debug::TraceContextBumper ctx{"{}::Test_1_BasicRange_ ()"};
         {
             Range<int> r (3, 5);
             VerifyTestResult (not r.empty ());
@@ -130,7 +130,7 @@ namespace {
 
     void Test_2_BasicDiscreteRangeIteration_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test_2_BasicDiscreteRangeIteration_"};
+        Debug::TraceContextBumper ctx{"{}::Test_2_BasicDiscreteRangeIteration_"};
         {
             DiscreteRange<int> r (3, 5);
             VerifyTestResult (not r.empty ());
@@ -173,7 +173,7 @@ namespace {
 namespace {
     void Test_3_SimpleDiscreteRangeWithEnumsTest_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test_3_SimpleDiscreteRangeWithEnumsTest_"};
+        Debug::TraceContextBumper ctx{"{}::Test_3_SimpleDiscreteRangeWithEnumsTest_"};
         enum class Color {
             red,
             blue,
@@ -251,7 +251,7 @@ namespace {
 namespace {
     void Test4_MapTest_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test4_MapTest_"};
+        Debug::TraceContextBumper ctx{"{}::Test4_MapTest_"};
         {
             Containers::Sequence<int> n;
             n.Append (1);
@@ -270,7 +270,7 @@ namespace {
 namespace {
     void Test5_ReduceTest_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test5_ReduceTest_"};
+        Debug::TraceContextBumper ctx{"{}::Test5_ReduceTest_"};
         {
             Containers::Sequence<int> n;
             n.Append (1);
@@ -285,7 +285,7 @@ namespace {
 namespace {
     void Test6_FunctionApplicationContext_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test6_FunctionApplicationContext_"};
+        Debug::TraceContextBumper ctx{"{}::Test6_FunctionApplicationContext_"};
         using Containers::Sequence;
 
         {
@@ -343,7 +343,7 @@ namespace {
 
         {
             using Characters::String;
-            Sequence<String> s = {L"alpha", L"beta", L"gamma"};
+            Sequence<String> s = {"alpha", "beta", "gamma"};
             {
                 int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
                 // out of scope before this does
@@ -352,7 +352,7 @@ namespace {
                                         ++countSoFar;
                                         return countSoFar & 1;
                                     })
-                                    .Map<String> ([] (String s) { return s + L" hello"; })
+                                    .Map<String> ([] (String s) { return s + " hello"sv; })
                                     .Reduce<size_t> ([] ([[maybe_unused]] String s, size_t memo) { return memo + 1; });
                 VerifyTestResult (answer == 2);
             }
@@ -364,9 +364,9 @@ namespace {
                                                                                        ++countSoFar;
                                                                                        return countSoFar & 1;
                                                                                    })
-                                                                                   .Map<String> ([] (String s) { return s + L" hello"; }));
+                                                                                   .Map<String> ([] (String s) { return s + " hello"sv; }));
                 VerifyTestResult (r.length () == 2);
-                VerifyTestResult (r[0] == L"alpha hello" and r[1] == L"gamma hello");
+                VerifyTestResult (r[0] == "alpha hello"sv and r[1] == "gamma hello"sv);
             }
         }
     }
@@ -375,7 +375,7 @@ namespace {
 namespace {
     void Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test7_FunctionApplicationContextWithDiscreteRangeEtc_"};
+        Debug::TraceContextBumper ctx{"{}::Test7_FunctionApplicationContextWithDiscreteRangeEtc_"};
         using Containers::Sequence;
         {
             const uint32_t kRefCheck_[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
@@ -396,7 +396,7 @@ namespace {
 namespace {
     void Test8_DiscreteRangeTestFromDocs_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test8_DiscreteRangeTestFromDocs_"};
+        Debug::TraceContextBumper ctx{"{}::Test8_DiscreteRangeTestFromDocs_"};
         // From Docs in DiscreteRange<> class
         vector<int> v = DiscreteRange<int>{1, 10}.Elements ().As<vector<int>> ();
         VerifyTestResult ((v == vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
@@ -409,7 +409,7 @@ namespace {
 namespace {
     void Test9_Generators_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test9_Generators_"};
+        Debug::TraceContextBumper ctx{"{}::Test9_Generators_"};
         {
             constexpr int kMin      = 1;
             constexpr int kMax      = 10;
@@ -436,7 +436,7 @@ namespace {
     void Test10_MakeIterableFromIterator_ ()
     {
         static_assert (ranges::range<Iterable<int>>);
-        Debug::TraceContextBumper ctx{L"{}::Test10_MakeIterableFromIterator_"};
+        Debug::TraceContextBumper ctx{"{}::Test10_MakeIterableFromIterator_"};
         {
             Containers::Sequence<int> a    = {1, 3, 5, 7, 9};
             Iterator<int>             iter = a.MakeIterator ();
@@ -453,7 +453,7 @@ namespace {
 namespace {
     void Test11_GetDistanceSpanned_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test11_GetDistanceSpanned_"};
+        Debug::TraceContextBumper ctx{"{}::Test11_GetDistanceSpanned_"};
         using IntRange = Range<unsigned int>;
         IntRange foo{3, 9};
         VerifyTestResult (foo.GetDistanceSpanned () == 6);
@@ -463,7 +463,7 @@ namespace {
 namespace {
     void Test12_RangeConstExpr_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test12_RangeConstExpr_"};
+        Debug::TraceContextBumper ctx{"{}::Test12_RangeConstExpr_"};
         using IntRange = Range<unsigned int>;
         constexpr IntRange     kFoo_{3, 9};
         constexpr unsigned int l = kFoo_.GetLowerBound ();
@@ -478,7 +478,7 @@ namespace {
 namespace {
     void Test13_DisjointRange_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test13_DisjointRange_"};
+        Debug::TraceContextBumper ctx{"{}::Test13_DisjointRange_"};
         {
             DisjointRange<float> dr{};
             VerifyTestResult (dr.empty ());
@@ -742,7 +742,7 @@ namespace {
 namespace {
     void Test14_ToString_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test14_ToString_"};
+        Debug::TraceContextBumper ctx{"{}::Test14_ToString_"};
         VerifyTestResult ((Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4]"));
         VerifyTestResult ((Range<int>{3, 4}.ToString () == L"[3 ... 4]"));
         {
@@ -756,7 +756,7 @@ namespace {
             using namespace Time;
             VerifyTestResult (
                 (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString () ==
-                 L"[4/4/1903 ... 4/5/1903]"));
+                 "[4/4/1903 ... 4/5/1903]"));
         }
     }
 }
@@ -787,7 +787,7 @@ namespace {
 namespace {
     void Test16_LinqLikeFunctions_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test16_LinqLikeFunctions_"};
+        Debug::TraceContextBumper ctx{"{}::Test16_LinqLikeFunctions_"};
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
             VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequentialEquals (Iterable<int>{2, 4, 6}));
@@ -906,12 +906,12 @@ namespace {
 namespace {
     void Test17_DurationRange_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test17_DurationRange_"};
+        Debug::TraceContextBumper ctx{"{}::Test17_DurationRange_"};
         using Time::Duration;
         using Traversal::Range;
 
         {
-            Range<Duration> a{Duration{"PT.5S"}, Duration{"PT2M"}};
+            Range<Duration> a{Duration{"PT.5S"sv}, Duration{"PT2M"}};
             Range<Duration> b{Duration{"PT1S"}, Duration{"PT2M"}};
             Verify ((a ^ b) == b);
         }
@@ -928,7 +928,7 @@ namespace {
 namespace {
     void Test18_IterableConstructors_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test18_IterableConstructors_"};
+        Debug::TraceContextBumper ctx{"{}::Test18_IterableConstructors_"};
 
         {
             vector<int>   a = {1, 3, 5};
@@ -945,7 +945,7 @@ namespace {
 namespace {
     void Test19_CreateGeneratorBug_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test19_CreateGeneratorBug_"};
+        Debug::TraceContextBumper ctx{"{}::Test19_CreateGeneratorBug_"};
         auto                      t1 = [] () {
             Containers::Bijection<int, int> seeIfReady;
             seeIfReady.Add (1, 1);
@@ -1031,17 +1031,17 @@ namespace {
     void Test20_Join_ ()
     {
         using IO::Network::InternetAddress;
-        Debug::TraceContextBumper ctx{L"{}::Test20_Join_"};
+        Debug::TraceContextBumper ctx{"{}::Test20_Join_"};
         Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
-        VerifyTestResult (c.Join () == L"localhost, INADDR_ANY");
-        VerifyTestResult (c.Join (L"; ") == L"localhost; INADDR_ANY");
+        VerifyTestResult (c.Join () == "localhost, INADDR_ANY");
+        VerifyTestResult (c.Join (L"; ") == "localhost; INADDR_ANY");
     }
 }
 
 namespace {
     void Test21_Repeat_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test21_Repeat_"};
+        Debug::TraceContextBumper ctx{"{}::Test21_Repeat_"};
         {
             Iterable<int> c{1};
             VerifyTestResult (c.Repeat (5).SequentialEquals (Iterable<int>{1, 1, 1, 1, 1}));
@@ -1059,7 +1059,7 @@ namespace {
 namespace {
     void Test22_Top_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test22_Top_"};
+        Debug::TraceContextBumper ctx{"{}::Test22_Top_"};
         {
             Iterable<int> c{3, 5, 9, 38, 3, 5};
             VerifyTestResult (c.Top ().SequentialEquals (c.OrderBy (std::greater<int>{})));

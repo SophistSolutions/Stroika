@@ -147,7 +147,6 @@ int main (int argc, const char* argv[])
         if (searchFor.has_value ()) {
             DoSearching_ (&s, *searchFor);
         }
-
         if (listen or searchFor.has_value ()) {
             Execution::WaitableEvent{}.Wait (quitAfter); // wait quitAfter seconds, or til user hits ctrl-c
         }

@@ -47,7 +47,7 @@ namespace {
                                  "ADDRESS        CHAR(50),"
                                  "SALARY         REAL,"
                                  "STILL_EMPLOYED INT"
-                                 ");");
+                                 ");"sv);
                      }
                  }},
                 {"PAYCHECKS"sv,
@@ -59,7 +59,7 @@ namespace {
                                  "EMPLOYEEREF INT NOT NULL,"
                                  "AMOUNT REAL,"
                                  "DATE TEXT"
-                                 ");");
+                                 ");"sv);
                      }
                  }},
             });
@@ -68,7 +68,7 @@ namespace {
     void PeriodicallyUpdateEmployeesTable_ (Connection::Ptr conn)
     {
         Statement addEmployeeStatement = conn.mkStatement (
-            "INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);");
+            "INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);"sv);
 
         // Add Initial Employees
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{

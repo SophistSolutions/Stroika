@@ -57,8 +57,8 @@ namespace {
                   [] () -> ObjectVariantMapper {
                       ObjectVariantMapper mapper;
                       mapper.AddClass<OptionsData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {"Enabled", StructFieldMetaInfo{&OptionsData_::fEnabled}},
-                          {"Last-Synchronized-At", StructFieldMetaInfo{&OptionsData_::fLastSynchronizedAt}},
+                          {"Enabled"sv, StructFieldMetaInfo{&OptionsData_::fEnabled}},
+                          {"Last-Synchronized-At"sv, StructFieldMetaInfo{&OptionsData_::fLastSynchronizedAt}},
                       });
                       return mapper;
                   }(),
@@ -87,7 +87,7 @@ namespace {
                    *
                    *            But a better pattern is to create the folder in your application installer, typically.
                    */
-                  OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here")}
+                  OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here"sv)}
             , fActualCurrentConfigData_{fOptionsFile_.Read<OptionsData_> (OptionsData_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
@@ -148,7 +148,7 @@ namespace {
         // Use the return value to tell if a real change was made (so you can invoke some sort of notication/action)
         static const Duration kMinTime_ = 2min;
         if (sModuleConfiguration_.Update ([] (const OptionsData_& data) -> optional<OptionsData_> {
-                if (data.fLastSynchronizedAt && *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) {
+                if (data.fLastSynchronizedAt and *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) {
                     OptionsData_ result        = data;
                     result.fLastSynchronizedAt = DateTime::Now ();
                     return result;

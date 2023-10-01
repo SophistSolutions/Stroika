@@ -75,7 +75,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     Sequence<String> args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, "quit-after")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "quit-after"sv)) {
             ++argi;
             if (argi != args.end ()) {
                 quitAfter = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);

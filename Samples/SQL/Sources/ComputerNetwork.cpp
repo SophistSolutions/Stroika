@@ -68,10 +68,10 @@ namespace {
         mapper.AddCommonType<Common::GUID> (VariantValue::eBLOB);
 
         mapper.AddClass<Device> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {"id", StructFieldMetaInfo{&Device::id}},
-            {"name", StructFieldMetaInfo{&Device::name}},
-            {"openPorts", StructFieldMetaInfo{&Device::openPorts}},
-            {"hardwareAddresses", StructFieldMetaInfo{&Device::hardwareAddresses}},
+            {"id"sv, StructFieldMetaInfo{&Device::id}},
+            {"name"sv, StructFieldMetaInfo{&Device::name}},
+            {"openPorts"sv, StructFieldMetaInfo{&Device::openPorts}},
+            {"hardwareAddresses"sv, StructFieldMetaInfo{&Device::hardwareAddresses}},
         });
 
         return mapper;
@@ -81,7 +81,7 @@ namespace {
      *  This defines the mapping from our external data model (Device::kMapper) to the SQL data model.
      */
     const SQL::ORM::Schema::Table kDeviceTableSchema_{
-        "Devices",
+        "Devices"sv,
         /*
          *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
          *  for ID, just as an example.
@@ -90,8 +90,8 @@ namespace {
             /**
              *  For ID, generate random GUID (BLOB) automatically in database
              */
-            {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = "randomblob(16)"sv},
-            {.fName = "name", .fRequired = true, .fVariantValueType = VariantValue::eString}},
+            {.fName = "ID"sv, .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = "randomblob(16)"sv},
+            {.fName = "name"sv, .fRequired = true, .fVariantValueType = VariantValue::eString}},
         SQL::ORM::Schema::CatchAllField{}};
 }
 
