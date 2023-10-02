@@ -535,6 +535,8 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
     try {
         shared_ptr<Rep_> incRefCnt = *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
 
+        sCurrentThreadRep_ = incRefCnt;
+
         /*
          *  \note   SUBTLE!!!!
          *

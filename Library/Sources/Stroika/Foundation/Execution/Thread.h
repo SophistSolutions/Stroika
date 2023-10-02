@@ -743,6 +743,7 @@ namespace Stroika::Foundation::Execution {
         private:
             shared_ptr<Rep_>                                               fRep_;
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+            static inline thread_local weak_ptr<Rep_>                      sCurrentThreadRep_;
 
         private:
             friend Ptr New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration);

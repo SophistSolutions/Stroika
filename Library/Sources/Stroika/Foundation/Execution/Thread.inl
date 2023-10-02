@@ -95,7 +95,11 @@ namespace Stroika::Foundation::Execution {
         // a pointer. This is that pointer - so another thread can terminate/abort this thread.
         InterruptFlagType_* fTLSInterruptFlag_{}; // regular interrupt, abort interrupt, or none
         mutable mutex fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
-        jthread                          fThread_;
+#if __cpp_lib_jthread >= 201911
+        jthread fThread_;
+#else
+        thread               fThread_;
+#endif
         atomic<Status>                   fStatus_{Status::eNotYetRunning};
         WaitableEvent                    fRefCountBumpedEvent_;
         WaitableEvent                    fOK2StartEvent_;
