@@ -314,7 +314,7 @@ void Thread::Ptr::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
 
     {
         lock_guard<mutex> critSec{(*repSharedPtr)->fAccessSTDThreadMutex_};
-        (*repSharedPtr)->fThread_ = jthread ([&repSharedPtr] (const stop_token& stopToken) -> void { ThreadMain_ (repSharedPtr, stopToken); });
+        (*repSharedPtr)->fThread_ = jthread ([&repSharedPtr] () -> void { ThreadMain_ (repSharedPtr); });
     }
     try {
         (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
@@ -522,7 +522,7 @@ void Thread::Ptr::Rep_::ApplyPriority (Priority priority)
     }
 }
 
-void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep, const stop_token& stopToken) noexcept
+void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
 {
     RequireNotNull (thisThreadRep);
     TraceContextBumper ctx{"Thread::Rep_::ThreadMain_"};

@@ -377,10 +377,12 @@ namespace Stroika::Foundation::Execution {
              */
             nonvirtual NativeHandleType GetNativeHandle () const noexcept;
 
+#if __cpp_lib_jthread >= 201911
         public:
             /**
              */
             nonvirtual stop_token GetStopToken () const;
+#endif
 
         public:
             /**

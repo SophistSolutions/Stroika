@@ -52,8 +52,10 @@ namespace Stroika::Foundation::Execution {
     public:
         nonvirtual NativeHandleType GetNativeHandle ();
 
+#if __cpp_lib_jthread >= 201911
     public:
         nonvirtual stop_token GetStopToken () const;
+#endif
 
     public:
         nonvirtual Characters::String ToString () const;
@@ -74,7 +76,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void NotifyOfInterruptionFromAnyThread_ (bool aborting);
 
     private:
-        static void ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep, const stop_token& stopToken) noexcept;
+        static void ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept;
 
     private:
 #if qPlatform_POSIX
@@ -118,10 +120,12 @@ namespace Stroika::Foundation::Execution {
     {
         fOK2StartEvent_.Set ();
     }
+#if __cpp_lib_jthread >= 201911
     inline stop_token Thread::Ptr::Rep_::GetStopToken () const
     {
         return this->fThread_.get_stop_token ();
     }
+#endif
 
     /*
      ********************************************************************************
@@ -173,12 +177,14 @@ namespace Stroika::Foundation::Execution {
         }
         return fRep_->GetNativeHandle ();
     }
+#if __cpp_lib_jthread >= 201911
     inline stop_token Thread::Ptr::GetStopToken () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         RequireNotNull (fRep_);
         return fRep_->GetStopToken ();
     }
+#endif
     inline void Thread::Ptr::reset () noexcept
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
