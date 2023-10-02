@@ -379,6 +379,11 @@ namespace Stroika::Foundation::Execution {
 
         public:
             /**
+             */
+            nonvirtual stop_token GetStopToken () const;
+
+        public:
+            /**
              * \req    GetStatus () == Status::eNotYetRunning
              */
             nonvirtual void Start () const;
