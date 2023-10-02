@@ -747,7 +747,8 @@ namespace Stroika::Foundation::Execution {
 
         private:
             friend Ptr New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration);
-            friend Ptr GetCurrent ();
+            friend Ptr  GetCurrent ();
+            friend void CheckForInterruption ();
         };
 
         /**

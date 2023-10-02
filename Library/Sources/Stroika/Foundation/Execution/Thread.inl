@@ -10,22 +10,10 @@
  ********************************************************************************
  */
 #include <atomic>
-#include <list>
 
 #include "WaitableEvent.h"
 
 namespace Stroika::Foundation::Execution {
-
-    namespace PRIVATE_ {
-        enum class InterruptFlagState_ {
-            eNone,
-            eInterrupted,
-            eAborted,
-
-            Stroika_Define_Enum_Bounds (eNone, eAborted)
-        };
-        using InterruptFlagType_ = atomic<InterruptFlagState_>;
-    }
 
     /*
      ********************************************************************************
@@ -86,14 +74,17 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     private:
-        using InterruptFlagState_ = PRIVATE_::InterruptFlagState_;
-        using InterruptFlagType_  = PRIVATE_::InterruptFlagType_;
+        enum class InterruptFlagState_ {
+            eNone,
+            eInterrupted,
+            eAborted,
+
+            Stroika_Define_Enum_Bounds (eNone, eAborted)
+        };
 
     private:
-        function<void ()> fRunnable_;
-        // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
-        // a pointer. This is that pointer - so another thread can terminate/abort this thread.
-        InterruptFlagType_* fTLSInterruptFlag_{}; // regular interrupt, abort interrupt, or none
+        function<void ()>           fRunnable_;
+        atomic<InterruptFlagState_> fInterruptionState_{InterruptFlagState_::eNone}; // regular interrupt, abort interrupt, or none
         mutable mutex fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
 #if __cpp_lib_jthread >= 201911
         jthread fThread_;
@@ -113,6 +104,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         friend class Ptr;
+        friend void CheckForInterruption ();
     };
 
     /*

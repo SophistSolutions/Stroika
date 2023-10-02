@@ -76,12 +76,6 @@ namespace {
 }
 
 namespace {
-    using PRIVATE_::InterruptFlagState_;
-    using PRIVATE_::InterruptFlagType_;
-}
-
-namespace {
-    thread_local InterruptFlagType_          t_Interrupting_{InterruptFlagState_::eNone};
     thread_local InterruptSuppressCountType_ t_InterruptionSuppressDepth_{0};
 }
 
@@ -384,7 +378,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     if (not fThreadName_.empty ()) {
         sb << "name: '"sv << fThreadName_ << "', "sv;
     }
-    sb << "status: " << Characters::ToString (fStatus_.load ());
+    sb << "status: "sv << Characters::ToString (fStatus_.load ());
     sb << "}"sv;
     return sb.str ();
 }
@@ -590,8 +584,8 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
          *  Subtle, and not super clearly documented, but this is taking the address of a thread-local variable, and storing it in a non-thread-local
          *  instance, and hoping all that works correctly (that the memory access all work correctly).
          */
-        incRefCnt->fTLSInterruptFlag_ = &t_Interrupting_;
-        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (*incRefCnt->fTLSInterruptFlag_);
+        //   incRefCnt->fInterruptionState_ = &t_Interrupting_;
+        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (incRefCnt->fInterruptionState_);
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (incRefCnt->fStatus_);
 
         try {
@@ -652,7 +646,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
             }
 
             /*
-             *  Note - be careful NOT to directly or indirectly refrence fThead - because we may deadlock 
+             *  Note - be careful NOT to directly or indirectly refrence fThread - because we may deadlock 
              *  trying to shutdown (join) the thread -
              *  until we get inside the if (doRun)
              *
@@ -679,8 +673,8 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
         catch (...) {
             SuppressInterruptionInContext suppressCtx;
 #if qPlatform_POSIX
-            Platform::POSIX::ScopedBlockCurrentThreadSignal blockThreadAbortSignal (SignalUsedForThreadInterrupt ());
-            t_Interrupting_ = InterruptFlagState_::eNone; //  else .Set() below will THROW EXCPETION and not set done flag!
+            Platform::POSIX::ScopedBlockCurrentThreadSignal blockThreadAbortSignal{SignalUsedForThreadInterrupt ()};
+            this->fInterruptionState_ = InterruptFlagState_::eNone; //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
@@ -688,17 +682,12 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
         }
     }
     catch (const InterruptException&) {
-        DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught InterruptException - see sigsetmask stuff above - somehow "
-                  "still not working");
-        //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
-        // TI THINK ISSUE IS
+        DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught InterruptException - see sigsetmask stuff above - somehow not "
+                  "working???");
         AssertNotReached (); // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
     }
     catch (...) {
         DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught exception");
-
-        //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
-        // TI THINK ISSUE IS
         AssertNotReached (); // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
     }
 }
@@ -708,9 +697,8 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted or (not aborting)); // if aborting, must be in state aborting or completed, but for interruption can be other state
     //TraceContextBumper ctx{"Thread::Rep_::NotifyOfAbortFromAnyThread_"};
 
-    AssertNotNull (fTLSInterruptFlag_);
     if (aborting) {
-        fTLSInterruptFlag_->store (InterruptFlagState_::eAborted);
+        fInterruptionState_.store (InterruptFlagState_::eAborted);
     }
     else {
         /*
@@ -719,27 +707,26 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
          *  If was none, upgrade to interrupted. If was interrupted, already done. If was aborted, don't actually want to change.
          */
         InterruptFlagState_ v = InterruptFlagState_::eNone;
-        if (not fTLSInterruptFlag_->compare_exchange_strong (v, InterruptFlagState_::eInterrupted)) {
+        if (not fInterruptionState_.compare_exchange_strong (v, InterruptFlagState_::eInterrupted)) {
             Assert (v == InterruptFlagState_::eInterrupted or v == InterruptFlagState_::eAborted);
         }
         // Weak assert because this COULD fail - you could stop just before this check and the handling thread could handle the interruption and
         // clear the flag. I've seen this once (2019-06-13)
-        WeakAssert (fTLSInterruptFlag_->load () == InterruptFlagState_::eInterrupted or fTLSInterruptFlag_->load () == InterruptFlagState_::eAborted);
+        WeakAssert (fInterruptionState_.load () == InterruptFlagState_::eInterrupted or fInterruptionState_.load () == InterruptFlagState_::eAborted);
     }
 
     if (GetCurrentThreadID () == GetID ()) {
-        Assert (fTLSInterruptFlag_ == &t_Interrupting_);
         // NOTE - using CheckForInterruption uses TLS t_Interrupting_ instead of fStatus
         //      --LGP 2015-02-26
         CheckForInterruption (); // unless suppressed, this will throw
     }
     // Note we fall through here either if we have throws suppressed, or if sending to another thread
 
-    // @todo note - this used to check fStatus flag and I just changed to checking *fTLSInterruptFlag_ -- LGP 2015-02-26
+    // @todo note - this used to check fStatus flag and I just changed to checking *fInterruptionState_ -- LGP 2015-02-26
     if (fStatus_ == Status::eAborting) {
-        Assert (*fTLSInterruptFlag_ == InterruptFlagState_::eAborted);
+        Assert (fInterruptionState_ == InterruptFlagState_::eAborted);
     }
-    if (*fTLSInterruptFlag_ != InterruptFlagState_::eNone) {
+    if (fInterruptionState_ != InterruptFlagState_::eNone) {
 #if qPlatform_POSIX
         {
             [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
@@ -853,10 +840,6 @@ void Thread::Ptr::SetThreadPriority (Priority priority) const
     RequireNotNull (fRep_);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
     NativeHandleType nh = GetNativeHandle ();
-    /**
-     *  @todo - not important - but this is a race (bug). If two Thread::Ptrs refer to same thread, and one calls start, and the other calls
-     *          SetThreadPriority () - the priority change could get dropped on the floor.
-     */
     if (nh == NativeHandleType{}) {
         // This can happen if you set the thread priority before starting the thread (actually probably a common sequence of events)
         fRep_->fInitialPriority_.store (priority);
@@ -1319,32 +1302,35 @@ void Execution::Thread::CheckForInterruption ()
      *  re-throw with string operations. Otheriwse we would have to use SuppressInterruptionInContext
      *  just before the actual throw.
      */
-    if (t_InterruptionSuppressDepth_ == 0) {
-        Thread::SuppressInterruptionInContext suppressSoStringsDontThrow;
-        switch (t_Interrupting_.load ()) {
-            case InterruptFlagState_::eInterrupted: {
-                // When we interrupt a thread, that state is not sticky - it happens just once, until someone calls Interrupt () again
-                // but be careful not to undo an abort that comes after interrupt
-                InterruptFlagState_ prev = InterruptFlagState_::eInterrupted;
-                if (not t_Interrupting_.compare_exchange_strong (prev, InterruptFlagState_::eNone)) {
-                    DbgTrace (L"Failed to reset interrupted thread state (state was %d)", prev); // most likely no problem - just someone did abort right after interrupt
-                }
-                Throw (Thread::InterruptException::kThe);
-            } break;
-            case InterruptFlagState_::eAborted:
-                Throw (Thread::AbortException::kThe);
+    if (shared_ptr<Ptr::Rep_> thisRunningThreadRep = Ptr::sCurrentThreadRep_.lock ()) {
+        using InterruptFlagState_ = Ptr::Rep_::InterruptFlagState_;
+        if (t_InterruptionSuppressDepth_ == 0) {
+            Thread::SuppressInterruptionInContext suppressSoStringsDontThrow;
+            switch (thisRunningThreadRep->fInterruptionState_.load ()) {
+                case InterruptFlagState_::eInterrupted: {
+                    // When we interrupt a thread, that state is not sticky - it happens just once, until someone calls Interrupt () again
+                    // but be careful not to undo an abort that comes after interrupt
+                    InterruptFlagState_ prev = InterruptFlagState_::eInterrupted;
+                    if (not thisRunningThreadRep->fInterruptionState_.compare_exchange_strong (prev, InterruptFlagState_::eNone)) {
+                        DbgTrace (L"Failed to reset interrupted thread state (state was %d)", prev); // most likely no problem - just someone did abort right after interrupt
+                    }
+                    Throw (Thread::InterruptException::kThe);
+                } break;
+                case InterruptFlagState_::eAborted:
+                    Throw (Thread::AbortException::kThe);
+            }
         }
-    }
 #if qDefaultTracingOn
-    else if (t_Interrupting_ != InterruptFlagState_::eNone) {
-        static atomic<unsigned int> sSuperSuppress_{};
-        if (++sSuperSuppress_ <= 1) {
-            IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: t_InterruptionSuppressDepth_=%d, t_Interrupting_=%d",
-                                               t_InterruptionSuppressDepth_, t_Interrupting_.load ()));
-            sSuperSuppress_--;
+        else if (thisRunningThreadRep->fInterruptionState_ != InterruptFlagState_::eNone) {
+            static atomic<unsigned int> sSuperSuppress_{};
+            if (++sSuperSuppress_ <= 1) {
+                IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: t_InterruptionSuppressDepth_=%d, t_Interrupting_=%d",
+                                                   t_InterruptionSuppressDepth_, thisRunningThreadRep->fInterruptionState_.load ()));
+                sSuperSuppress_--;
+            }
         }
-    }
 #endif
+    }
 }
 
 /*

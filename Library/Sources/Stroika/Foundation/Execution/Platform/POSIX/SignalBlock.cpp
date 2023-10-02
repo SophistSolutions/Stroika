@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::Execution::Platform::POSIX;
  ********************************************************************************
  */
 ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal ()
-    : fRestoreMask_ ()
+    : fRestoreMask_{}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals all signals");
@@ -33,7 +33,7 @@ ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal ()
 }
 
 ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalID signal)
-    : fRestoreMask_ ()
+    : fRestoreMask_{}
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals for %s", SignalToName (signal).c_str ());
