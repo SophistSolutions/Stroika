@@ -314,7 +314,11 @@ void Thread::Ptr::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
 
     {
         lock_guard<mutex> critSec{(*repSharedPtr)->fAccessSTDThreadMutex_};
+#if __cpp_lib_jthread >= 201911
         (*repSharedPtr)->fThread_ = jthread ([&repSharedPtr] () -> void { ThreadMain_ (repSharedPtr); });
+#else
+        (*repSharedPtr)->fThread_ = thread ([&repSharedPtr] () -> void { ThreadMain_ (repSharedPtr); });
+#endif
     }
     try {
         (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
