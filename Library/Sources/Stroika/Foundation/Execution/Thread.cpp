@@ -301,7 +301,7 @@ Thread::Ptr::Rep_::Rep_ (const function<void ()>& runnable, [[maybe_unused]] con
 void Thread::Ptr::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{L"Thread::Ptr::Rep_::DoCreate"};
+    TraceContextBumper ctx{"Thread::Ptr::Rep_::DoCreate"};
 #endif
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
@@ -314,7 +314,7 @@ void Thread::Ptr::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
 
     {
         lock_guard<mutex> critSec{(*repSharedPtr)->fAccessSTDThreadMutex_};
-        (*repSharedPtr)->fThread_ = thread ([&repSharedPtr] () -> void { ThreadMain_ (repSharedPtr); });
+        (*repSharedPtr)->fThread_ = jthread ([&repSharedPtr] () -> void { ThreadMain_ (repSharedPtr); });
     }
     try {
         (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
