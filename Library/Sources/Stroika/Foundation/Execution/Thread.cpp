@@ -674,7 +674,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
             SuppressInterruptionInContext suppressCtx;
 #if qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal blockThreadAbortSignal{SignalUsedForThreadInterrupt ()};
-            this->fInterruptionState_ = InterruptFlagState_::eNone; //  else .Set() below will THROW EXCPETION and not set done flag!
+            thisThreadRep->fInterruptionState_ = InterruptFlagState_::eNone; //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
