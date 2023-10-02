@@ -191,6 +191,9 @@ namespace Stroika::Foundation::Characters {
          *  \see also - FromUTF8, FromSDKString, FromNarrowSDKString, FromStringConstant, FromLatin1, which are all like constructors
          *       but with special names to avoid confusion and make clear their arguments, and not participate in overloading. Note, chose
          *       this path instead of FLAG argument and explicit on CTOR, cuz more terse.
+         *
+         *  TODO:
+         *      @todo   basic_string_view<> UNICODE constructors - like char8_t etc, should also use STRINGCONSTANT code and avoid copying.
          */
         String ();
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
