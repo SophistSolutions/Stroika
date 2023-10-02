@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline Thread::CleanupPtr::CleanupPtr (AbortFlag abortFlag, Ptr threadPtr)
-        : Ptr (threadPtr)
+        : Ptr{threadPtr}
         , fAbort_{abortFlag == AbortFlag::eAbortBeforeWaiting}
     {
     }
@@ -347,6 +347,16 @@ namespace Stroika::Foundation::Execution {
     inline Thread::IDType Thread::GetCurrentThreadID () noexcept
     {
         return this_thread::get_id ();
+    }
+
+    /*
+     ********************************************************************************
+     ***************************** Thread::GetCurrent *******************************
+     ********************************************************************************
+     */
+    inline Thread::Ptr Thread::GetCurrent ()
+    {
+        return Thread::Ptr ::sCurrentThreadRep_.lock ();
     }
 
     /*

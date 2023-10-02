@@ -747,6 +747,7 @@ namespace Stroika::Foundation::Execution {
 
         private:
             friend Ptr New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration);
+            friend Ptr GetCurrent ();
         };
 
         /**
@@ -1072,6 +1073,12 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         IDType GetCurrentThreadID () noexcept;
+
+        /**
+         *  If the current (calling) thread is a 'Stroika thread' - that thread Ptr is returned. If the current thread is NOT a stroika thread (e.g. the main thread)
+         *  this will return a nullptr.
+         */
+        Ptr GetCurrent ();
 
         /**
          *  Our thread interruption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)
