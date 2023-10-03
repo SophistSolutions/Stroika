@@ -44,3 +44,14 @@ signal:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHan
 # Ideally, we would match on having ONE of these in one stack, and the other in the other stack, but could come in either order
 deadlock:Stroika::Foundation::Debug::AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex
 deadlock:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_
+
+#WARNING: ThreadSanitizer: unlock of an unlocked mutex (or by a wrong thread) (pid=392243)
+#    #0 pthread_mutex_unlock <null> (Test40+0xaf4abe)
+#    #1 __gthread_mutex_unlock /usr/include/x86_64-linux-gnu/c++/12/bits/gthr-default.h:779 (Test40+0xb95e12)
+#    #2 __gthread_recursive_mutex_unlock /usr/include/x86_64-linux-gnu/c++/12/bits/gthr-default.h:832 (Test40+0xb95e82)
+#    #3 std::recursive_timed_mutex::unlock() <null> (Test40+0xbdb585)
+#    #4 std::unique_lock<std::recursive_timed_mutex>::unlock() <null> (Test40+0xc223b1)
+#    #5 std::unique_lock<std::recursive_timed_mutex>::~unique_lock() <null> (Test40+0xc0c21e)
+#
+#       I looked closely - Oct 3 2023 on Ubuntu 23.04 - and this appears a bogus tsan report, only affecting if you do timed locks.
+mutex:__gthread_recursive_mutex_unlock
