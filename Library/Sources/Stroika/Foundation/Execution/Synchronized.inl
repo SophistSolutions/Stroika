@@ -442,15 +442,17 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (ReadableReference&& src)
-        : fT{src.fT}
+        : fT{src.fT}    // its a pointer so move same as copy
         , fSharedLock_{std::move (src.fSharedLock_)}
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
             this->fDbgTraceLocksName = move (src.fDbgTraceLocksName);
         }
         _NoteLockStateChanged (L"ReadableReference move-Locked");
+        #if qDebug
         src.fT           = nullptr;
-        src.fSharedLock_ = nullptr;
+        #endif
+        //src.fSharedLock_ = nullptr;
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::~ReadableReference ()
