@@ -137,6 +137,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
          *
+         *  \note   ***NOT a Cancelation Point***
          */
         nonvirtual void release_and_notify_one (LockType& lock);
 
@@ -150,6 +151,8 @@ namespace Stroika::Foundation::Execution {
          *          thread to release the lock.
          *
          *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
+         *
+         *  \note   ***NOT a Cancelation Point***
          */
         nonvirtual void release_and_notify_all (LockType& lock);
 
@@ -160,6 +163,8 @@ namespace Stroika::Foundation::Execution {
 
         /**
          *  \brief forward notify_all () call to underlying std::condition_variable'
+         *
+         *  \note   ***NOT a Cancelation Point***
          */
         nonvirtual void notify_all () noexcept;
 
@@ -173,6 +178,8 @@ namespace Stroika::Foundation::Execution {
          *  Returns:
          *      1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
          *      2) true of 'readyToWake' () is reason we woke
+         *
+         *  \note   ***Cancelation Point***
          *
          *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_until () - except
          *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
@@ -195,6 +202,8 @@ namespace Stroika::Foundation::Execution {
          *     1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
          *     2) true of 'readyToWake' () is reason we woke
          *
+         *  \note   ***Cancelation Point***
+         *
          *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_for () - except
          *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
          *
@@ -213,6 +222,8 @@ namespace Stroika::Foundation::Execution {
          *          // from BlockingQueue code...
          *          fCondtionVariable_.MutateDataNotifyAll ([=]() { fEndOfInput_ = true; });
          *      \endcode
+         *
+         *  \note   ***Not Cancelation Point***     -- but perhaps should be???
          */
         template <typename FUNCTION>
         nonvirtual void MutateDataNotifyAll (FUNCTION&& mutatorFunction);
@@ -225,6 +236,8 @@ namespace Stroika::Foundation::Execution {
          *          // from BlockingQueue code...
          *          fCondtionVariable_.MutateDataNotifyOne ([=]() { fEndOfInput_ = true; });
          *      \endcode
+         *
+         *  \note   ***Not Cancelation Point***     -- but perhaps should be???
          */
         template <typename FUNCTION>
         nonvirtual void MutateDataNotifyOne (FUNCTION&& mutatorFunction);

@@ -53,8 +53,6 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   \em Design Note     WaitForAny/WaitForAnyUntil and WaitForMultipleEvents
      *
-     *  \note   ***Cancelation Point***
-     *
      *  @see    qExecution_WaitableEvent_SupportWaitForMultipleObjects
      *
      *      This appears to be an issue with strong arguments on both sides. I'm very uncertain.
@@ -144,6 +142,8 @@ namespace Stroika::Foundation::Execution {
          *  Set the event to the non-signaled state
          *
          *  \note   This COULD have been called 'UnSet'.
+         *
+         *  \note   ***Not Cancelation Point***
          */
         nonvirtual void Reset ();
 
@@ -151,6 +151,8 @@ namespace Stroika::Foundation::Execution {
         /**
          *  This checks if the event is currently in a triggered state. Regardless of the type of event
          *  (autoreset or not) - this does not change the trigger state.
+         *
+         *  \note   ***Not Cancelation Point***
          */
         nonvirtual bool PeekIsSet () const noexcept;
 
@@ -159,6 +161,8 @@ namespace Stroika::Foundation::Execution {
          *  Set the event to the signaled state.
          *
          *  \note   This COULD have been called 'Signal', or 'SetSignaled'.
+         *
+         *  \note   ***Not Cancelation Point***
          */
         nonvirtual void Set ();
 
