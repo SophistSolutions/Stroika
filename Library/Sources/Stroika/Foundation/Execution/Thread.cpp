@@ -936,6 +936,12 @@ void Thread::Ptr::Abort () const
                 AssertNotReached ();
             }
         }
+#if __cpp_lib_jthread >= 201911
+        // If transitioning to aborted state, notify any existing stop_callbacks
+        if (prevState != Status::eAborting) [[likely]] {
+            fRep_->fThread_.get_stop_source ().request_stop ();
+        }
+#endif
     }
     if (fRep_->fStatus_ == Status::eAborting) {
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
