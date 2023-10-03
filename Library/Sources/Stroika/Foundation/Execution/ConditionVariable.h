@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Execution {
      *
      *                  Sadly, the POSIX (gcc/clang) of condition_variable don't appear to support EINTR, the windows
      *                  implementation doesn't support alertable states, and (FIND REFERENCE***) I THINK I saw documented
-     *                  someplace the standard metnions that this cannot be done (no idea why)
+     *                  someplace the standard mentions that this cannot be done (no idea why)
      *
      *              >   Maintain a list of 'waiting' condition variables, and then have thread-abort notify_all() on each of these
      *                  This significantly adds to the cost of waiting (add/remove safely from linked list with thread safety) - but
