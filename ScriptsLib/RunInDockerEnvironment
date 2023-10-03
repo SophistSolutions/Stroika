@@ -9,7 +9,7 @@
 CONTAINER_NAME="${CONTAINER_NAME:-regression-tests}"
 CONTAINER_IMAGE="${CONTAINER_IMAGE:-sophistsolutionsinc/stroika-buildvm-ubuntu1804-regression-tests}"
 # Default EXTRA_DNS to include my local LAN DNS server so I get local machine names, like raspberrypi (where I run my rasberry pi regtests)
-EXTRA_DNS="${EXTRA_DNS:-192.168.244.1}"
+#EXTRA_DNS="${EXTRA_DNS:-192.168.244.1}"
 EXTRA_DOCKER_ARGS="${EXTRA_DOCKER_ARGS:-}"
 ECHO_DOCKER_COMMANDS="${ECHO_DOCKER_COMMANDS:-0}"
 STOP_AT_END="${STOP_AT_END:-1}"
@@ -18,6 +18,13 @@ INCLUDE_EXTRA_PERSONAL_MOUNT_FILES="${INCLUDE_EXTRA_PERSONAL_MOUNT_FILES:-0}"
 
 SANDBOX_FROM="${SANDBOX_FROM:=`pwd`}"
 SANDBOX_TO="${SANDBOX_TO:=${SANDBOX_FROM}}"
+
+
+# used todo 	#--dns ${EXTRA_DNS} --dns 8.8.8.8 \
+# but didn't seem to be helping... so simplify
+if [ "${EXTRA_DNS}" != "" ] ; then
+	EXTRA_DOCKER_ARGS = "$EXTRA_DOCKER_ARGS --dns $EXTRA_DNS "
+fi
 
 
 ### Can set CMD2RUN=./ScriptsLib/RegressionTests
@@ -88,13 +95,13 @@ RunCMD_()
 ### so start with a boring task (sleep inf), and then run the CMD2RUN arg using exec, and then
 ### stop the container (it can then be safely restarted)
 
+
 ##NB: redirect to /dev/null so container ID not shown - actual errors go to stderr
 RunCMD_ "docker run \
 	${USER_FLAGS} ${PASSWORD_FILE_MOUNTS} \
 	-v /etc/localtime:/etc/localtime:ro \
 	${PERSONAL_FILE_MOUNTS} \
 	-v ${PRIVATE_COMPILER_BUILDS_DIR}:/private-compiler-builds \
-	--dns ${EXTRA_DNS} --dns 8.8.8.8 \
 	--security-opt seccomp=unconfined \
 	$EXTRATERMARGS \
 	--name ${CONTAINER_NAME} \
