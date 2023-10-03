@@ -4,9 +4,8 @@
 
 
 
-#workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only
-race:__interceptor_pipe
-#workaround https://stroika.atlassian.net/browse/STK-673 - Ubuntu 1810 only
+#race:__interceptor_pipe #### NO LONGER SEEMS NEEDED - LGP 2023-10-03
+#workaround https://stroika.atlassian.net/browse/STK-673 - Seen on Ubuntu 23.04, and appears unrelated to my code
 race:pipe
 
 
