@@ -32,7 +32,7 @@ namespace {
         uint16_t result;
         switch (Configuration::GetEndianness ()) {
             case Configuration::Endian::eLittle:
-                result = *reinterpret_cast<const uint16_t*> (p);
+                (void)::memcpy (&result, p, 2);
                 break;
             case Configuration::Endian::eBig:
                 result = (to_integer<uint16_t> (p[1]) << 8) + to_integer<uint16_t> (p[0]);
