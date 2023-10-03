@@ -1,4 +1,4 @@
-FROM sophistsolutionsinc/stroika-buildvm-ubuntu2204-small
+FROM sophistsolutionsinc/stroika-buildvm-ubuntu2304-small
 
 # Get latest packages system, so can do installs
 RUN apt-get update
@@ -10,7 +10,7 @@ RUN apt-get -qq install -y locales && locale-gen en_US en_US.UTF-8
 RUN apt-get -qq install -y lsb-release
 
 #install the latest (C++20 compat) g++ compilers
-RUN apt-get -qq install -y g++-11 g++-12
+RUN apt-get -qq install -y g++-11 g++-12 g++-13
 
 # For reasons which elude me, installing libc++-N removes all the other
 # https://askubuntu.com/questions/1227092/how-can-i-install-multiple-versions-of-llvm-libc-on-the-same-computer-at-the-s
@@ -19,7 +19,8 @@ RUN apt-get -qq install -y g++-11 g++-12
 #and only install libc++-14-dev since others don't appear to work on this release of ubuntu (at least not instlaling mulitple versions)
 RUN apt-get -qq install -y clang++-13
 RUN apt-get -qq install -y clang++-14
-RUN apt-get -qq install -y clang++-15 && apt-get install -y libc++-15-dev libc++abi-15-dev
+RUN apt-get -qq install -y clang++-15
+RUN apt-get -qq install -y clang++-16 && apt-get install -y libc++-16-dev libc++abi-16-dev
 
 # For some reason not installed on ubuntu 21.04, nor 22.04 otherwise
 RUN apt-get -qq install -y libz.a
@@ -28,4 +29,4 @@ RUN apt-get -qq install -y libz.a
 RUN apt-get -qq install -y valgrind
 
 # Cross-compile tests for ARM (iputils-ping is how we detect if machine exists to run regtests on)
-RUN apt-get -qq install -y g++-11-arm-linux-gnueabihf g++-12-arm-linux-gnueabihf iputils-ping
+RUN apt-get -qq install -y g++-11-arm-linux-gnueabihf g++-12-arm-linux-gnueabihf g++-13-arm-linux-gnueabihf iputils-ping
