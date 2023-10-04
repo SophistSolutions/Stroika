@@ -82,9 +82,9 @@
     "versions, "                                                                                                                           \
     "and clang5"
 #endif
-#if (__clang_major__ > 15) || (__clang_major__ == 15 && (__clang_minor__ > 0))
+#if (__clang_major__ > 16)
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Info: Stroika untested with this version of clang++ - (>14.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
+    "Info: Stroika untested with this version of clang++ - (>16.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -517,8 +517,9 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 14
 // still broken in clang++ 15
+// still broken in clang++ 16
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #else
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy 0
 #endif
@@ -549,7 +550,8 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 #define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 14
-// first noticed broken in apply clang 15
+// broken in clang 15
+// appears fixed in clang++16
 #define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy 0
@@ -883,6 +885,8 @@ In file included from ../Characters/StringBuilder.h:273,
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
+//  broken in -clang++15
+// Fixed in -clang++16
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy                                                    \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
@@ -1011,6 +1015,7 @@ make[1]: *** [Makefile:20:
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
 // Noticed broken in -clang++15
+// fixed in clang++16
 #define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy                                                      \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
@@ -1044,6 +1049,19 @@ Writer.h:61:50: error: default member initializer for ‘Stroika::Foundation::Da
       |                                                  ^
 Writer.h:55:49: note: defined here
    55 |             bool                  fSpaceSeparate{false}; // if true, emit space after all separators on a line but the last
+
+
+
+   Compiling Library/Sources/Stroika/Foundation/Execution/WaitForIOReady.cpp ... 
+In file included from Writer.cpp:8:
+./Writer.h:68:43: error: default member initializer for 'fSeparator' needed within definition of enclosing class 'Writer' outside of member functions
+        Writer (const Options& options = {});
+                                          ^
+./Writer.h:54:35: note: default member initializer declared here
+            Characters::Character fSeparator{','};
+                                  ^
+1 error generated.
+make[6]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedB
       |                                                 ^~~~~~~~
          Co*/
 #ifndef qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
@@ -1061,8 +1079,9 @@ Writer.h:55:49: note: defined here
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noticed in clang++-14
 // broken in clang++-15
+// broken in clang++-16
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #else
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy 0
 #endif
@@ -1367,6 +1386,7 @@ In file included from Namespace.cpp:10:
 #define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy                                                            \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
+// seems fixed in clang++16
 #define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy                                                            \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__GNUC__) && !defined(__clang__)
@@ -1572,7 +1592,8 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCol
 // appears still broken in clang++-13
 // appears still broken in clang++-14
 // appears still broken in clang++-15
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// appears still broken in clang++-16
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(_MSC_VER)
 // Newly broken in _MSC_VER_2k22_17Pt2_ - wonder if that means this is my bug not vs2k22/clang?
 // broken in _MSC_VER_2k22_17Pt3_
@@ -1601,6 +1622,7 @@ ld-temp.o:(.text._ZN7Stroika10Foundation6Memory12InlineBufferIcLm10240EE7reserve
 #if defined(__clang__) && !defined(__APPLE__)
 // appears still broken in clang++-13 and -clang++-14-release-libstdc++
 // and broekn uuntu22.04 clang++-15-release-libstdc++
+// appears fixed in clang++16
 #define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_release_bld_error_bad_obj_offset_Buggy 0
@@ -1670,7 +1692,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-13
 // still broken in clang++-14
 // still broken in clang++-15
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// still broken in clang++-16
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(_MSC_VER)
 // verified still broken in _MSC_VER_2k22_17Pt0_
 // verified still broken in _MSC_VER_2k22_17Pt1_
@@ -1729,8 +1752,9 @@ Test.cpp:173:31: error: template template argument has different template parame
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-14
 // verified still broken in clang++-15
+// verified still broken in clang++-16
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
@@ -1764,6 +1788,7 @@ Stack dump:
 #define qCompilerAndStdLib_template_second_concept_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-15
+// appears fixed in clang++16
 #define qCompilerAndStdLib_template_second_concept_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_template_second_concept_Buggy 0
