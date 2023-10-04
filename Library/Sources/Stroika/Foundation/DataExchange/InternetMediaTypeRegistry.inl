@@ -23,7 +23,7 @@ namespace Stroika::Foundation::DataExchange {
         AssertNotNull (fFrontEndRep_);
         return fFrontEndRep_->GetPreferredAssociatedFileSuffix (ct);
     }
-    inline Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const InternetMediaType& ct) const
+    inline Containers::Set<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const InternetMediaType& ct) const
     {
         AssertNotNull (fFrontEndRep_);
         return fFrontEndRep_->GetAssociatedFileSuffixes (ct);

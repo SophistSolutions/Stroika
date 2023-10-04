@@ -27,7 +27,7 @@ namespace Stroika::Foundation::DataExchange {
 
     using Characters::String;
     using Containers::Mapping;
-    using Containers::Set;
+    //using Containers::Set;
 
     /**
      *  This leverages the os-dependent MIME databases
@@ -152,7 +152,7 @@ namespace Stroika::Foundation::DataExchange {
          */
         struct OverrideRecord {
             optional<String>              fTypePrintName;
-            optional<Set<FileSuffixType>> fFileSuffixes;
+            optional<Containers::Set<FileSuffixType>> fFileSuffixes;
             optional<FileSuffixType>      fPreferredSuffix;
         };
 
