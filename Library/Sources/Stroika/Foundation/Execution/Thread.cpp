@@ -632,13 +632,6 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
              */
             incRefCnt->fOK2StartEvent_.Wait ();
 
-#if __cpp_lib_jthread >= 201911
-            // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
-            // But only register this after fRefCountBumpedEvent_ (would need to think more carefully to place this earlier)
-            // --LGP 2023-10-03
-            stop_callback (incRefCnt->fThread_.get_stop_token (), [=] () { Ptr{incRefCnt}.Abort (); });
-#endif
-
             bool doRun = false;
             {
                 Status prevValue = Status::eNotYetRunning;
@@ -651,6 +644,13 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
                         Characters::ToString (prevValue).c_str ());
                 }
             }
+
+#if __cpp_lib_jthread >= 201911
+            // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
+            // But only register this after fRefCountBumpedEvent_ (would need to think more carefully to place this earlier)
+            // --LGP 2023-10-03
+            stop_callback stopCallback{incRefCnt->fThread_.get_stop_token (), [=] () { Ptr{incRefCnt}.Abort (); }};
+#endif
 
             /*
              *  Note - be careful NOT to directly or indirectly refrence fThread - because we may deadlock 
