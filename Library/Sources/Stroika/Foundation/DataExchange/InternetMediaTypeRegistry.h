@@ -151,9 +151,9 @@ namespace Stroika::Foundation::DataExchange {
          *  Used to override InternetMediaType file suffix/pretty name entries from the OS, or to define custom ones per-application.
          */
         struct OverrideRecord {
-            optional<String>              fTypePrintName;
+            optional<String>                          fTypePrintName;
             optional<Containers::Set<FileSuffixType>> fFileSuffixes;
-            optional<FileSuffixType>      fPreferredSuffix;
+            optional<FileSuffixType>                  fPreferredSuffix;
         };
 
     public:

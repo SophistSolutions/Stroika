@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Traversal {
     static_assert (IIterableOf<vector<int>, long int>);
     static_assert (not IIterableOf<vector<string>, int>);
 
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wsubobject-linkage\"");  // First required by g++-13 - probably compiler bug/errant warning
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wsubobject-linkage\""); // First required by g++-13 - probably compiler bug/errant warning
     /**
      *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
      *          to traverse them.

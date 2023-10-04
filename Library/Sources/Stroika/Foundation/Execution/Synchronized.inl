@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Execution {
         requires (TRAITS::kIsRecursiveReadMutex and TRAITS::kSupportsTimedLocks)
     {
         ReadLockType_ critSec{fMutex_, tryFor};
-        if (not critSec) [[unlikely]]  {
+        if (not critSec) [[unlikely]] {
             ThrowTimeOutException ();
         }
         return fProtectedValue_;
@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Execution {
         requires (TRAITS::kIsRecursiveLockMutex and TRAITS::kSupportsTimedLocks)
     {
         [[maybe_unused]] auto&& critSec = unique_lock{fMutex_, tryFor};
-        if (not critSec)[[unlikely]]  {
+        if (not critSec) [[unlikely]] {
             ThrowTimeOutException ();
         }
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
@@ -311,7 +311,7 @@ namespace Stroika::Foundation::Execution {
         return UpgradeLockNonAtomicallyQuietly (
             lockBeingUpgraded,
             [&] (WritableReference&& wRef, [[maybe_unused]] bool interveningWriteLock) {
-                if (interveningWriteLock)  [[unlikely]] {
+                if (interveningWriteLock) [[unlikely]] {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"in UpgradeLockNonAtomicallyQuietly - turning interveningWriteLock into fake timeout");
 #endif
@@ -368,7 +368,7 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_,
                                       Characters::ToString (timeout).c_str ()};
 #endif
-        if (not UpgradeLockNonAtomicallyQuietly (lockBeingUpgraded, doWithWriteLock, timeout)) [[unlikely]]  {
+        if (not UpgradeLockNonAtomicallyQuietly (lockBeingUpgraded, doWithWriteLock, timeout)) [[unlikely]] {
             Execution::ThrowTimeOutException (); // @todo a bit of a defect, could be returned false not due to timeout, but do to doWithWriteLock returning false...
         }
     }
@@ -382,7 +382,7 @@ namespace Stroika::Foundation::Execution {
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_,
                                       Characters::ToString (timeout).c_str ()};
 #endif
-        if (not UpgradeLockNonAtomicallyQuietly (lockBeingUpgraded, doWithWriteLock, timeout)) [[unlikely]]  {
+        if (not UpgradeLockNonAtomicallyQuietly (lockBeingUpgraded, doWithWriteLock, timeout)) [[unlikely]] {
             Execution::ThrowTimeOutException (); // @todo a bit of a defect, could be returned false not due to timeout, but do to doWithWriteLock returning false...
         }
     }
@@ -442,16 +442,16 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (ReadableReference&& src)
-        : fT{src.fT}    // its a pointer so move same as copy
+        : fT{src.fT} // its a pointer so move same as copy
         , fSharedLock_{std::move (src.fSharedLock_)}
     {
         if constexpr (TRAITS::kDbgTraceLockUnlockIfNameSet) {
             this->fDbgTraceLocksName = move (src.fDbgTraceLocksName);
         }
         _NoteLockStateChanged (L"ReadableReference move-Locked");
-        #if qDebug
-        src.fT           = nullptr;
-        #endif
+#if qDebug
+        src.fT = nullptr;
+#endif
         //src.fSharedLock_ = nullptr;
     }
     template <typename T, typename TRAITS>
@@ -528,7 +528,7 @@ namespace Stroika::Foundation::Execution {
         , fWriteLock_{s->fMutex_, timeout}
     {
         RequireNotNull (s);
-        if (not fWriteLock_.owns_lock ())[[unlikely]]  {
+        if (not fWriteLock_.owns_lock ()) [[unlikely]] {
             Execution::ThrowTimeOutException ();
         }
         this->_NoteLockStateChanged (L"WritableReference Locked");
