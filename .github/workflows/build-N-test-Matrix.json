@@ -142,7 +142,7 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-23.04-g++-12",
+        "displayTargetName": "ubuntu-23.04-g++-13",
         "compiler": "g++-13",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2304-regression-tests:v3",
@@ -153,7 +153,7 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-23.04-g++-12-c++20",
+        "displayTargetName": "ubuntu-23.04-g++-13-c++20",
         "compiler": "g++-13",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2304-regression-tests:v3",
