@@ -95,7 +95,7 @@
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika v3 does not support versions prior to GCC 11 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
-#if __GNUC__ > 12 || (__GNUC__ == 12 && (__GNUC_MINOR__ > 3))
+#if __GNUC__ > 13 || (__GNUC__ == 13 && (__GNUC_MINOR__ > 1))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -825,7 +825,8 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 // VERIFIED BROKEN IN GCC 10.2
 // VERIFIED BROKEN IN GCC 11
 // VERIFIED BROKEN IN GCC 12
-#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+// VERIFIED BROKEN IN GCC 13
+#define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
 #else
 #define qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy 0
 #endif
@@ -859,8 +860,9 @@ In file included from ../Characters/StringBuilder.h:273,
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt5_)
 #elif defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 12
+// VERIFIED BROKEN IN GCC 13
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
 #elif defined(__clang__) && defined(__APPLE__)
 // Noticed broken in crapple-clang++14
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
@@ -1048,8 +1050,10 @@ Writer.h:55:49: note: defined here
 
 #if defined(__GNUC__) && !defined(__clang__)
 // First noticed in g++-11
+// still broken in g++-12
+// still broken in g++-13
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
 #elif defined(__clang__) && defined(__APPLE__)
 // First noticed in clang++-14
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
@@ -1097,7 +1101,8 @@ In file included from ../Characters/Format.h:15,
 
 #if defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEEN BROKEN IN GCC 12
-#define qCompilerAndStdLib_templateConstructorSpecialization_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+// BROKEN IN GCC 13
+#define qCompilerAndStdLib_templateConstructorSpecialization_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
 #else
 #define qCompilerAndStdLib_templateConstructorSpecialization_Buggy 0
 #endif
@@ -1125,6 +1130,7 @@ In function '__copy_m',
 #if defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEEN BROKEN IN GCC 11
 // SEEEN BROKEN IN GCC 12
+// FIXED in GCC 13
 #define qCompilerAndStdLib_copy_warning_overflow_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (11 <= __GNUC__ && __GNUC__ <= 12)
 #else
 #define qCompilerAndStdLib_copy_warning_overflow_Buggy 0
@@ -1365,6 +1371,7 @@ In file included from Namespace.cpp:10:
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 12.3 - so wondering if this is not a compiler bug but a me bug --LGP 2023-08-08
+// FIXED in GCC 13
 #define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
 #elif defined(_MSC_VER)
 // verified broken in _MSC_VER_2k22_17Pt5_ (BUT ONLY WHEN BUILDING INSIDE DOCKER????)
@@ -1458,6 +1465,8 @@ In file included from ../Characters/String.h:18,
 
 #if defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 11
+// VERIFIED BROKEN IN GCC 12
+// FIXED in GCC 13
 #define qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
 #else
 #define qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy 0
