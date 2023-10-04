@@ -999,6 +999,20 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 
+	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
+		if ($ENABLE_LTO == true) {
+			my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+			if (13.0 <= $itsVersion && $itsVersion < 14) {
+				# With gcc 13 - these and LTP - these appear to geenrate TONS of bogus warning messages, or at least warning messages that
+				# are hard to figure out what todo about --LGP 2023-10-04
+				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-subobject-linkage ';
+
+				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-odr ';
+				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-lto-type-mismatch ';
+			}
+		}
+	}
+
 	if (!(defined $AR)) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			my $ccLessArgs = $COMPILER_DRIVER_C;
@@ -1165,7 +1179,7 @@ sub	SetDefaultForPlatform_
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && $COMPILER_DRIVER eq '') {
 		# Ubuntu 20.04 comes with gcc version 9.x, which this version of Stroika doesnt support so
 		# if < 10, at least force gcc 10 as default; if wrong default - user can specify what they wanted explicitly
-		if (GetGCCVersion_ ("gcc") < '11') {
+		if (GetGCCVersion_ ("gcc") < 11.0) {
 			$COMPILER_DRIVER = "gcc-11";
 		}
 		else {
