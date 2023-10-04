@@ -140,6 +140,28 @@
         "extra_config_args": "--compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --trace2file enable",
         "run_on_branch": "v3-Release"
     },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-23.04-g++-12",
+        "compiler": "g++-13",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2304-regression-tests:v3",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "always"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-23.04-g++-12-c++20",
+        "compiler": "g++-13",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2304-regression-tests:v3",
+        "cpp_version": "c++20",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
+    },
     {},
     {
         "comment": "MacOS",
