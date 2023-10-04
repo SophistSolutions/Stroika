@@ -69,17 +69,19 @@ namespace Stroika::Foundation::Configuration {
      ********************************************************************************
      */
     template <typename ENUM>
-    inline constexpr make_unsigned_t<typename underlying_type<ENUM>::type> OffsetFromStart (ENUM e)
+    inline constexpr make_unsigned_t< underlying_type_t<ENUM>> OffsetFromStart (ENUM e)
     {
         // https://stroika.atlassian.net/browse/STK-549
         //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
-        return static_cast<make_unsigned_t<typename underlying_type<ENUM>::type>> (ToInt (e) - ToInt (ENUM::eSTART));
+        return static_cast<make_unsigned_t< underlying_type_t<ENUM>>> (ToInt (e) - ToInt (ENUM::eSTART));
     }
+    #if 0
     template <typename ENUM>
     inline constexpr ENUM OffsetFromStart (make_unsigned_t<typename underlying_type<ENUM>::type> offset)
     {
         return ToEnum<ENUM> (offset + ENUM::eSTART);
     }
+    #endif
 
     /*
      ********************************************************************************
