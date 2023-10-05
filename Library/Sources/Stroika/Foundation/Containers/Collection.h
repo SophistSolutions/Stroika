@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Containers {
      *          See inherited Iterable<>::SequentialEquals, Iterable<>::MultiSetEquals, , Iterable<>::SetEquals.
      */
     template <typename T>
-    class Collection : public Iterable<T> {
+    class [[nodiscard]] Collection : public Iterable<T> {
     private:
         using inherited = Iterable<T>;
 

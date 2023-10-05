@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Execution {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *          all methods can be freely used from any thread, and they will block internally as needed.
      */
-    class ThreadPool {
+    class [[nodiscard]] ThreadPool {
     public:
         /**
          */

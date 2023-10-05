@@ -84,7 +84,7 @@ namespace Stroika::Foundation::IO::Network {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
-    class URI {
+    class [[nodiscard]] URI {
     public:
         using Authority = UniformResourceIdentification::Authority;
 

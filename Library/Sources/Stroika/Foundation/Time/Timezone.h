@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Time {
      *
      *  @see https://stroika.atlassian.net/browse/STK-636
      */
-    struct TimeZoneInformationType {
+    struct [[nodiscard]] TimeZoneInformationType {
         struct Details {
             optional<Characters::String> fName;
             optional<Characters::String> fAbbreviation;
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Time {
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *          o   comparison of < not 100% intuitive, but unambiguous, so these can be compared (by numeric value of flags/offets).
      */
-    class Timezone {
+    class [[nodiscard]] Timezone {
     private:
         enum class TZ_ : uint16_t {
             eLocalTime,

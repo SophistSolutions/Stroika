@@ -199,7 +199,7 @@ namespace Stroika::Foundation::DataExchange {
      *              But will have to wait a bit it appears (MSFT still doesn't support reflections TS, and I'm not sure
      *              this can be done with reflections TS).
      */
-    class ObjectVariantMapper {
+    class [[nodiscard]] ObjectVariantMapper {
     public:
         /**
          *  FromObjectMapperType<T> defines how to map from a given type to a VariantValue.

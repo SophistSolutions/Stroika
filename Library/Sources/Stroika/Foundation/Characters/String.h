@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Characters {
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *      o   String::EqualsComparer, String::ThreeWayComparer and String::LessComparer provided with construction parameters to allow case insensitive compares 
      */
-    class String : public Traversal::Iterable<Character> {
+    class [[nodiscard]] String : public Traversal::Iterable<Character> {
     private:
         using inherited = Iterable<Character>;
 

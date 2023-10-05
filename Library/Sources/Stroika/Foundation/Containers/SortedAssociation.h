@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers {
      *          on the KEYS.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class SortedAssociation : public Association<KEY_TYPE, MAPPED_VALUE_TYPE> {
+    class [[nodiscard]] SortedAssociation : public Association<KEY_TYPE, MAPPED_VALUE_TYPE> {
     private:
         using inherited = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
 

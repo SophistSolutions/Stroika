@@ -168,7 +168,7 @@ namespace {
             sRegTest3Event_T1_.Reset ();
             sRegTest3Event_T2_.Reset ();
             int updaterValue = 0;
-             {
+            {
                 Thread::Ptr thread1 = Thread::New (bind (&FRED1::DoIt, &updaterValue));
                 Thread::Ptr thread2 = Thread::New (bind (&FRED2::DoIt, &updaterValue));
                 Thread::Start ({thread1, thread2});

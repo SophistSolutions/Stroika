@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Execution {
      *          must be provided to map 'T' objects to that SDKPollableType. These are provided by default for most appropriate types.
      */
     template <typename T = WaitForIOReady_Support::SDKPollableType, typename TRAITS = WaitForIOReady_Support::WaitForIOReady_Traits<T>>
-    class WaitForIOReady : public WaitForIOReady_Support::WaitForIOReady_Base {
+    class [[nodiscard]] WaitForIOReady : public WaitForIOReady_Support::WaitForIOReady_Base {
     public:
         using TraitsType = TRAITS;
 

@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers {
      *          Since a Bijection is not necessarily sorted, or in any particular order, < and > are not well defined.
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    class Bijection : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>, public Bijection_Base {
+    class [[nodiscard]] Bijection : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>, public Bijection_Base {
     private:
         using inherited = Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>;
 

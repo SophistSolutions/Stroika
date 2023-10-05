@@ -43,7 +43,7 @@
  *******************************************************************
  *******************************************************************
  */
-#include <ciso646>
+#include <climits> // include as little as possible but enuf to get LIBRARY defines like _LIBCPP_VERSION
 
 /*
  *  @eee StroikaConfig.cpp

@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers {
      *          only implementing three way compare for C++20 or later.
      */
     template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
-    class SortedMultiSet : public MultiSet<T, TRAITS> {
+    class [[nodiscard]] SortedMultiSet : public MultiSet<T, TRAITS> {
     private:
         using inherited = MultiSet<T, TRAITS>;
 

@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Time {
      *
      *          This coertion to GMT can be avoided by optional constructor argument to DateTime::ThreeWayComparer
      */
-    class DateTime {
+    class [[nodiscard]] DateTime {
     public:
         /**
          *  Construct a DateTime record with the given date and time value. Presume that these values

@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      *  \brief SQLite Concrete Connection is a factory for building (local) sqlite based database connection objects.
      *         'Connection' is a quasi-namespace.
      */
-    class Connection : SQL::Connection {
+    class [[nodiscard]] Connection : SQL::Connection {
     public:
         class IRep;
 

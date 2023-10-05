@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers {
      *          only implementing three way compare for C++20 or later.
      */
     template <typename T>
-    class SortedSet : public Set<T> {
+    class [[nodiscard]] SortedSet : public Set<T> {
     private:
         using inherited = Set<T>;
 

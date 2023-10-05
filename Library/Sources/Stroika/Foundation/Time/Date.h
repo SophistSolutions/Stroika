@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Time {
      * 
      *  \note DayOfWeek can be converted from/to unsigned int.
      */
-    struct DayOfWeek : weekday {
+    struct [[nodiscard]] DayOfWeek : weekday {
         /**
          *  For the purpose of integer constructors, 0==Sunday, 1==Monday, and so on
          */
@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Time {
      * 
      *  \note MonthOfYear can be converted from/to unsigned int.
      */
-    struct MonthOfYear : month {
+    struct [[nodiscard]] MonthOfYear : month {
         /**
          *  For the purpose of integer constructors, 1==January, 2==February and so on (no zero).
          */
@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Time {
      *  \note DayOfMonth can be converted from/to unsigned int.
      *  \note You can use the suffix 'd' intead of DayOfMonth{n}
      */
-    struct DayOfMonth : day {
+    struct [[nodiscard]] DayOfMonth : day {
         /**
          *  For the purpose of integer constructors, 1==1st, 2==2nd, and so on (no zero)
          */
@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Time {
      * 
      *  \note you can use the suffix y instead of Year{N} (assuming using namespace Foundation::Time).
      */
-    struct Year : year {
+    struct [[nodiscard]] Year : year {
         /**
          */
         constexpr Year (year y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
@@ -315,7 +315,7 @@ namespace Stroika::Foundation::Time {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
-    class Date {
+    class [[nodiscard]] Date {
     public:
         /*
          *  This refers to Julian Day Number - JDN - https://en.wikipedia.org/wiki/Julian_day

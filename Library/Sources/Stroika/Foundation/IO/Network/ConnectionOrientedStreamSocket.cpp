@@ -53,7 +53,7 @@ namespace {
                     Execution::WaitForIOReady ioReady{fSD_};
                     try {
                     again:
-                        ioReady.WaitUntil (timeOutAt);
+                        (void)ioReady.WaitUntil (timeOutAt);
                         char data[1024];
 #if qPlatform_POSIX
                         int nb = ::read (fSD_, data, NEltsOf (data));

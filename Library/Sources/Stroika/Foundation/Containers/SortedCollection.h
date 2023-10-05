@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Containers {
      *      o   Only supported if C++20 comparison supported (easy for C++17, but no need since close to abandoing C++17 support and not regression)
      */
     template <typename T>
-    class SortedCollection : public Collection<T> {
+    class [[nodiscard]] SortedCollection : public Collection<T> {
     private:
         using inherited = Collection<T>;
 

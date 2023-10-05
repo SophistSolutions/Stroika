@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Time {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   comparisons (operator <=>) inherited from chrono::duration
      */
-    class Duration final : public chrono::duration<double> {
+    class [[nodiscard]] Duration final : public chrono::duration<double> {
     private:
         using inherited = chrono::duration<double>;
 

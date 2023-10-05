@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers {
      *
      */
     template <typename T>
-    class PriorityQueue : public Iterable<pair<T, Priority>> {
+    class [[nodiscard]] PriorityQueue : public Iterable<pair<T, Priority>> {
     protected:
         class _IRep;
 

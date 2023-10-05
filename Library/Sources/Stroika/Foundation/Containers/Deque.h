@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers {
      *      @see inherited from Queue<T>
      */
     template <typename T>
-    class Deque : public Queue<T> {
+    class [[nodiscard]] Deque : public Queue<T> {
     private:
         using inherited = Queue<T>;
 

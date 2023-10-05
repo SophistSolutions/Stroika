@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers {
      *          on the KEYS.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class SortedMapping : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> {
+    class [[nodiscard]] SortedMapping : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> {
     private:
         using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 

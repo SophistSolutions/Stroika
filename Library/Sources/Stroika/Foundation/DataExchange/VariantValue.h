@@ -113,7 +113,7 @@ namespace Stroika::Foundation::DataExchange {
      *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
      *              Though probably not.
      */
-    class VariantValue {
+    class [[nodiscard]] VariantValue {
     private:
         /**
          *  Internal format for storing floating point data in a VariantValue.

@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Containers {
      *          the obvious sequential ordering three way comparison on queues (Iterable::SequentialThreeWayComparer)
      */
     template <typename T>
-    class Stack : public Iterable<T> {
+    class [[nodiscard]] Stack : public Iterable<T> {
     private:
         using inherited = Iterable<T>;
 

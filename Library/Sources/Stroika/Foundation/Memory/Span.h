@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <span>
+#include <string>
 
 #include "../Configuration/Common.h"
 

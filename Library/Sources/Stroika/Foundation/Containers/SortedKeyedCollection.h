@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Containers {
      *
      */
     template <typename T, typename KEY_TYPE, typename TRAITS = KeyedCollection_DefaultTraits<T, KEY_TYPE>>
-    class SortedKeyedCollection : public KeyedCollection<T, KEY_TYPE, TRAITS> {
+    class [[nodiscard]] SortedKeyedCollection : public KeyedCollection<T, KEY_TYPE, TRAITS> {
     private:
         using inherited = KeyedCollection<T, KEY_TYPE, TRAITS>;
 

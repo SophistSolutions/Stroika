@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Database::SQL {
     /**
      *  'Connection' is a quasi-namespace.
      */
-    class Connection {
+    class [[nodiscard]] Connection {
     public:
         class IRep;
 

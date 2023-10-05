@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers {
      *          to compare with an alternative comparer, just pass it as a template parameter (via DataHyperRectangle<>::EqualsComparer).
      */
     template <typename T, typename... INDEXES>
-    class DataHyperRectangle : public Iterable<tuple<T, INDEXES...>> {
+    class [[nodiscard]] DataHyperRectangle : public Iterable<tuple<T, INDEXES...>> {
     private:
         using inherited = Iterable<tuple<T, INDEXES...>>;
 

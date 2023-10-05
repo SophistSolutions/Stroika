@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Containers {
      *              Set easily (maybe more logical).
      */
     template <typename T, typename KEY_TYPE, typename TRAITS = KeyedCollection_DefaultTraits<T, KEY_TYPE>>
-    class KeyedCollection : public Iterable<T> {
+    class [[nodiscard]] KeyedCollection : public Iterable<T> {
 
     private:
         using inherited = Iterable<T>;

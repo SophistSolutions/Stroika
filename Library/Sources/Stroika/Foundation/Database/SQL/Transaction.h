@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Database::SQL {
      *          }
      *      \endcode
      */
-    class Transaction : protected Debug::AssertExternallySynchronizedMutex {
+    class [[nodiscard]] Transaction : protected Debug::AssertExternallySynchronizedMutex {
     public:
         class IRep;
 

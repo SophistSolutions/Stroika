@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Characters {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename OPTIONS = StringBuilder_Options<>>
-    class StringBuilder {
+    class [[nodiscard]] StringBuilder {
     public:
         /**
          */

@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Time {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
-    class TimeOfDay {
+    class [[nodiscard]] TimeOfDay {
     public:
         /**
          * NB: The maximum value in a TimeOfDay struct is one less than kMaxSecondsPerDay

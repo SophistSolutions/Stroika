@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
     /**
      *  'Connection' is a quasi-namespace.
      */
-    class Connection : SQL::Connection {
+    class [[nodiscard]] Connection : SQL::Connection {
     public:
         class IRep;
 

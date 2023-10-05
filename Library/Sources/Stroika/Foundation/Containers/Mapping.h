@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers {
      *          of the mapping (keys) - even if there was some way to compare the values.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
+    class [[nodiscard]] Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
     private:
         using inherited = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
 

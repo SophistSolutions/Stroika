@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers {
      *      @see inherited from DataHyperRectangle<>
      */
     template <typename T, typename... INDEXES>
-    class DenseDataHyperRectangle : public DataHyperRectangle<T, INDEXES...> {
+    class [[nodiscard]] DenseDataHyperRectangle : public DataHyperRectangle<T, INDEXES...> {
     private:
         using inherited = DataHyperRectangle<T, INDEXES...>;
 

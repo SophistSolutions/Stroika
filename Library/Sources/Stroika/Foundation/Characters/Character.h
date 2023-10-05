@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Characters {
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *      o   Character::EqualsComparer and Character::ThreeWayComparer provided with construction parameters to allow case insensitive compares 
      */
-    class Character {
+    class [[nodiscard]] Character {
     public:
         /**
          *  Default constructor produces a zero character.
