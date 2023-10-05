@@ -43,7 +43,7 @@
  *******************************************************************
  *******************************************************************
  */
-#include <iostream>
+#include <ciso646>
 
 /*
  *  @eee StroikaConfig.cpp
@@ -135,10 +135,12 @@
 /*
  *  If using libc++, require version 11 or later, since 
  *  version 10 missing new chrono code (and more?)
+ * 
+ *      NOTE ON _LIBCPP_VERSION  went from 15000 (5 digits) to 160000 (6 digits)
  */
 #if defined(_LIBCPP_VERSION)
-#if _LIBCPP_VERSION < 13000
-#error "Stroika v3 requires a more c++-20 compliant version of std-c++ library than libc++12 (missing new chrono/span code for example); try newer libc++, older version of Stroika (e.g. 2.1), or libstdc++"
+#if _LIBCPP_VERSION < 14000
+#error "Stroika v3 requires a more c++-20 compliant version of std-c++ library than libc++14 (missing new chrono/span code for example); try newer libc++, older version of Stroika (e.g. 2.1), or libstdc++"
 #endif
 #endif
 
@@ -906,8 +908,9 @@ In file included from ../Characters/StringBuilder.h:273,
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
 // noticed broken in clang++15 with LIBC++
+
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15 || (_LIBCPP_VERSION < 170000)))
 #else
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
@@ -1276,6 +1279,7 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #endif
 #endif
 
+
 /**
  *      This is going to limit how much I can support ranges in Stroika v3.
  * 
@@ -1299,7 +1303,7 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 1
 #else
 // seems still broken in _LIBCPP_VERSION 15007
-#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 16000)
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 160000)
 #endif
 #elif defined(__clang_major__)
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
@@ -1310,7 +1314,7 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
 #if defined(_LIBCPP_VERSION)
-#if _LIBCPP_VERSION <= 16000
+#if _LIBCPP_VERSION < 170000
 #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy !qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
 #else
 #if defined(__APPLE__)
@@ -1517,7 +1521,8 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 // appears fixed in clang++14 (or maybe SB depending on libversion)
 // _LIBCPP_VERSION <= 14000
 // _LIBCPP_VERSION <= 15007
-#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 15007))
+// _LIBCPP_VERSION ==160000 (so say < 170000)
+#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 170000))
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #endif
@@ -1815,10 +1820,11 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 #if defined(_LIBCPP_VERSION)
 // Broken in _LIBCPP_VERSION  14000
 // Broken in _LIBCPP_VERSION  15007
+// Broken in _LIBCPP_VERSION  160000
 #if defined(__APPLE__)
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 16000))
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 170000))
 #else
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 16000))
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 170000))
 #endif
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
