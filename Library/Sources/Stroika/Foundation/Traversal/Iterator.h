@@ -10,6 +10,7 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "../Configuration/Common.h"
 
