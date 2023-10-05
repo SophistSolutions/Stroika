@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <bit>
 #include <compare>
 #include <memory>
 #include <span>
