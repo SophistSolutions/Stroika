@@ -103,9 +103,7 @@ namespace Stroika::Foundation::Configuration {
      *  @todo   See if there is some better way for this.
      */
     template <typename ENUM>
-    constexpr make_unsigned_t< underlying_type_t<ENUM>> OffsetFromStart (ENUM e);
-    //template <typename ENUM>
-    //constexpr ENUM OffsetFromStart (make_unsigned_t<typename underlying_type<ENUM>::type> offset);
+    constexpr make_unsigned_t<underlying_type_t<ENUM>> OffsetFromStart (ENUM e);
 
     /**
      *  \def Stroika_Define_Enum_Bounds
