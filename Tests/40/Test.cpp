@@ -117,9 +117,7 @@ namespace {
             sRegTest3Event_T2_.Reset ();
             int updaterValue = 0;
 
-            //https://stroika.atlassian.net/browse/STK-717
-            //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
-            if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
+            {
                 Thread::Ptr thread1 = Thread::New (bind (&FRED1::DoIt, &updaterValue));
                 Thread::Ptr thread2 = Thread::New (bind (&FRED2::DoIt, &updaterValue));
                 Thread::Start ({thread1, thread2});
@@ -170,9 +168,7 @@ namespace {
             sRegTest3Event_T1_.Reset ();
             sRegTest3Event_T2_.Reset ();
             int updaterValue = 0;
-            //https://stroika.atlassian.net/browse/STK-717
-            //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
-            if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
+             {
                 Thread::Ptr thread1 = Thread::New (bind (&FRED1::DoIt, &updaterValue));
                 Thread::Ptr thread2 = Thread::New (bind (&FRED2::DoIt, &updaterValue));
                 Thread::Start ({thread1, thread2});
@@ -544,9 +540,7 @@ namespace {
             }
         };
 
-        //https://stroika.atlassian.net/browse/STK-717
-        //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
-        if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
+        {
             // Normal usage
             {
                 Thread::Ptr thread = Thread::New (&FRED::DoIt);
@@ -607,9 +601,7 @@ namespace {
                 *argP = tmp + 1;
             }
         };
-        //https://stroika.atlassian.net/browse/STK-717
-        //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
-        if constexpr (not qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy or not Debug::kBuiltWithThreadSanitizer) {
+        {
             for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
                 ThreadPool p;
                 p.SetPoolSize (threadPoolSize);
@@ -656,13 +648,6 @@ namespace {
     void RegressionTest10_BlockingQueue_ ()
     {
         Debug::TraceContextBumper ctx{"RegressionTest10_BlockingQueue_"};
-        //https://stroika.atlassian.net/browse/STK-717
-        //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
-        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-            DbgTrace ("Skipping RegressionTest10_BlockingQueue_ due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and "
-                      "Debug::kBuiltWithThreadSanitizer");
-            return;
-        }
         enum {
             START = 0,
             END   = 100
@@ -1011,12 +996,6 @@ namespace {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
-            //https://stroika.atlassian.net/browse/STK-717
-            //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
-            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-                return;
-            }
-
             // https://stroika.atlassian.net/browse/STK-632
             // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
             // most likely helgrind bug - hopefully fixed soon.
@@ -1085,11 +1064,6 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest19_ThreadPoolAndBlockingQueue_"};
-            //https://stroika.atlassian.net/browse/STK-717
-            //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
-            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-                return;
-            }
             Private_::TEST_ ();
         }
     }
@@ -1173,12 +1147,6 @@ namespace {
          *  BUt there can still be one special thread that always write locks
          */
         Debug::TraceContextBumper ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
-
-        //https://stroika.atlassian.net/browse/STK-717
-        //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
-        if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-            return;
-        }
 
         static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 

@@ -1889,46 +1889,6 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 #endif
 #endif
 
-// Now set in the configure script, because this depends on the OS
-
-// https://github.com/google/sanitizers/issues/1259
-// https://github.com/google/sanitizers/issues/950 (sometimes also shows up as)
-// THose were TSAN, but also shows up in valgrind/helgrind (so far only on Ubuntu 20.10) as:
-/*
-==3198448== Thread #2: Bug in libpthread: write lock granted on mutex/rwlock which is currently wr-held by a different thread
-==3198448==    at 0x4840EDF: ??? (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_helgrind-amd64-linux.so)
-==3198448==    by 0x2A9B48: __gthread_mutex_lock(pthread_mutex_t*) (gthr-default.h:749)
-==3198448==    by 0x2AC76D: std::mutex::lock() (std_mutex.h:100)
-==3198448==    by 0x2B050B: std::lock_guard<std::mutex>::lock_guard(std::mutex&) (std_mutex.h:159)
-==3198448==    by 0x40D5E1: Stroika::Foundation::Execution::WaitableEvent::WE_::Set() (WaitableEvent.inl:65)
-==3198448==    by 0x40D03E: Stroika::Foundation::Execution::WaitableEvent::Set() (WaitableEvent.cpp:96)
-==3198448==    by 0x3C9C2B: Stroika::Foundation::Execution::Thread::Ptr::Rep_::ThreadMain_(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*) (Thread.cpp:589)
-==3198448==    by 0x3C88E3: Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}::operator()() const (Thread.cpp:319)
-==3198448==    by 0x3CEEE9: void std::__invoke_impl<void, Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}>(std::__invoke_other, Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}&&) (invoke.h:60)
-==3198448==    by 0x3CEE9E: std::__invoke_result<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}>::type std::__invoke<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}>(std::__invoke_result&&, (Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}&&)...) (invoke.h:95)
-==3198448==    by 0x3CEE4B: void std::thread::_Invoker<std::tuple<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}> >::_M_invoke<0ul>(std::_Index_tuple<0ul>) (thread:264)
-==3198448==    by 0x3CEE1F: std::thread::_Invoker<std::tuple<Stroika::Foundation::Execution::Thread::Ptr::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Ptr::Rep_> const*)::{lambda()#1}> >::operator()() (thread:271)
-==3198448== 
-
-
-==================
-WARNING: ThreadSanitizer: double lock of a mutex (pid=2575509)
-    #0 pthread_mutex_lock <null> (Test36+0x27e0328)
-    #1 __gthread_mutex_lock /usr/include/x86_64-linux-gnu/c++/11/bits/gthr-default.h:749 (Test36+0x2fc31a7)
-    #2 std::mutex::lock() /usr/include/c++/11/bits/std_mutex.h:100 (Test36+0x2fc4aee)
-    #3 std::lock_guard<std::mutex>::lock_guard(std::mutex&) /usr/include/c++/11/bits/std_mutex.h:229 (Test36+0x2fc59d1)
-    #4 Stroika::Foundation::Execution::WaitableEvent::WE_::Set() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2110_x86_64/Library/Sources/Stroika/Foundation/Execution/WaitableEvent.inl:52 (Test36+0x3241833)
-
-*/
-// NOTE: I think underlying issue is probably with the tsan/helgrind (probably now common) instrumentation in
-// lib std c++. which is why I use same bug define for tsan and valgrind
-// https://stroika.atlassian.net/browse/STK-717
-#if !defined(qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy)
-
-// Now set in the configure script, because this depends on the OS, in additional to the compiler version
-#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy 0
-
-#endif
 
 #if !defined(qCompiler_ValgrindDirectSignalHandler_Buggy)
 

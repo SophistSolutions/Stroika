@@ -171,6 +171,7 @@ my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_librt = undef;
 my $FEATUREFLAG_WIX = undef;
 my $TargettingValgrind = undef;
+my $qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy = undef;
 my $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = undef;
 my $qCompiler_ValgrindLTO_Buggy = undef;
 my $qCompiler_ValgrindDirectSignalHandler_Buggy = undef;
@@ -1097,6 +1098,9 @@ sub	SetDefaultForCompilerDriver_
 		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
+			if ($TargettingValgrind == true) {
+				$qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy = true;
+			}
 		}
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and ($TargettingValgrind == true)) {
 			$qCompiler_ValgrindDirectSignalHandler_Buggy = true;
@@ -1105,8 +1109,13 @@ sub	SetDefaultForCompilerDriver_
 			$qCompiler_ValgrindLTO_Buggy = true;
 		}
 	}
-	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
-		push (@useExtraCDefines, '#define qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy 1');
+	if ( $lsb_release == "23.04") {
+		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14.0)) {
+			if ($TargettingValgrind == true) {
+				$qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy = true;	# @todo look into this - since tsan fixed, maybe something else here???
+			}
+		}
 	}
 	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy) and $qCompiler_ValgrindDirectSignalHandler_Buggy) {
 		push (@useExtraCDefines, '#define qCompiler_ValgrindDirectSignalHandler_Buggy 1');
@@ -2261,12 +2270,7 @@ sub PostProcessOptions_ ()
 			if (not ($RUN_PREFIX eq "")) {
 				$RUN_PREFIX = " " . $RUN_PREFIX;
 			}
-			if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
-				$RUN_PREFIX = "TSAN_OPTIONS=\"detect_deadlocks=0 suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy.supp\"" . $RUN_PREFIX;
-			}
-			else {
-				$RUN_PREFIX = "TSAN_OPTIONS=suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions.supp" . $RUN_PREFIX;
-			}
+			$RUN_PREFIX = "TSAN_OPTIONS=suppressions=\${StroikaRoot}/Tests/ThreadSanitizerSuppressions.supp" . $RUN_PREFIX;
 		}
 	}
 
@@ -2733,8 +2737,8 @@ sub	WriteConfigFile_
 
 	print (OUT "    <RUN_PREFIX>$RUN_PREFIX</RUN_PREFIX>\n");
 
-	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy)) {
-		print (OUT "    <qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy</qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy>\n");
+	if (defined ($qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy)) {
+		print (OUT "    <qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy>$qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy</qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy>\n");
 	}
 	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy)) {
 		print (OUT "    <qCompiler_ValgrindDirectSignalHandler_Buggy>$qCompiler_ValgrindDirectSignalHandler_Buggy</qCompiler_ValgrindDirectSignalHandler_Buggy>\n");

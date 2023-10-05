@@ -611,12 +611,6 @@ namespace {
             //      https://stroika.atlassian.net/browse/STK-700
             //
             Debug::TraceContextBumper traceCtx{"{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()"};
-            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-                // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
-                //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
-                DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
-                return;
-            }
             int64_t cnt{};
             {
                 Debug::TraceContextBumper ctx1{"TestBasics_<vector<int>>"};
@@ -739,12 +733,6 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper traceCtx{"{}Test11_SynchronizedCaches_..."};
-            if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-                // workaround TSAN HERE - but valgrind issue in RegressionTests script -  https://stroika.atlassian.net/browse/STK-717
-                //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
-                DbgTrace ("Skipping this test cuz double locks cause TSAN to die and cannot be easily suppressed");
-                return;
-            }
             static const bool kRunningValgrind_           = Debug::IsRunningUnderValgrind ();
             bool              hasBug632AndRunningHelgrind = kRunningValgrind_; // not easy to check
             if (hasBug632AndRunningHelgrind) {

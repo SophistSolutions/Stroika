@@ -139,7 +139,8 @@
 			"execution": "cpp",
 			"stop_token": "cpp",
 			"syncstream": "cpp",
-			"version": "cpp"
+			"version": "cpp",
+			"ciso646": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
