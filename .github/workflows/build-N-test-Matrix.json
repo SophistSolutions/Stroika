@@ -115,7 +115,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
         "cpp_version": "c++20",
         "config_name": "Release",
-        "extra_config_args": "--compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --trace2file enable",
+        "extra_config_args": "--apply-default-release-flags --stdlib libstdc++ --trace2file enable",
         "run_on_branch": "v3-Release"
     },
     {
@@ -137,7 +137,7 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
         "cpp_version": "c++2b",
         "config_name": "Release",
-        "extra_config_args": "--compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --trace2file enable",
+        "extra_config_args": "--apply-default-release-flags --stdlib libstdc++ --trace2file enable",
         "run_on_branch": "v3-Release"
     },
     {
@@ -160,6 +160,28 @@
         "cpp_version": "c++20",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-22.04-clang++-16-debug-libc++-c++23",
+        "compiler": "clang++-16",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2304-regression-tests:v3",
+        "cpp_version": "c++2b",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --stdlib libc++ --debug-symbols false",
+        "run_on_branch": "always"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-22.04-clang++-16-release-libstdc++-c++23",
+        "compiler": "clang++-16",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2304-regression-tests:v3",
+        "cpp_version": "c++2b",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --stdlib libstdc++ --trace2file enable",
         "run_on_branch": "v3-Release"
     },
     {},
