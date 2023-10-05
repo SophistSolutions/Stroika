@@ -150,7 +150,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
             Sequence<VariantValue> args = OrderParamValues (paramNames, &m->rwRequest ());
             Assert (args.size () == paramNames.size ());
             if constexpr (is_same_v<RETURN_TYPE, void>) {
-                ApplyArgs (args, objVarMapper, f);
+                (void)ApplyArgs (args, objVarMapper, f);
                 WriteResponse (&m->rwResponse (), webServiceDescription);
             }
             else {

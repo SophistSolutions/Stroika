@@ -826,7 +826,7 @@ namespace {
                 Execution::WaitForIOReady waiter{fd};
                 bool                      eof = false;
                 while (not eof) {
-                    waiter.WaitQuietly (1);
+                    (void)waiter.WaitQuietly (1);
                     readALittleFromProcess (fd, stream, write2StdErrCache, &eof);
                 }
             };

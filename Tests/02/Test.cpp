@@ -1734,9 +1734,9 @@ namespace {
 namespace {
     void Test55_StringAscii_CTORs_ ()
     {
-        String{"a"};
+        (void)String{"a"};
         try {
-            String{"\x81"};
+            (void)String{"\x81"};
             VerifyTestResult (false); // not reached
         }
         catch (...) {

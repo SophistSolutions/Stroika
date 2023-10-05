@@ -645,7 +645,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         // not a great way to test since some systems have both, like ubuntu
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             try {
-                Execution::ProcessRunner{"dpkg --help"}.Run (String{});
+                (void)Execution::ProcessRunner{"dpkg --help"}.Run (String{});
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
             }
             catch (...) {
@@ -653,7 +653,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         }
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             try {
-                Execution::ProcessRunner{"rpm --help"}.Run (String{});
+                (void)Execution::ProcessRunner{"rpm --help"}.Run (String{});
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
             }
             catch (...) {
