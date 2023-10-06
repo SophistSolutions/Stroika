@@ -478,9 +478,6 @@ basic-unix-test-configurations_g++_versions_:
 	./configure g++-13-release++2b --config-tag Unix --compiler-driver g++-13 --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version c++2b
 
 basic-unix-test-configurations_clang++_versions_:
-	# clang-13
-	./configure clang++-13-debug-libc++ --config-tag Unix --compiler-driver clang++-13 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
-	./configure clang++-13-release-libstdc++ --config-tag Unix --compiler-driver clang++-13 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# clang-14
 	./configure clang++-14-debug-libc++ --config-tag Unix --compiler-driver clang++-14 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler
 	./configure clang++-14-release-libstdc++ --config-tag Unix --compiler-driver clang++-14 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable

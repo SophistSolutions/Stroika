@@ -888,12 +888,7 @@ sub	SetDefaultForCompilerDriver_
 			$STDCXXLIB = "libstdc++";
 		}
 		if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14.0) {
-				$STDCXXLIB = "libstdc++";	# libc++ doesn't work with lib version# 13 (think - maybe retest 13)
-			}
-			else {
-				$STDCXXLIB = "libc++";
-			}
+			$STDCXXLIB = "libc++";
 		}
 	}
 	if (! defined $SharedSymbolVisibility) {
@@ -1092,6 +1087,9 @@ sub	SetDefaultForCompilerDriver_
 		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
 			print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 (xcode 14) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
+	}
+	if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
+		print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 	}
 
 	if ($lsb_release == "20.04" or $lsb_release == "20.10" or $lsb_release == "21.04" or $lsb_release == "21.10" or $lsb_release == "22.04") {
@@ -2480,15 +2478,8 @@ PostProcessOptions_ ();
 
 sub ValidateConfigurationAndEmitNeededWarnings_
 {
-	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 (xcode 14) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
-		}
-	}
-	if (!("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '13.0') {
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 13 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
-		}
+	if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '14.0') {
+		print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 	}
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 		if (GetGCCVersion_ ($COMPILER_DRIVER) < 11) {
@@ -2790,16 +2781,10 @@ if ($onlyGenerateIfCompilerExists) {
 		}
 	}
 	# if flag to use libc++ - check if right version is available (but not on XCode)
-	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++') && index ($TARGET_PLATFORMS, "MacOS") == -1) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '14.0') {
+	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) <  14.0) {
 			$generate = false;
-			$generateBecause = "libc++ doesn't support enough of new concept support (try libstdc++ or older Stroika or newer libc++).";
-		}
-		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '15.0') {
-			if (! -e ('/usr/lib/llvm-14/include/c++/v1/cstddef')) {
-				$generate = false;
-				$generateBecause = "/usr/lib/llvm-14/include/c++/v1/cstddef not present";
-			}
+			$generateBecause = "clang++-13 with libc++ doesn't support modern enough c++, and with libstdc++, some versions (ubuntu 22.04) work, and others (libg++ 13 and later) dont compile";
 		}
 	}
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {

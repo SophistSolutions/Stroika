@@ -25,20 +25,6 @@
         "run_on_branch": "v3-Release"
     },
     {
-        "comment": "ubuntu-22.04-clang++-13"
-    },
-    {
-        "build_job": "Linux",
-        "displayTargetName": "ubuntu-22.04-clang++-13",
-        "compiler": "clang++-13",
-        "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
-        "cpp_version": "c++2a",
-        "config_name": "Release",
-        "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "always"
-    },
-    {
         "comment": "ubuntu 22.04"
     },
     {
