@@ -93,8 +93,12 @@ namespace Stroika::Foundation::Execution {
      *
      *              This MAYBE related to why "std::condition_variable works only with std::unique_lock<std::mutex>".
      *              BUT - then i don't understand how " std::condition_variable_any provides a condition variable that works with any BasicLockable"
+     * 
+     *  \note before Stroika v3, we used 
+     *        CONDITION_VARIABLE = conditional_t<is_same_v<mutex, MUTEX>, condition_variable, condition_variable_any>
+     *        but since v3, we always use condition_variable_any so that we can use stop_token.
      */
-    template <typename MUTEX = mutex, typename CONDITION_VARIABLE = conditional_t<is_same_v<mutex, MUTEX>, condition_variable, condition_variable_any>>
+    template <typename MUTEX = mutex, typename CONDITION_VARIABLE = condition_variable_any>
     struct ConditionVariable {
 
         /**
@@ -189,7 +193,7 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
         template <typename PREDICATE>
-        nonvirtual bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readyToWake);
+        nonvirtual bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE&& readyToWake);
 
         /**
          * Like condition_variable wait_for, except

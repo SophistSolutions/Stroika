@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
     template <typename PREDICATE>
-    bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readyToWake)
+    bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE&& readyToWake)
     {
         Require (lock.owns_lock ());
         Thread::CheckForInterruption ();
