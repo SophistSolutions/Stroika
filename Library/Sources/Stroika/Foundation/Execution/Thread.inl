@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Execution {
      */
     inline Thread::Ptr Thread::GetCurrent ()
     {
-        return Thread::Ptr::sCurrentThreadRep_.lock ();
+        return Ptr{Ptr::sCurrentThreadRep_.lock ()};
     }
 
 #if __cpp_lib_jthread >= 201911
@@ -359,7 +359,7 @@ namespace Stroika::Foundation::Execution {
      */
     inline optional<stop_token> Thread::GetCurrentThreadStopToken ()
     {
-        if (Thread::Ptr curThread = Thread::GetCurrent ()) {
+        if (Ptr curThread = GetCurrent ()) {
             return curThread.GetStopToken ();
         }
         else {
