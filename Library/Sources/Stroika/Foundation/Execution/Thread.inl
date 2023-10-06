@@ -348,8 +348,25 @@ namespace Stroika::Foundation::Execution {
      */
     inline Thread::Ptr Thread::GetCurrent ()
     {
-        return Thread::Ptr ::sCurrentThreadRep_.lock ();
+        return Thread::Ptr::sCurrentThreadRep_.lock ();
     }
+
+#if __cpp_lib_jthread >= 201911
+    /*
+     ********************************************************************************
+     ************************ Thread::GetCurrentThreadStopToken *********************
+     ********************************************************************************
+     */
+    inline optional<stop_token> Thread::GetCurrentThreadStopToken ()
+    {
+        if (Thread::Ptr curThread = Thread::GetCurrent ()) {
+            return curThread.GetStopToken ();
+        }
+        else {
+            return nullopt;
+        }
+    }
+#endif
 
     /*
      ********************************************************************************

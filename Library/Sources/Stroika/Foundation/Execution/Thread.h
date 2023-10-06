@@ -1081,6 +1081,12 @@ namespace Stroika::Foundation::Execution {
          */
         Ptr GetCurrent ();
 
+#if __cpp_lib_jthread >= 201911
+        /**
+         */
+        optional<stop_token> GetCurrentThreadStopToken ();
+#endif
+
         /**
          *  Our thread interruption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)
          *  spots in the code - like sleeps, most reads, etc.
