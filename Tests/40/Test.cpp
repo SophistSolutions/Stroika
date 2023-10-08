@@ -104,7 +104,6 @@ namespace {
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
-                        DbgTrace ("i=%d", i);
                         sRegTest3Event_T2_.Wait ();
                         int tmp = *argP;
                         Execution::Sleep (.001);
