@@ -81,7 +81,7 @@ namespace {
     namespace WAITABLE_EVENTS_ {
         void NOTIMEOUTS_ ()
         {
-            Debug::TimingTrace traceCtx{"pingpong threads with event.wait(NOTIMEOUTS)"};
+            Debug::TimingTrace traceCtx{"pingpong threads with event.wait(WAITABLE_EVENTS_::NOTIMEOUTS)"};
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct FRED1 {
                 static void DoIt (void* ignored)
@@ -104,6 +104,7 @@ namespace {
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
+                        DbgTrace ("i=%d", i);
                         sRegTest3Event_T2_.Wait ();
                         int tmp = *argP;
                         Execution::Sleep (.001);
@@ -133,7 +134,7 @@ namespace {
         }
         void PingBackAndForthWithSimpleTimeouts_ ()
         {
-            Debug::TimingTrace traceCtx{"pingpong threads with event.wait(WITHTIMEOUT)"};
+            Debug::TimingTrace traceCtx{"pingpong threads with event.wait(WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_)"};
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct FRED1 {
                 static void DoIt (void* ignored)
@@ -185,8 +186,9 @@ namespace {
         }
         void TEST_TIMEOUT_EXECPETIONS_ ()
         {
-            Debug::TimingTrace traceCtx{"Event wait timeouts"};
-            bool                      passed = false;
+            Debug::TimingTrace traceCtx{"Event wait timeouts (WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_)"};
+            bool               passed  = false;
+            auto               startAt = Time::GetTickCount ();
             sRegTest3Event_T1_.Reset ();
             try {
                 sRegTest3Event_T1_.Wait (0.5); // should timeout
@@ -197,10 +199,14 @@ namespace {
             catch (...) {
             }
             VerifyTestResult (passed);
+            if (Time::GetTickCount () >= startAt > 1.0) {
+                Stroika::TestHarness::WarnTestIssue ("TEST_TIMEOUT_EXECPETIONS_ took too long");
+            }
         }
         void TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_ ()
         {
-            Debug::TimingTrace traceCtx{"Deadlock block on waitable event and abort thread (thread cancelation)"};
+            Debug::TimingTrace traceCtx{"Deadlock block on waitable event and abort thread (thread cancelation)- "
+                                        "WAITABLE_EVENTS_::TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_"};
             // Make a thread to wait a 'LONG TIME' on a single event, and verify it gets cancelled reasonably
             static constexpr Time::DurationSecondsType kLONGTimeForThread2Wait_{60.0}; // just has to be much more than the waits below
             static WaitableEvent                       s_autoResetEvent_{WaitableEvent::eAutoReset};
@@ -258,7 +264,7 @@ namespace {
 
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
             {
-                Debug::TraceContextBumper ctx1{L"expect-abort-to-work-and-wait-to-succceed"};
+                Debug::TraceContextBumper ctx1{"expect-abort-to-work-and-wait-to-succceed"};
                 constexpr Time::DurationSecondsType kMarginOfError_ = 10; // larger margin of error cuz sometimes fails on raspberrypi (esp with asan)
                 constexpr Time::DurationSecondsType kWaitOnAbortFor = qDebug ? 7.0 : 3.0;
                 // use such a long timeout cuz we run this on 'debug' builds,
@@ -687,7 +693,7 @@ namespace {
     void RegressionTest11_AbortSubAbort_ ()
     {
         Debug::TimingTrace ctx{"RegressionTest11_AbortSubAbort_"};
-        auto                      testFailToProperlyAbort = [] () {
+        auto               testFailToProperlyAbort = [] () {
             Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000); });
             innerThread.SetThreadName (L"innerThread");
             Thread::Ptr testThread = Thread::New ([&innerThread] () {
@@ -798,17 +804,17 @@ namespace {
 namespace {
     void RegressionTest14_SpinLock_ ()
     {
-        Debug::TimingTrace        ctx{"RegressionTest14_SpinLock_"};
-        SpinLock                  lock;
-        int                       sum = 0;
-        Thread::Ptr               t1  = Thread::New ([&lock, &sum] () {
+        Debug::TimingTrace ctx{"RegressionTest14_SpinLock_"};
+        SpinLock           lock;
+        int                sum = 0;
+        Thread::Ptr        t1  = Thread::New ([&lock, &sum] () {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
                 lock_guard<SpinLock> critSec{lock};
                 sum += i;
             }
         });
-        Thread::Ptr               t2  = Thread::New ([&lock, &sum] () {
+        Thread::Ptr        t2  = Thread::New ([&lock, &sum] () {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
                 lock_guard<SpinLock> critSec{lock};
@@ -885,10 +891,10 @@ namespace {
     namespace RegressionTest17_ThreadInterruption_ {
         void RunTests ()
         {
-            Debug::TimingTrace        ctx{"RegressionTest17_ThreadInterruption_::RunTests"};
-            atomic<unsigned>          interruptCnt{};
-            WaitableEvent             we{WaitableEvent::eManualReset};
-            Thread::Ptr               t = Thread::New (
+            Debug::TimingTrace ctx{"RegressionTest17_ThreadInterruption_::RunTests"};
+            atomic<unsigned>   interruptCnt{};
+            WaitableEvent      we{WaitableEvent::eManualReset};
+            Thread::Ptr        t = Thread::New (
                 [&] () {
                     while (true) {
                         try {
@@ -995,7 +1001,7 @@ namespace {
         void DoIt ()
         {
             Debug::TimingTrace ctx{"RegressionTest18_RWSynchronized_"};
-            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            static const bool  kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
             // https://stroika.atlassian.net/browse/STK-632
             // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
