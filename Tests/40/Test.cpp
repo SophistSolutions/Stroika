@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
+#include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Execution/BlockingQueue.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
@@ -31,7 +32,7 @@ using Containers::Sequence;
 namespace {
     void RegressionTest1_ ()
     {
-        Debug::TraceContextBumper traceCtx{"RegressionTest1_"};
+        Debug::TimingTrace traceCtx{"RegressionTest1_"};
         struct FRED {
             static void DoIt ([[maybe_unused]] void* ignored)
             {
@@ -51,7 +52,7 @@ namespace {
     recursive_mutex sharedCriticalSection_;
     void            RegressionTest2_ ()
     {
-        Debug::TraceContextBumper traceCtx{"RegressionTest2_"};
+        Debug::TimingTrace traceCtx{"RegressionTest2_"};
 
         // Make 2 concurrent threads, which share a critical section object to take turns updating a variable
         auto DoIt = [] (void* ignored) {
@@ -80,7 +81,7 @@ namespace {
     namespace WAITABLE_EVENTS_ {
         void NOTIMEOUTS_ ()
         {
-            Debug::TraceContextBumper traceCtx{"pingpong threads with event.wait(NOTIMEOUTS)"};
+            Debug::TimingTrace traceCtx{"pingpong threads with event.wait(NOTIMEOUTS)"};
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct FRED1 {
                 static void DoIt (void* ignored)
@@ -132,7 +133,7 @@ namespace {
         }
         void PingBackAndForthWithSimpleTimeouts_ ()
         {
-            Debug::TraceContextBumper traceCtx{"pingpong threads with event.wait(WITHTIMEOUT)"};
+            Debug::TimingTrace traceCtx{"pingpong threads with event.wait(WITHTIMEOUT)"};
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct FRED1 {
                 static void DoIt (void* ignored)
@@ -184,7 +185,7 @@ namespace {
         }
         void TEST_TIMEOUT_EXECPETIONS_ ()
         {
-            Debug::TraceContextBumper traceCtx{"Event wait timeouts"};
+            Debug::TimingTrace traceCtx{"Event wait timeouts"};
             bool                      passed = false;
             sRegTest3Event_T1_.Reset ();
             try {
@@ -199,7 +200,7 @@ namespace {
         }
         void TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_ ()
         {
-            Debug::TraceContextBumper traceCtx{"Deadlock block on waitable event and abort thread (thread cancelation)"};
+            Debug::TimingTrace traceCtx{"Deadlock block on waitable event and abort thread (thread cancelation)"};
             // Make a thread to wait a 'LONG TIME' on a single event, and verify it gets cancelled reasonably
             static constexpr Time::DurationSecondsType kLONGTimeForThread2Wait_{60.0}; // just has to be much more than the waits below
             static WaitableEvent                       s_autoResetEvent_{WaitableEvent::eAutoReset};
@@ -351,7 +352,7 @@ namespace {
     }
     void RegressionTest3_WaitableEvents_ ()
     {
-        Debug::TraceContextBumper traceCtx{"RegressionTest3_WaitableEvents_"};
+        Debug::TimingTrace traceCtx{"RegressionTest3_WaitableEvents_"};
         WAITABLE_EVENTS_::NOTIMEOUTS_ ();
         WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
         WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
@@ -451,7 +452,7 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper ctx{"RegressionTest4_Synchronized_"};
+            Debug::TimingTrace ctx{"RegressionTest4_Synchronized_"};
             Private_::Test1_ ();
             Private_::Test2_LongWritesBlock_ ();
         }
@@ -461,7 +462,7 @@ namespace {
 namespace {
     void RegressionTest5_Aborting_ ()
     {
-        Debug::TraceContextBumper traceCtx{"RegressionTest5_Aborting_"};
+        Debug::TimingTrace traceCtx{"RegressionTest5_Aborting_"};
         {
             struct FRED {
                 static void DoIt ()
@@ -515,7 +516,7 @@ namespace {
 namespace {
     void RegressionTest6_ThreadWaiting_ ()
     {
-        Debug::TraceContextBumper traceCtx{"RegressionTest6_ThreadWaiting_"};
+        Debug::TimingTrace traceCtx{"RegressionTest6_ThreadWaiting_"};
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         // if this triggers - add waits to end of procedure - so we assure no 'side effects' moving on to next test...
         [[maybe_unused]] auto&& cleanupReport = Finally ([] () {
@@ -570,7 +571,7 @@ namespace {
 namespace {
     void RegressionTest7_SimpleThreadPool_ ()
     {
-        Debug::TraceContextBumper traceCtx{"RegressionTest7_SimpleThreadPool_"};
+        Debug::TimingTrace traceCtx{"RegressionTest7_SimpleThreadPool_"};
         {
             ThreadPool p;
             p.SetPoolSize (1);
@@ -590,7 +591,7 @@ namespace {
 namespace {
     void RegressionTest8_ThreadPool_ ()
     {
-        Debug::TraceContextBumper traceCtx{"RegressionTest8_ThreadPool_"};
+        Debug::TimingTrace traceCtx{"RegressionTest8_ThreadPool_"};
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
         auto doIt = [] (int* argP) {
             for (int i = 0; i < 10; i++) {
@@ -621,7 +622,7 @@ namespace {
 namespace {
     void RegressionTest9_ThreadsAbortingEarly_ ()
     {
-        Debug::TraceContextBumper traceCtx{"RegressionTest9_ThreadsAbortingEarly_"};
+        Debug::TimingTrace traceCtx{"RegressionTest9_ThreadsAbortingEarly_"};
         // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
         // between the create of thread and Abort
         Containers::Collection<Thread::Ptr> innerThreads;
@@ -647,7 +648,7 @@ namespace {
 namespace {
     void RegressionTest10_BlockingQueue_ ()
     {
-        Debug::TraceContextBumper ctx{"RegressionTest10_BlockingQueue_"};
+        Debug::TimingTrace ctx{"RegressionTest10_BlockingQueue_"};
         enum {
             START = 0,
             END   = 100
@@ -685,7 +686,7 @@ namespace {
 namespace {
     void RegressionTest11_AbortSubAbort_ ()
     {
-        Debug::TraceContextBumper ctx{"RegressionTest11_AbortSubAbort_"};
+        Debug::TimingTrace ctx{"RegressionTest11_AbortSubAbort_"};
         auto                      testFailToProperlyAbort = [] () {
             Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000); });
             innerThread.SetThreadName (L"innerThread");
@@ -728,7 +729,7 @@ namespace {
 namespace {
     void RegressionTest12_WaitAny_ ()
     {
-        Debug::TraceContextBumper ctx{"RegressionTest12_WaitAny_"};
+        Debug::TimingTrace ctx{"RegressionTest12_WaitAny_"};
         // EXPERIMENTAL
         WaitableEvent                              we1{WaitableEvent::eAutoReset};
         WaitableEvent                              we2{WaitableEvent::eAutoReset};
@@ -766,7 +767,7 @@ namespace {
 namespace {
     void RegressionTest13_WaitAll_ ()
     {
-        Debug::TraceContextBumper ctx{"RegressionTest13_WaitAll_"};
+        Debug::TimingTrace ctx{"RegressionTest13_WaitAll_"};
         // EXPERIMENTAL
         WaitableEvent we1{WaitableEvent::eAutoReset};
         WaitableEvent we2{WaitableEvent::eAutoReset};
@@ -797,7 +798,7 @@ namespace {
 namespace {
     void RegressionTest14_SpinLock_ ()
     {
-        Debug::TraceContextBumper ctx{"RegressionTest14_SpinLock_"};
+        Debug::TimingTrace        ctx{"RegressionTest14_SpinLock_"};
         SpinLock                  lock;
         int                       sum = 0;
         Thread::Ptr               t1  = Thread::New ([&lock, &sum] () {
@@ -834,7 +835,7 @@ namespace {
         // Maybe no bug??? BUt tried to reproduce what looked like it MIGHT be a bug/issue based on behavior in
         // BLKQCL...--LGP 2015-10-05
         //
-        Debug::TraceContextBumper traceCtx{"RegressionTest15_ThreadPoolStarvationBug_"};
+        Debug::TimingTrace traceCtx{"RegressionTest15_ThreadPoolStarvationBug_"};
         {
             Time::DurationSecondsType testStartedAt       = Time::GetTickCount ();
             static constexpr unsigned kThreadPoolSize_    = 10;
@@ -868,7 +869,7 @@ namespace {
     namespace RegressionTest16_SimpleThreadConstructDestructLeak_ {
         void RunTests ()
         {
-            Debug::TraceContextBumper ctx{"RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests"};
+            Debug::TimingTrace ctx{"RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests"};
             // This test doesn't do a lot by itself, but we run this test under valgrind to look for leaks
             {
                 Thread::Ptr t;
@@ -884,7 +885,7 @@ namespace {
     namespace RegressionTest17_ThreadInterruption_ {
         void RunTests ()
         {
-            Debug::TraceContextBumper ctx{"RegressionTest17_ThreadInterruption_::RunTests"};
+            Debug::TimingTrace        ctx{"RegressionTest17_ThreadInterruption_::RunTests"};
             atomic<unsigned>          interruptCnt{};
             WaitableEvent             we{WaitableEvent::eManualReset};
             Thread::Ptr               t = Thread::New (
@@ -923,7 +924,7 @@ namespace {
             template <typename SYNCRHONIZED_INT>
             void Test1_MultipleConcurrentReaders (bool mustBeEqualToZero, unsigned int repeatCount, double sleepTime)
             {
-                Debug::TraceContextBumper ctx{"...Test1_MultipleConcurrentReaders"};
+                Debug::TimingTrace ctx{"...Test1_MultipleConcurrentReaders"};
                 /**
                  *  Verify that both threads are maintaining the lock at the same time.
                  */
@@ -993,7 +994,7 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
+            Debug::TimingTrace ctx{"RegressionTest18_RWSynchronized_"};
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
             // https://stroika.atlassian.net/browse/STK-632
@@ -1063,7 +1064,7 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper ctx{"RegressionTest19_ThreadPoolAndBlockingQueue_"};
+            Debug::TimingTrace ctx{"RegressionTest19_ThreadPoolAndBlockingQueue_"};
             Private_::TEST_ ();
         }
     }
@@ -1072,7 +1073,7 @@ namespace {
 namespace {
     void RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ()
     {
-        Debug::TraceContextBumper ctx{"RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_"};
+        Debug::TimingTrace ctx{"RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_"};
         enum {
             START = 0,
             END   = 100
@@ -1119,7 +1120,7 @@ namespace {
     void RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ()
     {
         // https://stroika.atlassian.net/browse/STK-767 - ONCE saw hang in this routine under Ubuntu 21.10, TSAN, so adding TraceContextMbumper to debug
-        Debug::TraceContextBumper        ctx{"RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_"};
+        Debug::TimingTrace               ctx{"RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_"};
         BlockingQueue<function<void ()>> q;
         Verify (q.size () == 0);
         Thread::Ptr consumerThread = Thread::New (
@@ -1146,7 +1147,7 @@ namespace {
          *
          *  BUt there can still be one special thread that always write locks
          */
-        Debug::TraceContextBumper ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
+        Debug::TimingTrace ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
 
         static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
