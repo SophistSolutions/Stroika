@@ -22,6 +22,9 @@ namespace Stroika::Foundation::Characters {
     {
         static const String kExceptPefix_{"Exception: "sv};
         static const String kUnknown_{"Unknown Exception"sv};
+        if (e == nullptr) {
+            return "nullptr"sv;
+        }
         try {
             rethrow_exception (e);
         }
