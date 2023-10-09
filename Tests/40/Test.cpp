@@ -198,7 +198,7 @@ namespace {
             catch (...) {
             }
             VerifyTestResult (passed);
-            if (Time::GetTickCount () >= startAt > 1.0) {
+            if (Time::GetTickCount () - startAt > 1.0) {
                 Stroika::TestHarness::WarnTestIssue ("TEST_TIMEOUT_EXECPETIONS_ took too long");
             }
         }
@@ -1406,7 +1406,7 @@ namespace {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         [[maybe_unused]] auto&& cleanupReport = Finally ([] () {
             auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
-            DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
+            DbgTrace ("Total Running threads at end: %d", runningThreads.size ());
             for (Execution::Thread::IDType threadID : runningThreads) {
                 DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
             }
