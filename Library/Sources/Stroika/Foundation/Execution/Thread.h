@@ -650,6 +650,9 @@ namespace Stroika::Foundation::Execution {
             /**
              *  This is a portable wrapper on setting thread priorities. It has fewer knobs than direct or low level
              *  APIs. You can always directly call low-level native APIs using GetNativeHandle().
+             * 
+             *  \note - no GetPriority API, cuz cannot do something vaguely like that portably. For one thing, priority
+             *          is more complex than a single number (like this argument) at runtime for reading on Linux.
              */
             nonvirtual void SetThreadPriority (Priority priority = Priority::eNormal) const;
 
@@ -855,7 +858,7 @@ namespace Stroika::Foundation::Execution {
             ~IndexRegistrar ();
 
         public:
-            IndexRegistrar& operator= (const IndexRegistrar&) = delete;
+            nonvirtual IndexRegistrar& operator= (const IndexRegistrar&) = delete;
 
         public:
             /**
@@ -869,8 +872,8 @@ namespace Stroika::Foundation::Execution {
 
         private:
             bool                      fInitialized_{false};
-            mutex                     fMutex_;
-            map<IDType, unsigned int> fShownThreadIDs_;
+            mutex                     fMutex_;          // for read/update the fShownThreadIDs_ map
+            map<IDType, unsigned int> fShownThreadIDs_; // use std::map instead of Stroika to avoid module deadly embrace
         };
         inline IndexRegistrar IndexRegistrar::sThe;
 
