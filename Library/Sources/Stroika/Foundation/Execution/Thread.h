@@ -1095,8 +1095,6 @@ namespace Stroika::Foundation::Execution {
          *  Any call to this routine is a 'cancelation point'.
          */
         void CheckForInterruption ();
-        template <unsigned int kEveryNTimes>
-        void CheckForInterruption ();
 
         /*
          *  Avoid interference with Windows SDK headers. I hate needless C macros (with short, common names)
