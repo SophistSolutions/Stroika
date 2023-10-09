@@ -137,7 +137,7 @@ public:
         }
         if (not poolEntryResult and Time::GetTickCount () > timeoutAt) {
             // Let's see if we can wait a little
-            unique_lock lock (fAvailableConnectionsChanged.fMutex);
+            unique_lock lock{fAvailableConnectionsChanged.fMutex};
             if (fAvailableConnectionsChanged.wait_until (lock, timeoutAt) == cv_status::no_timeout) {
                 goto again; // a new one maybe available
             }
