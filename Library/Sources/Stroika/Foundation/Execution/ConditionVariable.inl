@@ -64,6 +64,7 @@ namespace Stroika::Foundation::Execution {
                 // native std c++ fConditionVariable.wait_until works with stop token, but my version in overload wtih no predicate doesn't - perhaps
                 // critucal to hold lock whole predicate checked? which I think I'm doing here, but maybe review lib code more carefully... cuz this case
                 // works and mine doesn't...
+#if __cpp_lib_jthread >= 201911
                 if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
                     if (fConditionVariable.wait_until (lock, *ost, Time::DurationSeconds2time_point (timeoutAt),
                                                        [&] () { return ost->stop_requested (); })) {
@@ -71,6 +72,7 @@ namespace Stroika::Foundation::Execution {
                     }
                     return (Time::GetTickCount () < timeoutAt) ? cv_status::no_timeout : cv_status::timeout;
                 }
+#endif
             }
 
             // @todo DOC THIS BETTER
@@ -115,11 +117,13 @@ namespace Stroika::Foundation::Execution {
         // critucal to hold lock whole predicate checked? which I think I'm doing here, but maybe review lib code more carefully... cuz this case
         // works and mine doesn't...
         if constexpr (kSupportsStopToken) {
+#if __cpp_lib_jthread >= 201911
             if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
                 auto r = fConditionVariable.wait_until (lock, *ost, Time::DurationSeconds2time_point (timeoutAt), forward<PREDICATE> (readyToWake));
                 Thread::CheckForInterruption ();
                 return r;
             }
+#endif
         }
 #endif
 
