@@ -19,6 +19,9 @@
  *
  * TODO:
  *
+ *      @todo   Consider if its a good idea to support auto-reset events. I use in one place besides
+ *              regression tests.
+ *
  *      @todo   Consider if there is a need for timed mutexes.
  *              Reviewed 2014-02-09, and I'm pretty sure not needed.
  *
@@ -146,6 +149,15 @@ namespace Stroika::Foundation::Execution {
          *  \note   ***Not Cancelation Point***
          */
         nonvirtual void Reset ();
+
+    public:
+        /**
+         *  This checks if the event is currently in a triggered state. Regardless of the type of event
+         *  (autoreset or not) - this does not change the trigger state.
+         *
+         *  \note   ***Not Cancelation Point***
+         */
+        nonvirtual bool GetIsSet () const noexcept;
 
     public:
         /**
@@ -312,6 +324,7 @@ namespace Stroika::Foundation::Execution {
 
             WE_ (ResetType resetType);
             nonvirtual void Reset ();
+            nonvirtual bool GetIsSet () const noexcept;
             nonvirtual bool PeekIsSet () const noexcept;
             nonvirtual void Set ();
             nonvirtual void WaitUntil (Time::DurationSecondsType timeoutAt);

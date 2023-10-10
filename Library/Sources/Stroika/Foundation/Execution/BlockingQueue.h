@@ -10,48 +10,12 @@
 #include "../Containers/Queue.h"
 
 #include "ConditionVariable.h"
-#include "Synchronized.h"
-#include "WaitableEvent.h"
 
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Consider if RemoveHead () should throw other exception at EOF?
- *
- *      @todo   Add method to "CopyQueue" which takes a SNAPSHOT of the current Queue and returns it.
- *
- *      @todo   Use condition variables (instead of waitable event?) Or explain why not. Waitable event
- *              uses them, so maybe thats enouf
- *
  *      @todo   Perhaps have PeekHead() take timeout=0 optional param?
- *
- *      @todo   Perhaps rename to Message Queue or EventQueue
- *
- *              Event Q bad name, cuz misleading (not just for events and could be confused with
- *              waitable events).
- *
- *              Just DOOCUMENT that these are common synonyms.
- *
- *      @todo   Consider if/how to integrate with Foundation::Containers::Queue
- *
- *              I'm pretty sure the right answer is to SUBCLASS from Queue, but for AddTail/RemoveHead - and
- *              overloads with the timeout logic.
- *
- *              maybe just templated or otther param? What about priority Queue?
- *
- *      @todo   Add docs on why no WaitForMultipleObjects, and instead use
- *              http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/BlockingQueue.html
- *              (which is already in README file for Foundation::Execution::ReadMe.md
- *
- *      @todo   This - I THINK - essentially replaces the need for WaitForMultipleObjects.
- *              Maybe add utility class that runs threads that wait on each individual object,
- *              and then POST an event to this Q when available. Then the caller can wait on events
- *              for that Q.
- *                  Maybe at least have a utility class that takes a socket set (fd_set) and
- *              posts (but what?) to the Q (maybe utility class templated and takes value to
- *              be posted?) - so does a posix select/poll (careful to be cancelable) - and
- *              posts to event Q as needed.
  *
  *      @todo   Consider linking this to ThreadPools - so that instead of having a single
  *              thread running the Q, you have an entire threadpool. Maybe thats an attachable
@@ -109,6 +73,9 @@ namespace Stroika::Foundation::Execution {
      *          producerThread.WaitForDone ();      // producer already set to run off the end...
      *          consumerThread.WaitForDone ();      // consumer will end due to exception reading from end
      *      \endcode
+     * 
+     *  \note Aliases
+     *        This could easily be called EventQueue or MessageQueue, as its well suited to those sorts of uses.
      */
     template <typename T>
     class BlockingQueue {
@@ -162,6 +129,8 @@ namespace Stroika::Foundation::Execution {
          *  \note   Once this is true, it will always remain true.
          *
          *  \note   This function is non-blocking.
+         * 
+         *  \see also empty ()
          */
         nonvirtual bool QAtEOF () const;
 
@@ -171,7 +140,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  If there are currently no items in the Q, this may wait indefinitely (up to timeout provided).
          *
-         *  If there are no available entries, and SignalEndOfInput () has been called, this will throw a timeout exception
+         *  If there are no available entries, and SignalEndOfInput () has been called, this will throw a Streams::EOFException
          *  no matter what the timeout value given.
          *
          *  Similar to the java BlockingQueue<T>::take() or BlockingQueue<T>::poll (time) method.
@@ -206,6 +175,8 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  Returns true if the Q contains no items. Equivalent to PeekHead ().empty ()
+         * 
+         *  \see also QAtEOF ()
          */
         nonvirtual bool empty () const;
 
@@ -220,6 +191,13 @@ namespace Stroika::Foundation::Execution {
          *  Alias for size()
          */
         nonvirtual size_t length () const;
+
+    public:
+        /**
+         *  Get a copy of the entire owned Queue. NOTE - modifications to the returned copy have no effect on Queue associated 
+         *  Queue with the BlockingQueue
+         */
+        nonvirtual Containers::Queue<T> GetQueue () const;
 
     public:
         /**

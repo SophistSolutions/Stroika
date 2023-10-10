@@ -300,25 +300,29 @@ void Thread::Ptr::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
 
-    /*
-     *  Once we have constructed the other thread, its critical it be allowed to run at least to the
-     *  point where it's bumped its reference count before we allow aborting this thread.
-     */
-    SuppressInterruptionInContext suppressInterruptionsOfThisThreadWhileConstructingOtherElseLoseSharedPtrEtc;
-
     {
-        lock_guard<mutex> critSec{(*repSharedPtr)->fAccessSTDThreadMutex_};
+        /*
+         *  Once we have constructed the other thread, its critical it be allowed to run at least to the
+         *  point where it's bumped its reference count before we allow aborting this thread.
+         */
+        SuppressInterruptionInContext suppressInterruptionsOfThisThreadWhileConstructingRepOtherElseLoseSharedPtrEtc;
+
+        {
 #if __cpp_lib_jthread >= 201911
-        (*repSharedPtr)->fThread_ = jthread ([&repSharedPtr] () -> void { ThreadMain_ (repSharedPtr); });
+            (*repSharedPtr)->fThread_ = jthread ([&repSharedPtr] () -> void { ThreadMain_ (repSharedPtr); });
 #else
-        (*repSharedPtr)->fThread_ = thread ([&repSharedPtr] () -> void { ThreadMain_ (repSharedPtr); });
+            (*repSharedPtr)->fThread_ = thread ([&repSharedPtr] () -> void { ThreadMain_ (repSharedPtr); });
 #endif
+        }
     }
+
+    // REGTEST RegressionTest9_ThreadsAbortingEarly_ sometimes fails if suppression above in place... NOT SURE WHAT THE SITUATION IS HERE - CONSIDER BEFORE CHECKIN
     try {
         (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
     }
     catch (...) {
-        AssertNotReached ();
+        CheckForInterruption ();
+        WeakAssert (false); // otherwise, I can think of no reason for the wait to fail - so probably a real issue
         Execution::ReThrow ();
     }
     (*repSharedPtr)->ApplyThreadName2OSThreadObject ();
@@ -372,13 +376,27 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     sb << "id: "sv << Characters::ToString (GetID ()) << ", "sv;
-    if (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
+    if constexpr (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
         sb << "index: " << Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (GetID ()))) << ", "sv;
     }
     if (not fThreadName_.empty ()) {
-        sb << "name: '"sv << fThreadName_ << "', "sv;
+        sb << "name: "sv << Characters::ToString (fThreadName_) << ", "sv;
     }
-    sb << "status: "sv << Characters::ToString (fStatus_.load ());
+    sb << "status: "sv << Characters::ToString (fStatus_.load ()) << ", "sv;
+    //sb << "runnable: "sv << Characters::ToString (fRunnable_) << ", "sv;     // doesn't yet print anything useful
+    sb << "interruptionState: "sv << Characters::ToString (static_cast<int> (fInterruptionState_.load ())) << ", "sv;
+    sb << "refCountBumpedEvent: "sv << Characters::ToString (fRefCountBumpedEvent_.PeekIsSet ()) << ", "sv;
+    sb << "OK2StartEvent: "sv << Characters::ToString (fOK2StartEvent_.PeekIsSet ()) << ", "sv;
+    sb << "threadDoneAndCanJoin: "sv << Characters::ToString (fThreadDoneAndCanJoin_.PeekIsSet ()) << ", "sv;
+    if (fSavedException_ != nullptr) [[unlikely]] {
+        sb << "savedException: "sv << Characters::ToString (fSavedException_) << ", "sv;
+    }
+    if (fInitialPriority_.load () != nullopt) [[unlikely]] {
+        sb << "initialPriority: "sv << Characters::ToString (fInitialPriority_.load ()) << ", "sv;
+    }
+#if qPlatform_Windows
+    sb << "throwInterruptExceptionInsideUserAPC: "sv << Characters::ToString (fThrowInterruptExceptionInsideUserAPC_) << ", "sv;
+#endif
     sb << "}"sv;
     return sb.str ();
 }
@@ -524,16 +542,27 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
 {
     RequireNotNull (thisThreadRep);
     TraceContextBumper ctx{"Thread::Rep_::ThreadMain_"};
-    Require (Debug::AppearsDuringMainLifetime ());
 
 #if qDebug
+    Require (Debug::AppearsDuringMainLifetime ());
     [[maybe_unused]] auto&& cleanupCheckMain = Finally ([] () noexcept { Require (Debug::AppearsDuringMainLifetime ()); });
 #endif
 
     try {
-        shared_ptr<Rep_> incRefCnt = *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
+        shared_ptr<Rep_> incRefCnt = *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running (in case owning shared_ptr is destroyed first)
+
+        {
+            SuppressInterruptionInContext suppressInterruptionsOfThisThreadCallerKnowsWeHaveItBumpedAndCanProceed;
+            // We cannot possibly get interrupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID
+            // baring an external process sending us a bogus signal)
+            //
+            // Note that BOTH the fRefCountBumpedEvent_ and the fOK2StartEvent_ wait MUST come inside the try/catch for
+            incRefCnt->fRefCountBumpedEvent_.Set ();
+        }
 
         sCurrentThreadRep_ = incRefCnt;
+
+        Assert (incRefCnt->fStatus_ == Status::eNotYetRunning);
 
         /*
          *  \note   SUBTLE!!!!
@@ -589,11 +618,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (incRefCnt->fStatus_);
 
         try {
-            // We cannot possibly get interrupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID
-            // baring an external process sending us a bogus signal)
-            //
-            // Note that BOTH the fRefCountBumpedEvent_ and the fOK2StartEvent_ wait MUST come inside the try/catch for
-            incRefCnt->fRefCountBumpedEvent_.Set ();
+            Assert (incRefCnt->fStatus_ == Status::eNotYetRunning); // before this point, constructor of thread cannot proceed
 
 #if qPlatform_POSIX
             {
@@ -649,7 +674,15 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
             // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
             // But only register this after fRefCountBumpedEvent_ (would need to think more carefully to place this earlier)
             // --LGP 2023-10-03
-            stop_callback stopCallback{incRefCnt->fThread_.get_stop_token (), [=] () { Ptr{incRefCnt}.Abort (); }};
+            stop_callback stopCallback{
+                incRefCnt->fThread_.get_stop_token (), [=] () {
+                    DbgTrace (
+                        "Something triggered stop_token request stop, so doing aboort to make sure we are in an aboorting (flag) state.");
+                    // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
+                    if (incRefCnt->fStatus_ != Status::eAborting) [[unlikely]] {
+                        IgnoreExceptionsForCall (Ptr{incRefCnt}.Abort ());
+                    }
+                }};
 #endif
 
             /*
@@ -761,18 +794,6 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
         Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
 #endif
     }
-}
-
-Thread::IDType Thread::Ptr::Rep_::GetID () const
-{
-    [[maybe_unused]] auto&& critSec = lock_guard{fAccessSTDThreadMutex_};
-    return fThread_.get_id ();
-}
-
-Thread::NativeHandleType Thread::Ptr::Rep_::GetNativeHandle ()
-{
-    [[maybe_unused]] auto&& critSec = lock_guard{fAccessSTDThreadMutex_};
-    return fThread_.native_handle ();
 }
 
 #if qPlatform_POSIX
@@ -902,11 +923,6 @@ void Thread::Ptr::Abort () const
     Require (*this != nullptr);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 
-    // note status not protected by critsection, but SB OK for this
-
-    // first try to send abort exception, and then - if force - get serious!
-    // goto aborting, unless the previous value was completed, and then leave it completed.
-
     {
         // set to aborting, unless completed
         Status prevState = Status::eRunning;
@@ -917,7 +933,7 @@ void Thread::Ptr::Abort () const
             }
             else if (prevState == Status::eNotYetRunning) {
                 if (fRep_->fStatus_.compare_exchange_strong (prevState, Status::eCompleted)) {
-                    DbgTrace (L"thread never started, so marked as completed");
+                    DbgTrace ("thread never started, so marked as completed");
                     fRep_->fThreadDoneAndCanJoin_.Set ();
                     break; // leave state alone
                 }
@@ -938,7 +954,10 @@ void Thread::Ptr::Abort () const
         }
 #if __cpp_lib_jthread >= 201911
         // If transitioning to aborted state, notify any existing stop_callbacks
+        // not needed to check prevState - since https://en.cppreference.com/w/cpp/thread/jthread/request_stop says requst_stop checks if already requested.
         if (prevState != Status::eAborting) [[likely]] {
+            DbgTrace ("Transitioned state from %s to aborting, so calling fThread_.get_stop_source ().request_stop ();",
+                      Characters::ToString (prevState).c_str ());
             fRep_->fThread_.get_stop_source ().request_stop ();
         }
 #endif
@@ -1047,7 +1066,6 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) 
          *  NOTE: because we call this join () inside fAccessSTDThreadMutex_, its critical the running thread has terminated to the point where it will no
          *  longer access fThread_ (and therfore not lock fAccessSTDThreadMutex_)
          */
-        lock_guard<mutex> critSec2{fRep_->fAccessSTDThreadMutex_};
         if (fRep_->fThread_.joinable ()) {
             // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDoneAndCanJoin_ - it shouldn't really take long
             fRep_->fThread_.join ();
@@ -1102,7 +1120,7 @@ bool Thread::Ptr::IsDone () const
 
 /*
  ********************************************************************************
- ************************ Thread::CleanupPtr ************************************
+ **************************** Thread::CleanupPtr ********************************
  ********************************************************************************
  */
 Thread::CleanupPtr::~CleanupPtr ()

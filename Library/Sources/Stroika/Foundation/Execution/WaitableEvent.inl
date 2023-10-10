@@ -28,31 +28,23 @@ namespace Stroika::Foundation::Execution {
     {
         typename ConditionVariable<>::QuickLockType critSection{fConditionVariable.fMutex};
         fTriggered = false;
+        /*
+         *  NOTE: this code does NOT do a notifyall () - because we dont want anyone to WAKE to discover new data. Resetting the waitable event
+         *  is meant to be like destroying it and starting over.
+         */
     }
-    inline bool WaitableEvent::WE_::PeekIsSet () const noexcept
+    inline bool WaitableEvent::WE_::GetIsSet () const noexcept
     {
         typename ConditionVariable<>::QuickLockType critSection{fConditionVariable.fMutex};
         return fTriggered;
     }
+    inline bool WaitableEvent::WE_::PeekIsSet () const noexcept
+    {
+        return fTriggered;
+    }
     inline void WaitableEvent::WE_::Set ()
     {
-        /**
-         * NOTIFY the condition variable (notify_all), but unlock first due to:                  *
-         *      http://en.cppreference.com/w/cpp/thread/condition_variable/notify_all
-         *
-         *          The notifying thread does not need to hold the lock on the same mutex as the
-         *          one held by the waiting thread(s); in fact doing so is a pessimization, since
-         *          the notified thread would immediately block again, waiting for the notifying
-         *          thread to release the lock.
-         *
-         *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
-         *
-         */
-        {
-            typename ConditionVariable<>::QuickLockType critSection{fConditionVariable.fMutex};
-            fTriggered = true;
-        }
-        fConditionVariable.notify_all ();
+        fConditionVariable.MutateDataNotifyAll ([this] () { fTriggered = true; });
     }
 
     /*
@@ -68,6 +60,10 @@ namespace Stroika::Foundation::Execution {
     {
         //Debug::TraceContextBumper ctx{"WaitableEvent::Reset"};
         fWE_.Reset ();
+    }
+    inline bool WaitableEvent::GetIsSet () const noexcept
+    {
+        return fWE_.GetIsSet ();
     }
     inline bool WaitableEvent::PeekIsSet () const noexcept
     {

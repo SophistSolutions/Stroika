@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 
+#include "../Streams/EOFException.h"
 #include "TimeOutException.h"
 
 namespace Stroika::Foundation::Execution {
@@ -44,7 +45,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     inline bool BlockingQueue<T>::EndOfInputHasBeenQueued () const
     {
-        // lock not strictly needed, but it avoids false-positive from lock checking tools
+        // lock may not always be strictly needed, but could report stale (cross thread) value without lock
         typename ConditionVariable<>::QuickLockType critSection{fCondtionVariable_.fMutex};
         return fEndOfInput_;
     }
@@ -59,16 +60,16 @@ namespace Stroika::Foundation::Execution {
     {
         Time::DurationSecondsType waitTil = Time::GetTickCount () + timeout;
         while (true) {
-            typename ConditionVariable<>::LockType waitableLock{fCondtionVariable_.fMutex};
+            typename ConditionVariable<>::LockType waitableLock{fCondtionVariable_.fMutex}; // despite appearances to the contrary, not holding lock lock cuz condition variable unlocks before waiting
             if (optional<T> tmp = fQueue_.RemoveHeadIf ()) {
-                // Only notify_all() on additions
+                // Only notify_all() on additions, cuz waiters just looking for more data
                 return *tmp;
             }
             if (fEndOfInput_) [[unlikely]] {
-                Execution::Throw (Execution::TimeOutException::kThe); // Since we always must return, and know we never will, throw timeout now
+                Execution::Throw (Streams::EOFException::kThe); // Since we always must return, and know we never will, throw timeout now
             }
             ThrowTimeoutExceptionAfter (waitTil);
-            fCondtionVariable_.wait_until (waitableLock, waitTil);
+            (void)fCondtionVariable_.wait_until (waitableLock, waitTil, [this] () { return fEndOfInput_ or not fQueue_.empty (); });
         }
     }
     template <typename T>
@@ -76,17 +77,17 @@ namespace Stroika::Foundation::Execution {
     {
         Time::DurationSecondsType waitTil = Time::GetTickCount () + timeout;
         while (true) {
-            typename ConditionVariable<>::LockType waitableLock{fCondtionVariable_.fMutex};
+            typename ConditionVariable<>::LockType waitableLock{fCondtionVariable_.fMutex}; // despite appearances to the contrary, not holding lock lock cuz condition variable unlocks before waiting
             if (optional<T> tmp = fQueue_.RemoveHeadIf ()) {
                 return tmp;
             }
             if (fEndOfInput_) {
-                return {}; // on end of input, no point in waiting
+                return nullopt; // on end of input, no point in waiting
             }
             if (Time::GetTickCount () > waitTil) {
-                return {}; // on timeout, return 'missing'
+                return nullopt; // on timeout, return 'missing'
             }
-            fCondtionVariable_.wait_until (waitableLock, waitTil);
+            (void)fCondtionVariable_.wait_until (waitableLock, waitTil, [this] () { return fEndOfInput_ or not fQueue_.empty (); });
         }
     }
     template <typename T>
@@ -111,6 +112,12 @@ namespace Stroika::Foundation::Execution {
     inline size_t BlockingQueue<T>::length () const
     {
         return size ();
+    }
+    template <typename T>
+    inline Containers::Queue<T> BlockingQueue<T>::GetQueue () const
+    {
+        typename ConditionVariable<>::QuickLockType critSection{fCondtionVariable_.fMutex};
+        return fQueue_;
     }
     template <typename T>
     inline void BlockingQueue<T>::clear ()

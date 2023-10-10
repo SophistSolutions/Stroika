@@ -21,7 +21,7 @@
 namespace Stroika::Foundation::Execution {
 
     /**
-     *  A simple wrapper on a std::condition_variable, with support for Stroika thread Cancelation, and 
+     *  ConditionVariable is a thin abstraction/wrapper on a std::condition_variable, with support for Stroika thread Cancelation, and 
      *  other shortcuts to simplify use. (combines related mutex with condition variable). Since you always use a
      *  condition variable with a mutex, its helpful to also include the associated mutex in the condition variable (type can be
      *  changed with template parameters).
@@ -51,6 +51,7 @@ namespace Stroika::Foundation::Execution {
      *      \endcode
      *
      *  \note   Design Note on implementing thread cancelation
+     * (@todo UPDATE DOCS IN LIGHT OF C++20)
      *          >   There are three obvious ways to implement cancelation
      *
      *              >   Uinsg EINTR (POSIX) and alertable states on windows - this is what we do most other places
@@ -94,12 +95,54 @@ namespace Stroika::Foundation::Execution {
      *              This MAYBE related to why "std::condition_variable works only with std::unique_lock<std::mutex>".
      *              BUT - then i don't understand how " std::condition_variable_any provides a condition variable that works with any BasicLockable"
      * 
-     *  \note before Stroika v3, we used 
+     *  \note use of condition_variable (not condition_variable_any) with stop_token
+     *        See https://stackoverflow.com/questions/66309276/why-does-c20-stdcondition-variable-not-support-stdstop-token
+     *        PROBABLY must use condition_variable_any, and just make that the default.
+     *          
      *        CONDITION_VARIABLE = conditional_t<is_same_v<mutex, MUTEX>, condition_variable, condition_variable_any>
-     *        but since v3, we always use condition_variable_any so that we can use stop_token.
+     *        but for now, seems to be working.
      */
+    //    template <typename MUTEX = mutex, typename CONDITION_VARIABLE = conditional_t<is_same_v<mutex, MUTEX>, condition_variable, condition_variable_any>>
     template <typename MUTEX = mutex, typename CONDITION_VARIABLE = condition_variable_any>
     struct ConditionVariable {
+
+        /**
+         *  This is the type of the mutex associated with the condition variable.
+         */
+        using MutexType = MUTEX;
+
+        /**
+         *  This is the type of condition variable. This is generally going to be condition_variable_any (so it will work with stop_tokens)
+         *  but could be condition_variable (or others).
+         */
+        using ConditionVariableType = CONDITION_VARIABLE;
+
+        /**
+         *  explicitly unlockable lock (on the mutex). Use, for example, with condition variables, where the apis need to unlock/lock and track
+         *  the 'locked' state.
+         */
+        using LockType = unique_lock<MUTEX>;
+
+        /**
+         *  just lock and unlock. Basically the same as LockType, but less flexible (cannot explicitly unlock) and more efficient (cuz no data
+         *  to track if locked).
+         */
+        using QuickLockType = lock_guard<MUTEX>;
+
+        /*
+         * https://stackoverflow.com/questions/66309276/why-does-c20-stdcondition-variable-not-support-stdstop-token
+         * 
+         *  Seems simple enuf to use 
+         *        std::stop_callback callback{ stoken, [&cv]{ cv.notify_all(); } };
+         *  But according to that stackoverflow link, its unsafe. MSFT implementation basically does this anyhow.
+         *  So only support stop_token for condition_variable_any.
+         *          -- LGP 2023-10-06
+         */
+#if __cpp_lib_jthread < 201911
+        static constexpr bool kSupportsStopToken = false;
+#else
+        static constexpr bool kSupportsStopToken = same_as<CONDITION_VARIABLE, condition_variable_any>;
+#endif
 
         /**
          *  This (ThreadAbortCheckFrequency) API shouldnt be needed - if we had a better underlying implementation, and beware, the API could go away
@@ -111,15 +154,13 @@ namespace Stroika::Foundation::Execution {
          *  effecitvely busy wait, and this checking is ONLY needed for the special, rare case of thread abort.
          * 
          *  @see https://stroika.atlassian.net/browse/STK-930 - @todo - want to lose this!
+         * 
+         * 
+         *  @todo DOC RARELY USED - JUST MAYBE WHEN cannot do stop_token stuff.
+         * 
+         * maybe rename and add define for threadcheck when kSupportsStopToken and when !kSupportsStopToken
          */
         static inline Time::DurationSecondsType sThreadAbortCheckFrequency_Default{0.25};
-
-        Time::DurationSecondsType fThreadAbortCheckFrequency{sThreadAbortCheckFrequency_Default};
-
-        using MutexType             = MUTEX;
-        using ConditionVariableType = CONDITION_VARIABLE;
-        using LockType              = unique_lock<MUTEX>;
-        using QuickLockType         = lock_guard<MUTEX>;
 
         /**
          */
@@ -127,7 +168,14 @@ namespace Stroika::Foundation::Execution {
         ConditionVariable (const ConditionVariable&)                       = delete;
         nonvirtual ConditionVariable& operator= (const ConditionVariable&) = delete;
 
-        MutexType          fMutex;
+        /**
+         *  ConditionVariable is a very THIN abstraction. Callers will often need to explicitly access/use the mutex
+         */
+        MutexType fMutex;
+
+        /**
+         *  ConditionVariable is a very THIN abstraction. Callers will often need to explicitly access/use the condition_variable
+         */
         CONDITION_VARIABLE fConditionVariable;
 
         /**
@@ -162,6 +210,8 @@ namespace Stroika::Foundation::Execution {
 
         /**
          *  \brief forward notify_one () call to underlying std::condition_variable'
+         *
+         *  \note   ***NOT a Cancelation Point***
          */
         nonvirtual void notify_one () noexcept;
 
@@ -190,6 +240,8 @@ namespace Stroika::Foundation::Execution {
          *
          *  \req (lock.owns_lock ());
          *  \ensure (lock.owns_lock ());
+         * 
+         * @todo maybe lose the (no predicate) overload --LGP 2023-10-09
          */
         nonvirtual cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
         template <typename PREDICATE>

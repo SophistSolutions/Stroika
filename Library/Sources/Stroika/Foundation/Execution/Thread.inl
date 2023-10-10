@@ -85,7 +85,10 @@ namespace Stroika::Foundation::Execution {
     private:
         function<void ()>           fRunnable_;
         atomic<InterruptFlagState_> fInterruptionState_{InterruptFlagState_::eNone}; // regular interrupt, abort interrupt, or none
-        mutable mutex fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
+
+        // @todo lose this mutex. We read fID from thread object, but sometimes call join. want to allow access to some attributes to read while doing a join..
+        /// MAYBE reviseit - not sure thats safe...
+        //     mutable mutex fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
 #if __cpp_lib_jthread >= 201911
         jthread fThread_;
 #else
@@ -122,6 +125,14 @@ namespace Stroika::Foundation::Execution {
         return this->fThread_.get_stop_token ();
     }
 #endif
+    inline Thread::IDType Thread::Ptr::Rep_::GetID () const
+    {
+        return fThread_.get_id ();
+    }
+    inline Thread::NativeHandleType Thread::Ptr::Rep_::GetNativeHandle ()
+    {
+        return fThread_.native_handle ();
+    }
 
     /*
      ********************************************************************************

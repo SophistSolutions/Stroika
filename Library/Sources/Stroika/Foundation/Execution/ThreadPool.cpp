@@ -365,7 +365,7 @@ void ThreadPool::WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) con
                                                                                  L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
 #endif
     Thread::CheckForInterruption ();
-    // @todo - use waitableevent - this is a horribly implementation
+    // @todo - use waitableevent - this is a horribe implementation
     while (GetTasksCount () != 0) {
         ThrowTimeoutExceptionAfter (timeoutAt);
         Execution::Sleep (100ms);

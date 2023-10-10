@@ -16,6 +16,9 @@ namespace Stroika::Foundation::Execution {
 
     namespace Thread {
         void CheckForInterruption ();
+#if __cpp_lib_jthread >= 201911
+        optional<stop_token> GetCurrentThreadStopToken ();
+#endif
     }
 
     /*
@@ -49,19 +52,42 @@ namespace Stroika::Foundation::Execution {
     cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
     {
         Require (lock.owns_lock ());
-        while (true) {
+        {
             Thread::CheckForInterruption ();
             Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
             if (remaining < 0) {
                 Ensure (lock.owns_lock ());
                 return cv_status::timeout;
             }
-            remaining = min (remaining, fThreadAbortCheckFrequency);
 
+            if constexpr (kSupportsStopToken) {
+                // native std c++ fConditionVariable.wait_until works with stop token, but my version in overload wtih no predicate doesn't - perhaps
+                // critucal to hold lock whole predicate checked? which I think I'm doing here, but maybe review lib code more carefully... cuz this case
+                // works and mine doesn't...
+                if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
+                    if (fConditionVariable.wait_until (lock, *ost, Time::DurationSeconds2time_point (timeoutAt),
+                                                       [&] () { return ost->stop_requested (); })) {
+                        Thread::CheckForInterruption ();
+                    }
+                    return (Time::GetTickCount () < timeoutAt) ? cv_status::no_timeout : cv_status::timeout;
+                }
+            }
+
+            // @todo DOC THIS BETTER
+            if (kSupportsStopToken) {
+                remaining = min (remaining, 60.0 * 60.0);
+            }
+            else {
+                remaining = min (remaining, sThreadAbortCheckFrequency_Default);
+            }
+            Assert (not isinf (remaining));
+
+            Thread::CheckForInterruption ();
+            // @todo simplify to call wait_until() after we lose __cpp_lib_jthread < 201911 support
             Assert (lock.owns_lock ());
-            cv_status tmp = fConditionVariable.wait_for (lock, Time::Duration{remaining}.As<chrono::milliseconds> ());
+            (void)fConditionVariable.wait_for (lock, Time::Duration{remaining}.As<chrono::milliseconds> ());
             Assert (lock.owns_lock ());
-            if (tmp == cv_status::timeout) {
+            {
                 /*
                  *  Cannot quit here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
                  *  this timeout value (or any return code) - cuz we re-examine tickcount at the top of the loop.
@@ -75,11 +101,6 @@ namespace Stroika::Foundation::Execution {
                     return cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
                 }
             }
-            else {
-                Assert (tmp == cv_status::no_timeout);
-                Ensure (lock.owns_lock ());
-                return cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
-            }
         }
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
@@ -88,12 +109,28 @@ namespace Stroika::Foundation::Execution {
     {
         Require (lock.owns_lock ());
         Thread::CheckForInterruption ();
+
+#if 1
+        // native std c++ fConditionVariable.wait_until works with stop token, but my version in overload wtih no predicate doesn't - perhaps
+        // critucal to hold lock whole predicate checked? which I think I'm doing here, but maybe review lib code more carefully... cuz this case
+        // works and mine doesn't...
+        if constexpr (kSupportsStopToken) {
+            if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
+                auto r = fConditionVariable.wait_until (lock, *ost, Time::DurationSeconds2time_point (timeoutAt), forward<PREDICATE> (readyToWake));
+                Thread::CheckForInterruption ();
+                return r;
+            }
+        }
+#endif
+
         while (not readyToWake ()) {
             // NB: further checks for interruption happen inside wait_until() called here...
             if (wait_until (lock, timeoutAt) == cv_status::timeout) {
                 /*
-                 *  Somewhat ambiguous if this should check readyToWake just return false. Probably best to check, since the condition is met, and thats
+                 *  Somewhat ambiguous if this should check readyToWake or just return false. Probably best to check, since the condition is met, and thats
                  *  probably more important than the timeout.
+                 * 
+                 *  Also - docs in https://en.cppreference.com/w/cpp/thread/condition_variable/wait_until - make it clear this is the right thing todo.
                  */
                 auto result = readyToWake ();
                 Ensure (lock.owns_lock ());
