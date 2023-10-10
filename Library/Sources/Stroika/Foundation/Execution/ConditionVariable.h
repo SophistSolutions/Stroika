@@ -268,7 +268,7 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
         template <typename PREDICATE>
-        nonvirtual bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readyToWake);
+        nonvirtual bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE&& readyToWake);
 
         /**
          *  Idea is you pass lambda to do actual data change, and this acquires lock first, and notifies all after.

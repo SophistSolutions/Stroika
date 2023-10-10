@@ -52,58 +52,37 @@ namespace Stroika::Foundation::Execution {
     cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
     {
         Require (lock.owns_lock ());
-        {
-            Thread::CheckForInterruption ();
-            Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
-            if (remaining < 0) {
-                Ensure (lock.owns_lock ());
-                return cv_status::timeout;
-            }
 
-            if constexpr (kSupportsStopToken) {
-                // native std c++ fConditionVariable.wait_until works with stop token, but my version in overload wtih no predicate doesn't - perhaps
-                // critucal to hold lock whole predicate checked? which I think I'm doing here, but maybe review lib code more carefully... cuz this case
-                // works and mine doesn't...
-#if __cpp_lib_jthread >= 201911
-                if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
-                    if (fConditionVariable.wait_until (lock, *ost, Time::DurationSeconds2time_point (timeoutAt),
-                                                       [&] () { return ost->stop_requested (); })) {
-                        Thread::CheckForInterruption ();
-                    }
-                    return (Time::GetTickCount () < timeoutAt) ? cv_status::no_timeout : cv_status::timeout;
-                }
-#endif
-            }
-
-            // @todo DOC THIS BETTER
-            if (kSupportsStopToken) {
-                remaining = min (remaining, 60.0 * 60.0);
-            }
-            else {
-                remaining = min (remaining, sThreadAbortCheckFrequency_Default);
-            }
-            Assert (not isinf (remaining));
-
-            Thread::CheckForInterruption ();
-            // @todo simplify to call wait_until() after we lose __cpp_lib_jthread < 201911 support
-            Assert (lock.owns_lock ());
-            (void)fConditionVariable.wait_for (lock, Time::Duration{remaining}.As<chrono::milliseconds> ());
-            Assert (lock.owns_lock ());
-            {
-                /*
-                 *  Cannot quit here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
-                 *  this timeout value (or any return code) - cuz we re-examine tickcount at the top of the loop.
-                 */
-                {
-                    Time::DurationSecondsType stillRemaining = timeoutAt - Time::GetTickCount ();
-                    if (stillRemaining < 0) {
-                        return cv_status::timeout;
-                    }
-                    Ensure (lock.owns_lock ());
-                    return cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
-                }
-            }
+        Thread::CheckForInterruption ();
+        if (Time::GetTickCount () > timeoutAt) [[unlikely]] {
+            Ensure (lock.owns_lock ());
+            return cv_status::timeout;
         }
+
+        // convert DurationSecondsType  to time_point for stdc++ calls, but ping to more modest maximum...
+        auto timeoutAtStopPoint = Time::DurationSeconds2time_point (
+            kSupportsStopToken ? timeoutAt : min (timeoutAt, Time::GetTickCount () + sThreadAbortCheckFrequency_Default));
+
+        if constexpr (kSupportsStopToken) {
+            // If no predicate function is provided (to say when we are done) - use stop_requested() as the predicate
+#if __cpp_lib_jthread >= 201911
+            if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
+                if (fConditionVariable.wait_until (lock, *ost, timeoutAtStopPoint, [&] () { return ost->stop_requested (); })) [[unlikely]] {
+                    Thread::CheckForInterruption ();
+                }
+                return (Time::GetTickCount () < timeoutAt) ? cv_status::no_timeout : cv_status::timeout;
+            }
+#endif
+        }
+
+        Thread::CheckForInterruption ();
+        (void)fConditionVariable.wait_until (lock, timeoutAtStopPoint);
+
+        Ensure (lock.owns_lock ());
+
+        // cannot use fConditionVariable.wait_until result because we may have fiddled its argument
+        // can be spurious wakeup, or real, no way to know
+        return (Time::GetTickCount () > timeoutAt) ? cv_status::timeout : cv_status::no_timeout;
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
     template <typename PREDICATE>
@@ -112,21 +91,24 @@ namespace Stroika::Foundation::Execution {
         Require (lock.owns_lock ());
         Thread::CheckForInterruption ();
 
-#if 1
+        auto timeoutAtStopPoint = Time::DurationSeconds2time_point (timeoutAt);
+
         // native std c++ fConditionVariable.wait_until works with stop token, but my version in overload wtih no predicate doesn't - perhaps
         // critucal to hold lock whole predicate checked? which I think I'm doing here, but maybe review lib code more carefully... cuz this case
         // works and mine doesn't...
         if constexpr (kSupportsStopToken) {
 #if __cpp_lib_jthread >= 201911
             if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
-                auto r = fConditionVariable.wait_until (lock, *ost, Time::DurationSeconds2time_point (timeoutAt), forward<PREDICATE> (readyToWake));
-                Thread::CheckForInterruption ();
-                return r;
+                bool ready = fConditionVariable.wait_until (lock, *ost, timeoutAtStopPoint, forward<PREDICATE> (readyToWake));
+                if (ost->stop_requested ()) {
+                    Thread::CheckForInterruption ();
+                }
+                return ready;
             }
 #endif
         }
-#endif
 
+        // if kSupportsStopToken not in use (or not in a Stroika thread so this thread not stoppable)
         while (not readyToWake ()) {
             // NB: further checks for interruption happen inside wait_until() called here...
             if (wait_until (lock, timeoutAt) == cv_status::timeout) {
@@ -153,16 +135,16 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
     template <typename PREDICATE>
-    inline bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readyToWake)
+    inline bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE&& readyToWake)
     {
         Require (lock.owns_lock ());
-        return wait_until (lock, timeout + Time::GetTickCount (), move (readyToWake));
+        return wait_until (lock, timeout + Time::GetTickCount (), forward<PREDICATE> (readyToWake));
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
     template <typename FUNCTION>
     inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyAll (FUNCTION&& mutatorFunction)
     {
-        // See https://en.cppreference.com/w/cpp/thread/condition_variable for why we modify the data under the lock (maybe obvious)
+        // See https://en.cppreference.com/w/cpp/thread/condition_variable for why we modify the data under the lock
         // but call the notify_all() after releasing the lock - also https://stackoverflow.com/questions/35775501/c-should-condition-variable-be-notified-under-lock
         {
             QuickLockType quickLock{fMutex};
@@ -174,7 +156,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION>
     inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyOne (FUNCTION&& mutatorFunction)
     {
-        // See https://en.cppreference.com/w/cpp/thread/condition_variable for why we modify the data under the lock (maybe obvious)
+        // See https://en.cppreference.com/w/cpp/thread/condition_variable for why we modify the data under the lock
         // but call the notify_all() after releasing the lock - also https://stackoverflow.com/questions/35775501/c-should-condition-variable-be-notified-under-lock
         {
             QuickLockType quickLock{fMutex};
