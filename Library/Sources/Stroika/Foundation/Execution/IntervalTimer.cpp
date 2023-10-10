@@ -50,21 +50,21 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     virtual ~Rep_ () = default;
     void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when)
     {
-        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: AddOneShot"};
+        Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: AddOneShot"};
         auto                      lk = fData_.rwget ();
         lk->Add (RegisteredTask{intervalTimer, Time::GetTickCount () + when.As<DurationSecondsType> ()});
         DataChanged_ ();
     }
     void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
     {
-        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: AddRepeating"};
+        Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: AddRepeating"};
         auto                      lk = fData_.rwget ();
         lk->Add ({intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, hysteresis});
         DataChanged_ ();
     }
     void RemoveRepeating (const TimerCallback& intervalTimer) noexcept
     {
-        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: RemoveRepeating"};
+        Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: RemoveRepeating"};
         auto                      lk = fData_.rwget ();
         RegisteredTaskCollection  x  = lk.cref ();
         lk->Remove (intervalTimer);
@@ -72,7 +72,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     }
     RegisteredTaskCollection GetAllRegisteredTasks () const
     {
-        Debug::TraceContextBumper ctx{L"IntervalTimer::Manager: default implementation: GetAllRegisteredTasks"};
+        Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: GetAllRegisteredTasks"};
         return fData_.load ();
     }
 
