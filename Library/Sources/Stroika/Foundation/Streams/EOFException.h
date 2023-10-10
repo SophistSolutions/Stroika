@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2023.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Streams_EOFException_h_
-#define _Stroika_Foundation_Streams_EOFExceptionm_h_ 1
+#define _Stroika_Foundation_Streams_EOFException_h_ 1
 
 #include "../StroikaPreComp.h"
 
