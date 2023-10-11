@@ -1322,6 +1322,16 @@ string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const Forma
 
 /*
  ********************************************************************************
+ ******************* Thread::IsCurrentThreadInterruptible ***********************
+ ********************************************************************************
+ */
+ bool Thread::IsCurrentThreadInterruptible ()
+{
+    return Ptr::sCurrentThreadRep_.lock () != nullptr;
+}
+
+/*
+ ********************************************************************************
  ********************** Execution::Thread::CheckForInterruption *****************
  ********************************************************************************
  */
