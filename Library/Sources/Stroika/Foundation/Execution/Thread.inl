@@ -379,6 +379,18 @@ namespace Stroika::Foundation::Execution {
     }
 #endif
 
+#if !qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
+    /*
+     ********************************************************************************
+     ******************* Thread::IsCurrentThreadInterruptible ***********************
+     ********************************************************************************
+     */
+    inline bool Thread::IsCurrentThreadInterruptible ()
+    {
+        return Ptr::sCurrentThreadRep_.lock () != nullptr;
+    }
+#endif
+
 }
 
 namespace Stroika::Foundation::Configuration {

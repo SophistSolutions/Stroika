@@ -528,6 +528,29 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 #endif
 
 /*
+
+   https://bugs.llvm.org/show_bug.cgi?id=42111
+
+
+Linking  $StroikaRoot/Builds/Debug/HTMLViewCompiler...
+duplicate symbol 'thread-local initialization routine for Stroika::Foundation::Execution::Thread::Ptr::sCurrentThreadRep_' in:
+    /Users/runner/work/Stroika/Stroika/Builds/Debug/Stroika-Foundation.a(Thread.o)
+    /Users/runner/work/Stroika/Stroika/Builds/Debug/Stroika-Foundation.a(WaitableEvent.o)
+ld: 1 duplicate symbol for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+*/
+#ifndef qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// first noticed broken in apply clang 14
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#else
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy 0
+#endif
+
+#endif
+
+/*
     Compiling Tests/11/Test.cpp ...
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
 Stack dump:
