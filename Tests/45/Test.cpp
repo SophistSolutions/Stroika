@@ -56,7 +56,7 @@ namespace {
             void Test_1_SimpleFetch_Google_C_ (Connection::Ptr c)
             {
                 Debug::TraceContextBumper ctx{"{}::...Test_1_SimpleFetch_Google_C_"};
-                Response                  r = c.GET (URI{L"http://www.google.com"});
+                Response                  r = c.GET (URI{"http://www.google.com"});
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
             }
@@ -64,7 +64,7 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"{}::...Test_2_SimpleFetch_SSL_Google_C_"};
                 try {
-                    Response r = c.GET (URI{L"https://www.google.com"});
+                    Response r = c.GET (URI{"https://www.google.com"});
                     VerifyTestResult (r.GetSucceeded ());
                     VerifyTestResult (r.GetData ().size () > 1);
                 }
@@ -163,14 +163,14 @@ namespace {
             void T1_httpbin_SimpleGET_ (Connection::Ptr c)
             {
                 Debug::TraceContextBumper ctx{"T1_httpbin_SimpleGET_"};
-                Response                  r = c.GET (URI{L"http://httpbin.org/get"});
+                Response                  r = c.GET (URI{"http://httpbin.org/get"});
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
                 {
                     VariantValue                  v  = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
-                    VerifyTestResult (vv.ContainsKey (L"args"));
-                    VerifyTestResult (vv[L"url"] == L"http://httpbin.org/get" or vv[L"url"] == L"https://httpbin.org/get");
+                    VerifyTestResult (vv.ContainsKey ("args"));
+                    VerifyTestResult (vv["url"] == "http://httpbin.org/get" or vv["url"] == "https://httpbin.org/get");
                 }
             }
             DISABLE_COMPILER_MSC_WARNING_START (4102);
@@ -182,7 +182,7 @@ namespace {
 
                 static mt19937 sRNG_;
 
-                c.SetSchemeAndAuthority (URI{L"http://httpbin.org"});
+                c.SetSchemeAndAuthority (URI{"http://httpbin.org"});
                 BLOB roundTripTestData = [] () {
                     Memory::StackBuffer<byte> buf{Debug::IsRunningUnderValgrind () ? 100u : 1024u};
                     for (size_t i = 0; i < buf.GetSize (); ++i) {
@@ -197,7 +197,7 @@ namespace {
             again:
 #endif
                 try {
-                    optResp = c.POST (URI{L"/post"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
+                    optResp = c.POST (URI{"/post"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
                 }
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
@@ -205,7 +205,7 @@ namespace {
                     if (lce.code () == error_code{CURLE_SEND_FAIL_REWIND, LibCurl_error_category ()}) {
                         DbgTrace ("Warning - ignored failure since rewinding of the data stream failed' (status CURLE_SEND_FAIL_REWIND) - "
                                   "try again ssl link");
-                        c.SetSchemeAndAuthority (URI{L"https://httpbin.org/"});
+                        c.SetSchemeAndAuthority (URI{"https://httpbin.org/"});
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
                             Execution::Sleep (500ms * tryCount);
@@ -266,7 +266,7 @@ namespace {
                     }
                     return BLOB (buf.begin (), buf.end ());
                 }();
-                Response r = c.PUT (URI{L"http://httpbin.org/put"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
+                Response r = c.PUT (URI{"http://httpbin.org/put"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
                 VerifyTestResult (r.GetSucceeded ()); // because throws on failure
                 {
                     VariantValue                  v  = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
@@ -374,7 +374,7 @@ namespace {
         namespace Private_ {
             void Test_1_SimpleFetch_Google_C_ (Connection::Ptr c)
             {
-                Response r = c.GET (URI{L"http://www.google.com"});
+                Response r = c.GET (URI{"http://www.google.com"});
                 VerifyTestResultWarning (r.GetSucceeded ());
                 for (auto i : r.GetHeaders ()) {
                     DbgTrace (L"%s=%s", i.fKey.c_str (), i.fValue.c_str ());
@@ -438,7 +438,7 @@ namespace {
             void T1_get_ ()
             {
                 Connection::Ptr c = IO::Network::Transfer::Connection::New (kDefaultTestOptions_);
-                Response        r = c.GET (URI{L"http://www.google.com"});
+                Response        r = c.GET (URI{"http://www.google.com"});
                 VerifyTestResultWarning (r.GetSucceeded ());
                 VerifyTestResultWarning (r.GetData ().size () > 1);
             }
@@ -598,13 +598,13 @@ namespace {
                 Debug::TraceContextBumper ctx{"{}::...SimpleGetFetch_T1"};
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                 static const auto kInitList_ =
-                    initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}};
+                    initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}};
 #endif
                 for (URI u :
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                      kInitList_
 #else
-                     initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}}
+                     initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}}
 #endif
                 ) {
                     try {
@@ -674,13 +674,13 @@ namespace {
                 Debug::TraceContextBumper ctx{"{}::...SimpleGetFetch_T1"};
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                 static const auto kInitList_ =
-                    initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}};
+                    initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}};
 #endif
                 for (URI u :
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                      kInitList_
 #else
-                     initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}}
+                     initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, URI{"http://www.cnn.com"}}
 #endif
                 ) {
                     Connection::Ptr c = factory (u);

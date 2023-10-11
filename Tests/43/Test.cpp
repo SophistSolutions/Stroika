@@ -160,8 +160,8 @@ namespace {
                 {
                     // This behavior appears to meet the needs of my URL::eStroikaPre20a50BackCompatMode tests - so may work for Stroika - just replace its use with URI -- LGP 2019-04-04
                     // AT LEAST CLOSE - I THINK I CAN COME UP WITH CHEATSHEET TO MAP NAMES (like GetRElPath to GetPath () - but does it handle leading slash same?)
-                    IO::Network::URI uri = IO::Network::URI::Parse (L"dyn:/StyleSheet.css?ThemeName=Cupertino");
-                    VerifyTestResult (*uri.GetScheme () == SchemeType{L"dyn"});
+                    IO::Network::URI uri = IO::Network::URI::Parse ("dyn:/StyleSheet.css?ThemeName=Cupertino");
+                    VerifyTestResult (*uri.GetScheme () == SchemeType{"dyn"sv});
                     VerifyTestResult (not uri.GetAuthority ().has_value ());
                     VerifyTestResult (uri.GetPath () == "/StyleSheet.css");
                     VerifyTestResult (uri.GetQuery<String> () == "ThemeName=Cupertino");
@@ -172,12 +172,12 @@ namespace {
                     VerifyTestResult (uri.Normalize ().As<String> () == L"https://www.microsoft.com/Path");
                 }
                 {
-                    URI base{L"http://www.sophists.com"};
-                    VerifyTestResult (base.Combine (URI{L"/blag/foo.icon"}).As<String> () == L"http://www.sophists.com/blag/foo.icon");
+                    URI base{"http://www.sophists.com"};
+                    VerifyTestResult (base.Combine (URI{"/blag/foo.icon"}).As<String> () == "http://www.sophists.com/blag/foo.icon");
                 }
                 {
-                    URI base{L"http://www.sophists.com/"};
-                    VerifyTestResult (base.Combine (URI{L"/blag/foo.icon"}).As<String> () == L"http://www.sophists.com/blag/foo.icon");
+                    URI base{"http://www.sophists.com/"};
+                    VerifyTestResult (base.Combine (URI{"/blag/foo.icon"}).As<String> () == "http://www.sophists.com/blag/foo.icon");
                 }
             }
             void Test_Reference_Resolution_Examples_From_RFC_3986_ ()
@@ -260,8 +260,8 @@ namespace {
                      *      o.port
                      *      o.geturl ()
                      */
-                    auto o = URI{L"http://www.cwi.nl:80/%7Eguido/Python.html"};
-                    VerifyTestResult (o.GetScheme () == SchemeType{L"http"});
+                    auto o = URI{"http://www.cwi.nl:80/%7Eguido/Python.html"};
+                    VerifyTestResult (o.GetScheme () == SchemeType{"http"});
                     VerifyTestResult (o.GetAuthority ()->GetPort () == 80);
                     // NOTE - here python emits '%7Eguido' instead of '~guido'. However, according to
                     // https://tools.ietf.org/html/rfc3986#section-2.3, '~' - %7E - is an unreserved character, and
@@ -363,7 +363,7 @@ namespace {
             void Test_RegressionDueToBugInCompareURIsC20Spaceship_ ()
             {
                 Debug::TraceContextBumper ctx{"Test_RegressionDueToBugInCompareURIsC20Spaceship_"};
-                URI                       fred = URI{L"http://abc.com/bar"};
+                URI                       fred = URI{"http://abc.com/bar"};
                 if (fred) {
                     // make sure operator bool working
                 }
@@ -373,13 +373,13 @@ namespace {
 // workaround really only needed if ASAN enabled, but more of a PITA to test that
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                 static const auto kInitList_ =
-                    initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, fred, URI{L"http://www.cnn.com"}};
+                    initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, fred, URI{"http://www.cnn.com"}};
 #endif
                 for (URI u :
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                      kInitList_
 #else
-                     initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, fred, URI{L"http://www.cnn.com"}}
+                     initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, fred, URI{"http://www.cnn.com"}}
 #endif
                 ) {
                     auto schemeAndAuthority = fred.GetSchemeAndAuthority ();

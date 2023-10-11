@@ -660,8 +660,8 @@ namespace {
         tmp.fSet1_.Add (193);
         tmp.fVector1_.push_back (3);
         tmp.fVector1_.push_back (-91);
-        tmp.fURL1_ = IO::Network::URI{L"http://localhost:3344/fred"};
-        tmp.fURL2_ = IO::Network::URI{L"http://localhost:1234"};
+        tmp.fURL1_ = IO::Network::URI{"http://localhost:3344/fred"};
+        tmp.fURL2_ = IO::Network::URI{"http://localhost:1234"};
 
         VariantValue v = mapper.FromObject (tmp);
 
