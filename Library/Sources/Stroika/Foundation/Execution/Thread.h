@@ -23,6 +23,10 @@
  *  \file
  *
  * TODO
+ *      @todo   Fix thread INTERRUPTION (not aborting) case to work properly again with the new stop_token stuff. Tricky
+ *              - and not sure possible - cuz once stop_token set, it cannot be unset. CONSIDER LOSING INTERRUPTION feature.
+ *              (or making it optional and more expensive)
+ * 
  *      @todo   Probably no longer need siginterrupt () calls, since we DON'T set SA_RESTART in our call to sigaction().
  *
  *      @todo   DOCS and review impl/test impl of abort/thread code. Add test case for Interrupt.
@@ -46,7 +50,9 @@ namespace Stroika::Foundation::Execution {
      *
      *      Stroika Threads are built on std::thread, so can be used mostly interoperably. However,
      *  Stroika threads add a number of very useful features to std::threads:
-     *          o   Cancelation/Interruption/Aborting
+     *          o   Simpler Cancelation/Interruption/Aborting
+     *              (c++ 20 introduces thread cancelation via explicitly managed stop_tokens, but Stroika's thread cancelation
+     *              uses this, but hides it - mostly).
      *          o   EINTR handling (POSIX only)
      *
      *  as well as a couple modestly helpful features (that can be done other ways directly with std::thread):
@@ -54,7 +60,7 @@ namespace Stroika::Foundation::Execution {
      *          o   Better lifetime management (the thread envelope - object you create - can go away, but
      *              the underlying thread can continue running, with its memory/resources being cleaned
      *              up autoamtically.
-     *          o   And several smaller features like (mostly) portably setting thread priorities, names, etc and more
+     *          o   And several minor features like (mostly) portably setting thread priorities, names, etc and more
      *
      *  Note - the cancelation feature is very handy for building large scale applications which use
      *  worker tasks and things like thread pools, to be able to reclaim resources, cancel ongoing operations
@@ -65,7 +71,8 @@ namespace Stroika::Foundation::Execution {
      *  is still running will keep the reference count non-zero.
      *
      *  Thread Aborting/Interruption:
-     *      The Stroika Thread class supports the idea of 'interrupting' or 'aborting' a thread.
+     *      The Stroika Thread class supports the idea of 'interrupting' or 'aborting' a thread (std c++ jthread only
+     *      supports thread aborting).
      *
      *  \em Nomenclature Note:
      *       In some libraries, the term interruption, cancelation is used for thread aborting.
@@ -751,6 +758,7 @@ namespace Stroika::Foundation::Execution {
         private:
             friend Ptr New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration);
             friend Ptr  GetCurrent ();
+            friend bool IsCurrentThreadInterruptible ();
             friend void CheckForInterruption ();
         };
 
@@ -1089,6 +1097,11 @@ namespace Stroika::Foundation::Execution {
          */
         optional<stop_token> GetCurrentThreadStopToken ();
 #endif
+
+        /**
+         *  Returns true iff it is potentially useful to call CheckForInterruption.
+         */
+        bool IsCurrentThreadInterruptible ();
 
         /**
          *  Our thread interruption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)

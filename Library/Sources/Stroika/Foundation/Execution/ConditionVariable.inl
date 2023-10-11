@@ -16,6 +16,7 @@ namespace Stroika::Foundation::Execution {
 
     namespace Thread {
         void CheckForInterruption ();
+        bool IsCurrentThreadInterruptible ();
 #if __cpp_lib_jthread >= 201911
         optional<stop_token> GetCurrentThreadStopToken ();
 #endif
@@ -74,17 +75,23 @@ namespace Stroika::Foundation::Execution {
 #endif
         }
 
-        // @todo fix - so when calling from MAIN THREAD we still do timing breakup stuff
-        timeoutAtStopPoint = Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sThreadAbortCheckFrequency_NoStopToken));
+        // Not all threads are interuptible. For example, the 'main' thread cannot be interrupted or aborted
+        // @todo NOTE - this is a defect compared to Stroika v2.1 interupption - where you could interupted but not usefully abort the main thread)
+        // But if  kSupportsStopToken, and the current thread supports interruption, we don't get here. So just check the other case
+        bool currentThreadIsInterruptible = (not kSupportsStopToken) and Thread::IsCurrentThreadInterruptible ();
+        Assert (not kSupportsStopToken or not currentThreadIsInterruptible); // just cuz of tests above
+
+        if (currentThreadIsInterruptible) {
+            timeoutAtStopPoint = Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sThreadAbortCheckFrequency_NoStopToken));
+            Thread::CheckForInterruption ();
+        }
 
         // If for some reason, we cannot use the stop token (old c++, on main thread or not Stroika thread, or not using condition_variable_any)
         // fall back on basic condition variable code
-        Thread::CheckForInterruption ();
         (void)fConditionVariable.wait_until (lock, timeoutAtStopPoint);
-
         Ensure (lock.owns_lock ());
 
-        // cannot use fConditionVariable.wait_until result because we may have fiddled its argument
+        // cannot use fConditionVariable.wait_until result because we may have fiddled its timeoutAtStopPoint
         // can be spurious wakeup, or real, no way to know
         return (Time::GetTickCount () > timeoutAt) ? cv_status::timeout : cv_status::no_timeout;
     }
@@ -95,15 +102,13 @@ namespace Stroika::Foundation::Execution {
         Require (lock.owns_lock ());
         Thread::CheckForInterruption ();
 
-        auto timeoutAtStopPoint = Time::DurationSeconds2time_point (timeoutAt);
-
         // native std c++ fConditionVariable.wait_until works with stop token, but my version in overload wtih no predicate doesn't - perhaps
         // critucal to hold lock whole predicate checked? which I think I'm doing here, but maybe review lib code more carefully... cuz this case
         // works and mine doesn't...
         if constexpr (kSupportsStopToken) {
 #if __cpp_lib_jthread >= 201911
             if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
-                bool ready = fConditionVariable.wait_until (lock, *ost, timeoutAtStopPoint, forward<PREDICATE> (readyToWake));
+                bool ready = fConditionVariable.wait_until (lock, *ost, Time::DurationSeconds2time_point (timeoutAt), forward<PREDICATE> (readyToWake));
                 if (ost->stop_requested ()) {
                     Thread::CheckForInterruption ();
                 }
@@ -114,6 +119,7 @@ namespace Stroika::Foundation::Execution {
 
         // if kSupportsStopToken not in use (or not in a Stroika thread so this thread not stoppable)
         while (not readyToWake ()) {
+            Assert (lock.owns_lock ()); // lock owned during readyToWake call and before wait_until call
             // NB: further checks for interruption happen inside wait_until() called here...
             if (wait_until (lock, timeoutAt) == cv_status::timeout) {
                 /*

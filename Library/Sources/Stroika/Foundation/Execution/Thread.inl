@@ -362,6 +362,16 @@ namespace Stroika::Foundation::Execution {
         return Ptr{Ptr::sCurrentThreadRep_.lock ()};
     }
 
+    /*
+     ********************************************************************************
+     *************** Thread::IsCurrentThreadInterruptible ***************************
+     ********************************************************************************
+     */
+    inline bool Thread::IsCurrentThreadInterruptible ()
+    {
+        return Ptr::sCurrentThreadRep_.lock () != nullptr;
+    }
+
 #if __cpp_lib_jthread >= 201911
     /*
      ********************************************************************************
