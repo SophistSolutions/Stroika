@@ -145,22 +145,12 @@ namespace Stroika::Foundation::Execution {
 #endif
 
         /**
-         *  This (ThreadAbortCheckFrequency) API shouldnt be needed - if we had a better underlying implementation, and beware, the API could go away
-         *  if we find a better way. But callers may find it advisible to control this timeout to tune performance.
-         *
-         *  The ConditionVariable class internally uses condition_variable::wait_for () - and this doesn't advertise support for
-         *  EINTR or using Windows SDK 'alertable states' - so its not clear how often it returns to allow checking
-         *  for aborts. This 'feature' allows us to periodically check. You don't want to check too often, or you
-         *  effecitvely busy wait, and this checking is ONLY needed for the special, rare case of thread abort.
+         *  sThreadAbortCheckFrequency_NoStopToken is used iff kSupportsStopToken is false.
          * 
-         *  @see https://stroika.atlassian.net/browse/STK-930 - @todo - want to lose this!
-         * 
-         * 
-         *  @todo DOC RARELY USED - JUST MAYBE WHEN cannot do stop_token stuff.
-         * 
-         * maybe rename and add define for threadcheck when kSupportsStopToken and when !kSupportsStopToken
+         *  When waiting, with kSupportsStopToken false, this max timeout is used chunk the waits into smaller chunks so
+         *  we can check for thread cancelation.
          */
-        static inline Time::DurationSecondsType sThreadAbortCheckFrequency_Default{0.25};
+        static inline Time::DurationSecondsType sThreadAbortCheckFrequency_NoStopToken{0.25};
 
         /**
          */

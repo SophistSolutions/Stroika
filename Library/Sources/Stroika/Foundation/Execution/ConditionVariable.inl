@@ -60,8 +60,7 @@ namespace Stroika::Foundation::Execution {
         }
 
         // convert DurationSecondsType  to time_point for stdc++ calls, but ping to more modest maximum...
-        auto timeoutAtStopPoint = Time::DurationSeconds2time_point (
-            kSupportsStopToken ? timeoutAt : min (timeoutAt, Time::GetTickCount () + sThreadAbortCheckFrequency_Default));
+        auto timeoutAtStopPoint = Time::DurationSeconds2time_point (timeoutAt);
 
         if constexpr (kSupportsStopToken) {
             // If no predicate function is provided (to say when we are done) - use stop_requested() as the predicate
@@ -75,6 +74,11 @@ namespace Stroika::Foundation::Execution {
 #endif
         }
 
+        // @todo fix - so when calling from MAIN THREAD we still do timing breakup stuff
+        timeoutAtStopPoint = Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sThreadAbortCheckFrequency_NoStopToken));
+
+        // If for some reason, we cannot use the stop token (old c++, on main thread or not Stroika thread, or not using condition_variable_any)
+        // fall back on basic condition variable code
         Thread::CheckForInterruption ();
         (void)fConditionVariable.wait_until (lock, timeoutAtStopPoint);
 
