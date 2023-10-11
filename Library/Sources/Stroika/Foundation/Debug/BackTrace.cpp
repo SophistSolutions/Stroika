@@ -20,11 +20,17 @@
 #define BOOST_STACKTRACE_USE_WINDBG_CACHED 1
 #endif
 
+#if __cpp_lib_stacktrace >= 202011
+#include <stacktrace>
+#endif
+
 #if qHasFeature_boost
 #include <boost/stacktrace.hpp>
 #endif
 
+
 #include "../Characters/LineEndings.h"
+#include "../Characters/SDKString.h"
 #include "../Execution/Finally.h"
 
 #include "BackTrace.h"
@@ -45,7 +51,31 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     useSkipFrames += 1; // always skip this frame, because anyone calling BackTrace() doens't care to see its implementation in the trace
 
     [[maybe_unused]] unsigned usingMaxFrames = options.fMaxFrames.value_or (BackTrace::Options::sDefault_MaxFrames);
-#if qHasFeature_boost
+
+#if __cpp_lib_stacktrace >= 202011
+    auto st = std::stacktrace::current ();
+    stringstream o;
+    bool         firstEntry = true;
+    for (const stacktrace_entry& entry : st) {
+        string eText = entry.description ();
+        bool   useFileName = eText.empty ();
+        if (useFileName) {
+            // if using file, always write line#
+            eText = entry.source_file ();
+        }
+        else if (useFileName or options.fIncludeSourceLines.value_or (BackTrace::Options::sDefault_IncludeSourceLines)) {
+            eText += "#" + to_string (entry.source_line ());
+        }
+        if (firstEntry) {
+            firstEntry = false;
+        }
+        else {
+            o << "; ";
+        }
+        o << eText;
+    }
+    return Characters::NarrowSDK2Wide (o.str (), AllowMissingCharacterErrorsFlag::eIgnoreErrors);
+#elif qHasFeature_boost
     using namespace boost;
 
     auto bt = stacktrace::stacktrace ();
