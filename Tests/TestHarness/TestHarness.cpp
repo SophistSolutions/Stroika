@@ -40,6 +40,20 @@ namespace {
 
         _Exit (EXIT_FAILURE); // skip
     }
+    void WEAK_ASSERT_HANDLER_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
+    {
+        if (assertCategory == nullptr) {
+            assertCategory = "Unknown assertion";
+        }
+        if (assertionText == nullptr) {
+            assertionText = "";
+        }
+        if (functionName == nullptr) {
+            functionName = "";
+        }
+        cerr << "WARNING: weak assertion  " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": " << lineNum << endl;
+        DbgTrace ("WARNING: weak assertion  %s; %s; %s; %s; %d", assertCategory, assertionText, functionName, fileName, lineNum);
+    }
     void FatalErrorHandler_ (const Characters::SDKChar* msg) noexcept
     {
 #if qTargetPlatformSDKUseswchar_t
@@ -63,6 +77,7 @@ void TestHarness::Setup ()
 {
 #if qDebug
     Stroika::Foundation::Debug::SetAssertionHandler (ASSERT_HANDLER_);
+    Stroika::Foundation::Debug::SetWeakAssertionHandler (WEAK_ASSERT_HANDLER_);
 #endif
     Debug::RegisterDefaultFatalErrorHandlers (FatalErrorHandler_);
     using namespace Execution;
