@@ -51,7 +51,8 @@ namespace {
         if (functionName == nullptr) {
             functionName = "";
         }
-        cerr << "WARNING: weak assertion  " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": " << lineNum << endl;
+        cerr << "WARNING: weak assertion  " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": "
+             << lineNum << endl;
         DbgTrace ("WARNING: weak assertion  %s; %s; %s; %s; %d", assertCategory, assertionText, functionName, fileName, lineNum);
     }
     void FatalErrorHandler_ (const Characters::SDKChar* msg) noexcept

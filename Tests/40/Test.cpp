@@ -663,7 +663,7 @@ namespace {
     void RegressionTest10_BlockingQueue_ ()
     {
         Debug::TraceContextBumper ctx{"RegressionTest10_BlockingQueue_"};
-        Debug::TimingTrace tt;
+        Debug::TimingTrace        tt;
         enum {
             START = 0,
             END   = 100

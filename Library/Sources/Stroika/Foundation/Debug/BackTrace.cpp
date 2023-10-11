@@ -28,7 +28,6 @@
 #include <boost/stacktrace.hpp>
 #endif
 
-
 #include "../Characters/LineEndings.h"
 #include "../Characters/SDKString.h"
 #include "../Execution/Finally.h"
@@ -53,11 +52,11 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
     [[maybe_unused]] unsigned usingMaxFrames = options.fMaxFrames.value_or (BackTrace::Options::sDefault_MaxFrames);
 
 #if __cpp_lib_stacktrace >= 202011
-    auto st = std::stacktrace::current ();
+    auto         st = std::stacktrace::current ();
     stringstream o;
     bool         firstEntry = true;
     for (const stacktrace_entry& entry : st) {
-        string eText = entry.description ();
+        string eText       = entry.description ();
         bool   useFileName = eText.empty ();
         if (useFileName) {
             // if using file, always write line#
