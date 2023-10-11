@@ -1327,7 +1327,21 @@ string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const Forma
  */
  bool Thread::IsCurrentThreadInterruptible ()
 {
-    return Ptr::sCurrentThreadRep_.lock () != nullptr;
+    return GetCurrent () != nullptr;
+
+    #if 0
+
+    https://bugs.llvm.org/show_bug.cgi?id=42111
+
+
+ Linking  $StroikaRoot/Builds/Debug/HTMLViewCompiler...
+duplicate symbol 'thread-local initialization routine for Stroika::Foundation::Execution::Thread::Ptr::sCurrentThreadRep_' in:
+    /Users/runner/work/Stroika/Stroika/Builds/Debug/Stroika-Foundation.a(Thread.o)
+    /Users/runner/work/Stroika/Stroika/Builds/Debug/Stroika-Foundation.a(WaitableEvent.o)
+ld: 1 duplicate symbol for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+#endif
+//    return Ptr::sCurrentThreadRep_.lock () != nullptr;
 }
 
 /*
