@@ -150,7 +150,7 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-22.04-clang++-16-debug-libc++-c++23",
+        "displayTargetName": "ubuntu-23.04-clang++-16-debug-libc++-c++23",
         "compiler": "clang++-16",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2304-regression-tests:v3",
@@ -161,7 +161,7 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-22.04-clang++-16-release-libstdc++-c++23",
+        "displayTargetName": "ubuntu-23.04-clang++-16-release-libstdc++-c++23",
         "compiler": "clang++-16",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2304-regression-tests:v3",
