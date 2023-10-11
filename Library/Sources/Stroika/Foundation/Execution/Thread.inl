@@ -369,7 +369,7 @@ namespace Stroika::Foundation::Execution {
      */
     inline bool Thread::IsCurrentThreadInterruptible ()
     {
-        return Ptr::sCurrentThreadRep_.lock () != nullptr;
+        return GetCurrent () != nullptr;
     }
 
 #if __cpp_lib_jthread >= 201911
