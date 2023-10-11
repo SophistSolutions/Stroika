@@ -1088,7 +1088,7 @@ sub	SetDefaultForCompilerDriver_
 			print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 (xcode 14) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
 	}
-	if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
+	if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
 		print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 	}
 
@@ -2478,13 +2478,11 @@ PostProcessOptions_ ();
 
 sub ValidateConfigurationAndEmitNeededWarnings_
 {
-	if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '14.0') {
+	if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '14.0') {
 		print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 	}
-	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetGCCVersion_ ($COMPILER_DRIVER) < 11) {
-			print "CONFIGURATION-WARNING: Stroika 3 requires gcc 11 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
-		}
+	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER) < 11) {
+		print "CONFIGURATION-WARNING: Stroika 3 requires gcc 11 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 	}
 }
 
