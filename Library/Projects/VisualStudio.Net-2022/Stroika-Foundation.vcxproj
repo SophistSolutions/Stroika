@@ -963,7 +963,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Sanitizer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.inl" />
