@@ -231,7 +231,9 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
                 remainingString2Parse = remainingString2Parse.SubString (*closeBracket + 1);
             }
             else {
-                Execution::Throw (Execution::RuntimeErrorException{"no closing bracket in host part of authority of URI"sv});
+                ;
+                static const Execution::RuntimeErrorException kException_{"no closing bracket in host part of authority of URI"sv};
+                Execution::Throw (kException_);
             }
         }
         else {

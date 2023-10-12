@@ -479,7 +479,8 @@ RetryWithAuth:
         }
 
         if (not fURL_.GetAuthority () or not fURL_.GetAuthority ()->GetHost () or not fURL_.GetAuthority ()->GetHost ()->AsRegisteredName ()) {
-            Execution::Throw (Execution::RuntimeErrorException{"Cannot validate TLS without a host name"sv});
+            static const Execution::RuntimeErrorException kException_{"Cannot validate TLS without a host name"sv};
+            Execution::Throw (kException_);
         }
         auto equalsComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
         if (not equalsComparer (*fURL_.GetAuthority ()->GetHost ()->AsRegisteredName (), resultSSLInfo.fSubjectCommonName) and
@@ -552,7 +553,8 @@ void Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
     RequireNotNull (fSessionHandle_);
     if (fConnectionHandle_ == nullptr) {
         if (not fURL_.GetAuthority () or not fURL_.GetAuthority ()->GetHost ()) {
-            Execution::Throw (Execution::RuntimeErrorException{"Cannot connect without a host"sv});
+            static const Execution::RuntimeErrorException kException_{"Cannot connect without a host"sv};
+            Execution::Throw (kException_);
         }
         // NOT SURE - for IPv6 address - if we want to pass encoded value here?
         fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (

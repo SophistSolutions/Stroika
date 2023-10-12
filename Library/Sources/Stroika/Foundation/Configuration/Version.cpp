@@ -31,7 +31,8 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     int nMatchingItems = ::swscanf (win32Version4DotStr.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStageOctet, &verSubStageOctet);
     DISABLE_COMPILER_MSC_WARNING_END (4996)
     if (major < 0 or major > 255) [[unlikely]] {
-        Execution::Throw (Execution::RuntimeErrorException{"Invalid Version String"sv});
+        static const Execution::RuntimeErrorException kException_{"Invalid Version String"sv};
+        Execution::Throw (kException_);
     }
     if (minor < 0 or minor > 255) [[unlikely]] {
         Execution::Throw (Execution::RuntimeErrorException{"Invalid Version String"sv});
@@ -43,7 +44,8 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     bool verFinal = verSubStageOctet & 0x1;
     if (nMatchingItems != 4 or not(ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
         DbgTrace (L"win32Version4DotString=%s", win32Version4DotStr.c_str ());
-        Execution::Throw (Execution::Exception{"Invalid Version String"sv});
+        static const Execution::Exception kException_{"Invalid Version String"sv};
+        Execution::Throw (kException_);
     }
     return Version{static_cast<uint8_t> (major), static_cast<uint8_t> (minor), static_cast<VersionStage> (verStage), verSubStage, verFinal};
 }
@@ -61,7 +63,8 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         long l = wcstol (i, endResult, 10);
         if (l < 0 or l > numeric_limits<uint8_t>::max ()) [[unlikely]] {
             DbgTrace (L"prettyVersionString=%s", ppv.c_str ());
-            Execution::Throw (Execution::RuntimeErrorException{"Invalid Version String: component out of range"_k});
+            static const Execution::RuntimeErrorException kException_{"Invalid Version String: component out of range"_k};
+            Execution::Throw (kException_);
         }
         return static_cast<uint8_t> (l);
     };
@@ -72,7 +75,8 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     major                   = my_wcstol_ (i, &tokenEnd); // @todo should validate, but no biggie
     if (i == tokenEnd) [[unlikely]] {
         DbgTrace (L"prettyVersionString=%s", ppv.c_str ());
-        Execution::Throw (Execution::RuntimeErrorException{"Invalid Version String"sv});
+        static const Execution::RuntimeErrorException kException_{"Invalid Version String"sv};
+        Execution::Throw (kException_);
     }
     Assert (static_cast<size_t> (i - ppv.c_str ()) <= prettyVersionString.length ());
     i = tokenEnd + 1; // end plus '.' separator
@@ -117,7 +121,8 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     uint8_t verSubStage = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) [[unlikely]] {
         DbgTrace (L"prettyVersionString=%s", ppv.c_str ());
-        Execution::Throw (Execution::RuntimeErrorException{"Invalid Version String"sv}); // require form 1.0a3, or at least 1.0, but no 1
+        static const Execution::RuntimeErrorException kException_{"Invalid Version String"sv};
+        Execution::Throw (kException_); // require form 1.0a3, or at least 1.0, but no 1
     }
     i               = tokenEnd;
     bool finalBuild = true;

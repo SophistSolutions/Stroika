@@ -122,7 +122,8 @@ URI URI::Parse (const String& rawURL)
                    UniformResourceIdentification::PCTDecode2String (path.value_or (String{})), emptyStr2Missing (query), emptyStr2Missing (fragment)};
     }
     else {
-        Execution::Throw (Execution::RuntimeErrorException{"Ill-formed URI"sv}); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
+        static const Execution::RuntimeErrorException kException_{"Ill-formed URI"sv};
+        Execution::Throw (kException_); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
     }
 }
 
@@ -144,7 +145,8 @@ String URI::AsString_ () const
 
     if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith ("/"sv))) {
         // NOT SURE HOW TO HANDLE
-        Execution::Throw (Execution::RuntimeErrorException{"This is not a legal URI to encode (authority present, but path not empty or absolute)"sv});
+        static const Execution::RuntimeErrorException kException_{"This is not a legal URI to encode (authority present, but path not empty or absolute)"sv};
+        Execution::Throw (kException_);
     }
 
     static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
@@ -236,7 +238,8 @@ void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, con
      *      must either be empty or begin with a slash ("/") character
      */
     if (authority and (not path.empty () and not path.StartsWith ("/"sv))) {
-        Execution::Throw (Execution::RuntimeErrorException{"A URI with an authority must have an empty path, or an absolute path"sv});
+        static const Execution::RuntimeErrorException kException_{"A URI with an authority must have an empty path, or an absolute path"sv};
+        Execution::Throw (kException_);
     }
 }
 
@@ -264,7 +267,8 @@ URI URI::Combine (const URI& overridingURI) const
      */
     URI baseURI = Normalize ();
     if (not baseURI.GetScheme ()) {
-        Execution::Throw (Execution::RuntimeErrorException{"Scheme is required in base URI to combine with another URI"sv});
+        static const Execution::RuntimeErrorException kException_{"Scheme is required in base URI to combine with another URI"sv};
+        Execution::Throw (kException_);
     }
     auto merge = [&] (const String& base, const String& rhs) -> String {
         // @see https://tools.ietf.org/html/rfc3986#section-5.2.3

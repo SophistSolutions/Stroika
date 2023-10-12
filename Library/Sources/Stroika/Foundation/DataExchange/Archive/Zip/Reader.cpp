@@ -2594,7 +2594,8 @@ public:
         , fZipFile_ (unzOpen2_64 ("", &fInSeekStream_))
     {
         if (fZipFile_ == nullptr) [[unlikely]] {
-            Execution::Throw (Execution::RuntimeErrorException{"failed to open zipfile"sv});
+            static const Execution::RuntimeErrorException kException_{"failed to open zipfile"sv};
+            Execution::Throw (kException_);
         }
     }
     ~Rep_ ()
