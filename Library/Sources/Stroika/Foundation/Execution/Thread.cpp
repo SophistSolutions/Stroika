@@ -1347,7 +1347,7 @@ void Execution::Thread::CheckForInterruption ()
     if (shared_ptr<Ptr::Rep_> thisRunningThreadRep = Ptr::sCurrentThreadRep_.lock ()) {
         using InterruptFlagState_ = Ptr::Rep_::InterruptFlagState_;
         if (t_InterruptionSuppressDepth_ == 0) {
-            Thread::SuppressInterruptionInContext suppressSoStringsDontThrow;
+            Thread::SuppressInterruptionInContext suppressSoStringsDontThrow; // @todo - why is this needed/good idea?
             switch (thisRunningThreadRep->fInterruptionState_.load ()) {
                 case InterruptFlagState_::eInterrupted: {
                     // When we interrupt a thread, that state is not sticky - it happens just once, until someone calls Interrupt () again

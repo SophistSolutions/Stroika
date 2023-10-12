@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Execution {
 
     namespace Private_ {
         // hack to avoid #include of Thread.h for Thread::SuppressInterruptionInContext
-        bool SharedStaticData_DTORHelper_ (conditional_t<kSpinLock_IsFasterThan_mutex, SpinLock, mutex>* m, unsigned int* cu);
+        bool SharedStaticData_DTORHelper_ (conditional_t<kSpinLock_IsFasterThan_mutex, SpinLock, mutex>* m, unsigned int* cu) noexcept;
     }
 
     /*
