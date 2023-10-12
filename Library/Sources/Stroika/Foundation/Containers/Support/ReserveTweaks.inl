@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
          */
         size_t capacity{targetSize};
         // if small, grow quicky
-        if (capacity <= 2 * minChunk) {
+        if (capacity <= 2 * minChunk) [[likely]] {
             capacity *= 4;
         }
         else if (capacity <= 5 * minChunk) {
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
     {
         size_t targetSize{c.size () + addN};
         size_t capacity{c.capacity ()};
-        if (targetSize >= capacity) {
+        if (targetSize >= capacity) [[unlikely]] {
             return GetScaledUpCapacity (targetSize, sizeof (typename CONTAINER::value_type), minChunk);
         }
         return nullopt;
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
     template <typename CONTAINER>
     inline void Reserve4AddN (CONTAINER& c, size_t n, size_t minChunk)
     {
-        if (auto newCapacity = GetScaledUpCapacity4AddN (c, n, minChunk)) {
+        if (auto newCapacity = GetScaledUpCapacity4AddN (c, n, minChunk)) [[unlikely]] {
             c.reserve (*newCapacity);
         }
     }
