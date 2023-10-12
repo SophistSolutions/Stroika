@@ -161,14 +161,13 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-23.04-clang++-16-release-libstdc++-c++23",
+        "displayTargetName": "ubuntu-23.04-clang++-16-release-libstdc++",
         "compiler": "clang++-16",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2304-regression-tests:v3",
-        "cpp_version": "c++2b",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --stdlib libstdc++ --trace2file enable",
-        "run_on_branch": "always"
+        "run_on_branch": "v3-Release"
     },
     {},
     {
