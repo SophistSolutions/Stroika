@@ -168,7 +168,7 @@
         "cpp_version": "c++2b",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --stdlib libstdc++ --trace2file enable",
-        "run_on_branch": "v3-Release"
+        "run_on_branch": "always"
     },
     {},
     {
