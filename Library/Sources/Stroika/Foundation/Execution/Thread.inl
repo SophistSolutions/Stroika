@@ -59,9 +59,9 @@ namespace Stroika::Foundation::Execution {
 
     private:
         // Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
-        // and is just called by Thread::Abort (). It sets (indirectly) the thread-local-storage aborted
+        // and is just called by Thread::Abort (). It sets (indirectly) the thread-local-storage interrupted
         // flag for the target thread. And if called from an aborting thread, it may throw
-        nonvirtual void NotifyOfInterruptionFromAnyThread_ (bool aborting);
+        nonvirtual void NotifyOfInterruptionFromAnyThread_ ();
 
     private:
         static void ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept;
@@ -74,17 +74,8 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     private:
-        enum class InterruptFlagState_ {
-            eNone,
-            eInterrupted,
-            eAborted,
-
-            Stroika_Define_Enum_Bounds (eNone, eAborted)
-        };
-
-    private:
-        function<void ()>           fRunnable_;
-        atomic<InterruptFlagState_> fInterruptionState_{InterruptFlagState_::eNone}; // regular interrupt, abort interrupt, or none
+        function<void ()> fRunnable_;
+        atomic<bool>      fInterruptionState_{false}; // regular interrupt, abort interrupt, or none
 
         // @todo lose this mutex. We read fID from thread object, but sometimes call join. want to allow access to some attributes to read while doing a join..
         /// MAYBE reviseit - not sure thats safe...

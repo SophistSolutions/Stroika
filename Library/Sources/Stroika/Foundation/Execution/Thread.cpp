@@ -384,7 +384,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     }
     sb << "status: "sv << Characters::ToString (fStatus_.load ()) << ", "sv;
     //sb << "runnable: "sv << Characters::ToString (fRunnable_) << ", "sv;     // doesn't yet print anything useful
-    sb << "interruptionState: "sv << Characters::ToString (static_cast<int> (fInterruptionState_.load ())) << ", "sv;
+    sb << "interruptionState: "sv << Characters::ToString (fInterruptionState_.load ()) << ", "sv;
     sb << "refCountBumpedEvent: "sv << Characters::ToString (fRefCountBumpedEvent_.PeekIsSet ()) << ", "sv;
     sb << "OK2StartEvent: "sv << Characters::ToString (fOK2StartEvent_.PeekIsSet ()) << ", "sv;
     sb << "threadDoneAndCanJoin: "sv << Characters::ToString (fThreadDoneAndCanJoin_.PeekIsSet ()) << ", "sv;
@@ -713,7 +713,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
             SuppressInterruptionInContext suppressCtx;
 #if qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal blockThreadAbortSignal{SignalUsedForThreadInterrupt ()};
-            incRefCnt->fInterruptionState_.store (InterruptFlagState_::eNone); //  else .Set() below will THROW EXCPETION and not set done flag!
+            incRefCnt->fInterruptionState_ = false; //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
@@ -731,68 +731,53 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
     }
 }
 
-void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
+void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
 {
-    Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted or (not aborting)); // if aborting, must be in state aborting or completed, but for interruption can be other state
+    Require (fStatus_ != Status::eCompleted);
     //TraceContextBumper ctx{"Thread::Rep_::NotifyOfAbortFromAnyThread_"};
 
-    if (aborting) {
-        fInterruptionState_.store (InterruptFlagState_::eAborted);
-    }
-    else {
-        /*
-         *  Only upgrade
-         *
-         *  If was none, upgrade to interrupted. If was interrupted, already done. If was aborted, don't actually want to change.
-         */
-        InterruptFlagState_ v = InterruptFlagState_::eNone;
-        if (not fInterruptionState_.compare_exchange_strong (v, InterruptFlagState_::eInterrupted)) {
-            Assert (v == InterruptFlagState_::eInterrupted or v == InterruptFlagState_::eAborted);
-        }
-        // Weak assert because this COULD fail - you could stop just before this check and the handling thread could handle the interruption and
-        // clear the flag. I've seen this once (2019-06-13)
-        WeakAssert (fInterruptionState_.load () == InterruptFlagState_::eInterrupted or fInterruptionState_.load () == InterruptFlagState_::eAborted);
-    }
-
+    fInterruptionState_ = true;
     if (GetCurrentThreadID () == GetID ()) {
-        // NOTE - using CheckForInterruption uses TLS t_Interrupting_ instead of fStatus
-        //      --LGP 2015-02-26
         CheckForInterruption (); // unless suppressed, this will throw
     }
     // Note we fall through here either if we have throws suppressed, or if sending to another thread
 
     // @todo note - this used to check fStatus flag and I just changed to checking *fInterruptionState_ -- LGP 2015-02-26
     if (fStatus_ == Status::eAborting) {
-        Assert (fInterruptionState_ == InterruptFlagState_::eAborted);
+        Assert (fInterruptionState_); // once we enter abort state, cannot exit, except by transitioning to completed, but cannot get these calls when completed.
     }
-    if (fInterruptionState_ != InterruptFlagState_::eNone) {
-#if qPlatform_POSIX
-        {
-            [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
-            if (not sHandlerInstalled_) {
-                SignalHandlerRegistry::Get ().AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
-                sHandlerInstalled_ = true;
-            }
-        }
-#if 0
-        // Comment out 2020-10-30 - since ubuntu 20.10 now warns of deprecation, and this appears to be redudant with our exist
-        // call to sigaction that already doesnt set SA_RESTART
-        {
-            /*
-             * siginterrupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
-             * will return EINTR - which is crucial to our strategy to interrupt them!
-             *
-             *  @todo PROBABLY NOT NEEDED ANYMORE (due to use of sigaction) -- LGP 2015-08-29
-             */
-            Verify (::siginterrupt (SignalUsedForThreadInterrupt (), true) == 0);
-        }
-#endif
 
-        (void)Execution::SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
-#elif qPlatform_Windows
-        Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
-#endif
+    /*
+     *  Do some platform-specific magic to terminate ongoing system calls
+     * 
+     *      On POSIX - this is sending a signal which generates EINTR error.
+     *      On Windoze - this is QueueUserAPC to enter an alertable state.
+     */
+#if qPlatform_POSIX
+    {
+        [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
+        if (not sHandlerInstalled_) {
+            SignalHandlerRegistry::Get ().AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+            sHandlerInstalled_ = true;
+        }
     }
+#if 0
+    // Comment out 2020-10-30 - since ubuntu 20.10 now warns of deprecation, and this appears to be redudant with our exist
+    // call to sigaction that already doesnt set SA_RESTART
+    {
+        /*
+            * siginterrupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
+            * will return EINTR - which is crucial to our strategy to interrupt them!
+            *
+            *  @todo PROBABLY NOT NEEDED ANYMORE (due to use of sigaction) -- LGP 2015-08-29
+            */
+        Verify (::siginterrupt (SignalUsedForThreadInterrupt (), true) == 0);
+    }
+#endif
+    (void)Execution::SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
+#elif qPlatform_Windows
+    Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
+#endif
 }
 
 #if qPlatform_POSIX
@@ -961,9 +946,9 @@ void Thread::Ptr::Abort () const
         }
 #endif
     }
-    if (fRep_->fStatus_ == Status::eAborting) {
+    if (fRep_->fStatus_ == Status::eAborting) [[likely]] {
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
-        fRep_->NotifyOfInterruptionFromAnyThread_ (true);
+        fRep_->NotifyOfInterruptionFromAnyThread_ ();
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"leaving thread-state = %s", Characters::ToString (fRep_->fStatus_.load ()).c_str ());
@@ -972,16 +957,11 @@ void Thread::Ptr::Abort () const
 
 void Thread::Ptr::Interrupt () const
 {
-    Debug::TraceContextBumper ctx{"Thread::Interrupt"};
-    Require (*this != nullptr);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-
-    // not status not protected by critsection, but SB OK for this
-    DbgTrace (L"*this=%s", ToString ().c_str ());
-
-    Status cs = fRep_->fStatus_.load ();
-    if (cs != Status::eAborting and cs != Status::eCompleted) {
-        fRep_->NotifyOfInterruptionFromAnyThread_ (false);
+    Require (*this != nullptr);
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Interrupt", L"*this=%s", ToString ().c_str ())};
+    if (fRep_->fStatus_ != Status::eCompleted) [[likely]] {
+        fRep_->NotifyOfInterruptionFromAnyThread_ ();
     }
 }
 namespace {
@@ -1345,25 +1325,26 @@ void Execution::Thread::CheckForInterruption ()
      *  just before the actual throw.
      */
     if (shared_ptr<Ptr::Rep_> thisRunningThreadRep = Ptr::sCurrentThreadRep_.lock ()) {
-        using InterruptFlagState_ = Ptr::Rep_::InterruptFlagState_;
-        if (t_InterruptionSuppressDepth_ == 0) {
-            Thread::SuppressInterruptionInContext suppressSoStringsDontThrow; // @todo - why is this needed/good idea?
-            switch (thisRunningThreadRep->fInterruptionState_.load ()) {
-                case InterruptFlagState_::eInterrupted: {
-                    // When we interrupt a thread, that state is not sticky - it happens just once, until someone calls Interrupt () again
-                    // but be careful not to undo an abort that comes after interrupt
-                    InterruptFlagState_ prev = InterruptFlagState_::eInterrupted;
-                    if (not thisRunningThreadRep->fInterruptionState_.compare_exchange_strong (prev, InterruptFlagState_::eNone)) {
-                        DbgTrace (L"Failed to reset interrupted thread state (state was %d)", prev); // most likely no problem - just someone did abort right after interrupt
-                    }
-                    Throw (Thread::InterruptException::kThe);
-                } break;
-                case InterruptFlagState_::eAborted:
-                    Throw (Thread::AbortException::kThe);
+        if (t_InterruptionSuppressDepth_ == 0) [[likely]] {
+            if (thisRunningThreadRep->fInterruptionState_) [[unlikely]] {
+                switch (thisRunningThreadRep->fStatus_) {
+                    case Status::eAborting: {
+                        Throw (Thread::AbortException::kThe);
+                    } break;
+                    case Status::eRunning: {
+                        // Basic thread interruption - turn off flag, but THROW an interrupt
+                        thisRunningThreadRep->fInterruptionState_ = false;
+                        Throw (Thread::InterruptException::kThe);
+                    } break;
+                    default: {
+                        DbgTrace ("CheckForInterruption in state %d", thisRunningThreadRep->fStatus_.load ());
+                        Assert (false); // very bad - we should not get this called in other states, like completed, or not yet running
+                    } break;
+                }
             }
         }
 #if qDefaultTracingOn
-        else if (thisRunningThreadRep->fInterruptionState_ != InterruptFlagState_::eNone) {
+        else if (thisRunningThreadRep->fInterruptionState_) {
             static atomic<unsigned int> sSuperSuppress_{};
             if (++sSuperSuppress_ <= 1) {
                 IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: t_InterruptionSuppressDepth_=%d, t_Interrupting_=%d",
