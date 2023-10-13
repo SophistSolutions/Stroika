@@ -81,9 +81,12 @@ jobs:
           grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
           df -h
-          du -hs /* || true
-          du -hs /usr/*|| true
-          du -hs /usr/share/*|| true
+      - name: Hacks 2 Save Space
+        run: |
+          df -h
+          du -hs /* /usr/* /usr/share/* || true
+          rm -rf /usr/doc /usr/doc-base /usr/share/icons /usr/share/javascript || true
+          df -h
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
