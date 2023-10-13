@@ -84,7 +84,10 @@ jobs:
       - name: Hacks 2 Save Space
         run: |
           df -h
-          du -hs /* /usr/* /usr/share/* /__w/* || true
+          du -hs /* || true
+          du -hs /usr/* || true
+          du -hs /usr/share/* || true
+          du -hs /__w/* || true
           rm -rf /usr/doc /usr/doc-base /usr/share/icons /usr/share/javascript || true
           df -h
           ls -l .
