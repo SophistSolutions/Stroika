@@ -82,7 +82,8 @@ jobs:
           grep MemTotal /proc/meminfo
           df -h
           du -hs /*
-          du -hs /usr/share/doc
+          du -hs /usr/*
+          du -hs /usr/share/*
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
