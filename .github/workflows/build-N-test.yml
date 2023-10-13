@@ -84,7 +84,7 @@ jobs:
       - name: Hacks 2 Save Space
         run: |
           df -h
-          du -hs /* /usr/* /usr/share/* || true
+          du -hs /* /usr/* /usr/share/* /__t/* /__w/* || true
           rm -rf /usr/doc /usr/doc-base /usr/share/icons /usr/share/javascript || true
           df -h
       - name: Configure ${{ matrix.config_name }}
