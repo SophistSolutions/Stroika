@@ -1423,6 +1423,10 @@ sub	ParseCommandLine_Remaining_
 			if ($var ne "c++2a" && $var ne "c++20" && $var ne "c++2b" && $var ne "c++23") {
 				print "Warning: unrecognized arg to --cppstd-version\n";
 			}
+			if $($var eq "") {
+				print ("UNRECOGNIZED cppstd-version ARG: $var\n");
+				DoHelp_ (1);
+			}
 			$CPPSTD_VERSION_FLAG = "--std=" . $var;
 		}
 		elsif ((lc ($var) eq "-strawberryperl") or (lc ($var) eq "--strawberryperl")) {
