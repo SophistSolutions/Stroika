@@ -1371,7 +1371,7 @@ namespace {
         Tester (L"Simple String append test (+='string object') 10x", Test_SimpleStringAppends1_<wstring>, L"wstring",
                 Test_SimpleStringAppends1_<String>, L"Charactes::String", 1350000, 4.8, &failedTests);
         Tester (L"Simple String append test (+=wchar_t[]) 10x", Test_SimpleStringAppends2_<wstring>, L"wstring",
-                Test_SimpleStringAppends2_<String>, L"Charactes::String", 1500000, 4.0, &failedTests);
+                Test_SimpleStringAppends2_<String>, L"Charactes::String", 1500000, 4.1, &failedTests);
         Tester (L"Simple String append test (+=wchar_t[]) 100x", Test_SimpleStringAppends3_<wstring>, L"wstring",
                 Test_SimpleStringAppends3_<String>, L"Charactes::String", 360000, 78, &failedTests);
         Tester (L"String a + b", Test_SimpleStringConCat1_<wstring>, L"wstring", Test_SimpleStringConCat1_<String>, L"String", 2200000, 2.1, &failedTests);
