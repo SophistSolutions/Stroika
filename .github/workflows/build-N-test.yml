@@ -88,10 +88,12 @@ jobs:
           du -hs /usr/* || true
           du -hs /usr/share/* || true
           du -hs /__w/* || true
+          du -hs /usr/doc /usr/doc-base /usr/share/icons /usr/share/javascript Archive .git
           rm -rf /usr/doc /usr/doc-base /usr/share/icons /usr/share/javascript || true
           rm -rf Archive
-          ls -la .
           rm -rf .git
+          ls -la .
+          du -hs /usr/doc /usr/doc-base /usr/share/icons /usr/share/javascript Archive .git || true
           df -h
       - name: Configure ${{ matrix.config_name }}
         run: |
