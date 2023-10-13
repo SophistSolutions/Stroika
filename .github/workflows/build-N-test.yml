@@ -81,9 +81,9 @@ jobs:
           grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
           df -h
-          du -hs /*
-          du -hs /usr/*
-          du -hs /usr/share/*
+          du -hs /* || true
+          du -hs /usr/*|| true
+          du -hs /usr/share/*|| true
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
