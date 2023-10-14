@@ -430,7 +430,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SparseDataHyperRectangle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Support\ReserveTweaks.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Algorithm.h" />
@@ -864,7 +863,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SparseDataHyperRectangle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Stack.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Support\ReadMe.md" />

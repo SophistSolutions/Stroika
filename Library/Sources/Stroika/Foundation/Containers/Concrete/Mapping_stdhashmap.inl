@@ -13,7 +13,6 @@
 #include "../../Common/Compare.h"
 #include "../../Debug/Cast.h"
 #include "../../Memory/BlockAllocated.h"
-#include "../STL/Compare.h"
 
 #include "../DataStructures/STLContainerWrapper.h"
 #include "../Private/IteratorImplHelper.h"

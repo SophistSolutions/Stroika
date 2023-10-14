@@ -16,7 +16,6 @@
 #include "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
-#include "Stroika/Foundation/Containers/STL/Compare.h"
 #include "Stroika/Foundation/Containers/STL/Utilities.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"

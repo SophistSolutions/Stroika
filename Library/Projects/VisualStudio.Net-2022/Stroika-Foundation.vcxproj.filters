@@ -1170,9 +1170,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h">
-      <Filter>Sources\Containers\STL</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
@@ -2450,9 +2447,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.inl">
       <Filter>Sources\Traversal</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.inl">
-      <Filter>Sources\Containers\STL</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.inl">
       <Filter>Sources\Containers\Concrete</Filter>

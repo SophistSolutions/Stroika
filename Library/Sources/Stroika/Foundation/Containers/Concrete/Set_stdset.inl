@@ -15,7 +15,6 @@
 
 #include "../DataStructures/STLContainerWrapper.h"
 #include "../Private/IteratorImplHelper.h"
-#include "../STL/Compare.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 
