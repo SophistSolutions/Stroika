@@ -162,6 +162,12 @@ endif
 #	$2 OUTFILE OBJ name
 #
 ifeq (Unix,$(ProjectPlatformSubdir))
+DEFAULT_CPP_LINE=\
+	"$(CXX)" \
+		$(CPPFLAGS) \
+		$(CXXFLAGS) \
+		-E $1 \
+		> $2.i
 DEFAULT_CXX_LINE=\
 	"$(CXX)" \
 		$(CPPFLAGS) \
@@ -169,6 +175,13 @@ DEFAULT_CXX_LINE=\
 		-c $1 \
 		-o $2
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+DEFAULT_CPP_LINE=\
+	"$(CXX)" \
+		$(CPPFLAGS) \
+		$(CXXFLAGS) \
+		-E $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
+		> $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2).i \
+		| sed -n '1!p'
 DEFAULT_CXX_LINE=\
 	"$(CXX)" \
 		$(CPPFLAGS) \

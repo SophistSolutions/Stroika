@@ -15,6 +15,10 @@ export ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable ECHO)
 
 FUNCTION_CAPITALIZE_WORD=$(shell $(ECHO) $1 | tr '[:lower:]' '[:upper:]' | cut -c 1-1)$(shell $(ECHO) $1 | cut -c 2-99)
 
+ECHO_BUILD_LINES?=0
+
+WRITE_PREPROCESSOR_OUTPUT?=0
+
 # intentionally export cuz sometimes MAKE_INDENT_LEVEL doesnt go up as fast as MAKELEVEL, and so submakes work out
 # looking better with less explicit setting
 export MAKE_INDENT_LEVEL?=$(MAKELEVEL)

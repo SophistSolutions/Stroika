@@ -234,6 +234,7 @@ Special Variables:               -    Extra params you can pass to the make line
     CONFIGURATION_TAGS=TAGS      -    Causes only the configurations with tags TAGS to have the targetted goal applied (e.g. make all CONFIGURATION_TAGS=Windows)
                                       NB: TAGS is a handy shortcut for CONFIGURAITON_TAGS, so you can say make all TAGS="Windows 64"
     ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging
+    WRITE_PREPROCESSOR_OUTPUT=1  -    Emit .i files in same folder as the .o(bj) files
     MAKE_INDENT_LEVEL=0          -    Helpful to neaten formatting when multiple levels of makes calling Stroika make
     QUICK_BUILD=1                -    Defaults=0, but if =1, skip some optional build steps (like openssl tests, CURRENT folders; used for some CI testing)
     TEST_FAILURES_CAUSE_FAILED_MAKE=0
