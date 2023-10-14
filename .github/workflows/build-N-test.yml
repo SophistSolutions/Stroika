@@ -126,6 +126,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Sample apps (${{ matrix.displayTargetName }})
+          if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/Samples-*
       - name: Make Documentation
@@ -141,6 +142,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Log Data (${{ matrix.displayTargetName }})
+          if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             /tmp/Trace*.txt
@@ -210,6 +212,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Log Results (${{ matrix.displayTargetName }})
+          if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             /tmp/LOGS-ARCHIVE
@@ -218,6 +221,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Samples (${{ matrix.displayTargetName }})
+          if-no-files-found: warn
           path: |
             Builds/${{ matrix.config_name }}/Samples-*
 
@@ -295,6 +299,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Log Results (${{ matrix.displayTargetName }})
+          if-no-files-found: warn
           path: |
             ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
             ${{ env.ARTIFACTS_DIR }}TRACE_LOGS
@@ -302,6 +307,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Samples (${{ matrix.displayTargetName }})
+          if-no-files-found: warn
           path: |
             ${{ env.ARTIFACTS_DIR }}Samples-*
 
