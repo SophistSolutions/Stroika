@@ -22,7 +22,86 @@ namespace Stroika::Foundation::IO::Network {
 
         class _IRep;
 
-        class Ptr;
+        /**
+         *  \par Example Usage
+         *      \code
+         *          ConnectionOrientedMasterSocket::Ptr ms  = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
+         *          ms.Bind (addr);
+         *          ms.Listen (backlog);
+         *          Sequence<ConnectionOrientedMasterSocket::Ptr>   l;  // cannot do Sequence<ConnectionOrientedMasterSocket> cuz not copyable
+         *          l.push_back (ms);
+         *      \endcode
+         *
+         *  \note Since ConnectionOrientedMasterSocket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+         *        the underlying thread object.
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
+         */
+        class Ptr : public Socket::Ptr {
+        private:
+            using inherited = Socket::Ptr;
+
+        public:
+            /**
+             */
+            Ptr () = delete;
+            Ptr (nullptr_t);
+            Ptr (const Ptr& src) = default;
+            Ptr (Ptr&& src)      = default;
+            Ptr (shared_ptr<_IRep>&& rep);
+            Ptr (const shared_ptr<_IRep>& rep);
+
+        public:
+            /**
+             */
+            nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+            nonvirtual Ptr& operator= (Ptr&& rhs)      = default;
+
+        public:
+            /**
+             *  @todo   Need timeout on this API? Or global (for instance) timeout?
+             *
+             *   throws on error, and otherwise means should call accept
+             */
+            nonvirtual void Listen (unsigned int backlog) const;
+
+        public:
+            /**
+             *  After Listen() on a connected socket returns (not throws) - you can call Accept() on tha same
+             *  socket to allocate a NEW socket with the new connection stream.
+             *
+             *  @todo   Need timeout on this API? Or global (for instance) timeout?
+             *
+             *  \note ***Cancelation Point***
+             */
+            nonvirtual ConnectionOrientedStreamSocket::Ptr Accept () const;
+
+        protected:
+            /**
+             */
+            nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+        protected:
+            /**
+             * \req fRep_ != nullptr
+             */
+            nonvirtual _IRep& _ref () const;
+
+        protected:
+            /**
+             * \req fRep_ != nullptr
+             */
+            nonvirtual const _IRep& _cref () const;
+        };
+
+        /**
+        */
+        class _IRep : public Socket::_IRep {
+        public:
+            virtual ~_IRep ()                                                         = default;
+            virtual void                                Listen (unsigned int backlog) = 0;
+            virtual ConnectionOrientedStreamSocket::Ptr Accept ()                     = 0;
+        };
 
         /**
          *  \par Example Usage
@@ -49,87 +128,6 @@ namespace Stroika::Foundation::IO::Network {
          *  the associated Socket object.
          */
         Ptr Attach (PlatformNativeHandle sd);
-    };
-
-    /**
-     *  \par Example Usage
-     *      \code
-     *          ConnectionOrientedMasterSocket::Ptr ms  = ConnectionOrientedMasterSocket::New (SocketAddress::INET, Socket::STREAM);
-     *          ms.Bind (addr);
-     *          ms.Listen (backlog);
-     *          Sequence<ConnectionOrientedMasterSocket::Ptr>   l;  // cannot do Sequence<ConnectionOrientedMasterSocket> cuz not copyable
-     *          l.push_back (ms);
-     *      \endcode
-     *
-     *  \note Since ConnectionOrientedMasterSocket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
-     *        the underlying thread object.
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
-     */
-    class ConnectionOrientedMasterSocket::Ptr : public Socket::Ptr {
-    private:
-        using inherited = Socket::Ptr;
-
-    public:
-        /**
-         */
-        Ptr () = delete;
-        Ptr (nullptr_t);
-        Ptr (const Ptr& src) = default;
-        Ptr (Ptr&& src)      = default;
-        Ptr (shared_ptr<_IRep>&& rep);
-        Ptr (const shared_ptr<_IRep>& rep);
-
-    public:
-        /**
-         */
-        nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-        nonvirtual Ptr& operator= (Ptr&& rhs)      = default;
-
-    public:
-        /**
-         *  @todo   Need timeout on this API? Or global (for instance) timeout?
-         *
-         *   throws on error, and otherwise means should call accept
-         */
-        nonvirtual void Listen (unsigned int backlog) const;
-
-    public:
-        /**
-         *  After Listen() on a connected socket returns (not throws) - you can call Accept() on tha same
-         *  socket to allocate a NEW socket with the new connection stream.
-         *
-         *  @todo   Need timeout on this API? Or global (for instance) timeout?
-         *
-         *  \note ***Cancelation Point***
-         */
-        nonvirtual ConnectionOrientedStreamSocket::Ptr Accept () const;
-
-    protected:
-        /**
-         */
-        nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
-
-    protected:
-        /**
-         * \req fRep_ != nullptr
-         */
-        nonvirtual _IRep& _ref () const;
-
-    protected:
-        /**
-         * \req fRep_ != nullptr
-         */
-        nonvirtual const _IRep& _cref () const;
-    };
-
-    /**
-     */
-    class ConnectionOrientedMasterSocket::_IRep : public Socket::_IRep {
-    public:
-        virtual ~_IRep ()                                                         = default;
-        virtual void                                Listen (unsigned int backlog) = 0;
-        virtual ConnectionOrientedStreamSocket::Ptr Accept ()                     = 0;
     };
 
 }

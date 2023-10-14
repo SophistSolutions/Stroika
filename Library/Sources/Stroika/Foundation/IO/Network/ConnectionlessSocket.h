@@ -22,7 +22,129 @@ namespace Stroika::Foundation::IO::Network {
 
         class _IRep;
 
-        class Ptr;
+        /**
+         *  \par Example Usage
+         *      \code
+         *          ConnectionlessSocket::Ptr cs  = ConnectionlessSocket::New (Socket::INET, Socket::DGRAM);
+         *          Sequence<ConnectionlessSocket::Ptr> l;  // cannot do Sequence<ConnectionlessSocket> cuz not copyable
+         *          l.push_back (cs);
+         *      \endcode
+         *
+         *  \note Since ConnectionlessSocket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+         *        the underlying thread object.
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
+         */
+        class Ptr : public Socket::Ptr {
+        private:
+            using inherited = Socket::Ptr;
+
+        public:
+            /**
+             */
+            Ptr () = delete;
+            Ptr (nullptr_t);
+            Ptr (const Ptr& src) = default;
+            Ptr (Ptr&& src)      = default;
+            Ptr (shared_ptr<_IRep>&& rep);
+            Ptr (const shared_ptr<_IRep>& rep);
+
+        public:
+            /**
+             */
+            nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+            nonvirtual Ptr& operator= (Ptr&& rhs)      = default;
+
+        public:
+            /**
+             */
+            nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny) const;
+
+        public:
+            /**
+             */
+            nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny) const;
+
+        public:
+            /**
+             *  This specifies the number of networks to traverse in sending the multicast message.
+             *  It defaults to 1.
+             */
+            nonvirtual uint8_t GetMulticastTTL () const;
+
+        public:
+            /**
+             *  This specifies the number of networks to traverse in sending the multicast message.
+             *  It defaults to 1.
+             */
+            nonvirtual void SetMulticastTTL (uint8_t ttl) const;
+
+        public:
+            /**
+             *  This determines whether the data sent will be looped back to sender host or not.
+             */
+            nonvirtual bool GetMulticastLoopMode () const;
+
+        public:
+            /**
+             *  This determines whether the data sent will be looped back to sender host or not.
+             */
+            nonvirtual void SetMulticastLoopMode (bool loopMode) const;
+
+        public:
+            /**
+             *  Send the argument data to the argument socket address.
+             *
+             *  @see https://linux.die.net/man/2/sendto
+             */
+            nonvirtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) const;
+
+        public:
+            /**
+             *  Read the next message (typically a full packet) from the socket.
+             *
+             *  @see https://linux.die.net/man/2/recvfrom
+             *
+             *  if fromAddress != nullptr (legal to pass nullptr) - then it it is filled in with the source address the packet came from.
+             *
+             *  \note ***Cancelation Point***
+             */
+            nonvirtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress,
+                                           Time::DurationSecondsType timeout = Time::kInfinite) const;
+
+        protected:
+            /**
+             */
+            nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+        protected:
+            /**
+             * \req fRep_ != nullptr
+             */
+            nonvirtual _IRep& _ref () const;
+
+        protected:
+            /**
+             * \req fRep_ != nullptr
+             */
+            nonvirtual const _IRep& _cref () const;
+        };
+
+        /**
+         */
+        class _IRep : public Socket::_IRep {
+        public:
+            virtual ~_IRep () = default;
+
+            virtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) = 0;
+            virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
+            virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
+            virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
+            virtual uint8_t GetMulticastTTL () const                                                               = 0;
+            virtual void    SetMulticastTTL (uint8_t ttl)                                                          = 0;
+            virtual bool    GetMulticastLoopMode () const                                                          = 0;
+            virtual void    SetMulticastLoopMode (bool loopMode)                                                   = 0;
+        };
 
         /**
          *  \par Example Usage
@@ -37,7 +159,7 @@ namespace Stroika::Foundation::IO::Network {
          *  \note ConnectionlessSocket is not copyable, but it can be copied into a ConnectionlessSocket::Ptr or
          *        Socket::Ptr.  This is critical to save them in a container, for example.
          */
-        ConnectionlessSocket::Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
+        ConnectionlessSocket::Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = nullopt);
 
         /**
          *  This function associates a Platform native socket handle with a Stroika wrapper object.
@@ -49,130 +171,7 @@ namespace Stroika::Foundation::IO::Network {
          *  the associated Socket object.
          */
         Ptr Attach (PlatformNativeHandle sd);
-    };
 
-    /**
-     *  \par Example Usage
-     *      \code
-     *          ConnectionlessSocket::Ptr cs  = ConnectionlessSocket::New (Socket::INET, Socket::DGRAM);
-     *          Sequence<ConnectionlessSocket::Ptr> l;  // cannot do Sequence<ConnectionlessSocket> cuz not copyable
-     *          l.push_back (cs);
-     *      \endcode
-     *
-     *  \note Since ConnectionlessSocket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
-     *        the underlying thread object.
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
-     */
-    class ConnectionlessSocket::Ptr : public Socket::Ptr {
-    private:
-        using inherited = Socket::Ptr;
-
-    public:
-        /**
-         */
-        Ptr () = delete;
-        Ptr (nullptr_t);
-        Ptr (const Ptr& src) = default;
-        Ptr (Ptr&& src)      = default;
-        Ptr (shared_ptr<_IRep>&& rep);
-        Ptr (const shared_ptr<_IRep>& rep);
-
-    public:
-        /**
-        */
-        nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-        nonvirtual Ptr& operator= (Ptr&& rhs)      = default;
-
-    public:
-        /**
-         */
-        nonvirtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny) const;
-
-    public:
-        /**
-         */
-        nonvirtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny) const;
-
-    public:
-        /**
-         *  This specifies the number of networks to traverse in sending the multicast message.
-         *  It defaults to 1.
-         */
-        nonvirtual uint8_t GetMulticastTTL () const;
-
-    public:
-        /**
-         *  This specifies the number of networks to traverse in sending the multicast message.
-         *  It defaults to 1.
-         */
-        nonvirtual void SetMulticastTTL (uint8_t ttl) const;
-
-    public:
-        /**
-         *  This determines whether the data sent will be looped back to sender host or not.
-         */
-        nonvirtual bool GetMulticastLoopMode () const;
-
-    public:
-        /**
-         *  This determines whether the data sent will be looped back to sender host or not.
-         */
-        nonvirtual void SetMulticastLoopMode (bool loopMode) const;
-
-    public:
-        /**
-         *  Send the argument data to the argument socket address.
-         *
-         *  @see https://linux.die.net/man/2/sendto
-         */
-        nonvirtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) const;
-
-    public:
-        /**
-         *  Read the next message (typically a full packet) from the socket.
-         *
-         *  @see https://linux.die.net/man/2/recvfrom
-         *
-         *  if fromAddress != nullptr (legal to pass nullptr) - then it it is filled in with the source address the packet came from.
-         *
-         *  \note ***Cancelation Point***
-         */
-        nonvirtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress,
-                                       Time::DurationSecondsType timeout = Time::kInfinite) const;
-
-    protected:
-        /**
-         */
-        nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
-
-    protected:
-        /**
-         * \req fRep_ != nullptr
-         */
-        nonvirtual _IRep& _ref () const;
-
-    protected:
-        /**
-         * \req fRep_ != nullptr
-         */
-        nonvirtual const _IRep& _cref () const;
-    };
-
-    /**
-     */
-    class ConnectionlessSocket::_IRep : public Socket::_IRep {
-    public:
-        virtual ~_IRep () = default;
-
-        virtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) = 0;
-        virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
-        virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
-        virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
-        virtual uint8_t GetMulticastTTL () const                                                               = 0;
-        virtual void    SetMulticastTTL (uint8_t ttl)                                                          = 0;
-        virtual bool    GetMulticastLoopMode () const                                                          = 0;
-        virtual void    SetMulticastLoopMode (bool loopMode)                                                   = 0;
     };
 
 }
