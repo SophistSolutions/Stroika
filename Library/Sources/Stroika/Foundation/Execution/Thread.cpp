@@ -322,6 +322,7 @@ void Thread::Ptr::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
     }
     catch (...) {
         CheckForInterruption ();
+        DbgTrace (L"waiting for fRefCountBumpedEvent_: current exception = %s", Characters::ToString (current_exception ()).c_str ());
         WeakAssert (false); // otherwise, I can think of no reason for the wait to fail - so probably a real issue
         Execution::ReThrow ();
     }
