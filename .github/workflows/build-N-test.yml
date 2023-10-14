@@ -88,9 +88,9 @@ jobs:
           #du -hs /usr/* || true
           #du -hs /usr/share/* || true
           #du -hs /__w/* || true
-          du -hs /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts-droid-fallback /usr/share/X || true
+          du -hs /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts-droid-fallback /usr/share/X11 || true
           du -hs Archive .git
-          rm -rf /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts-droid-fallback /usr/share/X || true
+          rm -rf /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts-droid-fallback /usr/share/X11 || true
           rm -rf Archive .git
           #ls -la .
           df -h
