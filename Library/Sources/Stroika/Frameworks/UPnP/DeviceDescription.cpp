@@ -102,7 +102,7 @@ String DeviceDescription::ToString () const
     if (fServices) {
         sb << "Services: "sv << Characters::ToString (fServices);
     }
-    sb << "}sv";
+    sb << "}"sv;
     return sb.str ();
 }
 

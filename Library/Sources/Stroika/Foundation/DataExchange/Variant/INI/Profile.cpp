@@ -31,12 +31,12 @@ String Section::ToString () const
 String Profile::ToString () const
 {
     Characters::StringBuilder sb;
-    sb << "{";
+    sb << "{"sv;
     if (not fUnnamedSection.fProperties.empty ()) {
         sb << "fUnnamedSection: "sv << Characters::ToString (fUnnamedSection) << ","sv;
     }
     if (not fNamedSections.empty ()) {
-        sb << "fNamedSections: " << Characters::ToString (fNamedSections) << ","sv;
+        sb << "fNamedSections: "sv << Characters::ToString (fNamedSections) << ","sv;
     }
     sb << "}"sv;
     return sb.str ();
