@@ -73,8 +73,8 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \note   \em Thread-Safety   not constructable
     */
-    class Socket {
-    public:
+    namespace Socket {
+
         /**
          *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
          */
@@ -83,20 +83,10 @@ namespace Stroika::Foundation::IO::Network {
 #else
         using PlatformNativeHandle = int;
 #endif
-    protected:
         class _IRep;
 
-    public:
         class Ptr;
 
-    public:
-        /**
-         *  Only Stream::Ptr objects are constructible. 'Stream' is a quasi-namespace.
-         */
-        Socket ()              = delete;
-        Socket (const Socket&) = delete;
-
-    public:
         /**
          * 'second arg' to ::socket() call - socket type
          */
@@ -105,11 +95,10 @@ namespace Stroika::Foundation::IO::Network {
             DGRAM  = SOCK_DGRAM,
             RAW    = SOCK_RAW,
         };
-        static constexpr Type STREAM = Type::STREAM;
-        static constexpr Type DGRAM  = Type::DGRAM;
-        static constexpr Type RAW    = Type::RAW;
+        constexpr Type STREAM = Type::STREAM;
+        constexpr Type DGRAM  = Type::DGRAM;
+        constexpr Type RAW    = Type::RAW;
 
-    public:
         /**
          */
         struct BindFlags {
@@ -127,7 +116,6 @@ namespace Stroika::Foundation::IO::Network {
             bool fSO_REUSEADDR{false};
         };
 
-    public:
         enum class ShutdownTarget {
             eReads,
             eWrites,
@@ -137,12 +125,13 @@ namespace Stroika::Foundation::IO::Network {
 
             Stroika_Define_Enum_Bounds (eReads, eBoth)
         };
-        static constexpr ShutdownTarget eReads  = ShutdownTarget::eReads;
-        static constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
-        static constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
+        constexpr ShutdownTarget eReads  = ShutdownTarget::eReads;
+        constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
+        constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
 
-    protected:
-        static PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const optional<IPPROTO>& protocol);
+        namespace _Protected {
+            PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const optional<IPPROTO>& protocol);
+        }
     };
 
     /**

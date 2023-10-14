@@ -16,24 +16,14 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
      */
-    class ConnectionOrientedMasterSocket : public Socket {
-    private:
-        using inherited = Socket;
+    namespace ConnectionOrientedMasterSocket {
 
-    protected:
+        using namespace Socket;
+
         class _IRep;
 
-    public:
         class Ptr;
 
-    public:
-        /**
-         */
-        ConnectionOrientedMasterSocket ()                                        = delete;
-        ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = delete;
-        ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = delete;
-
-    public:
         /**
          *  \par Example Usage
          *      \code
@@ -47,16 +37,8 @@ namespace Stroika::Foundation::IO::Network {
          *  \note ConnectionOrientedMasterSocket is not copyable, but it can be copied into a ConnectionOrientedMasterSocket::Ptr or
          *        Socket::Ptr.  This is critical to save them in a container, for example.
          */
-        static Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
+        Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
 
-    public:
-        /**
-         *  For copyability, use ConnectionOrientedMasterSocket::Ptr for assigned-to type.
-         */
-        nonvirtual ConnectionOrientedMasterSocket& operator= (ConnectionOrientedMasterSocket&& s)      = delete;
-        nonvirtual ConnectionOrientedMasterSocket& operator= (const ConnectionOrientedMasterSocket& s) = delete;
-
-    public:
         /**
          *  This function associates a Platform native socket handle with a Stroika wrapper object.
          *
@@ -66,7 +48,7 @@ namespace Stroika::Foundation::IO::Network {
          *  To prevent that behavior, you can Detach the PlatformNativeHandle before destroying
          *  the associated Socket object.
          */
-        static Ptr Attach (PlatformNativeHandle sd);
+        Ptr Attach (PlatformNativeHandle sd);
     };
 
     /**
@@ -95,8 +77,6 @@ namespace Stroika::Foundation::IO::Network {
         Ptr (nullptr_t);
         Ptr (const Ptr& src) = default;
         Ptr (Ptr&& src)      = default;
-
-    protected:
         Ptr (shared_ptr<_IRep>&& rep);
         Ptr (const shared_ptr<_IRep>& rep);
 
@@ -141,9 +121,6 @@ namespace Stroika::Foundation::IO::Network {
          * \req fRep_ != nullptr
          */
         nonvirtual const _IRep& _cref () const;
-
-    private:
-        friend class ConnectionOrientedMasterSocket;
     };
 
     /**

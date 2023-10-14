@@ -22,42 +22,40 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
 namespace {
-    struct ConnectionOrientedMasterSocket_IMPL_ : ConnectionOrientedMasterSocket {
-        struct Rep_ : BackSocketImpl_<ConnectionOrientedMasterSocket>::Rep_ {
-            using inherited = BackSocketImpl_<ConnectionOrientedMasterSocket>::Rep_;
-            Rep_ (Socket::PlatformNativeHandle sd)
-                : inherited{sd}
-            {
-            }
-            virtual void Listen (unsigned int backlog) override
-            {
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s",
-                                                                                             Characters::ToString ((int)backlog).c_str ())};
-                AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    struct Rep_ : BackSocketImpl_<ConnectionOrientedMasterSocket::_IRep> {
+        using inherited = BackSocketImpl_<ConnectionOrientedMasterSocket::_IRep>;
+        Rep_ (Socket::PlatformNativeHandle sd)
+            : inherited{sd}
+        {
+        }
+        virtual void Listen (unsigned int backlog) override
+        {
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s",
+                                                                                         Characters::ToString ((int)backlog).c_str ())};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if qPlatform_POSIX
-                Handle_ErrNoResultInterruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
+            Handle_ErrNoResultInterruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
 #elif qPlatform_Windows
-                ThrowWSASystemErrorIfSOCKET_ERROR (::listen (fSD_, backlog));
+            ThrowWSASystemErrorIfSOCKET_ERROR (::listen (fSD_, backlog));
 #else
-                AssertNotImplemented ();
+            AssertNotImplemented ();
 #endif
-            }
-            virtual ConnectionOrientedStreamSocket::Ptr Accept () override
-            {
-                AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-                sockaddr_storage                                peer{};
-                socklen_t                                       sz = sizeof (peer);
+        }
+        virtual ConnectionOrientedStreamSocket::Ptr Accept () override
+        {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            sockaddr_storage                                peer{};
+            socklen_t                                       sz = sizeof (peer);
 #if qPlatform_POSIX
-                return ConnectionOrientedStreamSocket::Attach (
-                    Handle_ErrNoResultInterruption ([&] () -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); }));
+            return ConnectionOrientedStreamSocket::Attach (
+                Handle_ErrNoResultInterruption ([&] () -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); }));
 #elif qPlatform_Windows
-                return ConnectionOrientedStreamSocket::Attach (
-                    ThrowWSASystemErrorIfSOCKET_ERROR (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
+            return ConnectionOrientedStreamSocket::Attach (
+                ThrowWSASystemErrorIfSOCKET_ERROR (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
 #else
-                AssertNotImplemented ();
+            AssertNotImplemented ();
 #endif
-            }
-        };
+        }
     };
 }
 
@@ -68,10 +66,10 @@ namespace {
  */
 ConnectionOrientedMasterSocket::Ptr ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol)
 {
-    return Ptr{make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol))};
+    return Ptr{make_shared<Rep_> (_Protected::mkLowLevelSocket_ (family, socketKind, protocol))};
 }
 
 ConnectionOrientedMasterSocket::Ptr ConnectionOrientedMasterSocket::Attach (PlatformNativeHandle sd)
 {
-    return Ptr{make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (sd)};
+    return Ptr{make_shared<Rep_> (sd)};
 }

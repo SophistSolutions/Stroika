@@ -95,158 +95,158 @@ namespace Stroika::Foundation::IO::Network {
             }
         }
 
-        template <typename BASE>
-        struct BackSocketImpl_ : public BASE {
-            struct Rep_ : public BASE::_IRep, protected Debug::AssertExternallySynchronizedMutex {
-                Socket::PlatformNativeHandle fSD_;
-                Rep_ (Socket::PlatformNativeHandle sd)
-                    : fSD_{sd}
-                {
+        template <typename BASE_REP>
+        // struct BackSocketImpl_ : public BASE {
+        struct BackSocketImpl_ : public BASE_REP, protected Debug::AssertExternallySynchronizedMutex {
+            Socket::PlatformNativeHandle fSD_;
+            BackSocketImpl_ (Socket::PlatformNativeHandle sd)
+                : fSD_{sd}
+            {
+            }
+            ~BackSocketImpl_ ()
+            {
+                if (fSD_ != kINVALID_NATIVE_HANDLE_) {
+                    Close ();
                 }
-                ~Rep_ ()
-                {
-                    if (fSD_ != kINVALID_NATIVE_HANDLE_) {
-                        Close ();
-                    }
-                }
-                virtual Socket::PlatformNativeHandle Detach () override
-                {
-                    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-                    Socket::PlatformNativeHandle                    h = fSD_;
-                    fSD_                                              = kINVALID_NATIVE_HANDLE_;
-                    return h;
-                }
-                virtual void Shutdown (Socket::ShutdownTarget shutdownTarget) override
-                {
-                    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-                    Require (fSD_ != kINVALID_NATIVE_HANDLE_);
-                    // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
-                    switch (shutdownTarget) {
-                        case Socket::ShutdownTarget::eReads:
+            }
+            virtual Socket::PlatformNativeHandle Detach () override
+            {
+                AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+                Socket::PlatformNativeHandle                    h = fSD_;
+                fSD_                                              = kINVALID_NATIVE_HANDLE_;
+                return h;
+            }
+            virtual void Shutdown (Socket::ShutdownTarget shutdownTarget) override
+            {
+                AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+                Require (fSD_ != kINVALID_NATIVE_HANDLE_);
+                // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
+                switch (shutdownTarget) {
+                    case Socket::ShutdownTarget::eReads:
 #if qPlatform_POSIX
-                            ::shutdown (fSD_, SHUT_RD);
+                        ::shutdown (fSD_, SHUT_RD);
 #elif qPlatform_Windows
-                            ::shutdown (fSD_, SD_RECEIVE);
+                        ::shutdown (fSD_, SD_RECEIVE);
 #endif
-                            break;
-                        case Socket::ShutdownTarget::eWrites:
+                        break;
+                    case Socket::ShutdownTarget::eWrites:
 // I believe this triggers TCP FIN
 #if qPlatform_POSIX
-                            ::shutdown (fSD_, SHUT_WR);
+                        ::shutdown (fSD_, SHUT_WR);
 #elif qPlatform_Windows
-                            ::shutdown (fSD_, SD_SEND);
+                        ::shutdown (fSD_, SD_SEND);
 #endif
-                            break;
-                        case Socket::ShutdownTarget::eBoth:
+                        break;
+                    case Socket::ShutdownTarget::eBoth:
 #if qPlatform_POSIX
-                            ::shutdown (fSD_, SHUT_RDWR);
+                        ::shutdown (fSD_, SHUT_RDWR);
 #elif qPlatform_Windows
-                            ::shutdown (fSD_, SD_BOTH);
+                        ::shutdown (fSD_, SD_BOTH);
 #endif
-                            break;
-                        default:
-                            RequireNotReached ();
-                    }
+                        break;
+                    default:
+                        RequireNotReached ();
                 }
-                virtual void Close () override
-                {
-                    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-                    if (fSD_ != kINVALID_NATIVE_HANDLE_) {
+            }
+            virtual void Close () override
+            {
+                AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+                if (fSD_ != kINVALID_NATIVE_HANDLE_) {
 #if qPlatform_POSIX
-                        ::close (fSD_);
+                    ::close (fSD_);
 #elif qPlatform_Windows
-                        ::closesocket (fSD_);
+                    ::closesocket (fSD_);
 #else
-                        AssertNotImplemented ();
+                    AssertNotImplemented ();
 #endif
-                        fSD_ = kINVALID_NATIVE_HANDLE_;
-                    }
+                    fSD_ = kINVALID_NATIVE_HANDLE_;
                 }
-                virtual optional<IO::Network::SocketAddress> GetLocalAddress () const override
-                {
-                    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-                    struct sockaddr_storage                        radr;
-                    socklen_t                                      len = sizeof (radr);
-                    if (::getsockname (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
-                        IO::Network::SocketAddress sa{radr};
-                        return sa;
-                    }
-                    return nullopt;
+            }
+            virtual optional<IO::Network::SocketAddress> GetLocalAddress () const override
+            {
+                AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+                struct sockaddr_storage                        radr;
+                socklen_t                                      len = sizeof (radr);
+                if (::getsockname (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
+                    IO::Network::SocketAddress sa{radr};
+                    return sa;
                 }
-                virtual SocketAddress::FamilyType GetAddressFamily () const override
-                {
-                    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+                return nullopt;
+            }
+            virtual SocketAddress::FamilyType GetAddressFamily () const override
+            {
+                AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
 #if defined(SO_DOMAIN)
-                    return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
+                return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
 #elif defined(SO_PROTOCOL)
-                    return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_PROTOCOL);
+                return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_PROTOCOL);
 #elif qPlatform_Windows
-                    /*
+                /*
                         *  According to https://msdn.microsoft.com/en-us/library/windows/desktop/ms741621(v=vs.85).aspx,
                         *      WSAENOPROTOOPT  The socket option is not supported on the specified protocol. For example,
                         *                      an attempt to use the SIO_GET_BROADCAST_ADDRESS IOCTL was made on an IPv6 socket
                         *                      or an attempt to use the TCP SIO_KEEPALIVE_VALS IOCTL was made on a datagram socket.
                         */
-                    DWORD            dwBytesRet;
-                    sockaddr_storage bcast;
-                    bool             isV6 = (WSAIoctl (this->GetNativeSocket (), SIO_GET_BROADCAST_ADDRESS, NULL, 0, &bcast, sizeof (bcast),
-                                                       &dwBytesRet, NULL, NULL) == SOCKET_ERROR);
-                    if (isV6) {
-                        Assert (::WSAGetLastError () == WSAENOPROTOOPT);
-                    }
-                    return isV6 ? SocketAddress::FamilyType::INET6 : SocketAddress::FamilyType::INET;
+                DWORD            dwBytesRet;
+                sockaddr_storage bcast;
+                bool isV6 = (WSAIoctl (this->GetNativeSocket (), SIO_GET_BROADCAST_ADDRESS, NULL, 0, &bcast, sizeof (bcast), &dwBytesRet,
+                                       NULL, NULL) == SOCKET_ERROR);
+                if (isV6) {
+                    Assert (::WSAGetLastError () == WSAENOPROTOOPT);
+                }
+                return isV6 ? SocketAddress::FamilyType::INET6 : SocketAddress::FamilyType::INET;
 #else
-                    Execution::Throw (Execution::OperationNotSupportedException ("SO_DOMAIN"sv));
+                Execution::Throw (Execution::OperationNotSupportedException ("SO_DOMAIN"sv));
 #endif
-                }
-                virtual Socket::PlatformNativeHandle GetNativeSocket () const override
-                {
-                    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-                    return fSD_;
-                }
-                virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const override
-                {
-                    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-                    // According to http://linux.die.net/man/2/getsockopt cannot return EINTR, so no need to retry
-                    RequireNotNull (optval);
+            }
+            virtual Socket::PlatformNativeHandle GetNativeSocket () const override
+            {
+                AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+                return fSD_;
+            }
+            virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const override
+            {
+                AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+                // According to http://linux.die.net/man/2/getsockopt cannot return EINTR, so no need to retry
+                RequireNotNull (optval);
 #if qPlatform_POSIX
-                    ThrowPOSIXErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
+                ThrowPOSIXErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
 #elif qPlatform_Windows
-                    ThrowWSASystemErrorIfSOCKET_ERROR (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
+                ThrowWSASystemErrorIfSOCKET_ERROR (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optvallen));
 #else
-                    AssertNotImplemented ();
+                AssertNotImplemented ();
 #endif
-                }
-                template <typename RESULT_TYPE>
-                inline RESULT_TYPE getsockopt (int level, int optname) const
-                {
-                    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-                    RESULT_TYPE                                    r{};
-                    socklen_t                                      roptlen = sizeof (r);
-                    this->getsockopt (level, optname, &r, &roptlen);
-                    return r;
-                }
-                virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen) override
-                {
-                    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-                    // According to http://linux.die.net/man/2/setsockopt cannot return EINTR, so no need to retry
-                    RequireNotNull (optval);
+            }
+            template <typename RESULT_TYPE>
+            inline RESULT_TYPE getsockopt (int level, int optname) const
+            {
+                AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+                RESULT_TYPE                                    r{};
+                socklen_t                                      roptlen = sizeof (r);
+                this->getsockopt (level, optname, &r, &roptlen);
+                return r;
+            }
+            virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen) override
+            {
+                AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+                // According to http://linux.die.net/man/2/setsockopt cannot return EINTR, so no need to retry
+                RequireNotNull (optval);
 #if qPlatform_POSIX
-                    ThrowPOSIXErrNoIfNegative (::setsockopt (fSD_, level, optname, optval, optvallen));
+                ThrowPOSIXErrNoIfNegative (::setsockopt (fSD_, level, optname, optval, optvallen));
 #elif qPlatform_Windows
-                    ThrowWSASystemErrorIfSOCKET_ERROR (::setsockopt (fSD_, level, optname, reinterpret_cast<const char*> (optval), optvallen));
+                ThrowWSASystemErrorIfSOCKET_ERROR (::setsockopt (fSD_, level, optname, reinterpret_cast<const char*> (optval), optvallen));
 #else
-                    AssertNotImplemented ();
+                AssertNotImplemented ();
 #endif
-                }
-                template <typename ARG_TYPE>
-                inline void setsockopt (int level, int optname, ARG_TYPE arg)
-                {
-                    socklen_t optvallen = sizeof (arg);
-                    this->setsockopt (level, optname, &arg, optvallen);
-                }
-            };
+            }
+            template <typename ARG_TYPE>
+            inline void setsockopt (int level, int optname, ARG_TYPE arg)
+            {
+                socklen_t optvallen = sizeof (arg);
+                this->setsockopt (level, optname, &arg, optvallen);
+            }
         };
+        //};
     }
 
 }

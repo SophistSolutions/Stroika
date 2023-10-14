@@ -17,32 +17,13 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
      */
-    class ConnectionlessSocket : public Socket {
-    private:
-        using inherited = Socket;
+    namespace ConnectionlessSocket {
+        using namespace Socket;
 
-    protected:
         class _IRep;
 
-    public:
         class Ptr;
 
-    public:
-        /** 
-         * @see ConnectionlessSocket::New ()
-         */
-        ConnectionlessSocket ()                              = delete;
-        ConnectionlessSocket (ConnectionlessSocket&& s)      = delete;
-        ConnectionlessSocket (const ConnectionlessSocket& s) = delete;
-
-    public:
-        /**
-         *  For copyability, use ConnectionlessSocket::Ptr for assigned-to type.
-         */
-        nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s)      = delete;
-        nonvirtual ConnectionlessSocket& operator= (const ConnectionlessSocket& s) = delete;
-
-    public:
         /**
          *  \par Example Usage
          *      \code
@@ -56,9 +37,8 @@ namespace Stroika::Foundation::IO::Network {
          *  \note ConnectionlessSocket is not copyable, but it can be copied into a ConnectionlessSocket::Ptr or
          *        Socket::Ptr.  This is critical to save them in a container, for example.
          */
-        static ConnectionlessSocket::Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
+        ConnectionlessSocket::Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
 
-    public:
         /**
          *  This function associates a Platform native socket handle with a Stroika wrapper object.
          *
@@ -68,7 +48,7 @@ namespace Stroika::Foundation::IO::Network {
          *  To prevent that behavior, you can Detach the PlatformNativeHandle before destroying
          *  the associated Socket object.
          */
-        static Ptr Attach (PlatformNativeHandle sd);
+        Ptr Attach (PlatformNativeHandle sd);
     };
 
     /**
@@ -95,8 +75,6 @@ namespace Stroika::Foundation::IO::Network {
         Ptr (nullptr_t);
         Ptr (const Ptr& src) = default;
         Ptr (Ptr&& src)      = default;
-
-    protected:
         Ptr (shared_ptr<_IRep>&& rep);
         Ptr (const shared_ptr<_IRep>& rep);
 
@@ -179,9 +157,6 @@ namespace Stroika::Foundation::IO::Network {
          * \req fRep_ != nullptr
          */
         nonvirtual const _IRep& _cref () const;
-
-    private:
-        friend class ConnectionlessSocket;
     };
 
     /**

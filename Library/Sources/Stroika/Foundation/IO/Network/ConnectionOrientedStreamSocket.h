@@ -37,37 +37,15 @@ namespace Stroika::Foundation::IO::Network {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
      */
-    class ConnectionOrientedStreamSocket : public Socket {
-    private:
-        using inherited = Socket;
+    namespace ConnectionOrientedStreamSocket {
+        using namespace Socket;
 
-    protected:
         class _IRep;
 
-    public:
         class Ptr;
 
-    public:
-        /**
-         *  \note - use ConnectionOrientedStreamSocket::Attach () instead of a normal constructor to emphasize that
-         *          The newly created object takes ownership of the socket.
-         *
-         *  \note unless you call @Detach() - socket is CLOSED in DTOR of rep, so when final reference goes away
-         *
-         *  \note ConnectionOrientedStreamSocket is not copyable, but it can be copied into a ConnectionOrientedStreamSocket::Ptr or
-         *        Socket::Ptr. This is critical to save them in a container, for example.
-         *
-         *  TODO:
-         *      @todo - maybe - ConnectionOrientedStreamSocket should take OVERLOAD with CTOR having socket-address-to-connect-to
-         */
-        ConnectionOrientedStreamSocket ()                                        = delete;
-        ConnectionOrientedStreamSocket (const ConnectionOrientedStreamSocket& s) = delete;
-        ConnectionOrientedStreamSocket (ConnectionOrientedStreamSocket&& s)      = delete;
+        Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
 
-    public:
-        static Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
-
-    public:
         /**
          *  \brief create a ConnectionOrientedStreamSocket::Ptr, and connect to the given address.
          *
@@ -76,16 +54,8 @@ namespace Stroika::Foundation::IO::Network {
          *          s.Connect (someSocketAddress);
          *          return s;
          */
-        static Ptr NewConnection (const SocketAddress& sockAddr);
+        Ptr NewConnection (const SocketAddress& sockAddr);
 
-    public:
-        /**
-         *  For copyability, use ConnectionOrientedStreamSocket::Ptr for assigned-to type.
-         */
-        nonvirtual ConnectionOrientedStreamSocket& operator= (ConnectionOrientedStreamSocket&& s)      = delete;
-        nonvirtual ConnectionOrientedStreamSocket& operator= (const ConnectionOrientedStreamSocket& s) = delete;
-
-    public:
         /**
          *  This function associates a Platform native socket handle with a Stroika wrapper object.
          *
@@ -95,9 +65,8 @@ namespace Stroika::Foundation::IO::Network {
          *  To prevent that behavior, you can Detach the PlatformNativeHandle before destroying
          *  the associated Socket object.
          */
-        static Ptr Attach (PlatformNativeHandle sd);
+        Ptr Attach (PlatformNativeHandle sd);
 
-    public:
         /**
          */
         struct KeepAliveOptions {
@@ -145,8 +114,6 @@ namespace Stroika::Foundation::IO::Network {
         Ptr (nullptr_t);
         Ptr (const Ptr& src) = default;
         Ptr (Ptr&& src)      = default;
-
-    protected:
         Ptr (shared_ptr<_IRep>&& rep);
         Ptr (const shared_ptr<_IRep>& rep);
 
@@ -287,9 +254,6 @@ namespace Stroika::Foundation::IO::Network {
         * \req fRep_ != nullptr
         */
         nonvirtual const _IRep& _cref () const;
-
-    private:
-        friend class ConnectionOrientedStreamSocket;
     };
 
     /**

@@ -27,9 +27,10 @@ namespace Stroika::Frameworks::WebServer {
 
     using namespace Stroika::Foundation;
     using namespace Stroika::Foundation::IO;
+    using namespace Stroika::Foundation::IO::Network;
+
     using Characters::String;
 
-    using Stroika::Foundation::IO::Network::ConnectionOrientedStreamSocket;
     using Stroika::Foundation::IO::Network::SocketStream;
     using Stroika::Foundation::IO::Network::HTTP::Headers;
 
