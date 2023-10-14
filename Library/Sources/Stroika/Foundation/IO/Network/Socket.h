@@ -114,6 +114,8 @@ namespace Stroika::Foundation::IO::Network {
             bool fSO_REUSEADDR{false};
         };
 
+        /**
+         */
         enum class ShutdownTarget {
             eReads,
             eWrites,
@@ -123,60 +125,57 @@ namespace Stroika::Foundation::IO::Network {
 
             Stroika_Define_Enum_Bounds (eReads, eBoth)
         };
-        constexpr ShutdownTarget eReads  = ShutdownTarget::eReads;
-        constexpr ShutdownTarget eWrites = ShutdownTarget::eWrites;
-        constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
 
         /**
-     *  \brief a smart pointer wrapper (like shared_ptr <_IRep>).
-     *
-     *  Users of the class interact only with the smart pointer wrapper.
-     *
-     *  But for purposes of thread safety, and understanding object lifetime, its important
-     *  to consider both.
-     *
-     *  And you almost always just interact with and manage the smart pointers - Socket::Ptr.
-     *
-     *  But you construct a concrete subtype and assign it to a pointer. 
-     *
-     *  \par Example Usage
-     *      \code
-     *          Socket::Ptr      s  = ConnectionlessSocket{ SocketAddress::INET, Socket::DGRAM };
-     *      \endcode
-     *
-     *  \par Example Usage
-     *      \code
-     *          Socket::Ptr      s;
-     *          if (s == nullptr) {
-     *              s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
-     *          }
-     *      \endcode
-     *
-     *  The Socket smart pointer objects can be freely assigned and passed around, but the
-     *  underlying (_IRep*) socket is finally disposed of when the last reference to it
-     *  goes away (or when it is 'Closed').
-     *
-     *  Closing one, closes them all (though overwriting one just has the effect of detaching
-     *  from the underlying socket.
-     *
-     *  \note   select: Socket has no select method: instead use Execution::WaitForIOReady which
-     *          works transparently with sockets, sets of sockets, or other waitable objects.
-     *
-     *  \note inherits from Socket just for inherited type definitions - no methods or data.
-     *
-     *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *        o Socket::Ptr objects are compared (relative or equality) by their underlying 'rep' object.
-     *          This USED to be done by calling GetNativeSocket () so two separately attached sockets
-     *          would compare equal. Now - we compare the underlying smart pointers. This is nearly always
-     *          the same thing, but can be different in the case of multiple objects attached to the same
-     *          socket. This is probably a better definition, and definitely more efficient.
-     *
-     *  \note Since Socket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
-     *        the underlying thread object.
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
-     */
+         *  \brief a smart pointer wrapper (like shared_ptr <_IRep>).
+         *
+         *  Users of the class interact only with the smart pointer wrapper.
+         *
+         *  But for purposes of thread safety, and understanding object lifetime, its important
+         *  to consider both.
+         *
+         *  And you almost always just interact with and manage the smart pointers - Socket::Ptr.
+         *
+         *  But you construct a concrete subtype and assign it to a pointer. 
+         *
+         *  \par Example Usage
+         *      \code
+         *          Socket::Ptr      s  = ConnectionlessSocket{ SocketAddress::INET, Socket::DGRAM };
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          Socket::Ptr      s;
+         *          if (s == nullptr) {
+         *              s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
+         *          }
+         *      \endcode
+         *
+         *  The Socket smart pointer objects can be freely assigned and passed around, but the
+         *  underlying (_IRep*) socket is finally disposed of when the last reference to it
+         *  goes away (or when it is 'Closed').
+         *
+         *  Closing one, closes them all (though overwriting one just has the effect of detaching
+         *  from the underlying socket.
+         *
+         *  \note   select: Socket has no select method: instead use Execution::WaitForIOReady which
+         *          works transparently with sockets, sets of sockets, or other waitable objects.
+         *
+         *  \note inherits from Socket just for inherited type definitions - no methods or data.
+         *
+         *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
+         *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
+         *        o Socket::Ptr objects are compared (relative or equality) by their underlying 'rep' object.
+         *          This USED to be done by calling GetNativeSocket () so two separately attached sockets
+         *          would compare equal. Now - we compare the underlying smart pointers. This is nearly always
+         *          the same thing, but can be different in the case of multiple objects attached to the same
+         *          socket. This is probably a better definition, and definitely more efficient.
+         *
+         *  \note Since Socket::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+         *        the underlying thread object.
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
+         */
         class Ptr : protected Debug::AssertExternallySynchronizedMutex {
         public:
             /**

@@ -95,7 +95,7 @@ namespace Stroika::Foundation::IO::Network {
         };
 
         /**
-        */
+         */
         class _IRep : public Socket::_IRep {
         public:
             virtual ~_IRep ()                                                         = default;
@@ -128,6 +128,7 @@ namespace Stroika::Foundation::IO::Network {
          *  the associated Socket object.
          */
         Ptr Attach (PlatformNativeHandle sd);
+
     };
 
 }
