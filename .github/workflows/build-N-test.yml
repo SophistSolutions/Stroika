@@ -84,16 +84,15 @@ jobs:
       - name: Hacks 2 Save Space
         run: |
           df -h
-          du -hs /* || true
-          du -hs /usr/* || true
-          du -hs /usr/share/* || true
-          du -hs /__w/* || true
-          du -hs /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript Archive .git || true
-          rm -rf /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript || true
-          rm -rf Archive
-          rm -rf .git
-          ls -la .
-          du -hs /usr/doc /usr/doc-base /usr/share/icons /usr/share/javascript Archive .git || true
+          #du -hs /* || true
+          #du -hs /usr/* || true
+          #du -hs /usr/share/* || true
+          #du -hs /__w/* || true
+          du -hs /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts-droid-fallback /usr/share/X || true
+          du -hs Archive .git
+          rm -rf /usr/share/doc /usr/share/doc-base /usr/share/icons /usr/share/javascript /usr/share/fonts-droid-fallback /usr/share/X || true
+          rm -rf Archive .git
+          #ls -la .
           df -h
       - name: Configure ${{ matrix.config_name }}
         run: |
