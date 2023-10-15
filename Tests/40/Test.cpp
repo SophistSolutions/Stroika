@@ -640,22 +640,21 @@ namespace {
         // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
         // between the create of thread and Abort
         Containers::Collection<Thread::Ptr> innerThreads;
-        auto                                DoItInnerThread = [] () { Execution::Sleep (.01); };
-        auto                                DoOuterThread   = [DoItInnerThread, &innerThreads] () {
+        Thread::Ptr thread = Thread::New ([&innerThreads] () {
             while (true) {
-                Thread::Ptr t = Thread::New (DoItInnerThread);
+                static int sInnerThreadNum {};
+                Thread::Ptr t = Thread::New ([] () { Execution::Sleep (.01); }, Characters::Format (L"innerthread%d", ++sInnerThreadNum));
                 innerThreads.Add (t);
                 Execution::Sleep (.02);
                 t.Start ();
             }
-        };
-        Thread::Ptr thread = Thread::New (DoOuterThread);
+        });
         thread.Start ();
         Execution::Sleep (.5);
         thread.AbortAndWaitForDone ();
         // NB: we must call AbortAndWaitForDone on innerThreads because we could have created the thread but not started it, so
         // wait for done will never terminate
-        innerThreads.Apply ([] (Thread::Ptr t) { t.AbortAndWaitForDone (); }); // assure subthreads  complete before the text exits (else valgrind may report leak)
+        innerThreads.Apply ([] (Thread::Ptr t) { t.AbortAndWaitForDone (); }); // assure subthreads complete before the test exits (else valgrind may report leak)
     }
 }
 
