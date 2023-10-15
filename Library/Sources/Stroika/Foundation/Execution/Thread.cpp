@@ -1219,8 +1219,8 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::Du
                                                                                  Characters::ToString (threads).c_str (), timeoutAt)};
 #endif
     CheckForInterruption (); // always a cancelation point (even if empty list)
-    // consider rewriting so we don't do this sequentially, but 'harvest' the ones completed, but perhaps no point.
-    // This is probably done.
+    // consider rewriting so we don't do this sequentially, but 'harvest' the ones completed (much as we did in Stroika v2.1), but perhaps no point.
+    // This is probably fine.
     threads.Apply ([timeoutAt] (const Ptr& t) { t.WaitForDoneUntil (timeoutAt); });
 }
 
