@@ -71,12 +71,7 @@ using namespace Characters;
 using namespace Execution;
 
 namespace {
-    // Used to use 'atomic' but not needed, bcause always used from the same thread (thread local)
-    using InterruptSuppressCountType_ = unsigned int;
-}
-
-namespace {
-    thread_local InterruptSuppressCountType_ t_InterruptionSuppressDepth_{0};
+    thread_local unsigned int t_InterruptionSuppressDepth_{0};
 }
 
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -142,7 +137,7 @@ namespace {
             (pfnNtQueryInformationThread)ntdll.GetProcAddress ("NtQueryInformationThread");
         if (NtQueryInformationThread == nullptr)
             return 0; // failed to get proc address
-        THREAD_BASIC_INFORMATION tbi;
+        THREAD_BASIC_INFORMATION tbi{};
         THREAD_INFORMATION_CLASS tic = ThreadBasicInformation;
         if (::NtQueryInformationThread (thread, tic, &tbi, sizeof (tbi), nullptr) != STATUS_SUCCESS) {
             return 0;
