@@ -195,17 +195,8 @@
     },
     {
         "build_job": "MacOS",
-        "displayTargetName": "MacOS-Debug-testos14",
-        "runs_on": "macos-14",
-        "xcode": "14.3",
-        "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable",
-        "run_on_branch": "always"
-    },
-    {
-        "build_job": "MacOS",
         "displayTargetName": "MacOS-Debug-testxcode15",
-        "runs_on": "macos-14",
+        "runs_on": "macos-13",
         "xcode": "15.0",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable",
