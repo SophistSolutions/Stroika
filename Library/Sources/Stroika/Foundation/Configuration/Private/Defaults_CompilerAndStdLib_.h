@@ -67,7 +67,7 @@
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika v3 (older clang versions supported by Stroika v2.1) does not support versions prior to APPLE clang++ 14 (XCode 14)"
 #endif
-#if (__clang_major__ > 14) || (__clang_major__ == 14 && (__clang_minor__ > 0))
+#if (__clang_major__ > 15)
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -513,8 +513,9 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #if defined(__clang__) && defined(__APPLE__)
 // first noticed broken in apply clang 14
+// reproduced on clang 15
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 14
 // still broken in clang++ 15
@@ -538,12 +539,23 @@ duplicate symbol 'thread-local initialization routine for Stroika::Foundation::E
     /Users/runner/work/Stroika/Stroika/Builds/Debug/Stroika-Foundation.a(WaitableEvent.o)
 ld: 1 duplicate symbol for architecture x86_64
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
+
+troika Tools {Debug}:
+      Linking  $StroikaRoot/Builds/Debug/HTMLViewCompiler...
+duplicate symbol '__ZTHN7Stroika10Foundation9Execution6Thread3Ptr18sCurrentThreadRep_E' in:
+    /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a[105](Thread.o)
+    /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a[110](WaitableEvent.o)
+ld: 1 duplicate symbols
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+make[4]: ***
+
 */
 #ifndef qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 // first noticed broken in apply clang 14
-#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+// replicated in xcode 15.0
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy 0
 #endif
@@ -571,6 +583,7 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 
 #if defined(__clang__) && defined(__APPLE__)
 // wag untesed
+// seems fixed in XCode 15
 #define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 14
@@ -891,6 +904,7 @@ In file included from ../Characters/StringBuilder.h:273,
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
 #elif defined(__clang__) && defined(__APPLE__)
 // Noticed broken in crapple-clang++14
+// appears fixed in xcode 15
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
@@ -905,6 +919,7 @@ In file included from ../Characters/StringBuilder.h:273,
 
 #if defined(__clang__) && defined(__APPLE__)
 // Noticed broken in crapple-clang++14
+// appears fixed in xcode 15
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy                                                    \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -920,13 +935,26 @@ In file included from ../Characters/StringBuilder.h:273,
 #endif
 
 /**
+ *      Compiling Library/Sources/Stroika/Foundation/Execution/SpinLock.cpp ... 
+In file included from SignalHandlers.cpp:27:
+In file included from ./SignalHandlers.h:15:
+./Function.h:99:23: error: substitution into constraint expression resulted in a non-constant expression
+            requires (is_convertible_v<remove_cvref_t<CTOR_FUNC_SIG>, function<FUNCTION_SIGNATURE>> and
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_convertible.h:30:66: note: while checking constraint satisfaction for template 'Function<void (int)>' required here
+    : public integral_constant<bool, __is_convertible_to(_T1, _T2)> {};
+                                                                 ^
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_convertible.h:30:66: note: while substituting deduced template arguments into function template 'Function' [with CTOR_FUNC_SIG = Stroika::Foundation::Execution::SignalHandler]
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_convertible.h:103:42: note: in instantiation of template class 'std::is_convertible<Stroika::Foundation::Execution::SignalHandler, std::function<void (int)>>' re
+
  */
 #ifndef qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 // Noticed broken in crapple-clang++14
+// reproduced in xcode 15
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
 // noticed broken in clang++15 with LIBC++
@@ -1035,6 +1063,7 @@ make[1]: *** [Makefile:20:
 
 #if defined(__clang__) && defined(__APPLE__)
 // Noticed broken in crapple-clang++14
+// appears fixed in xcode 15
 #define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy                                                      \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -1099,8 +1128,9 @@ make[6]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedB
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
 #elif defined(__clang__) && defined(__APPLE__)
 // First noticed in clang++-14
+// Reproduced in clang++-15
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noticed in clang++-14
 // broken in clang++-15
@@ -1263,7 +1293,8 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #if defined(__clang__) && defined(__APPLE__)
 // first noticed in XCODE 13
 // HANGS on XCode 14 (at least debug builds on my m1 machine- may have todo with codepage/installed locales?)
-#define qCompiler_vswprintf_on_elispisStr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+// Broken on XCode 15 too
+#define qCompiler_vswprintf_on_elispisStr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompiler_vswprintf_on_elispisStr_Buggy 0
 #endif
@@ -1408,6 +1439,7 @@ In file included from Namespace.cpp:10:
 #ifndef qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
+// appears fixed in xcode 15
 #define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy                                                            \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -1535,7 +1567,8 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 #elif defined(__clang__) && defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 // still broken in XCode 14
-#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+// still broken in XCode 15
+#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__) && defined(_LIBCPP_VERSION)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 // appears still broken in clang++13 (maybe should depend on stdlib version not compiler version)
@@ -1613,7 +1646,8 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCol
 #if defined(__clang__) && defined(__APPLE__)
 // Appears broken on XCode 13
 // Still broken on XCode 14
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+// Still broken on XCode 15
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // appears still broken in clang++-13
 // appears still broken in clang++-14
@@ -1710,7 +1744,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // VERIFIED BROKEN on XCode 12.0
 // VERIFIED BROKEN on XCode 13.0
 // VERIFIED BROKEN on XCode 14
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+// VERIFIED BROKEN on XCode 15
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // still broken in clang++-10
 // still broken in clang++-11
@@ -1773,8 +1808,9 @@ Test.cpp:173:31: error: template template argument has different template parame
 
 #if defined(__clang__) && defined(__APPLE__)
 // VERIFIED BROKEN on XCode 14
+// verified still broken xcode 15
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-14
 // verified still broken in clang++-15
@@ -1811,6 +1847,7 @@ Stack dump:
 
 #if defined(__clang__) && defined(__APPLE__)
 // VERIFIED BROKEN on XCode 14
+// appears fixed in XCODE 15
 #define qCompilerAndStdLib_template_second_concept_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-15
@@ -2035,7 +2072,8 @@ TRIED alignas to fix on the array but no luck
 
 #if defined(__clang__) && defined(__APPLE__)
 // reproduced on XCode 14
-#define qMacUBSanitizerifreqAlignmentIssue_Buggy ((11 <= __clang_major__) && (__clang_major__ <= 14))
+// reproduced on XCode 15
+#define qMacUBSanitizerifreqAlignmentIssue_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ <= 15)
 #else
 #define qMacUBSanitizerifreqAlignmentIssue_Buggy 0
 #endif
@@ -2048,7 +2086,8 @@ TRIED alignas to fix on the array but no luck
 
 #if defined(__clang__) && defined(__APPLE__)
 // Still BROKEN on XCode 14
-#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+// Still BROKEN on XCode 15
+#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_locale_pctX_print_time_Buggy 0
 #endif
@@ -2234,7 +2273,8 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 
 #if defined(__clang__) && defined(__APPLE__)
 // VERIFIED STILL BROKEN on XCode 14
-#define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+// VERIFIED STILL BROKEN on XCode 15
+#define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_quick_exit_Buggy 0
 #endif
