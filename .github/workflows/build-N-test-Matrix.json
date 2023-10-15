@@ -177,7 +177,7 @@
     },
     {
         "build_job": "MacOS",
-        "displayTargetName": "MacOS-Debug",
+        "displayTargetName": "MacOS-13-XCode-14.3-Debug",
         "runs_on": "macos-13",
         "xcode": "14.3",
         "config_name": "Debug",
@@ -186,7 +186,7 @@
     },
     {
         "build_job": "MacOS",
-        "displayTargetName": "MacOS",
+        "displayTargetName": "MacOS-13-XCode-14.3",
         "runs_on": "macos-13",
         "xcode": "14.3",
         "config_name": "Release",
@@ -195,12 +195,21 @@
     },
     {
         "build_job": "MacOS",
-        "displayTargetName": "MacOS-Debug-testxcode15",
+        "displayTargetName": "MacOS-13-XCode-15.0-Debug",
         "runs_on": "macos-13",
         "xcode": "15.0",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable",
         "run_on_branch": "always"
+    },
+    {
+        "build_job": "MacOS",
+        "displayTargetName": "MacOS-13-XCode-15.0",
+        "runs_on": "macos-13",
+        "xcode": "15.0",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
     },
     {},
     {
