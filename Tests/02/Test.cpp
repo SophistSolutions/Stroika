@@ -1702,6 +1702,7 @@ namespace {
 namespace {
     void Test53_vswprintf_on_2_strings_longish_Buggy_ ()
     {
+        Debug::TraceContextBumper ctx{"Test53_vswprintf_on_2_strings_longish_Buggy_"};
         String b = L"…";
         if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
             try {
@@ -1718,6 +1719,7 @@ namespace {
 namespace {
     void Test54_StringAs_ ()
     {
+        Debug::TraceContextBumper ctx{"Test54_StringAs_"};
         VerifyTestResult (String{"hi mom"}.AsASCII () == "hi mom");
         {
             try {
@@ -1734,6 +1736,7 @@ namespace {
 namespace {
     void Test55_StringAscii_CTORs_ ()
     {
+        Debug::TraceContextBumper ctx{"Test55_StringAscii_CTORs_"};
         (void)String{"a"};
         try {
             (void)String{"\x81"};
@@ -1748,6 +1751,7 @@ namespace {
 namespace {
     void Test56_StdStringMoveCTORs_ ()
     {
+        Debug::TraceContextBumper ctx{"Test56_StdStringMoveCTORs_"};
         {
             wstring stuff{L"abc"};
             String  a{move (stuff)};
@@ -1759,6 +1763,7 @@ namespace {
 namespace {
     void Test57_Latin1_Tests_ ()
     {
+        Debug::TraceContextBumper ctx{"Test57_Latin1_Tests_"};
         /**
          *  Be careful with signed/unsigned issues using Latin1 characters and string
          *      A few random characters selected from https://en.wikipedia.org/wiki/Latin-1_Supplement
@@ -1805,6 +1810,7 @@ namespace {
 namespace {
     void Test58_CodeCVT_ ()
     {
+        Debug::TraceContextBumper ctx{"Test58_CodeCVT_"};
         auto codeCvtChar16Test = [] (CodeCvt<char16_t> ccvt) {
             constexpr char16_t        someRandomText[] = u"hello mom";
             span<const char16_t>      someRandomTextSpan{someRandomText, Characters::CString::Length (someRandomText)};
