@@ -194,10 +194,12 @@ jobs:
         run: |
           make run-tests
       - name: Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
+        if: always()
         run: |
           mkdir /tmp/LOGS-ARCHIVE
           cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE
       - name: DEBUG Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
+        if: always()
         run: |
           echo "TMPDIR=$TMPDIR"
           echo "TMPDIR using ENV.TMPDIR=${{ env.TMPDIR }}"
