@@ -1171,8 +1171,16 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, 
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"threads=%s, timeoutAt=%f",
                                                                                  Characters::ToString (threads).c_str (), timeoutAt)};
 #endif
+    /*
+     *  Before Stroika v3, we would sometimes re-send the abort message, but no need if this is not buggy. One abort sb enuf.
+     */
+    Abort (threads);
+    WaitForDoneUntil (threads, timeoutAt);
+
+#if 0
     threads.Apply ([] (const Ptr& t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
-#if 1                                                  /*qDefaultTracingOn*/
+
+#if 1 /*qDefaultTracingOn*/
     {
         constexpr Time::DurationSecondsType kTimeBetweenDbgTraceWarnings_{5.0};
         Time::DurationSecondsType           timeOfLastWarning = Time::GetTickCount ();
@@ -1201,6 +1209,7 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, 
 #else
     threads.Apply ([timeoutAt] (Ptr t) { t.AbortAndWaitForDoneUntil (timeoutAt); });
 #endif
+#endif
 }
 
 void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeoutAt)
@@ -1210,6 +1219,8 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::Du
                                                                                  Characters::ToString (threads).c_str (), timeoutAt)};
 #endif
     CheckForInterruption (); // always a cancelation point (even if empty list)
+    // consider rewriting so we don't do this sequentially, but 'harvest' the ones completed, but perhaps no point.
+    // This is probably done.
     threads.Apply ([timeoutAt] (const Ptr& t) { t.WaitForDoneUntil (timeoutAt); });
 }
 
