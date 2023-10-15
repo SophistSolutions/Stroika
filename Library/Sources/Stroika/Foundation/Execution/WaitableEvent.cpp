@@ -42,7 +42,7 @@ using Stroika::Foundation::Time::Duration;
  */
 void WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
 {
-    if (WaitUntilQuietly (timeoutAt) == kWaitQuietlyTimeoutResult) {
+    if (WaitUntilQuietly (timeoutAt) == false) {
 // note - safe use of TimeOutException::kThe because you cannot really wait except when threads are running, so
 // inside 'main' lifetime
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -66,10 +66,10 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
             Assert (lock.owns_lock ()); // cannot call Reset () directly because we already have the lock mutex
             fTriggered = false;         // autoreset
         }
-        return not kWaitQuietlyTimeoutResult;
+        return true;
     }
     else {
-        return kWaitQuietlyTimeoutResult;
+        return false;
     }
 }
 

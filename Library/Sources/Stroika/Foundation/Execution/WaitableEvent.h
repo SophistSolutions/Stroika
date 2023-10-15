@@ -103,6 +103,11 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note This means that AutoReset events are unsuitable for use when multiple threads are waiting on an event, and you wish to
          *        make them all up. By definition, only ONE thread wakes up to recieve the 'AutoReset' event.
+         * 
+         *  \todo CONSIDER losing ResetType - and just force callers to manually do the 'reset' after wait returns successfully. Maybe simpler and less
+         *        confusing and error prone ( in case people dont read this ).
+         * 
+         *          MAYBE instead address this by having an API - WaitAndReset() ---???
          */
         enum class ResetType {
             eAutoReset,
@@ -197,13 +202,14 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  Intentionally omit case of spurrious wakeout we get from condition variables.
          */
-        static constexpr bool kWaitQuietlyTimeoutResult{false};
+        enum class WaitStatus {
+            eTimeout,
+            eTriggered,
 
-    public:
-        /**
-         */
-        static constexpr bool kWaitQuietlySetResult{true};
+            Stroika_Define_Enum_Bounds (eTimeout, eTriggered)
+        };
 
     public:
         /**
@@ -224,8 +230,8 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   ***Cancelation Point***
          */
-        nonvirtual bool WaitQuietly (Time::DurationSecondsType timeout = Time::kInfinite);
-        nonvirtual bool WaitQuietly (const Time::Duration& timeout);
+        nonvirtual WaitStatus WaitQuietly (Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual WaitStatus WaitQuietly (const Time::Duration& timeout);
 
     public:
         /**
@@ -253,7 +259,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   ***Cancelation Point***
          */
-        nonvirtual bool WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
+        nonvirtual WaitStatus WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
 
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
     public:
@@ -311,6 +317,10 @@ namespace Stroika::Foundation::Execution {
         template <typename ITERATOR_OF_WAITABLE_EVENTS>
         static void WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
                                      Time::DurationSecondsType timeoutAt);
+
+    public:
+        [[deprecated ("since v3.0d4 - use WaitStatus::eTimeout")]] static constexpr WaitStatus kWaitQuietlyTimeoutResult{WaitStatus::eTimeout};
+        [[deprecated ("since v3.0d4 - use WaitStatus::eTriggered")]] static constexpr WaitStatus kWaitQuietlySetResult{WaitStatus::eTriggered};
 
     private:
         static inline SpinLock sExtraWaitableEventsMutex_;

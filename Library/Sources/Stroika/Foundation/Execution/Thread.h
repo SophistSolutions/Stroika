@@ -559,7 +559,7 @@ namespace Stroika::Foundation::Execution {
             /**
              *  Wait until thread is done (use Abort to request termination) or timeoutAt expires
              *  
-             *  Returns:    true (WaitableEvent::kWaitQuietlySetResult) if thread done, and false (WaitableEvent::kWaitQuietlyTimeoutResult) if timeout
+             *  Returns:    true if thread done, and false if timeout
              *
              *  Note that its legal to call WaitForDoneUntilQuietly on a thread in any state - including nullptr.
              *  Some may just have no effect.

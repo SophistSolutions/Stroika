@@ -982,7 +982,7 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
         }
         else {
             // If timeLeft BIG - ignore timeout exception and go through loop again
-            if (WaitForDoneUntilQuietly (Time::GetTickCount () + kAbortAndWaitForDoneUntil_TimeBetweenAborts_) == WaitableEvent::kWaitQuietlySetResult) {
+            if (WaitForDoneUntilQuietly (Time::GetTickCount () + kAbortAndWaitForDoneUntil_TimeBetweenAborts_)) {
                 return;
             }
             // timeout just continue to loop
@@ -1016,7 +1016,7 @@ void Thread::Ptr::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"*this=%s, timeoutAt=%e",
                                                                                  ToString ().c_str (), timeoutAt)};
-    if (WaitForDoneUntilQuietly (timeoutAt) == WaitableEvent::kWaitQuietlyTimeoutResult) {
+    if (not WaitForDoneUntilQuietly (timeoutAt)) {
         Throw (TimeOutException::kThe);
     }
 }
@@ -1030,7 +1030,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) 
     Require (*this != nullptr);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     CheckForInterruption (); // always a cancelation point
-    if (fRep_->fThreadDoneAndCanJoin_.WaitUntilQuietly (timeoutAt) == WaitableEvent::kWaitQuietlySetResult) {
+    if (fRep_->fThreadDoneAndCanJoin_.WaitUntilQuietly (timeoutAt) == WaitableEvent::WaitStatus::eTriggered) {
         /*
          *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
          *  This really only has effect #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -1045,9 +1045,9 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) 
             // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDoneAndCanJoin_ - it shouldn't really take long
             fRep_->fThread_.join ();
         }
-        return WaitableEvent::kWaitQuietlySetResult;
+        return true;
     }
-    return WaitableEvent::kWaitQuietlyTimeoutResult;
+    return false;
 }
 
 #if qPlatform_Windows

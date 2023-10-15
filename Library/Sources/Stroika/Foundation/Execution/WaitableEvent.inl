@@ -77,11 +77,11 @@ namespace Stroika::Foundation::Execution {
     {
         Wait (timeout.As<Time::DurationSecondsType> ());
     }
-    inline bool WaitableEvent::WaitQuietly (Time::DurationSecondsType timeout)
+    inline auto WaitableEvent::WaitQuietly (Time::DurationSecondsType timeout) -> WaitStatus
     {
-        return fWE_.WaitUntilQuietly (timeout + Time::GetTickCount ());
+        return fWE_.WaitUntilQuietly (timeout + Time::GetTickCount ()) ? WaitStatus::eTriggered : WaitStatus::eTimeout;
     }
-    inline bool WaitableEvent::WaitQuietly (const Time::Duration& timeout)
+    inline auto WaitableEvent::WaitQuietly (const Time::Duration& timeout) -> WaitStatus
     {
         return WaitQuietly (timeout.As<Time::DurationSecondsType> ());
     }
@@ -89,9 +89,9 @@ namespace Stroika::Foundation::Execution {
     {
         fWE_.WaitUntil (timeoutAt);
     }
-    inline bool WaitableEvent::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
+    inline auto WaitableEvent::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) -> WaitStatus
     {
-        return fWE_.WaitUntilQuietly (timeoutAt);
+        return fWE_.WaitUntilQuietly (timeoutAt) ? WaitStatus::eTriggered : WaitStatus::eTimeout;
     }
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
     template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
@@ -220,6 +220,21 @@ namespace Stroika::Foundation::Execution {
         }
     }
 #endif
+}
+
+namespace Stroika::Foundation::Configuration {
+    template <>
+    constexpr EnumNames<Execution::WaitableEvent::ResetType> DefaultNames<Execution::WaitableEvent::ResetType>::k{
+        EnumNames<Execution::WaitableEvent::ResetType>::BasicArrayInitializer{{
+            {Execution::WaitableEvent::ResetType::eAutoReset, L"AutoReset"},
+            {Execution::WaitableEvent::ResetType::eManualReset, L"ManualReset"},
+        }}};
+    template <>
+    constexpr EnumNames<Execution::WaitableEvent::WaitStatus> DefaultNames<Execution::WaitableEvent::WaitStatus>::k{
+        EnumNames<Execution::WaitableEvent::WaitStatus>::BasicArrayInitializer{{
+            {Execution::WaitableEvent::WaitStatus::eTimeout, L"Timeout"},
+            {Execution::WaitableEvent::WaitStatus::eTriggered, L"Triggered"},
+        }}};
 }
 
 #endif /*_Stroika_Foundation_Execution_WaitableEvent_inl_*/
