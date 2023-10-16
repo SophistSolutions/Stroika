@@ -2374,26 +2374,11 @@ sub PostProcessOptions_ ()
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-			if ("$^O" eq "darwin") {
-				#xcode not supporting filesystem API (so use boost)
-				#$EXTRA_SUFFIX_LINKER_ARGS .= " -lc++experimental";
-				##qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
-				# if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
-				# 	push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";
-				# 	push @LIB_DEPENDENCIES_ADD, "-lboost_system";
-				# 	push @LIB_DEPENDENCIES_ADD, "-lboost_thread";
-				# 	push @LIB_DEPENDENCIES_ADD, "-lboost_chrono";
-				# 	push @LIB_DEPENDENCIES_ADD, "-lboost_json";
-				# }
+			if ($STDCXXLIB eq "libc++") {
+				push @LIB_DEPENDENCIES_ADD, "-lc++";
 			}
 			else {
-				if ($STDCXXLIB eq "libc++") {
-					$EXTRA_SUFFIX_LINKER_ARGS .= " ";
-					push @LIB_DEPENDENCIES_ADD, "-lc++";
-				}
-				else {
-					push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
-				}
+				push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
 			}
 		}
 
@@ -2405,7 +2390,6 @@ sub PostProcessOptions_ ()
 			push @LIB_DEPENDENCIES_ADD, "-lboost_chrono";
 			push @LIB_DEPENDENCIES_ADD, "-lboost_json";
 		}
-
 	}
 
 	FillDefaultIncludesPathIfNeeded_();
@@ -2423,18 +2407,6 @@ sub PostProcessOptions_ ()
 		$EXTRA_PREFIX_LINKER_ARGS .= " -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
 	}
 
-
-	#
-	# generate CFLAGS and CXXFLAGS
-	# roughly as follows:
-	#	CFLAGS		+=	$(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CXXWARNING_FLAGS)
-	#	ifeq ($(IncludeDebugSymbolsInLibraries), 1)
-	#		CFLAGS += -g
-	#	endif
-	#	ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
-	#		CFLAGS +=  -D_GLIBCXX_DEBUG 
-	#	endif
-	#
 	if ($CPPFLAGS_Overridden eq false) {
 		@GetDefaultCZZFLAGS_flags_flags = @CPPFLAGS;
 		@GetDefaultCZZFLAGS_flags_flagValues2Remove = @CPPFLAGS2Remove;
