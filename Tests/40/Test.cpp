@@ -680,7 +680,7 @@ namespace {
                 }
                 q.SignalEndOfInput ();
             },
-            Thread::eAutoStart, L"Producer");
+            Thread::eAutoStart, "Producer");
         Thread::Ptr consumerThread = Thread::New (
             [&q] () {
                 // Since we call SignalEndOfInput () - the RemoveHead () will eventually timeout
@@ -689,7 +689,7 @@ namespace {
                     f ();
                 }
             },
-            Thread::eAutoStart, L"Consumer");
+            Thread::eAutoStart, "Consumer");
         // producer already set to run off the end...
         // consumer will end due to exception reading from end
         Thread::WaitForDone ({producerThread, consumerThread});
@@ -703,15 +703,14 @@ namespace {
         Debug::TraceContextBumper ctx{"RegressionTest11_AbortSubAbort_"};
         Debug::TimingTrace        tt;
         auto                      testFailToProperlyAbort = [] () {
-            Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000); });
-            innerThread.SetThreadName (L"innerThread");
-            Thread::Ptr testThread = Thread::New ([&innerThread] () {
-                innerThread.Start ();
-                Execution::Sleep (1000);
-                innerThread.AbortAndWaitForDone ();
-            });
-            testThread.SetThreadName (L"testThread");
-            testThread.Start ();
+            Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000); }, "innerThread");
+            Thread::Ptr testThread  = Thread::New (
+                [&innerThread] () {
+                    innerThread.Start ();
+                    Execution::Sleep (1000);
+                    innerThread.AbortAndWaitForDone ();
+                },
+                Thread::eAutoStart, "testThread");
             Execution::Sleep (1); // wait til both threads running and blocked in sleeps
             testThread.AbortAndWaitForDone ();
             // This is the BUG SuppressInterruptionInContext was meant to solve!
@@ -719,18 +718,17 @@ namespace {
             innerThread.AbortAndWaitForDone ();
         };
         auto testInnerThreadProperlyShutDownByOuterThread = [] () {
-            Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000); });
-            innerThread.SetThreadName (L"innerThread");
-            Thread::Ptr testThread = Thread::New ([&innerThread] () {
-                innerThread.Start ();
-                [[maybe_unused]] auto&& cleanup = Finally ([&innerThread] () noexcept {
-                    Thread::SuppressInterruptionInContext suppressInterruptions;
-                    innerThread.AbortAndWaitForDone ();
-                });
-                Execution::Sleep (1000);
-            });
-            testThread.SetThreadName (L"testThread");
-            testThread.Start ();
+            Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000); }, "innerThread");
+            Thread::Ptr testThread  = Thread::New (
+                [&innerThread] () {
+                    innerThread.Start ();
+                    [[maybe_unused]] auto&& cleanup = Finally ([&innerThread] () noexcept {
+                        Thread::SuppressInterruptionInContext suppressInterruptions;
+                        innerThread.AbortAndWaitForDone ();
+                    });
+                    Execution::Sleep (1000);
+                },
+                Thread::eAutoStart, "testThread");
             Execution::Sleep (1); // wait til both threads running and blocked in sleeps
             // This is the BUG SuppressInterruptionInContext was meant to solve!
             testThread.AbortAndWaitForDone ();
@@ -1427,9 +1425,9 @@ namespace {
     namespace RegressionTest25_AbortNotYetStartedThread_ {
         void Test ()
         {
-            Debug::TraceContextBumper traceCtx{"RegressionTest25_AbortNotYetStartedThread_"};
             return; // TMPHACK DISABLE CUZ FAILS ON SOME SYSTEMS
-            Thread::Ptr t1 = Thread::New ([&] () { Sleep (30s); }, "t1"sv);
+            Debug::TraceContextBumper traceCtx{"RegressionTest25_AbortNotYetStartedThread_"};
+            Thread::Ptr               t1 = Thread::New ([&] () { Sleep (30s); }, "t1"sv);
             t1.AbortAndWaitForDone ();
         }
 
@@ -1474,7 +1472,7 @@ namespace {
         RegressionTest22_SycnhonizedUpgradeLock_ ();
         RegressionTest23_SycnhonizedWithTimeout_ ();
         RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ();
-        RegressionTest25_AbortNotYetStartedThread_ ::Test ();
+        RegressionTest25_AbortNotYetStartedThread_::Test ();
     }
 }
 
