@@ -1057,6 +1057,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) 
         }
         return true;
     }
+    Assert (timeoutAt <= Time::GetTickCount ()); // otherwise we couldn't have timed out
     return false;
 }
 

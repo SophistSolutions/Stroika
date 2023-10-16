@@ -69,6 +69,7 @@ auto WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) 
         return WaitStatus::eTriggered;
     }
     else {
+        Assert (timeoutAt <= Time::GetTickCount ()); // otherwise we couldn't have timed out
         return WaitStatus::eTimeout;
     }
 }
