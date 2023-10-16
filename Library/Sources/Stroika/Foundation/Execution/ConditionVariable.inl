@@ -111,6 +111,14 @@ namespace Stroika::Foundation::Execution {
                 bool ready = fConditionVariable.wait_until (lock, *ost, Time::DurationSeconds2time_point (timeoutAt), forward<PREDICATE> (readyToWake));
                 if (ost->stop_requested ()) {
                     Thread::CheckForInterruption ();
+                    // tricky case.
+                    // We are blocking, waiting for an event. WE have been asked to stop. But the only reason why we wouldn't throw in the CheckForInterruption is that it
+                    // was supporessed (SuppressInterruptionInContext). Why suppress? Cuz we need to cleanup a sub-thread. So fine.
+                    // In this case, just continue waiting - but without the stop token.
+                    // Note - if above also timedout, no problem, as the following conditionVariable.wait_until will quickly also timeout.
+                    if (not ready) {
+                        ready = fConditionVariable.wait_until (lock, Time::DurationSeconds2time_point (timeoutAt), forward<PREDICATE> (readyToWake));
+                    }
                 }
                 return ready;
             }

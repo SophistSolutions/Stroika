@@ -707,11 +707,12 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noex
         }
         catch (...) {
             SuppressInterruptionInContext suppressCtx;
-#if qPlatform_POSIX
+            // used todo this til 3.0d4 but dont think needed here and if it is, needed above on interruoptexption too
+#if qPlatform_POSIX && 0
             Platform::POSIX::ScopedBlockCurrentThreadSignal blockThreadAbortSignal{SignalUsedForThreadInterrupt ()};
             incRefCnt->fInterruptionState_ = false; //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (due to EXCEPTION) for thread: %s", incRefCnt->ToString ().c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
             incRefCnt->fThreadDoneAndCanJoin_.Set ();
         }
@@ -936,7 +937,7 @@ void Thread::Ptr::Abort () const
         // If transitioning to aborted state, notify any existing stop_callbacks
         // not needed to check prevState - since https://en.cppreference.com/w/cpp/thread/jthread/request_stop says requst_stop checks if already requested.
         if (prevState != Status::eAborting) [[likely]] {
-            DbgTrace ("Transitioned state from %s to aborting, so calling fThread_.get_stop_source ().request_stop ();",
+            DbgTrace (L"Transitioned state from %s to aborting, so calling fThread_.get_stop_source ().request_stop ();",
                       Characters::ToString (prevState).c_str ());
             fRep_->fThread_.get_stop_source ().request_stop ();
         }
@@ -946,8 +947,8 @@ void Thread::Ptr::Abort () const
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
         fRep_->NotifyOfInterruptionFromAnyThread_ ();
     }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"leaving thread-state = %s", Characters::ToString (fRep_->fStatus_.load ()).c_str ());
+#if USE_NOISY_TRACE_IN_THIS_MODULE_ || 1
+    DbgTrace (L"leaving *this = %s", Characters::ToString (*this).c_str ());
 #endif
 }
 
@@ -970,6 +971,14 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
                                                                                  L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
     RequireNotNull (*this);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+
+    Abort ();
+    WaitForDoneUntil (timeoutAt);
+
+#if 0
+    // Assume no more race/magic needed - debug those cases!
+
+
     // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
     unsigned int tries = 0;
     while (true) {
@@ -998,6 +1007,7 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
             DbgTrace ("OK - maybe the target thread is ignoring abort exceptions? try/catch/ignore?");
         }
     }
+#endif
 }
 
 void Thread::Ptr::ThrowIfDoneWithException () const
