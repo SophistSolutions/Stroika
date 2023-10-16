@@ -210,19 +210,19 @@ namespace {
                                                "WAITABLE_EVENTS_::TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_"};
             // Make a thread to wait a 'LONG TIME' on a single event, and verify it gets cancelled reasonably
             static constexpr Time::DurationSecondsType kLONGTimeForThread2Wait_{60.0}; // just has to be much more than the waits below
-            static WaitableEvent                       s_autoResetEvent_{WaitableEvent::eAutoReset};
+            static WaitableEvent                       s_autoResetEvent_{};
             auto                                       myWaitingThreadProc = [] () {
                 Debug::TraceContextBumper innerThreadLoopCtx{"innerThreadLoop"};
                 s_autoResetEvent_.Wait (kLONGTimeForThread2Wait_);
             };
 
             s_autoResetEvent_.Reset ();
-            Thread::Ptr t = Thread::New (myWaitingThreadProc, Thread::eAutoStart);
+            Thread::Ptr t = Thread::New (myWaitingThreadProc, Thread::eAutoStart, "myWaitingThreadProc"sv);
 
             // At this point the thread 't' SHOULD block and wait kLONGTimeForThread2Wait_ seconds
             // So we wait a shorter time for it, and that should fail
             {
-                Debug::TraceContextBumper           ctx1{L"expect-failed-wait"};
+                Debug::TraceContextBumper           ctx1{"expect-failed-wait"};
                 constexpr Time::DurationSecondsType kMarginOfErrorLo_ = .5;
                 constexpr Time::DurationSecondsType kMarginOfErrorHi_Warn_ = qDebug ? 5.0 : 3.0; // if sys busy, thread could be put to sleep almost any amount of time
                 constexpr Time::DurationSecondsType kMarginOfErrorHi_Error_ = 10.0; // ""
@@ -238,7 +238,7 @@ namespace {
                 }
                 Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
                 if (not(expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_)) {
-                    DbgTrace (L"expectedEndAt=%f, caughtExceptAt=%f", double (expectedEndAt), double (caughtExceptAt));
+                    DbgTrace ("expectedEndAt=%f, caughtExceptAt=%f", double (expectedEndAt), double (caughtExceptAt));
                 }
                 VerifyTestResult (expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt);
                 // FAILURE:
