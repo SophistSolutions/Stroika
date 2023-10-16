@@ -1425,7 +1425,6 @@ namespace {
     namespace RegressionTest25_AbortNotYetStartedThread_ {
         void Test ()
         {
-            return; // TMPHACK DISABLE CUZ FAILS ON SOME SYSTEMS
             Debug::TraceContextBumper traceCtx{"RegressionTest25_AbortNotYetStartedThread_"};
             Thread::Ptr               t1 = Thread::New ([&] () { Sleep (30s); }, "t1"sv);
             t1.AbortAndWaitForDone ();
