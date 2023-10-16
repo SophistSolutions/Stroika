@@ -102,23 +102,26 @@ namespace Stroika::Foundation::Execution {
         Require (lock.owns_lock ());
         Thread::CheckForInterruption ();
 
-        // native std c++ fConditionVariable.wait_until works with stop token, but my version in overload wtih no predicate doesn't - perhaps
-        // critucal to hold lock whole predicate checked? which I think I'm doing here, but maybe review lib code more carefully... cuz this case
-        // works and mine doesn't...
+        // Support interruption using the c++20 stop token API, if possible (supported and we are called from a thread with a Thread object
+        // whose stop_token we can access)
         if constexpr (kSupportsStopToken) {
 #if __cpp_lib_jthread >= 201911
             if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
                 bool ready = fConditionVariable.wait_until (lock, *ost, Time::DurationSeconds2time_point (timeoutAt), forward<PREDICATE> (readyToWake));
-                if (ost->stop_requested ()) {
-                    Thread::CheckForInterruption ();
+                while (ost->stop_requested () and not ready) {
                     // tricky case.
-                    // We are blocking, waiting for an event. WE have been asked to stop. But the only reason why we wouldn't throw in the CheckForInterruption is that it
-                    // was supporessed (SuppressInterruptionInContext). Why suppress? Cuz we need to cleanup a sub-thread. So fine.
-                    // In this case, just continue waiting - but without the stop token.
-                    // Note - if above also timedout, no problem, as the following conditionVariable.wait_until will quickly also timeout.
-                    if (not ready) {
-                        ready = fConditionVariable.wait_until (lock, Time::DurationSeconds2time_point (timeoutAt), forward<PREDICATE> (readyToWake));
-                    }
+                    //
+                    // We are blocking, waiting for a signaled condition. This thread has been asked to stop. But the only reason why we wouldn't throw in the CheckForInterruption is that it
+                    // was suppressed by (SuppressInterruptionInContext).
+                    //
+                    // This function is NOT permitted to return spurrious interrupts. Just readyToWake return, or timeout.
+                    //
+                    // If you find yourself looping here - consider if you really wanted to SuppressInterruptionInContext around this!
+                    //
+                    Thread::CheckForInterruption ();
+                    // must recheck / re-wait ONLY on the condition var itself - no stop token (cuz then this instantly returns and doesn't unlock argument lock so the signaler can progress)
+                    ready = fConditionVariable.wait_until (lock, Time::DurationSeconds2time_point (Time::GetTickCount () + sThreadAbortCheckFrequency_NoStopToken),
+                                                           forward<PREDICATE> (readyToWake));
                 }
                 return ready;
             }
