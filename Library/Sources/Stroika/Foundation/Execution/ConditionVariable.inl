@@ -141,6 +141,7 @@ namespace Stroika::Foundation::Execution {
     inline cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout)
     {
         Require (lock.owns_lock ());
+        Assert (isinf (timeout) == isinf (timeout + Time::GetTickCount ())); // make sure arithmatic works right with inf
         return wait_until (lock, timeout + Time::GetTickCount ());
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
@@ -148,6 +149,7 @@ namespace Stroika::Foundation::Execution {
     inline bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE&& readyToWake)
     {
         Require (lock.owns_lock ());
+        Assert (isinf (timeout) == isinf (timeout + Time::GetTickCount ())); // make sure arithmatic works right with inf
         return wait_until (lock, timeout + Time::GetTickCount (), forward<PREDICATE> (readyToWake));
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>

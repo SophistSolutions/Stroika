@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline auto WaitableEvent::WaitQuietly (Time::DurationSecondsType timeout) -> WaitStatus
     {
-        return fWE_.WaitUntilQuietly (timeout + Time::GetTickCount ()) ? WaitStatus::eTriggered : WaitStatus::eTimeout;
+        return fWE_.WaitUntilQuietly (timeout + Time::GetTickCount ());
     }
     inline auto WaitableEvent::WaitQuietly (const Time::Duration& timeout) -> WaitStatus
     {
@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline auto WaitableEvent::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) -> WaitStatus
     {
-        return fWE_.WaitUntilQuietly (timeoutAt) ? WaitStatus::eTriggered : WaitStatus::eTimeout;
+        return fWE_.WaitUntilQuietly (timeoutAt);
     }
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
     template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>

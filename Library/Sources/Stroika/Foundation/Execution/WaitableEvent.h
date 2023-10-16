@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  TimeOutException throws if the timeout is exceeeded.
          *
-         *  \note Wait (0) will always throw TimeOutException () regardless of the state of the event/trigger
+         *  \note Wait (0) will always throw TimeOutException regardless of the state of the event/trigger
          *
          *  @see WaitQuietly ()
          *  @see PeekIsSet ()
@@ -318,13 +318,13 @@ namespace Stroika::Foundation::Execution {
         static void WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
                                      Time::DurationSecondsType timeoutAt);
 
-    public:
-        [[deprecated ("since v3.0d4 - use WaitStatus::eTimeout")]] static constexpr WaitStatus kWaitQuietlyTimeoutResult{WaitStatus::eTimeout};
-        [[deprecated ("since v3.0d4 - use WaitStatus::eTriggered")]] static constexpr WaitStatus kWaitQuietlySetResult{WaitStatus::eTriggered};
-
     private:
         static inline SpinLock sExtraWaitableEventsMutex_;
 #endif
+
+    public:
+        [[deprecated ("since v3.0d4 - use WaitStatus::eTimeout")]] static constexpr WaitStatus kWaitQuietlyTimeoutResult{WaitStatus::eTimeout};
+        [[deprecated ("since v3.0d4 - use WaitStatus::eTriggered")]] static constexpr WaitStatus kWaitQuietlySetResult{WaitStatus::eTriggered};
 
     private:
         struct WE_ {
@@ -333,12 +333,12 @@ namespace Stroika::Foundation::Execution {
             bool                        fTriggered{false};
 
             WE_ (ResetType resetType);
-            nonvirtual void Reset ();
-            nonvirtual bool GetIsSet () const noexcept;
-            nonvirtual bool PeekIsSet () const noexcept;
-            nonvirtual void Set ();
-            nonvirtual void WaitUntil (Time::DurationSecondsType timeoutAt);
-            nonvirtual bool WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
+            nonvirtual void       Reset ();
+            nonvirtual bool       GetIsSet () const noexcept;
+            nonvirtual bool       PeekIsSet () const noexcept;
+            nonvirtual void       Set ();
+            nonvirtual void       WaitUntil (Time::DurationSecondsType timeoutAt);
+            nonvirtual WaitStatus WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
         };
         WE_ fWE_;
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects

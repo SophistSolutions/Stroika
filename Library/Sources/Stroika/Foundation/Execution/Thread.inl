@@ -315,7 +315,7 @@ namespace Stroika::Foundation::Execution {
         return ptr;
     }
     inline auto Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const Characters::String& name,
-                     const optional<Configuration>& configuration ) -> Ptr
+                             const optional<Configuration>& configuration) -> Ptr
     {
         return New (fun2CallOnce, AutoStartFlag::eAutoStart, optional<Characters::String>{name}, configuration);
     }

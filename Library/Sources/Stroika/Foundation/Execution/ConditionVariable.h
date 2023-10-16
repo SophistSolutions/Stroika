@@ -225,6 +225,9 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_until () - except
          *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
+         * 
+         *  \note the cv_status returning overload CAN return/wakeup spurriously (not timeout, and not desired condition true)
+         *        The PREDICATE (readyToWake) overload, never returns a spurrious wake (so only returns timeout (false) or true if readyToWake returned true.
          *
          *  \req (lock.owns_lock ());
          *  \ensure (lock.owns_lock ());
@@ -250,6 +253,9 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_for () - except
          *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
+         * 
+         *  \note the cv_status returning overload CAN return/wakeup spurriously (not timeout, and not desired condition true)
+         *        The PREDICATE (readyToWake) overload, never returns a spurrious wake (so only returns timeout (false) or true if readyToWake returned true.
          *
          *  \req (lock.owns_lock ());
          *  \ensure (lock.owns_lock ());
