@@ -1285,7 +1285,8 @@ namespace {
 namespace {
     void RegressionTest23_SycnhonizedWithTimeout_ ()
     {
-        TimedSynchronized<int> test;
+        Debug::TraceContextBumper traceCtx{"RegressionTest23_SycnhonizedWithTimeout_"};
+        TimedSynchronized<int>    test;
         Thread::Ptr            t1 = Thread::New (
             [&] () {
                 auto lk = test.cget ();
@@ -1386,6 +1387,7 @@ namespace {
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\""); // kIsRecursiveLockMutex
     void RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ()
     {
+        Debug::TraceContextBumper                traceCtx{"RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_"};
         Synchronized<int, xxSynchronized_Traits> test;
         Thread::Ptr                              t1 = Thread::New (
             [&] () {
@@ -1418,6 +1420,22 @@ namespace {
         catch (...) {
             VerifyTestResult (false); // NOT REACHED
         }
+    }
+}
+
+namespace {
+    namespace RegressionTest25_AbortNotYetStartedThread_ {
+        void Test()
+        {
+            Debug::TraceContextBumper traceCtx{"RegressionTest25_AbortNotYetStartedThread_"};
+            Thread::Ptr               t1 = Thread::New (
+                [&] () {
+                    Sleep (30s);
+                },
+                "t1"sv);
+            t1.AbortAndWaitForDone ();
+        }
+    
     }
 }
 
@@ -1459,6 +1477,7 @@ namespace {
         RegressionTest22_SycnhonizedUpgradeLock_ ();
         RegressionTest23_SycnhonizedWithTimeout_ ();
         RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ();
+        RegressionTest25_AbortNotYetStartedThread_ ::Test ();
     }
 }
 
