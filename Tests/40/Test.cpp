@@ -640,9 +640,9 @@ namespace {
         // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
         // between the create of thread and Abort
         Containers::Collection<Thread::Ptr> innerThreads;
-        Thread::Ptr thread = Thread::New ([&innerThreads] () {
+        Thread::Ptr                         thread = Thread::New ([&innerThreads] () {
             while (true) {
-                static int sInnerThreadNum {};
+                static int  sInnerThreadNum{};
                 Thread::Ptr t = Thread::New ([] () { Execution::Sleep (.01); }, Characters::Format (L"innerthread%d", ++sInnerThreadNum));
                 innerThreads.Add (t);
                 Execution::Sleep (.02);

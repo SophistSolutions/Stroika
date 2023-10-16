@@ -1703,7 +1703,7 @@ namespace {
     void Test53_vswprintf_on_2_strings_longish_Buggy_ ()
     {
         Debug::TraceContextBumper ctx{"Test53_vswprintf_on_2_strings_longish_Buggy_"};
-        String b = L"…";
+        String                    b = L"…";
         if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
             try {
                 String x = Characters::Format (L"%s", b.c_str ());
@@ -1811,7 +1811,7 @@ namespace {
     void Test58_CodeCVT_ ()
     {
         Debug::TraceContextBumper ctx{"Test58_CodeCVT_"};
-        auto codeCvtChar16Test = [] (CodeCvt<char16_t> ccvt) {
+        auto                      codeCvtChar16Test = [] (CodeCvt<char16_t> ccvt) {
             constexpr char16_t        someRandomText[] = u"hello mom";
             span<const char16_t>      someRandomTextSpan{someRandomText, Characters::CString::Length (someRandomText)};
             Memory::StackBuffer<byte> targetBuf{ccvt.ComputeTargetByteBufferSize (someRandomTextSpan)};
