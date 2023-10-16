@@ -252,6 +252,9 @@ namespace Stroika::Foundation::Execution {
          *  \note   WaitUntilQuietly() can raise exceptions, but only Thread::AbortException
          *
          *  Returns:    true (kWaitQuietlySetResult) if event signaled/occurred, and false (kWaitQuietlyTimeoutResult) if timeout
+         * 
+         *  Note - unlike condition variable - will not return with spurrious wakeup.
+         *  So a return of triggered means it definitely was triggered!
          *
          *  @see Wait ()
          *  @see WaitQuietly ()
