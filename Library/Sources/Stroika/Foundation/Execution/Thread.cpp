@@ -1118,6 +1118,7 @@ Thread::CleanupPtr::~CleanupPtr ()
  */
 Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration)
 {
+    // All Thread::New () overloads vector through this one...
     Ptr ptr = Ptr{make_shared<Ptr::Rep_> (fun2CallOnce, CombineCFGs_ (configuration))};
     if (name) {
         ptr.SetThreadName (*name);

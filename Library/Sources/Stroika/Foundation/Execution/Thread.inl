@@ -307,18 +307,21 @@ namespace Stroika::Foundation::Execution {
     {
         return New (fun2CallOnce, optional<Characters::String>{name}, configuration);
     }
-    inline Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration)
-    {
-        Ptr ptr = New (fun2CallOnce, nullopt, configuration);
-        ptr.Start ();
-        return ptr;
-    }
-    inline Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name,
-                                    const optional<Configuration>& configuration)
+    inline auto Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name,
+                             const optional<Configuration>& configuration) -> Ptr
     {
         Ptr ptr = New (fun2CallOnce, name, configuration);
         ptr.Start ();
         return ptr;
+    }
+    inline auto Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const Characters::String& name,
+                     const optional<Configuration>& configuration ) -> Ptr
+    {
+        return New (fun2CallOnce, AutoStartFlag::eAutoStart, optional<Characters::String>{name}, configuration);
+    }
+    inline auto Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration) -> Ptr
+    {
+        return New (fun2CallOnce, AutoStartFlag::eAutoStart, nullopt, configuration);
     }
     inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeout)
     {

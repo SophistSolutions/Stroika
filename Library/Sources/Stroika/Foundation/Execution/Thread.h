@@ -952,13 +952,14 @@ namespace Stroika::Foundation::Execution {
          *          t.WaitForDone ();
          *      \endcode
          */
-        Ptr New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name = nullopt,
-                 const optional<Configuration>& configuration = nullopt);
+        Ptr New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration);
         Ptr New (const function<void ()>& fun2CallOnce, const Characters::String& name, const optional<Configuration>& configuration = nullopt);
-        Ptr New (const function<void ()>& fun2CallOnce, const optional<Configuration>& configuration);
-        Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name = nullopt,
+        Ptr New (const function<void ()>& fun2CallOnce, const optional<Configuration>& configuration = nullopt);
+        Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name,
+                 const optional<Configuration>& configuration);
+        Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const Characters::String& name,
                  const optional<Configuration>& configuration = nullopt);
-        Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration);
+        Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration = nullopt);
 
         /**
          * \req    foreach Thread t: t.GetStatus () == Status::eNotYetRunning
