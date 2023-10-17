@@ -515,9 +515,9 @@ void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& mess
     const DWORD kEventID     = EVENT_Message;
     HANDLE      hEventSource = ::RegisterEventSource (NULL, fEventSourceName_.AsSDKString ().c_str ());
     Verify (hEventSource != NULL);
-    [[maybe_unused]] auto&&    cleanup = Execution::Finally ([hEventSource] () { Verify (::DeregisterEventSource (hEventSource)); });
-    SDKString                  tmp     = message.AsSDKString ();
-    const Characters::SDKChar* msg     = tmp.c_str ();
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([hEventSource] () noexcept { Verify (::DeregisterEventSource (hEventSource)); });
+    SDKString               tmp     = message.AsSDKString ();
+    const Characters::SDKChar* msg  = tmp.c_str ();
     Verify (::ReportEvent (hEventSource, eventType, eventCategoryID, kEventID, NULL, (WORD)1, 0, &msg, NULL));
 }
 #endif

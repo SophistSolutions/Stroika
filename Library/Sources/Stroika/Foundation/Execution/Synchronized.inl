@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Execution {
         if (&rhs != this) [[likely]] {
             auto                    value   = rhs.cget ().load (); // load outside the lock to avoid possible deadlock
             [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { NoteLockStateChanged_ (L"Unlocked"); });
             NoteLockStateChanged_ (L"Locked");
             ++fWriteLockCount_;
             fProtectedValue_ = value;
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Execution {
     inline auto Synchronized<T, TRAITS>::operator= (T&& rhs) -> Synchronized&
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { NoteLockStateChanged_ (L"Unlocked"); });
         NoteLockStateChanged_ (L"Locked");
         fProtectedValue_ = move (rhs);
         ++fWriteLockCount_;
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Execution {
     inline auto Synchronized<T, TRAITS>::operator= (const T& rhs) -> Synchronized&
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { NoteLockStateChanged_ (L"Unlocked"); });
         NoteLockStateChanged_ (L"Locked");
         fProtectedValue_ = rhs;
         ++fWriteLockCount_;
@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Execution {
         requires (TRAITS::kIsRecursiveLockMutex)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { NoteLockStateChanged_ (L"Unlocked"); });
         NoteLockStateChanged_ (L"Locked");
         ++fWriteLockCount_;
         fProtectedValue_ = v;
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Execution {
         requires (TRAITS::kIsRecursiveLockMutex)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { NoteLockStateChanged_ (L"Unlocked"); });
         NoteLockStateChanged_ (L"Locked");
         ++fWriteLockCount_;
         fProtectedValue_ = std::move (v);
@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Execution {
         if (not critSec) [[unlikely]] {
             ThrowTimeOutException ();
         }
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { NoteLockStateChanged_ (L"Unlocked"); });
         NoteLockStateChanged_ (L"Locked");
         ++fWriteLockCount_;
         fProtectedValue_ = v;
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Execution {
         if (not critSec) [[unlikely]] {
             ThrowTimeOutException ();
         }
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept { NoteLockStateChanged_ (L"Unlocked"); });
         NoteLockStateChanged_ (L"Locked");
         ++fWriteLockCount_;
         fProtectedValue_ = std::move (v);
@@ -339,7 +339,7 @@ namespace Stroika::Foundation::Execution {
         Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
         auto writeLockCountBeforeReleasingReadLock = fWriteLockCount_;
         fMutex_.unlock_shared ();
-        [[maybe_unused]] auto&&        cleanup = Execution::Finally ([this] () {
+        [[maybe_unused]] auto&&        cleanup = Execution::Finally ([this] () noexcept {
             fMutex_.lock_shared (); // this API requires (regardless of timeout) that we re-lock (shared)
             NoteLockStateChanged_ (L"in Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly finally relocked shared");
         });

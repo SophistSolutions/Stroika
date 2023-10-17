@@ -62,7 +62,7 @@ public:
                 Assert (fCurTask_ != nullptr);
                 Assert (fNextTask_ == nullptr);
             }
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () {
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
                 fCurTask_                       = nullptr;
             });

@@ -1437,7 +1437,7 @@ namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        [[maybe_unused]] auto&& cleanupReport = Finally ([] () {
+        [[maybe_unused]] auto&& cleanupReport = Finally ([] () noexcept {
             auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
             DbgTrace ("Total Running threads at end: %d", runningThreads.size ());
             for (Execution::Thread::IDType threadID : runningThreads) {

@@ -76,34 +76,34 @@ namespace {
     void Test2_CommandLine_ ()
     {
         {
-            String           cmdLine = L"/bin/sh -c \"a b c\"";
+            String           cmdLine = "/bin/sh -c \"a b c\"";
             Sequence<String> l       = ParseCommandLine (cmdLine);
             VerifyTestResult (l.size () == 3);
-            VerifyTestResult (l[0] == L"/bin/sh");
-            VerifyTestResult (l[1] == L"-c");
-            VerifyTestResult (l[2] == L"a b c");
+            VerifyTestResult (l[0] == "/bin/sh");
+            VerifyTestResult (l[1] == "-c");
+            VerifyTestResult (l[2] == "a b c");
         }
         {
-            String           cmdLine = L"";
+            String           cmdLine = "";
             Sequence<String> l       = ParseCommandLine (cmdLine);
             VerifyTestResult (l.size () == 0);
         }
         {
-            String           cmdLine = L"/bin/sh -c \'a b c\'";
+            String           cmdLine = "/bin/sh -c \'a b c\'";
             Sequence<String> l       = ParseCommandLine (cmdLine);
             VerifyTestResult (l.size () == 3);
-            VerifyTestResult (l[0] == L"/bin/sh");
-            VerifyTestResult (l[1] == L"-c");
-            VerifyTestResult (l[2] == L"a b c");
+            VerifyTestResult (l[0] == "/bin/sh");
+            VerifyTestResult (l[1] == "-c");
+            VerifyTestResult (l[2] == "a b c");
         }
         {
-            String           cmdLine = L"/bin/sh\t b c     -d";
+            String           cmdLine = "/bin/sh\t b c     -d";
             Sequence<String> l       = ParseCommandLine (cmdLine);
             VerifyTestResult (l.size () == 4);
-            VerifyTestResult (l[0] == L"/bin/sh");
-            VerifyTestResult (l[1] == L"b");
-            VerifyTestResult (l[2] == L"c");
-            VerifyTestResult (l[3] == L"-d");
+            VerifyTestResult (l[0] == "/bin/sh");
+            VerifyTestResult (l[1] == "b");
+            VerifyTestResult (l[2] == "c");
+            VerifyTestResult (l[3] == "-d");
         }
     }
 }
@@ -128,7 +128,7 @@ namespace {
     namespace Test4_ConstantProperty_ {
         namespace Private_ {
             namespace T1_ {
-                static const String                    x{L"3"};
+                static const String                    x{"3"};
                 const Common::ConstantProperty<String> kX = [] () { return x; };
                 void                                   DoIt ()
                 {
@@ -136,11 +136,11 @@ namespace {
                 }
             }
             namespace T2_ {
-                const Common::ConstantProperty<String> kX = [] () { return L"6"; };
+                const Common::ConstantProperty<String> kX = [] () { return "6"; };
                 void                                   DoIt ()
                 {
                     const String a = kX;
-                    VerifyTestResult (a == L"6"); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
+                    VerifyTestResult (a == "6"); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
                 }
             }
             namespace T3_ {
@@ -183,16 +183,16 @@ namespace {
             };
             struct ModuleGetterSetter_Implementation_MyData_ {
                 ModuleGetterSetter_Implementation_MyData_ ()
-                    : fOptionsFile_{L"MyModule",
+                    : fOptionsFile_{"MyModule",
                                     [] () -> ObjectVariantMapper {
                                         ObjectVariantMapper mapper;
                                         mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                                            {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
-                                            {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
+                                            {"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
+                                            {"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
                                         });
                                         return mapper;
                                     }(),
-                                    OptionsFile::kDefaultUpgrader, OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")}
+                                    OptionsFile::kDefaultUpgrader, OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here")}
                     , fActualCurrentConfigData_{fOptionsFile_.Read<MyData_> (MyData_{})}
                 {
                     Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
