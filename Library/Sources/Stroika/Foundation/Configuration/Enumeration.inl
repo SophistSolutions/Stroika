@@ -71,9 +71,11 @@ namespace Stroika::Foundation::Configuration {
     template <typename ENUM>
     inline constexpr make_unsigned_t<underlying_type_t<ENUM>> OffsetFromStart (ENUM e)
     {
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         // https://stroika.atlassian.net/browse/STK-549
         //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
         return static_cast<make_unsigned_t<underlying_type_t<ENUM>>> (ToInt (e) - ToInt (ENUM::eSTART));
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     }
 
     /*
@@ -199,12 +201,16 @@ namespace Stroika::Foundation::Configuration {
     constexpr void EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
     {
         DISABLE_COMPILER_MSC_WARNING_START (4996); // hack for when deprecated enum is used in EnumNames...
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
-        using IndexType = make_unsigned_t<typename underlying_type<ENUM_TYPE>::type>;
+        using IndexType = make_unsigned_t<underlying_type_t<ENUM_TYPE>>;
         for (IndexType i = 0; i < static_cast<IndexType> (ENUM_TYPE::eCOUNT); ++i) {
             Require (OffsetFromStart<ENUM_TYPE> (fEnumNames_[i].first) == i);
         }
         DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     }
 
     /*
