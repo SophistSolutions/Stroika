@@ -67,6 +67,16 @@ namespace Stroika::Foundation::Configuration {
         };
     };
 
+    /**
+     *  \brief like std::invocable concept, except also requires the invocation doesn't raise exceptions
+     */
+    template <typename F, typename... Args>
+    concept INoThrowInvocable = invocable<F, Args...> and requires (F f, Args... args) {
+        {
+            noexcept (f (args...))
+        };
+    };
+
     namespace Private_ {
         template <typename T>
         concept HasEq_ = requires (T t) {
