@@ -2441,6 +2441,16 @@ sub PostProcessOptions_ ()
 		push @CFLAGS, " -arch $ARCH";
 		push @CXXFLAGS, " -arch $ARCH";
 		$EXTRA_PREFIX_LINKER_ARGS .= " -arch $ARCH";
+		# Since XCode 15, we've been getting these warnings, and no simple way to avoid them.
+		#https://stackoverflow.com/questions/77164140/ld-warning-ignoring-duplicate-libraries-lgcc-after-the-recent-update-of-xc
+		#Tried combingin the pkg-config lines into one call (would have been easy to fix configure todo this) - but that didnt help.
+		#Try wring awk script:
+		#lewis@lewis-mac2 StroikaDev % (PKG_CONFIG_PATH=/Users/lewis/Sandbox/StroikaDev/Builds/Debug/ThirdPartyComponents/lib/pkgconfig pkg-config --static --libs zlib libcurl openssl ) | awk '{for (i=1;i<=NF;i++) if ($i =="-framework"||!a[$i]++) printf("%s%s",$i,FS)}{printf("\n")}'
+		# comes close, but no cigar ) the -framework stuff pITA. Looked at docs, and no alternative syntax for -framework ARG.
+		# COULD combine them all, and harwire runing the awk scrit to remove dups a -lz and each of these
+		# libraries: '-lbrotlidec', '-lcrypto', '-lidn2', '-lssl', '-lz'
+		# Seens of a bad bunch of options
+		$EXTRA_SUFFIX_LINKER_ARGS .= " -Wl,-no_warn_duplicate_libraries"
 	}
 
 }
