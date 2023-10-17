@@ -16,20 +16,19 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     **************************** Execution::FinallySentry **************************
+     ****************** Execution::Private_::FinallySentry **************************
      ********************************************************************************
      */
-    template <typename FUNCTION>
-    inline FinallySentry<FUNCTION>::FinallySentry (FUNCTION&& f)
+    template <Configuration::INoThrowInvocable FUNCTION>
+    inline Private_::FinallySentry<FUNCTION>::FinallySentry (FUNCTION&& f)
         : fCleanupCodeBlock_{std::forward<FUNCTION> (f)}
     {
     }
-    template <typename FUNCTION>
-    inline FinallySentry<FUNCTION>::~FinallySentry ()
+    template <Configuration::INoThrowInvocable FUNCTION>
+    inline Private_::FinallySentry<FUNCTION>::~FinallySentry ()
     {
-        // consider checking noexcept(f) and not doing the ignore, but that being helpful depends on compiler
-        // analysis, which if done, probably always optimizes this try/catch anyhow
-        IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
+        // No need for IgnoreExceptionsForCall, because we assure its no-throw invocable
+        fCleanupCodeBlock_ ();
     }
 
     /*
@@ -37,8 +36,8 @@ namespace Stroika::Foundation::Execution {
      ******************************* Execution::Finally *****************************
      ********************************************************************************
      */
-    template <typename FUNCTION>
-    inline auto Finally (FUNCTION&& f) -> FinallySentry<FUNCTION>
+    template <Configuration::INoThrowInvocable FUNCTION>
+    inline auto Finally (FUNCTION&& f) -> Private_::FinallySentry<FUNCTION>
     {
         return {std::forward<FUNCTION> (f)};
     }

@@ -6,9 +6,11 @@
 
 #include "../StroikaPreComp.h"
 
+#include <concepts>
 #include <functional>
 
 #include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
 
 /**
  *  \file
@@ -25,28 +27,25 @@
 
 namespace Stroika::Foundation::Execution {
 
-    /**
-     *  @see Finally<FUNCTION>
-     *
-     *  Don't use this directly.
-     */
-    template <typename FUNCTION>
-    class FinallySentry {
-    public:
-        FinallySentry () = delete;
-        FinallySentry (FUNCTION&& f);
-        FinallySentry (FinallySentry&&)      = delete;
-        FinallySentry (const FinallySentry&) = delete;
+    namespace Private_ {
+        template <Configuration::INoThrowInvocable FUNCTION>
+        class FinallySentry {
+        public:
+            FinallySentry () = delete;
+            FinallySentry (FUNCTION&& f);
+            FinallySentry (FinallySentry&&)      = default;
+            FinallySentry (const FinallySentry&) = delete;
 
-    public:
-        ~FinallySentry ();
+        public:
+            ~FinallySentry ();
 
-    public:
-        nonvirtual FinallySentry& operator= (const FinallySentry&) = delete;
+        public:
+            nonvirtual FinallySentry& operator= (const FinallySentry&) = delete;
 
-    private:
-        FUNCTION fCleanupCodeBlock_;
-    };
+        private:
+            FUNCTION fCleanupCodeBlock_;
+        };
+    }
 
     /**
      *  This helpful utility to plug a missing feature from C++11 - to have a block of code run at the end
@@ -87,8 +86,8 @@ namespace Stroika::Foundation::Execution {
      *          [[maybe_unused]]auto&& cleanup  =   Finally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
      *      \endcode
      */
-    template <typename FUNCTION>
-    auto Finally (FUNCTION&& f) -> FinallySentry<FUNCTION>;
+    template <Configuration::INoThrowInvocable FUNCTION>
+    auto Finally (FUNCTION&& f) -> Private_::FinallySentry<FUNCTION>;
 
 }
 
