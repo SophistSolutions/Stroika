@@ -140,11 +140,17 @@ namespace Stroika::Foundation::Configuration {
     template <typename ENUM_TYPE>
     class EnumNames {
     public:
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         static_assert (is_enum_v<decltype (ENUM_TYPE::eCOUNT)>,
                        "Missing eCOUNT - typically Use Stroika_Define_Enum_Bounds inside the enum");
         static_assert (is_enum_v<decltype (ENUM_TYPE::eSTART)>,
                        "Missing eSTART - typically Use Stroika_Define_Enum_Bounds inside the enum");
         static_assert (is_enum_v<decltype (ENUM_TYPE::eEND)>, "Missing eEND - typically Use Stroika_Define_Enum_Bounds inside the enum");
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     private:
         using EnumNamesHolderType_ = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
