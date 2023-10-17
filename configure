@@ -2450,7 +2450,9 @@ sub PostProcessOptions_ ()
 		# COULD combine them all, and harwire runing the awk scrit to remove dups a -lz and each of these
 		# libraries: '-lbrotlidec', '-lcrypto', '-lidn2', '-lssl', '-lz'
 		# Seens of a bad bunch of options
-		$EXTRA_SUFFIX_LINKER_ARGS .= " -Wl,-no_warn_duplicate_libraries"
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 15.0) {
+			$EXTRA_SUFFIX_LINKER_ARGS .= " -Wl,-no_warn_duplicate_libraries";
+		}
 	}
 
 }
