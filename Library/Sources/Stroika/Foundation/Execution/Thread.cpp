@@ -758,19 +758,6 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
             sHandlerInstalled_ = true;
         }
     }
-#if 0
-    // Comment out 2020-10-30 - since ubuntu 20.10 now warns of deprecation, and this appears to be redudant with our exist
-    // call to sigaction that already doesnt set SA_RESTART
-    {
-        /*
-            * siginterrupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
-            * will return EINTR - which is crucial to our strategy to interrupt them!
-            *
-            *  @todo PROBABLY NOT NEEDED ANYMORE (due to use of sigaction) -- LGP 2015-08-29
-            */
-        Verify (::siginterrupt (SignalUsedForThreadInterrupt (), true) == 0);
-    }
-#endif
     (void)Execution::SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
 #elif qPlatform_Windows
     Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
