@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   ***NOT a Cancelation Point***
          */
-        nonvirtual void release_and_notify_one (LockType& lock);
+        nonvirtual void release_and_notify_one (LockType& lock) noexcept;
 
         /**
          * NOTIFY the condition variable (notify_all), but unlock first due to:                  
@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   ***NOT a Cancelation Point***
          */
-        nonvirtual void release_and_notify_all (LockType& lock);
+        nonvirtual void release_and_notify_all (LockType& lock) noexcept;
 
         /**
          *  \brief forward notify_one () call to underlying std::condition_variable'
@@ -235,7 +235,7 @@ namespace Stroika::Foundation::Execution {
          * @todo maybe lose the (no predicate) overload --LGP 2023-10-09
          */
         nonvirtual cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
-        template <typename PREDICATE>
+        template <invocable PREDICATE>
         nonvirtual bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE&& readyToWake);
 
         /**
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Execution {
          *  \ensure (lock.owns_lock ());
          */
         nonvirtual cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
-        template <typename PREDICATE>
+        template <invocable PREDICATE>
         nonvirtual bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE&& readyToWake);
 
         /**
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   ***Not Cancelation Point***     -- but perhaps should be???
          */
-        template <typename FUNCTION>
+        template <invocable FUNCTION>
         nonvirtual void MutateDataNotifyAll (FUNCTION&& mutatorFunction);
 
         /**
@@ -289,7 +289,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   ***Not Cancelation Point***     -- but perhaps should be???
          */
-        template <typename FUNCTION>
+        template <invocable FUNCTION>
         nonvirtual void MutateDataNotifyOne (FUNCTION&& mutatorFunction);
     };
 

@@ -28,13 +28,13 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename MUTEX, typename CONDITION_VARIABLE>
-    inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::release_and_notify_one (LockType& lock)
+    inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::release_and_notify_one (LockType& lock) noexcept
     {
         lock.unlock ();
         notify_one ();
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
-    inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::release_and_notify_all (LockType& lock)
+    inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::release_and_notify_all (LockType& lock) noexcept
     {
         lock.unlock ();
         notify_all ();
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Execution {
         return (Time::GetTickCount () > timeoutAt) ? cv_status::timeout : cv_status::no_timeout;
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
-    template <typename PREDICATE>
+    template <invocable PREDICATE>
     bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE&& readyToWake)
     {
         Require (lock.owns_lock ());
@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Execution {
         return wait_until (lock, timeout + Time::GetTickCount ());
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
-    template <typename PREDICATE>
+    template <invocable PREDICATE>
     inline bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE&& readyToWake)
     {
         Require (lock.owns_lock ());
@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Execution {
         return wait_until (lock, timeout + Time::GetTickCount (), forward<PREDICATE> (readyToWake));
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
-    template <typename FUNCTION>
+    template <invocable FUNCTION>
     inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyAll (FUNCTION&& mutatorFunction)
     {
         // See https://en.cppreference.com/w/cpp/thread/condition_variable for why we modify the data under the lock
@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Execution {
         fConditionVariable.notify_all ();
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
-    template <typename FUNCTION>
+    template <invocable FUNCTION>
     inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyOne (FUNCTION&& mutatorFunction)
     {
         // See https://en.cppreference.com/w/cpp/thread/condition_variable for why we modify the data under the lock
