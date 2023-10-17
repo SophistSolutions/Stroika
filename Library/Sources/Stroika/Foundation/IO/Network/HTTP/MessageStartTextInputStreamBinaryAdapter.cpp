@@ -47,7 +47,7 @@ public:
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{
-            Stroika_Foundation_Debug_OptionalizeTraceArgs (L"MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable")};
+            Stroika_Foundation_Debug_OptionalizeTraceArgs ("MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable")};
 #endif
         this->SeekRead (Whence::eFromStart, 0);
         Character c;
@@ -73,7 +73,7 @@ public:
                             s = gotCRLFCR;
                         } break;
                         default: {
-                            DbgTrace (L"Looks like bad HTTP header");
+                            DbgTrace ("Looks like bad HTTP header");
                             s = gotNOTHING;
                         } break;
                     }
@@ -88,7 +88,7 @@ public:
                             return true;
                         } break;
                         default: {
-                            DbgTrace (L"Looks like bad HTTP header");
+                            DbgTrace ("Looks like bad HTTP header");
                             s = gotNOTHING;
                         } break;
                     }
