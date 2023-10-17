@@ -79,7 +79,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     // @todo - re-implement using priority q, with next time at top of q
     Synchronized<RegisteredTaskCollection>       fData_;
     Synchronized<shared_ptr<Thread::CleanupPtr>> fThread_{};
-    WaitableEvent                                fDataChanged_{WaitableEvent::ResetType::eAutoReset};
+    WaitableEvent                                fDataChanged_{};
 
     // this is where a priorityq would be better
     DurationSecondsType GetNextWakeupTime_ ()
@@ -106,6 +106,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
         while (true) {
             Require (Debug::AppearsDuringMainLifetime ());
             fDataChanged_.WaitUntilQuietly (GetNextWakeupTime_ ());
+            fDataChanged_.Reset (); // SUBTLE why this is not a race. Yes, another thread could post new data, but we haven't yet looked through the data so OK; and only one reader (us)
             // now process any timer events that are ready (could easily be more than one).
             // if we had a priority q, we would do them in order, but for now, just do all that are ready
             // NOTE - to avoid holding a lock (in case these guys remove themselves or whatever) - lock/run through list twice
@@ -191,7 +192,7 @@ auto IntervalTimer::Manager::DefaultRep::GetAllRegisteredTasks () const -> Regis
  */
 IntervalTimer::Manager::Activator::Activator ()
 {
-    Debug::TraceContextBumper ctx{L"IntervalTimer::Manager::Activator::Activator"};
+    Debug::TraceContextBumper ctx{"IntervalTimer::Manager::Activator::Activator"};
     Require (Manager::sThe.fRep_ == nullptr); // only one activator object allowed
     Require (Debug::AppearsDuringMainLifetime ());
     Manager::sThe = Manager{make_shared<IntervalTimer::Manager::DefaultRep> ()};
@@ -199,7 +200,7 @@ IntervalTimer::Manager::Activator::Activator ()
 
 IntervalTimer::Manager::Activator::~Activator ()
 {
-    Debug::TraceContextBumper ctx{L"IntervalTimer::Manager::Activator::~Activator"};
+    Debug::TraceContextBumper ctx{"IntervalTimer::Manager::Activator::~Activator"};
     RequireNotNull (Manager::sThe.fRep_); // this is the only way to remove, and so must not be null here
     Require (Debug::AppearsDuringMainLifetime ());
     Manager::sThe.fRep_.reset ();

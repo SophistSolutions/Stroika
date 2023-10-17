@@ -20,10 +20,6 @@ namespace Stroika::Foundation::Execution {
      ********************** Execution::WaitableEvent::WE_ ***************************
      ********************************************************************************
      */
-    inline WaitableEvent::WE_::WE_ (ResetType resetType)
-        : fResetType{resetType}
-    {
-    }
     inline void WaitableEvent::WE_::Reset ()
     {
         typename ConditionVariable<>::QuickLockType critSection{fConditionVariable.fMutex};
@@ -52,8 +48,8 @@ namespace Stroika::Foundation::Execution {
      *************************** Execution::WaitableEvent ***************************
      ********************************************************************************
      */
-    inline WaitableEvent::WaitableEvent (ResetType resetType)
-        : fWE_{resetType}
+    inline WaitableEvent::WaitableEvent ()
+        : fWE_{}
     {
     }
     inline void WaitableEvent::Reset ()
@@ -92,6 +88,32 @@ namespace Stroika::Foundation::Execution {
     inline auto WaitableEvent::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) -> WaitStatus
     {
         return fWE_.WaitUntilQuietly (timeoutAt);
+    }
+    inline void WaitableEvent::WaitAndReset (Time::Duration timeout)
+    {
+        Wait (timeout);
+        Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
+        fWE_.fTriggered = false;
+    }
+    inline void WaitableEvent::WaitUntilAndReset (Time::DurationSecondsType timeoutAt)
+    {
+        WaitUntil (timeoutAt);
+        Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
+        fWE_.fTriggered = false;
+    }
+    inline auto WaitableEvent::WaitQuietlyAndReset (const Time::Duration& timeout) -> WaitStatus
+    {
+        auto r = WaitQuietly (timeout);
+        Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
+        fWE_.fTriggered = false;
+        return r;
+    }
+    inline auto WaitableEvent::WaitUntilQuietlyAndReset (Time::DurationSecondsType timeoutAt) -> WaitStatus
+    {
+        auto r = WaitUntilQuietlyAndReset (timeoutAt);
+        Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
+        fWE_.fTriggered = false;
+        return r;
     }
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
     template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
@@ -223,12 +245,18 @@ namespace Stroika::Foundation::Execution {
 }
 
 namespace Stroika::Foundation::Configuration {
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <>
     constexpr EnumNames<Execution::WaitableEvent::ResetType> DefaultNames<Execution::WaitableEvent::ResetType>::k{
         EnumNames<Execution::WaitableEvent::ResetType>::BasicArrayInitializer{{
             {Execution::WaitableEvent::ResetType::eAutoReset, L"AutoReset"},
             {Execution::WaitableEvent::ResetType::eManualReset, L"ManualReset"},
         }}};
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <>
     constexpr EnumNames<Execution::WaitableEvent::WaitStatus> DefaultNames<Execution::WaitableEvent::WaitStatus>::k{
         EnumNames<Execution::WaitableEvent::WaitStatus>::BasicArrayInitializer{{

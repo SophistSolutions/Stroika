@@ -64,18 +64,11 @@ auto WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) 
     constexpr bool kMagicWorkaroundMaybe_ = true;
     if (kMagicWorkaroundMaybe_) {
         if (fTriggered) {
-            if (fResetType == eAutoReset) {
-                fTriggered = false;         // autoreset
-            }
             return WaitStatus::eTriggered;
         }
     }
     unique_lock<mutex> lock{fConditionVariable.fMutex};
     if (fConditionVariable.wait_until (lock, timeoutAt, [this] () { return fTriggered; })) {
-        if (fResetType == eAutoReset) {
-            Assert (lock.owns_lock ()); // cannot call Reset () directly because we already have the lock mutex
-            fTriggered = false;         // autoreset
-        }
         return WaitStatus::eTriggered;
     }
     else {
@@ -89,13 +82,21 @@ auto WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) 
  ********************************** WaitableEvent *******************************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 constexpr WaitableEvent::ResetType WaitableEvent::eAutoReset;
 constexpr WaitableEvent::ResetType WaitableEvent::eManualReset;
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 #if qDebug || qStroika_FeatureSupported_Valgrind
 WaitableEvent::~WaitableEvent ()
 {
+#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
     Require (fExtraWaitableEvents_.empty ()); // Cannot kill a waitable event while its being waited on by others
+#endif
 }
 #endif
 

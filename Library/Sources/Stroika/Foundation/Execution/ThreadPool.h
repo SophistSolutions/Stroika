@@ -281,10 +281,10 @@ namespace Stroika::Foundation::Execution {
         mutable recursive_mutex         fCriticalSection_;
         atomic<bool>                    fAborted_{false};
         Containers::Collection<TPInfo_> fThreads_; // all threads, and a data member for thread object, and one for running task, if any
-        list<TaskType>                  fPendingTasks_;             // tasks not yet running - @todo Use Stroika Queue
-        WaitableEvent fTasksMaybeAdded_{WaitableEvent::eAutoReset}; // recheck for new tasks (or other events - wakeup waiters on fTasks)
-        atomic<unsigned int>         fNextThreadEntryNumber_{1};
-        optional<Characters::String> fThreadPoolName_;
+        list<TaskType>                  fPendingTasks_;      // tasks not yet running - @todo Use Stroika Queue
+        WaitableEvent                   fTasksMaybeAdded_{}; // recheck for new tasks (or other events - wakeup waiters on fTasks)
+        atomic<unsigned int>            fNextThreadEntryNumber_{1};
+        optional<Characters::String>    fThreadPoolName_;
 
     private:
         friend class MyRunnable_; // So MyRunnable_ can call WaitForNextTask_()

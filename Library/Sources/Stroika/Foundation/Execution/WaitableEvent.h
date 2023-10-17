@@ -16,20 +16,6 @@
 
 /**
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- * TODO:
- *
- *      @todo   Consider if its a good idea to support auto-reset events. I use in one place besides
- *              regression tests.
- *
- *      @todo   Consider if there is a need for timed mutexes.
- *              Reviewed 2014-02-09, and I'm pretty sure not needed.
- *
- *      @todo   Consider doing an #if qPlatform_Windows implemeantion using Windows 'CreateEvent'. I had this in Stroika
- *              circa 2013-06-01, and could just grab that implementation (really pretty simple).
- *
- *              But unless there is a performance or other such issue, it maybe better to stick to a single portable
- *              implementation.
  */
 
 namespace Stroika::Foundation::Execution {
@@ -37,27 +23,7 @@ namespace Stroika::Foundation::Execution {
     /*
      *  UNSURE IF/HOW LONG WE WANT TO SUPPORT THIS API. EXPERIMENTAL!
      *  (introduced in Stroika 2.0a20 - 2014-02-08)
-     */
-#ifndef qExecution_WaitableEvent_SupportWaitForMultipleObjects
-#define qExecution_WaitableEvent_SupportWaitForMultipleObjects 1
-#endif
-
-    /**
-     *  AutoReset Waitable Event (like Windows' CreateEvent (resetType==eManualReset, false)).
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
-     *
-     *  \note   \em async-signal-safety - this is NOT safe to use from signals (from http://pubs.opengroup.org/onlinepubs/009695399/functions/pthread_cond_broadcast.html - It is not safe to use the pthread_cond_signal() function in a signal handler that is invoked asynchronously
-     *          Use POSIX sem_init/sem_post () 
-     *
-     *  \note   \em Design Note     Considered making this copyable, or at least movable, but mutex and
-     *              other similar classes are not.
-     *              and you can easily use shared_ptr<> on an WaitableEvent to make it copyable.
-     *
-     *  \note   \em Design Note     WaitForAny/WaitForAnyUntil and WaitForMultipleEvents
-     *
-     *  @see    qExecution_WaitableEvent_SupportWaitForMultipleObjects
-     *
+     * 
      *      This appears to be an issue with strong arguments on both sides. I'm very uncertain.
      *
      *      I've used the Windows WaitForMutlipleObjects API for years, and feel pretty comfortable with it.
@@ -89,45 +55,34 @@ namespace Stroika::Foundation::Execution {
      *          o   Interesting notes on how to implement WaitForMultipleEvents
      *              http://lists.boost.org/Archives/boost/2004/12/77175.php
      *
+     *  I THINK condition-variable API is better, so disabling this by default.. and maybe lose it altogether soon.
+     *  -- LGP 2023-10-17
+     */
+#ifndef qExecution_WaitableEvent_SupportWaitForMultipleObjects
+#define qExecution_WaitableEvent_SupportWaitForMultipleObjects 0
+#endif
+
+    /**
+     *  AutoReset Waitable Event (like Windows' CreateEvent (resetType==eManualReset, false)).
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *
+     *  \note   \em async-signal-safety - this is NOT safe to use from signals (from http://pubs.opengroup.org/onlinepubs/009695399/functions/pthread_cond_broadcast.html - It is not safe to use the pthread_cond_signal() function in a signal handler that is invoked asynchronously
+     *          Use POSIX sem_init/sem_post () 
+     *
+     *  \note   \em Design Note     Considered making this copyable, or at least movable, but mutex and
+     *              other similar classes are not.
+     *              and you can easily use shared_ptr<> on an WaitableEvent to make it copyable.
+     *
+     *  \note   \em Design Note     WaitForAny/WaitForAnyUntil and WaitForMultipleEvents
+     *
+     *  @see    qExecution_WaitableEvent_SupportWaitForMultipleObjects
      */
     class WaitableEvent {
     public:
         /**
-         *  eManualReset is the simplest to understand. Wait only returns when the event is set, and the only thing that can set it
-         *  is a call to Set().
-         *
-         *  eAutoReset is sometimes useful when you have a single thread waiting on the event, and need to wake that thread repeatedly, each time an event happens.
-         *
-         *  The only difference between eManualReset and eAutoReset is that when a Wait() succeeds, as the very last step in returning
-         *  a successful wait, the event is automatically 'Reset'.
-         *
-         *  \note This means that AutoReset events are unsuitable for use when multiple threads are waiting on an event, and you wish to
-         *        make them all up. By definition, only ONE thread wakes up to recieve the 'AutoReset' event.
-         * 
-         *  \todo CONSIDER losing ResetType - and just force callers to manually do the 'reset' after wait returns successfully. Maybe simpler and less
-         *        confusing and error prone ( in case people dont read this ).
-         * 
-         *          MAYBE instead address this by having an API - WaitAndReset() ---???
          */
-        enum class ResetType {
-            eAutoReset,
-            eManualReset,
-
-            Stroika_Define_Enum_Bounds (eAutoReset, eManualReset)
-        };
-
-    public:
-        static constexpr ResetType eAutoReset = ResetType::eAutoReset;
-
-    public:
-        static constexpr ResetType eManualReset = ResetType::eManualReset;
-
-    public:
-        /**
-         *  \note   WaitableEvent () defaults to 'manual reset' - because it often doesn't matter how the waitable event gets reset (because it never does)
-         *          and this (manual reset) is the least surprising behavior.
-         */
-        WaitableEvent (ResetType resetType = eManualReset);
+        WaitableEvent ();
         WaitableEvent (WaitableEvent&&)      = delete;
         WaitableEvent (const WaitableEvent&) = delete;
 
@@ -226,6 +181,7 @@ namespace Stroika::Foundation::Execution {
          *  @see Wait ()
          *  @see WaitUntil ()
          *  @see WaitUntilQuietly ()
+         *  @see WaitQuietlyAndReset ()
          *  @see PeekIsSet ()
          *
          *  \note   ***Cancelation Point***
@@ -241,6 +197,7 @@ namespace Stroika::Foundation::Execution {
          *  @see Wait ()
          *  @see WaitQuietly ()
          *  @see WaitUntilQuietly ()
+         *  @see WaitUntilAndReset ()
          *
          *  \note   ***Cancelation Point***
          */
@@ -259,11 +216,30 @@ namespace Stroika::Foundation::Execution {
          *  @see Wait ()
          *  @see WaitQuietly ()
          *  @see WaitUntil ()
+         *  @see WaitUntilQuietlyAndReset ()
          *
          *  \note   ***Cancelation Point***
          */
         nonvirtual WaitStatus WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
 
+    public:
+        /**
+         *  @see Wait ()
+         *  @see WaitUntil ()
+         *  @see WaitQuietly ()
+         *  @see WaitUntilQuietly ()
+         *  @see Reset ()
+         *
+         *  \note   ***Cancelation Point***
+         * 
+         *  Unclear if this is a good idea. Its a preplacement for 'auto-reset' events in Stroika v2.1.
+         */
+        nonvirtual void       WaitAndReset (Time::Duration timeout = Time::kInfinite);
+        nonvirtual void       WaitUntilAndReset (Time::DurationSecondsType timeoutAt);
+        nonvirtual WaitStatus WaitQuietlyAndReset (const Time::Duration& timeout);
+        nonvirtual WaitStatus WaitUntilQuietlyAndReset (Time::DurationSecondsType timeoutAt);
+
+    public:
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
     public:
         /**
@@ -326,16 +302,24 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     public:
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        enum class [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] ResetType{eAutoReset, eManualReset,
+                                                                                        Stroika_Define_Enum_Bounds (eAutoReset, eManualReset)};
+        [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] static constexpr ResetType eAutoReset   = ResetType::eAutoReset;
+        [[deprecated ("Since Stroika v3.0d4 - use WaitAndReset")]] static constexpr ResetType eManualReset = ResetType::eManualReset;
         [[deprecated ("since v3.0d4 - use WaitStatus::eTimeout")]] static constexpr WaitStatus kWaitQuietlyTimeoutResult{WaitStatus::eTimeout};
         [[deprecated ("since v3.0d4 - use WaitStatus::eTriggered")]] static constexpr WaitStatus kWaitQuietlySetResult{WaitStatus::eTriggered};
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     private:
         struct WE_ {
-            ResetType                   fResetType;
             mutable ConditionVariable<> fConditionVariable{};
             bool                        fTriggered{false};
 
-            WE_ (ResetType resetType);
             nonvirtual void       Reset ();
             nonvirtual bool       GetIsSet () const noexcept;
             nonvirtual bool       PeekIsSet () const noexcept;

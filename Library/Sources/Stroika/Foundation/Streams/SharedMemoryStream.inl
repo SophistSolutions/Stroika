@@ -250,7 +250,7 @@ namespace Stroika::Foundation::Streams {
 
     private:
         mutable recursive_mutex fMutex_;
-        Execution::WaitableEvent fMoreDataWaiter_{Execution::WaitableEvent::eManualReset}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
+        Execution::WaitableEvent fMoreDataWaiter_{}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
         vector<ElementType>                    fData_;
         typename vector<ElementType>::iterator fReadCursor_;
         typename vector<ElementType>::iterator fWriteCursor_;

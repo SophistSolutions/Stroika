@@ -198,11 +198,13 @@ namespace Stroika::Foundation::Configuration {
     template <typename ENUM_TYPE>
     constexpr void EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
     {
+        DISABLE_COMPILER_MSC_WARNING_START (4996); // hack for when deprecated enum is used in EnumNames...
         Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
         using IndexType = make_unsigned_t<typename underlying_type<ENUM_TYPE>::type>;
         for (IndexType i = 0; i < static_cast<IndexType> (ENUM_TYPE::eCOUNT); ++i) {
             Require (OffsetFromStart<ENUM_TYPE> (fEnumNames_[i].first) == i);
         }
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
     }
 
     /*

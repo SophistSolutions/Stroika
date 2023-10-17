@@ -455,7 +455,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
 
         // Prevent spinwaiting... This event is SET when any new item arrives
         //DbgTrace ("ThreadPool::WaitForNextTask_ () - about to wait for added tasks");
-        fTasksMaybeAdded_.Wait ();
+        fTasksMaybeAdded_.WaitAndReset ();
         //DbgTrace ("ThreadPool::WaitForNextTask_ () - completed wait for added tasks");
     }
 }

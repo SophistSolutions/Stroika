@@ -78,8 +78,8 @@ namespace {
 }
 
 namespace {
-    WaitableEvent sRegTest3Event_T1_{WaitableEvent::eAutoReset};
-    WaitableEvent sRegTest3Event_T2_{WaitableEvent::eAutoReset};
+    WaitableEvent sRegTest3Event_T1_{};
+    WaitableEvent sRegTest3Event_T2_{};
     namespace WAITABLE_EVENTS_ {
         void NOTIMEOUTS_ ()
         {
@@ -90,7 +90,7 @@ namespace {
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
-                        sRegTest3Event_T1_.Wait ();
+                        sRegTest3Event_T1_.WaitAndReset ();
                         int tmp = *argP;
                         Execution::Sleep (.001);
                         // Since fred1/fred2 always take turns, and Fred1 always goes first...
@@ -106,7 +106,7 @@ namespace {
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
-                        sRegTest3Event_T2_.Wait ();
+                        sRegTest3Event_T2_.WaitAndReset ();
                         int tmp = *argP;
                         Execution::Sleep (.001);
                         //DbgTrace ("FRED2: Updating value in of %d", tmp);
@@ -743,10 +743,11 @@ namespace {
     void RegressionTest12_WaitAny_ ()
     {
         Debug::TraceContextBumper ctx{"RegressionTest12_WaitAny_"};
-        Debug::TimingTrace        tt;
+#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
+        Debug::TimingTrace tt;
         // EXPERIMENTAL
-        WaitableEvent                              we1{WaitableEvent::eAutoReset};
-        WaitableEvent                              we2{WaitableEvent::eAutoReset};
+        WaitableEvent                              we1{};
+        WaitableEvent                              we2{};
         static constexpr Time::DurationSecondsType kMaxWaitTime_{5.0};
         Thread::Ptr                                t1      = Thread::New ([&we1] () {
             Execution::Sleep (kMaxWaitTime_); // wait long enough that we are pretty sure t2 will always trigger before we do
@@ -775,6 +776,7 @@ namespace {
         // They capture so must wait for them to complete
         t1.AbortAndWaitForDone ();
         t2.AbortAndWaitForDone ();
+#endif
     }
 }
 
@@ -783,9 +785,10 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"RegressionTest13_WaitAll_"};
         Debug::TimingTrace        tt;
+#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
         // EXPERIMENTAL
-        WaitableEvent we1{WaitableEvent::eAutoReset};
-        WaitableEvent we2{WaitableEvent::eAutoReset};
+        WaitableEvent we1{};
+        WaitableEvent we2{};
         bool          w1Fired = false;
         bool          w2Fired = false;
         Thread::Ptr   t1      = Thread::New ([&we1, &w1Fired] () {
@@ -807,6 +810,7 @@ namespace {
         // They capture so must wait for them to complete
         t1.AbortAndWaitForDone ();
         t2.AbortAndWaitForDone ();
+#endif
     }
 }
 
@@ -906,7 +910,7 @@ namespace {
             Debug::TraceContextBumper ctx{"RegressionTest17_ThreadInterruption_::RunTests"};
             Debug::TimingTrace        tt;
             atomic<unsigned>          interruptCnt{};
-            WaitableEvent             we{WaitableEvent::eManualReset};
+            WaitableEvent             we{};
             Thread::Ptr               t = Thread::New (
                 [&] () {
                     while (true) {
