@@ -64,6 +64,10 @@ auto WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) 
     constexpr bool kMagicWorkaroundMaybe_ = true;
     if (kMagicWorkaroundMaybe_) {
         if (fTriggered) {
+            if (fResetType == eAutoReset) {
+                Assert (lock.owns_lock ()); // cannot call Reset () directly because we already have the lock mutex
+                fTriggered = false;         // autoreset
+            }
             return WaitStatus::eTriggered;
         }
     }
