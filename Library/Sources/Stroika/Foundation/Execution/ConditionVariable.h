@@ -12,7 +12,7 @@
 #include "../Time/Realtime.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  \file
  *
@@ -153,7 +153,6 @@ namespace Stroika::Foundation::Execution {
          *              o       stop_token overloads not supported (see kSupportsStopToken)
          *              o       ? may change - cannot interrupt main thread (abort) so have no stop token to use/pass? why does that matter?
          *                
-         * 
          *      \note in Stroika v2.1 this was called sThreadAbortCheckFrequency_Default
          */
         static inline Time::DurationSecondsType sConditionVariableWaitChunkTime{0.25};
