@@ -3,14 +3,12 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../Characters/CString/Utilities.h"
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
 #include "../Characters/ToString.h"
 #include "../Debug/Main.h"
 #include "../Debug/TimingTrace.h"
 #include "../Execution/Finally.h"
-#include "../Memory/BlockAllocated.h"
 
 #include "Common.h"
 #include "Sleep.h"
@@ -412,9 +410,6 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
         DbgTrace (L"serious bug");
         AssertNotReached (); // this should never happen due to the SuppressInterruptionInContext...
     }
-
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
 }
 
 String ThreadPool::ToString () const

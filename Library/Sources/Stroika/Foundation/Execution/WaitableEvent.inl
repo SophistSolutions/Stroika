@@ -10,8 +10,11 @@
  ********************************************************************************
  */
 #include "Common.h"
+
+#if qExecution_WaitableEvent_SupportWaitForMultipleObjects
 #include "Finally.h"
 #include "Thread.h"
+#endif
 
 namespace Stroika::Foundation::Execution {
 
@@ -22,12 +25,12 @@ namespace Stroika::Foundation::Execution {
      */
     inline void WaitableEvent::WE_::Reset ()
     {
-        typename ConditionVariable<>::QuickLockType critSection{fConditionVariable.fMutex};
-        fTriggered = false;
         /*
-         *  NOTE: this code does NOT do a notifyall () - because we dont want anyone to WAKE to discover new data. Resetting the waitable event
+         *  NOTE: this code does NOT do a fConditionVariable.MutateDataNotifyAll () - because we dont want anyone to WAKE to discover new data. Resetting the waitable event
          *  is meant to be like destroying it and starting over.
          */
+        typename ConditionVariable<>::QuickLockType critSection{fConditionVariable.fMutex};
+        fTriggered = false;
     }
     inline bool WaitableEvent::WE_::GetIsSet () const noexcept
     {
@@ -92,27 +95,27 @@ namespace Stroika::Foundation::Execution {
     inline void WaitableEvent::WaitAndReset (Time::Duration timeout)
     {
         Wait (timeout);
-        Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
-        fWE_.fTriggered = false;
+        //Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
+        Reset ();
     }
     inline void WaitableEvent::WaitUntilAndReset (Time::DurationSecondsType timeoutAt)
     {
         WaitUntil (timeoutAt);
-        Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
-        fWE_.fTriggered = false;
+        //Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
+        Reset ();
     }
     inline auto WaitableEvent::WaitQuietlyAndReset (const Time::Duration& timeout) -> WaitStatus
     {
         auto r = WaitQuietly (timeout);
-        Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
-        fWE_.fTriggered = false;
+        // Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
+        Reset ();
         return r;
     }
     inline auto WaitableEvent::WaitUntilQuietlyAndReset (Time::DurationSecondsType timeoutAt) -> WaitStatus
     {
         auto r = WaitUntilQuietlyAndReset (timeoutAt);
-        Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
-        fWE_.fTriggered = false;
+        // Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
+        Reset ();
         return r;
     }
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects

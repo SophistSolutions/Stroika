@@ -142,7 +142,7 @@ namespace {
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
-                        sRegTest3Event_T1_.Wait (5.0);
+                        sRegTest3Event_T1_.WaitAndReset (5.0);
                         int tmp = *argP;
                         Execution::Sleep (.001);
                         // Since fred1/fred2 always take turns, and Fred1 always goes first...
@@ -158,7 +158,7 @@ namespace {
                 {
                     int* argP = reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
-                        sRegTest3Event_T2_.Wait (5.0);
+                        sRegTest3Event_T2_.WaitAndReset (5.0);
                         int tmp = *argP;
                         Execution::Sleep (.001);
                         //DbgTrace ("FRED2: Updating value in of %d", tmp);
