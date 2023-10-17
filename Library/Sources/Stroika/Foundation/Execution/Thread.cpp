@@ -961,9 +961,6 @@ void Thread::Ptr::Interrupt () const
         fRep_->NotifyOfInterruptionFromAnyThread_ ();
     }
 }
-namespace {
-    constexpr Time::DurationSecondsType kAbortAndWaitForDoneUntil_TimeBetweenAborts_ = 1.0;
-}
 
 void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
@@ -974,40 +971,6 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
 
     Abort ();
     WaitForDoneUntil (timeoutAt);
-
-#if 0
-    // Assume no more race/magic needed - debug those cases!
-
-
-    // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
-    unsigned int tries = 0;
-    while (true) {
-        Abort ();
-        ++tries;
-        Time::DurationSecondsType timeLeft = timeoutAt - Time::GetTickCount ();
-        if (timeLeft <= kAbortAndWaitForDoneUntil_TimeBetweenAborts_) {
-            WaitForDoneUntil (timeoutAt); // throws if we should throw
-            return;
-        }
-        else {
-            // If timeLeft BIG - ignore timeout exception and go through loop again
-            if (WaitForDoneUntilQuietly (Time::GetTickCount () + kAbortAndWaitForDoneUntil_TimeBetweenAborts_)) {
-                return;
-            }
-            // timeout just continue to loop
-        }
-        if (tries <= 1) {
-            // this COULD happen due to a lucky race - OR - the code could just be BUSY for a while (not calling CheckForAborted). But even then - it COULD make
-            // a blocking call which needs interruption.
-            DbgTrace ("This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be "
-                      "called again to re-interrupt: tries: %d.",
-                      tries);
-        }
-        else {
-            DbgTrace ("OK - maybe the target thread is ignoring abort exceptions? try/catch/ignore?");
-        }
-    }
-#endif
 }
 
 void Thread::Ptr::ThrowIfDoneWithException () const
@@ -1188,40 +1151,6 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, 
      */
     Abort (threads);
     WaitForDoneUntil (threads, timeoutAt);
-
-#if 0
-    threads.Apply ([] (const Ptr& t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
-
-#if 1 /*qDefaultTracingOn*/
-    {
-        constexpr Time::DurationSecondsType kTimeBetweenDbgTraceWarnings_{5.0};
-        Time::DurationSecondsType           timeOfLastWarning = Time::GetTickCount ();
-        Time::DurationSecondsType           timeOfLastAborts  = timeOfLastWarning;
-        Set<Ptr>                            threads2WaitOn{threads};
-        while (not threads2WaitOn.empty ()) {
-            for (Traversal::Iterator<Ptr> i = threads2WaitOn.begin (); i != threads2WaitOn.end ();) {
-                constexpr Time::DurationSecondsType kMinWaitThreshold_ =
-                    min (kTimeBetweenDbgTraceWarnings_, kAbortAndWaitForDoneUntil_TimeBetweenAborts_);
-                Time::DurationSecondsType to = min (Time::GetTickCount () + kMinWaitThreshold_, timeoutAt);
-                if (i->WaitForDoneUntilQuietly (to)) {
-                    i = threads2WaitOn.erase (i);
-                }
-                else {
-                    ++i;
-                }
-            }
-            if (not threads2WaitOn.empty () and timeOfLastWarning + kTimeBetweenDbgTraceWarnings_ < Time::GetTickCount ()) {
-                DbgTrace (L"still waiting for %s - re-sending aborts", Characters::ToString (threads2WaitOn).c_str ());
-            }
-            if (not threads2WaitOn.empty () and timeOfLastAborts + kAbortAndWaitForDoneUntil_TimeBetweenAborts_ < Time::GetTickCount ()) {
-                threads2WaitOn.Apply ([] (Ptr t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
-            }
-        }
-    }
-#else
-    threads.Apply ([timeoutAt] (Ptr t) { t.AbortAndWaitForDoneUntil (timeoutAt); });
-#endif
-#endif
 }
 
 void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeoutAt)
