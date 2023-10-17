@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline auto WaitableEvent::WaitUntilQuietlyAndReset (Time::DurationSecondsType timeoutAt) -> WaitStatus
     {
-        auto r = WaitUntilQuietlyAndReset (timeoutAt);
+        auto r = WaitUntilQuietly (timeoutAt);
         // Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
         Reset ();
         return r;
