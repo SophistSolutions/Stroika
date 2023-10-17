@@ -338,8 +338,9 @@ jobs:
         sudo apt-get install -y libtool-bin pkg-config cmake automake autoconf libtool-bin
         sudo apt-get install -y g++
     - name: Configure
+      # NOTE - disable optimizer due bugs/errors in optimizer (link errors) - but no matter, cuz also slows down analysis (I think)
       run: |
-        ./configure Release --compiler-driver g++ --apply-default-release-flags --lto disable
+        ./configure Release --compiler-driver g++ --apply-default-release-flags --lto disable --append-CXXFLAGS -O0
         cat ConfigurationFiles/Release.xml
     # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
     # to show the summary time for each part
