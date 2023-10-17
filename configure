@@ -386,11 +386,6 @@ sub     IsMSVCCompiler_
 {
 	my $x = shift(@_);
 	return ($x =~ /.*cl.exe.*/);
-   #bad way but best I know for now
-	# if ("$^O" eq "cygwin" or "$^O" eq "msys") {
-	# 	return true;
-	# }
-	# return false
 }
 
 sub     Get_MSVC_CL_Version_
@@ -855,6 +850,14 @@ sub	SetDefaultForCompilerDriver_
 			if (getUbuntuVersion() == 20.04 or getUbuntuVersion() == 22.04) {
 				$EXTRA_PREFIX_LINKER_ARGS = $EXTRA_PREFIX_LINKER_ARGS  . "-Wno-return-local-addr ";
 			}
+			# Lots of apparently spurrious warnings, which we cannot (easily) suppress locally with #pragma warn...
+			#	EG
+			#		In function 'CRYPTO_cfb128_encrypt',
+    		#		inlined from 'SEED_cfb128_encrypt' at ../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/seed/seed_cfb.c:24:5,
+			#		../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/modes/cfb128.c:122:33: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
+				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-stringop-overflow ';
+			}
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_CLANG;
@@ -1005,6 +1008,11 @@ sub	SetDefaultForCompilerDriver_
 
 				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-odr ';
 				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-lto-type-mismatch ';
+			}
+
+			# MOSTLY UNRELATED ISSUE
+			if ($itsVersion < 13.0) {
+				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-stringop-overflow ';
 			}
 		}
 	}

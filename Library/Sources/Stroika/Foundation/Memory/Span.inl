@@ -60,11 +60,6 @@ namespace Stroika::Foundation::Memory {
     {
         return span<TO_T>{reinterpret_cast<TO_T*> (src.data ()), src.size ()};
     }
-#if 0
-    template <typename FROM_T, typename TO_T>
-    constexpr std::span<TO_T> SpanReInterpretCast (span<FROM_T> src)
-        requires (sizeof (FROM_T) == sizeof (TO_T));
-#endif
 
     /*
      ********************************************************************************
@@ -76,14 +71,7 @@ namespace Stroika::Foundation::Memory {
     {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
-#if qCompilerAndStdLib_copy_warning_overflow_Buggy
-        auto targetOutputIterator = target.begin ();
-        for (const auto& elt : src) {
-            *targetOutputIterator++ = elt;
-        }
-#else
         std::copy (src.begin (), src.end (), target.data ());
-#endif
         return target.subspan (0, src.size ());
     }
     template <typename T>
