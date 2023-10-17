@@ -52,6 +52,9 @@ namespace Stroika::Foundation::Execution {
     template <typename MUTEX, typename CONDITION_VARIABLE>
     cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
     {
+        /*
+         *  NOTE: this overload CAN return spurrious wakeups, and just checks timeoutAt to see which cv_status to return.
+         */
         Require (lock.owns_lock ());
 
         Thread::CheckForInterruption ();
@@ -60,7 +63,7 @@ namespace Stroika::Foundation::Execution {
             return cv_status::timeout;
         }
 
-        // convert DurationSecondsType  to time_point for stdc++ calls, but ping to more modest maximum...
+        // convert DurationSecondsType to time_point for stdc++ calls, but ping to more modest maximum...
         auto timeoutAtStopPoint = Time::DurationSeconds2time_point (timeoutAt);
 
         if constexpr (kSupportsStopToken) {
@@ -82,8 +85,7 @@ namespace Stroika::Foundation::Execution {
         Assert (not kSupportsStopToken or not currentThreadIsInterruptible); // just cuz of tests above
 
         if (currentThreadIsInterruptible) {
-            timeoutAtStopPoint = Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sThreadAbortCheckFrequency_NoStopToken));
-            Thread::CheckForInterruption ();
+            timeoutAtStopPoint = Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime));
         }
 
         // If for some reason, we cannot use the stop token (old c++, on main thread or not Stroika thread, or not using condition_variable_any)
@@ -120,7 +122,7 @@ namespace Stroika::Foundation::Execution {
                     //
                     Thread::CheckForInterruption ();
                     // must recheck / re-wait ONLY on the condition var itself - no stop token (cuz then this instantly returns and doesn't unlock argument lock so the signaler can progress)
-                    ready = fConditionVariable.wait_until (lock, Time::DurationSeconds2time_point (Time::GetTickCount () + sThreadAbortCheckFrequency_NoStopToken),
+                    ready = fConditionVariable.wait_until (lock, Time::DurationSeconds2time_point (Time::GetTickCount () + sConditionVariableWaitChunkTime),
                                                            forward<PREDICATE> (readyToWake));
                 }
                 return ready;
@@ -132,6 +134,19 @@ namespace Stroika::Foundation::Execution {
         while (not readyToWake ()) {
             Assert (lock.owns_lock ()); // lock owned during readyToWake call and before wait_until call
             // NB: further checks for interruption happen inside wait_until() called here...
+            //
+            // Another SUBTLE point. we could get here with kSupportsStopToken==false, which might be because of
+            // the kind of condition_variable used, etc (many reasons). Point is - we need to be interrupted
+            // in 3 cases:
+            //      o   timeout
+            //      o   interrupted
+            //      o   readyToWake() (variable it looks at) changes, which happens spontaneously (other thread wakes us toggling lock).
+            //
+            //  We DONT need to tweak timeoutAt with sConditionVariableWaitChunkTime (as is done in called wait_until) because
+            //  if its possible to handle the interuption case, thats done in called wait_until (possibly using sConditionVariableWaitChunkTime).
+            //  if we are woken because of a toggle of lock, we'll get (apparently from point of view of called wait_until) spurrious wakeup and can check
+            //  again.
+            //
             if (wait_until (lock, timeoutAt) == cv_status::timeout) {
                 /*
                  *  Somewhat ambiguous if this should check readyToWake or just return false. Probably best to check, since the condition is met, and thats

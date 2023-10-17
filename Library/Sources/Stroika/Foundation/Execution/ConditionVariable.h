@@ -143,12 +143,20 @@ namespace Stroika::Foundation::Execution {
 #endif
 
         /**
-         *  sThreadAbortCheckFrequency_NoStopToken is used iff kSupportsStopToken is false.
+         *  sConditionVariableWaitChunkTime is used iff kSupportsStopToken is false.
          * 
          *  When waiting, with kSupportsStopToken false, this max timeout is used chunk the waits into smaller chunks so
          *  we can check for thread cancelation.
+         * 
+         *      This time value is generally NOT used in condition variable operation, except in a few disparate situations:
+         * 
+         *              o       stop_token overloads not supported (see kSupportsStopToken)
+         *              o       ? may change - cannot interrupt main thread (abort) so have no stop token to use/pass? why does that matter?
+         *                
+         * 
+         *      \note in Stroika v2.1 this was called sThreadAbortCheckFrequency_Default
          */
-        static inline Time::DurationSecondsType sThreadAbortCheckFrequency_NoStopToken{0.25};
+        static inline Time::DurationSecondsType sConditionVariableWaitChunkTime{0.25};
 
         /**
          */
