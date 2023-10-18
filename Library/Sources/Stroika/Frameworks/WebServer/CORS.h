@@ -53,7 +53,7 @@ namespace Stroika::Frameworks::WebServer {
 
         /**
          */
-        static constexpr wstring_view kAccessControlWildcard = L"*"sv;
+        static constexpr string_view kAccessControlWildcard = "*"sv;
 
         /**
          *  This is the set of headers which will be allowed by Access-Control-Request-Headers OPTIONS requests.
