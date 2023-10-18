@@ -346,6 +346,7 @@ namespace Stroika::Foundation::Execution {
         return Ptr{Ptr::sCurrentThreadRep_.lock ()};
     }
 
+#if !qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 #if __cpp_lib_jthread >= 201911
     /*
      ********************************************************************************
@@ -361,6 +362,7 @@ namespace Stroika::Foundation::Execution {
             return nullopt;
         }
     }
+#endif
 #endif
 
 #if !qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy

@@ -549,6 +549,15 @@ ld: 1 duplicate symbols
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 make[4]: ***
 
+
+
+SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
+.. 
+/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/valgrind-release-SSLPurify-NoBlockAlloc/Stroika-Foundation.a(WaitableEvent.o): in function `bool Stroika::Foundation::Execution::ConditionVariable<std::mutex, std::_V2::condition_variable_any>::wait_until<Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntilQuietly(double)::{lambda()#1}>(std::unique_lock<std::mutex>&, double, Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntilQuietly(double)::{lambda()#1}&&) [clone .constprop.0]':
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ConditionVariable.inl:111: undefined reference to `Stroika::Foundation::Execution::Thread::GetCurrentThreadStopToken()'
+/usr/bin/ld: /Sandbox/Stroika-Dev/Builds/valgrind-release-SSLPurify-NoBlockAlloc/Stroika-Foundation.a(WaitableEvent.o): in function `Stroika::Foundation::Execution::ConditionVariable<std::mutex, std::_V2::condition_variable_any>::wait_until(std::unique_lock<std::mutex>&, double)':
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Execution/ConditionVaria
+
 */
 #ifndef qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 
@@ -560,6 +569,9 @@ make[4]: ***
 // first noticed broken in apply clang 14
 // replicated in clang 15.0
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#elif defined(__GNUC__) && !defined(__clang__)
+// FIRST SEEN BROKEN IN GCC 11
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
 #else
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy 0
 #endif

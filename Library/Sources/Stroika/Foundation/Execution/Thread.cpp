@@ -1228,6 +1228,26 @@ string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const Forma
 }
 
 #if qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
+#if __cpp_lib_jthread >= 201911
+    /*
+     ********************************************************************************
+     ************************ Thread::GetCurrentThreadStopToken *********************
+     ********************************************************************************
+     */
+    optional<stop_token> Thread::GetCurrentThreadStopToken ()
+    {
+        if (Ptr curThread = GetCurrent ()) {
+            return curThread.GetStopToken ();
+        }
+        else {
+            return nullopt;
+        }
+    }
+#endif
+#endif
+
+
+#if qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 /*
  ********************************************************************************
  ******************* Thread::IsCurrentThreadInterruptible ***********************
