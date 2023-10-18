@@ -61,7 +61,7 @@ auto WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) 
 #endif
     Thread::CheckForInterruption ();
     // https://stroika.atlassian.net/browse/STK-993
-    constexpr bool kMagicWorkaroundMaybe_ = true;
+    constexpr bool kMagicWorkaroundMaybe_ = false;
     if (kMagicWorkaroundMaybe_) {
         std::atomic_thread_fence (std::memory_order::seq_cst);
         if (fTriggered) {
