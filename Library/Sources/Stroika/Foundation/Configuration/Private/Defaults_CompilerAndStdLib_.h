@@ -556,6 +556,10 @@ make[4]: ***
 // first noticed broken in apply clang 14
 // replicated in xcode 15.0
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#elif defined(__clang__)
+// first noticed broken in apply clang 14
+// replicated in clang 15.0
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy 0
 #endif
