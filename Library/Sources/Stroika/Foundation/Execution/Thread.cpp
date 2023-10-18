@@ -525,7 +525,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 
         Assert (thisThreadRep->fStatus_ == Status::eNotYetRunning); // status change not allowed til fStartReadyToTransitionToRunningEvent_
 
-        [[maybe_unused]] IDType thisThreadID = thisThreadRep->GetID ();
+        [[maybe_unused]] IDType thisThreadID = GetCurrentThreadID (); // NOTE - CANNOT call thisThreadRep->GetID () or in any way touch thisThreadRep->fThread_
 
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         {
@@ -585,6 +585,8 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             }
 #endif
             thisThreadRep->fStartReadyToTransitionToRunningEvent_.Wait ();
+            
+            Assert (thisThreadID == thisThreadRep->GetID ()); // By NOW we know thisThreadRep->fThread_ has been assigned so it can be accessed
 
             bool doRun = false;
             {
@@ -626,7 +628,6 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
              */
             if (doRun) {
                 DbgTrace (L"In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: %s", thisThreadRep->ToString ().c_str ());
-                Assert (thisThreadID == thisThreadRep->GetID ()); // By NOW we know this is OK
                 thisThreadRep->Run_ ();
                 DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: %s", thisThreadRep->ToString ().c_str ());
                 thisThreadRep->fStatus_ = Status::eCompleted;
@@ -831,7 +832,7 @@ void Thread::Ptr::Start () const
      *                                                               |>      thisThreadRep->fRefCountBumpedInsideThreadMainEvent_.Set ()  (NOTE thisThreadRep == fRefCountBumpedInsideThreadMainEvent_)
      *          END SuppressInterruptionInContext                    |       
      *          Setup a few thread properties, name, priority       <|>      Setup thread-local properties, inside ThreadMain/new thread 
-     *          fRep_->fStartReadyToTransitionToRunningEvent_.Set ()<|>      thisThreadRep->fStartReadyToTransitionToRunningEvent_.Wait ()
+     *          fRep_->fStartReadyToTransitionToRunningEvent_.Set ()<|>      thisThreadRep->fStartReadyToTransitionToRunningEvent_.Wait ();   -- NOTE CANNOT ACCESS thisThreadRep->fThread_ until this point
      *          return/done                                         <|>      STATE TRANSITION TO RUNNING (MAYBE - COULD HAVE BEEN ALREADY ABORTED)
      */
 
