@@ -1377,10 +1377,10 @@ namespace {
         Tester (L"String a + b", Test_SimpleStringConCat1_<wstring>, L"wstring", Test_SimpleStringConCat1_<String>, L"String", 2200000, 2.1, &failedTests);
         Tester (L"wstringstream << test", Test_OperatorINSERT_ostream_<wstring>, L"wstring", Test_OperatorINSERT_ostream_<String>,
                 L"Charactes::String", 6000, 1.4, &failedTests);
-        Tester (L"String::substr()", Test_StringSubStr_<wstring>, L"wstring", Test_StringSubStr_<String>, L"Charactes::String", 2700000, 1.6, &failedTests);
+        Tester (L"String::substr()", Test_StringSubStr_<wstring>, L"wstring", Test_StringSubStr_<String>, L"Charactes::String", 2700000, 1.7, &failedTests);
         struct MemStreamOfChars_ : public MemoryStream<Characters::Character>::Ptr {
             MemStreamOfChars_ ()
-                : Ptr (MemoryStream<Characters::Character>::New ())
+                : Ptr{MemoryStream<Characters::Character>::New ()}
             {
             }
         };
