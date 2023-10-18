@@ -29,12 +29,6 @@ namespace Stroika::Foundation::Execution {
         ~Rep_ ();
 
     public:
-        static void DoCreate (const shared_ptr<Rep_>* repSharedPtr);
-
-    public:
-        nonvirtual void Start ();
-
-    public:
         nonvirtual IDType GetID () const;
 
     public:
@@ -64,7 +58,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void NotifyOfInterruptionFromAnyThread_ ();
 
     private:
-        static void ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept;
+        static void ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexcept;
 
     private:
 #if qPlatform_POSIX
@@ -86,8 +80,8 @@ namespace Stroika::Foundation::Execution {
         thread               fThread_;
 #endif
         atomic<Status>                   fStatus_{Status::eNotYetRunning};
-        WaitableEvent                    fRefCountBumpedEvent_;
-        WaitableEvent                    fOK2StartEvent_;
+        WaitableEvent                    fRefCountBumpedInsideThreadMainEvent_;
+        WaitableEvent                    fStartReadyToTransitionToRunningEvent_;
         WaitableEvent                    fThreadDoneAndCanJoin_;
         wstring                          fThreadName_;
         exception_ptr                    fSavedException_;
@@ -106,10 +100,6 @@ namespace Stroika::Foundation::Execution {
      *********************************** Thread::Rep_ *******************************
      ********************************************************************************
      */
-    inline void Thread::Ptr::Rep_::Start ()
-    {
-        fOK2StartEvent_.Set ();
-    }
 #if __cpp_lib_jthread >= 201911
     inline stop_token Thread::Ptr::Rep_::GetStopToken () const
     {
