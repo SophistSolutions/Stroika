@@ -585,7 +585,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             }
 #endif
             thisThreadRep->fStartReadyToTransitionToRunningEvent_.Wait ();
-            
+
             Assert (thisThreadID == thisThreadRep->GetID ()); // By NOW we know thisThreadRep->fThread_ has been assigned so it can be accessed
 
             bool doRun = false;
@@ -1230,23 +1230,22 @@ string Execution::Thread::FormatThreadID_A (Thread::IDType threadID, const Forma
 
 #if qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 #if __cpp_lib_jthread >= 201911
-    /*
+/*
      ********************************************************************************
      ************************ Thread::GetCurrentThreadStopToken *********************
      ********************************************************************************
      */
-    optional<stop_token> Thread::GetCurrentThreadStopToken ()
-    {
-        if (Ptr curThread = GetCurrent ()) {
-            return curThread.GetStopToken ();
-        }
-        else {
-            return nullopt;
-        }
+optional<stop_token> Thread::GetCurrentThreadStopToken ()
+{
+    if (Ptr curThread = GetCurrent ()) {
+        return curThread.GetStopToken ();
     }
+    else {
+        return nullopt;
+    }
+}
 #endif
 #endif
-
 
 #if qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy
 /*

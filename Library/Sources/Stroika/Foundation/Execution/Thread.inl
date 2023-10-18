@@ -68,25 +68,25 @@ namespace Stroika::Foundation::Execution {
 #endif
 
     private:
-        function<void ()>                   fRunnable_;
-        atomic<bool>                        fInterruptionState_{false}; // regular interrupt, abort interrupt, or none
+        function<void ()> fRunnable_;
+        atomic<bool>      fInterruptionState_{false}; // regular interrupt, abort interrupt, or none
         // @todo lose this mutex. We read fID from thread object, but sometimes call join. want to allow access to some attributes to read while doing a join..
         /// MAYBE reviseit - not sure thats safe...
         //     mutable mutex fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
 #if __cpp_lib_jthread >= 201911
-        jthread                             fThread_;
+        jthread fThread_;
 #else
-        thread                              fThread_;
+        thread               fThread_;
 #endif
-        atomic<Status>                      fStatus_{Status::eNotYetRunning};
-        WaitableEvent                       fRefCountBumpedInsideThreadMainEvent_;
-        WaitableEvent                       fStartReadyToTransitionToRunningEvent_;
-        WaitableEvent                       fThreadDoneAndCanJoin_;
-        wstring                             fThreadName_;
-        exception_ptr                       fSavedException_;
-        Synchronized<optional<Priority>>    fInitialPriority_; // where we store priority before start
+        atomic<Status>                   fStatus_{Status::eNotYetRunning};
+        WaitableEvent                    fRefCountBumpedInsideThreadMainEvent_;
+        WaitableEvent                    fStartReadyToTransitionToRunningEvent_;
+        WaitableEvent                    fThreadDoneAndCanJoin_;
+        wstring                          fThreadName_;
+        exception_ptr                    fSavedException_;
+        Synchronized<optional<Priority>> fInitialPriority_; // where we store priority before start
 #if qPlatform_Windows
-        bool                                fThrowInterruptExceptionInsideUserAPC_{false};
+        bool fThrowInterruptExceptionInsideUserAPC_{false};
 #endif
 
     private:
