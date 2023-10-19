@@ -56,5 +56,7 @@ deadlock:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalH
 #       I looked closely - Oct 3 2023 on Ubuntu 23.04 - and this appears a bogus tsan report, only affecting if you do timed locks.
 mutex:__gthread_recursive_mutex_unlock
 
-
+# This is a REAL RACE, but on purpose, to avoid recursive locks and deadlocks in DBGTRACE calls.
+# Should be VERY rarely used (right now just in ToString() for thread rep).
+#       -- LGP 2023-10-19
 race:Stroika::Foundation::Execution::WaitableEvent::PeekIsSet() const 
