@@ -574,7 +574,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             [[maybe_unused]] auto&& cleanupThreadDoneEventSetter = Finally ([thisThreadRep] () noexcept {
                 // whether aborted before we transition state to running, or after, be sure to set this so we can 'join' the thread (also done in catch handlers)
                 thisThreadRep->fThreadDoneAndCanJoin_.Set ();
-                Assert (thisThreadRep->fStatus_ == Status::eCompleted); // someone else must have set it to completed before we got a chance to run - like Abort ()
+                thisThreadRep->fStatus_ = Status::eCompleted;
             });
 
             Assert (thisThreadID == thisThreadRep->GetID ()); // By now we know thisThreadRep->fThread_ has been assigned so it can be accessed
@@ -621,7 +621,6 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
                 DbgTrace (L"In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: %s", thisThreadRep->ToString ().c_str ());
                 thisThreadRep->Run_ ();
                 DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: %s", thisThreadRep->ToString ().c_str ());
-                thisThreadRep->fStatus_ = Status::eCompleted;
             }
         }
         catch (const AbortException&) {
