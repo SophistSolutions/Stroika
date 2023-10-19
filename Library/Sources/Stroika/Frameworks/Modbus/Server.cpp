@@ -421,7 +421,7 @@ namespace {
                 out.Flush (); // since buffering output, be sure to flush after each response!
             }
         }
-        catch (const Execution::Thread::InterruptException&) {
+        catch (const Execution::Thread::AbortException&) {
             ReThrow (); // no warning needed
         }
         catch (...) {
