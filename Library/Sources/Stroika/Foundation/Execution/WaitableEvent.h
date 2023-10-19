@@ -123,6 +123,9 @@ namespace Stroika::Foundation::Execution {
         /**
          *  This checks if the event is currently in a triggered state. Regardless of the type of event
          *  (autoreset or not) - this does not change the trigger state.
+         * 
+         *  \note   ***NOT THREADSAFE*** - same as GetIsSet() except avoids the lock, so will be reported by TSAN (for example)
+         *          as a race (cuz it is). JUST INTENDED for debug trace messages (so used in ToString).
          *
          *  \note   ***Not Cancelation Point***
          */

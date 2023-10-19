@@ -55,3 +55,6 @@ deadlock:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalH
 #
 #       I looked closely - Oct 3 2023 on Ubuntu 23.04 - and this appears a bogus tsan report, only affecting if you do timed locks.
 mutex:__gthread_recursive_mutex_unlock
+
+
+race:Stroika::Foundation::Execution::WaitableEvent::PeekIsSet() const 
