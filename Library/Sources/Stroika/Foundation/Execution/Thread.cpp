@@ -817,11 +817,10 @@ void Thread::Ptr::Start () const
         SuppressInterruptionInContext suppressInterruptionsOfThisThreadWhileConstructingRepOtherElseLoseSharedPtrEtc;
 
 #if __cpp_lib_jthread >= 201911
-        using StdThreadType = jthread;
+        fRep_->fThread_ = jthread{[this] (const stop_token& st) -> void { fRep_->fStopToken_ = st; Rep_::ThreadMain_ (fRep_); }};
 #else
-        using StdThreadType = thread;
+        fRep_->fThread_ = thread{[this] () -> void { Rep_::ThreadMain_ (fRep_); }};
 #endif
-        fRep_->fThread_ = StdThreadType{[this] () -> void { Rep_::ThreadMain_ (fRep_); }};
 
         // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
         fRep_->fRefCountBumpedInsideThreadMainEvent_.Wait ();
