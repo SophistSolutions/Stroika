@@ -1090,6 +1090,9 @@ namespace Stroika::Foundation::Execution {
         /**
          *  If the current (calling) thread is a 'Stroika thread' - that thread Ptr is returned. If the current thread is NOT a stroika thread (e.g. the main thread)
          *  this will return a nullptr.
+         * 
+         *  \note SEE https://stroika.atlassian.net/browse/STK-994 - for the idea of creating a special Ptr - just for the main thread. But really
+         *        no reason I can see --LGP 2023-10-18
          */
         Ptr GetCurrent ();
 

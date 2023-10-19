@@ -586,7 +586,13 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 #endif
             thisThreadRep->fStartReadyToTransitionToRunningEvent_.Wait ();
 
-            Assert (thisThreadID == thisThreadRep->GetID ()); // By NOW we know thisThreadRep->fThread_ has been assigned so it can be accessed
+            [[maybe_unused]] auto&& cleanupThreadDoneEventSetter = Finally ([thisThreadRep] () noexcept {
+                // whether aborted before we transition state to running, or after, be sure to set this so we can 'join' the thread (also done in catch handlers)
+                thisThreadRep->fThreadDoneAndCanJoin_.Set ();
+                Assert (thisThreadRep->fStatus_ == Status::eCompleted); // someone else must have set it to completed before we got a chance to run - like Abort ()
+            });
+
+            Assert (thisThreadID == thisThreadRep->GetID ()); // By now we know thisThreadRep->fThread_ has been assigned so it can be accessed
 
             bool doRun = false;
             {
@@ -631,13 +637,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
                 thisThreadRep->Run_ ();
                 DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: %s", thisThreadRep->ToString ().c_str ());
                 thisThreadRep->fStatus_ = Status::eCompleted;
-                thisThreadRep->fThreadDoneAndCanJoin_.Set ();
             }
-            else {
-                // if aborted or whatever before we trnasition state to running, be sure to set this so we can 'join' the thread
-                thisThreadRep->fThreadDoneAndCanJoin_.Set ();
-            }
-            Assert (thisThreadRep->fStatus_ == Status::eCompleted); // someone else must have set it to completed before we got a chance to run - like Abort ()
         }
         catch (const InterruptException&) {
             SuppressInterruptionInContext suppressCtx;
@@ -729,17 +729,6 @@ void CALLBACK Thread::Ptr::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParame
     if (rep->fThrowInterruptExceptionInsideUserAPC_) [[unlikely]] {
         CheckForInterruption ();
     }
-#if 0
-    // See https://stroika.atlassian.net/browse/STK-963
-    // in case in a blocking WSA call - like ::recv, or ::connect, etc...
-    // This is SLIGHTLY non-modular, but just makes the WSA socket code behave more like POSIX code - where thread interuption
-    // causes 'EINTR' to be returned.
-    // BUT - sadly this function was removed in WSA 2.0, and we must use that (MSFT no longer supports older one anyhow).
-    // And I can see no obvious way to fix this. So must just avoid the synchonous WSA APIs (if/where I can).
-    if (::WSACancelBlockingCall () == SOCKET_ERROR) {
-        Assert (::WSAGetLastError () == WSAENETDOWN or ::WSAGetLastError () == WSAEINVAL); // either way - OK
-    }
-#endif
 }
 #endif
 
@@ -886,11 +875,6 @@ void Thread::Ptr::Abort () const
                      *  This is COMPLEX, as there are several possible cases. It COULD be we never got 'Start' called. It could be we are in the middle
                      *  of a Start () - at some indeterminate stage.
                      */
-
-#if 0
-                    WeakAssert (fRep_->fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ());  // dont think this can fail...
-                    WeakAssert (fRep_->fStartReadyToTransitionToRunningEvent_.PeekIsSet ()); // else we may need to set it
-#endif
                     // not 100% sure what todo for all these cases - but I think this is best--LGP 2023-10-17
                     fRep_->fRefCountBumpedInsideThreadMainEvent_.Set ();
                     fRep_->fStartReadyToTransitionToRunningEvent_.Set ();
@@ -927,7 +911,7 @@ void Thread::Ptr::Abort () const
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
         fRep_->NotifyOfInterruptionFromAnyThread_ ();
     }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_ || 1
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"leaving *this = %s", Characters::ToString (*this).c_str ());
 #endif
 }

@@ -60,14 +60,6 @@ auto WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) 
     Debug::TraceContextBumper ctx{"WaitableEvent::WE_::WaitUntil", "timeout = %e", timeoutAt};
 #endif
     Thread::CheckForInterruption ();
-    // https://stroika.atlassian.net/browse/STK-993
-    constexpr bool kMagicWorkaroundMaybe_ = false;
-    if (kMagicWorkaroundMaybe_) {
-        std::atomic_thread_fence (std::memory_order::seq_cst);
-        if (fTriggered) {
-            return WaitStatus::eTriggered;
-        }
-    }
     unique_lock<mutex> lock{fConditionVariable.fMutex};
     if (fConditionVariable.wait_until (lock, timeoutAt, [this] () { return fTriggered; })) [[likely]] {
         return WaitStatus::eTriggered;
