@@ -1488,7 +1488,7 @@ namespace {
         Tester (L"String Characters::Format ()", Test_String_Format_<wstring>, L"sprintf", Test_String_Format_<String>,
                 L"String Characters::Format", 2100000, 1.8, &failedTests);
         Tester (L"BLOB versus vector<byte>", Test_BLOB_Versus_Vector_Byte<vector<byte>>, L"vector<byte>",
-                Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB", 13000, 0.99, &failedTests);
+                Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB", 13000, 1.0, &failedTests);
         Tester (L"BLOB versus vector<byte> ver#2", Test_BLOB_Versus_Vector_Byte_2<vector<byte>>, L"vector<byte>",
                 Test_BLOB_Versus_Vector_Byte_2<Memory::BLOB>, L"BLOB", 5000, 0.85, &failedTests);
         Tester (L"Test_JSONReadWriteFile", Test_JSONReadWriteFile_::DoRunPerfTest, L"Test_JSONReadWriteFile",
