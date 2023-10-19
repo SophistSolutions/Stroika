@@ -597,7 +597,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
             // But only register this after fRefCountBumpedInsideThreadMainEvent_ (would need to think more carefully to place this earlier)
             // --LGP 2023-10-03
-            stop_callback stopCallback{thisThreadRep->fThread_.get_stop_token (), [=] () {
+            stop_callback stopCallback{thisThreadRep->fStopToken_, [=] () {
                                            if (doRun) {
                                                DbgTrace ("Something triggered stop_token request stop, so doing aboort to make sure we are "
                                                          "in an aboorting (flag) state.");
@@ -817,7 +817,8 @@ void Thread::Ptr::Start () const
         SuppressInterruptionInContext suppressInterruptionsOfThisThreadWhileConstructingRepOtherElseLoseSharedPtrEtc;
 
 #if __cpp_lib_jthread >= 201911
-        fRep_->fThread_ = jthread{[this] (const stop_token& st) -> void { fRep_->fStopToken_ = st; Rep_::ThreadMain_ (fRep_); }};
+        fRep_->fStopToken_ = fRep_->fStopSource_.get_token ();
+        fRep_->fThread_ = jthread{[this] () -> void { Rep_::ThreadMain_ (fRep_); }};
 #else
         fRep_->fThread_ = thread{[this] () -> void { Rep_::ThreadMain_ (fRep_); }};
 #endif
@@ -886,7 +887,7 @@ void Thread::Ptr::Abort () const
         if (prevState != Status::eAborting) [[likely]] {
             DbgTrace (L"Transitioned state from %s to aborting, so calling fThread_.get_stop_source ().request_stop ();",
                       Characters::ToString (prevState).c_str ());
-            fRep_->fThread_.get_stop_source ().request_stop ();
+            fRep_->fStopSource_.request_stop ();
         }
 #endif
     }

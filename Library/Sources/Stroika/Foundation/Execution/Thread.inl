@@ -74,6 +74,7 @@ namespace Stroika::Foundation::Execution {
         /// MAYBE reviseit - not sure thats safe...
         //     mutable mutex fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
 #if __cpp_lib_jthread >= 201911
+        stop_source fStopSource_;
         stop_token fStopToken_; // initialized in Ptr::Start() before ThreadMain_ called
         jthread fThread_;
 #else
