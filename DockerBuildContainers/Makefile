@@ -33,9 +33,11 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	docker build -f Ubuntu2004-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-small .
 	docker build -f Ubuntu2204-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-small .
 	docker build -f Ubuntu2304-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2304-small .
+	docker build -f Ubuntu2310-Small/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2310-small .
 	docker build -f Ubuntu2004-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
 	docker build -f Ubuntu2204-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
 	docker build -f Ubuntu2304-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2304-regression-tests .
+	docker build -f Ubuntu2310-RegressionTests/Dockerfile -t sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2004 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests .
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2204 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
@@ -81,6 +83,8 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-regression-tests; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2304-small; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2304-regression-tests; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-small; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-regression-tests; ${DOCKER_TAG_LINE_}
 	#docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
@@ -94,6 +98,7 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	docker pull ubuntu:20.04
 	docker pull ubuntu:22.04
 	docker pull ubuntu:23.04
+	docker pull ubuntu:23.10
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	docker pull mcr.microsoft.com/windows/servercore:ltsc2022
@@ -118,9 +123,11 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-small; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-small; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2304-small; ${DOCKER_PUSH_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-small; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-regression-tests; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-regression-tests; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2304-regression-tests; ${DOCKER_PUSH_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2310-regression-tests; ${DOCKER_PUSH_LINE_}
 	# #docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
