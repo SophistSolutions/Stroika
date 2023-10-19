@@ -188,26 +188,11 @@ Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
 
 /*
  ********************************************************************************
- ********************** Thread::InterruptException ******************************
- ********************************************************************************
- */
-Thread::InterruptException::InterruptException ()
-    : InterruptException{"Thread Interrupt"sv}
-{
-}
-
-Thread::InterruptException::InterruptException (const Characters::String& msg)
-    : Exception<>{msg}
-{
-}
-
-/*
- ********************************************************************************
  ************************** Thread::AbortException ******************************
  ********************************************************************************
  */
 Thread::AbortException::AbortException ()
-    : InterruptException{"Thread Abort"sv}
+    : Exception<>{"Thread Abort"sv}
 {
 }
 
@@ -315,7 +300,7 @@ void Thread::Ptr::Rep_::Run_ ()
     try {
         fRunnable_ ();
     }
-    catch (const InterruptException&) {
+    catch (const AbortException&) {
         // Note: intentionally not saved in fSavedException_.
         // See ThrowIfDoneWithException
         throw;
@@ -639,7 +624,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
                 thisThreadRep->fStatus_ = Status::eCompleted;
             }
         }
-        catch (const InterruptException&) {
+        catch (const AbortException&) {
             SuppressInterruptionInContext suppressCtx;
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: %s",
                       thisThreadRep->ToString ().c_str ());
@@ -659,7 +644,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             thisThreadRep->fThreadDoneAndCanJoin_.Set ();
         }
     }
-    catch (const InterruptException&) {
+    catch (const AbortException&) {
         DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught InterruptException - see sigsetmask stuff above - somehow not "
                   "working???");
         AssertNotReached (); // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
@@ -916,16 +901,6 @@ void Thread::Ptr::Abort () const
 #endif
 }
 
-void Thread::Ptr::Interrupt () const
-{
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    Require (*this != nullptr);
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Interrupt", L"*this=%s", ToString ().c_str ())};
-    if (fRep_->fStatus_ != Status::eCompleted) [[likely]] {
-        fRep_->NotifyOfInterruptionFromAnyThread_ ();
-    }
-}
-
 void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil",
@@ -1095,15 +1070,6 @@ void Thread::Abort (const Traversal::Iterable<Ptr>& threads)
     threads.Apply ([] (Ptr t) { t.Abort (); });
 }
 
-void Thread::Interrupt (const Traversal::Iterable<Ptr>& threads)
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{
-        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Interrupt", L"threads=%s", Characters::ToString (threads).c_str ())};
-#endif
-    threads.Apply ([] (Ptr t) { t.Interrupt (); });
-}
-
 void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeoutAt)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -1261,11 +1227,6 @@ void Execution::Thread::CheckForInterruption ()
                 switch (thisRunningThreadRep->fStatus_) {
                     case Status::eAborting: {
                         Throw (Thread::AbortException::kThe);
-                    } break;
-                    case Status::eRunning: {
-                        // Basic thread interruption - turn off flag, but THROW an interrupt
-                        thisRunningThreadRep->fInterruptionState_ = false;
-                        Throw (Thread::InterruptException::kThe);
                     } break;
                     default: {
                         DbgTrace ("CheckForInterruption in state %d", thisRunningThreadRep->fStatus_.load ());

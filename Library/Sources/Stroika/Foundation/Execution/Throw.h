@@ -104,7 +104,6 @@ namespace Stroika::Foundation::Execution {
      *  \def IgnoreExceptionsForCall - ignore all exceptions for the given argument call (evaluate arg)
      *
      *      @see IgnoreExceptionsExceptThreadAbortForCall
-     *      @see IgnoreExceptionsExceptThreadInterruptForCall
      */
 #define IgnoreExceptionsForCall(theCode)                                                                                                   \
     try {                                                                                                                                  \
@@ -117,29 +116,12 @@ namespace Stroika::Foundation::Execution {
      *  \def IgnoreExceptionsExceptThreadAbortForCall - ignore all exceptions (except thread abort) for the given argument call (evaluate arg)
      *
      *      @see IgnoreExceptionsForCall
-     *      @see IgnoreExceptionsExceptThreadInterruptForCall
      */
 #define IgnoreExceptionsExceptThreadAbortForCall(theCode)                                                                                  \
     try {                                                                                                                                  \
         theCode;                                                                                                                           \
     }                                                                                                                                      \
     catch (const Stroika::Foundation::Execution::Thread::AbortException&) {                                                                \
-        Execution::ReThrow ();                                                                                                             \
-    }                                                                                                                                      \
-    catch (...) {                                                                                                                          \
-    }
-
-    /**
-     *  \def IgnoreExceptionsExceptThreadInterruptForCall - ignore all exceptions (except thread interrupt or thread abort) for the given argument call (evaluate arg)
-     *
-     *      @see IgnoreExceptionsForCall
-     *      @see IgnoreExceptionsExceptThreadAbortForCall
-     */
-#define IgnoreExceptionsExceptThreadInterruptForCall(theCode)                                                                              \
-    try {                                                                                                                                  \
-        theCode;                                                                                                                           \
-    }                                                                                                                                      \
-    catch (const Stroika::Foundation::Execution::Thread::InterruptException&) {                                                            \
         Execution::ReThrow ();                                                                                                             \
     }                                                                                                                                      \
     catch (...) {                                                                                                                          \

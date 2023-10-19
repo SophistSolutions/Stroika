@@ -904,44 +904,6 @@ namespace {
 }
 
 namespace {
-    namespace RegressionTest17_ThreadInterruption_ {
-        void RunTests ()
-        {
-            Debug::TraceContextBumper ctx{"RegressionTest17_ThreadInterruption_::RunTests"};
-            Debug::TimingTrace        tt;
-            atomic<unsigned>          interruptCnt{};
-            WaitableEvent             we{};
-            Thread::Ptr               t = Thread::New (
-                [&] () {
-                    while (true) {
-                        try {
-                            Execution::Sleep (10);
-                        }
-                        catch (const Thread::AbortException&) {
-                            Execution::ReThrow ();
-                        }
-                        catch (const Thread::InterruptException&) {
-                            ++interruptCnt;
-                        }
-                        we.Set ();
-                    }
-                },
-                Thread::eAutoStart);
-            constexpr unsigned int kInteruptCnt_{10};
-            for (int i = 0; i < kInteruptCnt_; ++i) {
-                Execution::Sleep (0.1); // if we interrupt too fast, the thread may only get one or two
-                t.Interrupt ();
-            }
-            we.Wait ();            // so we get at least one interruption
-            Execution::Sleep (.1); // so we get a few - not needed
-            VerifyTestResult (interruptCnt >= 1);
-            VerifyTestResult (interruptCnt <= kInteruptCnt_);
-            t.AbortAndWaitForDone ();
-        }
-    }
-}
-
-namespace {
     namespace RegressionTest18_RWSynchronized_ {
         namespace Private_ {
             template <typename SYNCRHONIZED_INT>
@@ -1467,7 +1429,7 @@ namespace {
         RegressionTest14_SpinLock_ ();
         RegressionTest15_ThreadPoolStarvationBug_ ();
         RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests ();
-        RegressionTest17_ThreadInterruption_::RunTests ();
+        //RegressionTest17_ThreadInterruption_::RunTests ();    LOSE IN STROIKA v3.0d4
         RegressionTest18_RWSynchronized_::DoIt ();
         RegressionTest19_ThreadPoolAndBlockingQueue_::DoIt ();
         RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ();

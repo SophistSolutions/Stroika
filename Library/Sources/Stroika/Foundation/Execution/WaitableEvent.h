@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   WaitQuietly (0) will always return false regardless of the state of the event/trigger
          *
-         *  \note   WaitQuietly() can raise exceptions, but only Thread::InterruptException
+         *  \note   WaitQuietly() can raise exceptions, but only Thread::AborttException
          *
          *  @see Wait ()
          *  @see WaitUntil ()

@@ -593,7 +593,7 @@ namespace {
                                                         const function<T (const Streams::InputStream<byte>::Ptr&)>& reader)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
-                IgnoreExceptionsExceptThreadInterruptForCall (return reader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)));
+                IgnoreExceptionsExceptThreadAbortForCall (return reader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)));
             }
             return nullopt;
         }
@@ -653,7 +653,7 @@ namespace {
                 }
             };
             if (IO::FileSystem::Default ().Access (fullPath2CmdLineFile)) {
-                IgnoreExceptionsExceptThreadInterruptForCall (
+                IgnoreExceptionsExceptThreadAbortForCall (
                     return ReadFileString_ (FileInputStream::New (fullPath2CmdLineFile, FileInputStream::eNotSeekable)));
             }
             return nullopt;
@@ -673,7 +673,7 @@ namespace {
         static optional<Mapping<String, String>> OptionallyReadFileStringsMap_ (const filesystem::path& fullPath)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
-                IgnoreExceptionsExceptThreadInterruptForCall (return ReadFileStringsMap_ (fullPath));
+                IgnoreExceptionsExceptThreadAbortForCall (return ReadFileStringsMap_ (fullPath));
             }
             return nullopt;
         }

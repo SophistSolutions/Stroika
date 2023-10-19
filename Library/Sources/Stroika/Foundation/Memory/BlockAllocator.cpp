@@ -34,7 +34,7 @@ void Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** stat
         (*(void**)p)     = *staticNextLinkP;
         *staticNextLinkP = p;
     }
-    catch (const Execution::Thread::InterruptException&) {
+    catch (const Execution::Thread::AbortException&) {
         Execution::Thread::SuppressInterruptionInContext suppressContext;
         auto                                             critSec = lock_guard{Private_::GetLock_ ()};
         // push p onto the head of linked free list

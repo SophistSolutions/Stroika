@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Execution {
                           Characters::ToString (outputFunctionArgument).c_str (), nextRunAt);
 #endif
             }
-            catch (const Thread::InterruptException&) {
+            catch (const Thread::AbortException&) {
                 Execution::ReThrow ();
             }
             catch (...) {

@@ -23,13 +23,7 @@
  *  \file
  *
  * TODO
- *      @todo   Fix thread INTERRUPTION (not aborting) case to work properly again with the new stop_token stuff. Tricky
- *              - and not sure possible - cuz once stop_token set, it cannot be unset. CONSIDER LOSING INTERRUPTION feature.
- *              (or making it optional and more expensive)
- * 
  *      @todo   Probably no longer need siginterrupt () calls, since we DON'T set SA_RESTART in our call to sigaction().
- *
- *      @todo   DOCS and review impl/test impl of abort/thread code. Add test case for Interrupt.
  */
 namespace Stroika::Foundation::Characters {
     class String;
@@ -48,7 +42,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \brief  Thread is a namespace for Stroika thread code, @see Thread::Ptr or @Thread::New
      *
-     *      Stroika Threads are built on std::thread, so can be used mostly interoperably. However,
+     *      Stroika Threads are built on std::jthread, so can be used mostly interoperably. However,
      *  Stroika threads add a number of very useful features to std::threads:
      *          o   Simpler Cancelation/Interruption/Aborting
      *              (c++ 20 introduces thread cancelation via explicitly managed stop_tokens, but Stroika's thread cancelation
@@ -70,9 +64,23 @@ namespace Stroika::Foundation::Execution {
      *  will work safely - so that even when all external references go away, the fact that the thread
      *  is still running will keep the reference count non-zero.
      *
-     *  Thread Aborting/Interruption:
-     *      The Stroika Thread class supports the idea of 'interrupting' or 'aborting' a thread (std c++ jthread only
-     *      supports thread aborting).
+     *  Thread Aborting:
+     *      The Stroika Thread class supports the idea of 'aborting' a thread (cooperatitve cancelation)
+     *
+     *  Thread Interruoption:
+     *      Stroika v2.1 and earlier supported a feature like Thread-Abort, called 'Interrupt' - that acted like
+     *      thread abort, except that it was not sticky - and once the interrupt was handled, it 'reset' to not
+     *      interrupting anymore.
+     * 
+     *      I never really found any compelling use case for this idea (borrowed from java thread interrupt).
+     * 
+     *      And I think the scenarios where it MIGHT be helpful, could be handled just as easily with
+     *      condition variables.
+     * 
+     *      Also, c++20 added support which allows thead aborting (stop_token), but that doesn't work well/easily
+     *      for basic interruption.
+     * 
+     *      So - abandoned Thread::Interrupt(...) in Stroika v3.
      *
      *  \em Nomenclature Note:
      *       In some libraries, the term interruption, cancelation is used for thread aborting.
@@ -93,14 +101,8 @@ namespace Stroika::Foundation::Execution {
      *          existing in process processes - some maybe handling a read/write sequence, and some
      *          perhaps doing a socket listen/accept call.
      *
-     *  When a thread is interrupted, it (in that thread) throws
-     *      class   InterruptException;
-     *
      *  When a thread is aborted, it (in that thread) throws
      *      class   AbortException;
-     *
-     *  The only difference between Interruption and Aborting is that Aborting is permanent, whereas
-     *  Interrupt happens just once.
      *
      *  Thread 'interruption' happens via 'cancelation points'. Cancelation points are points in the code
      *  where we check to see if the current running thread has been interupted (or aborted) and raise
@@ -436,37 +438,8 @@ namespace Stroika::Foundation::Execution {
              *          @see Thread::GetThrowInterruptExceptionInsideUserAPC()
              *
              *  \req *this != nullptr
-             *
-             *  @see Interrupt
              */
             nonvirtual void Abort () const;
-
-        public:
-            /**
-             *  Interrupt is meant to stop what a thread is currently doing. Calling this sets a thread-local-storage variable
-             *  inside that thread, so that at the next cancelation point, it will throw the InterruptedException.
-             *
-             *  When InterruptedException is thrown, that thread local storage flag is cleared. Often code will catch and rethrow
-             *  the exception, but the Interrupt state doesn't perisist past when its first handled (this is in stark contrast to Abort).
-             *
-             *  If the InterruptException is not handled, it will terminate the thread  (go to the done state).
-             *
-             *  Like Abort(), sending an Interrupt() to an expired (aborted) or null thread will be ignored - simply never delivered.
-             *
-             *  Note this can be called from any thread, whether the thread object being interrupted, or (more typically) from another.
-             *
-             *  A thread being Aborted can also be interrupted, but Abort() takes precedence if both are attempted.
-             *
-             *  \note   If the function associated with the thread doesn't handle the InterruptException, this will effectively
-             *          abort the thread (as would any other exception).
-             *
-             *  \note   only partly implemented and untested
-             *
-             *  \req *this != nullptr
-             *
-             *  @see Abort
-             */
-            nonvirtual void Interrupt () const;
 
         public:
             /**
@@ -803,29 +776,7 @@ namespace Stroika::Foundation::Execution {
 
         /**
          */
-        class InterruptException : public Exception<> {
-        public:
-            InterruptException ();
-
-        protected:
-            InterruptException (const Characters::String& msg);
-
-        public:
-            /*
-             *  Handy constant you can use to avoid construction.
-             *
-             *  Statically allocate because:
-             *      o   Performance
-             *      o   Only legal to throw these while main active (so safe to use in that context)
-             *      o   Avoids issue with re-throwing while constructing one
-             */
-            static const InterruptException kThe;
-        };
-        inline const InterruptException InterruptException::kThe;
-
-        /**
-         */
-        class AbortException : public InterruptException {
+        class AbortException : public Exception<> {
         public:
             AbortException ();
 
@@ -841,6 +792,8 @@ namespace Stroika::Foundation::Execution {
             static const AbortException kThe;
         };
         inline const AbortException AbortException::kThe;
+
+        using InterruptException [[deprecated ("Since Stroika v3.0d4 - use AbortException")]] = AbortException;
 
         /**
          *  Thread IDs tend to be long and not easy to read in trace output. This utility class just maps these long
@@ -886,7 +839,7 @@ namespace Stroika::Foundation::Execution {
         inline IndexRegistrar IndexRegistrar::sThe;
 
         /**
-         *  This object - while in existance, blocks delivery of all Interrupt Exceptions (InterruptException and AbortException)
+         *  This object - while in existance, blocks delivery of all Thread::AbortException's
          *  (for this thread in which its instantiated). This blocking nest (so if you have two of them in one thread, only when the last
          *  one is destroyed does the block on Interruption be removed).
          *
@@ -976,13 +929,6 @@ namespace Stroika::Foundation::Execution {
         void Abort (const Traversal::Iterable<Ptr>& threads);
 
         /**
-         *    foreach Thread t: t.Interrupt ()
-         *
-         * \req    foreach Thread t: t != nullptr
-         */
-        void Interrupt (const Traversal::Iterable<Ptr>& threads);
-
-        /**
          *  \note ***Cancelation Point***
          *
          * \req    foreach Thread t: t != nullptr
@@ -1032,11 +978,6 @@ namespace Stroika::Foundation::Execution {
          * Generally should not be reported. It's just to help force a thread to shut itself down
          */
         class AbortException;
-
-        /**
-         * Generally should not be reported. This is to support Thread::Interrupt();
-         */
-        class InterruptException;
 
         class SuppressInterruptionInContext;
 
@@ -1113,6 +1054,10 @@ namespace Stroika::Foundation::Execution {
          *  This function will also trigger a throw if called inside a thread which is being aborted.
          *
          *  Any call to this routine is a 'cancelation point'.
+         *
+         *  \note   ***Cancelation Point***
+         * 
+         *  \note   This name is somewhat historical, but still reasonable. But now might be better called CheckForThreadAbort, since thats all it does now.
          */
         void CheckForInterruption ();
 

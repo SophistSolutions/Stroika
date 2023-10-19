@@ -324,14 +324,8 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                 fActiveConnectionThreads_.AddTask (handleActivatedConnection);
             }
         }
-        catch (Thread::AbortException&) {
+        catch (const Thread::AbortException&) {
             Execution::ReThrow ();
-        }
-        catch (Thread::InterruptException&) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"Normal receipt of interruption because connection added to open but inactive connections.");
-#endif
-            // OK - completely ignore - this just means the list of sockets to watch has changed
         }
         catch (...) {
             DbgTrace (L"Internal exception in WaitForReadyConnectionLoop_ loop suppressed: %s", Characters::ToString (current_exception ()).c_str ());
