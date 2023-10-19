@@ -160,7 +160,7 @@ namespace {
                     baseMutateFunction (&oneToKeepOverwriting);
                 }
             };
-            Thread::Ptr iterateThread{move (mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount))};
+            Thread::Ptr iterateThread{mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount)};
             Thread::Ptr mutateThread{Thread::New (mutateFunction)};
             Thread::Start ({iterateThread, mutateThread});
             Thread::WaitForDone ({iterateThread, mutateThread});
