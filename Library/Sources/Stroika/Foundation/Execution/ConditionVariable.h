@@ -182,8 +182,6 @@ namespace Stroika::Foundation::Execution {
          *          the notified thread would immediately block again, waiting for the notifying
          *          thread to release the lock.
          *
-         *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
-         *
          *  \note   ***NOT a Cancelation Point***
          */
         nonvirtual void release_and_notify_one (LockType& lock) noexcept;
@@ -195,9 +193,6 @@ namespace Stroika::Foundation::Execution {
          *          The notifying thread does not need to hold the lock on the same mutex as the 
          *          one held by the waiting thread(s); in fact doing so is a pessimization, since
          *          the notified thread would immediately block again, waiting for the notifying
-         *          thread to release the lock.
-         *
-         *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
          *
          *  \note   ***NOT a Cancelation Point***
          */

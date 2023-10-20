@@ -268,10 +268,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'RUN_PREFIX'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy>");
-		if (defined $pps) {
-			$configuration {'qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<qCompiler_ValgrindLTO_Buggy>");
 		if (defined $pps) {
 			$configuration {'qCompiler_ValgrindLTO_Buggy'} = $pps;

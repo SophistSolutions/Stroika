@@ -42,9 +42,6 @@
  *                  printf ("malloc called with %zu\n", c);
  *                  return __real_malloc (c);
  *              }
- *
- *      @todo   Fix so valgrind/helgrind friendly. Not super important, since if those were working we wouldn't need
- *              this (its mostly for situations - such as the one I face at block - where valgrind is coming up lemons.
  */
 
 namespace Stroika::Foundation::Debug {

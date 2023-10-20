@@ -104,13 +104,13 @@ To document, and to help ensure that Stroika classes are used in a thread safe m
 
 But it means that if your code runs correctly (without assertion errors) in Debug builds, it&#39;s probably thread safe.
 
-This doesn&#39;t completely replace tools like thread-sanitizer, and valgrind/helgrind, but it does help provide simpler, and clearer diagnostics directly when you are running your threaded applications.
+This doesn&#39;t completely replace tools like thread-sanitizer, but it does help provide simpler, and clearer diagnostics directly when you are running your threaded applications.
 
 ---
 
 ## External Validation Tools
 
-Tools like valgrind (helgrind and memcheck), and sanitizers (address, undefined behavior, and thread sanitizer) are all regularly run as part of the Stroika regression test suite, and are a sensible addition Stroika-based development process.
+Tools like valgrind (memcheck), and sanitizers (address, undefined behavior, and thread sanitizer) are all regularly run as part of the Stroika regression test suite, and are a sensible addition Stroika-based development process.
 
 They are especially useful to help validate that any subtle bugs aren&#39;t present ONLY in release builds, but not in debug builds (extremely rare, but it can happen).
 

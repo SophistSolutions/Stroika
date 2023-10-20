@@ -804,8 +804,6 @@ namespace {
         t2.Start ();
         t1.Start ();
         WaitableEvent::WaitForAll (Sequence<WaitableEvent*>{{&we1, &we2}});
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (w1Fired); // tecnically a race
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (w2Fired); // tecnically a race
         VerifyTestResult (w1Fired and w2Fired);
         // They capture so must wait for them to complete
         t1.AbortAndWaitForDone ();
@@ -838,9 +836,7 @@ namespace {
         Thread::Start ({t1, t2});
         t1.WaitForDone ();
         t2.WaitForDone ();
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind_START (sum);
         VerifyTestResult (sum == 0);
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind_END (sum);
     }
 }
 
@@ -981,23 +977,12 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
             Debug::TimingTrace        tt;
-            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-
-            // https://stroika.atlassian.net/browse/STK-632
-            // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
-            // most likely helgrind bug - hopefully fixed soon.
-            //
-            // NOTE - tested and reproduced 2021-11-29 on Ubuntu 20.04, but this particular instance of the bug was flakey and sometimes
-            // worked and sometimes failed...
-            bool hasBug632AndRunningHelgrind = kRunningValgrind_; // not easy to check
-            if (not hasBug632AndRunningHelgrind) {
                 // if using RWSynchonized, we must get overlap, and if using Synchonized<> (no shared lock) - we must not get overlap (first arg to test function)
                 Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 1000u : 10000u, 0.0);
                 Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 1000u : 10000u, 0.0);
                 Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 100u : 1000u, 0.001);
                 Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 100u : 250u, 0.001);
                 Private_::Test2_LongWritesBlock_ ();
-            }
         }
     }
 }
@@ -1139,18 +1124,7 @@ namespace {
         Debug::TraceContextBumper ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
         Debug::TimingTrace        tt;
 
-        static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-
-        // https://stroika.atlassian.net/browse/STK-632
-        // This helgrind bug ONLY happens when we run this at the end. If we run this as the only test it works fine.
-        // Most likely some sort of memory corruption, and given notes in https://stroika.atlassian.net/browse/STK-632 - seems
-        // most likely helgrind bug - hopefully fixed soon.
-        //
-        // This appears still broken in Ununtu 2004 and near end of Stroika 2.1b14 --LGP 2021-11-29
-        //
-        bool hasBug632AndRunningHelgrind = kRunningValgrind_; // not easy to check
-        if (not hasBug632AndRunningHelgrind) {
-
+        {
             auto testUpgradeLockNonAtomically1 = [] (auto& isEven) {
                 while (true) {
                     Thread::CheckForInterruption ();

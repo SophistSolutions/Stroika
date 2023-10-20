@@ -49,29 +49,12 @@ ifeq (1,$(USING_BLOCK_ALLOCATION))
 DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-MemCheck-BlockAllocation.supp
 endif
 VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_)
-else ifeq (helgrind,$(VALGRIND))
-DEFAULT_VALGRIND_SUPPRESSIONS_=Valgrind-Helgrind-Common.supp
-ifeq ($(qCompiler_ValgrindLTO_Buggy),1)
-DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-qCompiler_lto_Buggy.supp
-endif
-ifneq (,$(wildcard Valgrind-Helgrind-Common-$(ARCH).supp))
-DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-Common-$(ARCH).supp
-endif
-ifeq (1,$(qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy))
-#https://stroika.atlassian.net/browse/STK-717
-DEFAULT_VALGRIND_SUPPRESSIONS_+= Valgrind-Helgrind-qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy.supp
-endif
-VALGRIND_SUPPRESSIONS?= $(DEFAULT_VALGRIND_SUPPRESSIONS_) $(EXTRA_VALGRIND_SUPPRESSIONS)
 endif
 
 ifeq (memcheck,$(VALGRIND))
 EXTRA_VALGRIND_OPTIONS=
 VALGRIND_EXPANDED_SUPPRESSIONS:= $(foreach vs,$(VALGRIND_SUPPRESSIONS),--suppressions=$(vs))
 VALGRIND_OPTIONS=-q --track-origins=yes --tool=memcheck --gen-suppressions=all --leak-check=full $(VALGRIND_EXPANDED_SUPPRESSIONS) $(EXTRA_VALGRIND_OPTIONS)
-else ifeq (helgrind,$(VALGRIND))
-EXTRA_VALGRIND_OPTIONS=
-VALGRIND_EXPANDED_SUPPRESSIONS:= $(foreach vs,$(VALGRIND_SUPPRESSIONS),--suppressions=$(vs))
-VALGRIND_OPTIONS=-q --tool=helgrind --gen-suppressions=all $(VALGRIND_EXPANDED_SUPPRESSIONS) $(EXTRA_VALGRIND_OPTIONS)
 endif
 
 
@@ -88,9 +71,6 @@ endif
 RUNTEST_EXE_RUN=ssh $(SSH_REMOTE_WARNINGS_OFF) $(REMOTE) ${RUN_PREFIX} "$(VALEXTRARUN_) /tmp/$(BASEEXEPATTERN)"
 RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) ${RUN_PREFIX} $(VALEXTRARUN_) /tmp/$(BASEEXEPATTERN)
 else ifeq (memcheck,$(VALGRIND))
-RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN)
-RUNTEST_EXE_RUN_PRINTLINE=$(RUNTEST_EXE_RUN)
-else ifeq (helgrind,$(VALGRIND))
 RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN)
 RUNTEST_EXE_RUN_PRINTLINE=$(RUNTEST_EXE_RUN)
 else
@@ -115,10 +95,9 @@ help:
 	@$(ECHO) "    project-files:          -    builds project files for things like visual studio.net etc"
 	@$(ECHO) "    tests:"
 	@$(ECHO) "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost;"
-	@$(ECHO) "                                 [VALGRIND=memcheck or helgrind, etc] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
+	@$(ECHO) "                                 [VALGRIND=memcheck, etc] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "                                 OR VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp\""
-	@$(ECHO) "                                 OR VALGRIND_SUPPRESSIONS=\"Valgrind-Helgrind-Common.supp\""
-	@$(ECHO) "                                 EG: VALGRIND_SUPPRESSIONS=\"Valgrind-Helgrind-Common.supp\" make VALGRIND=helgrind run-tests"
+	@$(ECHO) "                                 EG: VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp\" make VALGRIND=memcheck run-tests"
 
 
 all:		tests 

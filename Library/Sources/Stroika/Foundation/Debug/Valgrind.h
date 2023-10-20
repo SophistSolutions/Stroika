@@ -14,8 +14,7 @@
  *  \brief  Include this file VERY EARLY ON - before including stuff like <cstdio> -
  *          to allow use of Valgrind (some features)
  *
- *  Note - this is NOT required for use of valgrind memcheck() - at least as of v2.0a145. But it does
- *  help in getting clean results with valgrind tool helgrind.
+ *  Note - this is NOT required for use of valgrind memcheck() - at least as of v2.0a145.
  *
  *  This module is VERY careful not to include unneded files - and includes just the minimal required to make
  *  the valgrind family of tools work IFF you preconfigure (./configure) qStroika_FeatureSupported_Valgrind to
@@ -23,7 +22,6 @@
  *
  *  @see http://valgrind.org/docs/manual/drd-manual.html
  *  @see https://github.com/svn2github/valgrind
- *  @see https://sourceforge.net/u/lluct/me722-cm/ci/master/tree/external/valgrind/main/helgrind/helgrind.h
  *  @see https://sourceforge.net/u/lluct/me722-cm/ci/master/tree/external/valgrind/main/memcheck/memcheck.h
  *  @see https://lists.sourceforge.net/lists/listinfo/valgrind-developers
  *
@@ -37,95 +35,18 @@
 #endif
 
 #if qStroika_FeatureSupported_Valgrind
-#include "valgrind/helgrind.h"
 #include "valgrind/memcheck.h"
-#endif
-
-#if qStroika_FeatureSupported_Valgrind
-/*
- *  See https://gcc.gnu.org/onlinedocs/libstdc++/manual/debug.html
- *
- *  undef because some systems pre-include and define this (by default empty), and we want to force to map to 
- *  helgrind etc versions - as in above docs -- LGP 2018-10-24
- */
-#undef _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE
-#define _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE(A) ANNOTATE_HAPPENS_BEFORE (A)
-#undef _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER
-#define _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER(A) ANNOTATE_HAPPENS_AFTER (A)
 #endif
 
 /**
  *  Use IsRunningUnderValgrind () to test if we are running under valgrind. This often
- *  uses MUCH more memory and runs much slower (details depend on if running under memcheck or helgrind, which we blurr,
+ *  uses MUCH more memory and runs much slower (details depend on if running under memcheck or which we blurr,
  *  so this isn't perfect).
  *
  *  \note This can be called whether or not qStroika_FeatureSupported_Valgrind is defined, but it always returns false if qStroika_FeatureSupported_Valgrind is not defined.
  *
  */
 bool IsRunningUnderValgrind ();
-
-/**
- *  Use Macro Stroika_Foundation_Debug_ValgrindDisableHelgrind () on variables Helgrind should
- *  ignore.
- *
- *  There are many classes of 'bugs' with helgrind that we can most easily avoid by just ignoring those variables.
- *      o   std::atomic
- *      o   magic statics
- */
-#if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrindRange(START, END)                                                                  \
-    VALGRIND_HG_DISABLE_CHECKING (START, ((const byte*)END - (const byte*)START))
-#else
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrindRange(START, END) ((void)0)
-#endif
-
-/**
- *  Use Macro Stroika_Foundation_Debug_ValgrindDisableHelgrind () on variables Helgrind should
- *  ignore.
- *
- *  \see Stroika_Foundation_Debug_ValgrindDisableHelgrindRange
- */
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrind(X)                                                                                \
-    Stroika_Foundation_Debug_ValgrindDisableHelgrindRange (&(X), ((byte*)(&X) + sizeof (X)))
-
-/**
- *  See https://bugs.kde.org/show_bug.cgi?id=379630
- *  for info on            
- *       VALGRIND_HG_MUTEX_INIT_POST (&fLock_, true);
- *
- *  It appears valgrind doesn't notice when a lock goes out of scope (destroyed). Failing with the wrappers for gnu/stl for valgrind.
- *  Still broken as of Ubuntu 1804
- */
-
-/**
- *  Use Macro Stroika_Foundation_Debug_ValgrindDisableHelgrind_START/Stroika_Foundation_Debug_ValgrindDisableHelgrind_END
- *  to ignore a particular variable in a range of code.
- *
- *  \par Example Usage
- *      \code
- *          int var = 1;
- *          .... thread 1 writes;
- *          .... thread 2 writes; // all with locks
- *          wait til thread 1/2 done;
- *          Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(var);
- *          read var;   // helgrind doesn't know the thread completion is essentially a barrier
- *          Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(var);
- *      \endcode
- */
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(X) Stroika_Foundation_Debug_ValgrindDisableHelgrind (X)
-
-#if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(X) VALGRIND_HG_ENABLE_CHECKING (&(X), sizeof (X))
-#else
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(X)
-#endif
-
-/**
- *  If the current implementation of helgrind doesn't recognize std::atomic being atomic, disable warnings about those variables
- *  
- *  \note this still appears broken in valigrind on Ubuntu 1804/gcc
- */
-#define Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic(X) Stroika_Foundation_Debug_ValgrindDisableHelgrind (X)
 
 /**
  */
@@ -141,34 +62,6 @@ bool IsRunningUnderValgrind ();
 #define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) VALGRIND_HG_CLEAN_MEMORY (P, SIZE)
 #else
 #define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) ((void)0)
-#endif
-
-/**
- *  \brief  Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE is ANNOTATE_HAPPENS_BEFORE except it can be used
- *          if no valgrind includes, and ifdefed out, and it can be used in an expression
- *
- *  \see docs https://android.googlesource.com/platform/external/valgrind/+/master/helgrind/helgrind.h#531
- *          If threads T1 .. Tn all do ANNOTATE_HAPPENS_BEFORE(obj) and later
- *         (w.r.t. some notional global clock for the computation) thread Tm
- *         does ANNOTATE_HAPPENS_AFTER(obj), then Helgrind will regard all
- *         memory accesses done by T1 .. Tn before the ..BEFORE.. call as
- *         happening-before all memory accesses done by Tm after the
- *         ..AFTER.. call.  Hence Helgrind won't complain about races if Tm's
- *         accesses afterwards are to the same locations as accesses before by
- *         any of T1 .. Tn.
- *
- *  \par Example Usage
- *      \code
- *          reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
- *          Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (p);
- *      \endcode
- *
- *  \see Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER
- */
-#if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X) Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (X)
-#else
-#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X) ((void)0)
 #endif
 
 /**

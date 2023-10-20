@@ -65,8 +65,6 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
 
     Rep_ ()
     {
-        // @todo minor bug - fix!!!
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fOutQMaybeNeedsFlush_); // not worth worrying valgrind output about - so supress til we get around to fixing
     }
     void FlushSuppressedDuplicates_ (bool forceEvenIfNotOutOfDate = false)
     {

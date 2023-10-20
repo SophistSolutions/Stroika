@@ -118,7 +118,6 @@ private:
         }
         fRecievedSig_.notify_one ();
 #else
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWorkMaybeAvailable_); // ignore because we are careful not to unset unless safe
         fWorkMaybeAvailable_ = true;
         fRecievedSig_.Set ();
 #endif
@@ -169,7 +168,6 @@ public:
                             }
                         }
                     }
-                    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWorkMaybeAvailable_); // ignore because we are careful not to unset unless safe
                     // When we set fWorkMaybeAvailable_ false, do one more time around loop so no race - if we set from true to false
                     // we always recehck protected data (and mutex not signal safe)
                     if (fWorkMaybeAvailable_.exchange (false)) {
@@ -185,7 +183,6 @@ public:
     {
         Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_",
                                          Stroika_Foundation_Debug_OptionalizeTraceArgs (L"this=%p", this)};
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fRecievedSig_); // For RARE (1/10 times) failure in regtest Foundation::Execution::Signals
         Thread::SuppressInterruptionInContext suppressInterruption;
         fBlockingQueuePusherThread_.Abort ();
         tell2WakeAfterDataUpdate_ ();
@@ -312,9 +309,6 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
         Assert (nConstructed == 1);
     }
     Debug::TraceContextBumper trcCtx{"Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR"};
-
-    Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fDirectSignalHandlersCache_Lock_);
-    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fDirectSignalHandlersCache_); // This is disabled on purpose, because we intentionally have no locks - and just read optimistically carefully. No locks cuz read from signal handler
 }
 
 SignalHandlerRegistry::~SignalHandlerRegistry ()

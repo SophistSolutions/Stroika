@@ -32,10 +32,6 @@ namespace Stroika::Foundation::Execution {
         if (sCountUses_ == 1) {
             sOnceObj_ = new T{};
         }
-        if constexpr (qDebug) {
-            Stroika_Foundation_Debug_ValgrindDisableHelgrind (sCountUses_); // beacuse use in asserts - read there - safe/OK even without lock
-            Stroika_Foundation_Debug_ValgrindDisableHelgrind (sOnceObj_); // maybe not non-const get, but count on other later to provide interlock/checking
-        }
     }
     template <typename T>
     SharedStaticData<T>::~SharedStaticData ()

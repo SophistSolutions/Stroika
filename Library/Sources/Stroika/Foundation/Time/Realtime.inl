@@ -73,25 +73,6 @@ namespace Stroika::Foundation::Time {
          *       const __clock_t::time_point __s_entry = __clock_t::now();
          *       const auto __delta = __atime - __c_entry;
          *       const auto __s_atime = __s_entry + __delta;
-         *
-         *
-         *  WITHOUT THIS FIX IN PLACE, and GCC/Linux
-         *      DEBUG build (w/sanitizer) can get:
-         *          /usr/include/c++/7/chrono:450:34: runtime error: signed integer overflow: 1507047104294033810 + 9223362506684172023 cannot be represented in type 'long int'
-         *
-         *      valgrind -q --tool=helgrind --suppressions=Valgrind-Helgrind-Common.supp   ../Builds/VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc/Test38
-         *
-         *       ==26445== Thread #215's call to pthread_cond_timedwait failed
-         *       ==26445==    with error code 22 (EINVAL: Invalid argument)
-         *       ==26445==    at 0x4C37990: ??? (in /usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so)
-         *       ==26445==    by 0x41316A: __gthread_cond_timedwait (gthr-default.h:871)
-         *       ==26445==    by 0x41316A: __wait_until_impl<std::chrono::duration<long int, std::ratio<1, 1000000000> > > (condition_variable:166)
-         *       ==26445==    by 0x41316A: wait_until<std::chrono::_V2::steady_clock, std::chrono::duration<long int, std::ratio<1, 1000000000> > > (condition_variable:119)
-         *       ==26445==    by 0x41316A: Stroika::Foundation::Execution::BlockingQueue<std::function<void ()> >::RemoveHead(double) (BlockingQueue.inl:63)
-         *       ==26445==    by 0x40AE52: operator() (Test.cpp:916)
-         *       ==26445==    by 0x40AE52: std::_Function_handler<void (), (anonymous namespace)::RegressionTest19_ThreadPoolAndBlockingQueue_::Private_::TEST_()::{lambda()#2}>::_M_invoke(std::_Any_data const&) (std_function.h:316)
-         *
-         *
          */
         using chrono::duration;
         using chrono::duration_cast;

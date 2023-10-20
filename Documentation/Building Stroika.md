@@ -215,11 +215,10 @@ Targets:
     documentation:
     third-party-components:
     run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost;
-                                      [VALGRIND=memcheck or helgrind, etc] to run with valgrind
+                                      [VALGRIND=memcheck, etc] to run with valgrind
                                       (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)
                                       OR VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp"
-                                      OR VALGRIND_SUPPRESSIONS="Valgrind-Helgrind-Common.supp"
-                                      EG: VALGRIND_SUPPRESSIONS="Valgrind-Helgrind-Common.supp" make VALGRIND=helgrind run-tests
+                                      EG: VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp" make VALGRIND=memcheck run-tests
     apply-configurations:        -    Force re-creation implied files / links for any configurations in the Configurations
                                       folder (not needed, automatic)
     default-configurations:      -    Creates the default configurations in Configurations folder; see ./configure -help for environment variables
@@ -363,7 +362,7 @@ On any platform, building Stroika, and all is demo applications and regression t
 - `make CONFIGURATION=zyx run-tests REMOTE='lewis@raspberrypi'`
 - `make CONFIGURATION=abc run-tests VALGRIND=memcheck`
 
-  Builds Stroika, and all the regression tests, and runs the regression tests. If REMOTE= is specified, the code is copied to the target machine with ssh, and the test run there (helpful for when cross-compiling). VALGRIND= is used to run memcheck, leakcheck, or helgrind on the given configuraiton.
+  Builds Stroika, and all the regression tests, and runs the regression tests. If REMOTE= is specified, the code is copied to the target machine with ssh, and the test run there (helpful for when cross-compiling). VALGRIND= is used to run memcheck, or leakcheck on the given configuration.
 
 - make `project-files`
 

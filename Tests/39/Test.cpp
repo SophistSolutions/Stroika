@@ -60,8 +60,6 @@ namespace {
                 atomic<bool> called{false};
                 SignalHandlerRegistry::Get ().SetSignalHandlers (
                     SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) -> void { called = true; }});
-                // @todo - as of 2018-02-18 - helgrind still doesn't understand that atomic<bool> is threadsafe
-                Stroika_Foundation_Debug_ValgrindDisableHelgrind (called);
                 ::raise (SIGINT);
                 Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
                 VerifyTestResult (called);

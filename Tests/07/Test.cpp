@@ -347,7 +347,6 @@ namespace {
                 // workaround hang using MEMCHECK (not HELGRIND surprisingly) -- https://stroika.atlassian.net/browse/STK-728
                 return;
             }
-            Stroika_Foundation_Debug_ValgrindDisableHelgrind_START (done);
             for (int i = 0; i < threadCount; i++) {
                 threads1.emplace_back ([&] () {
                     for (int j = 0; j < perThreadOpCount; j++) {
@@ -385,7 +384,6 @@ namespace {
             for (auto& thread : threads2) {
                 thread.join ();
             }
-            Stroika_Foundation_Debug_ValgrindDisableHelgrind_END (done);
         }
 
         void test_all ()
