@@ -1591,7 +1591,8 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 // _LIBCPP_VERSION <= 14000
 // _LIBCPP_VERSION <= 15007
 // _LIBCPP_VERSION ==160000 (so say < 170000)
-#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 170000))
+// 170002 also seems broken, (at least with clang++-14)
+#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 180000))
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #endif
