@@ -976,7 +976,7 @@ In file included from ./SignalHandlers.h:15:
 // noticed broken in clang++15 with LIBC++
 
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15 || (_LIBCPP_VERSION < 170000)))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
 #else
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
