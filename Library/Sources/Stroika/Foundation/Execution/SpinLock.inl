@@ -22,27 +22,9 @@ namespace Stroika::Foundation::Execution {
     inline SpinLock::SpinLock (BarrierType barrier)
         : fBarrierFlag_{barrier}
     {
-#if qStroika_FeatureSupported_Valgrind
-        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fLock_);
-        VALGRIND_HG_MUTEX_INIT_POST (&fLock_, true);
-#endif
     }
-#if qStroika_FeatureSupported_Valgrind
-    inline SpinLock::~SpinLock ()
-    {
-        VALGRIND_HG_MUTEX_DESTROY_PRE (&fLock_);
-        VALGRIND_HG_ENABLE_CHECKING (&fLock_, sizeof (fLock_));
-    }
-#endif
     inline bool SpinLock::try_lock ()
     {
-        // Atomically set fLock to true and examine the previous value. If it was false, we
-        // successfully gained the lock. If it was already true (someone else holds the lock),
-        // we did NOT gain the lock, but we changed nothing. The fact that we changed nothing in the case where
-        // we didn't gain the lock, is why this is not a race.
-#if qStroika_FeatureSupported_Valgrind
-        VALGRIND_HG_MUTEX_LOCK_PRE (&fLock_, true);
-#endif
         /*
          *  NOTE: I don't understand why memory_order_acquire is good enough here since if
          *  we make change we need to make sure its published to other threads.
@@ -52,11 +34,6 @@ namespace Stroika::Foundation::Execution {
          *          ; // spin until the lock is acquired
          */
         bool result = not fLock_.test_and_set (memory_order_acquire);
-#if qStroika_FeatureSupported_Valgrind
-        if (result) {
-            VALGRIND_HG_MUTEX_LOCK_POST (&fLock_);
-        }
-#endif
         if (result) {
             /*
              *  See https://stroika.atlassian.net/browse/STK-494 for notes on why this is right (using eReleaseAcquire/memory_order_acquire)
@@ -95,13 +72,7 @@ namespace Stroika::Foundation::Execution {
                 break;
         }
             // release lock
-#if qStroika_FeatureSupported_Valgrind
-        VALGRIND_HG_MUTEX_UNLOCK_PRE (&fLock_);
-#endif
         fLock_.clear (memory_order_release);
-#if qStroika_FeatureSupported_Valgrind
-        VALGRIND_HG_MUTEX_UNLOCK_POST (&fLock_);
-#endif
     }
 
 }

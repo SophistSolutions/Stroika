@@ -130,8 +130,6 @@ public:
         Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::CTOR",
                                          Stroika_Foundation_Debug_OptionalizeTraceArgs (L"this=%p", this)};
 #endif
-        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fIncomingSignalCounts_);
-        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fLastSignalRecieved_);
         fBlockingQueuePusherThread_ = Thread::New (
             [this] () {
                 // This is a safe context

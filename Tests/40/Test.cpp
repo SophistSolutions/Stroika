@@ -427,9 +427,7 @@ namespace {
                 static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.001;
                 Synchronized<int>                          syncData{0};
                 atomic<bool>                               writerDone{false};
-                Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (writerDone);
                 atomic<unsigned int> readsDoneAfterWriterDone{0};
-                Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (readsDoneAfterWriterDone);
                 Thread::Ptr readerThread = Thread::New ([&] () {
                     Debug::TraceContextBumper ctx{"readerThread"};
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
@@ -977,6 +975,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
             Debug::TimingTrace        tt;
+                static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
                 // if using RWSynchonized, we must get overlap, and if using Synchonized<> (no shared lock) - we must not get overlap (first arg to test function)
                 Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 1000u : 10000u, 0.0);
                 Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 1000u : 10000u, 0.0);

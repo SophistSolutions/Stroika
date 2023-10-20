@@ -546,13 +546,6 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
         });
 #endif
 
-        /*
-         *  Subtle, and not super clearly documented, but this is taking the address of a thread-local variable, and storing it in a non-thread-local
-         *  instance, and hoping all that works correctly (that the memory access all work correctly).
-         */
-        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (thisThreadRep->fInterruptionState_);
-        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (thisThreadRep->fStatus_);
-
         try {
             Assert (thisThreadRep->fStatus_ == Status::eNotYetRunning); // before this point, constructor of thread cannot proceed
 

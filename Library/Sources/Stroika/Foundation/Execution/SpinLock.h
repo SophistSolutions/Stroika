@@ -86,10 +86,8 @@ namespace Stroika::Foundation::Execution {
         SpinLock (BarrierType barrier = BarrierType::eDEFAULT);
         SpinLock (const SpinLock&) = delete;
 
-#if qStroika_FeatureSupported_Valgrind
     public:
-        ~SpinLock ();
-#endif
+        ~SpinLock () = default;
 
     public:
         nonvirtual SpinLock& operator= (const SpinLock&) = delete;
