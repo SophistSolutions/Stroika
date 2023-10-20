@@ -12,7 +12,7 @@
 
 namespace Stroika::Samples::SQL {
 
-    using Stroika::Foundation::Database::SQL::Connection;
+    using namespace Stroika::Foundation::Database::SQL;
 
     /**
      *  \brief  Simple test of using threads with SQL - one thread updates employees table, and one writes paychecks

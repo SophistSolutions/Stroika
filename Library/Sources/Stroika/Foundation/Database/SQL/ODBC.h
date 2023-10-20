@@ -48,76 +48,61 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
         optional<String> fDSN;
     };
 
-    /**
-     *  'Connection' is a quasi-namespace.
-     */
-    class [[nodiscard]] Connection : SQL::Connection {
-    public:
-        class IRep;
+    namespace Connection {
+        using namespace SQL::Connection;
 
-    public:
         class Ptr;
 
-    private:
-        struct Rep_;
-
-    public:
         /**
-         *  Quasi-namespace class - don't construct - construct a Connection:::Ptr class with Connection::New ()
+         *  Connection provides an API for accessing an ODBC database.
+         * 
+         *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
          */
-        Connection () = delete;
+        class IRep : public SQL::Connection::IRep, protected Debug::AssertExternallySynchronizedMutex {
+        private:
+            friend class Ptr;
+        };
 
-    public:
         /**
-         *  The dbInitializer is called IFF the New () call results in a newly created database (@todo RECONSIDER).
-         */
-        static Ptr New (const Options& options);
-    };
-
-    /**
-     *  Connection provides an API for accessing an ODBC database.
-     * 
-     *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
-     */
-    class Connection::IRep : public SQL::Connection::IRep, protected Debug::AssertExternallySynchronizedMutex {
-    private:
-        friend class Ptr;
-    };
-
-    class Statement;
-
-    /**
      *  Connection provides an API for accessing an ODBC database.
      *
      *  A new Connection::Ptr is typically created ODBC::Connection::New()
      */
-    class Connection::Ptr : public SQL::Connection::Ptr {
-    private:
-        using inherited = SQL::Connection::Ptr;
+        class Ptr : public SQL::Connection::Ptr {
+        private:
+            using inherited = SQL::Connection::Ptr;
 
-    public:
-        /**
+        public:
+            /**
          */
-        Ptr (const Ptr& src);
-        Ptr (const shared_ptr<IRep>& src = nullptr);
+            Ptr (const Ptr& src);
+            Ptr (const shared_ptr<IRep>& src = nullptr);
 
-    public:
-        ~Ptr () = default;
+        public:
+            ~Ptr () = default;
 
-    public:
-        /**
+        public:
+            /**
          */
-        nonvirtual Ptr& operator= (const Ptr& src);
-        nonvirtual Ptr& operator= (Ptr&& src) noexcept;
+            nonvirtual Ptr& operator= (const Ptr& src);
+            nonvirtual Ptr& operator= (Ptr&& src) noexcept;
 
-    public:
-        /**
+        public:
+            /**
          */
-        nonvirtual IRep* operator->() const noexcept;
+            nonvirtual IRep* operator->() const noexcept;
 
-    private:
-        friend class Statement;
+        private:
+            friend class Statement;
+        };
+
+        /**
+         *  The dbInitializer is called IFF the New () call results in a newly created database (@todo RECONSIDER).
+         */
+        Ptr New (const Options& options);
     };
+
+    class Statement;
 
     /**
      */

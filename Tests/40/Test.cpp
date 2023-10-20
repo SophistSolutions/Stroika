@@ -427,8 +427,8 @@ namespace {
                 static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.001;
                 Synchronized<int>                          syncData{0};
                 atomic<bool>                               writerDone{false};
-                atomic<unsigned int> readsDoneAfterWriterDone{0};
-                Thread::Ptr readerThread = Thread::New ([&] () {
+                atomic<unsigned int>                       readsDoneAfterWriterDone{0};
+                Thread::Ptr                                readerThread = Thread::New ([&] () {
                     Debug::TraceContextBumper ctx{"readerThread"};
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
                     for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
@@ -439,11 +439,11 @@ namespace {
                         Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0 (note - on ubuntu 1804 and fast host, inside vm, median sleep time here is really about 2ms despite division - LGP 2018-06-20)
                     }
                 });
-                Thread::Ptr writerThread = Thread::New ([&] () {
+                Thread::Ptr                                writerThread = Thread::New ([&] () {
                     Debug::TraceContextBumper ctx{"writerThread"};
                     for (int i = 0; i < kBaseRepititionCount_; ++i) {
                         auto rwLock = syncData.rwget ();
-                        rwLock.store (rwLock.load () + 1);  // set to a value that will cause reader thread to fail
+                        rwLock.store (rwLock.load () + 1); // set to a value that will cause reader thread to fail
                         Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
                         VerifyTestResult (rwLock.load () % 2 == 1);
                         rwLock.store (rwLock.load () + 1); // set to a safe value
@@ -975,13 +975,13 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
             Debug::TimingTrace        tt;
-                static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-                // if using RWSynchonized, we must get overlap, and if using Synchonized<> (no shared lock) - we must not get overlap (first arg to test function)
-                Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 1000u : 10000u, 0.0);
-                Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 1000u : 10000u, 0.0);
-                Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 100u : 1000u, 0.001);
-                Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 100u : 250u, 0.001);
-                Private_::Test2_LongWritesBlock_ ();
+            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            // if using RWSynchonized, we must get overlap, and if using Synchonized<> (no shared lock) - we must not get overlap (first arg to test function)
+            Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 1000u : 10000u, 0.0);
+            Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 1000u : 10000u, 0.0);
+            Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 100u : 1000u, 0.001);
+            Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 100u : 250u, 0.001);
+            Private_::Test2_LongWritesBlock_ ();
         }
     }
 }

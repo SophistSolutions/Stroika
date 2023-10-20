@@ -9,56 +9,56 @@
 
 #include "../../Characters/Format.h"
 
-namespace Stroika::Foundation::Database::SQL {
+namespace Stroika::Foundation::Database::SQL::Connection {
 
     /*
      ********************************************************************************
      ****************************** SQL::Connection::Ptr ****************************
      ********************************************************************************
      */
-    inline Connection::Ptr::Ptr (const Ptr& src)
+    inline Ptr::Ptr (const Ptr& src)
         : Ptr{src._fRep}
     {
     }
-    inline Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
+    inline Ptr::Ptr (const shared_ptr<IRep>& src)
         : _fRep{src}
     {
     }
-    inline Connection::Ptr& Connection::Ptr::operator= (const Ptr& src)
+    inline Ptr& Ptr::operator= (const Ptr& src)
     {
         if (this != &src) {
             _fRep = src._fRep;
         }
         return *this;
     }
-    inline Connection::Ptr& Connection::Ptr::operator= (Ptr&& src) noexcept
+    inline Ptr& Ptr::operator= (Ptr&& src) noexcept
     {
         if (this != &src) {
             _fRep = move (src._fRep);
         }
         return *this;
     }
-    inline Connection::IRep* Connection::Ptr::operator->() const noexcept
+    inline IRep* Ptr::operator->() const noexcept
     {
         return _fRep.get ();
     }
-    inline auto Connection::Ptr::operator== (const Ptr& rhs) const
+    inline auto Ptr::operator== (const Ptr& rhs) const
     {
         return _fRep == rhs._fRep;
     }
-    inline bool Connection::Ptr::operator== (nullptr_t) const noexcept
+    inline bool Ptr::operator== (nullptr_t) const noexcept
     {
         return _fRep.get () == nullptr;
     }
-    inline shared_ptr<const EngineProperties> Connection::Ptr::GetEngineProperties () const
+    inline shared_ptr<const EngineProperties> Ptr::GetEngineProperties () const
     {
         return _fRep->GetEngineProperties ();
     }
-    inline void Connection::Ptr::Exec (const String& sql) const
+    inline void Ptr::Exec (const String& sql) const
     {
         _fRep->Exec (sql);
     }
-    inline String Connection::Ptr::ToString () const
+    inline String Ptr::ToString () const
     {
         return Characters::Format (L"%p", _fRep.get ());
     }

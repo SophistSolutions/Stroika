@@ -214,151 +214,141 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         optional<JournalModeType> fJournalMode;
     };
 
-    /**
-     *  \brief SQLite Concrete Connection is a factory for building (local) sqlite based database connection objects.
-     *         'Connection' is a quasi-namespace.
-     */
-    class [[nodiscard]] Connection : SQL::Connection {
-    public:
-        class IRep;
-
-    public:
-        class Ptr;
-
-    private:
-        struct Rep_;
-
-    public:
-        /**
-         *  Quasi-namespace class - don't construct - construct a Connection:::Ptr class with Connection::New ()
-         */
-        Connection () = delete;
-
-    public:
-        /**
-         */
-        static Ptr New (const Options& options);
-    };
-
-    /**
-     *  Connection provides an API for accessing an SQLite database.
-     * 
-     *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
-     *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
-     *
-     *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
-     *          of Options::fThreadingMode when the database is constructed.
-     * 
-     *          @see https://www.sqlite.org/threadsafe.html
-     *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
-     * 
-     *          NOTE ALSO - its POSSIBLE we could lift this Debug::AssertExternallySynchronizedMutex code / restriction.
-     *          But sqlite docs not super clear. Maybe I need to use thier locking APIs myself internally to use
-     *          those locks to make a sequence of bindings safe? But for now just don't assume this is threadsafe and we'll be OK.
-     */
-    class Connection::IRep : public SQL::Connection::IRep, protected Debug::AssertExternallySynchronizedMutex {
-    public:
-        /**
-         *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
-         */
-        virtual ::sqlite3* Peek () = 0;
-
-    public:
-        /**
-         *  Fetched dynamically with pragma busy_timeout;
-         */
-        virtual Duration GetBusyTimeout () const = 0;
-
-    public:
-        /**
-         *  \req timeout >= 0
-         */
-        virtual void SetBusyTimeout (const Duration& timeout) = 0;
-
-    public:
-        /**
-         */
-        virtual JournalModeType GetJournalMode () const = 0;
-
-    public:
-        /**
-         */
-        virtual void SetJournalMode (JournalModeType journalMode) = 0;
-
-    private:
-        friend class Ptr;
-    };
-
     class Statement;
 
     /**
-     *  Connection provides an API for accessing an SQLite database.
-     *
-     *  A new Connection::Ptr is typically created SQLite::Connection::New()
-     *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
-     *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
-     *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
-     *
-     *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
-     *          of Options::fThreadingMode when the database is constructed.
-     * 
-     *          @see https://www.sqlite.org/threadsafe.html
-     *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
-     * 
-     *          NOTE - two Connection::Ptr objects refering to the same underlying REP is NOT (probably) safe with SQLITE. But referring
-     *          to the same database is safe.
-     *
+     *  \brief SQLite::Connection namespace contains SQL::Connection::Ptr subclass, specific to SQLite, and ::New function factory.
      */
-    class Connection::Ptr : public SQL::Connection::Ptr {
-    private:
-        using inherited = SQL::Connection::Ptr;
+    namespace Connection {
 
-    public:
+        using namespace SQL::Connection;
+
+        class IRep;
+
         /**
+         *  Connection provides an API for accessing an SQLite database.
+         *
+         *  A new Connection::Ptr is typically created SQLite::Connection::New()
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
+         *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
+         *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
+         *
+         *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
+         *          of Options::fThreadingMode when the database is constructed.
+         * 
+         *          @see https://www.sqlite.org/threadsafe.html
+         *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
+         * 
+         *          NOTE - two Connection::Ptr objects refering to the same underlying REP is NOT (probably) safe with SQLITE. But referring
+         *          to the same database is safe.
+         *
          */
-        Ptr (const Ptr& src);
-        Ptr (const shared_ptr<IRep>& src = nullptr);
+        class Ptr : public SQL::Connection::Ptr {
+        private:
+            using inherited = SQL::Connection::Ptr;
 
-    public:
-        ~Ptr () = default;
+        public:
+            /**
+             */
+            Ptr (const Ptr& src);
+            Ptr (const shared_ptr<IRep>& src = nullptr);
 
-    public:
+        public:
+            ~Ptr () = default;
+
+        public:
+            /**
+             */
+            nonvirtual Ptr& operator= (const Ptr& src);
+            nonvirtual Ptr& operator= (Ptr&& src) noexcept;
+
+        public:
+            /**
+             */
+            nonvirtual IRep* operator->() const noexcept;
+
+        public:
+            /**
+             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
+             */
+            nonvirtual ::sqlite3* Peek () const;
+
+        public:
+            /**
+             *  When doing a query that would have failed due to SQL_BUSY timeout, sqlite will wait
+             *  and retry up to this long, to avoid the timeout.
+             */
+            Common::Property<Duration> pBusyTimeout;
+
+        public:
+            /**
+             *  This can significantly accect database performance, and reliability.
+             */
+            Common::Property<JournalModeType> pJournalMode;
+
+        private:
+            friend class Statement;
+        };
+
         /**
+         *  \brief create an SQLite database connection object, guided by argument Options.
          */
-        nonvirtual Ptr& operator= (const Ptr& src);
-        nonvirtual Ptr& operator= (Ptr&& src) noexcept;
+        Ptr New (const Options& options);
 
-    public:
         /**
+         *  Connection provides an API for accessing an SQLite database.
+         * 
+         *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *          But though each connection can only be accessed from a single thread at a time, the underlying database may be
+         *          threadsafe (even if accessed across processes) - depending on its construction OPtions::ThreadSafety
+         *
+         *          The Connection itself is standardC++ thread safety. The thread-safety of the underlying database depends on the setting
+         *          of Options::fThreadingMode when the database is constructed.
+         * 
+         *          @see https://www.sqlite.org/threadsafe.html
+         *          We set SQLITE_OPEN_NOMUTEX on open (so mode Multi-thread, but not Serialized).
+         * 
+         *          NOTE ALSO - its POSSIBLE we could lift this Debug::AssertExternallySynchronizedMutex code / restriction.
+         *          But sqlite docs not super clear. Maybe I need to use thier locking APIs myself internally to use
+         *          those locks to make a sequence of bindings safe? But for now just don't assume this is threadsafe and we'll be OK.
          */
-        nonvirtual IRep* operator->() const noexcept;
+        class IRep : public SQL::Connection::IRep, protected Debug::AssertExternallySynchronizedMutex {
+        public:
+            /**
+             *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
+             */
+            virtual ::sqlite3* Peek () = 0;
 
-    public:
-        /**
-         *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
-         */
-        nonvirtual ::sqlite3* Peek () const;
+        public:
+            /**
+             *  Fetched dynamically with pragma busy_timeout;
+             */
+            virtual Duration GetBusyTimeout () const = 0;
 
-    public:
-        /**
-         *  When doing a query that would have failed due to SQL_BUSY timeout, sqlite will wait
-         *  and retry up to this long, to avoid the timeout.
-         */
-        Common::Property<Duration> pBusyTimeout;
+        public:
+            /**
+             *  \req timeout >= 0
+             */
+            virtual void SetBusyTimeout (const Duration& timeout) = 0;
 
-    public:
-        /**
-         *  This can significantly accect database performance, and reliability.
-         */
-        Common::Property<JournalModeType> pJournalMode;
+        public:
+            /**
+             */
+            virtual JournalModeType GetJournalMode () const = 0;
 
-    private:
-        friend class Statement;
-    };
+        public:
+            /**
+             */
+            virtual void SetJournalMode (JournalModeType journalMode) = 0;
+
+        private:
+            friend class Ptr;
+        };
+
+    }
 
     /**
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>

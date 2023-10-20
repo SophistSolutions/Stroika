@@ -31,6 +31,8 @@ using namespace Time;
 #pragma comment(lib, "sqlite.lib")
 #endif
 
+using Database::SQL::EngineProperties;
+
 #if qHasFeature_sqlite
 namespace {
     struct ModuleShutdown_ {
@@ -135,265 +137,262 @@ namespace {
     } sVerifyFlags_;
 }
 
-/*
- ********************************************************************************
- *************************** SQLite::Connection::Rep_ ***************************
- ********************************************************************************
- */
-struct Connection::Rep_ final : IRep {
-    Rep_ (const Options& options)
-    {
-        TraceContextBumper ctx{"SQLite::Connection::Rep_::Rep_"};
+namespace {
 
-        int flags = 0;
-        if (options.fThreadingMode) {
-            // https://www.sqlite.org/threadsafe.html expalins the threadsafety stuff. Not sure I have it right, but hopefully --LGP 2023-09-13
-            switch (*options.fThreadingMode) {
-                case Options::ThreadingMode::eSingleThread:
-                    break;
-                case Options::ThreadingMode::eMultiThread:
-                    Require (CompiledOptions::kThe.THREADSAFE);
-                    Require (::sqlite3_threadsafe ());
-                    flags += SQLITE_OPEN_NOMUTEX;
-                    break;
-                case Options::ThreadingMode::eSerialized:
-                    Require (CompiledOptions::kThe.THREADSAFE);
-                    Require (::sqlite3_threadsafe ());
-                    flags += SQLITE_OPEN_FULLMUTEX;
-                    break;
+    struct Rep_ final : Database::SQL::SQLite::Connection::IRep {
+        Rep_ (const Options& options)
+        {
+            TraceContextBumper ctx{"SQLite::Connection::Rep_::Rep_"};
+
+            int flags = 0;
+            if (options.fThreadingMode) {
+                // https://www.sqlite.org/threadsafe.html expalins the threadsafety stuff. Not sure I have it right, but hopefully --LGP 2023-09-13
+                switch (*options.fThreadingMode) {
+                    case Options::ThreadingMode::eSingleThread:
+                        break;
+                    case Options::ThreadingMode::eMultiThread:
+                        Require (CompiledOptions::kThe.THREADSAFE);
+                        Require (::sqlite3_threadsafe ());
+                        flags += SQLITE_OPEN_NOMUTEX;
+                        break;
+                    case Options::ThreadingMode::eSerialized:
+                        Require (CompiledOptions::kThe.THREADSAFE);
+                        Require (::sqlite3_threadsafe ());
+                        flags += SQLITE_OPEN_FULLMUTEX;
+                        break;
+                }
             }
-        }
 
-        if (options.fImmutable) {
-            // NYI cuz requires uri syntax
-            WeakAssertNotImplemented ();
-            Require (options.fReadOnly);
-        }
-        flags |= options.fReadOnly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE;
+            if (options.fImmutable) {
+                // NYI cuz requires uri syntax
+                WeakAssertNotImplemented ();
+                Require (options.fReadOnly);
+            }
+            flags |= options.fReadOnly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE;
 
-        string uriArg;
-        if constexpr (qDebug) {
-            [[maybe_unused]] int n{};
+            string uriArg;
+            if constexpr (qDebug) {
+                [[maybe_unused]] int n{};
+                if (options.fDBPath) {
+                    ++n;
+                }
+                if (options.fTemporaryDB) {
+                    ++n;
+                }
+                if (options.fInMemoryDB) {
+                    ++n;
+                }
+                Require (n == 1); // exactly one of fDBPath, fTemporaryDB, fInMemoryDB must be provided
+            }
             if (options.fDBPath) {
-                ++n;
+                uriArg = options.fDBPath->generic_string ();
+                if (uriArg[0] == ':') {
+                    uriArg = "./" + uriArg; // sqlite docs warn to do this, to avoid issues with :memory or other extensions
+                }
             }
             if (options.fTemporaryDB) {
-                ++n;
+                uriArg = string{};
+                // According to https://sqlite.org/inmemorydb.html, temporary DBs appear to require empty name
+                // @todo MAYBE fix to find a way to do named temporary DB? - or adjust API so no string name provided.
+                Require (not options.fTemporaryDB->empty ());
             }
             if (options.fInMemoryDB) {
-                ++n;
+                flags |= SQLITE_OPEN_MEMORY;
+                Require (not options.fReadOnly);
+                Require (options.fCreateDBPathIfDoesNotExist);
+                uriArg = options.fInMemoryDB->AsNarrowSDKString (); // often empty string
+                if (uriArg.empty ()) {
+                    uriArg = ":memory";
+                }
+                else {
+                    uriArg = "file:" + uriArg + "?mode=memory&cache=shared";
+                }
+                // For now, it appears we ALWAYS create memory DBS when opening (so cannot find a way to open shared) - so always set created flag
+                fTmpHackCreated_ = true;
             }
-            Require (n == 1); // exactly one of fDBPath, fTemporaryDB, fInMemoryDB must be provided
-        }
-        if (options.fDBPath) {
-            uriArg = options.fDBPath->generic_string ();
-            if (uriArg[0] == ':') {
-                uriArg = "./" + uriArg; // sqlite docs warn to do this, to avoid issues with :memory or other extensions
-            }
-        }
-        if (options.fTemporaryDB) {
-            uriArg = string{};
-            // According to https://sqlite.org/inmemorydb.html, temporary DBs appear to require empty name
-            // @todo MAYBE fix to find a way to do named temporary DB? - or adjust API so no string name provided.
-            Require (not options.fTemporaryDB->empty ());
-        }
-        if (options.fInMemoryDB) {
-            flags |= SQLITE_OPEN_MEMORY;
-            Require (not options.fReadOnly);
-            Require (options.fCreateDBPathIfDoesNotExist);
-            uriArg = options.fInMemoryDB->AsNarrowSDKString (); // often empty string
-            if (uriArg.empty ()) {
-                uriArg = ":memory";
-            }
-            else {
-                uriArg = "file:" + uriArg + "?mode=memory&cache=shared";
-            }
-            // For now, it appears we ALWAYS create memory DBS when opening (so cannot find a way to open shared) - so always set created flag
-            fTmpHackCreated_ = true;
-        }
 
-        int e;
-        if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_CANTOPEN) {
-            if (options.fCreateDBPathIfDoesNotExist) {
-                if (fDB_ != nullptr) {
-                    Verify (::sqlite3_close (fDB_) == SQLITE_OK);
-                    fDB_ = nullptr;
+            int e;
+            if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_CANTOPEN) {
+                if (options.fCreateDBPathIfDoesNotExist) {
+                    if (fDB_ != nullptr) {
+                        Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+                        fDB_ = nullptr;
+                    }
+                    if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, SQLITE_OPEN_CREATE | flags,
+                                                options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_OK) {
+                        fTmpHackCreated_ = true;
+                    }
                 }
-                if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, SQLITE_OPEN_CREATE | flags,
-                                            options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_OK) {
-                    fTmpHackCreated_ = true;
+            }
+            if (e != SQLITE_OK) [[unlikely]] {
+                [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept {
+                    if (fDB_ != nullptr) {
+                        Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+                    }
+                });
+                ThrowSQLiteError_ (e, fDB_);
+            }
+            if (options.fBusyTimeout) {
+                SetBusyTimeout (*options.fBusyTimeout);
+            }
+            if (options.fJournalMode) {
+                SetJournalMode (*options.fJournalMode);
+            }
+            EnsureNotNull (fDB_);
+        }
+        ~Rep_ ()
+        {
+            AssertNotNull (fDB_);
+            Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+        }
+        bool                                       fTmpHackCreated_{false};
+        virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
+        {
+            struct MyEngineProperties_ final : EngineProperties {
+                virtual String GetEngineName () const override
+                {
+                    return "SQLite"sv;
                 }
-            }
-        }
-        if (e != SQLITE_OK) [[unlikely]] {
-            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept {
-                if (fDB_ != nullptr) {
-                    Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+                virtual String GetSQL (NonStandardSQL n) const override
+                {
+                    switch (n) {
+                        case NonStandardSQL::eDoesTableExist:
+                            return "SELECT name FROM sqlite_master WHERE type='table' AND name="_k + SQL::EngineProperties::kDoesTableExistParameterName;
+                    }
+                    AssertNotReached ();
+                    return String{};
                 }
-            });
-            ThrowSQLiteError_ (e, fDB_);
-        }
-        if (options.fBusyTimeout) {
-            SetBusyTimeout (*options.fBusyTimeout);
-        }
-        if (options.fJournalMode) {
-            SetJournalMode (*options.fJournalMode);
-        }
-        EnsureNotNull (fDB_);
-    }
-    ~Rep_ ()
-    {
-        AssertNotNull (fDB_);
-        Verify (::sqlite3_close (fDB_) == SQLITE_OK);
-    }
-    bool                                       fTmpHackCreated_{false};
-    virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
-    {
-        struct MyEngineProperties_ final : EngineProperties {
-            virtual String GetEngineName () const override
-            {
-                return "SQLite"sv;
-            }
-            virtual String GetSQL (NonStandardSQL n) const override
-            {
-                switch (n) {
-                    case NonStandardSQL::eDoesTableExist:
-                        return "SELECT name FROM sqlite_master WHERE type='table' AND name="_k + SQL::EngineProperties::kDoesTableExistParameterName;
+                virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override
+                {
+                    return true;
                 }
-                AssertNotReached ();
-                return String{};
-            }
-            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override
-            {
-                return true;
-            }
-            virtual bool SupportsNestedTransactions () const override
-            {
-                return false;
-            }
-        };
-        static const shared_ptr<const EngineProperties> kProps_ = make_shared<const MyEngineProperties_> ();
-        return kProps_;
-    }
-    virtual SQL::Statement mkStatement (const String& sql) override
-    {
-        Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
-        return SQLite::Statement{conn, sql};
-    }
-    virtual SQL::Transaction mkTransaction () override
-    {
-        Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
-        return SQLite::Transaction{conn};
-    }
-    virtual void Exec (const String& sql) override
-    {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        [[maybe_unused]] char* db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
-        int e = ::sqlite3_exec (fDB_, sql.AsUTF8<string> ().c_str (), NULL, 0, &db_err);
-        if (e != SQLITE_OK) [[unlikely]] {
-            ThrowSQLiteErrorIfNotOK_ (e, fDB_);
+                virtual bool SupportsNestedTransactions () const override
+                {
+                    return false;
+                }
+            };
+            static const shared_ptr<const EngineProperties> kProps_ = make_shared<const MyEngineProperties_> ();
+            return kProps_;
         }
-    }
-    virtual ::sqlite3* Peek () override
-    {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
-        return fDB_;
-    }
-    virtual Duration GetBusyTimeout () const override
-    {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        optional<int>                                         d;
-        auto callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-            optional<int>* pd = reinterpret_cast<optional<int>*> (lamdaArg);
-            AssertNotNull (pd);
-            Assert (argc == 1);
-            Assert (::strcmp (azColName[0], "timeout") == 0);
-            int val = ::atoi (argv[0]);
-            Assert (val >= 0);
-            *pd = val;
-            return 0;
-        };
-        ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma busy_timeout;", callback, &d, nullptr));
-        Assert (d);
-        return Duration{double (*d) / 1000.0};
-    }
-    virtual void SetBusyTimeout (const Duration& timeout) override
-    {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        ThrowSQLiteErrorIfNotOK_ (::sqlite3_busy_timeout (fDB_, (int)(timeout.As<float> () * 1000)), fDB_);
-    }
-    virtual JournalModeType GetJournalMode () const override
-    {
-        optional<string> d;
-        auto             callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
-            optional<string>* pd = reinterpret_cast<optional<string>*> (lamdaArg);
-            AssertNotNull (pd);
-            Assert (argc == 1);
-            Assert (::strcmp (azColName[0], "journal_mode") == 0);
-            *pd = argv[0];
-            return 0;
-        };
-        ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode;", callback, &d, nullptr));
-        Assert (d);
-        if (d == "delete"sv) {
+        virtual SQL::Statement mkStatement (const String& sql) override
+        {
+            Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
+            return Database::SQL::SQLite::Statement{conn, sql};
+        }
+        virtual SQL::Transaction mkTransaction () override
+        {
+            Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
+            return Database::SQL::SQLite::Transaction{conn};
+        }
+        virtual void Exec (const String& sql) override
+        {
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            [[maybe_unused]] char* db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
+            int e = ::sqlite3_exec (fDB_, sql.AsUTF8<string> ().c_str (), NULL, 0, &db_err);
+            if (e != SQLITE_OK) [[unlikely]] {
+                ThrowSQLiteErrorIfNotOK_ (e, fDB_);
+            }
+        }
+        virtual ::sqlite3* Peek () override
+        {
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this}; // not super helpful, but could catch errors - reason not very helpful is we lose lock long before we stop using ptr
+            return fDB_;
+        }
+        virtual Duration GetBusyTimeout () const override
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+            optional<int>                                         d;
+            auto callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+                optional<int>* pd = reinterpret_cast<optional<int>*> (lamdaArg);
+                AssertNotNull (pd);
+                Assert (argc == 1);
+                Assert (::strcmp (azColName[0], "timeout") == 0);
+                int val = ::atoi (argv[0]);
+                Assert (val >= 0);
+                *pd = val;
+                return 0;
+            };
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma busy_timeout;", callback, &d, nullptr));
+            Assert (d);
+            return Duration{double (*d) / 1000.0};
+        }
+        virtual void SetBusyTimeout (const Duration& timeout) override
+        {
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_busy_timeout (fDB_, (int)(timeout.As<float> () * 1000)), fDB_);
+        }
+        virtual JournalModeType GetJournalMode () const override
+        {
+            optional<string> d;
+            auto             callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+                optional<string>* pd = reinterpret_cast<optional<string>*> (lamdaArg);
+                AssertNotNull (pd);
+                Assert (argc == 1);
+                Assert (::strcmp (azColName[0], "journal_mode") == 0);
+                *pd = argv[0];
+                return 0;
+            };
+            ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode;", callback, &d, nullptr));
+            Assert (d);
+            if (d == "delete"sv) {
+                return JournalModeType::eDelete;
+            }
+            if (d == "truncate"sv) {
+                return JournalModeType::eTruncate;
+            }
+            if (d == "persist"sv) {
+                return JournalModeType::ePersist;
+            }
+            if (d == "memory"sv) {
+                return JournalModeType::eMemory;
+            }
+            if (d == "wal"sv) {
+                return JournalModeType::eWAL;
+            }
+            if (d == "wal2"sv) {
+                return JournalModeType::eWAL2;
+            }
+            if (d == "off"sv) {
+                return JournalModeType::eOff;
+            }
+            AssertNotReached ();
             return JournalModeType::eDelete;
         }
-        if (d == "truncate"sv) {
-            return JournalModeType::eTruncate;
-        }
-        if (d == "persist"sv) {
-            return JournalModeType::ePersist;
-        }
-        if (d == "memory"sv) {
-            return JournalModeType::eMemory;
-        }
-        if (d == "wal"sv) {
-            return JournalModeType::eWAL;
-        }
-        if (d == "wal2"sv) {
-            return JournalModeType::eWAL2;
-        }
-        if (d == "off"sv) {
-            return JournalModeType::eOff;
-        }
-        AssertNotReached ();
-        return JournalModeType::eDelete;
-    }
-    virtual void SetJournalMode (JournalModeType journalMode) override
-    {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        [[maybe_unused]] char*                                 db_err{};
-        switch (journalMode) {
-            case JournalModeType::eDelete:
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err));
-                break;
-            case JournalModeType::eTruncate:
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'truncate';", nullptr, 0, &db_err));
-                break;
-            case JournalModeType::ePersist:
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'persist';", nullptr, 0, &db_err));
-                break;
-            case JournalModeType::eMemory:
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'memory';", nullptr, 0, &db_err));
-                break;
-            case JournalModeType::eWAL:
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal';", nullptr, 0, &db_err));
-                break;
-            case JournalModeType::eWAL2:
-                if (GetJournalMode () == JournalModeType::eWAL) {
+        virtual void SetJournalMode (JournalModeType journalMode) override
+        {
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            [[maybe_unused]] char*                                 db_err{};
+            switch (journalMode) {
+                case JournalModeType::eDelete:
                     ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err));
-                }
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal2';", nullptr, 0, &db_err));
-                break;
-            case JournalModeType::eOff:
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'off';", nullptr, 0, &db_err));
-                break;
+                    break;
+                case JournalModeType::eTruncate:
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'truncate';", nullptr, 0, &db_err));
+                    break;
+                case JournalModeType::ePersist:
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'persist';", nullptr, 0, &db_err));
+                    break;
+                case JournalModeType::eMemory:
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'memory';", nullptr, 0, &db_err));
+                    break;
+                case JournalModeType::eWAL:
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal';", nullptr, 0, &db_err));
+                    break;
+                case JournalModeType::eWAL2:
+                    if (GetJournalMode () == JournalModeType::eWAL) {
+                        ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'delete';", nullptr, 0, &db_err));
+                    }
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'wal2';", nullptr, 0, &db_err));
+                    break;
+                case JournalModeType::eOff:
+                    ThrowSQLiteErrorIfNotOK_ (::sqlite3_exec (fDB_, "pragma journal_mode = 'off';", nullptr, 0, &db_err));
+                    break;
+            }
         }
-    }
 
-    ::sqlite3* fDB_{};
-};
-
+        ::sqlite3* fDB_{};
+    };
+}
 /*
  ********************************************************************************
  *********************** SQL::SQLite::Connection::Ptr ***************************
@@ -424,7 +423,7 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
 {
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
     if (src != nullptr) {
-        SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
+        fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
     }
 #endif
 }
@@ -455,7 +454,7 @@ struct Statement::MyRep_ : IRep {
         RequireNotNull (db);
         RequireNotNull (db->Peek ());
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
-        SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.GetSharedContext ());
+        SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.fAssertExternallySynchronizedMutex.GetSharedContext ());
 #endif
         string                                          queryUTF8 = query.AsUTF8<string> ();
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};

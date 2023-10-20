@@ -12,6 +12,7 @@
 namespace Stroika::Foundation::Database::SQL::ODBC {
 
 #if qHasLibrary_ODBC
+
     /*
      ********************************************************************************
      ****************************** ODBC::Connection::Ptr ***************************

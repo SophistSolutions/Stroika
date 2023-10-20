@@ -41,6 +41,9 @@ namespace {
  *************************** ODBC::Connection::Rep_ *****************************
  ********************************************************************************
  */
+namespace Stroika::Foundation::Database::SQL::ODBC::Connection {
+    struct Rep_;
+}
 struct Connection::Rep_ final : IRep {
     SQLHDBC fConnectionHandle{nullptr};
     SQLHENV fODBCEnvironmentHandle{nullptr};
@@ -164,7 +167,7 @@ SQL::ODBC::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
 {
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
     if (src != nullptr) {
-        SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
+        fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
     }
 #endif
 }
@@ -196,7 +199,7 @@ struct Statement::MyRep_ : IRep {
 #endif
         RequireNotNull (db);
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
-        SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.GetSharedContext ());
+        SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.fAssertExternallySynchronizedMutex.GetSharedContext ());
 #endif
         u8string                                        queryUTF8 = query.AsUTF8 ();
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};

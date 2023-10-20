@@ -13,7 +13,7 @@
 
 namespace Stroika::Samples::SQL {
 
-    using Stroika::Foundation::Database::SQL::Connection;
+    using namespace Stroika::Foundation::Database::SQL;
 
     /**
      *  \brief  Simple test of creating a plain (employees) db and adding to it, and a few simple queries.
