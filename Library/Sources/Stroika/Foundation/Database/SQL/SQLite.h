@@ -315,7 +315,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
          *          But sqlite docs not super clear. Maybe I need to use thier locking APIs myself internally to use
          *          those locks to make a sequence of bindings safe? But for now just don't assume this is threadsafe and we'll be OK.
          */
-        class IRep : public SQL::Connection::IRep, protected Debug::AssertExternallySynchronizedMutex {
+        class IRep : public SQL::Connection::IRep {
         public:
             /**
              *  Use of Peek () is discouraged, and unsafe, but allowed for now because we don't have a full wrapper on the sqlite API.
@@ -343,6 +343,9 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
             /**
              */
             virtual void SetJournalMode (JournalModeType journalMode) = 0;
+
+        public:
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
 
         private:
             friend class Ptr;

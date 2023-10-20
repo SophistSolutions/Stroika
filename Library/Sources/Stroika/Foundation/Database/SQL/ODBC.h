@@ -49,32 +49,23 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
     };
 
     namespace Connection {
+
         using namespace SQL::Connection;
 
-        class Ptr;
+        class IRep;
 
         /**
          *  Connection provides an API for accessing an ODBC database.
-         * 
-         *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
+         *
+         *  A new Connection::Ptr is typically created ODBC::Connection::New()
          */
-        class IRep : public SQL::Connection::IRep, protected Debug::AssertExternallySynchronizedMutex {
-        private:
-            friend class Ptr;
-        };
-
-        /**
-     *  Connection provides an API for accessing an ODBC database.
-     *
-     *  A new Connection::Ptr is typically created ODBC::Connection::New()
-     */
         class Ptr : public SQL::Connection::Ptr {
         private:
             using inherited = SQL::Connection::Ptr;
 
         public:
             /**
-         */
+             */
             Ptr (const Ptr& src);
             Ptr (const shared_ptr<IRep>& src = nullptr);
 
@@ -83,7 +74,7 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
 
         public:
             /**
-         */
+             */
             nonvirtual Ptr& operator= (const Ptr& src);
             nonvirtual Ptr& operator= (Ptr&& src) noexcept;
 
@@ -100,6 +91,20 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
          *  The dbInitializer is called IFF the New () call results in a newly created database (@todo RECONSIDER).
          */
         Ptr New (const Options& options);
+
+        /**
+         *  Connection provides an API for accessing an ODBC database.
+         * 
+         *  Typically don't use this directly, but use Connecion::Ptr, a smart ptr wrapper on this interface.
+         */
+        class IRep : public SQL::Connection::IRep {
+        public:
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySynchronizedMutex;
+
+        private:
+            friend class Ptr;
+        };
+
     };
 
     class Statement;

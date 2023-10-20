@@ -138,8 +138,7 @@ namespace {
 }
 
 namespace {
-
-    struct Rep_ final : Database::SQL::SQLite::Connection::IRep {
+    struct Rep_ final : Database::SQL::SQLite::Connection::IRep, private Debug::AssertExternallySynchronizedMutex {
         Rep_ (const Options& options)
         {
             TraceContextBumper ctx{"SQLite::Connection::Rep_::Rep_"};
@@ -393,6 +392,7 @@ namespace {
         ::sqlite3* fDB_{};
     };
 }
+
 /*
  ********************************************************************************
  *********************** SQL::SQLite::Connection::Ptr ***************************
@@ -423,7 +423,7 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
 {
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
     if (src != nullptr) {
-        fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
+        fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->fAssertExternallySynchronizedMutex.GetSharedContext ());
     }
 #endif
 }
