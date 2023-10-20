@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Execution {
             default:
                 break;
         }
-            // release lock
+        // release lock
         fLock_.clear (memory_order_release);
     }
 

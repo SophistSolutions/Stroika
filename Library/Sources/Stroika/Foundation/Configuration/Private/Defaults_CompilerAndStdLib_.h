@@ -1538,7 +1538,6 @@ In file included from ../Characters/String.h:18,
 
 #endif
 
-
 /**
  /../../Memory/../Streams/../Traversal/Iterable.h: In instantiation of ‘class Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::String>’:
 ../../../Memory/../Streams/InputStream.inl:269:65:   required from here
@@ -1564,7 +1563,6 @@ In file included from ../Execution/../Characters/../Containers/Sequence.h:16,
 #endif
 
 #endif
-
 
 /*
       Compiling Library/Sources/Stroika/Foundation/Characters/FloatConversion.cpp ...

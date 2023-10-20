@@ -811,7 +811,7 @@ void Thread::Ptr::Start () const
 
 #if __cpp_lib_jthread >= 201911
         fRep_->fStopToken_ = fRep_->fStopSource_.get_token ();
-        fRep_->fThread_ = jthread{[this] () -> void { Rep_::ThreadMain_ (fRep_); }};
+        fRep_->fThread_    = jthread{[this] () -> void { Rep_::ThreadMain_ (fRep_); }};
 #else
         fRep_->fThread_ = thread{[this] () -> void { Rep_::ThreadMain_ (fRep_); }};
 #endif
