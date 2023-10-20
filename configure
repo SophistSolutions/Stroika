@@ -2766,6 +2766,13 @@ if ($onlyGenerateIfCompilerExists) {
 			$generate = false;
 			$generateBecause = "clang++-13 with libc++ doesn't support modern enough c++, and with libstdc++, some versions (ubuntu 22.04) work, and others (libg++ 13 and later) dont compile";
 		}
+		if ($itsVersion <  15.0 && $STDCXXLIB eq "libstdc++") {
+			# use g++ version and a proxy for what version of stdlib (hard to find otehrwise)
+			if (GetGCCVersion_ ("g++") >= 13.0) {
+				$generate = false;
+				$generateBecause = "clang++-14 with libstdc++ doesn't work with more recent versions of libstdc++";
+			}
+		}
 		if (16.0 <= $itsVersion && $itsVersion < 17.0 && $STDCXXLIB eq "libstdc++" && $CPPSTD_VERSION_FLAG eq "--std=c++2b") {
 			# PERHAPS should fine tune this check to make sure we are looking at g++ lib 13
 			$generate = false;
