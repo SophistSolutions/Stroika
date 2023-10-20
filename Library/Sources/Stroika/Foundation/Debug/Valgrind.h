@@ -64,40 +64,6 @@ bool IsRunningUnderValgrind ();
 #define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) ((void)0)
 #endif
 
-/**
- *  \brief  Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER is ANNOTATE_HAPPENS_AFTER except it can be used
- *          if no valgrind includes, and ifdefed out, and it can be used in an expression
- *
- *  \par Example Usage
- *      \code
- *          Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (p);
- *          void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
- *      \endcode
- *
- *  \see Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE
- */
-#if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X) Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_AFTER_ (X)
-#else
-#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X) ((void)0)
-#endif
-
-#if defined(__cplusplus)
-namespace Stroika::Foundation::Debug {
-#if qStroika_FeatureSupported_Valgrind
-    inline void Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (const void* p)
-    {
-        // use this inline function def in Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE because then Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE and be used in comma operator expression
-        ANNOTATE_HAPPENS_BEFORE (p);
-    }
-    inline void Do_Valgrind_ANNOTATE_HAPPENS_AFTER_ (const void* p)
-    {
-        // use this inline function def in Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE because then Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER and be used in comma operator expression
-        ANNOTATE_HAPPENS_AFTER (p);
-    }
-#endif
-}
-#endif
 
 /*
  ********************************************************************************
