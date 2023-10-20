@@ -454,10 +454,11 @@ struct Statement::MyRep_ : IRep {
         RequireNotNull (db);
         RequireNotNull (db->Peek ());
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
-        SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.fAssertExternallySynchronizedMutex.GetSharedContext ());
+        _fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (
+            fConnectionPtr_.fAssertExternallySynchronizedMutex.GetSharedContext ());
 #endif
         string                                          queryUTF8 = query.AsUTF8<string> ();
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         const char*                                     pzTail = nullptr;
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_prepare_v2 (db->Peek (), queryUTF8.c_str (), -1, &fStatementObj_, &pzTail), db->Peek ());
         Assert (pzTail != nullptr);
@@ -487,13 +488,13 @@ struct Statement::MyRep_ : IRep {
     }
     ~MyRep_ ()
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         AssertNotNull (fStatementObj_);
         (void)::sqlite3_finalize (fStatementObj_);
     }
     virtual String GetSQL (WhichSQLFlag whichSQL) const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
         switch (whichSQL) {
             case WhichSQLFlag::eOriginal:
                 return String::FromUTF8 (::sqlite3_sql (fStatementObj_));
@@ -523,22 +524,22 @@ struct Statement::MyRep_ : IRep {
     }
     virtual Sequence<ColumnDescription> GetColumns () const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
         return Sequence<ColumnDescription>{fColumns_};
     };
     virtual Sequence<ParameterDescription> GetParameters () const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
         return fParameters_;
     };
     virtual void Bind () override
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_clear_bindings (fStatementObj_));
     }
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         fParameters_[parameterIndex].fValue = v;
         switch (v.GetType ()) {
             case VariantValue::eDate:
@@ -571,7 +572,7 @@ struct Statement::MyRep_ : IRep {
     virtual void Bind (const String& parameterName, const VariantValue& v) override
     {
         Require (not parameterName.empty ());
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         String                                          pn = parameterName;
         if (pn[0] != ':') {
             pn = ":"_k + pn;
@@ -591,7 +592,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::Reset"};
 #endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         AssertNotNull (fStatementObj_);
         ThrowSQLiteErrorIfNotOK_ (::sqlite3_reset (fStatementObj_), fConnectionPtr_->Peek ());
     }
@@ -600,7 +601,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::GetNextRow"};
 #endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         // @todo MAYBE redo with https://www.sqlite.org/c3ref/value.html
         AssertNotNull (fStatementObj_);
         int rc = ::sqlite3_step (fStatementObj_);

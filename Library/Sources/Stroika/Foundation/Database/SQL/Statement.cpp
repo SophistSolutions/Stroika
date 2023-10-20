@@ -64,7 +64,7 @@ auto Statement::GetAllRemainingRows () -> Sequence<Row>
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     Sequence<Row>                                   result;
     while (auto o = GetNextRow ()) {
         result += *o;
@@ -77,7 +77,7 @@ Sequence<VariantValue> Statement::GetAllRemainingRows (size_t restrictToColumn)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     Sequence<VariantValue>                          result;
     ColumnDescription                               col0 = GetColumns ()[restrictToColumn];
     while (auto o = GetNextRow ()) {
@@ -91,7 +91,7 @@ Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRemainingRows (size
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     Sequence<tuple<VariantValue, VariantValue>>     result;
     ColumnDescription                               col0 = GetColumns ()[restrictToColumn1];
     ColumnDescription                               col1 = GetColumns ()[restrictToColumn2];
@@ -107,7 +107,7 @@ Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemai
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
 #endif
-    AssertExternallySynchronizedMutex::WriteContext           critSec{*this};
+    AssertExternallySynchronizedMutex::WriteContext           critSec{_fAssertExternallySynchronizedMutex};
     Sequence<tuple<VariantValue, VariantValue, VariantValue>> result;
     ColumnDescription                                         col0 = GetColumns ()[restrictToColumn1];
     ColumnDescription                                         col1 = GetColumns ()[restrictToColumn2];
@@ -120,7 +120,7 @@ Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemai
 
 void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameters)
 {
-    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     int                                             idx = 0;
     Bind ();
     for (const auto& i : parameters) {
@@ -136,7 +136,7 @@ void Statement::Bind (const Traversal::Iterable<ParameterDescription>& parameter
 
 void Statement::Bind (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
 {
-    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     Bind ();
     for (const auto& i : parameters) {
         Bind (i.fKey, i.fValue);
@@ -148,7 +148,7 @@ void Statement::Execute ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::Execute"};
 #endif
-    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     Reset ();
     (void)_fRep->GetNextRow ();
 }
@@ -158,7 +158,7 @@ void Statement::Execute (const Traversal::Iterable<ParameterDescription>& parame
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::Execute"};
 #endif
-    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     Reset ();
     Bind (parameters);
     (void)_fRep->GetNextRow ();
@@ -170,7 +170,7 @@ void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, 
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SQL::Statement::Execute", L"parameters=%s",
                                                                           Characters::ToString (parameters).c_str ())};
 #endif
-    AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+    AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     Reset ();
     Bind (parameters);
     (void)_fRep->GetNextRow ();
@@ -178,7 +178,7 @@ void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, 
 
 String Statement::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+    AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
     StringBuilder                                  sb;
     sb << "{"sv;
     sb << "Parameter-Bindings: "sv << Characters::ToString (GetParameters ()) << ", "sv;

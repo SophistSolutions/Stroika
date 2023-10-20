@@ -37,8 +37,10 @@ namespace Stroika::Foundation::Database::SQL {
      *        String slightly simpler, and nearly as performant, so going with that for now.
      *
      *  \todo   CONSIDER redo Row as iterator; or maybe GetResults () method that returns iterable of Rows? and lazy pulls them?
+     * 
+     *  \todo   CONSIDER if this should be a namespace (like Connection) with Ptr and IRep class members).
      */
-    class Statement : protected Debug::AssertExternallySynchronizedMutex {
+    class Statement {
     public:
         class IRep;
 
@@ -268,6 +270,9 @@ namespace Stroika::Foundation::Database::SQL {
         nonvirtual String ToString () const;
 
     protected:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fAssertExternallySynchronizedMutex;
+
+    protected:
         unique_ptr<IRep> _fRep;
     };
 
@@ -278,7 +283,7 @@ namespace Stroika::Foundation::Database::SQL {
      *          But though each Statement can only be accessed from a single thread at a time, the underlying database may be
      *          threadsafe (even if accessed across processes).
      */
-    class Statement::IRep : protected Debug::AssertExternallySynchronizedMutex {
+    class Statement::IRep {
     public:
         /**
          */
@@ -320,6 +325,9 @@ namespace Stroika::Foundation::Database::SQL {
          * returns 'missing' on EOF, exception on error
          */
         virtual optional<Row> GetNextRow () = 0;
+
+    protected:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fAssertExternallySynchronizedMutex;
     };
 
 }

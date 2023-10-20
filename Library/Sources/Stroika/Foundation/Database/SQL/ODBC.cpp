@@ -194,36 +194,37 @@ struct Statement::MyRep_ : IRep {
 #endif
         RequireNotNull (db);
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
-        SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.fAssertExternallySynchronizedMutex.GetSharedContext ());
+        _fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (
+            fConnectionPtr_.fAssertExternallySynchronizedMutex.GetSharedContext ());
 #endif
         u8string                                        queryUTF8 = query.AsUTF8 ();
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         AssertNotImplemented ();
     }
     ~MyRep_ ()
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
     }
     virtual String GetSQL ([[maybe_unused]] WhichSQLFlag whichSQL) const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
         AssertNotImplemented ();
         return String{};
     }
     virtual Sequence<ColumnDescription> GetColumns () const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
         AssertNotImplemented ();
         return Sequence<ColumnDescription>{};
     };
     virtual Sequence<ParameterDescription> GetParameters () const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{_fAssertExternallySynchronizedMutex};
         return fParameters_;
     };
     virtual void Bind () override
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         for (auto i = fParameters_.begin (); i != fParameters_.end (); ++i) {
             auto p   = *i;
             p.fValue = VariantValue{};
@@ -233,14 +234,14 @@ struct Statement::MyRep_ : IRep {
     }
     virtual void Bind (unsigned int parameterIndex, const VariantValue& v) override
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         fParameters_[parameterIndex].fValue = v;
         AssertNotImplemented ();
     }
     virtual void Bind (const String& parameterName, const VariantValue& v) override
     {
         Require (not parameterName.empty ());
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         AssertNotImplemented ();
         String pn = parameterName;
         if (pn[0] != ':') {
@@ -261,7 +262,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::Reset"};
 #endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         AssertNotImplemented ();
     }
     virtual optional<Row> GetNextRow () override
@@ -269,7 +270,7 @@ struct Statement::MyRep_ : IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::Statement::GetNextRow"};
 #endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{_fAssertExternallySynchronizedMutex};
         AssertNotImplemented ();
         return nullopt;
     }
