@@ -85,6 +85,10 @@ namespace Stroika::Foundation::Traversal {
     static_assert (IIterableOf<vector<int>, long int>);
     static_assert (not IIterableOf<vector<string>, int>);
 
+    #if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wsubobject-linkage\"")
+    #endif
+
     /**
      *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
      *          to traverse them.
@@ -1296,6 +1300,10 @@ namespace Stroika::Foundation::Traversal {
         using _IteratorRepSharedPtr [[deprecated ("Since Stroika v3.0d1 use unique_ptr<typename Iterator<T>::IRep> directly")]] =
             unique_ptr<typename Iterator<T>::IRep>;
     };
+
+    #if qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wsubobject-linkage\"")
+    #endif
 
     /**
      *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the

@@ -1538,6 +1538,34 @@ In file included from ../Characters/String.h:18,
 
 #endif
 
+
+/**
+ /../../Memory/../Streams/../Traversal/Iterable.h: In instantiation of ‘class Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::String>’:
+../../../Memory/../Streams/InputStream.inl:269:65:   required from here
+../../../Memory/../Streams/../Traversal/Iterable.h:205:11: warning: ‘Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::String>’ has a field ‘Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::String>::_SharedByValueRepType Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::String>::_fRep’ whose type has internal linkage [-Wsubobject-linkage]
+      Compiling Library/Sources/Stroika/Foundation/Characters/CodePage.cpp ... 
+      Compiling Library/Sources/Stroika/Foundation/Cryptography/OpenSSL/CipherAlgorithm.cpp ... 
+      Compiling Library/Sources/Stroika/Foundation/Cryptography/Encoding/Algorithm/RC4.cpp ... 
+In file included from ../Execution/../Characters/../Containers/Sequence.h:16,
+                 from ../Execution/../Characters/String.h:15,
+                 from ../Execution/Exceptions.h:15,
+                 from CodePage.cpp:13:
+../Execution/../Characters/../Containers/../Traversal/Iterable.h: In instantiation of ‘class Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::Characters::Character>’:
+../Execution/../Characters/String.h:163:52:   required from here
+..
+*/
+#ifndef qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// Issue (just warning) in GCC 13
+#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 13)
+#else
+#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy 0
+#endif
+
+#endif
+
+
 /*
       Compiling Library/Sources/Stroika/Foundation/Characters/FloatConversion.cpp ...
 FloatConversion.cpp: In function ‘Stroika::Foundation::Characters::String {anonymous}::Float2String_OptimizedForCLocaleAndNoStreamFlags_(FLOAT_TYPE, int, bool)’:
