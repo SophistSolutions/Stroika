@@ -94,7 +94,7 @@
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika v3 does not support versions prior to GCC 11 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
-#if __GNUC__ > 13 || (__GNUC__ == 13 && (__GNUC_MINOR__ > 1))
+#if __GNUC__ > 13
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
