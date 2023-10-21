@@ -32,31 +32,11 @@ namespace Stroika::Foundation::Execution {
     inline Synchronized<T, TRAITS>::Synchronized (ARGUMENT_TYPES&&... args)
         : fProtectedValue_ (forward<ARGUMENT_TYPES> (args)...) // use () not {} so works with T with explicit CTOR (empirically has trouble - not sure why)
     {
-#if qStroika_FeatureSupported_Valgrind
-        if (TRAITS::kSupportSharedLocks) {
-            // This appears to not be supported default valgrind rules/gcc8 (and eariler) libraries/ubuntu1804,
-            // though VALGRIND_HG_MUTEX_INIT_POST() is --LGP 2018-06-27
-            ANNOTATE_RWLOCK_CREATE (&fMutex_);
-        }
-        else {
-            //VALGRIND_HG_MUTEX_INIT_POST (&fMutex_, TRAITS::kIsRecursiveReadMutex);
-        }
-#endif
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::Synchronized (const Synchronized& src)
         : fProtectedValue_{src.cget ().load ()}
     {
-#if qStroika_FeatureSupported_Valgrind
-        if (TRAITS::kSupportSharedLocks) {
-            // This appears to not be supported default valgrind rules/gcc8 (and eariler) libraries/ubuntu1804,
-            // though VALGRIND_HG_MUTEX_INIT_POST() is --LGP 2018-06-27
-            ANNOTATE_RWLOCK_CREATE (&fMutex_);
-        }
-        else {
-            //VALGRIND_HG_MUTEX_INIT_POST (&fMutex_, TRAITS::kIsRecursiveReadMutex);
-        }
-#endif
     }
 #if qStroika_FeatureSupported_Valgrind
     template <typename T, typename TRAITS>
