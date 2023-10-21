@@ -152,7 +152,6 @@ namespace Stroika::Foundation::Memory {
         }
         void* result = p;
         AssertNotNull (result);
-        Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated (result, n);
         /*
          *  Treat this as a linked list, and make head point to next member.
          *
@@ -183,7 +182,6 @@ namespace Stroika::Foundation::Memory {
          * treat this as a linked list, and make head point to next member
          */
         sHeadLink_ = (*(void**)sHeadLink_);
-        Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated (result, n);
         return result;
 #endif
     }
@@ -224,7 +222,6 @@ namespace Stroika::Foundation::Memory {
         else {
             Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
         }
-        Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated (p, SIZE);
 #else
         Private_::DoDeleteHandlingLocksExceptionsEtc_ (p, &sHeadLink_);
 #endif

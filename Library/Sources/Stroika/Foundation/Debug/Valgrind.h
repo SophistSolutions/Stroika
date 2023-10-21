@@ -48,22 +48,6 @@
  */
 bool IsRunningUnderValgrind ();
 
-/**
- */
-#if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated(P, SIZE) ANNOTATE_NEW_MEMORY (P, SIZE)
-#else
-#define Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated(P, SIZE) ((void)0)
-#endif
-
-/**
- */
-#if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) VALGRIND_HG_CLEAN_MEMORY (P, SIZE)
-#else
-#define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) ((void)0)
-#endif
-
 
 /*
  ********************************************************************************
