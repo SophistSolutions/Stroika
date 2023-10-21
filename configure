@@ -1090,13 +1090,15 @@ sub	SetDefaultForCompilerDriver_
 	# 	push @CXXFLAGS, '-Wstack-exhausted';
 	# }
 
-	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 (xcode 14) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+	if ($onlyGenerateIfCompilerExists == false) {
+		if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
+				print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 (xcode 14) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+			}
 		}
-	}
-	if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
-		print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		if (IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
+			print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		}
 	}
 
 	if ($lsb_release == "20.04" or $lsb_release == "20.10" or $lsb_release == "21.04" or $lsb_release == "21.10" or $lsb_release == "22.04") {
