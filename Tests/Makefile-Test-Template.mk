@@ -55,4 +55,4 @@ $(TARGETEXE):	$(Objs) $(StroikaLibs)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_LINK_LINE,$@)';\
 	fi
-	@+$(call DEFAULT_LINK_LINE,$@)
+	@$(call DEFAULT_LINK_LINE,$@)
