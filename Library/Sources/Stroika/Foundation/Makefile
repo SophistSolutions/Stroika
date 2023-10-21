@@ -97,7 +97,7 @@ $(ObjDir)%${OBJ_SUFFIX} : %.cpp
 
 .PHONY:			$(SubDirs)
 $(SubDirs):
-	@$(MAKE) --directory $@ -s
+	@+$(MAKE) --directory $@ -s
 
 
 # @todo fix - this iterates over all the subdirs calling make, which is a little slow and perhaps unneeded -- LGP 2019-10-27

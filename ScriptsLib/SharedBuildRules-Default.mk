@@ -35,7 +35,7 @@ $(ObjDir)%${OBJ_SUFFIX} : %.cpp
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) '$(call DEFAULT_CXX_LINE,$<,$@)';\
 	fi
-	@$(call DEFAULT_CXX_LINE,$<,$@)
+	@+$(call DEFAULT_CXX_LINE,$<,$@)
 
 	
 
