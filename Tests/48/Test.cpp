@@ -208,14 +208,16 @@ namespace {
         {
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-move\"")
-            //DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wself-move\"")       // PRAGMA WARNING ON GCC11 (g++ on ubuntu 20.04) - so try removing
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wpragmas\"")
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wself-move\"")          // PRAGMA WARNING ON GCC11 (g++ on ubuntu 20.04)but needed on i think g++ 13 and later
             Memory::BLOB bl{1, 2, 3, 4, 5};
             bl = bl; // assure self-assign OK
             bl = move (bl);
             VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-move\"")
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
-            //DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wself-move\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wself-move\"")
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wpragmas\"")
         }
         {
             const char kSrc1_[] = "This is a very good test of a very good test";
