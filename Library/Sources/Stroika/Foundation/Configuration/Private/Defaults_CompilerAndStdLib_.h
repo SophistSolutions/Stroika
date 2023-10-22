@@ -549,6 +549,11 @@ ld: 1 duplicate symbols
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 make[4]: ***
 
+/usr/bin/ld: /tmp/lto-llvm-d35bdb.o: in function `Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntilQuietly(double)':
+ld-temp.o:(.text._ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd+0xe3): undefined reference to `Stroika::Foundation::Execution::Thread::IsCurrentThreadInterruptible()'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+make[5]: *** [Makefile:47: /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2310_x86_64/Builds/clang++-16-release-libc++23/Samples-SSDPClient/SSDPClient] Error 1
+make[4]: *** [Makefile:29: all] Error 2
 
 
 SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
@@ -567,8 +572,9 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__)
 // first noticed broken in apply clang 14
-// replicated in clang 15.0
-#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// replicated in clang 15.
+// reproduced in clang 16
+#define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 11
 #define qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
