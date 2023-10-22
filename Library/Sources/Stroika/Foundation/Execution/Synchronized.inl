@@ -38,20 +38,6 @@ namespace Stroika::Foundation::Execution {
         : fProtectedValue_{src.cget ().load ()}
     {
     }
-#if qStroika_FeatureSupported_Valgrind
-    template <typename T, typename TRAITS>
-    inline Synchronized<T, TRAITS>::~Synchronized ()
-    {
-        if (TRAITS::kSupportSharedLocks) {
-            // This appears to not be supported default valgrind rules/gcc8 (and eariler) libraries/ubuntu1804,
-            // though VALGRIND_HG_MUTEX_INIT_POST() is --LGP 2018-06-27
-            ANNOTATE_RWLOCK_DESTROY (&fMutex_);
-        }
-        else {
-            //VALGRIND_HG_MUTEX_DESTROY_PRE (&fMutex_);
-        }
-    }
-#endif
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::operator= (const Synchronized& rhs) -> Synchronized&
     {

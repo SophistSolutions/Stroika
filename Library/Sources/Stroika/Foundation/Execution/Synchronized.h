@@ -265,11 +265,6 @@ namespace Stroika::Foundation::Execution {
         Synchronized (ARGUMENT_TYPES&&... args);
         Synchronized (const Synchronized& src);
 
-#if qStroika_FeatureSupported_Valgrind
-    public:
-        ~Synchronized ();
-#endif
-
     public:
         /**
          */
