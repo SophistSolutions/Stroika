@@ -15,9 +15,6 @@
 namespace Stroika::Foundation::IO::Network::Transfer {
 
 #if qHasFeature_WinHTTP
-    /**
-     *  'Connection_WinHTTP' is a quasi-namespace - just for the 'WinHTTP' based Connection factory
-     */
     namespace Connection_WinHTTP {
         using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
         /**

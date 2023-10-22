@@ -44,8 +44,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
 
         /**
+         *  Create a 'libcurl' connection object (url specified in the options).
          */
-        Connection::Ptr New (const Options& options = {});
+        Ptr New (const Options& options = {});
     };
 #endif
 

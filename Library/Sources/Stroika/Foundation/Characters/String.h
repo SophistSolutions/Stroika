@@ -90,6 +90,7 @@
  *                  }
  *          with the TRIM() implementation I wrote here - in String. Not sure we want to use the locale stuff? Maybe?
  */
+
 namespace Stroika::Foundation::Containers {
     template <typename T>
     class Set;
