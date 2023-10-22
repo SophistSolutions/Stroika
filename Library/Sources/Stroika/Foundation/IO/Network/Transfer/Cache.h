@@ -17,78 +17,69 @@
 /**
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *
+ *  This cache is a generic HTTP fetch cache API, allowing users of the IO::Transfer::Connection code to
+ *  use different cache implementations (e.g. one storing to disk, and one to RAM).
+ *
+ *  It is hopefully done in such a way that you can do alot of code sharing among these implementations,
+ *  but do not need to.
+ *
+ *  This Cache class also comes with an opaque, one-size-fits all (who they kidding) implementation, with a
+ *  handful of configuration options.
  */
 
-namespace Stroika::Foundation::IO::Network::Transfer {
+namespace Stroika::Foundation::IO::Network::Transfer::Cache {
+
+    struct IRep;
+
+    struct Ptr;
+
+    struct Element;
+
+    struct EvalContext;
 
     /**
-     *  This cache is a generic HTTP fetch cache API, allowing users of the IO::Transfer::Connection code to
-     *  use different cache implementations (e.g. one storing to disk, and one to RAM).
-     *
-     *  It is hopefully done in such a way that you can do alot of code sharing among these implementations,
-     *  but do not need to.
-     *
-     *  This Cache class also comes with an opaque, one-size-fits all (who they kidding) implementation, with a
-     *  handful of configuration options.
      */
-    class Cache {
-    public:
-        struct Rep;
+    struct DefaultOptions {
+        DefaultOptions () = default;
 
-    public:
-        struct Ptr;
+        optional<size_t> fCacheSize;
 
-    public:
-        struct Element;
-
-    public:
-        struct EvalContext;
-
-    public:
         /**
+         *  if not specified via expires header, or max-age etc...
          */
-        struct DefaultOptions {
-            DefaultOptions () = default;
+        optional<Time::Duration> fDefaultResourceTTL;
 
-            optional<size_t> fCacheSize;
-
-            /**
-             *  if not specified via expires header, or max-age etc...
-             */
-            optional<Time::Duration> fDefaultResourceTTL;
-
-            /**
-             */
-            static const inline String kCachedResultHeaderDefault{"X-Stroika-Cached-Result"sv};
-
-            /**
-             *  This header will always appear in cached results (so the caller can tell a Response is 'from cache').
-             *  If nullopt, the header will not be generated. It defaults to kCachedResultHeaderDefault.
-             */
-            optional<String> fCachedResultHeader{kCachedResultHeaderDefault};
-        };
-
-    public:
         /**
-         *  Creates a default-styled HTTP cache object. Note - you still must associate this cache object with
-         *  any cache connections you create (typically by assigning it to the Connection creation factory)
-         *
-         *  NOTE - though the smart ptr Ptr is not fully re-entrant, the letter class created by CreateDefault is fully
-         *  internally synchronized. This means you can re-use it with multiple connections and run those connection requests from as
-         *  many threads as desired.
-         *
-         *  @todo - redo with default argument, but messed up on gcc/clang/not sure why -- LGP 2019-06-27
-         *  @todo - maybe rename New ()
+        */
+        static const inline String kCachedResultHeaderDefault{"X-Stroika-Cached-Result"sv};
+
+        /**
+         *  This header will always appear in cached results (so the caller can tell a Response is 'from cache').
+         *  If nullopt, the header will not be generated. It defaults to kCachedResultHeaderDefault.
          */
-        static Ptr CreateDefault ();
-        static Ptr CreateDefault (const DefaultOptions& options);
+        optional<String> fCachedResultHeader{kCachedResultHeaderDefault};
     };
+
+    /**
+     *  Creates a default-styled HTTP cache object. Note - you still must associate this cache object with
+     *  any cache connections you create (typically by assigning it to the Connection creation factory)
+     *
+     *  NOTE - though the smart ptr Ptr is not fully re-entrant, the letter class created by CreateDefault is fully
+     *  internally synchronized. This means you can re-use it with multiple connections and run those connection requests from as
+     *  many threads as desired.
+     *
+     *  @todo - redo with default argument, but messed up on gcc/clang/not sure why -- LGP 2019-06-27
+     *  @todo - maybe rename New ()
+     */
+    Ptr CreateDefault ();
+    Ptr CreateDefault (const DefaultOptions& options);
 
     /**
      *  This is the basic element of data stored in the cache for any cached URL. Some implementations may store more or less,
      *  But this provides the rough outline of what is expected to cache, and utility apis to extract the cache control policy data.
      */
-    struct Cache::Element {
+    struct Element {
     public:
         Element () = default;
         Element (const Response& response);
@@ -137,7 +128,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *  Used internally by Connection::Rep subclasses to call the Cache::Rep API. The reason for this is we want some information
      *  snapshotted from before the request to be used after the request (when someone else may have deleted the item from the cache).
      */
-    struct Cache::EvalContext {
+    struct EvalContext {
         EvalContext () = default;
 
         optional<Element> fCachedElement;
@@ -146,9 +137,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     /**
      */
-    struct Cache::Rep {
+    struct IRep {
 
-        virtual ~Rep () = default;
+        virtual ~IRep () = default;
 
         /**
          *  was called BeforeGet - but can decide internally - and callers can decide to only use on get
@@ -173,7 +164,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     /**
      */
-    struct Cache::Ptr : shared_ptr<Cache::Rep> {};
+    struct Ptr : shared_ptr<Cache::IRep> {};
+
 }
 
 /*

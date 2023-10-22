@@ -28,7 +28,7 @@ using Stroika::Foundation::Cache::SynchronizedLRUCache;
 
 namespace {
 
-    struct DefaultCacheRep_ : Transfer::Cache::Rep {
+    struct DefaultCacheRep_ : Transfer::Cache::IRep {
 
         using Element        = Transfer::Cache::Element;
         using EvalContext    = Transfer::Cache::EvalContext;
