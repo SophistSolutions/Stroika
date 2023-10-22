@@ -52,11 +52,7 @@ namespace {
             Verify (::curl_global_init (CURL_GLOBAL_SSL | CURL_GLOBAL_ACK_EINTR) == 0);
         });
     }
-}
-#endif
 
-#if qHasFeature_LibCurl
-namespace {
     class LibCurl_error_category_ : public error_category {
     public:
         virtual const char* name () const noexcept override
@@ -98,74 +94,75 @@ const std::error_category& Transfer::LibCurl_error_category () noexcept
 {
     return Common::Immortalize<LibCurl_error_category_> ();
 }
-#endif
 
-#if qHasFeature_LibCurl
-class Connection_LibCurl::Rep_ : public Connection::IRep {
-private:
-    Connection::Options fOptions_;
+namespace {
+    class ::Rep_ : public Connection::IRep {
+    private:
+        Connection::Options fOptions_;
 
-public:
-    Rep_ (const Connection::Options& options)
-        : fOptions_{options}
-    {
-        AssureLibCurlInitialized_ ();
-    }
-    Rep_ (const Rep_&) = delete;
-    virtual ~Rep_ ();
+    public:
+        Rep_ (const Connection::Options& options)
+            : fOptions_{options}
+        {
+            AssureLibCurlInitialized_ ();
+        }
+        Rep_ (const Rep_&) = delete;
+        virtual ~Rep_ ();
 
-public:
-    nonvirtual Rep_& operator= (const Rep_&) = delete;
+    public:
+        nonvirtual Rep_& operator= (const Rep_&) = delete;
 
-public:
-    virtual Options GetOptions () const override
-    {
-        return fOptions_;
-    }
-    virtual DurationSecondsType GetTimeout () const override;
-    virtual void                SetTimeout (DurationSecondsType timeout) override;
-    virtual URI                 GetSchemeAndAuthority () const override;
-    virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) override;
-    virtual void                Close () override;
-    virtual Response            Send (const Request& request) override;
+    public:
+        virtual Options GetOptions () const override
+        {
+            return fOptions_;
+        }
+        virtual DurationSecondsType GetTimeout () const override;
+        virtual void                SetTimeout (DurationSecondsType timeout) override;
+        virtual URI                 GetSchemeAndAuthority () const override;
+        virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) override;
+        virtual void                Close () override;
+        virtual Response            Send (const Request& request) override;
 
-private:
-    nonvirtual void SetAuthorityRelativeURL_ (const URI& url);
+    private:
+        nonvirtual void SetAuthorityRelativeURL_ (const URI& url);
 
-private:
-    nonvirtual void MakeHandleIfNeeded_ ();
+    private:
+        nonvirtual void MakeHandleIfNeeded_ ();
 
-private:
-    static size_t     s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP);
-    nonvirtual size_t RequestPayloadReadHandler_ (byte* buffer, size_t bufSize);
+    private:
+        static size_t     s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP);
+        nonvirtual size_t RequestPayloadReadHandler_ (byte* buffer, size_t bufSize);
 
-private:
-    static size_t     s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
-    nonvirtual size_t ResponseWriteHandler_ (const byte* ptr, size_t nBytes);
+    private:
+        static size_t     s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
+        nonvirtual size_t ResponseWriteHandler_ (const byte* ptr, size_t nBytes);
 
-private:
-    static size_t     s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
-    nonvirtual size_t ResponseHeaderWriteHandler_ (const byte* ptr, size_t nBytes);
+    private:
+        static size_t     s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP);
+        nonvirtual size_t ResponseHeaderWriteHandler_ (const byte* ptr, size_t nBytes);
 
-private:
-    void*                   fCurlHandle_{nullptr};
-    URI                     fURL_;
-    bool                    fDidCustomMethod_{false};
-    vector<byte>            fUploadData_;
-    size_t                  fUploadDataCursor_{};
-    vector<byte>            fResponseData_;
-    Mapping<String, String> fResponseHeaders_;
-    curl_slist*             fSavedHeaders_{nullptr};
-};
+    private:
+        void*                   fCurlHandle_{nullptr};
+        URI                     fURL_;
+        bool                    fDidCustomMethod_{false};
+        vector<byte>            fUploadData_;
+        size_t                  fUploadDataCursor_{};
+        vector<byte>            fResponseData_;
+        Mapping<String, String> fResponseHeaders_;
+        curl_slist*             fSavedHeaders_{nullptr};
+    };
+}
+
 #endif
 
 #if qHasFeature_LibCurl
 /*
  ********************************************************************************
- ****************** Transfer::Connection_LibCurl::Rep_ **************************
+ ********************************** Rep_ ****************************************
  ********************************************************************************
  */
-Connection_LibCurl::Rep_::~Rep_ ()
+Rep_::~Rep_ ()
 {
     if (fCurlHandle_ != nullptr) {
         ::curl_easy_cleanup (fCurlHandle_);
@@ -176,7 +173,7 @@ Connection_LibCurl::Rep_::~Rep_ ()
     }
 }
 
-DurationSecondsType Connection_LibCurl::Rep_::GetTimeout () const
+DurationSecondsType Rep_::GetTimeout () const
 {
     AssertNotImplemented ();
     return 0;
@@ -189,15 +186,15 @@ void Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
 }
 
-URI Connection_LibCurl::Rep_::GetSchemeAndAuthority () const
+URI Rep_::GetSchemeAndAuthority () const
 {
     return fURL_.GetSchemeAndAuthority ();
 }
 
-void Connection_LibCurl::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
+void Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Connection_LibCurl::Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (schemeAndAuthority).c_str ());
+    DbgTrace (L"Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (schemeAndAuthority).c_str ());
 #endif
     fURL_.SetScheme (schemeAndAuthority.GetScheme ());
     fURL_.SetAuthority (schemeAndAuthority.GetAuthority ());
@@ -206,7 +203,7 @@ void Connection_LibCurl::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthor
     }
 }
 
-void Connection_LibCurl::Rep_::SetAuthorityRelativeURL_ (const URI& url)
+void Rep_::SetAuthorityRelativeURL_ (const URI& url)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"Connection_LibCurl::Rep_::SetAuthorityRelativeURL_ (%s)", Characters::ToString (url).c_str ());
@@ -220,7 +217,7 @@ void Connection_LibCurl::Rep_::SetAuthorityRelativeURL_ (const URI& url)
     fURL_ = newURL;
 }
 
-void Connection_LibCurl::Rep_::Close ()
+void Rep_::Close ()
 {
     if (fCurlHandle_ != nullptr) {
         ::curl_easy_cleanup (fCurlHandle_);
@@ -228,12 +225,12 @@ void Connection_LibCurl::Rep_::Close ()
     }
 }
 
-size_t Connection_LibCurl::Rep_::s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP)
+size_t Rep_::s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP)
 {
     return reinterpret_cast<Rep_*> (userP)->RequestPayloadReadHandler_ (reinterpret_cast<byte*> (buffer), size * nitems);
 }
 
-size_t Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (byte* buffer, size_t bufSize)
+size_t Rep_::RequestPayloadReadHandler_ (byte* buffer, size_t bufSize)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Connection_LibCurl::Rep_::RequestPayloadReadHandler_"};
@@ -248,7 +245,7 @@ size_t Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (byte* buffer, size_
     return bytes2Copy;
 }
 
-size_t Connection_LibCurl::Rep_::s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+size_t Rep_::s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
 {
 #if qStroika_FeatureSupported_Valgrind
     VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
@@ -256,13 +253,13 @@ size_t Connection_LibCurl::Rep_::s_ResponseWriteHandler_ (void* ptr, size_t size
     return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
 }
 
-size_t Connection_LibCurl::Rep_::ResponseWriteHandler_ (const byte* ptr, size_t nBytes)
+size_t Rep_::ResponseWriteHandler_ (const byte* ptr, size_t nBytes)
 {
     fResponseData_.insert (fResponseData_.end (), ptr, ptr + nBytes);
     return nBytes;
 }
 
-size_t Connection_LibCurl::Rep_::s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+size_t Rep_::s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
 {
 #if qStroika_FeatureSupported_Valgrind
     VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
@@ -270,7 +267,7 @@ size_t Connection_LibCurl::Rep_::s_ResponseHeaderWriteHandler_ (void* ptr, size_
     return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
 }
 
-size_t Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const byte* ptr, size_t nBytes)
+size_t Rep_::ResponseHeaderWriteHandler_ (const byte* ptr, size_t nBytes)
 {
     String from = String::FromUTF8 (span{reinterpret_cast<const char*> (ptr), nBytes});
     String to;
@@ -285,7 +282,7 @@ size_t Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const byte* ptr, s
     return nBytes;
 }
 
-Response Connection_LibCurl::Rep_::Send (const Request& request)
+Response Rep_::Send (const Request& request)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{L"Connection_LibCurl::Rep_::Send", L"method='%s'", request.fMethod.c_str ()};
@@ -396,7 +393,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     return result;
 }
 
-void Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
+void Rep_::MakeHandleIfNeeded_ ()
 {
     if (fCurlHandle_ == nullptr) {
         ThrowIfNull (fCurlHandle_ = ::curl_easy_init ());

@@ -40,14 +40,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     /**
      *  'Connection_LibCurl' is a quasi-namespace - just for the 'libcurl' based Connection factory
      */
-    class Connection_LibCurl : public Connection {
-    public:
+    namespace Connection_LibCurl {
+        using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
+
         /**
          */
-        static Connection::Ptr New (const Options& options = {});
-
-    private:
-        class Rep_;
+        Connection::Ptr New (const Options& options = {});
     };
 #endif
 

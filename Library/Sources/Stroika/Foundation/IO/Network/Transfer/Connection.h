@@ -89,24 +89,356 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      *      \endcode
      *
      */
-    class Connection {
-    public:
-        /**
-         *  'Connection' is a quasi-namespace (probably use Connection::Ptr)
-         */
-        Connection ()                  = delete;
-        Connection (const Connection&) = delete;
+    namespace Connection {
 
-    public:
+        /**
+         */
+        struct Options {
+            /**
+             */
+            bool fReturnSSLInfo{false};
+
+            /**
+             *  fFailConnectionIfSSLCertificateInvalid could be because of expired CERT, or because of non-matching
+             *  host.
+             *
+             *      \note - we may want to do something more sophisticated, like a callback with stats about the remote side
+             *              and allow that to throw, indicating rejection. BUt this is good enuf for now.
+             *
+             *      \note - fFailConnectionIfSSLCertificateInvalid, because it may default on or off depending on the
+             *              the underlying http client software. For example, with embedded apps, and openssl, we may not
+             *              have access to a reliable certs file.
+             *
+             *              Specify it explicitly if you care.
+             */
+            optional<bool> fFailConnectionIfSSLCertificateInvalid;
+
+            /**
+             */
+            bool fAssumeLowestCommonDenominatorHTTPServer{false};
+
+            /**
+             */
+            bool fSupportSessionCookies{true};
+
+            /**
+             *  If true, the Execution::DeclareActivity API will be used during some selected operations which will produce
+             *  more detailed exception messages (mostly include url) when exceptions happen.
+             */
+            optional<bool> fDeclareActivities{};
+
+            /**
+             *  Set to 0 to disable automatic redirects. 10 is a reasonable number if you allow auto-redirects (windows default).
+             *  
+             *  Set to 1 by default (a change from 0 before Stroika 2.1a5) because a single redirect can
+             *  make sense, and a typical fetcher would want to see the redirection. Most malicious or
+             *  broken cases involve more redirects.
+             */
+            unsigned int fMaxAutomaticRedirects{1};
+
+            /**
+             */
+            String fUserAgent{"Stroika/3.0"sv};
+
+            /**
+             */
+            struct Authentication {
+                /**
+                 *      eProactivelySendAuthentication requires fewer round-trips, and less resnding of data, but may not always work
+                 *      (e.g. if the auth requires server side information).
+                 *
+                 *      eRespondToWWWAuthenticate is more secure and widely applicable, but can be slower.
+                 *
+                 *  \note   Configuration::DefaultNames<> supported
+                 */
+                enum class Options {
+                    eProactivelySendAuthentication,
+                    eRespondToWWWAuthenticate,
+
+                    eDEFAULT = eRespondToWWWAuthenticate,
+
+                    Stroika_Define_Enum_Bounds (eProactivelySendAuthentication, eRespondToWWWAuthenticate)
+                };
+
+            public:
+                /**
+                 *  If the constructor with an authToken is specified, we automatically use eProactivelySendAuthentication.
+                 *
+                 *      \note   digest/basic/etc - normal username/password:
+                 *              Authentication{L"Mr-Smith", L"Super-Secret"} is equivalent to curl --user Mr-Smith:Super-Secret URL
+                 *
+                 *      \note   For OAuth2:
+                 *              Authentication{"OAuth <ACCESS_TOKEN>"} is equivalent to curl -H "Authorization: OAuth <ACCESS_TOKEN>" URL
+                 *
+                 *      \note   For Bearer tokens:
+                 *              Authentication{"Bearer <ACCESS_TOKEN>"} is equivalent to curl -H "Authorization: Bearer <ACCESS_TOKEN>" URL
+                 */
+                Authentication () = delete;
+                Authentication (const String& authToken);
+                Authentication (const String& username, const String& password, Options options = Options::eDEFAULT);
+
+            public:
+                /**
+                 */
+                nonvirtual Options GetOptions () const;
+
+            public:
+                /**
+                 *      return engaged optional iff constructed with a username/password.
+                 */
+                nonvirtual optional<pair<String, String>> GetUsernameAndPassword () const;
+
+            public:
+                /**
+                 * Return the parameter to the HTTP Authorization header. So for example, if you provided a username/password, this
+                 * might return (from https://tools.ietf.org/html/rfc2617#section-2) Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+                 *
+                 * This is not generally very useful, except if you've constructed the authorization with an explicit auth token, or when using 
+                 * eProactivelySendAuthentication.
+                 */
+                nonvirtual String GetAuthToken () const;
+
+            public:
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual String ToString () const;
+
+            private:
+                Options                        fOptions_;
+                optional<String>               fExplicitAuthToken_;
+                optional<pair<String, String>> fUsernamePassword_;
+            };
+
+            /**
+             *  If authentication options are missing, no authentication will be performed/supported, and if the remote HTTP server
+             *      requires authentication, and 401 HTTP exception will be thrown.
+             */
+            optional<Authentication> fAuthentication;
+
+            /*
+             * This is NOT to be confused with HTTP keep alives, but refers to the TCP transport layer variety. This only
+             * matters for long connections
+             */
+            optional<IO::Network::ConnectionOrientedStreamSocket::KeepAliveOptions> fTCPKeepAlives;
+
+            /**
+             *  The cache object defaults to nullptr, but to have cached HTTP GETs, create a static Options object and have
+             *  that object contain the Cache object reference, and then any Connections you create from that options
+             *  object will share the same cache.
+             */
+            Cache::Ptr fCache{nullptr};
+        };
+
         class IRep;
 
-    public:
-        struct Options;
+        /**
+         *  A Connection::Ptr is a smart 'shared_ptr' to a connection object.
+         */
+        class Ptr {
+        public:
+            /**
+             *  \req rep != nullptr
+             */
+            Ptr (const shared_ptr<IRep>& rep);
 
-    public:
-        class Ptr;
+        public:
+            /**
+             * Send should timeout after this amount of time. Note - the initial Send may do
+             * much more work (nslookup and tcp connect) than subsequent ones, and this same timeout is used for the combined time.
+             */
+            nonvirtual DurationSecondsType GetTimeout () const;
 
-    public:
+        public:
+            /**
+             */
+            nonvirtual void SetTimeout (DurationSecondsType timeout);
+
+        public:
+            /**
+             */
+            nonvirtual Options GetOptions () const;
+
+        public:
+            /**
+             *  Returns a URI with only the scheme/authority part set (the part defining the connection)
+             *      \ens (url.GetSchemeAndAuthority () == url);
+             */
+            nonvirtual URI GetSchemeAndAuthority () const;
+
+        public:
+            /**
+             *  Set a URI with only the scheme/authority part set (the part defining the connection)
+             *      \req (url.GetSchemeAndAuthority () == url);
+             */
+            nonvirtual void SetSchemeAndAuthority (const URI& url);
+
+        public:
+            /**
+             *  force closed Connection. Can still call Send again, but that autocreates new Connection
+             */
+            nonvirtual void Close ();
+
+        public:
+            /*
+             *  This returns a response object, which possibly contains an http error.
+             *
+             *  Call this->SetSchemeAndAuthority() first, or use a wrapper let GET/POST that does this automatically.
+             *
+             *  \par Example Usage
+             *      \code
+             *          if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
+             *              SetSchemeAndAuthority (schemeAndAuthority);
+             *          }
+             *          Response r = conn.Send (Request (...));
+             *          ...
+             *      \endcode
+             *
+             *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+             *          at e.GetResponse ()
+             *
+             *  \note   We considered having 1xx and 3xx responses not throw. However, they are generally fairly rare, and mostly
+             *          need to be treated like errors anyhow (cannot just read response) - so best to have this as the behavior, and catch
+             *          if you want to handle 300. The ONLY exception to this might be in caching, when you get a NOT-MODIFIED. We MAY
+             *          want to somehow reconsider that. But its simpler - at least for now - to treat these all uniformly.
+             *
+             *  \ensure (r.GetSucceeded());
+             *
+             *  \req r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
+             */
+            nonvirtual Response Send (const Request& r);
+
+        public:
+            /*
+             *  Simple wrapper on Send () for method GET
+             *
+             *  \par Example Usage
+             *      \code
+             *          Request r = conn.GET (URI{"https://www.sophists.com/"});
+             *          ...
+             *      \endcode
+             *
+             *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+             *          at e.GetResponse ().
+             *
+             *  \ensure (r.GetSucceeded());
+             */
+            nonvirtual Response GET (const URI& l, const Mapping<String, String>& extraHeaders = {});
+
+        public:
+            /*
+             *  Simple wrapper on Send () for method POST
+             *
+             *  \par Example Usage
+             *      \code
+             *          Request r = conn.POST (URI{"https://www.sophists.com/obj/"}, data);
+             *          ...
+             *      \endcode
+             *
+             *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+             *          at e.GetResponse ()
+             *
+             *  \ensure (r.GetSucceeded());
+             */
+            nonvirtual Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType,
+                                      const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+        public:
+            /*
+             *  Simple wrapper on Send () for method PATCH
+             *
+             *  \par Example Usage
+             *      \code
+             *          Request r = conn.PATCH (URI{"https://www.sophists.com/obj/"}, data);
+             *          ...
+             *      \endcode
+             *
+             *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+             *          at e.GetResponse ()
+             *
+             *  \ensure (r.GetSucceeded());
+             *
+             *  \note see https://tools.ietf.org/html/rfc5789 for docs on Patch
+             */
+            nonvirtual Response PATCH (const URI& l, const BLOB& data, const InternetMediaType& contentType,
+                                       const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+        public:
+            /*
+             *  Simple wrapper on Send () for method DELETE
+             *
+             *  \par Example Usage
+             *      \code
+             *          Request r = conn.Delete (URI{"https://www.sophists.com/obj/{id}"});
+             *          ...
+             *      \endcode
+             *
+             *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+             *          at e.GetResponse ()
+             *
+             *  \ensure (r.GetSucceeded());
+             */
+            nonvirtual Response DELETE (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+        public:
+            /*
+             *  Simple wrapper on Send () for method PUT
+             *
+             *  \par Example Usage
+             *      \code
+             *          Request r = conn.PUT (URI{"https://www.sophists.com/obj/{id}"}, data);
+             *          ...
+             *      \endcode
+             *
+             *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+             *          at e.GetResponse ()
+             *
+             *  \ensure (r.GetSucceeded());
+             */
+            nonvirtual Response PUT (const URI& l, const BLOB& data, const InternetMediaType& contentType,
+                                     const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+        public:
+            /*
+             *  Simple wrapper on Send() for the HTTP OPTIONS message
+             *
+             *  \par Example Usage
+             *      \code
+             *          Request r = conn.OPTIONS (URI{"https://www.sophists.com/"});
+             *      \endcode
+             *
+             *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
+             *          at e.GetResponse ()
+             *
+             *  \ensure (r.GetSucceeded());
+             */
+            nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+
+        private:
+            shared_ptr<IRep> fRep_;
+        };
+
+        /**
+         */
+        class IRep {
+        public:
+            IRep ()            = default;
+            IRep (const IRep&) = delete;
+            virtual ~IRep ()   = default;
+
+        public:
+            nonvirtual IRep& operator= (const IRep&) = delete;
+
+        public:
+            virtual Options             GetOptions () const                                   = 0;
+            virtual URI                 GetSchemeAndAuthority () const                        = 0;
+            virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) = 0;
+            virtual DurationSecondsType GetTimeout () const                                   = 0;
+            virtual void                SetTimeout (DurationSecondsType timeout)              = 0;
+            virtual void                Close ()                                              = 0;
+            virtual Response            Send (const Request& r)                               = 0;
+        };
+
         /**
          * Simple connection factory object. If you don't care what backend to use for remote connections, use this API
          * to construct an unconnected object.
@@ -126,354 +458,10 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *          nw.fExternalIPAddress = IO::Network::InternetAddress{response.GetDataTextInputStream ().ReadAll ()};
          *      \endcode
          */
-        static Ptr New ();
-        static Ptr New (const Options& options);
-    };
+        Ptr New ();
+        Ptr New (const Options& options);
 
-    /**
-     */
-    class Connection::Ptr {
-    public:
-        /**
-         *  \req rep != nullptr
-         */
-        Ptr (const shared_ptr<IRep>& rep);
-
-    public:
-        /**
-         * Send should timeout after this amount of time. Note - the initial Send may do
-         * much more work (nslookup and tcp connect) than subsequent ones, and this same timeout is used for the combined time.
-         */
-        nonvirtual DurationSecondsType GetTimeout () const;
-
-    public:
-        /**
-         */
-        nonvirtual void SetTimeout (DurationSecondsType timeout);
-
-    public:
-        /**
-         */
-        nonvirtual Options GetOptions () const;
-
-    public:
-        /**
-         *  Returns a URI with only the scheme/authority part set (the part defining the connection)
-         *      \ens (url.GetSchemeAndAuthority () == url);
-         */
-        nonvirtual URI GetSchemeAndAuthority () const;
-
-    public:
-        /**
-         *  Set a URI with only the scheme/authority part set (the part defining the connection)
-         *      \req (url.GetSchemeAndAuthority () == url);
-         */
-        nonvirtual void SetSchemeAndAuthority (const URI& url);
-
-    public:
-        /**
-         *  force closed Connection. Can still call Send again, but that autocreates new Connection
-         */
-        nonvirtual void Close ();
-
-    public:
-        /*
-         *  This returns a response object, which possibly contains an http error.
-         *
-         *  Call this->SetSchemeAndAuthority() first, or use a wrapper let GET/POST that does this automatically.
-         *
-         *  \par Example Usage
-         *      \code
-         *          if (URI schemeAndAuthority = l.GetSchemeAndAuthority ()) {
-         *              SetSchemeAndAuthority (schemeAndAuthority);
-         *          }
-         *          Response r = conn.Send (Request (...));
-         *          ...
-         *      \endcode
-         *
-         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
-         *
-         *  \note   We considered having 1xx and 3xx responses not throw. However, they are generally fairly rare, and mostly
-         *          need to be treated like errors anyhow (cannot just read response) - so best to have this as the behavior, and catch
-         *          if you want to handle 300. The ONLY exception to this might be in caching, when you get a NOT-MODIFIED. We MAY
-         *          want to somehow reconsider that. But its simpler - at least for now - to treat these all uniformly.
-         *
-         *  \ensure (r.GetSucceeded());
-         *
-         *  \req r.fAuthorityRelativeURL.GetAuthorityRelativeResource<URI> () == r.fAuthorityRelativeURL // MUST BE LEGIT authority-relative
-         */
-        nonvirtual Response Send (const Request& r);
-
-    public:
-        /*
-         *  Simple wrapper on Send () for method GET
-         *
-         *  \par Example Usage
-         *      \code
-         *          Request r = conn.GET (URI{"https://www.sophists.com/"});
-         *          ...
-         *      \endcode
-         *
-         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ().
-         *
-         *  \ensure (r.GetSucceeded());
-         */
-        nonvirtual Response GET (const URI& l, const Mapping<String, String>& extraHeaders = {});
-
-    public:
-        /*
-         *  Simple wrapper on Send () for method POST
-         *
-         *  \par Example Usage
-         *      \code
-         *          Request r = conn.POST (URI{"https://www.sophists.com/obj/"}, data);
-         *          ...
-         *      \endcode
-         *
-         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
-         *
-         *  \ensure (r.GetSucceeded());
-         */
-        nonvirtual Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType,
-                                  const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
-
-    public:
-        /*
-         *  Simple wrapper on Send () for method PATCH
-         *
-         *  \par Example Usage
-         *      \code
-         *          Request r = conn.PATCH (URI{"https://www.sophists.com/obj/"}, data);
-         *          ...
-         *      \endcode
-         *
-         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
-         *
-         *  \ensure (r.GetSucceeded());
-         *
-         *  \note see https://tools.ietf.org/html/rfc5789 for docs on Patch
-         */
-        nonvirtual Response PATCH (const URI& l, const BLOB& data, const InternetMediaType& contentType,
-                                   const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
-
-    public:
-        /*
-         *  Simple wrapper on Send () for method DELETE
-         *
-         *  \par Example Usage
-         *      \code
-         *          Request r = conn.Delete (URI{"https://www.sophists.com/obj/{id}"});
-         *          ...
-         *      \endcode
-         *
-         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
-         *
-         *  \ensure (r.GetSucceeded());
-         */
-        nonvirtual Response DELETE (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
-
-    public:
-        /*
-         *  Simple wrapper on Send () for method PUT
-         *
-         *  \par Example Usage
-         *      \code
-         *          Request r = conn.PUT (URI{"https://www.sophists.com/obj/{id}"}, data);
-         *          ...
-         *      \endcode
-         *
-         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
-         *
-         *  \ensure (r.GetSucceeded());
-         */
-        nonvirtual Response PUT (const URI& l, const BLOB& data, const InternetMediaType& contentType,
-                                 const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
-
-    public:
-        /*
-         *  Simple wrapper on Send() for the HTTP OPTIONS message
-         *
-         *  \par Example Usage
-         *      \code
-         *          Request r = conn.OPTIONS (URI{"https://www.sophists.com/"});
-         *      \endcode
-         *
-         *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
-         *          at e.GetResponse ()
-         *
-         *  \ensure (r.GetSucceeded());
-         */
-        nonvirtual Response OPTIONS (const URI& l, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
-
-    private:
-        shared_ptr<IRep> fRep_;
-    };
-
-    /**
-     */
-    struct Connection::Options {
-        /**
-         */
-        bool fReturnSSLInfo{false};
-
-        /**
-         *  fFailConnectionIfSSLCertificateInvalid could be because of expired CERT, or because of non-matching
-         *  host.
-         *
-         *      \note - we may want to do something more sophisticated, like a callback with stats about the remote side
-         *              and allow that to throw, indicating rejection. BUt this is good enuf for now.
-         *
-         *      \note - fFailConnectionIfSSLCertificateInvalid, because it may default on or off depending on the
-         *              the underlying http client software. For example, with embedded apps, and openssl, we may not
-         *              have access to a reliable certs file.
-         *
-         *              Specify it explicitly if you care.
-         */
-        optional<bool> fFailConnectionIfSSLCertificateInvalid;
-
-        /**
-         */
-        bool fAssumeLowestCommonDenominatorHTTPServer{false};
-
-        /**
-         */
-        bool fSupportSessionCookies{true};
-
-        /**
-         *  If true, the Execution::DeclareActivity API will be used during some selected operations which will produce
-         *  more detailed exception messages (mostly include url) when exceptions happen.
-         */
-        optional<bool> fDeclareActivities{};
-
-        /**
-         *  Set to 0 to disable automatic redirects. 10 is a reasonable number if you allow auto-redirects (windows default).
-         *  
-         *  Set to 1 by default (a change from 0 before Stroika 2.1a5) because a single redirect can
-         *  make sense, and a typical fetcher would want to see the redirection. Most malicious or
-         *  broken cases involve more redirects.
-         */
-        unsigned int fMaxAutomaticRedirects{1};
-
-        /**
-         */
-        String fUserAgent{"Stroika/3.0"sv};
-
-        /**
-         */
-        struct Authentication {
-            /**
-             *      eProactivelySendAuthentication requires fewer round-trips, and less resnding of data, but may not always work
-             *      (e.g. if the auth requires server side information).
-             *
-             *      eRespondToWWWAuthenticate is more secure and widely applicable, but can be slower.
-             *
-             *  \note   Configuration::DefaultNames<> supported
-             */
-            enum class Options {
-                eProactivelySendAuthentication,
-                eRespondToWWWAuthenticate,
-
-                eDEFAULT = eRespondToWWWAuthenticate,
-
-                Stroika_Define_Enum_Bounds (eProactivelySendAuthentication, eRespondToWWWAuthenticate)
-            };
-
-        public:
-            /**
-             *  If the constructor with an authToken is specified, we automatically use eProactivelySendAuthentication.
-             *
-             *      \note   digest/basic/etc - normal username/password:
-             *              Authentication{L"Mr-Smith", L"Super-Secret"} is equivalent to curl --user Mr-Smith:Super-Secret URL
-             *
-             *      \note   For OAuth2:
-             *              Authentication{"OAuth <ACCESS_TOKEN>"} is equivalent to curl -H "Authorization: OAuth <ACCESS_TOKEN>" URL
-             *
-             *      \note   For Bearer tokens:
-             *              Authentication{"Bearer <ACCESS_TOKEN>"} is equivalent to curl -H "Authorization: Bearer <ACCESS_TOKEN>" URL
-             */
-            Authentication () = delete;
-            Authentication (const String& authToken);
-            Authentication (const String& username, const String& password, Options options = Options::eDEFAULT);
-
-        public:
-            /**
-             */
-            nonvirtual Options GetOptions () const;
-
-        public:
-            /**
-             *      return engaged optional iff constructed with a username/password.
-             */
-            nonvirtual optional<pair<String, String>> GetUsernameAndPassword () const;
-
-        public:
-            /**
-             * Return the parameter to the HTTP Authorization header. So for example, if you provided a username/password, this
-             * might return (from https://tools.ietf.org/html/rfc2617#section-2) Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
-             *
-             * This is not generally very useful, except if you've constructed the authorization with an explicit auth token, or when using 
-             * eProactivelySendAuthentication.
-             */
-            nonvirtual String GetAuthToken () const;
-
-        public:
-            /**
-             *  @see Characters::ToString ();
-             */
-            nonvirtual String ToString () const;
-
-        private:
-            Options                        fOptions_;
-            optional<String>               fExplicitAuthToken_;
-            optional<pair<String, String>> fUsernamePassword_;
-        };
-
-        /**
-         *  If authentication options are missing, no authentication will be performed/supported, and if the remote HTTP server
-         *      requires authentication, and 401 HTTP exception will be thrown.
-         */
-        optional<Authentication> fAuthentication;
-
-        /*
-         * This is NOT to be confused with HTTP keep alives, but refers to the TCP transport layer variety. This only
-         * matters for long connections
-         */
-        optional<IO::Network::ConnectionOrientedStreamSocket::KeepAliveOptions> fTCPKeepAlives;
-
-        /**
-         *  The cache object defaults to nullptr, but to have cached HTTP GETs, create a static Options object and have
-         *  that object contain the Cache object reference, and then any Connections you create from that options
-         *  object will share the same cache.
-         */
-        Cache::Ptr fCache{nullptr};
-    };
-
-    /**
-     */
-    class Connection::IRep {
-    public:
-        IRep ()            = default;
-        IRep (const IRep&) = delete;
-        virtual ~IRep ()   = default;
-
-    public:
-        nonvirtual IRep& operator= (const IRep&) = delete;
-
-    public:
-        virtual Options             GetOptions () const                                   = 0;
-        virtual URI                 GetSchemeAndAuthority () const                        = 0;
-        virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) = 0;
-        virtual DurationSecondsType GetTimeout () const                                   = 0;
-        virtual void                SetTimeout (DurationSecondsType timeout)              = 0;
-        virtual void                Close ()                                              = 0;
-        virtual Response            Send (const Request& r)                               = 0;
-    };
+    }
 
 }
 

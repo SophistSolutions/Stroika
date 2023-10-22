@@ -18,16 +18,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     /**
      *  'Connection_WinHTTP' is a quasi-namespace - just for the 'WinHTTP' based Connection factory
      */
-    class Connection_WinHTTP : public Connection {
-    public:
+    namespace Connection_WinHTTP {
+        using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
         /**
          */
-        static Connection::Ptr New (const Options& options = {});
-
-    private:
-        class Rep_;
+        Connection::Ptr New (const Options& options = {});
     };
-
 #endif
 
 }

@@ -40,6 +40,11 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
+using IO::Network::Transfer::Connection_WinHTTP::Options;
+using Memory::BLOB;
+
+using std::byte;
+
 #if qPlatform_Windows
 using Stroika::Foundation::Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
@@ -82,53 +87,47 @@ namespace {
         }
         nonvirtual const AutoWinHINTERNET_& operator= (const AutoWinHINTERNET_&) = delete;
     };
-}
-#endif
 
-#if qHasFeature_WinHTTP
-class Connection_WinHTTP::Rep_ : public Connection::IRep {
-public:
-    Rep_ (const Connection::Options& options)
-        : fOptions_{options}
-    {
-    }
-    Rep_ (const Rep_&) = delete;
-    virtual ~Rep_ ();
+    class Rep_ : public Connection::IRep {
+    public:
+        Rep_ (const Connection::Options& options)
+            : fOptions_{options}
+        {
+        }
+        Rep_ (const Rep_&) = delete;
+        virtual ~Rep_ ();
 
-public:
-    nonvirtual Rep_& operator= (const Rep_&) = delete;
+    public:
+        nonvirtual Rep_& operator= (const Rep_&) = delete;
 
-public:
-    virtual Options GetOptions () const override
-    {
-        return fOptions_;
-    }
-    virtual DurationSecondsType GetTimeout () const override;
-    virtual void                SetTimeout (DurationSecondsType timeout) override;
-    virtual URI                 GetSchemeAndAuthority () const override;
-    virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) override;
-    virtual void                Close () override;
-    virtual Response            Send (const Request& request) override;
+    public:
+        virtual Options GetOptions () const override
+        {
+            return fOptions_;
+        }
+        virtual DurationSecondsType GetTimeout () const override;
+        virtual void                SetTimeout (DurationSecondsType timeout) override;
+        virtual URI                 GetSchemeAndAuthority () const override;
+        virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) override;
+        virtual void                Close () override;
+        virtual Response            Send (const Request& request) override;
 
-private:
-    nonvirtual void SetAuthorityRelativeURL_ (const URI& url);
+    private:
+        nonvirtual void SetAuthorityRelativeURL_ (const URI& url);
 
-private:
-    nonvirtual void AssureHasSessionHandle_ (const String& userAgent);
-    nonvirtual void AssureHasConnectionHandle_ ();
+    private:
+        nonvirtual void AssureHasSessionHandle_ (const String& userAgent);
+        nonvirtual void AssureHasConnectionHandle_ ();
 
-private:
-    Connection::Options           fOptions_;
-    DurationSecondsType           fTimeout_{Time::kInfinite};
-    URI                           fURL_;
-    shared_ptr<AutoWinHINTERNET_> fSessionHandle_;
-    String                        fSessionHandle_UserAgent_;
-    shared_ptr<AutoWinHINTERNET_> fConnectionHandle_;
-};
-#endif
+    private:
+        Connection::Options           fOptions_;
+        DurationSecondsType           fTimeout_{Time::kInfinite};
+        URI                           fURL_;
+        shared_ptr<AutoWinHINTERNET_> fSessionHandle_;
+        String                        fSessionHandle_UserAgent_;
+        shared_ptr<AutoWinHINTERNET_> fConnectionHandle_;
+    };
 
-#if qHasFeature_WinHTTP
-namespace {
     wstring Extract_WinHttpHeader_ (HINTERNET hRequest, DWORD dwInfoLevel, LPCWSTR pwszName, LPDWORD lpdwIndex)
     {
         DWORD size = 0;
@@ -151,26 +150,26 @@ namespace {
 #if qHasFeature_WinHTTP
 /*
  ********************************************************************************
- ***************** Transfer::Connection_WinHTTP::Rep_ ***************************
+ *************************************** Rep_ ***********************************
  ********************************************************************************
  */
-Connection_WinHTTP::Rep_::~Rep_ ()
+Rep_::~Rep_ ()
 {
     fConnectionHandle_.reset ();
     fSessionHandle_.reset ();
 }
 
-DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const
+DurationSecondsType Rep_::GetTimeout () const
 {
     return fTimeout_;
 }
 
-void Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout)
+void Rep_::SetTimeout (DurationSecondsType timeout)
 {
     fTimeout_ = timeout; // affects subsequent calls to send...
 }
 
-void Connection_WinHTTP::Rep_::SetAuthorityRelativeURL_ (const URI& url)
+void Rep_::SetAuthorityRelativeURL_ (const URI& url)
 {
     URI newURL = url; // almost but not quite the same as fURL_.Combine (url)
     newURL.SetScheme (fURL_.GetScheme ());
@@ -181,12 +180,12 @@ void Connection_WinHTTP::Rep_::SetAuthorityRelativeURL_ (const URI& url)
     }
 }
 
-URI Connection_WinHTTP::Rep_::GetSchemeAndAuthority () const
+URI Rep_::GetSchemeAndAuthority () const
 {
     return fURL_.GetSchemeAndAuthority ();
 }
 
-void Connection_WinHTTP::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
+void Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"Connection_WinHTTP::Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (schemeAndAuthority).c_str ());
@@ -200,13 +199,13 @@ void Connection_WinHTTP::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthor
     }
 }
 
-void Connection_WinHTTP::Rep_::Close ()
+void Rep_::Close ()
 {
     fConnectionHandle_.reset ();
     fSessionHandle_.reset ();
 }
 
-Response Connection_WinHTTP::Rep_::Send (const Request& request)
+Response Rep_::Send (const Request& request)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection_WinHTTP::Rep_::Send", L"request=%s",
@@ -525,7 +524,7 @@ RetryWithAuth:
     return result;
 }
 
-void Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAgent)
+void Rep_::AssureHasSessionHandle_ (const String& userAgent)
 {
     if (fSessionHandle_UserAgent_ != userAgent) {
         fConnectionHandle_.reset ();
@@ -548,7 +547,7 @@ void Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAgent)
     }
 }
 
-void Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
+void Rep_::AssureHasConnectionHandle_ ()
 {
     RequireNotNull (fSessionHandle_);
     if (fConnectionHandle_ == nullptr) {
