@@ -26,25 +26,26 @@
 #if qHasFeature_LibCurl
 namespace Stroika::Foundation::IO::Network::Transfer::LibCurl {
 
-	/**
-	 *  Return a reference the the LibCurl error category object. This object lives forever (like other error categories).
-	 */
-	const std::error_category& error_category () noexcept;
+    /**
+     *  Return a reference the the LibCurl error category object. This object lives forever (like other error categories).
+     */
+    const std::error_category& error_category () noexcept;
 
-	/**
-	 * throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
-	 * but MAY map to any other exception type
-	 */
-	void ThrowIfError (CURLcode status);
+    /**
+     * throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
+     * but MAY map to any other exception type
+     */
+    void ThrowIfError (CURLcode status);
 
-	namespace Connection {
-		using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
+    namespace Connection {
 
-		/**
-		 *  Create a 'libcurl' connection object (url specified in the options).
-		 */
-		Ptr New (const Options& options = {});
-	}
+        using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
+
+        /**
+         *  Create a 'libcurl' connection object (url specified in the options).
+         */
+        Ptr New (const Options& options = {});
+    }
 
 }
 #endif

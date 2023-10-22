@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::Network::Transfer::LibCurl {
 
 #if qHasFeature_LibCurl
 namespace Stroika::Foundation::IO::Network::Transfer {
- [[deprecated ("Since Stroika v3.0d4")]]    inline const std::error_category& LibCurl_error_category () noexcept
+    [[deprecated ("Since Stroika v3.0d4")]] inline const std::error_category& LibCurl_error_category () noexcept
     {
         return LibCurl::error_category ();
     }
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
      * throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
      * but MAY map to any other exception type
      */
- [[deprecated ("Since Stroika v3.0d4")]]   inline  void ThrowIfError (CURLcode status)
+    [[deprecated ("Since Stroika v3.0d4")]] inline void ThrowIfError (CURLcode status)
     {
         LibCurl::ThrowIfError (status);
     }
