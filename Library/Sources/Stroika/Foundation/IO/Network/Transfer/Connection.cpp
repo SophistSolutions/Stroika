@@ -176,10 +176,10 @@ Response Connection::Ptr::Send (const Request& r)
 Connection::Ptr Transfer::Connection::New (const Connection::Options& options)
 {
 #if qHasFeature_LibCurl
-    return Connection_LibCurl::New (options);
+    return LibCurl::Connection::New (options);
 #endif
 #if qHasFeature_WinHTTP
-    return Connection_WinHTTP::New (options);
+    return WinHTTP::Connection::New (options);
 #endif
     Execution::Throw (Execution::RequiredComponentMissingException{Execution::RequiredComponentMissingException::kIONetworkClientFactory});
 }
