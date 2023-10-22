@@ -95,8 +95,8 @@ const std::error_category& Transfer::LibCurl_error_category () noexcept
     return Common::Immortalize<LibCurl_error_category_> ();
 }
 
-using Stroika::Foundation::IO::Network::Transfer::Connection::Options;
 using Stroika::Foundation::IO::Network::Transfer::Connection::IRep;
+using Stroika::Foundation::IO::Network::Transfer::Connection::Options;
 
 namespace {
     class Rep_ : public IRep {
