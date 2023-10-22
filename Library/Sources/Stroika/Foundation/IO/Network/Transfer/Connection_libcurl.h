@@ -38,12 +38,13 @@ namespace Stroika::Foundation::IO::Network::Transfer::LibCurl {
 	void ThrowIfError (CURLcode status);
 
 	namespace Connection {
-	using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
+		using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
 
-	/**
- 	 *  Create a 'libcurl' connection object (url specified in the options).
- 	 */
-	Ptr New (const Options& options = {});
+		/**
+		 *  Create a 'libcurl' connection object (url specified in the options).
+		 */
+		Ptr New (const Options& options = {});
+	}
 
 }
 #endif
