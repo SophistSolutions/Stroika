@@ -27,6 +27,7 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Time;
 
+using Stroika::Foundation::IO::Network::Transfer::Cache;
 using Stroika::Foundation::IO::Network::Transfer::Request;
 using Stroika::Foundation::IO::Network::Transfer::Response;
 using Stroika::Foundation::IO::Network::Transfer::Connection::IRep;
