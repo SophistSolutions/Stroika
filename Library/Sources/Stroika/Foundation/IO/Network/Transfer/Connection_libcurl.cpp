@@ -95,13 +95,16 @@ const std::error_category& Transfer::LibCurl_error_category () noexcept
     return Common::Immortalize<LibCurl_error_category_> ();
 }
 
+using Stroika::Foundation::IO::Network::Transfer::Connection::Options;
+using Stroika::Foundation::IO::Network::Transfer::Connection::IRep;
+
 namespace {
-    class ::Rep_ : public Connection::IRep {
+    class Rep_ : public IRep {
     private:
-        Connection::Options fOptions_;
+        Options fOptions_;
 
     public:
-        Rep_ (const Connection::Options& options)
+        Rep_ (const Options& options)
             : fOptions_{options}
         {
             AssureLibCurlInitialized_ ();
@@ -179,7 +182,7 @@ DurationSecondsType Rep_::GetTimeout () const
     return 0;
 }
 
-void Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
+void Rep_::SetTimeout (DurationSecondsType timeout)
 {
     MakeHandleIfNeeded_ ();
     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TIMEOUT_MS, static_cast<int> (timeout * 1000)));
@@ -194,7 +197,7 @@ URI Rep_::GetSchemeAndAuthority () const
 void Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (schemeAndAuthority).c_str ());
+    DbgTrace (L"Connection_LibCurl::Rep_::SetSchemeAndAuthority ('%s')", Characters::ToString (schemeAndAuthority).c_str ());
 #endif
     fURL_.SetScheme (schemeAndAuthority.GetScheme ());
     fURL_.SetAuthority (schemeAndAuthority.GetAuthority ());

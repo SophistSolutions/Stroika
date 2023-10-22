@@ -40,7 +40,9 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
+#if qHasFeature_WinHTTP
 using IO::Network::Transfer::Connection_WinHTTP::Options;
+#endif
 using Memory::BLOB;
 
 using std::byte;
