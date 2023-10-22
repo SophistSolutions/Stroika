@@ -27,7 +27,6 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Time;
 
-using Stroika::Foundation::IO::Network::Transfer::Cache;
 using Stroika::Foundation::IO::Network::Transfer::Request;
 using Stroika::Foundation::IO::Network::Transfer::Response;
 using Stroika::Foundation::IO::Network::Transfer::Connection::IRep;
@@ -103,7 +102,7 @@ const std::error_category& Transfer::LibCurl::error_category () noexcept
 }
 
 namespace {
-    class Rep_ : public IRep {
+    class Rep_ : public Transfer::LibCurl::Connection::IRep {
     private:
         Options fOptions_;
 
@@ -175,7 +174,7 @@ namespace {
 
             SetAuthorityRelativeURL_ (useRequest.fAuthorityRelativeURL);
 
-            Cache::EvalContext cacheContext;
+            IO::Network::Transfer::Cache::EvalContext cacheContext;
             if (fOptions_.fCache != nullptr) {
                 if (auto r = fOptions_.fCache->OnBeforeFetch (&cacheContext, fURL_.GetSchemeAndAuthority (), &useRequest)) {
                     // shortcut - we already have a cached answer
