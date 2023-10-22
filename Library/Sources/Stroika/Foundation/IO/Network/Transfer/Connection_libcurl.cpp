@@ -338,23 +338,11 @@ namespace {
                     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTREDIR, CURL_REDIR_POST_301)); // could have used CURL_REDIR_POST_ALL?
                 }
 
-                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READFUNCTION, [] (char* buffer, size_t size, size_t nitems, void* userP) -> size_t {
-                    return reinterpret_cast<Rep_*> (userP)->RequestPayloadReadHandler_ (reinterpret_cast<byte*> (buffer), size * nitems);
-                }));
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READFUNCTION, &s_RequestPayloadReadHandler_));
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READDATA, this));
-                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, [] (void* ptr, size_t size, size_t nmemb, void* userP) -> size_t {
-#if qStroika_FeatureSupported_Valgrind
-                    VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
-#endif
-                    return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
-                }));
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, &s_ResponseWriteHandler_));
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEDATA, this));
-                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HEADERFUNCTION, [] (void* ptr, size_t size, size_t nmemb, void* userP) -> size_t {
-#if qStroika_FeatureSupported_Valgrind
-                    VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
-#endif
-                    return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
-                }));
+                ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HEADERFUNCTION, &s_ResponseHeaderWriteHandler_));
                 ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEHEADER, this));
 
                 if (fOptions_.fTCPKeepAlives) {
@@ -373,6 +361,12 @@ namespace {
         }
 
     private:
+    static
+size_t s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP)
+{
+    return reinterpret_cast<Rep_*> (userP)->RequestPayloadReadHandler_ (reinterpret_cast<byte*> (buffer), size * nitems);
+}
+
         nonvirtual size_t RequestPayloadReadHandler_ (byte* buffer, size_t bufSize)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -389,6 +383,15 @@ namespace {
         }
 
     private:
+    static
+size_t s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+{
+#if qStroika_FeatureSupported_Valgrind
+    VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
+#endif
+    return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
+}
+
         nonvirtual size_t ResponseWriteHandler_ (const byte* ptr, size_t nBytes)
         {
             fResponseData_.insert (fResponseData_.end (), ptr, ptr + nBytes);
@@ -396,6 +399,15 @@ namespace {
         }
 
     private:
+    
+static size_t s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+{
+#if qStroika_FeatureSupported_Valgrind
+    VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
+#endif
+    return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
+}
+
         nonvirtual size_t ResponseHeaderWriteHandler_ (const byte* ptr, size_t nBytes)
         {
             String from = String::FromUTF8 (span{reinterpret_cast<const char*> (ptr), nBytes});
