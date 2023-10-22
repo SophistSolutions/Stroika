@@ -209,7 +209,7 @@ namespace {
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-move\"")
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wpragmas\"")
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wself-move\"")          // PRAGMA WARNING ON GCC11 (g++ on ubuntu 20.04)but needed on i think g++ 13 and later
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wself-move\"") // PRAGMA WARNING ON GCC11 (g++ on ubuntu 20.04)but needed on i think g++ 13 and later
             Memory::BLOB bl{1, 2, 3, 4, 5};
             bl = bl; // assure self-assign OK
             bl = move (bl);
