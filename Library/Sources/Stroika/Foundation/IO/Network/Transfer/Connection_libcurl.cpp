@@ -87,10 +87,10 @@ namespace {
 
 /*
  ********************************************************************************
- ************************ Transfer::LibCurl_error_category **********************
+ *********************** Transfer::LibCurl::error_category **********************
  ********************************************************************************
  */
-const std::error_category& Transfer::LibCurl_error_category () noexcept
+const std::error_category& Transfer::LibCurl::error_category () noexcept
 {
     return Common::Immortalize<LibCurl_error_category_> ();
 }
@@ -463,10 +463,10 @@ void Rep_::MakeHandleIfNeeded_ ()
 #if qHasFeature_LibCurl
 /*
  ********************************************************************************
- ********************** Transfer::Connection_LibCurl ****************************
+ ****************** Transfer::LibCurl::Connection::New **************************
  ********************************************************************************
  */
-Connection::Ptr Connection_LibCurl::New (const Options& options)
+Connection::Ptr LibCurl::Connection::New (const Options& options)
 {
     return Connection::Ptr{make_shared<Rep_> (options)};
 }

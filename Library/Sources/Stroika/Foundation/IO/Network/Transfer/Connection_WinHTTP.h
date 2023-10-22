@@ -12,18 +12,16 @@
  *
  */
 
-namespace Stroika::Foundation::IO::Network::Transfer {
-
 #if qHasFeature_WinHTTP
-    namespace Connection_WinHTTP {
-        using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
-        /**
-         */
-        Connection::Ptr New (const Options& options = {});
-    };
-#endif
+namespace Stroika::Foundation::IO::Network::Transfer::WinHTTP::Connection {
+
+    using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
+    /**
+     */
+    Connection::Ptr New (const Options& options = {});
 
 }
+#endif
 
 /*
  ********************************************************************************

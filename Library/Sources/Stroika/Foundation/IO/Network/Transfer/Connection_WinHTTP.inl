@@ -12,6 +12,14 @@
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::IO::Network::Transfer, qHasFeature_WinHTTP, qHasFeature_WinHTTP);
 
 namespace Stroika::Foundation::IO::Network::Transfer {
+
+    namespace [[deprecated ("Since Stroika v3.0d4 use WinHTTP::Connection")]] Connection_WinHTTP {
+        using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
+        /**
+         */
+        Connection::Ptr New (const Options& options = {});
+    };
+
 }
 
 #endif /*_Stroika_Foundation_IO_Network_Transfer_Connection_WinHTTP_inl_*/

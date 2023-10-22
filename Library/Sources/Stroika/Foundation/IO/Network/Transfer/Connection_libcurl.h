@@ -23,34 +23,30 @@
  *              libraries using curl (like CurlNetAccessor::initCurl in xerces) do the same thing.
  */
 
-namespace Stroika::Foundation::IO::Network::Transfer {
-
 #if qHasFeature_LibCurl
-    /**
-     *  Return a reference the the LibCurl error category object. This object lives forever (like other error categories).
-     */
-    const std::error_category& LibCurl_error_category () noexcept;
+namespace Stroika::Foundation::IO::Network::Transfer::LibCurl {
 
-    /**
-     * throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
-     * but MAY map to any other exception type
-     */
-    void ThrowIfError (CURLcode status);
+	/**
+	 *  Return a reference the the LibCurl error category object. This object lives forever (like other error categories).
+	 */
+	const std::error_category& error_category () noexcept;
 
-    /**
-     *  'Connection_LibCurl' is a quasi-namespace - just for the 'libcurl' based Connection factory
-     */
-    namespace Connection_LibCurl {
-        using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
+	/**
+	 * throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
+	 * but MAY map to any other exception type
+	 */
+	void ThrowIfError (CURLcode status);
 
-        /**
-         *  Create a 'libcurl' connection object (url specified in the options).
-         */
-        Ptr New (const Options& options = {});
-    };
-#endif
+	namespace Connection {
+	using namespace Stroika::Foundation::IO::Network::Transfer::Connection;
+
+	/**
+ 	 *  Create a 'libcurl' connection object (url specified in the options).
+ 	 */
+	Ptr New (const Options& options = {});
 
 }
+#endif
 
 /*
  ********************************************************************************
