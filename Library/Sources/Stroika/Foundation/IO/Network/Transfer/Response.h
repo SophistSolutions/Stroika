@@ -36,8 +36,6 @@
 
 namespace Stroika::Foundation::IO::Network::Transfer {
 
-    using std::byte;
-
     using Characters::Charset;
     using Characters::String;
     using Containers::Mapping;

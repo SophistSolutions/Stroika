@@ -21,13 +21,13 @@ namespace Stroika::Foundation::Cryptography::Digest {
      ********************************************************************************
      */
     template <typename T>
-    size_t SystemHashDigester<T>::operator() (const Streams::InputStream<std::byte>::Ptr& from) const
+    size_t SystemHashDigester<T>::operator() (const Streams::InputStream<byte>::Ptr& from) const
     {
         Memory::BLOB b = from.ReadAll ();
         return this->operator() (b.begin (), b.end ());
     }
     template <typename T>
-    inline size_t SystemHashDigester<T>::operator() (const std::byte* from, const std::byte* to) const
+    inline size_t SystemHashDigester<T>::operator() (const byte* from, const byte* to) const
     {
         Require (to - from == sizeof (T));
         return hash<T>{}(*reinterpret_cast<const T*> (from));
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         template <typename RESULT_TYPE>
         inline RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
         {
-            if constexpr (is_arithmetic_v<RESULT_TYPE> or is_same_v<RESULT_TYPE, std::byte>) {
+            if constexpr (is_arithmetic_v<RESULT_TYPE> or is_same_v<RESULT_TYPE, byte>) {
                 // inspired by https://en.cppreference.com/w/cpp/utility/hash - return h1 ^ (h2 << 1); // or use boost::hash_combine
                 return lhs ^ (rhs << 1); // don't simply XOR, I think, because this would be symetric and produce zero if lhs==rhs
             }

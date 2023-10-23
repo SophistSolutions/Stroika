@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Execution::Resources {
         };
 
     protected:
-        static Accessor _mkAccessor (const std::byte* start, const std::byte* end);
+        static Accessor _mkAccessor (const byte* start, const byte* end);
 
     protected:
         explicit Manager (const shared_ptr<_IRep>& rep);

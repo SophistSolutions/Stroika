@@ -7,8 +7,6 @@
 
 #include "Writer.h"
 
-using std::byte;
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
@@ -87,7 +85,7 @@ CharacterDelimitedLines::Writer::Writer (const Options& options)
 {
 }
 
-void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream<std::byte>::Ptr& out)
+void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream<byte>::Ptr& out)
 {
     return Write (m, Streams::TextWriter::New (out));
 }
@@ -99,7 +97,7 @@ void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m
 
 Memory::BLOB CharacterDelimitedLines::Writer::WriteAsBLOB (const Iterable<Sequence<String>>& m)
 {
-    return _WriteAsBLOBHelper ([&m, this] (const OutputStream<std::byte>::Ptr& out) { Write (m, out); });
+    return _WriteAsBLOBHelper ([&m, this] (const OutputStream<byte>::Ptr& out) { Write (m, out); });
 }
 
 String CharacterDelimitedLines::Writer::WriteAsString (const Iterable<Sequence<String>>& m)

@@ -493,7 +493,7 @@ namespace Stroika::Foundation::Characters {
      *  @todo NEED EXAMPLE OR TO LOSE THIS... -- LGP 2023-09-12
      */
     template <typename OUTPUT_CHAR_T>
-    using UTFCodeConverter = function<UTFConvert::ConversionResult (span<const std::byte> source, span<OUTPUT_CHAR_T> targetBuffer)>;
+    using UTFCodeConverter = function<UTFConvert::ConversionResult (span<const byte> source, span<OUTPUT_CHAR_T> targetBuffer)>;
 
 }
 

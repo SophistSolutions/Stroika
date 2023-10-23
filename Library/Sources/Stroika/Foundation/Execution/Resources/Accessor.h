@@ -19,11 +19,11 @@ namespace Stroika::Foundation::Execution::Resources {
      */
     class Accessor {
     private:
-        Accessor (const std::byte* start, const std::byte* end);
+        Accessor (const byte* start, const byte* end);
 
     public:
-        nonvirtual const std::byte* begin () const;
-        nonvirtual const std::byte* end () const;
+        nonvirtual const byte* begin () const;
+        nonvirtual const byte* end () const;
 
     public:
         nonvirtual size_t size () const;
@@ -32,11 +32,11 @@ namespace Stroika::Foundation::Execution::Resources {
         /*
             * @todo    Consider different return value - streams? - or some new BLOB type.
             */
-        nonvirtual vector<std::byte> GetData () const;
+        nonvirtual vector<byte> GetData () const;
 
     private:
-        const std::byte* fDataStart_;
-        const std::byte* fDataEnd_;
+        const byte* fDataStart_;
+        const byte* fDataEnd_;
 
     private:
         friend class Manager;

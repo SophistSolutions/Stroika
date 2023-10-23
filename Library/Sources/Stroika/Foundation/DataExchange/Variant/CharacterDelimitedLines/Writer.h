@@ -77,7 +77,7 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
          *        able to overload on return type).
          */
         using inherited::Write;
-        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, const Streams::OutputStream<std::byte>::Ptr& out);
+        nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, const Streams::OutputStream<byte>::Ptr& out);
         nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, const Streams::OutputStream<Characters::Character>::Ptr& out);
         nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, ostream& out);
         nonvirtual void Write (const Traversal::Iterable<Sequence<String>>& m, wostream& out);

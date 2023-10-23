@@ -18,8 +18,6 @@
 
 namespace Stroika::Foundation::IO::Network::SOAP {
 
-    using std::byte;
-
     using Characters::String;
     using Streams::InputStream;
     /*

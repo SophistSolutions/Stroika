@@ -1064,8 +1064,8 @@ namespace Stroika::Foundation::DataExchange {
                 DbgTrace (L"fieldname = %s, offset=%s", i.fSerializedFieldName.c_str (), Characters::ToString (i.fFieldMetaInfo).c_str ());
 #endif
                 VariantValue vv = [&] () {
-                    const std::byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (fromObjOfTypeT)
-                                                          : reinterpret_cast<const std::byte*> (fromObjOfTypeT);
+                    const byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (fromObjOfTypeT)
+                                                     : reinterpret_cast<const byte*> (fromObjOfTypeT);
                     if (i.fOverrideTypeMapper) [[unlikely]] {
                         return i.fOverrideTypeMapper->fFromObjectMapper (mapper, b);
                     }
@@ -1097,8 +1097,7 @@ namespace Stroika::Foundation::DataExchange {
                           Characters::ToString (i.fFieldMetaInfo).c_str (), o.has_value ());
 #endif
                 if (o) {
-                    std::byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (intoObjOfTypeT)
-                                                    : reinterpret_cast<std::byte*> (intoObjOfTypeT);
+                    byte* b = i.fFieldMetaInfo ? i.fFieldMetaInfo->GetAddressOfMember (intoObjOfTypeT) : reinterpret_cast<byte*> (intoObjOfTypeT);
                     if (i.fOverrideTypeMapper) {
                         i.fOverrideTypeMapper->fToObjectMapper (mapper, *o, b);
                     }

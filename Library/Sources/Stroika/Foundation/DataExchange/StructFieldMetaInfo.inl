@@ -42,14 +42,14 @@ namespace Stroika::Foundation::DataExchange {
         return &(object->*p2m);
     }
     template <typename OWNING_OBJECT>
-    inline const std::byte* StructFieldMetaInfo::GetAddressOfMember (const OWNING_OBJECT* object) const
+    inline const byte* StructFieldMetaInfo::GetAddressOfMember (const OWNING_OBJECT* object) const
     {
-        return GetAddressOfMember<std::byte, OWNING_OBJECT> (object); // unsafe case (see comments in method description)
+        return GetAddressOfMember<byte, OWNING_OBJECT> (object); // unsafe case (see comments in method description)
     }
     template <typename OWNING_OBJECT>
-    inline std::byte* StructFieldMetaInfo::GetAddressOfMember (OWNING_OBJECT* object) const
+    inline byte* StructFieldMetaInfo::GetAddressOfMember (OWNING_OBJECT* object) const
     {
-        return GetAddressOfMember<std::byte, OWNING_OBJECT> (object); // unsafe case (see comments in method description)
+        return GetAddressOfMember<byte, OWNING_OBJECT> (object); // unsafe case (see comments in method description)
     }
     inline strong_ordering StructFieldMetaInfo::operator<=> (const StructFieldMetaInfo& rhs) const
     {

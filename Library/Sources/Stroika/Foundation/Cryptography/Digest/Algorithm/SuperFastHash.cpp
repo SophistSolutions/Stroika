@@ -51,7 +51,7 @@ namespace {
  ************ Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash> ************
  ********************************************************************************
  */
-void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const std::byte* start, const std::byte* end)
+void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const byte* start, const byte* end)
 {
     Require (not fCompleted_);
     /*

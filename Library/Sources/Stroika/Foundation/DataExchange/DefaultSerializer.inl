@@ -13,7 +13,6 @@
 namespace Stroika::Foundation::DataExchange {
 
     namespace Private_ {
-        using std::byte;
         template <typename TYPE_TO_COMPUTE_HASH_OF>
         Memory::BLOB SerializeForHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash)
             requires (is_trivially_copy_constructible_v<TYPE_TO_COMPUTE_HASH_OF>)

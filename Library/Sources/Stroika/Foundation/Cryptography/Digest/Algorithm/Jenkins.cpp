@@ -42,7 +42,7 @@ namespace {
  ***************** Algorithm::DigesterAlgorithm<Algorithm::Jenkins> *************
  ********************************************************************************
  */
-void Algorithm::DigesterAlgorithm<Algorithm::Jenkins>::Write (const std::byte* start, const std::byte* end)
+void Algorithm::DigesterAlgorithm<Algorithm::Jenkins>::Write (const byte* start, const byte* end)
 {
     Require (not fCompleted_);
     DoMore_ (&fData_, start, end);

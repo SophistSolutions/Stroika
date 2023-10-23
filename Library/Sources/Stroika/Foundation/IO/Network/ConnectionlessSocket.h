@@ -10,8 +10,6 @@
 
 namespace Stroika::Foundation::IO::Network {
 
-    using std::byte;
-
     /**
      *  \brief ConnectionlessSocket is typically a UDP socket you use for packet oriented communications (ie not tcp/streams)
      *

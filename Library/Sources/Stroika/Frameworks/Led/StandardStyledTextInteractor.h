@@ -21,8 +21,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-    using std::byte;
-
     /*
     @CONFIGVAR:     qIncludeLedNativeFileFormatSupportInStandardStyledTextInteractor
     @DESCRIPTION:   <p>This format isn't terribly useful right now. It may become much more useful in future versions, if I decide

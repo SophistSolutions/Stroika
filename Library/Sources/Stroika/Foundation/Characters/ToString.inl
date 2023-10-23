@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Characters {
     }
 
     template <>
-    inline String ToString (const std::byte& t)
+    inline String ToString (const byte& t)
     {
         return ToString (static_cast<unsigned char> (t), std::ios_base::hex);
     }

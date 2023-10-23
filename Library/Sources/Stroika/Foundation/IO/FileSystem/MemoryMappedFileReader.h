@@ -26,8 +26,6 @@
 
 namespace Stroika::Foundation::IO::FileSystem {
 
-    using std::byte;
-
     /**
      *  MemoryMappedFileReader is a utility to allow memory mapping of a file.
      */

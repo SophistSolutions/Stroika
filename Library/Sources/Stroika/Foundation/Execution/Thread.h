@@ -296,17 +296,17 @@ namespace Stroika::Foundation::Execution {
             /**
              *  Stack starts at base, and grows towards limit - could be up or down.
              */
-            optional<const std::byte*> fStackBase;
+            optional<const byte*> fStackBase;
 
             /**
              *  @see fStackBase
              */
-            optional<const std::byte*> fStackLimit;
+            optional<const byte*> fStackLimit;
 
             /**
              *  @see fStackBase, fStackLimit
              */
-            optional<const std::byte*> fCurrentStackAt;
+            optional<const byte*> fCurrentStackAt;
 
             /**
              *  Return current stack used, if available

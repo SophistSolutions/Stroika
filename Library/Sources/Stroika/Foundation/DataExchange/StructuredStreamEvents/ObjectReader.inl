@@ -229,7 +229,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         RequireNotNull (fActiveContext_);
         optional<StructFieldMetaInfo> ti = fFieldNameToTypeMap_.Lookup (name);
         if (ti) {
-            std::byte*                operatingOnObjField = ti->GetAddressOfMember (this->fValuePtr_);
+            byte*                     operatingOnObjField = ti->GetAddressOfMember (this->fValuePtr_);
             ReaderFromVoidStarFactory factory             = LookupFactoryForName_ (name);
             return factory (operatingOnObjField);
         }
@@ -246,7 +246,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         RequireNotNull (fActiveContext_);
         if (fValueFieldMetaInfo_) {
             Assert (fValueFieldConsumer_ == nullptr);
-            std::byte*                operatingOnObjField = fValueFieldMetaInfo_->GetAddressOfMember (this->fValuePtr_);
+            byte*                     operatingOnObjField = fValueFieldMetaInfo_->GetAddressOfMember (this->fValuePtr_);
             ReaderFromVoidStarFactory factory             = LookupFactoryForName_ (Name{Name::NameType::eValue});
             fValueFieldConsumer_                          = (factory)(operatingOnObjField);
             fValueFieldConsumer_->Activated (*fActiveContext_);
@@ -400,18 +400,17 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      ********************************************************************************
      */
     template <typename T>
-    const function<std::byte*(T*)> MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher =
-        [] (T* b) { return reinterpret_cast<std::byte*> (b); };
+    const function<byte*(T*)> MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher =
+        [] (T* b) { return reinterpret_cast<byte*> (b); };
     template <typename T>
-    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<std::byte*(T*)>& addressOfSubEltFetcher)
+    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory{readerFactory}
         , fAddressOfSubElementFetcher{addressOfSubEltFetcher}
     {
     }
     template <typename T>
-    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory&         readerFactory,
-                                                           const function<bool (const Name& name)>& readsName,
-                                                           const function<std::byte*(T*)>&          addressOfSubEltFetcher)
+    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory,
+                                                           const function<bool (const Name& name)>& readsName, const function<byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory{readerFactory}
         , fReadsName{readsName}
         , fAddressOfSubElementFetcher{addressOfSubEltFetcher}
@@ -419,16 +418,16 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
     template <typename T>
     inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText,
-                                                           const function<std::byte*(T*)>& addressOfSubEltFetcher)
+                                                           const function<byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory{readerFactory}
         , fReadsText{readsText}
         , fAddressOfSubElementFetcher{addressOfSubEltFetcher}
     {
     }
     template <typename T>
-    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory,
-                                                           const function<bool (const Name& name)>& readsName, const function<bool ()>& readsText,
-                                                           const function<std::byte*(T*)>& addressOfSubEltFetcher)
+    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory&         readerFactory,
+                                                           const function<bool (const Name& name)>& readsName,
+                                                           const function<bool ()>& readsText, const function<byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory{readerFactory}
         , fReadsName{readsName}
         , fReadsText{readsText}

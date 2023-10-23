@@ -75,7 +75,7 @@ namespace {
  **************** Algorithm::DigesterAlgorithm<Algorithm::CRC32> ****************
  ********************************************************************************
  */
-void Algorithm::DigesterAlgorithm<Algorithm::CRC32>::Write (const std::byte* start, const std::byte* end)
+void Algorithm::DigesterAlgorithm<Algorithm::CRC32>::Write (const byte* start, const byte* end)
 {
     Require (not fCompleted_);
     DoMore_ (&fData_, start, end);

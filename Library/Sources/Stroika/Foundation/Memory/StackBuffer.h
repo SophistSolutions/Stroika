@@ -16,8 +16,6 @@
 
 namespace Stroika::Foundation::Memory {
 
-    using std::byte;
-
     /**
      *  On Windows, there is _chkstk which shows up in alot of profiles. Perhaps something similar for UNIX? Or just kernel does this automatically?
      *  Anyhow - target number we try - for performance reasons - to avoid more than this much in a stack frame.
@@ -56,7 +54,7 @@ namespace Stroika::Foundation::Memory {
      * 
      *
      */
-    template <typename T = std::byte, size_t BUF_SIZE = StackBuffer_DefaultInlineSize<T> ()>
+    template <typename T = byte, size_t BUF_SIZE = StackBuffer_DefaultInlineSize<T> ()>
     using StackBuffer = InlineBuffer<T, BUF_SIZE>;
 
 }

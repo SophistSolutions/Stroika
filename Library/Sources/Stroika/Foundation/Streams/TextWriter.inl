@@ -57,10 +57,10 @@ namespace Stroika::Foundation::Streams {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
-            Memory::StackBuffer<std::byte> cvtBuf{size_t (end - start) * 5}; // excessive but start with that
-            auto                           srcSpan = span<const Character>{start, end};
-            auto                           trgSpan = span<byte>{cvtBuf.data (), cvtBuf.size ()};
-            trgSpan                                = _fConverter.Characters2Bytes (srcSpan, trgSpan);
+            Memory::StackBuffer<byte> cvtBuf{size_t (end - start) * 5}; // excessive but start with that
+            auto                      srcSpan = span<const Character>{start, end};
+            auto                      trgSpan = span<byte>{cvtBuf.data (), cvtBuf.size ()};
+            trgSpan                           = _fConverter.Characters2Bytes (srcSpan, trgSpan);
             _fSource.Write (trgSpan.data (), trgSpan.data () + trgSpan.size ());
         }
         virtual void Flush () override

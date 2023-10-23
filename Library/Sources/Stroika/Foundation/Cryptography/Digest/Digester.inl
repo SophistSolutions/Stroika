@@ -20,14 +20,14 @@ namespace Stroika::Foundation::Cryptography::Digest {
      ********************************************************************************
      */
     template <typename ALGORITHM, typename RETURN_TYPE>
-    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const std::byte* from, const std::byte* to)
+    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const byte* from, const byte* to)
     {
         Require (not fCompleted_);
         Require ((from == nullptr and to == nullptr) or (from != nullptr and from <= to));
         fDigesterAlgorithm_.Write (from, to);
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (span<const std::byte> from)
+    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (span<const byte> from)
     {
         this->Write (from.data (), from.data () + from.size ());
     }
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         this->Write (from.begin (), from.end ());
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const Streams::InputStream<std::byte>::Ptr& from)
+    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const Streams::InputStream<byte>::Ptr& from)
     {
         while (true) {
             byte   buf[32 * 1024];
@@ -79,18 +79,18 @@ namespace Stroika::Foundation::Cryptography::Digest {
      ********************************************************************************
      */
     template <typename ALGORITHM, typename RETURN_TYPE>
-    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const Streams::InputStream<std::byte>::Ptr& from) const -> ReturnType
+    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const Streams::InputStream<byte>::Ptr& from) const -> ReturnType
     {
         return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (from);
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const std::byte* from, const std::byte* to) const -> ReturnType
+    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const byte* from, const byte* to) const -> ReturnType
     {
         Require ((from == nullptr and to == nullptr) or (from != nullptr and from <= to));
         return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (from, to);
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (span<const std::byte> from) const -> ReturnType
+    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (span<const byte> from) const -> ReturnType
     {
         return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (from.data (), from.data () + from.size ());
     }
@@ -106,8 +106,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
     {
         // copy to inline stack buffer, and that can be passed as array to other overloads
         Memory::StackBuffer<TRIVIALLY_COPYABLE_T> buf{from.begin (), from.end ()};
-        return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (reinterpret_cast<const std::byte*> (buf.begin ()),
-                                                              reinterpret_cast<const std::byte*> (buf.end ()));
+        return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (reinterpret_cast<const byte*> (buf.begin ()),
+                                                              reinterpret_cast<const byte*> (buf.end ()));
     }
 
     /*
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      ********************************************************************************
      */
     template <typename ALGORITHM, typename RETURN_TYPE>
-    RETURN_TYPE ComputeDigest (const std::byte* from, const std::byte* to)
+    RETURN_TYPE ComputeDigest (const byte* from, const byte* to)
     {
         Require ((from == nullptr and to == nullptr) or (from != nullptr and from <= to));
         IncrementalDigester<ALGORITHM> ctx;
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         }
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    RETURN_TYPE ComputeDigest (const Streams::InputStream<std::byte>::Ptr& from)
+    RETURN_TYPE ComputeDigest (const Streams::InputStream<byte>::Ptr& from)
     {
         IncrementalDigester<ALGORITHM> ctx;
         ctx.Write (from);
@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         }
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    inline RETURN_TYPE ComputeDigest (span<const std::byte> from)
+    inline RETURN_TYPE ComputeDigest (span<const byte> from)
     {
         return ComputeDigest<ALGORITHM, RETURN_TYPE> (from.data (), from.data () + from.size ());
     }
@@ -156,8 +156,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
     {
         // copy to inline stack buffer, and that can be passed as array to other overloads
         Memory::StackBuffer<TRIVIALLY_COPYABLE_T> buf{from.begin (), from.end ()};
-        return ComputeDigest<ALGORITHM, RETURN_TYPE> (reinterpret_cast<const std::byte*> (buf.begin ()),
-                                                      reinterpret_cast<const std::byte*> (buf.end ()));
+        return ComputeDigest<ALGORITHM, RETURN_TYPE> (reinterpret_cast<const byte*> (buf.begin ()), reinterpret_cast<const byte*> (buf.end ()));
     }
 
 }

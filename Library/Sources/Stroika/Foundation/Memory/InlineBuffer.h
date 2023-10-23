@@ -22,8 +22,6 @@
 
 namespace Stroika::Foundation::Memory {
 
-    using std::byte;
-
     /**
      */
     template <typename T = byte>
@@ -87,7 +85,7 @@ namespace Stroika::Foundation::Memory {
      *          to BUF_SIZE
      *
      */
-    template <typename T = std::byte, size_t BUF_SIZE = InlineBuffer_DefaultInlineSize<T> ()>
+    template <typename T = byte, size_t BUF_SIZE = InlineBuffer_DefaultInlineSize<T> ()>
     class InlineBuffer {
     public:
         /**

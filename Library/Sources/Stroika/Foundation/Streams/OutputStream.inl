@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Streams {
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const uint8_t* start, const uint8_t* end) const
         requires (is_same_v<ELEMENT_TYPE, byte>)
     {
-        Write (reinterpret_cast<const std::byte*> (start), reinterpret_cast<const std::byte*> (end));
+        Write (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
     }
     template <typename ELEMENT_TYPE>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const Memory::BLOB& blob) const

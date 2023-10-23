@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     inline BLOB DerivedKey::NormalizePassword (const String& passwd)
     {
         string ascii = passwd.AsASCII ();
-        return BLOB{reinterpret_cast<const std::byte*> (ascii.c_str ()), reinterpret_cast<const std::byte*> (ascii.c_str () + ascii.length ())};
+        return BLOB{reinterpret_cast<const byte*> (ascii.c_str ()), reinterpret_cast<const byte*> (ascii.c_str () + ascii.length ())};
     }
 
     /*

@@ -21,8 +21,6 @@
 
 namespace Stroika::Foundation::IO::Network {
 
-    using std::byte;
-
     /**
      *  A SocketStream wraps a a socket as a InputOutputStream - two separate but related streams.
      *

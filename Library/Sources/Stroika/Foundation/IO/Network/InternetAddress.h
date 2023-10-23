@@ -60,7 +60,6 @@
 namespace Stroika::Foundation::IO::Network {
 
     using Characters::String;
-    using std::byte;
 
     /**
      *  v4 ip addr as a long.

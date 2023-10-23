@@ -178,8 +178,8 @@ namespace Stroika::Foundation::Memory {
                 {
                     // Still not totally legal for non-std-layout classes, but seems to work, and I haven't found a better way
                     //      --LGP 2021-05-27
-                    alignas (OWNING_OBJECT) std::byte buf[sizeof (OWNING_OBJECT)]{};
-                    const OWNING_OBJECT&              o = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
+                    alignas (OWNING_OBJECT) byte buf[sizeof (OWNING_OBJECT)]{};
+                    const OWNING_OBJECT&         o = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
                     auto result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
                     // Avoid #include - Ensure (result <= sizeof (OWNING_OBJECT));
                     return result;
@@ -287,10 +287,10 @@ namespace Stroika::Foundation::Memory {
      *************************** Memory::operator""_b *******************************
      ********************************************************************************
      */
-    constexpr std::byte operator""_b (unsigned long long b)
+    constexpr byte operator""_b (unsigned long long b)
     {
         Require (b <= 0xff);
-        return static_cast<std::byte> (b);
+        return static_cast<byte> (b);
     }
 
     ////////////////////// DEPRECATED .//////////////////////////

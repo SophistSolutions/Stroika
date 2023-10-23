@@ -9,11 +9,10 @@
 
 #include "Reader.h"
 
-using std::byte;
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
+using std::byte;
 using Streams::iostream::InputStreamFromStdIStream;
 
 /*
@@ -21,7 +20,7 @@ using Streams::iostream::InputStreamFromStdIStream;
  ******************************* Variant::Reader ********************************
  ********************************************************************************
  */
-Streams::InputStream<std::byte>::Ptr Variant::Reader::_ToByteReader (istream& in)
+Streams::InputStream<byte>::Ptr Variant::Reader::_ToByteReader (istream& in)
 {
     return InputStreamFromStdIStream<byte>::New (in);
 }

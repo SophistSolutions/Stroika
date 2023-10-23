@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
-         *        to std::byte, and the codecvt API calls this extern_type
+         *        to byte, and the codecvt API calls this extern_type
          * 
          *  /2 overload \req to.size () >= min(Bytes2Characters(*from), ComputeTargetCharacterBufferSize (*from)) on input.
          */
@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in most cases
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
-         *        to std::byte, and the codecvt API calls this extern_type
+         *        to byte, and the codecvt API calls this extern_type
          * 
          *  /2 overload \req to.size () >= min(ComputeTargetByteBufferSize (from),Characters2Bytes(from)) on input.
          */

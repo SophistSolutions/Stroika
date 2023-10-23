@@ -91,8 +91,6 @@
 
 namespace Stroika::Foundation::Execution {
 
-    using std::byte;
-
     using Characters::String;
 
     /**

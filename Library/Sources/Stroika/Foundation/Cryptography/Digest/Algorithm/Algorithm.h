@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
         virtual ~IDigester () = default;
 
     public:
-        virtual void Write (const std::byte* start, const std::byte* end) = 0;
+        virtual void Write (const byte* start, const byte* end) = 0;
     };
 
     /**
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
         DigesterAlgorithm (const DigesterAlgorithm& src) = default;
 
     public:
-        virtual void Write (const std::byte* start, const std::byte* end) override;
+        virtual void Write (const byte* start, const byte* end) override;
 
     public:
         virtual ReturnType Complete () override;

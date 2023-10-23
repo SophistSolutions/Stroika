@@ -335,7 +335,7 @@ Algorithm::DigesterAlgorithm<Algorithm::MD5>::DigesterAlgorithm ()
     MD5Init_ (&fCtx_);
 }
 
-void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Write (const std::byte* start, const std::byte* end)
+void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Write (const byte* start, const byte* end)
 {
     Require (not fCompleted_);
     Require (start == end or start != nullptr);

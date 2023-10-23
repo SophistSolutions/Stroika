@@ -43,8 +43,6 @@ namespace Stroika::Foundation::Characters {
 
 namespace Stroika::Foundation::Memory {
 
-    using std::byte;
-
     /**
      *  \brief  AccumulateIf () add in the rhs argument value to lhs optional, but if both were missing leave 'lhs'
      *          as still missing, and if only RHS available, assign it to the left.

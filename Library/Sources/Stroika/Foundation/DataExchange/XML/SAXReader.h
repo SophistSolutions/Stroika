@@ -38,7 +38,7 @@ namespace Stroika::Foundation::DataExchange::XML {
      *
      *  @see ObjectReaderRegistry for examples of one way to use this
      */
-    void SAXParse (const Streams::InputStream<std::byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback,
+    void SAXParse (const Streams::InputStream<byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback,
                    Execution::ProgressMonitor::Updater progress = nullptr);
     void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
 

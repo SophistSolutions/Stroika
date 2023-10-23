@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Streams {
     auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (const uint8_t* start, const uint8_t* end) -> Ptr
         requires is_same_v<ELEMENT_TYPE, byte>
     {
-        return New (reinterpret_cast<const byte*> (start), reinterpret_cast<const std::byte*> (end));
+        return New (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
     }
 
 }

@@ -17,7 +17,6 @@ namespace Stroika::Foundation::Streams::iostream {
     template <typename T>
     Memory::BLOB SerializeItemToBLOB (const T& elt)
     {
-        using std::byte;
         stringstream out;
         out << elt;
         string tmp = out.str ();

@@ -329,7 +329,7 @@ namespace {
                 // so if these fail, either something relevant changed or bug...
                 VerifyTestResult (h1 == 808390013);
                 VerifyTestResult (h2 == 125);
-                VerifyTestResult (h3[0] == std::byte{0x7d} and h3[1] == std::byte{0x0d} and h3[39] == std::byte{0});
+                VerifyTestResult (h3[0] == byte{0x7d} and h3[1] == byte{0x0d} and h3[39] == byte{0});
             }
             {
                 // verify can do digest of an Iterable<T>

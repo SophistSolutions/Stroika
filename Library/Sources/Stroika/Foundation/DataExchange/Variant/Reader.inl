@@ -38,7 +38,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         AssertNotNull (fRep_);
         return fRep_->GetDefaultFileSuffix ();
     }
-    inline VariantValue Reader::Read (const Streams::InputStream<std::byte>::Ptr& in)
+    inline VariantValue Reader::Read (const Streams::InputStream<byte>::Ptr& in)
     {
         AssertNotNull (fRep_);
         return fRep_->Read (in);
@@ -75,17 +75,17 @@ namespace Stroika::Foundation::DataExchange::Variant {
         EnsureNotNull (fRep_.cget ());
         return *fRep_.cget ();
     }
-    inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Streams::InputStream<std::byte>::Ptr& in)
+    inline Streams::InputStream<byte>::Ptr Reader::_ToByteReader (const Streams::InputStream<byte>::Ptr& in)
     {
         return in;
     }
-    inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
+    inline Streams::InputStream<byte>::Ptr Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
     {
         return Streams::TextToByteReader::New (in);
     }
-    inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Memory::BLOB& in)
+    inline Streams::InputStream<byte>::Ptr Reader::_ToByteReader (const Memory::BLOB& in)
     {
-        return in.As<Streams::InputStream<std::byte>::Ptr> ();
+        return in.As<Streams::InputStream<byte>::Ptr> ();
     }
     inline Streams::InputStream<Characters::Character>::Ptr Reader::_ToCharacterReader (const Streams::InputStream<Characters::Character>::Ptr& in)
     {

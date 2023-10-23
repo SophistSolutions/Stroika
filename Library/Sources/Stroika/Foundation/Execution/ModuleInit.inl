@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Execution {
         return ModuleDependency (Start, End);
     }
     template <typename MODULE_DATA>
-    alignas (alignof (MODULE_DATA)) std::byte ModuleInitializer<MODULE_DATA>::sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
+    alignas (alignof (MODULE_DATA)) byte ModuleInitializer<MODULE_DATA>::sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
 
 }
 

@@ -42,8 +42,6 @@
 
 namespace Stroika::Foundation::IO::FileSystem {
 
-    using std::byte;
-
     using Characters::String;
 
     /**

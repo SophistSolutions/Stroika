@@ -57,9 +57,6 @@ namespace Stroika::Foundation::Characters {
 
 namespace Stroika::Foundation::Memory {
 
-    using namespace std;
-    using std::byte;
-
     using namespace Configuration;
 
     /**

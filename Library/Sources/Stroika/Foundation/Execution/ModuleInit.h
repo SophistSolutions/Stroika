@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Execution {
         static ModuleDependency GetDependency ();
 
     private:
-        alignas (alignof (MODULE_DATA)) static std::byte sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
+        alignas (alignof (MODULE_DATA)) static byte sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
         static inline uint16_t sInitCnt_{0};
     };
 

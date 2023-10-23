@@ -15,8 +15,6 @@
 
 namespace Stroika::Foundation::IO::Network::HTTP {
 
-    using std::byte;
-
     /**
      * This can be used to create a readable stream of strings (readline) - which
      * consume a BinaryStream (pre-seeked to the right place) - as a series of characters.

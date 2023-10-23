@@ -37,13 +37,13 @@ namespace Stroika::Foundation::Streams {
      * 
      *      WONT change this part of the API - just adding overloads, so OK to release as-is - 2023-07-10
      */
-    class TextToByteReader : public InputStream<std::byte> {
+    class TextToByteReader : public InputStream<byte> {
     public:
         TextToByteReader ()                        = delete;
         TextToByteReader (const TextToByteReader&) = delete;
 
     public:
-        using Ptr = InputStream<std::byte>::Ptr;
+        using Ptr = InputStream<byte>::Ptr;
 
     public:
         static Ptr New (InputStream<Character>::Ptr srcStream);

@@ -16,8 +16,6 @@
 
 namespace Stroika::Foundation::Streams::iostream {
 
-    using std::byte;
-
     [[deprecated ("Since Stroika v3.0d2, use Foundation::InputStream")]] wstring ReadTextStream (istream& in);
     [[deprecated ("Since Stroika v3.0d2, use Foundation::InputStream")]] wstring ReadTextStream (wistream& in);
 

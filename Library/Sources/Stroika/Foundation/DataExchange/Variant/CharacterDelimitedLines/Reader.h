@@ -69,7 +69,7 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
         /**
          *  Alternative reading API for this file type, which maybe helpful, to read as a series of lines.
          */
-        nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<std::byte>::Ptr& in) const;
+        nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<byte>::Ptr& in) const;
         nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const;
         nonvirtual Iterable<Sequence<String>> ReadMatrix (const Traversal::Iterable<Characters::Character>& in);
         nonvirtual Iterable<Sequence<String>> ReadMatrix (const Memory::BLOB& in);

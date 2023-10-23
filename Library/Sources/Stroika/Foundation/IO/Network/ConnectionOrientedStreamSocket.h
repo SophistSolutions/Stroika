@@ -16,8 +16,6 @@ namespace Stroika::Foundation::Memory {
 
 namespace Stroika::Foundation::IO::Network {
 
-    using std::byte;
-
     /**
      *  \brief ConnectionOrientedStreamSocket is typically a tcp stream, either setup with Connect, or ConnectionOrientedMasterSocket::Accept ()
      *

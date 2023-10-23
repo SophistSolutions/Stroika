@@ -37,8 +37,6 @@
 
 namespace Stroika::Frameworks::WebServer {
 
-    using std::byte;
-
     using namespace Stroika::Foundation;
     using namespace Stroika::Foundation::IO::Network;
 

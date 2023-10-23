@@ -360,10 +360,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return LibCurl::Connection::New (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return WinHTTP::Connection::New (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -423,10 +423,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return LibCurl::Connection::New (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return WinHTTP::Connection::New (kDefaultTestOptions_); });
 #endif
         }
     }

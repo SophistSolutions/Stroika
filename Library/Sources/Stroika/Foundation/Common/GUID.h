@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Common {
 #endif
         GUID (const string& src);
         GUID (const Memory::BLOB& src);
-        GUID (const array<std::byte, 16>& src) noexcept;
+        GUID (const array<byte, 16>& src) noexcept;
         GUID (const array<uint8_t, 16>& src) noexcept;
         GUID (const Characters::String& src);
 
@@ -60,19 +60,19 @@ namespace Stroika::Foundation::Common {
         uint8_t  Data4[8]{};
 
     public:
-        using value_type = std::byte;
+        using value_type = byte;
 
     public:
         /**
          *  \nb: Stroika v2.1 allowed iterating and modifying in place of the GUID as a sequence of bytes, but no more
          */
-        nonvirtual const std::byte* begin () const noexcept;
+        nonvirtual const byte* begin () const noexcept;
 
     public:
         /**
          *  \nb: Stroika v2.1 allowed iterating and modifying in place of the GUID as a sequence of bytes, but no more
          */
-        nonvirtual const std::byte* end () const noexcept;
+        nonvirtual const byte* end () const noexcept;
 
     public:
         /**
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Common {
         template <typename T>
         nonvirtual T As () const
             requires (is_same_v<T, Characters::String> or is_same_v<T, std::string> or is_same_v<T, Memory::BLOB> or
-                      is_same_v<T, array<std::byte, 16>> or is_same_v<T, array<uint8_t, 16>>);
+                      is_same_v<T, array<byte, 16>> or is_same_v<T, array<uint8_t, 16>>);
 
     public:
         /**

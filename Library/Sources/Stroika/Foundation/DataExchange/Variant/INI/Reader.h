@@ -88,7 +88,7 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
         /**
          *  \brief though can read directly as VariantValue, reading as a Profile object maybe handier for this type of file.
          */
-        nonvirtual Profile ReadProfile (const Streams::InputStream<std::byte>::Ptr& in);
+        nonvirtual Profile ReadProfile (const Streams::InputStream<byte>::Ptr& in);
         nonvirtual Profile ReadProfile (const Streams::InputStream<Characters::Character>::Ptr& in);
         nonvirtual Profile ReadProfile (const Traversal::Iterable<Characters::Character>& in);
         nonvirtual Profile ReadProfile (const Memory::BLOB& in);

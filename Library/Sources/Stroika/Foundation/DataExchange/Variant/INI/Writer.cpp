@@ -73,7 +73,7 @@ INI::Writer::Writer ()
 {
 }
 
-void INI::Writer::Write (const Profile& profile, const OutputStream<std::byte>::Ptr& out)
+void INI::Writer::Write (const Profile& profile, const OutputStream<byte>::Ptr& out)
 {
     return Write (profile, Streams::TextWriter::New (out));
 }
@@ -85,7 +85,7 @@ void INI::Writer::Write (const Profile& profile, const OutputStream<Characters::
 
 Memory::BLOB INI::Writer::WriteAsBLOB (const Profile& profile)
 {
-    return _WriteAsBLOBHelper ([&profile, this] (const OutputStream<std::byte>::Ptr& out) { Write (profile, out); });
+    return _WriteAsBLOBHelper ([&profile, this] (const OutputStream<byte>::Ptr& out) { Write (profile, out); });
 }
 
 String INI::Writer::WriteAsString (const Profile& profile)

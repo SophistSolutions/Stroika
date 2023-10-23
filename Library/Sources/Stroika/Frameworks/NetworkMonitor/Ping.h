@@ -27,8 +27,6 @@
 
 namespace Stroika::Frameworks::NetworkMonitor::Ping {
 
-    using std::byte;
-
     using namespace Stroika::Foundation;
 
     using IO::Network::InternetAddress;

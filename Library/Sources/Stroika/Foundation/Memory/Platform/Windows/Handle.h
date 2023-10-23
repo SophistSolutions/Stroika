@@ -17,8 +17,6 @@
 
 namespace Stroika::Foundation::Memory::Platform::Windows {
 
-    using std::byte;
-
     /**
      */
     class StackBasedHandleLocker {

@@ -24,8 +24,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-    using std::byte;
-
     using Foundation::Characters::CodePage;
     using Foundation::Characters::SDKChar;
 

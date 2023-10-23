@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Memory {
      * 
      *  \see https://stackoverflow.com/questions/75411756/how-do-i-declare-and-initialize-an-array-of-bytes-in-c
      */
-    constexpr std::byte operator""_b (unsigned long long b);
+    constexpr byte operator""_b (unsigned long long b);
 
     /**
      *  Workaround absence of bit_cast in MacOS XCode 14 (which we support with Stroika v3)
@@ -172,7 +172,6 @@ namespace Stroika::Foundation::Memory {
     template <class T>
     inline T byteswap (T n) noexcept
     {
-        using std::byte;
         static_assert (std::has_unique_object_representations_v<T>, "T may not have padding bits");
         auto value_representation = bit_cast<array<byte, sizeof (T)>> (n);
         for (size_t i = 0; i < value_representation.size () / 2; ++i) {

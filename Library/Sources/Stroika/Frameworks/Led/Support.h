@@ -52,11 +52,12 @@
 #include <X11/Xatom.h>
 #endif
 
-namespace Stroika::Frameworks::Led {
-
+namespace Stroika {
     using namespace std;
-
     using std::byte;
+}
+
+namespace Stroika::Frameworks::Led {
 
     using Foundation::Characters::SDKString;
 

@@ -20,15 +20,11 @@ extern "C" {
 #pragma comment(lib, "lzma.lib")
 #endif
 
-using std::byte;
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Archive;
 
 using Memory::StackBuffer;
-
-using std::byte;
 
 #if qHasFeature_LZMA
 namespace {

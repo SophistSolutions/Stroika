@@ -61,7 +61,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
     public:
         /**
          */
-        nonvirtual VariantValue Read (const Streams::InputStream<std::byte>::Ptr& in);
+        nonvirtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in);
         nonvirtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in);
         nonvirtual VariantValue Read (const Traversal::Iterable<Characters::Character>& in);
         nonvirtual VariantValue Read (const Memory::BLOB& in);
@@ -76,10 +76,10 @@ namespace Stroika::Foundation::DataExchange::Variant {
         /**
          * \brief simple helper so subclasses can more easily provide varied Read overloads
          */
-        static Streams::InputStream<std::byte>::Ptr _ToByteReader (const Streams::InputStream<std::byte>::Ptr& in);
-        static Streams::InputStream<std::byte>::Ptr _ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in);
-        static Streams::InputStream<std::byte>::Ptr _ToByteReader (const Memory::BLOB& in);
-        static Streams::InputStream<std::byte>::Ptr _ToByteReader (istream& in);
+        static Streams::InputStream<byte>::Ptr _ToByteReader (const Streams::InputStream<byte>::Ptr& in);
+        static Streams::InputStream<byte>::Ptr _ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in);
+        static Streams::InputStream<byte>::Ptr _ToByteReader (const Memory::BLOB& in);
+        static Streams::InputStream<byte>::Ptr _ToByteReader (istream& in);
 
     protected:
         /**
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         virtual ~_IRep ()                                                                        = default;
         virtual _SharedPtrIRep Clone () const                                                    = 0;
         virtual String         GetDefaultFileSuffix () const                                     = 0;
-        virtual VariantValue   Read (const Streams::InputStream<std::byte>::Ptr& in)             = 0;
+        virtual VariantValue   Read (const Streams::InputStream<byte>::Ptr& in)                  = 0;
         virtual VariantValue   Read (const Streams::InputStream<Characters::Character>::Ptr& in) = 0;
     };
 

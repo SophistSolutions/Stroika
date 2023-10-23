@@ -104,26 +104,26 @@ namespace Stroika::Foundation::Cryptography::Encoding {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class OpenSSLInputStream : public Streams::InputStream<std::byte> {
+    class OpenSSLInputStream : public Streams::InputStream<byte> {
     public:
         OpenSSLInputStream ()                          = delete;
         OpenSSLInputStream (const OpenSSLInputStream&) = delete;
 
     public:
-        using typename InputStream<std::byte>::Ptr;
+        using typename InputStream<byte>::Ptr;
 
     public:
         /**
          */
-        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<std::byte>::Ptr& realIn);
+        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<byte>::Ptr& realIn);
         static Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
-                        Direction direction, const Streams::InputStream<std::byte>::Ptr& realIn);
+                        Direction direction, const Streams::InputStream<byte>::Ptr& realIn);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<std::byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
     };
 
     /**
@@ -142,26 +142,26 @@ namespace Stroika::Foundation::Cryptography::Encoding {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class OpenSSLOutputStream : public Streams::OutputStream<std::byte> {
+    class OpenSSLOutputStream : public Streams::OutputStream<byte> {
     public:
         OpenSSLOutputStream ()                           = delete;
         OpenSSLOutputStream (const OpenSSLOutputStream&) = delete;
 
     public:
-        using typename OutputStream<std::byte>::Ptr;
+        using typename OutputStream<byte>::Ptr;
 
     public:
         /**
          */
-        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<std::byte>::Ptr& realOut);
+        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<byte>::Ptr& realOut);
         static Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
-                        Direction direction, const Streams::OutputStream<std::byte>::Ptr& realOut);
+                        Direction direction, const Streams::OutputStream<byte>::Ptr& realOut);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<std::byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
     };
 #endif
 

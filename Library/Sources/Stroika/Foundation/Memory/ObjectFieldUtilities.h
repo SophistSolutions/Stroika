@@ -19,8 +19,6 @@ namespace Stroika::Foundation::Memory {
 
     using namespace std;
 
-    using std::byte;
-
     /**
      *  Given an objects field (given by pointer to member) and that owned object, run 'offsetof' backwards
      *  to get the original owning object.

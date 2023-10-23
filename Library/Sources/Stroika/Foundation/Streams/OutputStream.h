@@ -50,8 +50,6 @@ namespace Stroika::Foundation::Memory {
 
 namespace Stroika::Foundation::Streams {
 
-    using std::byte;
-
     /**
      *  \em Design Overview
      *

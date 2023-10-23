@@ -34,6 +34,8 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::WaitForIOReady_Support;
 
+using std::byte;
+
 using Memory::StackBuffer;
 using Time::DurationSecondsType;
 
@@ -102,7 +104,7 @@ namespace {
         }
         virtual void _ReadAllAvail () override
         {
-            std::byte buf[1024];
+            byte buf[1024];
             while (fReadSocket_.ReadNonBlocking (begin (buf), end (buf)))
                 ;
         }

@@ -32,13 +32,13 @@ namespace Stroika::Foundation::Common {
     {
         ::memcpy (this, src.data (), 16);
     }
-    inline const std::byte* GUID::begin () const noexcept
+    inline const byte* GUID::begin () const noexcept
     {
-        return reinterpret_cast<const std::byte*> (this);
+        return reinterpret_cast<const byte*> (this);
     }
-    inline const std::byte* GUID::end () const noexcept
+    inline const byte* GUID::end () const noexcept
     {
-        return reinterpret_cast<const std::byte*> (this) + 16;
+        return reinterpret_cast<const byte*> (this) + 16;
     }
     constexpr size_t GUID::size () const noexcept
     {
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Common {
     template <typename T>
     inline T Common::GUID::As () const
         requires (is_same_v<T, Characters::String> or is_same_v<T, std::string> or is_same_v<T, Memory::BLOB> or
-                  is_same_v<T, array<std::byte, 16>> or is_same_v<T, array<uint8_t, 16>>)
+                  is_same_v<T, array<byte, 16>> or is_same_v<T, array<uint8_t, 16>>)
     {
         if constexpr (is_same_v<T, Characters::String>) {
             char buf[1024];
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Common {
                                 Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
             return buf;
         }
-        else if constexpr (is_same_v<T, array<std::byte, 16>> or is_same_v<T, array<uint8_t, 16>>) {
+        else if constexpr (is_same_v<T, array<byte, 16>> or is_same_v<T, array<uint8_t, 16>>) {
             return *reinterpret_cast<const T*> (this);
         }
         else if constexpr (is_same_v<T, Memory::BLOB>) {

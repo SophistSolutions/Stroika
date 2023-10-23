@@ -13,8 +13,6 @@
 
 namespace Stroika::Foundation::Cryptography {
 
-    using std::byte;
-
     namespace Private_ {
         string        mkArrayFmt_ (const uint8_t* start, const uint8_t* end);
         inline string mkArrayFmt_ (const byte* start, const byte* end)

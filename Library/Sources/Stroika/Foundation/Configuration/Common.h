@@ -7,8 +7,11 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace Stroika::Foundation {
+namespace Stroika {
     using namespace std;
+
+    // deal with windows ambiguity - C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\rpcndr.h(202): note: could be 'unsigned char byte'
+    using std::byte;
 }
 
 namespace Stroika::Foundation::Configuration {

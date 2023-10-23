@@ -22,8 +22,6 @@
 
 namespace Stroika::Foundation::Characters {
 
-    using std::byte;
-
     class String;
 
     /**
