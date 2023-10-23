@@ -361,11 +361,10 @@ namespace {
         }
 
     private:
-    static
-size_t s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP)
-{
-    return reinterpret_cast<Rep_*> (userP)->RequestPayloadReadHandler_ (reinterpret_cast<byte*> (buffer), size * nitems);
-}
+        static size_t s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, void* userP)
+        {
+            return reinterpret_cast<Rep_*> (userP)->RequestPayloadReadHandler_ (reinterpret_cast<byte*> (buffer), size * nitems);
+        }
 
         nonvirtual size_t RequestPayloadReadHandler_ (byte* buffer, size_t bufSize)
         {
@@ -383,14 +382,13 @@ size_t s_RequestPayloadReadHandler_ (char* buffer, size_t size, size_t nitems, v
         }
 
     private:
-    static
-size_t s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
-{
+        static size_t s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+        {
 #if qStroika_FeatureSupported_Valgrind
-    VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
+            VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
 #endif
-    return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
-}
+            return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
+        }
 
         nonvirtual size_t ResponseWriteHandler_ (const byte* ptr, size_t nBytes)
         {
@@ -399,14 +397,13 @@ size_t s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* user
         }
 
     private:
-    
-static size_t s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
-{
+        static size_t s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
+        {
 #if qStroika_FeatureSupported_Valgrind
-    VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
+            VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb); // Handle OpenSSL if not built with purify
 #endif
-    return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
-}
+            return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const byte*> (ptr), size * nmemb);
+        }
 
         nonvirtual size_t ResponseHeaderWriteHandler_ (const byte* ptr, size_t nBytes)
         {

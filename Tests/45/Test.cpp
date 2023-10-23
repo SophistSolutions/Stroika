@@ -148,10 +148,10 @@ namespace {
             }
 
 #if qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_LibCurl::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return LibCurl::Connection::New (kDefaultTestOptions_); });
 #endif
 #if qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection_WinHTTP::New (kDefaultTestOptions_); });
+            DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return WinHTTP::Connection::New (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -649,7 +649,7 @@ namespace {
                 Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
                 Connection::Options options      = kDefaultTestOptions_;
                 options.fCache                   = cache;
-                return Connection_LibCurl::New (options);
+                return LibCurl::Connection::New (options);
             });
 #endif
 #if qHasFeature_WinHTTP
@@ -659,7 +659,7 @@ namespace {
                 Cache::Ptr          cache        = Cache::CreateDefault (cacheOptions);
                 Connection::Options options      = kDefaultTestOptions_;
                 options.fCache                   = cache;
-                return Connection_WinHTTP::New (options);
+                return WinHTTP::Connection::New (options);
             });
 #endif
         }

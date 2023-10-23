@@ -1134,8 +1134,7 @@ namespace {
                             rwLock.store (not rwLock.load ()); // toggle back and forth
                         }
                     },
-                    Thread::eAutoStart,
-                    "writerThread"sv);
+                    Thread::eAutoStart, "writerThread"sv);
                 Thread::Ptr readerThatSometimesWritesThread1 = Thread::New (readerFun, Thread::eAutoStart, "readerFun1"sv);
                 Thread::Ptr readerThatSometimesWritesThread2 = Thread::New (readerFun, Thread::eAutoStart, "readerFun2"sv);
                 Execution::Sleep (3s);
@@ -1165,52 +1164,52 @@ namespace {
                 runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically1 (isEven); });
             }
             {
-            auto testUpgradeLockNonAtomically2 = [] (auto& isEven) {
-                while (true) {
-                    Thread::CheckForInterruption ();
-                    auto rLock = isEven.cget ();
-                    if (rLock.load ()) {
-                        isEven.UpgradeLockNonAtomically (&rLock, [&] (auto&& writeLock, bool interveningWriteLock) {
-                            if (interveningWriteLock) {
-                                // MUST RECHECK writeLock.load () for now because UpgradeLockNonAtomically () unlocks first and lets others get a crack
-                                if (writeLock.load ()) {
+                auto testUpgradeLockNonAtomically2 = [] (auto& isEven) {
+                    while (true) {
+                        Thread::CheckForInterruption ();
+                        auto rLock = isEven.cget ();
+                        if (rLock.load ()) {
+                            isEven.UpgradeLockNonAtomically (&rLock, [&] (auto&& writeLock, bool interveningWriteLock) {
+                                if (interveningWriteLock) {
+                                    // MUST RECHECK writeLock.load () for now because UpgradeLockNonAtomically () unlocks first and lets others get a crack
+                                    if (writeLock.load ()) {
+                                        writeLock.store (false);
+                                    }
+                                }
+                                else {
+                                    // in this case we effectively did an atomic upgrade, because no intervening writers
+                                    Assert (writeLock.load ());
                                     writeLock.store (false);
                                 }
-                            }
-                            else {
-                                // in this case we effectively did an atomic upgrade, because no intervening writers
-                                Assert (writeLock.load ());
-                                writeLock.store (false);
-                            }
-                            return true; // instead of reloading here, could return false and let retyr code happen
-                        });
+                                return true; // instead of reloading here, could return false and let retyr code happen
+                            });
+                        }
                     }
-                }
-            };
+                };
                 Debug::TraceContextBumper ctx1{"run-test (2) RWSynchronized NonAtomically"};
                 RWSynchronized<bool>      isEven{true};
                 runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically2 (isEven); });
             }
             {
-            auto testUpgradeLockNonAtomically3 = [] (auto& isEven) {
-                while (true) {
-                    Thread::CheckForInterruption ();
-                    auto rLock = isEven.cget ();
-                    if (rLock.load ()) {
-                        isEven.UpgradeLockNonAtomicallyQuietly (&rLock, [&] (auto&& writeLock, bool interveningWriteLock) {
-                            if (interveningWriteLock) {
-                                return false; // will get retried
-                            }
-                            else {
-                                // in this case we effectively did an atomic upgrade, because no intervening writers
-                                VerifyTestResult (writeLock.load ());
-                                writeLock.store (false);
-                                return true; // instead of reloading here, could return false and let retyr code happen
-                            }
-                        });
+                auto testUpgradeLockNonAtomically3 = [] (auto& isEven) {
+                    while (true) {
+                        Thread::CheckForInterruption ();
+                        auto rLock = isEven.cget ();
+                        if (rLock.load ()) {
+                            isEven.UpgradeLockNonAtomicallyQuietly (&rLock, [&] (auto&& writeLock, bool interveningWriteLock) {
+                                if (interveningWriteLock) {
+                                    return false; // will get retried
+                                }
+                                else {
+                                    // in this case we effectively did an atomic upgrade, because no intervening writers
+                                    VerifyTestResult (writeLock.load ());
+                                    writeLock.store (false);
+                                    return true; // instead of reloading here, could return false and let retyr code happen
+                                }
+                            });
+                        }
                     }
-                }
-            };
+                };
                 Debug::TraceContextBumper ctx1{"run-test (3) RWSynchronized NonAtomically"};
                 RWSynchronized<bool>      isEven{true};
                 runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically3 (isEven); });
