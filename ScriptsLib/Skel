@@ -9,15 +9,16 @@ POSITIONAL_ARGS=()
 APP_ROOT=""
 APP_NAME=""
 STROIKA_SOURCE="git"
-GIT_REMOTE="https://github.com/SophistSolutions/Stroika.git"
-GIT_STROIKA_BRANCH=`git rev-parse --abbrev-ref HEAD`
+STROIKA_SOURCE_GIT_REMOTE="https://github.com/SophistSolutions/Stroika.git"
+STROIKA_SOURCE_GIT_STROIKA_BRANCH=`git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'v3-Release'`
 
 help_()
 {
   echo "Skel";
   echo "  --appRoot <DIR>         # top level directory generated (required - e.g. ../myApp)"
   echo '  --appName <NAME>        # top level directory generated (DEFAULT: `basename \$\{APP_ROOT\}`)'
-  echo "  --stroika-source (git | download)"
+  echo "  --stroikaSource (git)"
+  # todo add | download | symbolic-link, or maybe conan, but NYI --LGP 2023-10-24
 }
 parse_command_line_ () {
   while [[ $# -gt 0 ]]; do
@@ -31,6 +32,9 @@ parse_command_line_ () {
         APP_NAME="$2"
         shift # past argument
         shift # past value
+        ;;
+      --stroikaSource)
+        echo "NYI - only support git for now... $1"
         ;;
       -h|--help)
         help_;
@@ -89,8 +93,8 @@ mkThirdPartyComponentsAndStroika_()
     if [[ "$STROIKA_SOURCE" == "git" ]] ; then
       echo "Initializing git repository and adding Stroika submodule"
       (cd $APP_ROOT && git init)
-      (cd $APP_ROOT/ThirdPartyComponents/Stroika; git submodule add $GIT_REMOTE StroikaRoot)
-      (cd $APP_ROOT/ThirdPartyComponents/Stroika/StroikaRoot; git checkout ${GIT_STROIKA_BRANCH})
+      (cd $APP_ROOT/ThirdPartyComponents/Stroika; git submodule add $STROIKA_SOURCE_GIT_REMOTE StroikaRoot)
+      (cd $APP_ROOT/ThirdPartyComponents/Stroika/StroikaRoot; git checkout ${STROIKA_SOURCE_GIT_STROIKA_BRANCH})
     fi
 }
 mkMyApp_()

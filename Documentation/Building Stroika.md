@@ -510,7 +510,7 @@ Run Library/Projects/QtCreator/CreateQtCreatorSymbolicLinks.sh to create project
 ## Building your own application
 
 To some degree, this is simple, and you can just copy/munge one of the sample applications. But the paths in the makefile aren't simple to update. So Stroika provides
-a 'Skel' utility, that builds a skelten application.
+a 'Skel' utility, that builds a skeleton application.
 
   ~~~bash
   ./ScriptsLib/Skel --appRoot ../myApp
