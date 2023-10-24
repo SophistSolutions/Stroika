@@ -37,22 +37,23 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
     using namespace std;
 
 #if qHasLibrary_ODBC
-    /**
-     *  These are options used to create a database Connection::Ptr object (with Connection::New).
-     *
-     *  Since this is also how you create a database, in a sense, its those options too.
-     */
-    struct Options final {
-        /**
-         */
-        optional<String> fDSN;
-    };
 
     namespace Connection {
 
         using namespace SQL::Connection;
 
         class IRep;
+
+        /**
+         *  These are options used to create a database Connection::Ptr object (with Connection::New).
+         *
+         *  Since this is also how you create a database, in a sense, its those options too.
+         */
+        struct Options final {
+            /**
+             */
+            optional<String> fDSN;
+        };
 
         /**
          *  Connection provides an API for accessing an ODBC database.

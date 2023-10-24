@@ -33,12 +33,13 @@ namespace {
     void ThrowIfSQLError_ (SQLRETURN r, const String& message)
     {
         if ((r != SQL_SUCCESS) and (r != SQL_SUCCESS_WITH_INFO)) [[unlikely]] {
-            Execution::Throw (Exception{message});
+            Execution::Throw (Exception{message}); // mistake? why would I throw SUCCESS WITH INFO? Maybe just log it?
         }
     }
 }
 
 namespace {
+    using Connection::Options;
     struct Rep_ final : Stroika::Foundation::Database::SQL::ODBC::Connection::IRep {
         SQLHDBC fConnectionHandle{nullptr};
         SQLHENV fODBCEnvironmentHandle{nullptr};

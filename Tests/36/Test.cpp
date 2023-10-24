@@ -59,7 +59,7 @@ namespace {
                 DB (const filesystem::path& testDBFile)
                 {
                     try {
-                        fDB_ = Connection::New (Options{.fDBPath = testDBFile});
+                        fDB_ = Connection::New (Connection::Options{.fDBPath = testDBFile});
                         InitialSetup_ (fDB_);
                     }
                     catch (...) {
@@ -71,7 +71,7 @@ namespace {
                 DB ()
                 {
                     try {
-                        fDB_ = Connection::New (Options{.fInMemoryDB = ""sv});
+                        fDB_ = Connection::New (Connection::Options{.fInMemoryDB = ""sv});
                         InitialSetup_ (fDB_);
                     }
                     catch (...) {
@@ -297,12 +297,12 @@ namespace {
 
         namespace PRIVATE_ {
 
-            Connection::Ptr SetupDB_ (const Options& options)
+            Connection::Ptr SetupDB_ (const Connection::Options& options)
             {
-                TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::SetupDB_"};
-                Options            o = options;
-                o.fBusyTimeout       = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-                auto conn            = Connection::New (o);
+                TraceContextBumper  ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::SetupDB_"};
+                Connection::Options o = options;
+                o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
+                auto conn             = Connection::New (o);
                 VerifyTestResult (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
                 constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
                 SQL::ORM::ProvisionForVersion (
@@ -480,7 +480,7 @@ namespace {
                 }
             }
 
-            void ThreadTest_ (const Options& options)
+            void ThreadTest_ (const Connection::Options& options)
             {
                 TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::ThreadTest_"};
                 /*
@@ -506,7 +506,7 @@ namespace {
             using namespace Database::SQL::SQLite;
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-test.db";
             (void)std::filesystem::remove (dbPath);
-            PRIVATE_::ThreadTest_ (Options{.fDBPath = dbPath, .fThreadingMode = Options::ThreadingMode::eMultiThread});
+            PRIVATE_::ThreadTest_ (Connection::Options{.fDBPath = dbPath, .fThreadingMode = Connection::Options::ThreadingMode::eMultiThread});
         }
     }
 
@@ -612,12 +612,12 @@ namespace {
              * Create database connection, with hook to establish the database schema,
              * (and soon to provide database schema upgrades as needed)
              */
-            Connection::Ptr SetupDB_ (const Options& options)
+            Connection::Ptr SetupDB_ (const Connection::Options& options)
             {
-                TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::SetupDB_"};
-                Options            o = options;
-                o.fBusyTimeout       = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
-                auto conn            = Connection::New (o);
+                TraceContextBumper  ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::SetupDB_"};
+                Connection::Options o = options;
+                o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
+                auto conn             = Connection::New (o);
                 VerifyTestResult (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
                 constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
                 SQL::ORM::ProvisionForVersion (conn, kCurrentVersion_,
@@ -717,7 +717,7 @@ namespace {
                 }
             }
 
-            void ThreadTest_ (const Options& options)
+            void ThreadTest_ (const Connection::Options& options)
             {
                 TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::ThreadTest_"};
                 /*
@@ -742,7 +742,7 @@ namespace {
             using namespace Database::SQL::SQLite;
             auto dbPath = IO::FileSystem::WellKnownLocations::GetTemporary () / "threads-and-orm-test.db";
             (void)std::filesystem::remove (dbPath);
-            PRIVATE_::ThreadTest_ (Options{.fDBPath = dbPath, .fThreadingMode = Options::ThreadingMode::eMultiThread});
+            PRIVATE_::ThreadTest_ (Connection::Options{.fDBPath = dbPath, .fThreadingMode = Connection::Options::ThreadingMode::eMultiThread});
         }
     }
 }

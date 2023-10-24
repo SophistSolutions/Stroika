@@ -138,6 +138,7 @@ namespace {
 }
 
 namespace {
+    using Connection::Options;
     struct Rep_ final : Database::SQL::SQLite::Connection::IRep, private Debug::AssertExternallySynchronizedMutex {
         Rep_ (const Options& options)
         {

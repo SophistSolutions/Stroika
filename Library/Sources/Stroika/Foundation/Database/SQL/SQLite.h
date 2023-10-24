@@ -104,116 +104,6 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         eOff
     };
 
-    /**
-     *  These are options used to create a database Connection::Ptr object (with Connection::New).
-     *
-     *  Since this is also how you create a database, in a sense, its those options too.
-     */
-    struct Options final {
-        /**
-         *  NOTE - we choose to only support a PATH, and not the URI syntax, because the URI syntax is used to pass
-         *  extra parameters (as from a GUI) and those can conflict with what is specified here (making it unclear or
-         *  surprising how to interpret). @todo perhaps provide an API to 'parse' an sqlite URI into one of these Stroika
-         *  SQLite options objects?
-         * 
-         *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
-         */
-        optional<filesystem::path> fDBPath;
-
-        /**
-         *  This option only applies if fDBPath is set. 
-         *  \req fCreateDBPathIfDoesNotExist => not fReadOnly
-         */
-        bool fCreateDBPathIfDoesNotExist{true};
-
-        /**
-         *  fTemporaryDB is just like fInMemoryDB, except that it will be written to disk. But its like temporaryDB in that
-         *  it will be automatically deleted when this connection (that created it) closes.
-         * 
-         *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
-         */
-        optional<String> fTemporaryDB;
-
-        /**
-         *  If provided, the database will not be stored to disk, but just saved in memory. The name still must be provided to allow
-         *  for sharing the same (in memory) database between different connections). If the name is the empty string (String{}) then
-         *  it is guaranteed unique.
-         * 
-         *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
-         */
-        optional<String> fInMemoryDB;
-
-        /**
-         *  @see https://www.sqlite.org/compile.html#threadsafe
-         * 
-         *  Note this refers to the threading mode for the underlying database. A Connection object is always single-threaded/externally
-         *  synchronized.
-         */
-        enum class ThreadingMode {
-            /**
-             *   SQLITE_OPEN_FULLMUTEX
-             *  In this mode, all mutexes are disabled and SQLite is unsafe to use in more than a single thread at once
-             */
-            eSingleThread,
-
-            /**
-             *  SQLITE_OPEN_NOMUTEX
-             *  In this mode, SQLite can be safely used by multiple threads provided that no single database connection is used simultaneously in two or more threads.
-             *  (Stroika Debug::AssertExternallySynchronizedMutex enforces this)
-             * 
-             * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
-             * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
-             * call sqlite3_threadsafe, to see if this is enabled
-             */
-            eMultiThread,
-
-            /**
-             *  SQLITE_OPEN_FULLMUTEX
-             *  In serialized mode, SQLite can be safely used by multiple threads with no restriction.
-             *  (note even in this mode, each connection is Debug::AssertExternallySynchronizedMutex)
-             * 
-             * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
-             * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
-             * call sqlite3_threadsafe, to see if this is enabled
-             * 
-             *  \note Use of this API, as of Stroika 2.1b12, may result in poor error messages, due to how errors are stored (and maybe other such
-             *        issues - maybe we need to do lock around call to each function to avoid making this mode nearly pointless).
-             */
-            eSerialized,
-        };
-        optional<ThreadingMode> fThreadingMode;
-
-        /**
-         *  This can generally be ignored, and primarily affects low level OS interface locking choices.
-         *  @see https://www.sqlite.org/vfs.html
-         */
-        optional<String> fVFS;
-
-        /**
-         *  If a database is opened readonly, updates will fail, and if the database doesn't exist, it will not be automatically created.
-         */
-        bool fReadOnly{false};
-
-        /**
-         *  The immutable query parameter is a boolean that signals to SQLite that the underlying database file is held on read-only media and
-         *  cannot be modified, even by another process with elevated privileges.
-         * 
-         *  \req fImmutable ==> fReadOnly
-        */
-        bool fImmutable{false};
-
-        /**
-         *  This is only useful if the database can be opened by multiple threads of control (multiple threads with connections
-         *  within the same app, or multiple applications).
-         */
-        optional<Duration> fBusyTimeout;
-
-        /**
-         *  \note - see JournalModeType and Connection::Ptr::pJournalMode
-         */
-        optional<JournalModeType> fJournalMode;
-    };
-
     class Statement;
 
     /**
@@ -224,6 +114,116 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         using namespace SQL::Connection;
 
         class IRep;
+
+        /**
+         *  These are options used to create a database Connection::Ptr object (with Connection::New).
+         *
+         *  Since this is also how you create a database, in a sense, its those options too.
+         */
+        struct Options final {
+            /**
+             *  NOTE - we choose to only support a PATH, and not the URI syntax, because the URI syntax is used to pass
+             *  extra parameters (as from a GUI) and those can conflict with what is specified here (making it unclear or
+             *  surprising how to interpret). @todo perhaps provide an API to 'parse' an sqlite URI into one of these Stroika
+             *  SQLite options objects?
+             * 
+             *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
+             */
+            optional<filesystem::path> fDBPath;
+
+            /**
+             *  This option only applies if fDBPath is set. 
+             *  \req fCreateDBPathIfDoesNotExist => not fReadOnly
+             */
+            bool fCreateDBPathIfDoesNotExist{true};
+
+            /**
+             *  fTemporaryDB is just like fInMemoryDB, except that it will be written to disk. But its like temporaryDB in that
+             *  it will be automatically deleted when this connection (that created it) closes.
+             * 
+             *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
+             */
+            optional<String> fTemporaryDB;
+
+            /**
+             *  If provided, the database will not be stored to disk, but just saved in memory. The name still must be provided to allow
+             *  for sharing the same (in memory) database between different connections). If the name is the empty string (String{}) then
+             *  it is guaranteed unique.
+             * 
+             *  \note - fInMemoryDB and fDBPath and fTemporaryDB are mutually exclusive options.
+             */
+            optional<String> fInMemoryDB;
+
+            /**
+             *  @see https://www.sqlite.org/compile.html#threadsafe
+             * 
+             *  Note this refers to the threading mode for the underlying database. A Connection object is always single-threaded/externally
+             *  synchronized.
+             */
+            enum class ThreadingMode {
+                /**
+                 *   SQLITE_OPEN_FULLMUTEX
+                 *  In this mode, all mutexes are disabled and SQLite is unsafe to use in more than a single thread at once
+                 */
+                eSingleThread,
+
+                /**
+                 *  SQLITE_OPEN_NOMUTEX
+                 *  In this mode, SQLite can be safely used by multiple threads provided that no single database connection is used simultaneously in two or more threads.
+                 *  (Stroika Debug::AssertExternallySynchronizedMutex enforces this)
+                 * 
+                 * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
+                 * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
+                 * call sqlite3_threadsafe, to see if this is enabled
+                 */
+                eMultiThread,
+
+                /**
+                 *  SQLITE_OPEN_FULLMUTEX
+                 *  In serialized mode, SQLite can be safely used by multiple threads with no restriction.
+                 *  (note even in this mode, each connection is Debug::AssertExternallySynchronizedMutex)
+                 * 
+                 * This may not always be available depending on how sqlite was compiled, but we dont have access to SQLITE_THREADSAFE at compile time
+                 * (since just defined in C file from Stroika/ThirdPartyComponents/sqlite/Makefile);
+                 * call sqlite3_threadsafe, to see if this is enabled
+                 * 
+                 *  \note Use of this API, as of Stroika 2.1b12, may result in poor error messages, due to how errors are stored (and maybe other such
+                 *        issues - maybe we need to do lock around call to each function to avoid making this mode nearly pointless).
+                 */
+                eSerialized,
+            };
+            optional<ThreadingMode> fThreadingMode;
+
+            /**
+             *  This can generally be ignored, and primarily affects low level OS interface locking choices.
+             *  @see https://www.sqlite.org/vfs.html
+             */
+            optional<String> fVFS;
+
+            /**
+             *  If a database is opened readonly, updates will fail, and if the database doesn't exist, it will not be automatically created.
+             */
+            bool fReadOnly{false};
+
+            /**
+             *  The immutable query parameter is a boolean that signals to SQLite that the underlying database file is held on read-only media and
+             *  cannot be modified, even by another process with elevated privileges.
+             * 
+             *  \req fImmutable ==> fReadOnly
+            */
+            bool fImmutable{false};
+
+            /**
+             *  This is only useful if the database can be opened by multiple threads of control (multiple threads with connections
+             *  within the same app, or multiple applications).
+             */
+            optional<Duration> fBusyTimeout;
+
+            /**
+             *  \note - see JournalModeType and Connection::Ptr::pJournalMode
+             */
+            optional<JournalModeType> fJournalMode;
+        };
 
         /**
          *  Connection provides an API for accessing an SQLite database.
