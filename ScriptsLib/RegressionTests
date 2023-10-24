@@ -10,6 +10,7 @@ if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=
 : ${PARALELLMAKEFLAG:=-j8}
 : ${BUILD_CONFIGURATIONS_MAKEFILE_TARGET:=default-configurations}
 : ${USE_TEST_BASENAME:=""}
+: ${DO_SKEL_TEST:=1}
 
 # Some scripts use this, especially when we invoke stuff from 'GetConfigurations'
 export StroikaRoot=`realpath .`
@@ -442,6 +443,21 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		echo -n "$PREFIX_OUT_LABEL" "ScriptsLib/RunPerformanceRegressionTests ..." >>$TEST_OUT_FILE 2>&1
 		STAGE_STARTAT_INT=$(date +%s)
 		ScriptsLib/RunPerformanceRegressionTests>>$TEST_OUT_FILE 2>&1
+		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+	fi
+
+	if [ $DO_SKEL_TEST -ne 0 ]; then
+		echo >>$TEST_OUT_FILE 2>&1
+		echo >>$TEST_OUT_FILE 2>&1
+		echo -n "SKEL_TEST ..."
+		echo -n "$PREFIX_OUT_LABEL" "SKEL_TEST ..." >>$TEST_OUT_FILE 2>&1
+		STAGE_STARTAT_INT=$(date +%s)
+		echo "ScriptsLib/Skel --appRoot phred" >>$TEST_OUT_FILE 2>&1
+		ScriptsLib/Skel --appRoot phred 2>&1
+		echo "cd phred && make CONFIGURATION=Debug" >>$TEST_OUT_FILE 2>&1
+		(cd phred && make CONFIGURATION=Debug) >>$TEST_OUT_FILE 2>&1
 		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
