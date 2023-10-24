@@ -82,17 +82,17 @@ namespace {
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
 #if !qHasFeature_OpenSSL
-                    if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl_error_category ()}) {
+                    if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()}) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
 #endif
                     //https://stroika.atlassian.net/browse/STK-679
-                    if (lce.code () == error_code{CURLE_SSL_CONNECT_ERROR, LibCurl_error_category ()} and Debug::IsRunningUnderValgrind ()) {
+                    if (lce.code () == error_code{CURLE_SSL_CONNECT_ERROR, LibCurl::error_category ()} and Debug::IsRunningUnderValgrind ()) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see qCompilerAndStdLib_openssl3_helgrind_Buggy");
                         return;
                     }
-                    if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl_error_category ()} and Debug::IsRunningUnderValgrind ()) {
+                    if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl::error_category ()} and Debug::IsRunningUnderValgrind ()) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - - see https://stroika.atlassian.net/browse/STK-679");
                         return;
                     }
@@ -131,7 +131,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx{"{}::Test_1_SimpleConnnectionTests_"};
-            constexpr Execution::Activity kActivity_{L"running Test_1_SimpleConnnectionTests_"sv};
+            constexpr Execution::Activity kActivity_{"running Test_1_SimpleConnnectionTests_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
@@ -141,7 +141,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
@@ -202,7 +202,7 @@ namespace {
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
 #if qHasFeature_OpenSSL
-                    if (lce.code () == error_code{CURLE_SEND_FAIL_REWIND, LibCurl_error_category ()}) {
+                    if (lce.code () == error_code{CURLE_SEND_FAIL_REWIND, LibCurl::error_category ()}) {
                         DbgTrace ("Warning - ignored failure since rewinding of the data stream failed' (status CURLE_SEND_FAIL_REWIND) - "
                                   "try again ssl link");
                         c.SetSchemeAndAuthority (URI{"https://httpbin.org/"});
@@ -214,7 +214,7 @@ namespace {
                         Execution::ReThrow ();
                     }
 #endif
-                    if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl_error_category ()}) {
+                    if (lce.code () == error_code{CURLE_RECV_ERROR, LibCurl::error_category ()}) {
                         // Not sure why, but we sporadically get this error in regression tests, so try to eliminate it. Probably has todo with overloaded
                         // machine we are targetting.
                         DbgTrace ("Warning - ignored  since CURLE_RECV_ERROR' (status CURLE_RECV_ERROR) - try again ");
@@ -239,7 +239,7 @@ namespace {
                     for (auto i : vv) {
                         DbgTrace (L"%s : %s", i.fKey.c_str (), i.fValue.As<String> ().c_str ());
                     }
-                    String dataValueString = Memory::NullCoalesce (vv.Lookup (L"data")).As<String> ();
+                    String dataValueString = Memory::NullCoalesce (vv.Lookup ("data")).As<String> ();
                     {
                         size_t i = dataValueString.Find (',').value_or (String::npos);
                         if (i != -1) {
@@ -275,7 +275,7 @@ namespace {
                     for (auto i : vv) {
                         DbgTrace (L"%s : %s", i.fKey.c_str (), i.fValue.As<String> ().c_str ());
                     }
-                    String dataValueString = Memory::NullCoalesce (vv.Lookup (L"data")).As<String> ();
+                    String dataValueString = Memory::NullCoalesce (vv.Lookup ("data")).As<String> ();
                     {
                         size_t i = dataValueString.Find (',').value_or (String::npos);
                         if (i != -1) {
@@ -318,7 +318,7 @@ namespace {
                 // NOTE - even though this uses non-ssl URL, it gets redirected to SSL-based url, so we must support that to test this
                 catch (const system_error& lce) {
 #if !qHasFeature_OpenSSL
-                    if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl_error_category ()}) {
+                    if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl::error_category ()}) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
@@ -330,7 +330,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                     // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                     // This is more like the absence of a feature beacuse of the missing component.
-                    DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+                    DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                     Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).c_str ());
 #endif
@@ -343,7 +343,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx{"{}::Test_2_SimpleFetch_httpbin_"};
-            constexpr Execution::Activity kActivity_{L"running Test_2_SimpleFetch_httpbin_"sv};
+            constexpr Execution::Activity kActivity_{"running Test_2_SimpleFetch_httpbin_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
@@ -353,7 +353,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
@@ -383,7 +383,7 @@ namespace {
                 String            responseText = r.GetDataTextInputStream ().ReadAll ();
                 DbgTrace (L"responseText = %s", responseText.c_str ());
                 // rarely, but sometimes, this returns text that doesn't contain the word google --LGP 2019-04-19
-                VerifyTestResultWarning (responseText.Contains (L"google", Characters::CompareOptions::eCaseInsensitive));
+                VerifyTestResultWarning (responseText.Contains ("google", Characters::CompareOptions::eCaseInsensitive));
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
@@ -406,7 +406,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx{"{}::Test3_TextStreamResponse_"};
-            constexpr Execution::Activity kActivity_{L"running Test3_TextStreamResponse_"sv};
+            constexpr Execution::Activity kActivity_{"running Test3_TextStreamResponse_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
             try {
@@ -416,7 +416,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
@@ -446,7 +446,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx{"{}::Test_4_RefDocsTests_"};
-            constexpr Execution::Activity kActivity_{L"running Test_4_RefDocsTests_"sv};
+            constexpr Execution::Activity kActivity_{"running Test_4_RefDocsTests_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             try {
                 Private_::T1_get_ ();
@@ -466,7 +466,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif
@@ -491,7 +491,7 @@ namespace {
                 }
                 catch ([[maybe_unused]] const system_error& lce) {
 #if qHasFeature_LibCurl && !qHasFeature_OpenSSL
-                    if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, LibCurl_error_category ()}) {
+                    if (lce.code () == error_code{CURLE_UNSUPPORTED_PROTOCOL, Transfer::LibCurl::error_category ()}) {
                         DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
                         return;
                     }
@@ -502,7 +502,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                     // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
                     // This is more like the absence of a feature beacuse of the missing component.
-                    DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+                    DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                     Execution::ReThrow ();
 #endif
@@ -512,12 +512,12 @@ namespace {
                 }
             };
 
-            constexpr Execution::Activity kActivity_{L"running Test_5_SSLCertCheckTests_"sv};
+            constexpr Execution::Activity kActivity_{"running Test_5_SSLCertCheckTests_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             Connection::Options           o = kDefaultTestOptions_;
 
             // GOOD SSL SITE
-            const URI kGoodSite_{L"https://badssl.com/"}; // ironically this is a site with good SSL cert
+            const URI kGoodSite_{"https://badssl.com/"}; // ironically this is a site with good SSL cert
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = true;
                 T1_get_ignore_SSLNotConfigured (o, kGoodSite_);
@@ -526,7 +526,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #endif
             }
             catch (...) {
@@ -544,7 +544,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #endif
             }
             catch (...) {
@@ -556,7 +556,7 @@ namespace {
             }
 
             // BAD SSL SITE
-            const URI kBad_Expired_Site_{L"https://expired.badssl.com/"}; // see https://badssl.com/ - there are several other bads I could try
+            const URI kBad_Expired_Site_{"https://expired.badssl.com/"}; // see https://badssl.com/ - there are several other bads I could try
 
             {
                 try {
@@ -565,7 +565,7 @@ namespace {
                     VerifyTestResult (false); // getting here means our check for invalid cert didn't work, so thats bad
                 }
                 catch (...) {
-                    DbgTrace (L"Good - this should fail");
+                    DbgTrace ("Good - this should fail");
                 }
                 try {
                     o.fFailConnectionIfSSLCertificateInvalid = false;
@@ -576,7 +576,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                     // OK to ignore. We don't want to call this failing a test, because there is nothing to fix.
                     // This is more like the absence of a feature beacuse of the missing component.
-                    DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+                    DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #endif
                 }
                 catch (...) {
@@ -639,7 +639,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx{"{}::Test_6_TestWithCache_"};
-            constexpr Execution::Activity kActivity_{L"running Test_6_TestWithCache_"sv};
+            constexpr Execution::Activity kActivity_{"running Test_6_TestWithCache_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
 #if qHasFeature_LibCurl
@@ -703,7 +703,7 @@ namespace {
         void DoTests_ ()
         {
             Debug::TraceContextBumper     ctx{"{}::Test_7_TestWithConnectionPool_"};
-            constexpr Execution::Activity kActivity_{L"running Test_7_TestWithConnectionPool_"sv};
+            constexpr Execution::Activity kActivity_{"running Test_7_TestWithConnectionPool_"sv};
             Execution::DeclareActivity    declareActivity{&kActivity_};
             using namespace Private_;
 
@@ -740,7 +740,7 @@ namespace {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
                 // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
                 // This is more like the absence of a feature beacuse of the missing component.
-                DbgTrace (L"ignore RequiredComponentMissingException cuz no curl/winhttp");
+                DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
                 Execution::ReThrow ();
 #endif

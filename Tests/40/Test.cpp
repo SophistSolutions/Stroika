@@ -945,28 +945,32 @@ namespace {
                 static constexpr int                       kBaseRepititionCount_ = 500;
                 static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.001;
                 RWSynchronized<int>                        syncData{0};
-                Thread::Ptr                                readerThread = Thread::New ([&] () {
-                    Debug::TraceContextBumper ctx{"readerThread"};
-                    // Do 10x more reads than writer loop, but sleep 1/10th as long
-                    for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
-                        VerifyTestResult (syncData.cget ().load () % 2 == 0);
-                        // occasional sleep so the reader doesn't get ahead of writer, but rarely cuz this is very slow on linux (ubuntu 1804) - often taking > 2ms, even for sleep of 100us) -- LGP 2018-06-20
-                        if (i % 100 == 0) {
-                            Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
+                Thread::Ptr                                readerThread = Thread::New (
+                    [&] () {
+                        Debug::TraceContextBumper ctx{"readerThread"};
+                        // Do 10x more reads than writer loop, but sleep 1/10th as long
+                        for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
+                            VerifyTestResult (syncData.cget ().load () % 2 == 0);
+                            // occasional sleep so the reader doesn't get ahead of writer, but rarely cuz this is very slow on linux (ubuntu 1804) - often taking > 2ms, even for sleep of 100us) -- LGP 2018-06-20
+                            if (i % 100 == 0) {
+                                Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
+                            }
                         }
-                    }
-                }, "readerThread"sv);
-                Thread::Ptr                                writerThread = Thread::New ([&] () {
-                    Debug::TraceContextBumper ctx{"writerThread"};
-                    for (int i = 0; i < kBaseRepititionCount_; ++i) {
-                        auto rwLock = syncData.rwget ();
-                        rwLock.store (rwLock.load () + 1); // set to a value that will cause reader thread to fail
-                        Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
-                        VerifyTestResult (rwLock.load () % 2 == 1);
-                        rwLock.store (rwLock.load () + 1); // set to a safe value
-                    }
-                    VerifyTestResult (syncData.cget ().load () == kBaseRepititionCount_ * 2);
-                }, "writerThread"sv);
+                    },
+                    "readerThread"sv);
+                Thread::Ptr writerThread = Thread::New (
+                    [&] () {
+                        Debug::TraceContextBumper ctx{"writerThread"};
+                        for (int i = 0; i < kBaseRepititionCount_; ++i) {
+                            auto rwLock = syncData.rwget ();
+                            rwLock.store (rwLock.load () + 1);  // set to a value that will cause reader thread to fail
+                            Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
+                            VerifyTestResult (rwLock.load () % 2 == 1);
+                            rwLock.store (rwLock.load () + 1); // set to a safe value
+                        }
+                        VerifyTestResult (syncData.cget ().load () == kBaseRepititionCount_ * 2);
+                    },
+                    "writerThread"sv);
                 Thread::Start ({readerThread, writerThread});
                 Thread::WaitForDone ({readerThread, writerThread});
             }
@@ -1141,7 +1145,7 @@ namespace {
                 Thread::AbortAndWaitForDone ({writerThread, readerThatSometimesWritesThread1, readerThatSometimesWritesThread2});
             };
 
-            bool skipTestCuzVerySlow = Debug::IsRunningUnderValgrind ();    // As of 2023-10-24, this appears to work, but take about 1 day (valgrind-debug-SSLPurify config on ununtu 20.04, 22.04, and 23.10) using valgrind memcheck
+            bool skipTestCuzVerySlow = Debug::IsRunningUnderValgrind (); // As of 2023-10-24, this appears to work, but take about 1 day (valgrind-debug-SSLPurify config on ununtu 20.04, 22.04, and 23.10) using valgrind memcheck
 
             if (not skipTestCuzVerySlow) {
                 auto testUpgradeLockNonAtomically1 = [] (auto& isEven) {
