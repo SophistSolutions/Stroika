@@ -955,7 +955,7 @@ namespace {
                             Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
                         }
                     }
-                });
+                }, "readerThread"sv);
                 Thread::Ptr                                writerThread = Thread::New ([&] () {
                     Debug::TraceContextBumper ctx{"writerThread"};
                     for (int i = 0; i < kBaseRepititionCount_; ++i) {
@@ -966,7 +966,7 @@ namespace {
                         rwLock.store (rwLock.load () + 1); // set to a safe value
                     }
                     VerifyTestResult (syncData.cget ().load () == kBaseRepititionCount_ * 2);
-                });
+                }, "writerThread"sv);
                 Thread::Start ({readerThread, writerThread});
                 Thread::WaitForDone ({readerThread, writerThread});
             }
@@ -1141,7 +1141,9 @@ namespace {
                 Thread::AbortAndWaitForDone ({writerThread, readerThatSometimesWritesThread1, readerThatSometimesWritesThread2});
             };
 
-            {
+            bool skipTestCuzVerySlow = Debug::IsRunningUnderValgrind ();    // As of 2023-10-24, this appears to work, but take about 1 day (valgrind-debug-SSLPurify config on ununtu 20.04, 22.04, and 23.10) using valgrind memcheck
+
+            if (not skipTestCuzVerySlow) {
                 auto testUpgradeLockNonAtomically1 = [] (auto& isEven) {
                     while (true) {
                         Thread::CheckForInterruption ();
@@ -1163,7 +1165,7 @@ namespace {
                 RWSynchronized<bool>      isEven{true};
                 runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically1 (isEven); });
             }
-            {
+            if (not skipTestCuzVerySlow) {
                 auto testUpgradeLockNonAtomically2 = [] (auto& isEven) {
                     while (true) {
                         Thread::CheckForInterruption ();
@@ -1190,7 +1192,7 @@ namespace {
                 RWSynchronized<bool>      isEven{true};
                 runSyncTest (isEven, [&] () { testUpgradeLockNonAtomically2 (isEven); });
             }
-            {
+            if (not skipTestCuzVerySlow) {
                 auto testUpgradeLockNonAtomically3 = [] (auto& isEven) {
                     while (true) {
                         Thread::CheckForInterruption ();
