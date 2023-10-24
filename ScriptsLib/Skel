@@ -150,7 +150,7 @@ echo "  directory: $APP_ROOT"
 echo "  app name:  $APP_NAME"
 echo "  log:       $OUTDIR"
 
-mkdir $APP_ROOT
+mkdir -p $APP_ROOT
 mkTopLevelDir_ >> $OUTDIR 2>&1
 mkThirdPartyComponentsAndStroika_ >> $OUTDIR 2>&1
 mkMyApp_ >> $OUTDIR 2>&1
