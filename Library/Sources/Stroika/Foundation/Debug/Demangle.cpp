@@ -33,10 +33,10 @@ using namespace Stroika::Foundation;
 Characters::String Debug::Demangle (const Characters::String& originalName)
 {
 #if defined(__GNUC__) && defined(__GLIBCXX__)
-    int                     status{};
+    int   status{};
     char* realname =
         abi::__cxa_demangle (originalName.AsNarrowSDKString (Characters::AllowMissingCharacterErrorsFlag::eIgnoreErrors).c_str (), 0, 0, &status);
-    [[maybe_unused]] auto&& cleanup  = Execution::Finally ([&realname] () noexcept {
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&realname] () noexcept {
         if (realname != nullptr) {
             ::free (realname);
         }

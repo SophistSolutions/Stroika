@@ -1324,7 +1324,7 @@ namespace {
 #if qCompilerAndStdLib_locale_utf8_string_convert_Buggy
 // sigh - fails to convert unicode characters
 #else
-                VerifyTestResult (not initializedLocale);                                        // else means throw from conversion which would be bad
+                VerifyTestResult (not initializedLocale); // else means throw from conversion which would be bad
 #endif
             }
             catch (...) {
