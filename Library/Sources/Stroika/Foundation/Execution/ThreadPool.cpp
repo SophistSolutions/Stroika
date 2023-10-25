@@ -38,20 +38,17 @@ public:
     }
 
 public:
-    ThreadPool::TaskType GetCurrentTask () const
+    TaskType GetCurrentTask () const
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
-        // THIS CODE IS TOO SUBTLE - BUT BECAUSE OF HOW THIS IS CALLED - fNextTask_ will NEVER be in the middle of being updated during this code - so this test is OK
-        // Caller is never in the middle of doing a WaitForNextTask - and because we have this lock - we aren't updateing fCurTask_ or fNextTask_ either
-        Assert (fCurTask_ == nullptr or fNextTask_ == nullptr); // one or both must be null
-        return fCurTask_ == nullptr ? fNextTask_ : fCurTask_;
+        return fCurTask_;
     }
 
 public:
-    Time::DurationSecondsType GetRunningSince () const
+    tuple<TaskType, Time::DurationSecondsType, optional<String>> GetCurTaskInfo () const
     {
-        AssertNotNull (fCurTask_);
-        return this->fCurTaskStartedAt_;
+        [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
+        return make_tuple (fCurTask_, fCurTaskStartedAt_, fCurName_); // note curTask can be null, in which case these other things are meaningless
     }
 
 public:
@@ -62,14 +59,14 @@ public:
         // Keep grabbing new tasks, and running them
         while (true) {
             {
-                fThreadPool_.WaitForNextTask_ (&fNextTask_); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
+                ThreadPool::TaskType nextTask;
+                optional<String>     nextTaskName;
+                fThreadPool_.WaitForNextTask_ (&nextTask, &nextTaskName); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
                 [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
-                Assert (fNextTask_ != nullptr);
                 Assert (fCurTask_ == nullptr);
-                fCurTask_  = fNextTask_;
-                fNextTask_ = nullptr;
+                fCurTask_ = nextTask;
+                fCurName_ = nextTaskName;
                 Assert (fCurTask_ != nullptr);
-                Assert (fNextTask_ == nullptr);
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
@@ -79,12 +76,9 @@ public:
                 // Use lock to access fCurTask_, but don't hold the lock during run, so others can call getcurrenttask
                 ThreadPool::TaskType task2Run;
                 {
-                    bool                    trackTaskTimes = fThreadPool_.fTrackTaskTimes_;
-                    [[maybe_unused]] auto&& critSec        = lock_guard{fCurTaskUpdateCritSection_};
-                    task2Run                               = fCurTask_;
-                    if (trackTaskTimes) {
-                        fCurTaskStartedAt_ = Time::GetTickCount ();
-                    }
+                    [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
+                    task2Run                        = fCurTask_;
+                    fCurTaskStartedAt_              = Time::GetTickCount ();
                 }
                 task2Run ();
             }
@@ -101,12 +95,11 @@ public:
     }
 
 private:
-    mutable recursive_mutex      fCurTaskUpdateCritSection_;
-    ThreadPool&                  fThreadPool_;
-    ThreadPool::TaskType         fCurTask_;
-    ThreadPool::TaskType         fNextTask_; // @todo better document the purpose/meaning of fNextTask! CONFUSING!!! --LGP 2023-10-24
-    Time::DurationSecondsType    fCurTaskStartedAt_{0}; // meaningless if fCurTask_==nullptr
-    optional<Characters::String> fCurName_;
+    mutable mutex             fCurTaskUpdateCritSection_; // protect access to fCurTask_/fCurTaskStartedAt_/fCurName_ - very short duration
+    ThreadPool&               fThreadPool_;
+    ThreadPool::TaskType      fCurTask_;
+    Time::DurationSecondsType fCurTaskStartedAt_{0}; // meaningless if fCurTask_==nullptr
+    optional<Characters::String> fCurName_;          // ""
 };
 
 /*
@@ -302,28 +295,29 @@ void ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType ti
 
 auto ThreadPool::GetTasks () const -> Collection<TaskInfo>
 {
-    Collection<TaskInfo> result;
-    {
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-        for (const auto& ti : fPendingTasks_) {
-            result.Add (TaskInfo{.fTask = ti.fTask, .fName = ti.fName});
-        }
-        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-            shared_ptr<MyRunnable_> tr{i->fRunnable};
-            TaskType                task{tr->GetCurrentTask ()};
-            if (task != nullptr) {
-                result.Add (TaskInfo{.fTask = task, .fRunningSince = tr->GetRunningSince ()});
-            }
+    Collection<TaskInfo>    result;
+    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    for (const auto& ti : fPendingTasks_) {
+        result.Add (TaskInfo{.fTask = ti.fTask, .fName = ti.fName});
+    }
+    for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+        shared_ptr<MyRunnable_>                                      tr{i->fRunnable};
+        tuple<TaskType, Time::DurationSecondsType, optional<String>> curTaskInfo = tr->GetCurTaskInfo ();
+        if (get<TaskType> (curTaskInfo) != nullptr) {
+            result.Add (TaskInfo{
+                .fTask         = get<TaskType> (curTaskInfo),
+                .fName         = get<optional<String>> (curTaskInfo),
+                .fRunningSince = get<Time::DurationSecondsType> (curTaskInfo),
+            });
         }
     }
-    // @todo fill in task names, when we support
     return result;
 }
 
-Collection<ThreadPool::TaskType> ThreadPool::GetRunningTasks () const
+auto ThreadPool::GetRunningTasks () const -> Collection<TaskType>
 {
-    Collection<ThreadPool::TaskType> result;
-    [[maybe_unused]] auto&&          critSec = lock_guard{fCriticalSection_};
+    Collection<TaskType>    result;
+    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
         shared_ptr<MyRunnable_> tr{i->fRunnable};
         TaskType                task{tr->GetCurrentTask ()};
@@ -449,9 +443,10 @@ String ThreadPool::ToString () const
 }
 
 // THIS is called NOT from 'this' - but from the context of an OWNED thread of the pool
-void ThreadPool::WaitForNextTask_ (TaskType* result)
+void ThreadPool::WaitForNextTask_ (TaskType* result, optional<Characters::String>* resultName)
 {
     RequireNotNull (result);
+    RequireNotNull (resultName);
     while (true) {
         if (fAborted_) [[unlikely]] {
             Execution::Throw (Thread::AbortException::kThe);
@@ -460,7 +455,8 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
         {
             [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
             if (not fPendingTasks_.empty ()) {
-                *result = fPendingTasks_.front ().fTask;
+                *result     = fPendingTasks_.front ().fTask;
+                *resultName = fPendingTasks_.front ().fName;
                 fPendingTasks_.pop_front ();
                 DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving "
                           "pending-task-list-size = %d",

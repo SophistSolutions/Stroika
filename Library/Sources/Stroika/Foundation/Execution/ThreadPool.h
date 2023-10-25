@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Execution {
         struct TaskInfo {
             TaskType                            fTask;
             optional<Characters::String>        fName;
-            optional<Time::DurationSecondsType> fRunningSince; // if missing, cuz not running or not fTrackTaskTimes_
+            optional<Time::DurationSecondsType> fRunningSince; // if missing, cuz not running
 
             nonvirtual bool IsRunning () const;
         };
@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Execution {
     private:
         // Called internally from threadpool tasks - to wait until there is a new task to run.
         // This will not return UNTIL it has a new task to proceed with (except via exception like Thread::AbortException)
-        nonvirtual void    WaitForNextTask_ (TaskType* result);
+        nonvirtual void    WaitForNextTask_ (TaskType* result, optional<Characters::String>* resultName);
         nonvirtual TPInfo_ mkThread_ ();
 
     private:
@@ -310,7 +310,6 @@ namespace Stroika::Foundation::Execution {
         WaitableEvent                   fTasksMaybeAdded_{}; // recheck for new tasks (or other events - wakeup waiters on fTasks);
         atomic<unsigned int>            fNextThreadEntryNumber_{1};
         optional<Characters::String>    fThreadPoolName_;
-        bool                            fTrackTaskTimes_{true};
 
     private:
         friend class MyRunnable_; // So MyRunnable_ can call WaitForNextTask_()
