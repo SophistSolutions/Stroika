@@ -28,11 +28,8 @@
  *
  *      @todo   Just got rid of some fCriticalSection_ use - review - maybe can get rid of ALL of it!
  *
- *      @todo   REDO USING Stroika Q - CONSIDER USE OF blcoking q - I htink it will help. Or firgure out
- *              how these tie together. Issue with using Queue<> is that we nee dto be able to remove
- *              something from the middle of it, which isnt reasonable for a queue. Or is it?
- *
- *              Not sure if fix is to use Stroika sequnece here, or to change Queue to allow Remove(iterator);
+ *      @todo   CONSIDER USE OF blcoking q - I htink it will help. Or firgure out
+ *              how these tie together.
  *
  *      @todo   Current approach to aborting a running task is to abort the thread. But the current
  *              thread code doesn't support restarting a thread once its been aborted. We PROBABLY
@@ -83,7 +80,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        ThreadPool (unsigned int nThreads = 0, const optional<Characters::String>& threadPoolName = {});
+        ThreadPool (unsigned int nThreads = 0, const optional<Characters::String>& threadPoolName = nullopt);
         ThreadPool (ThreadPool&&)      = delete;
         ThreadPool (const ThreadPool&) = delete;
 
@@ -189,9 +186,24 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Includes those QUEUED AND those Running (IsPresent)
          */
-        nonvirtual Containers::Collection<TaskType> GetTasks () const;
+        struct TaskInfo {
+            TaskType                            fTask;
+            optional<Characters::String>        fName;
+            optional<Time::DurationSecondsType> fRunningSince; // if missing, cuz not running or not fTrackTaskTimes_
+        };
+
+    public:
+        /**
+         *  \brief returns GetPendingTasks () + GetRunningTasks () - but also some extra information about each task
+         */
+        nonvirtual Containers::Collection<TaskInfo> GetTasks () const;
+
+    public:
+        /**
+         *  return all tasks which are queued, but haven't yet been assigned to a thread.
+         */
+        nonvirtual Containers::Collection<TaskType> GetPendingTasks () const;
 
     public:
         /**
@@ -203,15 +215,15 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  This INCLUDES those with properly IsPresent () - those running or ready to run.
-         *  This is GetRunningTasks().size () + GetPendingTasksCount ()
+         *  \brief return total number of tasks, either pending, or currently running.
+         * 
+         *  This is GetRunningTasks().size () + GetPendingTasks ().size (), or alternatively GetTasks.size (), but more efficient.
          */
         nonvirtual size_t GetTasksCount () const;
 
     public:
         /**
-         *  This only tasks waiting to be run (queued but not yet running because the thread pool
-         *  has no available slots).
+         *  \brief return GetPendingTasks ().size (), except probably much more efficient
          */
         nonvirtual size_t GetPendingTasksCount () const;
 
@@ -276,15 +288,16 @@ namespace Stroika::Foundation::Execution {
 
     private:
         /*
-         *  @todo - make clear what fCriticalSection_ protects, and maybe redo using synchronized.
+         *  fCriticalSection_ protectes fThreads_ and fPendingTasks_
          */
         mutable recursive_mutex         fCriticalSection_;
         atomic<bool>                    fAborted_{false};
         Containers::Collection<TPInfo_> fThreads_; // all threads, and a data member for thread object, and one for running task, if any
-        list<TaskType>                  fPendingTasks_;      // tasks not yet running - @todo Use Stroika Queue
-        WaitableEvent                   fTasksMaybeAdded_{}; // recheck for new tasks (or other events - wakeup waiters on fTasks)
+        list<TaskType>                  fPendingTasks_;      // tasks not yet running - somewhat like a queue, but allow remove from middle
+        WaitableEvent                   fTasksMaybeAdded_{}; // recheck for new tasks (or other events - wakeup waiters on fTasks);
         atomic<unsigned int>            fNextThreadEntryNumber_{1};
         optional<Characters::String>    fThreadPoolName_;
+        bool                            fTrackTaskTimes_{true};
 
     private:
         friend class MyRunnable_; // So MyRunnable_ can call WaitForNextTask_()

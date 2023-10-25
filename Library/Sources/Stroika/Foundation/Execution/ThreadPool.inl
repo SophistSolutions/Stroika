@@ -9,7 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "ThreadPool.h"
 
 namespace Stroika::Foundation::Execution {
 
