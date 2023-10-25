@@ -338,7 +338,8 @@ void Logger::Log (Priority logLevel, const wchar_t* format, ...)
 namespace {
     string mkMsg_ (const String& applicationName)
     {
-        return Characters::CString::Format ("%s[%d]", applicationName.AsNarrowSDKString ().c_str (), GetCurrentProcessID ());
+        return Characters::CString::Format (
+            "%s[%d]", applicationName.AsNarrowSDKString (Characters::AllowMissingCharacterErrorsFlag::eIgnoreErrors).c_str (), GetCurrentProcessID ());
     }
 }
 Logger::SysLogAppender::SysLogAppender (const String& applicationName)
@@ -391,7 +392,7 @@ void Logger::SysLogAppender::Log (Priority logLevel, const String& message)
             RequireNotReached ();
     }
     // According to http://pubs.opengroup.org/onlinepubs/000095399/functions/xsh_chap02_09.html#tag_02_09_01 this is threadsafe
-    ::syslog (sysLogLevel, "%s", message.AsNarrowSDKString ().c_str ());
+    ::syslog (sysLogLevel, "%s", message.AsNarrowSDKString (Characters::AllowMissingCharacterErrorsFlag::eIgnoreErrors).c_str ());
 }
 #endif
 
