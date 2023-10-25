@@ -26,7 +26,6 @@ endif
 VERSION=3.2.4
 #VERSION=3.2.3
 #VERSION=3.2.2
-#VERSION=3.2.1
 ifeq (Unix,$(ProjectPlatformSubdir))
 ifeq ($(VERSION), 3.2.4)
 # This version of xerces requires more recent copy of cmake
@@ -46,7 +45,6 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces)
 
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
-#OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}Inter.../Thir.../Xerces/"
 
 
 #
@@ -67,8 +65,6 @@ FETCHURLS+=http://archive.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 FETCHURLS+=http://apache.cs.utah.edu//xerces/c/3/sources/$(BASENAME).tar.gz
 FETCHURLS+=http://www.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 FETCHURLS+=http://www-us.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
-
-
 
 
 
@@ -97,18 +93,12 @@ CMAKE_CURRENT_SOURCE_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-## similar bug with g++ - but just warnings here (all regtests pass without this change)
-##/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu1804_x86_64/Builds/g++-optimized/ThirdPartyComponents/include/xercesc/util/BinInputStream.hpp:29:22: warning: type 'struct BinInputStream' violates the C++ One Definition Rule [-Wodr]
-#CFLAGS:=$(filter-out -flto, $(CFLAGS))
-#CXXFLAGS:=$(filter-out -flto, $(CXXFLAGS))
-
-# Still support LTO, but not a bunch of times in parallel (slows PC down too much - somehow jobserver COMS not working)
+# Still support LTO, but not a bunch of times in parallel (slows PC down too much - somehow jobserver COMMS not working thru cmake/MAKE ENV vars)
 # --LGP 2023-10-25
 ifneq ($(findstring -flto=auto,$(CXXFLAGS)),)
 CFLAGS:=$(filter-out -flto=auto, $(CFLAGS)) -flto=1
 CXXFLAGS:=$(filter-out -flto=auto, $(CXXFLAGS)) -flto=1
 endif
-
 endif
 
 
@@ -121,26 +111,12 @@ CXXFLAGS+= -pthread
 endif
 
 
-##
-## It appears just /I"C:/Program Files (x86)/Windows Kits/10/include/10.0.18362.0/ucrt"
-## causes build problems. Unsure why (didnt did much).
-##
-## But there is no need for any of the /I parameters, as none were supported before Stroika 2.1a2, so strip them all for now
-##		-- LGP 2019-09-26
-##
-# ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-# CFLAGS:=$(call STRIP_INCLUDE_COMPILER_FLAGS,$(CFLAGS))
-# CXXFLAGS:=$(call STRIP_INCLUDE_COMPILER_FLAGS,$(CXXFLAGS))
-# endif
-
-
 # Avoid having warnings leak from here to linking code when Xerces is used --LGP 2022-01-18
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifneq ($(findstring -GL,$(CXXFLAGS)),)
 CXXFLAGS+= -wd4702 
 endif
 endif
-
 
 
 all:
@@ -225,9 +201,6 @@ endif
 		patch -p0 $@/src/xercesc/internal/ElemStack.cpp Patches/SilenceSanitizerWarningAboutMemcpyNullPtr.PATCH >> $@/PATCHING.OUT;\
 		patch -p0 $@/tests/src/Char16Test/Char16Test.cpp Patches/Char16Test_IOSTREAMCHANGE.PATCH >> $@/PATCHING.OUT;\
 	fi
-
-
-
 
 
 
