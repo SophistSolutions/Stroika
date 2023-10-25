@@ -454,10 +454,11 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		echo -n "SKEL_TEST ..."
 		echo -n "$PREFIX_OUT_LABEL" "SKEL_TEST ..." >>$TEST_OUT_FILE 2>&1
 		STAGE_STARTAT_INT=$(date +%s)
-		echo "ScriptsLib/Skel --appRoot phred" >>$TEST_OUT_FILE 2>&1
-		ScriptsLib/Skel --appRoot phred 2>&1
-		echo "cd phred && make CONFIGURATION=Debug" >>$TEST_OUT_FILE 2>&1
-		(cd phred && make CONFIGURATION=Debug) >>$TEST_OUT_FILE 2>&1
+		echo "ScriptsLib/Skel --appRoot ../$USE_TEST_BASENAME-skel" >>$TEST_OUT_FILE 2>&1
+		rm -rf ../$USE_TEST_BASENAME-skel
+		ScriptsLib/Skel --appRoot ../$USE_TEST_BASENAME-skel 2>&1
+		echo "cd ../$USE_TEST_BASENAME-skel && make CONFIGURATION=Debug" >>$TEST_OUT_FILE 2>&1
+		(cd ../$USE_TEST_BASENAME-skel && make CONFIGURATION=Debug) >>$TEST_OUT_FILE 2>&1
 		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
