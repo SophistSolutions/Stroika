@@ -24,10 +24,6 @@
  *  TODO:
  *      @todo   ThreadPool::WaitForTask () is a very sloppy inefficient implementation.
  *
- *      @todo   See if I can simplify use of critical sections with Synchronized!!!
- *
- *      @todo   Just got rid of some fCriticalSection_ use - review - maybe can get rid of ALL of it!
- *
  *      @todo   CONSIDER USE OF blcoking q - I htink it will help. Or firgure out
  *              how these tie together.
  *
@@ -48,9 +44,6 @@
  *              For example, if you had 3 threads in the pool, and 5 thread groups, then typically one or
  *              more thread groups would be idle. The thread groups give you lockless execution, and
  *              the threadpool lets the 5 groups run 'at the same time' on only 3 threads.
- *
- *      @todo   had declared ThreadPool movable, but never worked because mutex not movable - could fix if needed - review
- *              WOULD make sense to make movable, just low priority
  */
 
 namespace Stroika::Foundation::Execution {
@@ -80,7 +73,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          */
-        ThreadPool (unsigned int nThreads = 0, const optional<Characters::String>& threadPoolName = nullopt);
+        ThreadPool (unsigned int nThreads = thread::hardware_concurrency (), const optional<Characters::String>& threadPoolName = nullopt);
         ThreadPool (ThreadPool&&)      = delete;
         ThreadPool (const ThreadPool&) = delete;
 
@@ -103,18 +96,22 @@ namespace Stroika::Foundation::Execution {
          *  \note   It is imporant (required) that all tasks added to a ThreadPool respond in a timely manner to Thread Abort.
          *          ThreadPool counts on that for clean shutdown.
          * 
-         *          This means periodically calling CheckForInterruption () and that any waits respect thread cancelation (stop_tokne).
+         *          This means periodically calling CheckForInterruption () and that any waits respect thread cancelation (stop_token).
+         * 
+         *          Tasks may exit via exception, but nothing will be done with that exception (beyond DbgTrace loggging). So generally
+         *          not a good idea, except for ThreadAbort handling.
          */
         using TaskType = Function<void ()>;
 
     public:
         /**
+         *  This returns the number of threads in the pool (not the number of tasks). Note 0 is a legal size.
          */
         nonvirtual unsigned int GetPoolSize () const;
 
     public:
         /**
-         *  SetPoolSize () is advisory. It attempts to add or remove entries as requested.
+         *  SetPoolSize () is advisory. It attempts to add or remove entries as requested. Note - 0 is a legal size.
          *
          *  But under some circumstances, it will fail. For example, if tasks are busy
          *  running on all threads, the number of threads in the pool cannot be decreased.
@@ -151,6 +148,8 @@ namespace Stroika::Foundation::Execution {
          *
          *  It can cancel a task if it has not yet been started, or EVEN if its already in
          *  progress (see Thread::Abort - it sends abort signal)
+         * 
+         *  The function doesn't return until the task has been successfully cancelled, or it throws if timeout.
          */
         nonvirtual void AbortTask (const TaskType& task, Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -191,6 +190,8 @@ namespace Stroika::Foundation::Execution {
             TaskType                            fTask;
             optional<Characters::String>        fName;
             optional<Time::DurationSecondsType> fRunningSince; // if missing, cuz not running or not fTrackTaskTimes_
+
+            nonvirtual bool IsRunning () const;
         };
 
     public:

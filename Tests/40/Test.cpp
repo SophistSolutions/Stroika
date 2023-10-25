@@ -583,12 +583,10 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest7_SimpleThreadPool_"};
         Debug::TimingTrace        tt;
         {
-            ThreadPool p;
-            p.SetPoolSize (1);
+            ThreadPool p{1};
         }
         {
-            ThreadPool p;
-            p.SetPoolSize (1);
+            ThreadPool           p{1};
             int                  intVal = 3;
             ThreadPool::TaskType task{[&intVal] () { intVal++; }};
             p.AddTask (task);
@@ -615,8 +613,7 @@ namespace {
         };
         {
             for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
-                ThreadPool p;
-                p.SetPoolSize (threadPoolSize);
+                ThreadPool           p{threadPoolSize};
                 int                  updaterValue = 0;
                 ThreadPool::TaskType task1{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
                 ThreadPool::TaskType task2{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
@@ -857,9 +854,8 @@ namespace {
             static constexpr unsigned kStepsToGetTrouble_ = 100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
             static constexpr Time::DurationSecondsType kTime2WaitPerTask_{0.01};
             static constexpr Time::DurationSecondsType kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
-            ThreadPool p;
-            p.SetPoolSize (kThreadPoolSize_);
-            auto doItHandler = [] () { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
+            ThreadPool p{kThreadPoolSize_};
+            auto       doItHandler = [] () { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
 
             for (int i = 0; i < kStepsToGetTrouble_; ++i) {
                 p.AddTask (doItHandler);

@@ -26,5 +26,15 @@ namespace Stroika::Foundation::Execution {
         WaitForTasksDoneUntil (Time::GetTickCount () + timeout);
     }
 
+    /*
+     ********************************************************************************
+     *************************** ThreadPool::TaskInfo *******************************
+     ********************************************************************************
+     */
+    inline bool ThreadPool::TaskInfo::IsRunning () const
+    {
+        return fRunningSince.has_value ();
+    }
+
 }
 #endif /*_Stroika_Foundation_Execution_ThreadPool_inl_*/
