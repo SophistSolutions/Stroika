@@ -10,7 +10,6 @@
 #include <mutex>
 
 #include "../Containers/Collection.h"
-#include "../Containers/Queue.h"
 
 #include "Function.h"
 #include "Thread.h"
@@ -25,7 +24,7 @@
  *      @todo   ThreadPool::WaitForTask () is a very sloppy inefficient implementation.
  *
  *      @todo   CONSIDER USE OF blcoking q - I htink it will help. Or firgure out
- *              how these tie together.
+ *              how these tie together. Or rewrite using condition_variable.
  *
  *      @todo   Current approach to aborting a running task is to abort the thread. But the current
  *              thread code doesn't support restarting a thread once its been aborted. We PROBABLY
@@ -72,6 +71,15 @@ namespace Stroika::Foundation::Execution {
     class [[nodiscard]] ThreadPool {
     public:
         /**
+         *  \par Example Usage
+         *      \code
+         *          ThreadPool p{3};
+         *          p.AddTask ([&q, &counter] () {
+         *              ..dostuff..
+         *          });
+         *          // when goes out of scope automatically blocks waiting for threads to complete...
+         *          // or call p.WaitForTasksDoneUntil ()
+         *      \endcode
          */
         ThreadPool (unsigned int nThreads = thread::hardware_concurrency (), const optional<Characters::String>& threadPoolName = nullopt);
         ThreadPool (ThreadPool&&)      = delete;
@@ -139,7 +147,7 @@ namespace Stroika::Foundation::Execution {
          *          p.AddTask(f);
          *          p.RemoveTask (p);   // fails cuz different 'TaskType' added - f converted to TaskType twice!
          */
-        nonvirtual TaskType AddTask (const TaskType& task);
+        nonvirtual TaskType AddTask (const TaskType& task, const optional<Characters::String>& name = nullopt);
 
     public:
         /**
@@ -288,13 +296,17 @@ namespace Stroika::Foundation::Execution {
         nonvirtual TPInfo_ mkThread_ ();
 
     private:
+        struct PendingTaskInfo_ {
+            TaskType                     fTask;
+            optional<Characters::String> fName;
+        };
         /*
          *  fCriticalSection_ protectes fThreads_ and fPendingTasks_
          */
         mutable recursive_mutex         fCriticalSection_;
         atomic<bool>                    fAborted_{false};
         Containers::Collection<TPInfo_> fThreads_; // all threads, and a data member for thread object, and one for running task, if any
-        list<TaskType>                  fPendingTasks_;      // tasks not yet running - somewhat like a queue, but allow remove from middle
+        list<PendingTaskInfo_>          fPendingTasks_;      // tasks not yet running - somewhat like a queue, but allow remove from middle
         WaitableEvent                   fTasksMaybeAdded_{}; // recheck for new tasks (or other events - wakeup waiters on fTasks);
         atomic<unsigned int>            fNextThreadEntryNumber_{1};
         optional<Characters::String>    fThreadPoolName_;

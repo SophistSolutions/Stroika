@@ -101,11 +101,12 @@ public:
     }
 
 private:
-    mutable recursive_mutex   fCurTaskUpdateCritSection_;
-    ThreadPool&               fThreadPool_;
-    ThreadPool::TaskType      fCurTask_;
-    ThreadPool::TaskType      fNextTask_; // @todo better document the purpose/meaning of fNextTask! CONFUSING!!! --LGP 2023-10-24
-    Time::DurationSecondsType fCurTaskStartedAt_{0}; // meaningless if fCurTask_==nullptr
+    mutable recursive_mutex      fCurTaskUpdateCritSection_;
+    ThreadPool&                  fThreadPool_;
+    ThreadPool::TaskType         fCurTask_;
+    ThreadPool::TaskType         fNextTask_; // @todo better document the purpose/meaning of fNextTask! CONFUSING!!! --LGP 2023-10-24
+    Time::DurationSecondsType    fCurTaskStartedAt_{0}; // meaningless if fCurTask_==nullptr
+    optional<Characters::String> fCurName_;
 };
 
 /*
@@ -144,7 +145,7 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
 
     // Still quite weak implementation of REMOVAL
     while (poolSize < fThreads_.size ()) {
-        // iterate over threads if any not busy, remove that one
+        // iterate over threads if any not busy, remove that them first
         bool anyFoundToKill = false;
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_> tr{i->fRunnable};
@@ -157,14 +158,14 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
             }
         }
         if (not anyFoundToKill) {
-            // @todo - fix this better/eventually
+            // @todo - fix this better/eventually - either throw or wait...
             DbgTrace ("Failed to lower the loop size - cuz all threads busy - giving up");
             return;
         }
     }
 }
 
-ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task)
+ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task, const optional<Characters::String>& name)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"ThreadPool::AddTask"};
@@ -172,7 +173,7 @@ ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task)
     Require (not fAborted_);
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-        fPendingTasks_.push_back (task);
+        fPendingTasks_.push_back (PendingTaskInfo_{.fTask = task, .fName = name});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"fPendingTasks.size () now = %d", (int)fPendingTasks_.size ());
 #endif
@@ -192,7 +193,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
         // First see if its in the Q
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
-            if (*i == task) {
+            if (i->fTask == task) {
                 fPendingTasks_.erase (i);
                 return;
             }
@@ -261,7 +262,7 @@ bool ThreadPool::IsPresent (const TaskType& task) const
         // First see if its in the Q
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
-            if (*i == task) {
+            if (i->fTask == task) {
                 return true;
             }
         }
@@ -305,7 +306,7 @@ auto ThreadPool::GetTasks () const -> Collection<TaskInfo>
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
         for (const auto& ti : fPendingTasks_) {
-            result.Add (TaskInfo{.fTask = ti});
+            result.Add (TaskInfo{.fTask = ti.fTask, .fName = ti.fName});
         }
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_> tr{i->fRunnable};
@@ -348,10 +349,14 @@ size_t ThreadPool::GetTasksCount () const
     return count;
 }
 
-auto ThreadPool::GetPendingTasks () const -> Containers::Collection<TaskType>
+auto ThreadPool::GetPendingTasks () const -> Collection<TaskType>
 {
+    Collection<TaskType>    result;
     [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-    return fPendingTasks_;
+    for (const auto& i : fPendingTasks_) {
+        result.Add (i.fTask);
+    }
+    return result;
 }
 
 size_t ThreadPool::GetPendingTasksCount () const
@@ -455,7 +460,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
         {
             [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
             if (not fPendingTasks_.empty ()) {
-                *result = fPendingTasks_.front ();
+                *result = fPendingTasks_.front ().fTask;
                 fPendingTasks_.pop_front ();
                 DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving "
                           "pending-task-list-size = %d",
