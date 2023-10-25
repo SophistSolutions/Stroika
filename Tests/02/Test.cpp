@@ -570,7 +570,12 @@ namespace {
             void DoTest1 (STRING s)
             {
                 STRING t1 = s;
-                for (size_t i = 0; i < 100; ++i) {
+#if Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer && defined(__arm__)
+                constexpr size_t kMaxCount_{50};
+#else
+                constexpr size_t kMaxCount_{100};
+#endif
+                for (size_t i = 0; i < kMaxCount_; ++i) {
                     t1 += L"X";
                 }
                 STRING t2 = t1;
