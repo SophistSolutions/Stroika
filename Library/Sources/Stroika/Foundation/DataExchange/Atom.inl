@@ -21,7 +21,7 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     template <typename ATOM_MANAGER>
-    inline constexpr Atom<ATOM_MANAGER>::Atom ()
+    inline constexpr Atom<ATOM_MANAGER>::Atom () noexcept
         : fValue_{ATOM_MANAGER::kEmpty}
     {
     }
@@ -32,10 +32,15 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
     template <typename ATOM_MANAGER>
-    inline constexpr Atom<ATOM_MANAGER>::Atom (const AtomInternalType& src)
+    inline constexpr Atom<ATOM_MANAGER>::Atom (AtomInternalType src) noexcept
         : fValue_{src}
     {
-        // IF NOT CONSTEXPR (can do in C++20) validate src is already in ATOM_MANAGER
+        // IF NOT CONSTEXPR validate src is already in ATOM_MANAGER
+#if qDebug
+        if (not is_constant_evaluated ()) {
+            (void)ATOM_MANAGER::Extract (src); // for side-effect - assertion valid index
+        }
+#endif
     }
     template <typename ATOM_MANAGER>
     inline String Atom<ATOM_MANAGER>::GetPrintName () const
