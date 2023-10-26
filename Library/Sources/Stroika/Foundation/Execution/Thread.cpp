@@ -590,15 +590,17 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
             // But only register this after fRefCountBumpedInsideThreadMainEvent_ (would need to think more carefully to place this earlier)
             // --LGP 2023-10-03
-            stop_callback stopCallback{thisThreadRep->fStopToken_, [=] () {
-                                           if (doRun) {
-                                               DbgTrace ("Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state.");
-                                               // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
-                                               if (thisThreadRep->fStatus_ != Status::eAborting) [[unlikely]] {
-                                                   IgnoreExceptionsForCall (Ptr{thisThreadRep}.Abort ());
-                                               }
-                                           }
-                                       }};
+            stop_callback stopCallback{
+                thisThreadRep->fStopToken_, [=] () {
+                    if (doRun) {
+                        DbgTrace (
+                            "Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state.");
+                        // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
+                        if (thisThreadRep->fStatus_ != Status::eAborting) [[unlikely]] {
+                            IgnoreExceptionsForCall (Ptr{thisThreadRep}.Abort ());
+                        }
+                    }
+                }};
 #endif
 
             /*

@@ -569,8 +569,8 @@ namespace {
             template <typename STRING>
             void DoTest1 (STRING s)
             {
-                STRING t1 = s;
-                constexpr size_t kMaxCount_{100};   // NOTE - see https://stroika.atlassian.net/browse/STK-996
+                STRING           t1 = s;
+                constexpr size_t kMaxCount_{100}; // NOTE - see https://stroika.atlassian.net/browse/STK-996
                 for (size_t i = 0; i < kMaxCount_; ++i) {
                     t1 += L"X";
                 }
@@ -1320,7 +1320,7 @@ namespace {
 #if qCompilerAndStdLib_locale_utf8_string_convert_Buggy
 // sigh - fails to convert unicode characters
 #else
-                VerifyTestResult (not initializedLocale); // else means throw from conversion which would be bad
+                VerifyTestResult (not initializedLocale);                                        // else means throw from conversion which would be bad
 #endif
             }
             catch (...) {
