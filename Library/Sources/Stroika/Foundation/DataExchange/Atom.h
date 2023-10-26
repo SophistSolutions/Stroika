@@ -179,6 +179,7 @@ namespace Stroika::Foundation::DataExchange {
          *  Template on <T> only defined for
          *      T == String
          *      T == wstring
+         *      AtomInternalType
          */
         template <typename T>
         nonvirtual T As () const;
@@ -194,9 +195,10 @@ namespace Stroika::Foundation::DataExchange {
         struct type_ {};
 
         template <typename T>
-        nonvirtual T       As_ (type_<T>) const;
-        nonvirtual String  As_ (type_<String>) const;
-        nonvirtual wstring As_ (type_<wstring>) const;
+        nonvirtual T                As_ (type_<T>) const;
+        nonvirtual String           As_ (type_<String>) const;
+        nonvirtual wstring          As_ (type_<wstring>) const;
+        nonvirtual AtomInternalType As_ (type_<AtomInternalType>) const;
 
     protected:
         /**

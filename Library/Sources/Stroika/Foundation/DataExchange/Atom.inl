@@ -69,6 +69,11 @@ namespace Stroika::Foundation::DataExchange {
         return GetPrintName ().template As<wstring> ();
     }
     template <typename ATOM_MANAGER>
+    inline auto Atom<ATOM_MANAGER>::As_ (type_<AtomInternalType>) const -> AtomInternalType
+    {
+        return fValue_;
+    }
+    template <typename ATOM_MANAGER>
     inline typename Atom<ATOM_MANAGER>::AtomInternalType Atom<ATOM_MANAGER>::_GetInternalRep () const
     {
         return fValue_;
