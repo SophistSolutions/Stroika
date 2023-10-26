@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../Math/Common.h"
 
 namespace Stroika::Foundation::Execution {
 
@@ -25,6 +26,10 @@ namespace Stroika::Foundation::Execution {
     {
         WaitForTasksDoneUntil (Time::GetTickCount () + timeout);
     }
+    inline bool ThreadPool::GetCollectingStatistics () const
+    {
+        return fCollectingStatistics_;
+    }
 
     /*
      ********************************************************************************
@@ -34,6 +39,19 @@ namespace Stroika::Foundation::Execution {
     inline bool ThreadPool::TaskInfo::IsRunning () const
     {
         return fRunningSince.has_value ();
+    }
+
+    /*
+     ********************************************************************************
+     *************************** ThreadPool::Statistics *****************************
+     ********************************************************************************
+     */
+    inline Time::DurationSecondsType ThreadPool::Statistics::GetMeanTimeConsumed () const
+    {
+        if (fNumberOfTasksReporting == 0) {
+            return Math::nan<Time::DurationSecondsType> ();
+        }
+        return fTotalTimeConsumed / fNumberOfTasksReporting;
     }
 
 }

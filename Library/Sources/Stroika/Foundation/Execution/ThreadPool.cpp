@@ -69,8 +69,18 @@ public:
                 Assert (fCurTask_ != nullptr);
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
-                fCurTask_                       = nullptr;
+                Time::DurationSecondsType taskStartedAt;
+                {
+                    [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
+                    fCurTask_                       = nullptr;
+                    taskStartedAt                   = fCurTaskStartedAt_;
+                }
+                if (fThreadPool_.fCollectingStatistics_) {
+                    [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool_.fCriticalSection_};
+                    ++fThreadPool_.fCollectedTaskStats_.fNumberOfTasksCompleted;
+                    ++fThreadPool_.fCollectedTaskStats_.fNumberOfTasksReporting;
+                    fThreadPool_.fCollectedTaskStats_.fTotalTimeConsumed += Time::GetTickCount () - taskStartedAt;
+                }
             });
             try {
                 // Use lock to access fCurTask_, but don't hold the lock during run, so others can call getcurrenttask
@@ -170,6 +180,7 @@ ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task, const optional<C
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"fPendingTasks.size () now = %d", (int)fPendingTasks_.size ());
 #endif
+        ++fCollectedTaskStats_.fNumberOfTasksAdded;
     }
 
     // Notify any waiting threads to wakeup and claim the next task
@@ -385,6 +396,29 @@ void ThreadPool::WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) con
         ThrowTimeoutExceptionAfter (timeoutAt);
         Execution::Sleep (100ms);
     }
+}
+
+void ThreadPool::SetCollectingStatistics (bool collectStatistics)
+{
+    bool changed           = fCollectingStatistics_ != collectStatistics;
+    fCollectingStatistics_ = collectStatistics;
+    if (changed) {
+        if (collectStatistics) {
+            ResetStatistics ();
+        }
+    }
+}
+
+void ThreadPool::ResetStatistics ()
+{
+    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    fCollectedTaskStats_            = {};
+}
+
+auto ThreadPool::CollectStatistics () const -> Statistics
+{
+    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    return fCollectedTaskStats_;
 }
 
 void ThreadPool::Abort_ () noexcept

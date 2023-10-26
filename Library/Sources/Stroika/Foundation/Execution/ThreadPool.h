@@ -268,17 +268,63 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void WaitForTasksDoneUntil (const Traversal::Iterable<TaskType>& tasks, Time::DurationSecondsType timeoutAt) const;
         nonvirtual void WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) const;
 
-    private:
-        nonvirtual void Abort_ () noexcept;
+    public:
+        /**
+         *  NOTE - see https://stroika.atlassian.net/browse/STK-995 for how we might cheaply significantly improve these stats
+         */
+        struct Statistics {
+            unsigned int fNumberOfTasksAdded{0};
 
-    private:
-        nonvirtual void AbortAndWaitForDone_ () noexcept;
+            /**
+             *  Reports number of tasks that ran to completion, possibly with exceptions, possibly without
+             */
+            unsigned int fNumberOfTasksCompleted{0};
+            /**
+             *  This is the divisor for fTotalTimeConsumed, and may not include all tasks for a variety of reasons (canceled etc).
+             *  It doesn't contain tasks not yet run. Number of tasks reporting COULD exceed number added (since you can reset counters
+             *  while there are tasks in queue).
+             */
+            unsigned int              fNumberOfTasksReporting{0};
+            Time::DurationSecondsType fTotalTimeConsumed{0.0};
+
+            Time::DurationSecondsType GetMeanTimeConsumed () const;
+        };
+
+    public:
+        /**
+         */
+        nonvirtual bool GetCollectingStatistics () const;
+
+    public:
+        /**
+         */
+        nonvirtual void SetCollectingStatistics (bool collectStatistics);
+
+    public:
+        /**
+         */
+        nonvirtual void ResetStatistics ();
+
+    public:
+        /**
+         */
+        nonvirtual Statistics CollectStatistics () const;
 
     public:
         /**
          *  a helpful debug dump of the ThreadPool status
          */
         nonvirtual Characters::String ToString () const;
+
+    private:
+        bool       fCollectingStatistics_{false};
+        Statistics fCollectedTaskStats_;
+
+    private:
+        nonvirtual void Abort_ () noexcept;
+
+    private:
+        nonvirtual void AbortAndWaitForDone_ () noexcept;
 
     private:
         class MyRunnable_;
