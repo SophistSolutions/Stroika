@@ -1,0 +1,7 @@
+{
+   Saw_on_Ubuntu_2310_so_if_buggy_not_in_stroika
+   Memcheck:Overlap
+   ...
+   fun:inet_pton
+   ...
+}
