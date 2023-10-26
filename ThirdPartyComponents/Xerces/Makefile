@@ -93,23 +93,12 @@ CMAKE_CURRENT_SOURCE_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-# Still support LTO, but not a bunch of times in parallel (slows PC down too much - somehow jobserver COMMS not working thru cmake/MAKE ENV vars)
-# --LGP 2023-10-25
-ifneq ($(findstring -flto=auto,$(CXXFLAGS)),)
-CFLAGS:=$(filter-out -flto=auto, $(CFLAGS)) -flto=1
-CXXFLAGS:=$(filter-out -flto=auto, $(CXXFLAGS)) -flto=1
-endif
-endif
-
-
-ifeq (Unix,$(ProjectPlatformSubdir))
 #@todo fixup - bug workaround - configure autodetects -posix and se we have to add it in here. Must find
 # some way we can ADD these params to CFLAGS without REPLACING
 # -- without this hack - we get link error building Xerces
 CFLAGS+= -pthread
 CXXFLAGS+= -pthread
 endif
-
 
 # Avoid having warnings leak from here to linking code when Xerces is used --LGP 2022-01-18
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))

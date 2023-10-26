@@ -2189,9 +2189,11 @@ sub PostProcessOptions_ ()
 
 	if ($ENABLE_LTO == true) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			push @CFLAGS, "-flto=auto";
-			push @CXXFLAGS, "-flto=auto";
-			$EXTRA_PREFIX_LINKER_ARGS .= " -flto=auto";
+			push @CFLAGS, "-flto";
+			push @CXXFLAGS, "-flto";
+			# As of 2023-10-26:
+			# 	-flto=auto tends to spin up too many processes, and -flto=0 or 1 or missing produces warnings (lto-wrapper: warning: using serial compilation of 13 LTRANS jobs)
+			$EXTRA_PREFIX_LINKER_ARGS .= " -flto=2";
 		}
 		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-flto";
