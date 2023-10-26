@@ -1599,11 +1599,16 @@ namespace Stroika::Foundation::Characters {
      *  an exception will be generated in the constructor.
      */
     template <typename T>
-    concept IConvertibleToString = requires (T t) {
-        {
-            String{t}
-        };
-    };
+    concept IConvertibleToString = convertible_to<T, String>;
+
+    // Some some docs/testing...
+    static_assert (not IConvertibleToString<int>);
+    static_assert (not IConvertibleToString<char>);
+    static_assert (IConvertibleToString<string>);
+    static_assert (IConvertibleToString<wstring>);
+    static_assert (IConvertibleToString<u8string>);
+    static_assert (IConvertibleToString<u16string>);
+    static_assert (IConvertibleToString<u32string>);
 
     /**
      *  Use Stroika String more easily with std::ostream.
