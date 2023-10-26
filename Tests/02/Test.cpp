@@ -570,11 +570,7 @@ namespace {
             void DoTest1 (STRING s)
             {
                 STRING t1 = s;
-#if Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer && defined(__arm__)
-                constexpr size_t kMaxCount_{50};
-#else
-                constexpr size_t kMaxCount_{100};
-#endif
+                constexpr size_t kMaxCount_{100};   // NOTE - see https://stroika.atlassian.net/browse/STK-996
                 for (size_t i = 0; i < kMaxCount_; ++i) {
                     t1 += L"X";
                 }
