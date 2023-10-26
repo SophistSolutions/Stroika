@@ -413,6 +413,15 @@ sub getUbuntuVersion
 
 
 
+sub     IsTargettingASAN_
+{
+	my %already = map { $_ => 1 } @sanitizerFlags;
+	if(exists($already{'address'})) {
+		return true;
+	}
+	return false;
+}
+
 
 
 sub     FillDefaultIncludesPathIfNeeded_
@@ -963,6 +972,20 @@ sub	SetDefaultForCompilerDriver_
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS and $lsb_release == "20.04" and $TargettingValgrind == true) {
 			$ENABLE_LTO = false;
 		}
+		# https://stroika.atlassian.net/browse/STK-996
+		#	./Builds/g++-release-sanitize_address_undefined/Tests/Test02
+		#	=================================================================
+		#	==2050532==ERROR: AddressSanitizer: requested allocation size 0xccccccccccc86000 (0xccccccccccc87000 after adjustments for alignment, red zones etc.) exceeds maximum supported size of 0x10000000000 (thread T0)
+		#	    #0 0x5628d4f54bff in malloc (/Sandbox/Stroika-Dev/Builds/g++-release-sanitize_address_undefined/Tests/Test02+0x9dcbff) (BuildId: 97ffc4d1d27cdcfb13de655b58bf06b57977e113)
+		#	    #1 0x5628d53fdb7e in Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::Allocate_(unsigned long) /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/../Memory/InlineBuffer.inl:517
+		#	    #2 0x5628d53fdb7e in Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024ul>::reserve(unsigned long, bool) [clone .constprop.0] /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Characters/../Memory/InlineBuffer.inl:331
+		#	SUMMARY: AddressSanitizer: allocation-size-too-big (/Sandbox/Stroika-Dev/Builds/g++-release-sanitize_address_undefined/Tests/Test02+0x9dcbff) (BuildId: 97ffc4d1d27cdcfb13de655b58bf06b57977e113) in malloc
+		#	==2050532==ABORTING
+		#
+		# MAYBE add check for only if gcc version < 14 (seen in gcc 13.2)
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS && IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) && IsTargettingASAN_()) {
+			$ENABLE_LTO = false;
+		}
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS) {
 			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) ) {
 				$ENABLE_LTO = true;
@@ -1064,13 +1087,10 @@ sub	SetDefaultForCompilerDriver_
 	## LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost...
 	## https://learn.microsoft.com/en-us/answers/questions/864574/enabling-address-sanitizer-results-in-error-lnk203
 	## https://learn.microsoft.com/en-us/cpp/sanitizers/error-container-overflow?view=msvc-170
-	if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) >= 192930037 ) {
-		my %already = map { $_ => 1 } @sanitizerFlags;
-		if(exists($already{'address'})) {
-			## Workaround issue which started in 17.6 compiler
-			push @CPPFLAGS, '-D_DISABLE_VECTOR_ANNOTATION';
-			push @CPPFLAGS, '-D_DISABLE_STRING_ANNOTATION';
-		}
+	if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) >= 192930037 && IsTargettingASAN_()) {
+		## Workaround issue which started in 17.6 compiler
+		push @CPPFLAGS, '-D_DISABLE_VECTOR_ANNOTATION';
+		push @CPPFLAGS, '-D_DISABLE_STRING_ANNOTATION';
 	}
 
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 11.0)) {
@@ -2213,8 +2233,7 @@ sub PostProcessOptions_ ()
 				# Since 17.7.x, we need /c/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.37.32822/bin/Hostx64/x64/ - full toolspath is overkill
 				# but simple enuf and only when building for asan
 				my $clVer = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
-				my %already = map { $_ => 1 } @sanitizerFlags;
-				if(exists($already{'address'}) and 193732822 <= $clVer) {	## and $clVer <= 193732822(so far not fixed)
+				if(IsTargettingASAN_() and 193732822 <= $clVer) {	## and $clVer <= 193732822(so far not fixed)
 					if (not ($RUN_PREFIX eq "")) {
 						$RUN_PREFIX = " " . $RUN_PREFIX;
 					}
