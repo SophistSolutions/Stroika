@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  \par Example Usage
      *      \code
-     *          // using C++17 deduction guides, and hash table of size 10
+     *          // using deduction guides, and hash table of size 10
      *          LRUCache tmp{pair<string, string>{}, 3, 10, hash<string>{}};
      *          tmp.Add ("a", "1");
      *          tmp.Add ("b", "2");
