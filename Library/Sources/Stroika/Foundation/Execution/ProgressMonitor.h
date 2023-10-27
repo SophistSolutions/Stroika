@@ -22,9 +22,6 @@
  *      @todo   MAYBE allow copy - but just document its a smart pointer and copy just increments refcount.
  *              NOT copy by value semantics.
  *
- *      @todo   If we make (document) VariantValue to be theradsafe, then we can lift critical section
- *              use here and make it simpler!
- *
  *      @todo   Look at stuff I did I HeatthFrame progress code to automatically increase displayed progress values
  *              to monotonically when i have guesses - like for network activities. That should somehow integrate
  *              with this - maybe as an optional 'updater' module/adapter?
@@ -182,6 +179,10 @@ namespace Stroika::Foundation::Execution {
     /**
      *  The Updater is the API passed to code which knows about its progress through a long-lived task and makes callbacks
      *  to indicate phase, and percent progress (# 0..1).
+     * 
+     *      \note in old RFLLib code - this was called ProgressSubTask
+     * 
+     *      \todo Consider if DTOR should REMOVE added 'curTaskInfo' (stack behavior will require restructuring) - save old info on entry/construction perhaps
      */
     class ProgressMonitor::Updater {
     public:
@@ -195,6 +196,7 @@ namespace Stroika::Foundation::Execution {
         Updater ();
         Updater (nullptr_t);
         Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg);
+        Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, const CurrentTaskInfo& taskInfo);
 
     public:
         /**

@@ -88,6 +88,11 @@ namespace Stroika::Foundation::Execution {
         Require ((0.0f <= parentTask.fFromProg_) and (parentTask.fFromProg_ <= fFromProg_) and (fFromProg_ < fToProg_) and
                  (fToProg_ <= parentTask.fToProg_) and (parentTask.fToProg_ <= 1.0f));
     }
+    inline ProgressMonitor::Updater::Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, const CurrentTaskInfo& taskInfo)
+        : Updater{parentTask, fromProg, toProg}
+    {
+        SetCurrentTaskInfo (taskInfo);
+    }
     inline void ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
     {
         p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f);
