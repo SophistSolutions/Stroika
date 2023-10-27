@@ -601,13 +601,15 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest8_ThreadPool_"};
         Debug::TimingTrace        tt;
+    recursive_mutex useCritSection;
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
-        auto doIt = [] (int* argP) {
+        auto doIt = [&] (int* argP) {
+            //Debug::TraceContextBumper ctx{"...doIt"};
             for (int i = 0; i < 10; i++) {
-                [[maybe_unused]] auto&& critSect = lock_guard{sharedCriticalSection_};
+                [[maybe_unused]] auto&& critSect = lock_guard{useCritSection};
                 int                     tmp      = *argP;
                 Execution::Sleep (.002);
-                //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                //DbgTrace ("Updating value : %d to %d", tmp, tmp+1);
                 *argP = tmp + 1;
             }
         };
@@ -621,6 +623,8 @@ namespace {
                 p.AddTask (task2);
                 p.WaitForTask (task1);
                 p.WaitForTask (task2);
+               //   [[maybe_unused]] auto&& critSect = lock_guard{useCritSection};
+               //   DbgTrace ("updaterValue=%d", updaterValue);
                 VerifyTestResult (updaterValue == 2 * 10);
             }
         }
