@@ -412,7 +412,7 @@ namespace Stroika::Foundation::Characters {
         unique_ptr<STD_CODE_CVT_T> fCodeCvt_;
         optional<Character>        fInvalidCharacterReplacement_;
         optional<span<byte>>       fInvalidCharacterReplacementBytes_;
-        byte                       fInvalidCharacterReplacementBytesBuf[8]; // WAG at sufficient size, but sb enuf
+        alignas (CHAR_T) byte fInvalidCharacterReplacementBytesBuf[8]; // WAG at sufficient size, but sb enuf
         using extern_type = typename STD_CODE_CVT_T::extern_type;
         static_assert (is_same_v<CHAR_T, typename STD_CODE_CVT_T::intern_type>);
         CodeCvt_WrapStdCodeCvt_ (const Options& options, unique_ptr<STD_CODE_CVT_T>&& codeCvt)
