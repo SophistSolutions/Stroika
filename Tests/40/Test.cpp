@@ -623,8 +623,8 @@ namespace {
                 p.AddTask (task2);
                 p.WaitForTask (task1);
                 p.WaitForTask (task2);
-               //   [[maybe_unused]] auto&& critSect = lock_guard{useCritSection};
-               //   DbgTrace ("updaterValue=%d", updaterValue);
+                  [[maybe_unused]] auto&& critSect = lock_guard{useCritSection};
+              //   DbgTrace ("updaterValue=%d", updaterValue);
                 VerifyTestResult (updaterValue == 2 * 10);
             }
         }
