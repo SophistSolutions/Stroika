@@ -54,7 +54,20 @@ deadlock:Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalH
 #    #5 std::unique_lock<std::recursive_timed_mutex>::~unique_lock() <null> (Test40+0xc0c21e)
 #
 #       I looked closely - Oct 3 2023 on Ubuntu 23.04 - and this appears a bogus tsan report, only affecting if you do timed locks.
-mutex:__gthread_recursive_mutex_unlock
+#mutex:__gthread_recursive_mutex_unlock
+#   Seen with RELEASE builds (only?), Ubuntu 23.10, and like above an issue with timed locks
+#    #0 pthread_mutex_unlock <null> (Test40+0x3429af) (BuildId: 0e9fdb4e3e3d0f9b3285f641780af737de7a5122)
+#    #1 __gthread_mutex_unlock /usr/include/x86_64-linux-gnu/c++/13/bits/gthr-default.h:779 (Test40+0x3feb40) (BuildId: 0e9fdb4e3e3d0f9b3285f641780af737de7a5122)
+#    #2 std::recursive_timed_mutex::unlock() /usr/include/c++/13/mutex:359 (Test40+0x3feb40)
+#    #3 std::unique_lock<std::recursive_timed_mutex>::unlock() /usr/include/c++/13/bits/unique_lock.h:200 (Test40+0x3feb40)
+#    #4 std::unique_lock<std::recursive_timed_mutex>::~unique_lock() /usr/include/c++/13/bits/unique_lock.h:106 (Test40+0x3feb40)
+#    #5 Stroika::Foundation::Execution::Synchronized<int, Stroika::Foundation::Execution::Synchronized_Traits<std::recursive_timed_mutex> >::ReadableReference::~ReadableReference() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2310_x86_64/Library/Sources/Stroika/Foundation/Characters/../Execution/Synchronized.inl:432 (Test40+0x3feb40)
+#    #6 RegressionTest23_SycnhonizedWithTimeout_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2310_x86_64/Tests/40/Test.cpp:1253 (Test40+0x411d66) (BuildId: 0e9fdb4e3e3d0f9b3285f641780af737de7a5122)
+#    #7 DoRegressionTests_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2310_x86_64/Tests/40/Test.cpp:1412 (Test40+0x30cb9d) (BuildId: 0e9fdb4e3e3d0f9b3285f641780af737de7a5122)
+#    #8 Stroika::TestHarness::PrintPassOrFail(void (*)()) ../TestHarness/TestHarness.cpp:91 (Test40+0x30cb9d)
+#    #9 main /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2310_x86_64/Tests/40/Test.cpp:1421 (Test40+0x30cb9d)
+#mutex:__gthread_mutex_unlock
+mutex:std::recursive_timed_mutex::unlock()
 
 # This is a REAL RACE, but on purpose, to avoid recursive locks and deadlocks in DBGTRACE calls.
 # Should be VERY rarely used (right now just in ToString() for thread rep).
