@@ -471,6 +471,10 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest5_Aborting_"};
         Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_) {
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+        }
         {
             struct FRED {
                 static void DoIt ()
