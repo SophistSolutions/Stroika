@@ -88,6 +88,8 @@ namespace Stroika::Foundation::Execution {
             timeoutAtStopPoint = Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime));
         }
 
+        Assert (lock.owns_lock ());
+
         // If for some reason, we cannot use the stop token (old c++, on main thread or not Stroika thread, or not using condition_variable_any)
         // fall back on basic condition variable code
         (void)fConditionVariable.wait_until (lock, timeoutAtStopPoint);
@@ -121,8 +123,11 @@ namespace Stroika::Foundation::Execution {
                     // If you find yourself looping here - consider if you really wanted to SuppressInterruptionInContext around this!
                     //
                     Thread::CheckForInterruption ();
+                    if (Time::GetTickCount () > timeoutAt) {
+                        return ready;   // don't throw here - this API doesn't throw timeout...
+                    }
                     // must recheck / re-wait ONLY on the condition var itself - no stop token (cuz then this instantly returns and doesn't unlock argument lock so the signaler can progress)
-                    ready = fConditionVariable.wait_until (lock, Time::DurationSeconds2time_point (Time::GetTickCount () + sConditionVariableWaitChunkTime),
+                    ready = fConditionVariable.wait_until (lock, Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime)),
                                                            forward<PREDICATE> (readyToWake));
                 }
                 return ready;
