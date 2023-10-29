@@ -623,11 +623,10 @@ namespace {
                 p.AddTask (task2);
                 p.WaitForTask (task1);
                 p.WaitForTask (task2);
-                [[maybe_unused]] auto&& critSect = lock_guard{useCritSection};
+              //  [[maybe_unused]] auto&& critSect = lock_guard{useCritSection};
                 auto rr = updaterValue;
-                if (rr != 20) {
-                cout << "threadPoolSize=" << threadPoolSize << endl;
-                cout << "updaterValue=" << updaterValue << endl;
+                if (rr != 2 * 10) {
+                    cout << "threadPoolSize=" << threadPoolSize << "; updaterValue=" << updaterValue << endl;
                 }
                 //   DbgTrace ("updaterValue=%d", updaterValue);
                 VerifyTestResult (updaterValue == 2 * 10);
