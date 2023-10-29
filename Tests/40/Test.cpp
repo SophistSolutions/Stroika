@@ -495,7 +495,6 @@ namespace {
             // Now - abort it, and wait
             thread.AbortAndWaitForDone ();
         }
-#if qPlatform_Windows
         {
             Thread::Ptr thread = Thread::New ([] () {
                 while (true) {
@@ -517,7 +516,6 @@ namespace {
             // Now - abort it, and wait
             thread.AbortAndWaitForDone ();
         }
-#endif
     }
 }
 
