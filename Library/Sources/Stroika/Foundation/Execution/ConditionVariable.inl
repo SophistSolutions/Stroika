@@ -124,11 +124,12 @@ namespace Stroika::Foundation::Execution {
                     //
                     Thread::CheckForInterruption ();
                     if (Time::GetTickCount () > timeoutAt) {
-                        return ready;   // don't throw here - this API doesn't throw timeout...
+                        return ready; // don't throw here - this API doesn't throw timeout...
                     }
                     // must recheck / re-wait ONLY on the condition var itself - no stop token (cuz then this instantly returns and doesn't unlock argument lock so the signaler can progress)
-                    ready = fConditionVariable.wait_until (lock, Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime)),
-                                                           forward<PREDICATE> (readyToWake));
+                    ready = fConditionVariable.wait_until (
+                        lock, Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime)),
+                        forward<PREDICATE> (readyToWake));
                 }
                 return ready;
             }
