@@ -6,25 +6,39 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <memory>
+
 /**
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- *  TODO:
- *      @todo   Add Reader/Writer API like with JSON - using tree of Variants! - this produces essentially the same thing as a DOM reader/writer, but you can
- *              go back and forth with JSON or XML this way...
  */
 
 /**
  *  \def qHasFeature_Xerces
- *      Stroika currently depends on Xerces to provide SAX-reader services./p>
+ *      Stroika currently depends on Xerces to provide most XML services/functions./p>
  */
 #ifndef qHasFeature_Xerces
 #error "qHasFeature_Xerces should normally be defined indirectly by StroikaConfig.h"
 #endif
 
 namespace Stroika::Foundation::DataExchange::XML {
+
+    using namespace std;
+
+    /*
+     * Automatically manage initialization of dependent libraries by any code which includes this module
+     */
+#if qHasFeature_Xerces
+    struct DependencyLibraryInitializer {
+        struct LibXerces;
+        shared_ptr<LibXerces> fXERCES;
+        DependencyLibraryInitializer ();
+        static const DependencyLibraryInitializer sThe;
+    };
+    inline const DependencyLibraryInitializer DependencyLibraryInitializer::sThe;
+#endif
+
 }
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Common_h_*/

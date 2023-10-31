@@ -19,27 +19,6 @@
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qHasFeature_Xerces && defined(_MSC_VER)
-// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#if qDebug
-#pragma comment(lib, "xerces-c_3d.lib")
-#else
-#pragma comment(lib, "xerces-c_3.lib")
-#endif
-#endif
-
-#if qHasFeature_Xerces
-#ifndef qUseMyXMLDBMemManager
-#define qUseMyXMLDBMemManager qDebug
-//#define   qUseMyXMLDBMemManager       1
-#endif
-//#define   qXMLDBTrackAllocs   0
-//#define   qXMLDBTrackAllocs   1
-#ifndef qXMLDBTrackAllocs
-#define qXMLDBTrackAllocs qDebug
-#endif
-#endif
-
 #if qHasFeature_Xerces
 
 // Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
@@ -131,89 +110,6 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 #if qHasFeature_Xerces
-namespace {
-    /*
-     *  A helpful class to isolete Xerces (etc) memory management calls. Could be the basis
-     *  of future perfomance/memory optimizations, but for now, just a helpful debugging/tracking
-     *  class.
-     */
-    class MyXercesMemMgr_ : public MemoryManager {
-    public:
-        MyXercesMemMgr_ ()
-#if qXMLDBTrackAllocs
-            : fAllocator{fBaseAllocator}
-#endif
-        {
-        }
-
-#if qXMLDBTrackAllocs
-    public:
-        Memory::SimpleAllocator_CallLIBCNewDelete             fBaseAllocator;
-        Memory::LeakTrackingGeneralPurposeAllocator           fAllocator;
-        recursive_mutex                                       fLastSnapshot_CritSection;
-        Memory::LeakTrackingGeneralPurposeAllocator::Snapshot fLastSnapshot;
-#endif
-
-    public:
-#if qXMLDBTrackAllocs
-        void DUMPCurMemStats ()
-        {
-            TraceContextBumper      ctx{"MyXercesMemMgr_::DUMPCurMemStats"};
-            [[maybe_unused]] auto&& critSec = lock_guard{fLastSnapshot_CritSection};
-            fAllocator.DUMPCurMemStats (fLastSnapshot);
-            // now copy current map to prev for next time this gets called
-            fLastSnapshot = fAllocator.GetSnapshot ();
-        }
-#endif
-
-    public:
-        virtual MemoryManager* getExceptionMemoryManager () override
-        {
-            return this;
-        }
-        virtual void* allocate (XMLSize_t size) override
-        {
-            try {
-#if qXMLDBTrackAllocs
-                return fAllocator.Allocate (size);
-#else
-                return ::operator new (size);
-#endif
-            }
-            catch (...) {
-                // NB: use throw not Exception::Throw () since that requires its a subclass of exception (or SilentException)
-                throw (OutOfMemoryException ()); // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
-            }
-        }
-        virtual void deallocate (void* p) override
-        {
-            if (p != nullptr) {
-#if qXMLDBTrackAllocs
-                return fAllocator.Deallocate (p);
-#else
-                ::operator delete (p);
-#endif
-            }
-        }
-    };
-}
-#endif
-
-#if qHasFeature_Xerces
-namespace {
-    DOMImplementation& GetDOMIMPL_ ()
-    {
-        constexpr XMLCh kDOMImplFeatureDeclaration[] = {'C', 'o', 'r', 'e', '\0'};
-        // safe to save in a static var? -- LGP 2007-05-20
-        // from perusing implementation - this appears safe to cache and re-use in different threads
-        static DOMImplementation* impl = DOMImplementationRegistry::getDOMImplementation (kDOMImplFeatureDeclaration);
-        AssertNotNull (impl);
-        return *impl;
-    }
-}
-#endif
-
-#if qHasFeature_Xerces
 class MyErrorReproter_ : public XMLErrorReporter, public ErrorHandler {
     // XMLErrorReporter
 public:
@@ -280,73 +176,6 @@ namespace {
 #endif
 }
 
-/*
- ********************************************************************************
- ************************ Private::UsingModuleHelper ****************************
- ********************************************************************************
- */
-#if qHasFeature_Xerces
-namespace {
-#if qDebug
-    atomic<uint32_t> sStdIStream_InputStream_COUNT_{0};
-#endif
-
-    /*
-     *  Would be NICE to not need to do this, but due to the sad quirk in C++ about
-     *  order of construction of static objects across .obj files, its helpful to abstract out
-     *  these details and construct access to the libraries as late as possible (but still
-     *  allow them to be destroyed automatically during static object destruction.
-     *
-     *  Note - this workaround to the bug may NOT be sufficeint. I believe it IS sufficient
-     *  on the construction side (so long as we assure this module isn't accessed until after static
-     *  construction (start of main).
-     *
-     *  But on destruction - it COULD be we destroy stuff too late. I THINK that's why I couldn't
-     *  shutdown Xalan from here - but had to seperately when the number of objects hit
-     *  zero. I suppose we could do the SAME trick with # Document::Rep objects.
-     *
-     *  But - this seems adequate for now...
-     *
-     *      -- LGP 2007-07-03
-     */
-    struct UsingLibInterHelper {
-        struct UsingLibInterHelper_XERCES {
-            MyXercesMemMgr_* fUseXercesMemoryManager;
-            UsingLibInterHelper_XERCES ()
-                : fUseXercesMemoryManager{nullptr}
-            {
-#if qUseMyXMLDBMemManager
-                fUseXercesMemoryManager = new MyXercesMemMgr_ ();
-#endif
-                XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, fUseXercesMemoryManager);
-            }
-            ~UsingLibInterHelper_XERCES ()
-            {
-                TraceContextBumper ctx{"~UsingLibInterHelper_XERCES"};
-                XMLPlatformUtils::Terminate ();
-                Assert (sStdIStream_InputStream_COUNT_ == 0);
-#if qUseMyXMLDBMemManager
-                delete fUseXercesMemoryManager;
-#endif
-            }
-        };
-        UsingLibInterHelper_XERCES fXERCES;
-
-        UsingLibInterHelper ();
-    };
-    UsingLibInterHelper::UsingLibInterHelper ()
-    {
-    }
-}
-
-namespace {
-    inline void AssureXercesInitialized_ ()
-    {
-        static UsingLibInterHelper sUsingLibInterHelper_;
-    }
-}
-#endif
-
 #if qHasFeature_Xerces
 namespace {
     // These SHOULD be part of xerces! Perhaps someday post them?
@@ -357,16 +186,8 @@ namespace {
             StdIStream_InputStream (InputStream<byte>::Ptr in)
                 : fSource{in}
             {
-#if qDebug
-                ++sStdIStream_InputStream_COUNT_;
-#endif
             }
-            ~StdIStream_InputStream ()
-            {
-#if qDebug
-                --sStdIStream_InputStream_COUNT_;
-#endif
-            }
+            ~StdIStream_InputStream () = default;
 
         public:
             virtual XMLFilePos curPos () const override
@@ -527,7 +348,6 @@ void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, 
                     [[maybe_unused]] Execution::ProgressMonitor::Updater progress)
 {
 #if qHasFeature_Xerces
-    AssureXercesInitialized_ ();
     SAX2PrintHandlers_        handler{callback};
     shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
     SetupCommonParserFeatures_ (*parser, false);
