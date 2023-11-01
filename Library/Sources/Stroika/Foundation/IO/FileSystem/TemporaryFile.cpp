@@ -126,7 +126,7 @@ AppTempFileManager::~AppTempFileManager ()
     }
 }
 
-String AppTempFileManager::GetTempFile (const String& fileNameBase)
+filesystem::path AppTempFileManager::GetTempFile (const String& fileNameBase)
 {
 #if qPlatform_Windows
     String fn = AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
@@ -148,7 +148,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
             if (f != nullptr) {
                 ::CloseHandle (f);
                 DbgTrace (L"AppTempFileManager::GetTempFile (): returning '%s'", s.c_str ());
-                return s;
+                return ToPath (String{s});
             }
         }
     }
@@ -158,7 +158,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
     Execution::Throw (Exception{"Unknown error creating file"sv}, "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
 
-String AppTempFileManager::GetTempDir (const String& fileNameBase)
+filesystem::path AppTempFileManager::GetTempDir (const String& fileNameBase)
 {
     String fn = AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
 
@@ -171,7 +171,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
         if (not Directory{s}.Exists ()) {
             CreateDirectory (s, true);
             DbgTrace (L"AppTempFileManager::GetTempDir (): returning '%s'", s.c_str ());
-            return s;
+            return ToPath (s);
         }
     }
     Execution::Throw (Exception{"Unknown error creating temporary file"sv}, "AppTempFileManager::GetTempDir (): failed to create tempdir");

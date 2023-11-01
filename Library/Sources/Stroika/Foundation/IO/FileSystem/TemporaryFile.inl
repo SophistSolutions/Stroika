@@ -32,11 +32,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      ***************************** FileSystem::ScopedTmpDir *************************
      ********************************************************************************
      */
-    inline ScopedTmpDir::operator Directory () const
-    {
-        return fTmpDir;
-    }
-    inline Directory ScopedTmpDir::GetDirectory () const
+    inline filesystem::path ScopedTmpDir::GetDirectory () const
     {
         return fTmpDir;
     }

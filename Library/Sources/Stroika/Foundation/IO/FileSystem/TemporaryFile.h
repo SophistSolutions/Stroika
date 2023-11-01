@@ -13,7 +13,6 @@
 #include "../../Time/DateTime.h"
 
 #include "Common.h"
-#include "Directory.h"
 
 /**
  *  \file
@@ -39,8 +38,8 @@ namespace Stroika::Foundation::IO::FileSystem {
         nonvirtual String GetMasterTempDir () const;
 
     public:
-        nonvirtual String GetTempFile (const String& fileNameBase);
-        nonvirtual String GetTempDir (const String& fileNameBase);
+        nonvirtual filesystem::path GetTempFile (const String& fileNameBase);
+        nonvirtual filesystem::path GetTempDir (const String& fileNameBase);
 
     private:
         String fTmpDir;
@@ -54,11 +53,10 @@ namespace Stroika::Foundation::IO::FileSystem {
         ScopedTmpDir& operator= (const ScopedTmpDir&) = delete;
 
     public:
-        nonvirtual operator Directory () const;
-        nonvirtual Directory GetDirectory () const;
+        nonvirtual filesystem::path GetDirectory () const;
 
     private:
-        Directory fTmpDir;
+        filesystem::path fTmpDir;
     };
 
     class ScopedTmpFile {
