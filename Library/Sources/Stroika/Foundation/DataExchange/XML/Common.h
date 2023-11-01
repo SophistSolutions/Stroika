@@ -39,6 +39,12 @@ namespace Stroika::Foundation::DataExchange::XML {
     inline const DependencyLibraryInitializer DependencyLibraryInitializer::sThe;
 #endif
 
+    // Expose private details for regression testing
+    namespace Private {
+        size_t GetNetAllocationCount ();
+        size_t GetNetAllocatedByteCount ();
+    }
+
 }
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Common_h_*/

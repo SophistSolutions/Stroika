@@ -27,14 +27,14 @@ using namespace Stroika::Foundation::Debug;
 #endif
 
 #if qHasFeature_Xerces
-#ifndef qUseMyXMLDBMemManager
-#define qUseMyXMLDBMemManager qDebug
-//#define   qUseMyXMLDBMemManager       1
+#ifndef qUseMyXMLDBMemManager_
+#define qUseMyXMLDBMemManager_ qDebug
+//#define   qUseMyXMLDBMemManager_       1
 #endif
-//#define   qXMLDBTrackAllocs   0
-//#define   qXMLDBTrackAllocs   1
-#ifndef qXMLDBTrackAllocs
-#define qXMLDBTrackAllocs qDebug
+//#define   qXMLDBTrackAllocs_   0
+//#define   qXMLDBTrackAllocs_   1
+#ifndef qXMLDBTrackAllocs_
+#define qXMLDBTrackAllocs_ qDebug
 #endif
 #endif
 
@@ -75,13 +75,9 @@ using namespace Stroika::Foundation::Debug;
 #else
 #define Assert(c)
 #endif
-#endif
 
-#if qHasFeature_Xerces
 XERCES_CPP_NAMESPACE_USE
-#endif
 
-#if qHasFeature_Xerces
 namespace {
     /*
      *  A helpful class to isolete Xerces (etc) memory management calls. Could be the basis
@@ -91,13 +87,13 @@ namespace {
     class MyXercesMemMgr_ : public MemoryManager {
     public:
         MyXercesMemMgr_ ()
-#if qXMLDBTrackAllocs
+#if qXMLDBTrackAllocs_
             : fAllocator{fBaseAllocator}
 #endif
         {
         }
 
-#if qXMLDBTrackAllocs
+#if qXMLDBTrackAllocs_
     public:
         Memory::SimpleAllocator_CallLIBCNewDelete             fBaseAllocator;
         Memory::LeakTrackingGeneralPurposeAllocator           fAllocator;
@@ -106,7 +102,7 @@ namespace {
 #endif
 
     public:
-#if qXMLDBTrackAllocs
+#if qXMLDBTrackAllocs_
         void DUMPCurMemStats ()
         {
             TraceContextBumper      ctx{"MyXercesMemMgr_::DUMPCurMemStats"};
@@ -125,7 +121,7 @@ namespace {
         virtual void* allocate (XMLSize_t size) override
         {
             try {
-#if qXMLDBTrackAllocs
+#if qXMLDBTrackAllocs_
                 return fAllocator.Allocate (size);
 #else
                 return ::operator new (size);
@@ -139,7 +135,7 @@ namespace {
         virtual void deallocate (void* p) override
         {
             if (p != nullptr) {
-#if qXMLDBTrackAllocs
+#if qXMLDBTrackAllocs_
                 return fAllocator.Deallocate (p);
 #else
                 ::operator delete (p);
@@ -159,7 +155,7 @@ struct DependencyLibraryInitializer::LibXerces {
     LibXerces ()
         : fUseXercesMemoryManager{nullptr}
     {
-#if qUseMyXMLDBMemManager
+#if qUseMyXMLDBMemManager_
         fUseXercesMemoryManager = new MyXercesMemMgr_ ();
 #endif
         XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, fUseXercesMemoryManager);
@@ -168,7 +164,7 @@ struct DependencyLibraryInitializer::LibXerces {
     {
         TraceContextBumper ctx{"~LibXerces"};
         XMLPlatformUtils::Terminate ();
-#if qUseMyXMLDBMemManager
+#if qUseMyXMLDBMemManager_
         delete fUseXercesMemoryManager;
 #endif
     }

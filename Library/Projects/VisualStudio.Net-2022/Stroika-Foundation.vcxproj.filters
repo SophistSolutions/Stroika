@@ -831,6 +831,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.cpp">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.cpp">
+      <Filter>Sources\DataExchange\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.cpp">
+      <Filter>Sources\DataExchange\XML</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2138,6 +2144,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Charset.h">
       <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.h">
+      <Filter>Sources\DataExchange\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.h">
+      <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3518,6 +3530,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Charset.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.inl">
+      <Filter>Sources\DataExchange\XML</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.inl">
+      <Filter>Sources\DataExchange\XML</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

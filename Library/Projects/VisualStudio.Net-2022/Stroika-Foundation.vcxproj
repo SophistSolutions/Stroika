@@ -137,8 +137,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Reader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Writer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.cpp" />
@@ -497,8 +499,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.h" />
@@ -949,9 +953,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Writer.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedMutex.inl" />
