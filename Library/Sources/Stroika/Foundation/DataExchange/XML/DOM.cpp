@@ -118,8 +118,12 @@ namespace {
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/validators/common/Grammar.hpp>
+#if qDebug
 #define Assert(c)                                                                                                                          \
     (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+#else
+#define Assert(c) ((void)0)
+#endif
 #endif
 
 #if qHasFeature_Xerces
