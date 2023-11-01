@@ -1013,6 +1013,10 @@ namespace Stroika::Foundation::Characters {
     {
         return Find (c, startAt, CompareOptions::eWithCase).value_or (npos);
     }
+    inline size_t String::find (const String& s, size_t startAt) const
+    {
+        return Find (s, startAt, CompareOptions::eWithCase).value_or (npos);
+    }
     inline size_t String::rfind (Character c) const
     {
         return RFind (c).value_or (npos);

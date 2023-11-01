@@ -1387,14 +1387,19 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  Follow the basic_string<>::find () API
+         * 
          *  need more overloads.
          *
          *  Returns String::npos if not found, else the zero based index.
          */
         nonvirtual size_t find (Character c, size_t startAt = 0) const;
+        nonvirtual size_t find (const String& s, size_t startAt = 0) const;
 
     public:
         /**
+         *  Follow the basic_string<>::rfind () API
+         * 
          *   need more overloads.
          *
          *   Returns String::npos if not found, else the zero based index.
