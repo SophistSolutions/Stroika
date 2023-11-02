@@ -53,7 +53,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     class SubNodeIterator::Rep {
     public:
-        Rep () = default;
+        Rep ()          = default;
         virtual ~Rep () = default;
 
     public:

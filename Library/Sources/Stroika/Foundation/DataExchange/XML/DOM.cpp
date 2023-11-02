@@ -124,21 +124,7 @@ namespace {
 #else
 #define Assert(c) ((void)0)
 #endif
-#endif
-
-#if qHasFeature_Xerces
 XERCES_CPP_NAMESPACE_USE
-#endif
-
-#if qHasFeature_Xerces && 0
-#if defined(_MSC_VER)
-// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#if qDebug
-#pragma comment(lib, "xerces-c_static_3d.lib")
-#else
-#pragma comment(lib, "xerces-c_static_3.lib")
-#endif
-#endif
 #endif
 
 /*
@@ -626,7 +612,7 @@ public:
 
     MyMaybeSchemaDOMParser (const Schema* schema)
     {
-        if (schema != nullptr and schema->HasSchema ()) {
+        if (schema != nullptr) {
             // REALLY need READLOCK - cuz this just prevents UPDATE of Schema (never happens anyhow) -- LGP 2009-05-19
             fSchemaAccessor = shared_ptr<Schema::AccessCompiledXSD> (new Schema::AccessCompiledXSD (*schema));
             fParser         = make_shared<XercesDOMParser> (nullptr, XMLPlatformUtils::fgMemoryManager, fSchemaAccessor->GetCachedTRep ());
@@ -667,15 +653,13 @@ class DataExchange::XML::DOM::Document::Rep {
 public:
     Rep (const Schema* schema)
         : fXMLDoc ()
-        , fSchema (nullptr)
+        , fSchema (schema)
     {
         [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
         START_LIB_EXCEPTION_MAPPER
         {
             MakeXMLDoc_ (fXMLDoc);
             fXMLDoc->setUserData (kXerces2XMLDBDocumentKey, this, nullptr);
-
-            SetSchema (schema);
         }
         END_LIB_EXCEPTION_MAPPER
     }
@@ -710,11 +694,10 @@ public:
         return fSchema;
     }
 
-    nonvirtual void SetSchema (const Schema* schema)
+public:
+    nonvirtual void SetSchema (const Schema* s)
     {
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
-        fSchema = schema;
-        AssertNotNull (fXMLDoc);
+        fSchema = s;
     }
 
 public:
@@ -934,7 +917,7 @@ public:
 
         START_LIB_EXCEPTION_MAPPER
         {
-            if (not fSchema->HasSchema ()) {
+            if (fSchema == nullptr) {
                 return;
             }
             try {
@@ -987,14 +970,16 @@ public:
                     // Then - re-validate (with line#s) - and print the results of the validation to ANOTHER
                     // temporary file
                     //
-                    filesystem::path tmpFileName = IO::FileSystem::AppTempFileManager::Get ().GetTempFile ("FAILED_VALIDATION_.xml");
+                    filesystem::path tmpFileName = IO::FileSystem::AppTempFileManager::sThe.GetTempFile ("FAILED_VALIDATION_.xml");
                     DbgTrace (L"Error validating - so writing out temporary file = '%s'", Characters::ToString (tmpFileName).c_str ());
                     {
                         ofstream out (tmpFileName.c_str (), ios_base::out | ios_base::binary);
                         WritePrettyPrinted (out);
                     }
                     try {
-                        ValidateExternalFile (tmpFileName.c_str (), fSchema);
+                        if (fSchema != nullptr) {
+                            ValidateExternalFile (tmpFileName.c_str (), *fSchema);
+                        }
                     }
                     catch (const BadFormatException& vf) {
                         String   tmpFileNameStr = IO::FileSystem::FromPath (tmpFileName);

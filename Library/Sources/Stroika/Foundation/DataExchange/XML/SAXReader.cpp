@@ -345,41 +345,31 @@ namespace {
 #endif
 
 void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, [[maybe_unused]] StructuredStreamEvents::IConsumer& callback,
-                    [[maybe_unused]] Execution::ProgressMonitor::Updater progress)
+                    const optional<Schema>& schema, [[maybe_unused]] Execution::ProgressMonitor::Updater progress)
 {
 #if qHasFeature_Xerces
-    SAX2PrintHandlers_        handler{callback};
-    shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
-    SetupCommonParserFeatures_ (*parser, false);
+    SAX2PrintHandlers_                    handler{callback};
+    shared_ptr<SAX2XMLReader>             parser;
+    unique_ptr<Schema::AccessCompiledXSD> accessSchema;
+    if (schema) {
+        accessSchema = make_unique<Schema::AccessCompiledXSD> (*schema);
+        parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedTRep ()));
+    }
+    else {
+        parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
+    }
+    SetupCommonParserFeatures_ (*parser, schema.has_value ());
     parser->setContentHandler (&handler);
     parser->setErrorHandler (&sMyErrorReproter_);
-    const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
+    constexpr XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
     parser->parse (StdIStream_InputSourceWithProgress{in, ProgressMonitor::Updater{progress, 0.1f, 0.9f}, kBufID});
 #else
     Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kSAXFactory));
 #endif
 }
 
-void XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
+void XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const optional<Schema>& schema,
+                    Execution::ProgressMonitor::Updater progress)
 {
-    SAXParse (in.As<Streams::InputStream<byte>::Ptr> (), callback, progress);
+    SAXParse (in.As<Streams::InputStream<byte>::Ptr> (), callback, schema, progress);
 }
-
-#if 0
-//SCHEMA NOT YET SUPPORTED
-void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& callback, Execution::ProgressMontior* progres)
-{
-    if (schema.HasSchema ()) {
-        SAX2PrintHandlers   handler (callback);
-        Schema::AccessCompiledXSD   accessSchema (schema);// REALLY need READLOCK - cuz this just prevents UPDATE of Scehma (never happens anyhow) -- LGP 2009-05-19
-        shared_ptr<SAX2XMLReader>    parser  =   shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema.GetCachedTRep ()));
-        SetupCommonParserFeatures_ (*parser, true);
-        parser->setContentHandler (&handler);
-        parser->setErrorHandler (&sMyErrorReproter_);
-        parser->parse (StdIStream_InputSourceWithProgress (in, ProgressSubTask{progressCallback, 0.1f, 0.9f}, L"XMLDB::SAX::Parse"));
-    }
-    else {
-        Parse (in, callback, progressCallback);
-    }
-}
-#endif

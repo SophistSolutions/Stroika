@@ -32,37 +32,33 @@ namespace Stroika::Foundation::DataExchange::XML {
         // types of names (depending on the type of BLOB).
         class SourceComponent {
         public:
-            Memory::BLOB fBLOB;
-            wstring      fNamespace;
-            wstring      fPublicID;
-            wstring      fSystemID;
+            Memory::BLOB     fBLOB;
+            optional<String> fNamespace;
+            optional<String> fPublicID;
+            optional<String> fSystemID;
         };
 
     public:
-        Schema (const Schema& from);
+        Schema (const Schema& from) = default;
         // The targetNamespace argument is optional (we can have a schema with a blank target namespace).
         // The referencedSchema to support load/define the given schema (e.g. for xsd:import directives).
-        Schema (const wstring& targetNamespace = wstring (), const vector<SourceComponent>& sources = vector<SourceComponent> ());
-        Schema (const wstring& targetNamespace, const vector<SourceComponent>& sources, const vector<NamespaceDefinition>& namespaces);
-        ~Schema ();
-        Schema& operator= (const Schema& rhs);
+        Schema (const String& targetNamespace, const Memory::BLOB& targetNamespaceData, const vector<SourceComponent>& otherSources,
+                const NamespaceDefinitionsList& namespaceDefs = {});
 
     public:
-        nonvirtual bool HasSchema () const;
+        ~Schema () = default;
+
+    public:
+        Schema& operator= (const Schema& rhs) = default;
 
     public:
         nonvirtual vector<SourceComponent> GetSourceComponents () const;
-        nonvirtual void                    SetSourceComponents (const vector<SourceComponent>& sources);
-        // assumes a single BLOB (with this namespace as target)
-        nonvirtual void SetSchemaData (const Memory::BLOB& source);
 
     public:
         nonvirtual String GetTargetNamespace () const;
-        nonvirtual void   SetTargetNamespace (const String& targetNamespace);
 
     public:
         nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const;
-        nonvirtual void                     SetNamespaceDefinitions (const NamespaceDefinitionsList& namespaceDefinitions);
 
     public:
         typedef xercesc_3_2::XMLGrammarPool* T_CompiledXSDRep;
@@ -76,8 +72,7 @@ namespace Stroika::Foundation::DataExchange::XML {
             nonvirtual T_CompiledXSDRep GetCachedTRep () const;
 
         private:
-            const Schema&               fSchema2Access;
-            lock_guard<recursive_mutex> fEnterCritSection;
+            const Schema& fSchema2Access;
         };
 
     private:
@@ -112,7 +107,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         const Schema*  fOldSchema;
     };
 
-    void ValidateExternalFile (const filesystem::path& externalFileName, const Schema* schema); // throws BadFormatException exception on error
+    void ValidateExternalFile (const filesystem::path& externalFileName, const Schema& schema); // throws BadFormatException exception on error
 
 };
 #endif

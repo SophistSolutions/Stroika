@@ -7,31 +7,20 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/String.h"
-#include "../../Configuration/Common.h"
-#include "../../Containers/Mapping.h"
 #include "../../Execution/ProgressMonitor.h"
 #include "../../Streams/InputStream.h"
 
 #include "../StructuredStreamEvents/IConsumer.h"
 #include "../VariantValue.h"
+
 #include "Common.h"
+#include "Schema.h"
 
 /**
  *  \file
- *
- * TODO:
- *      @todo   Redo SAXParse() using factory style - like we have for IO::Networking::Transfer (curl or winhttp)
- *              then have ability to check for registered impl (and select impl) for SAX backend)
- *
- *      @todo   Add schema support, and overload of SAXParse taking schema, such as
- *              void  SAXParse (istream& in, const Schema& schema, CallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);
- *
  */
 
 namespace Stroika::Foundation::DataExchange::XML {
-
-    using Characters::String;
-    using Containers::Mapping;
 
     /**
      * Parse will throw an exception if it encounters any errors parsing.
@@ -39,8 +28,9 @@ namespace Stroika::Foundation::DataExchange::XML {
      *  @see ObjectReaderRegistry for examples of one way to use this
      */
     void SAXParse (const Streams::InputStream<byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback,
+                   const optional<Schema>& schema = nullopt, Execution::ProgressMonitor::Updater progress = nullptr);
+    void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const optional<Schema>& schema = nullopt,
                    Execution::ProgressMonitor::Updater progress = nullptr);
-    void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
 
 }
 

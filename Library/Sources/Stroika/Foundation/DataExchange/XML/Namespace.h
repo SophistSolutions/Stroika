@@ -38,10 +38,15 @@ namespace Stroika::Foundation::DataExchange::XML {
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     * 
+     *  @todo Enforce that only ONE namespace DEF can have an empty prefix!
+     *  REally - sb not VECTOR - but MAPPING from prefix (whci cna be empty) to namespace string.
+     * 
+     *  REALLY - to be clear - this sin't ncesariyl all naemapces, just all prefixes...
      */
     class NamespaceDefinitionsList {
     public:
-        NamespaceDefinitionsList (const vector<NamespaceDefinition>& namespaces = vector<NamespaceDefinition> ());
+        NamespaceDefinitionsList (const vector<NamespaceDefinition>& namespaces = {});
 
     public:
         nonvirtual bool empty () const;

@@ -21,6 +21,7 @@ Objs	=	\
 	$(ObjDir)Namespace${OBJ_SUFFIX}\
 	$(ObjDir)SAXReader${OBJ_SUFFIX}\
 	$(ObjDir)SerializationConfiguration${OBJ_SUFFIX}\
+	$(ObjDir)Schema${OBJ_SUFFIX}\
 	$(ObjDir)WriterUtils${OBJ_SUFFIX}\
 
 
