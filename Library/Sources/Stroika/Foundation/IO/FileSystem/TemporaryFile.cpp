@@ -29,10 +29,6 @@
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Module.h"
 #include "../../Execution/Process.h"
-#if qPlatform_Windows && 0
-#include "../../Execution/Platform/Windows/Exception.h"
-#include "../../Execution/Platform/Windows/HRESULTErrorException.h"
-#endif
 #include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
 #include "../../IO/FileSystem/FileSystem.h"
@@ -50,10 +46,6 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::Memory;
-
-#if qPlatform_Windows && 0
-using Execution::Platform::Windows::ThrowIfZeroGetLastError;
-#endif
 
 /*
  ********************************************************************************
@@ -131,7 +123,7 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
         filesystem::path trialName = fn / ToPath (basename + buf + ext);
         if (not exists (trialName)) {
 #if qPlatform_POSIX
-            int fd = ::_open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT);
+            int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT);
 #elif qPlatform_Windows
             int     fd;
             [[maybe_unused]] errno_t e  = ::_sopen_s (&fd, trialName.generic_string ().c_str (), (O_RDWR | O_CREAT), _SH_DENYNO, 0);
