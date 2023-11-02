@@ -35,14 +35,19 @@ namespace Stroika::Foundation::IO::FileSystem {
         static AppTempFileManager& Get ();
 
     public:
-        nonvirtual String GetMasterTempDir () const;
+        nonvirtual filesystem::path GetMasterTempDir () const;
 
     public:
-        nonvirtual filesystem::path GetTempFile (const String& fileNameBase);
-        nonvirtual filesystem::path GetTempDir (const String& fileNameBase);
+        /**
+        *  require root_path is empt - just filename and possibly extention. If extension missing, maybe added automatically
+         */
+        nonvirtual filesystem::path GetTempFile (const filesystem::path& fileBaseName);
+
+    public:
+        nonvirtual filesystem::path GetTempDir (const String& dirNameBase);
 
     private:
-        String fTmpDir;
+        filesystem::path fTmpDir_;
     };
 
     class ScopedTmpDir {
@@ -53,24 +58,24 @@ namespace Stroika::Foundation::IO::FileSystem {
         ScopedTmpDir& operator= (const ScopedTmpDir&) = delete;
 
     public:
-        nonvirtual filesystem::path GetDirectory () const;
+        operator filesystem::path () const;
 
     private:
-        filesystem::path fTmpDir;
+        filesystem::path fTmpDir_;
     };
 
     class ScopedTmpFile {
     public:
-        ScopedTmpFile (const String& fileNameBase);
+        ScopedTmpFile (const filesystem::path& fileBaseName);
         ScopedTmpFile (const ScopedTmpFile&) = delete;
         ~ScopedTmpFile ();
         ScopedTmpFile& operator= (const ScopedTmpFile&) = delete;
 
     public:
-        operator String () const;
+        operator filesystem::path () const;
 
     private:
-        String fTmpFile;
+        filesystem::path fTmpFile_;
     };
 
 }

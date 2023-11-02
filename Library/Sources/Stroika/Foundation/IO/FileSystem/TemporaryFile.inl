@@ -22,9 +22,9 @@ namespace Stroika::Foundation::IO::FileSystem {
         static AppTempFileManager sAppTempFileManager_;
         return sAppTempFileManager_;
     }
-    inline String AppTempFileManager::GetMasterTempDir () const
+    inline filesystem::path AppTempFileManager::GetMasterTempDir () const
     {
-        return fTmpDir;
+        return fTmpDir_;
     }
 
     /*
@@ -32,9 +32,9 @@ namespace Stroika::Foundation::IO::FileSystem {
      ***************************** FileSystem::ScopedTmpDir *************************
      ********************************************************************************
      */
-    inline filesystem::path ScopedTmpDir::GetDirectory () const
+    inline  ScopedTmpDir::operator filesystem::path () const
     {
-        return fTmpDir;
+        return fTmpDir_;
     }
 
     /*
@@ -42,9 +42,9 @@ namespace Stroika::Foundation::IO::FileSystem {
      **************************** FileSystem::ScopedTmpFile *************************
      ********************************************************************************
      */
-    inline ScopedTmpFile::operator String () const
+    inline ScopedTmpFile::operator filesystem::path () const
     {
-        return fTmpFile;
+        return fTmpFile_;
     }
 
 }
