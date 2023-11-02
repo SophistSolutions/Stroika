@@ -3,12 +3,7 @@
  */
 #include "../../StroikaPreComp.h"
 
-#include <cstdio>
-#include <ctime>
 #include <fcntl.h>
-#include <fstream>
-#include <limits>
-
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -19,9 +14,7 @@
 #include <unistd.h>
 #endif
 
-#include "../../Characters/CString/Utilities.h"
 #include "../../Characters/Format.h"
-#include "../../Containers/Common.h"
 #include "../../Debug/Trace.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/Exceptions.h"
@@ -29,7 +22,6 @@
 #include "../../Execution/Process.h"
 #include "../../IO/FileSystem/FileSystem.h"
 
-#include "FileUtils.h"
 #include "PathName.h"
 #include "WellKnownLocations.h"
 
@@ -60,8 +52,7 @@ AppTempFileManager::AppTempFileManager (const Options& options)
 
     filesystem::path cleanedExePath = Execution::GetEXEPath ();
 
-    filesystem::path exeFileName = cleanedExePath.filename ();
-    exeFileName.replace_extension (""); // strip trailing .EXE
+    filesystem::path exeFileName = cleanedExePath.stem ();
     // no biggie, but avoid spaces in tmpfile path name (but don't try too hard, should be
     // harmless)
     //  -- LGP 2009-08-16    // replace any spaces in name with -
@@ -148,6 +139,7 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
                 _close (fd);
 #endif
                 DbgTrace (L"AppTempFileManager::GetTempFile (): returning '%s'", Characters::ToString (trialName).c_str ());
+                WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
         }
@@ -167,6 +159,7 @@ filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
         if (not is_directory (trialName)) {
             if (create_directories (trialName)) {
                 DbgTrace (L"AppTempFileManager::GetTempDir (): returning '%s'", Characters::ToString (trialName).c_str ());
+                WeakAssert (is_directory (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
         }

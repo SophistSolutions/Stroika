@@ -6,12 +6,6 @@
 
 #include "../../StroikaPreComp.h"
 
-#include "../../Characters/SDKChar.h"
-#include "../../Configuration/Common.h"
-#include "../../Debug/Assertions.h"
-#include "../../Execution/Thread.h"
-#include "../../Time/DateTime.h"
-
 #include "Common.h"
 
 /**
