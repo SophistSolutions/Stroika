@@ -31,6 +31,7 @@ Objs	=	\
 	$(ObjDir)MemoryMappedFileReader${OBJ_SUFFIX}\
 	$(ObjDir)MountedFilesystem${OBJ_SUFFIX}\
 	$(ObjDir)PathName${OBJ_SUFFIX}\
+	$(ObjDir)TemporaryFile${OBJ_SUFFIX}\
 	$(ObjDir)ThroughTmpFileWriter${OBJ_SUFFIX}\
 	$(ObjDir)WellKnownLocations${OBJ_SUFFIX}\
 
