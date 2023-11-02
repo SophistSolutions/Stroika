@@ -9,28 +9,24 @@
 #include <fstream>
 #include <limits>
 
-#if 1
 #include <sys/stat.h>
 #include <sys/types.h>
 
 #if qPlatform_Windows
-#include <aclapi.h>
 #include <io.h>
-#include <shlobj.h>
 #include <windows.h>
 #elif qPlatform_POSIX
 #include <unistd.h>
 #endif
-#endif
 
 #include "../../Characters/CString/Utilities.h"
 #include "../../Characters/Format.h"
+#include "../../Containers/Common.h"
+#include "../../Debug/Trace.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Module.h"
 #include "../../Execution/Process.h"
-#include "../../Containers/Common.h"
-#include "../../Debug/Trace.h"
 #include "../../IO/FileSystem/FileSystem.h"
 
 #include "FileUtils.h"
@@ -41,7 +37,6 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
-using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
@@ -52,7 +47,14 @@ using namespace Stroika::Foundation::Memory;
  *********************** FileSystem::AppTempFileManager *************************
  ********************************************************************************
  */
-AppTempFileManager::AppTempFileManager ()
+namespace {
+    filesystem::path GetSysTmpRelativePath_ (const AppTempFileManager::Options& o)
+    {
+        return o.fRelativePathInsideTmpDir.value_or (GetEXEPath ().stem ()); // @todo optimize this use of value_or cuz evaluates args always (sad)
+    }
+}
+
+AppTempFileManager::AppTempFileManager (const Options& options)
 {
     filesystem::path tmpDir = WellKnownLocations::GetTemporary ();
 
@@ -80,7 +82,7 @@ AppTempFileManager::AppTempFileManager ()
     // But whatever we do, the DLL may do also, so we must use what is in the filesystem
     // to disambiguiate.
     //
-    tmpDir /= "HealthFrameWorks"sv;     // @todo FIX THIS NAME - HISTORICAL...
+    tmpDir /= GetSysTmpRelativePath_ (options);
     create_directories (tmpDir);
     for (int i = 0; i < INT_MAX; ++i) {
         filesystem::path trialD =
@@ -99,18 +101,29 @@ AppTempFileManager::AppTempFileManager ()
 
 AppTempFileManager::~AppTempFileManager ()
 {
+    if (not fTmpDir_.empty ()) {
+        DbgTrace (L"AppTempFileManager::DTOR: clearing '%s'", Characters::ToString (fTmpDir_).c_str ());
+        try {
+            remove_all (fTmpDir_);
+        }
+        catch (...) {
+            DbgTrace ("Ingoring exception clearly AppTempFileManager files: %s", Characters::ToString (current_exception ()).c_str ());
+        }
+    }
+}
+
+AppTempFileManager& AppTempFileManager::operator= (AppTempFileManager&& rhs)
+{
     DbgTrace (L"AppTempFileManager::DTOR: clearing '%s'", Characters::ToString (fTmpDir_).c_str ());
-    try {
-        remove_all (fTmpDir_);
-    }
-    catch (...) {
-        DbgTrace ("Ingoring exception clearly AppTempFileManager files: %s", Characters::ToString (current_exception ()).c_str ());
-    }
+    remove_all (fTmpDir_);
+    fTmpDir_ = move (rhs.fTmpDir_); // prevents rhs DTOR from doing anything
+    Assert (rhs.fTmpDir_.empty ()); // cuz of this...
+    return *this;
 }
 
 filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBaseName)
 {
-    filesystem::path fn = AppTempFileManager::Get ().GetMasterTempDir ();
+    filesystem::path fn = GetRootTempDir ();
     create_directories (fn);
     String basename = FromPath (fileBaseName.stem ());
     String ext      = FromPath (fileBaseName.extension ());
@@ -118,15 +131,15 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
         ext = "txt"sv;
     }
     for (int attempts = 0; attempts < 5; ++attempts) {
-        char    buf[1024];
+        char buf[1024];
         (void)snprintf (buf, NEltsOf (buf), "-%d", ::rand ());
         filesystem::path trialName = fn / ToPath (basename + buf + ext);
         if (not exists (trialName)) {
 #if qPlatform_POSIX
             int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT);
 #elif qPlatform_Windows
-            int     fd;
-            [[maybe_unused]] errno_t e  = ::_sopen_s (&fd, trialName.generic_string ().c_str (), (O_RDWR | O_CREAT), _SH_DENYNO, 0);
+            int                      fd;
+            [[maybe_unused]] errno_t e = ::_sopen_s (&fd, trialName.generic_string ().c_str (), (O_RDWR | O_CREAT), _SH_DENYNO, 0);
 #endif
             if (fd >= 0) {
 #if qPlatform_POSIX
@@ -135,7 +148,7 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
                 _close (fd);
 #endif
                 DbgTrace (L"AppTempFileManager::GetTempFile (): returning '%s'", Characters::ToString (trialName).c_str ());
-                return trialName; 
+                return trialName;
             }
         }
         DbgTrace (L"Attempt to create file collided, so retrying (%d)", Characters::ToString (trialName).c_str (), attempts);
@@ -145,7 +158,7 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
 
 filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
 {
-    filesystem::path fn = AppTempFileManager::Get ().GetMasterTempDir ();
+    filesystem::path fn = GetRootTempDir ();
     create_directories (fn);
     for (int attempts = 0; attempts < 5; ++attempts) {
         char buf[1024];
@@ -159,9 +172,9 @@ filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
         }
         DbgTrace (L"Attempt to create directory collided, so retrying (%d)", Characters::ToString (trialName).c_str (), attempts);
     }
-    Execution::Throw (Exception{"Unknown error creating temporary directory"sv}, "AppTempFileManager::GetTempDir (): failed to create tempdir");
+    Execution::Throw (Exception{"Unknown error creating temporary directory"sv},
+                      "AppTempFileManager::GetTempDir (): failed to create tempdir");
 }
-
 
 /*
  ********************************************************************************
@@ -169,18 +182,18 @@ filesystem::path AppTempFileManager::GetTempDir (const String& dirNameBase)
  ********************************************************************************
  */
 ScopedTmpDir::ScopedTmpDir (const String& fileNameBase)
-    : fTmpDir_{AppTempFileManager::Get ().GetTempDir (fileNameBase)}
+    : fTmpDir_{AppTempFileManager::sThe.GetTempDir (fileNameBase)}
 {
 }
 
 ScopedTmpDir::~ScopedTmpDir ()
 {
+    Debug::TraceContextBumper ctx{L"ScopedTmpDir::~ScopedTmpDir", L"readfilename=%s", Characters::ToString (fTmpDir_).c_str ()};
     try {
-        DbgTrace (L"ScopedTmpDir::~ScopedTmpDir - removing contents for '%s'", Characters::ToString (fTmpDir_).c_str ());
         remove_all (fTmpDir_);
     }
     catch (...) {
-        DbgTrace ("Ingoring exception clearing files in ScopedTmpDir DTOR: %s", Characters::ToString (current_exception ()).c_str ());
+        DbgTrace ("Ingoring exception DTOR: %s", Characters::ToString (current_exception ()).c_str ());
     }
 }
 
@@ -190,17 +203,16 @@ ScopedTmpDir::~ScopedTmpDir ()
  ********************************************************************************
  */
 ScopedTmpFile::ScopedTmpFile (const filesystem::path& fileBaseName)
-    : fTmpFile_{AppTempFileManager::Get ().GetTempFile (fileBaseName)}
+    : fTmpFile_{AppTempFileManager::sThe.GetTempFile (fileBaseName)}
 {
 }
 
 ScopedTmpFile::~ScopedTmpFile ()
 {
     try {
-        DbgTrace (L"ScopedTmpFile::~ScopedTmpFile - removing '%s'", Characters::ToString (fTmpFile_).c_str ());
         remove (fTmpFile_);
     }
     catch (...) {
-        DbgTrace ("Ingoring exception clearing files in ScopedTmpFile DTOR: %s", Characters::ToString (current_exception ()).c_str ());
+        DbgTrace ("Ingoring exception clearing file in ScopedTmpFile::~ScopedTmpFile: %s", Characters::ToString (current_exception ()).c_str ());
     }
 }
