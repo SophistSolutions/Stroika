@@ -336,7 +336,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     sb << "startReadyToTransitionToRunningEvent_: "sv << Characters::ToString (fStartReadyToTransitionToRunningEvent_.PeekIsSet ()) << ", "sv;
     sb << "threadDoneAndCanJoin: "sv << Characters::ToString (fThreadDoneAndCanJoin_.PeekIsSet ()) << ", "sv;
     if (fSavedException_.load () != nullptr) [[unlikely]] {
-        sb << "savedException: "sv << Characters::ToString (fSavedException_) << ", "sv;
+        sb << "savedException: "sv << Characters::ToString (fSavedException_.load ()) << ", "sv;
     }
     if (fInitialPriority_.load () != nullopt) [[unlikely]] {
         sb << "initialPriority: "sv << Characters::ToString (fInitialPriority_.load ()) << ", "sv;
