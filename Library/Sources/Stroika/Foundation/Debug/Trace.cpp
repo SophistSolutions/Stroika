@@ -141,43 +141,11 @@ namespace {
 #endif
 
 namespace {
-    /**
-     *  This USED to be just a regular recursive mutex (before Stroika v3). But since we allow for when we get calls before or after main.
-     *  Otherwise, our lock could be destroyed and hten we try to lock pointlessly and fruitlessly.
-     * 
-     *  And it turns out - this lock is not REALLY needed for any purpose. Only time this fails is before or after main when there are no threads.
-     *  And its mainly advisory, so the output of the threads isn't intermingled.
-     * 
-     *  Note - also COULD have fixed this by using 'ModuleInit' feature, but that extra overhead is not useful in this case.
-     */
-    struct AdvisoryLockSoTraceOutputNotIntermixed_ {
-        AdvisoryLockSoTraceOutputNotIntermixed_ ()
-        {
-            if (sMutex_.fLive) {
-                sMutex_.fActualMutex.lock ();
-            }
-        }
-        ~AdvisoryLockSoTraceOutputNotIntermixed_ ()
-        {
-            if (sMutex_.fLive) {
-                sMutex_.fActualMutex.unlock ();
-            }
-        }
-        struct MUTEX_ {
-            MUTEX_ ()
-                : fLive{true}
-            {
-            }
-            ~MUTEX_ ()
-
-            {
-                fLive = false;
-            }
-            recursive_mutex fActualMutex;
-            bool            fLive{false};
-        };
-        static inline MUTEX_ sMutex_;
-    };
+    inline recursive_mutex& GetEmitCritSection_ ()
+    {
+        static recursive_mutex sEmitTraceCritSec_;
+        return sEmitTraceCritSec_;
+    }
 }
 
 /*
@@ -381,7 +349,7 @@ namespace {
 template <typename CHARTYPE>
 Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* s, const CHARTYPE* e)
 {
-    [[maybe_unused]] auto&& critSec = AdvisoryLockSoTraceOutputNotIntermixed_{};
+    [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
     FlushBufferedCharacters_ ();
     Time::DurationSecondsType curRelativeTime = Time::GetTickCount ();
     {
@@ -460,7 +428,7 @@ void Emitter::FlushBufferedCharacters_ ()
 
 bool Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
 {
-    [[maybe_unused]] auto&& critSec = AdvisoryLockSoTraceOutputNotIntermixed_{};
+    [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
     // If the fLastNCharBuf_Token_ matches (no new tokens written since the saved one) and the time
     // hasn't been too long (we currently write 1/100th second timestamp resolution).
     // then blank unput (ignore) buffered characters, and return true so caller knows to write
@@ -618,7 +586,7 @@ TraceContextBumper::~TraceContextBumper ()
 {
     DecrCount_ ();
     if (fDoEndMarker) {
-        [[maybe_unused]] auto&& critSec = AdvisoryLockSoTraceOutputNotIntermixed_{};
+        [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
         if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
             Emitter::Get ().EmitUnadornedText ("/>");
             Emitter::Get ().EmitUnadornedText (GetEOL<char> ());
