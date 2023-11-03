@@ -14,8 +14,6 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta-Late">Beta-Late</a>
- *
- * TODO:
  */
 
 namespace Stroika::Foundation::IO::FileSystem {
