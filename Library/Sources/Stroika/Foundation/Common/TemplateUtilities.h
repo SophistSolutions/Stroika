@@ -21,8 +21,8 @@ namespace Stroika::Foundation::Common {
      *
      *  Based on template <class _Ty> _Ty& _Immortalize() from VS2k19 runtime library....
      */
-    template <typename T>
-    T& Immortalize ();
+    template <typename T, typename... ARGS>
+    T& Immortalize (ARGS... args);
 
     /**
      *  Utility to wrap a class that will not evaluate (illegal) for use with conditional_t (or other similar)

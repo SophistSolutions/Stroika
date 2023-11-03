@@ -18,8 +18,8 @@ namespace Stroika::Foundation::Common {
      ****************************** Common::Immortalize *****************************
      ********************************************************************************
      */
-    template <typename T>
-    inline T& Immortalize ()
+    template <typename T, typename... ARGS>
+    inline T& Immortalize (ARGS... args)
     {
         struct StorageImpl_ {
             union {
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Common {
         };
         static once_flag    sFlag_{};
         static StorageImpl_ sStorage_{};
-        call_once (sFlag_, [] () { ::new (&sStorage_) T{}; });
+        call_once (sFlag_, [&] () { ::new (&sStorage_) T{args...}; });
         return reinterpret_cast<T&> (sStorage_);
     }
 
