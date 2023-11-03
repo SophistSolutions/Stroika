@@ -1244,14 +1244,14 @@ namespace {
         [[maybe_unused]] Time::DurationSecondsType waitStart = Time::GetTickCount ();
         Sleep (1s); // long enough so t1 running
         try {
-            test.load (Time::Duration{5ms});
+            test.load (5ms);
             VerifyTestResult (false); // NOT REACHED
         }
         catch (...) {
             DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
         }
         try {
-            auto c = test.cget (Time::Duration{5ms});
+            auto c = test.cget (5ms);
             VerifyTestResult (false); // NOT REACHED
         }
         catch (...) {
@@ -1259,7 +1259,7 @@ namespace {
         }
         t1.AbortAndWaitForDone ();
         try {
-            auto c = test.cget (Time::Duration{5ms});
+            auto c = test.cget (5ms);
         }
         catch (...) {
             VerifyTestResult (false); // NOT REACHED
@@ -1346,14 +1346,14 @@ namespace {
         [[maybe_unused]] Time::DurationSecondsType waitStart = Time::GetTickCount ();
         Sleep (1s); // long enough so t1 running
         try {
-            test.load (Time::Duration{5ms});
+            test.load (5ms);
             VerifyTestResult (false); // NOT REACHED
         }
         catch (...) {
             DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
         }
         try {
-            auto c = test.cget (Time::Duration{5ms});
+            auto c = test.cget (5ms);
             VerifyTestResult (false); // NOT REACHED
         }
         catch (...) {
@@ -1363,7 +1363,7 @@ namespace {
         // doing this last part is what triggers TSAN failure if SanitizerDoubleLockWithConditionVariables
         // see https://stroika.atlassian.net/browse/STK-717
         try {
-            auto c = test.cget (Time::Duration{5ms});
+            auto c = test.cget (5ms);
         }
         catch (...) {
             VerifyTestResult (false); // NOT REACHED
