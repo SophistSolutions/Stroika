@@ -53,8 +53,8 @@ namespace Stroika::Foundation::IO::FileSystem {
      *      \code
      *          ThroughTmpFileWriter    tmpFile{targetFileName};
      *          {
-     *              FileOutputStream  out (tmpFile.GetTmpFilePath ());
-     *              YourCodeToWriteDataToStream (your_data, out);
+     *              IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
+     *              YourCodeToWriteDataToStream (your_data, outStream);
      *              // use scope (braces) to force close before commit (or call out.clear())
      *          }
      *          tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
