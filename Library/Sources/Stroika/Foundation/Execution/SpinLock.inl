@@ -35,6 +35,7 @@ namespace Stroika::Foundation::Execution {
          */
         bool result = not fLock_.test_and_set (memory_order_acquire);
         if (result) {
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wtsan\"");   // Needed in g++-13 and later, it appears, with --sanitize=thread, but so far no obvious real problems
             /*
              *  See https://stroika.atlassian.net/browse/STK-494 for notes on why this is right (using eReleaseAcquire/memory_order_acquire)
              */
@@ -48,6 +49,7 @@ namespace Stroika::Foundation::Execution {
                 default:
                     break;
             }
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wtsan\"");
         }
         return result;
     }
