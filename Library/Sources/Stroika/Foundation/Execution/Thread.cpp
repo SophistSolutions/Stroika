@@ -335,7 +335,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     sb << "refCountBumpedEvent: "sv << Characters::ToString (fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ()) << ", "sv;
     sb << "startReadyToTransitionToRunningEvent_: "sv << Characters::ToString (fStartReadyToTransitionToRunningEvent_.PeekIsSet ()) << ", "sv;
     sb << "threadDoneAndCanJoin: "sv << Characters::ToString (fThreadDoneAndCanJoin_.PeekIsSet ()) << ", "sv;
-    if (fSavedException_ != nullptr) [[unlikely]] {
+    if (fSavedException_.load () != nullptr) [[unlikely]] {
         sb << "savedException: "sv << Characters::ToString (fSavedException_) << ", "sv;
     }
     if (fInitialPriority_.load () != nullopt) [[unlikely]] {
@@ -914,8 +914,9 @@ void Thread::Ptr::ThrowIfDoneWithException () const
                                                                                  Characters::ToString (*this).c_str ())};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    if (fRep_ and fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_) {
-        ReThrow (fRep_->fSavedException_, "Rethrowing exception across threads");
+    if (fRep_ and fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_.load () != nullptr) {
+        // safe not holding lock cuz code simpler, and cannot transition from savedExcept to none - never cleared
+        ReThrow (fRep_->fSavedException_.load (), "Rethrowing exception across threads");
     }
 }
 
