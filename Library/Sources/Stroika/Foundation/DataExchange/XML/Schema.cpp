@@ -3,11 +3,6 @@
  */
 #include "../../StroikaPreComp.h"
 
-//#include <fstream>
-//#include <limits>
-//#include <set>
-//#include <sstream>
-
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
 
 #include "Schema.h"
