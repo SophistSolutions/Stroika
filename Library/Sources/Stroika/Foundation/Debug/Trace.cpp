@@ -14,6 +14,7 @@
 #include "../Characters/Format.h"
 #include "../Characters/LineEndings.h"
 #include "../Characters/ToString.h"
+#include "../Common/TemplateUtilities.h"
 #include "../Debug/Sanitizer.h"
 #include "../Debug/Valgrind.h"
 #include "../Execution/Common.h"
@@ -143,7 +144,9 @@ namespace {
 namespace {
     inline recursive_mutex& GetEmitCritSection_ ()
     {
-        static recursive_mutex sEmitTraceCritSec_;
+        // Immortalize, so can be used in static dtors called in semi-random order. Could force order with module-init, but no need todo that,
+        // since this DTOR doesn't do anything useful
+        static auto&& sEmitTraceCritSec_ = Common::Immortalize<recursive_mutex> ();
         return sEmitTraceCritSec_;
     }
 }
@@ -190,7 +193,9 @@ namespace {
     void Emit2File_ (Emitter& emitter, const char* text) noexcept
     {
         RequireNotNull (text);
-        static ofstream sTraceFile_{emitter.GetTraceFileName ().c_str (), ios::out | ios::binary};
+        // Note, we Immortalize ofstream so that calls to DbgTrace at end of application, during static destructors, can still
+        // be logged.
+        static auto&& sTraceFile_ = Common::Immortalize<ofstream> (emitter.GetTraceFileName ().c_str (), ios::out | ios::binary);
         try {
             if (sTraceFile_.is_open ()) {
                 sTraceFile_ << text;
