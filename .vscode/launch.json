@@ -32,7 +32,7 @@
       "name": "(lldb-UNIX) Launch EXE",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/Builds/Debug/Tests/Test50",
+      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test32",
       "args": []
     },
     {
