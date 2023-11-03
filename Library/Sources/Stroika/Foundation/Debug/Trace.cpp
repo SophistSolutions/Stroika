@@ -54,7 +54,7 @@ CompileTimeFlagChecker_SOURCE (Stroika::Foundation::Debug, qDefaultTracingOn, qD
 namespace {
     // This is MOSTLY to remove NEWLINES from the MIDDLE of a message - replace with kBadChar.
     const char kBadChar_ = ' ';
-    void       SquishBadCharacters_ (string* s)
+    void       SquishBadCharacters_ (string* s) noexcept
     {
         RequireNotNull (s);
         size_t end = s->length ();
@@ -68,7 +68,7 @@ namespace {
             }
         }
     }
-    void SquishBadCharacters_ (wstring* s)
+    void SquishBadCharacters_ (wstring* s) noexcept
     {
         RequireNotNull (s);
         size_t end = s->length ();
