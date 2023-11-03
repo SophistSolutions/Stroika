@@ -59,7 +59,9 @@ namespace Stroika::Foundation::IO::FileSystem {
      *          }
      *          tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
      *      \endcode
-     *
+     * 
+     *  \note - despite the similaries, this does not use AppTempFile module, because that writes in a specific place,
+     *          and for 'rename' to work, it must be in the same filesystem (disk/os dependent), so write in same folder (is what this does).
      */
     class ThroughTmpFileWriter {
     public:
