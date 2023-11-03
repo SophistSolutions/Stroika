@@ -127,7 +127,8 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
         filesystem::path trialName = fn / ToPath (basename + buf + ext);
         if (not exists (trialName)) {
 #if qPlatform_POSIX
-            int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT);
+            constexpr mode_t kCreateMode_  = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+            int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT, kCreateMode_);
 #elif qPlatform_Windows
             int                      fd;
             [[maybe_unused]] errno_t e = ::_sopen_s (&fd, trialName.generic_string ().c_str (), (O_RDWR | O_CREAT), _SH_DENYNO, 0);
