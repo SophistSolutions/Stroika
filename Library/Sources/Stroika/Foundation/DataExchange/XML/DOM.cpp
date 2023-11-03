@@ -1185,8 +1185,6 @@ void RWDocument::LoadXML (const String& xml)
     fRep->LoadXML (xml);
 }
 
-const bool kThrowInWSNodesForFancyFormatting = false; // mostly useful for debugging - but always leave on for now
-
 namespace {
     T_DOMNode* GetInternalRep_ (Node::Rep* anr)
     {
