@@ -27,10 +27,12 @@ namespace Stroika::Foundation::DataExchange::XML {
      *
      *  @see ObjectReaderRegistry for examples of one way to use this
      */
+#if qHasFeature_Xerces
     void SAXParse (const Streams::InputStream<byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback,
                    const optional<Schema>& schema = nullopt, Execution::ProgressMonitor::Updater progress = nullptr);
     void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const optional<Schema>& schema = nullopt,
                    Execution::ProgressMonitor::Updater progress = nullptr);
+    #endif
 
 }
 

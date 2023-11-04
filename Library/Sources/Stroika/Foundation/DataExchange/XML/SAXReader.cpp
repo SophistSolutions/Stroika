@@ -342,12 +342,10 @@ namespace {
         }
     };
 }
-#endif
 
 void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, [[maybe_unused]] StructuredStreamEvents::IConsumer& callback,
                     const optional<Schema>& schema, [[maybe_unused]] Execution::ProgressMonitor::Updater progress)
 {
-#if qHasFeature_Xerces
     SAX2PrintHandlers_                    handler{callback};
     shared_ptr<SAX2XMLReader>             parser;
     unique_ptr<Schema::AccessCompiledXSD> accessSchema;
@@ -363,9 +361,6 @@ void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, 
     parser->setErrorHandler (&sMyErrorReproter_);
     constexpr XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
     parser->parse (StdIStream_InputSourceWithProgress{in, ProgressMonitor::Updater{progress, 0.1f, 0.9f}, kBufID});
-#else
-    Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kSAXFactory));
-#endif
 }
 
 void XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const optional<Schema>& schema,
@@ -373,3 +368,4 @@ void XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& c
 {
     SAXParse (in.As<Streams::InputStream<byte>::Ptr> (), callback, schema, progress);
 }
+#endif
