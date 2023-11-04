@@ -285,7 +285,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
         EtcMimeTypesRep_ ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"InternetMediaTypeRegistry::{}::EtcMimeTypesRep_::CTOR"};
+            Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::{}::EtcMimeTypesRep_::CTOR"};
 #endif
             for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (
                      IO::FileSystem::FileInputStream::New ("/etc/mime.types"sv))) {
@@ -384,7 +384,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
         UsrShareMIMERep_ ()
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"InternetMediaTypeRegistry::{}UsrShareMIMERep_::CTOR"};
+            Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::{}UsrShareMIMERep_::CTOR"};
 #endif
             // @todo consider using globs2 file support, but little point since they seem to be written in priority order
             auto loadGlobsFromFile = [&] (const filesystem::path& fn) {
@@ -482,7 +482,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
         optional<String> LookupAndUpdateFromUsrShareMimePrettyName_ (const InternetMediaType& ct) const
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"{}MIMEDB_::LookupAndUpdateFromUsrShareMimePrettyName"};
+            Debug::TraceContextBumper ctx{"{}MIMEDB_::LookupAndUpdateFromUsrShareMimePrettyName"};
 #endif
             // @todo combine lock calls in this procedure
             if (auto o = fMediaType2PrettyNameCache.cget ()->Lookup (ct)) {
@@ -490,6 +490,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             }
             // SAX parse /usr/share/mime/TYPE/SUBTYPE.xml file and look for <comment> element (default with no language for now)
             // Simpler - just take the first - seems empirically fine/OK
+#if qHasFeature_Xerces
             try {
                 struct myHander_ : StructuredStreamEvents::IConsumer {
                     optional<String> fResult;
@@ -515,7 +516,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                         }
                     }
                 };
-                filesystem::path mimeRoot{"/usr/share/mime/"};
+                filesystem::path mimeRoot{"/usr/share/mime/"sv};
                 myHander_        handler;
                 // @todo validate ct.GetType () to make sure not a ../../ ATTACK
                 DataExchange::XML::SAXParse (
@@ -527,9 +528,12 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             }
             catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"failure ignored");
+                DbgTrace ("failure ignored");
 #endif
             }
+#else
+            DbgTrace ("/usr/share/mime/ ignored cuz no xml reader - not compiled with Xerces");
+#endif
             return nullopt;
         }
     };
