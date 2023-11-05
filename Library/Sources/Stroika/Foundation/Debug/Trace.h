@@ -80,71 +80,69 @@ namespace Stroika::Foundation::Debug {
 #define qStroika_Foundation_Debug_Trace_ShowThreadIndex 1
 #endif
 
-    // @todo wrap in private namespace
-    /**
-     *  Emitter is not meant to be used directly - but can be. Mostly users are expected to
-     *  use DbgTrace () or TraceContextBumper.
-     */
-    class Emitter {
-    public:
-        Emitter ()               = default;
-        Emitter (const Emitter&) = delete;
+    namespace Private_ {
 
-    public:
-        static Emitter& Get () noexcept;
+        class Emitter {
+        public:
+            Emitter ()               = default;
+            Emitter (const Emitter&) = delete;
+
+        public:
+            static Emitter& Get () noexcept;
 
 #if qTraceToFile
-    public:
-        static SDKString GetTraceFileName ();
+        public:
+            static SDKString GetTraceFileName ();
 #endif
 
-    public:
-        /**
+        public:
+            /**
          *   \note DbgTrace() is NOT a cancelation point, so you can call this freely without worrying about Throw (ThreadAbortException) etc
          */
-        nonvirtual void EmitTraceMessage (const char* format, ...) noexcept;
-        nonvirtual void EmitTraceMessage (const wchar_t* format, ...) noexcept;
+            nonvirtual void EmitTraceMessage (const char* format, ...) noexcept;
+            nonvirtual void EmitTraceMessage (const wchar_t* format, ...) noexcept;
 
-        // The 'TraceLastBufferedWriteTokenType' overload of EmitTraceMessage allows you to specify a set of (trailing) characters to
-        // be temporarily buffered. These characters are not immediately emitted, and can be cleared via UnputBufferedCharactersForMatchingToken ().
-        // They will eventually be flushed out on the next call to EmitTraceMessage ().
-        using TraceLastBufferedWriteTokenType = int;
-        nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept;
-        nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept;
+            // The 'TraceLastBufferedWriteTokenType' overload of EmitTraceMessage allows you to specify a set of (trailing) characters to
+            // be temporarily buffered. These characters are not immediately emitted, and can be cleared via UnputBufferedCharactersForMatchingToken ().
+            // They will eventually be flushed out on the next call to EmitTraceMessage ().
+            using TraceLastBufferedWriteTokenType = int;
+            nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept;
+            nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept;
 
-    public:
-        // if the last write matches the given token (no writes since then) and the timestamp is unchanged, abandon
-        // the buffered characters and return true. Else flush(write) them, and return false.
-        nonvirtual bool UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token);
+        public:
+            // if the last write matches the given token (no writes since then) and the timestamp is unchanged, abandon
+            // the buffered characters and return true. Else flush(write) them, and return false.
+            nonvirtual bool UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token);
 
-        template <typename CHARTYPE>
-        nonvirtual void EmitUnadornedText (const CHARTYPE* p);
+            template <typename CHARTYPE>
+            nonvirtual void EmitUnadornedText (const CHARTYPE* p);
 
-    private:
-        // This is the same as EmitTraceMessage_ - but it takes a plain string - and assumes the caller does any 'sprintf' stuff...
-        template <typename CHARTYPE>
-        nonvirtual TraceLastBufferedWriteTokenType DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e);
+        private:
+            // This is the same as EmitTraceMessage_ - but it takes a plain string - and assumes the caller does any 'sprintf' stuff...
+            template <typename CHARTYPE>
+            nonvirtual TraceLastBufferedWriteTokenType DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e);
 
-    private:
-        size_t fLastNCharBufCharCount_{0}; // len of valid data in fLastNCharBuf_CHAR_ or fLastNCharBuf_WCHAR_
-        char fLastNCharBuf_CHAR_[10]; // always filled in before used, so no need to initialize - NOT nul-terminated(see fLastNCharBufCharCount_)
-        wchar_t fLastNCharBuf_WCHAR_[10];
-        bool    fLastNCharBuf_WCHARFlag_{false}; // determines (if fLastNCharBufCharCount_!=0) which buffer CHAR or WCHAR to use
-        TraceLastBufferedWriteTokenType fLastNCharBuf_Token_{0};
-        Time::DurationSecondsType       fLastNCharBuf_WriteTickcount_{0.0};
+        private:
+            size_t fLastNCharBufCharCount_{0}; // len of valid data in fLastNCharBuf_CHAR_ or fLastNCharBuf_WCHAR_
+            char fLastNCharBuf_CHAR_[10]; // always filled in before used, so no need to initialize - NOT nul-terminated(see fLastNCharBufCharCount_)
+            wchar_t fLastNCharBuf_WCHAR_[10];
+            bool    fLastNCharBuf_WCHARFlag_{false}; // determines (if fLastNCharBufCharCount_!=0) which buffer CHAR or WCHAR to use
+            TraceLastBufferedWriteTokenType fLastNCharBuf_Token_{0};
+            Time::DurationSecondsType       fLastNCharBuf_WriteTickcount_{0.0};
 
-        nonvirtual void BufferNChars_ (size_t nChars, const char* p);
-        nonvirtual void BufferNChars_ (size_t nChars, const wchar_t* p);
+            nonvirtual void BufferNChars_ (size_t nChars, const char* p);
+            nonvirtual void BufferNChars_ (size_t nChars, const wchar_t* p);
 
-    private:
-        nonvirtual void FlushBufferedCharacters_ ();
+        private:
+            nonvirtual void FlushBufferedCharacters_ ();
 
-    private:
-        nonvirtual void DoEmit_ (const char* p) noexcept;
-        nonvirtual void DoEmit_ (const wchar_t* p) noexcept;
-        nonvirtual void DoEmit_ (const char* p, const char* e) noexcept;
-        nonvirtual void DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept;
-    };
+        private:
+            nonvirtual void DoEmit_ (const char* p) noexcept;
+            nonvirtual void DoEmit_ (const wchar_t* p) noexcept;
+            nonvirtual void DoEmit_ (const char* p, const char* e) noexcept;
+            nonvirtual void DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept;
+        };
+    }
 
     /**
      *  Just for debugging purposes, get the name displayed in the trace log for the given thread-id.
@@ -197,7 +195,6 @@ namespace Stroika::Foundation::Debug {
      *          };
      *      \endcode
      *
-
      *  \note ***Not Cancelation Point*** - and uses  noexcept
      */
     class TraceContextBumper {
@@ -212,7 +209,7 @@ namespace Stroika::Foundation::Debug {
          *  For TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) usage, @see Stroika_Foundation_Debug_OptionalizeTraceArgs
          *  to optionally supress side-effects.
          *
-         *  \note ***Not Cancelation Point*** - and uses  noexcept
+         *  \note ***Not Cancelation Point*** - and uses noexcept
          */
         TraceContextBumper () noexcept;
         TraceContextBumper (const char* contextName) noexcept;
@@ -238,8 +235,8 @@ namespace Stroika::Foundation::Debug {
         static constexpr size_t kMaxContextNameLen_{80};
 
     private:
-        wchar_t                                  fSavedContextName_[kMaxContextNameLen_]{};
-        Emitter::TraceLastBufferedWriteTokenType fLastWriteToken_{}; // used to COMBINE items into a single line if they happen quickly enuf
+        wchar_t fSavedContextName_[kMaxContextNameLen_]{};
+        Private_::Emitter::TraceLastBufferedWriteTokenType fLastWriteToken_{}; // used to COMBINE items into a single line if they happen quickly enuf
 
     private:
         static array<wchar_t, kMaxContextNameLen_ + 1> mkwtrfromascii_ (const char* contextName);
@@ -305,7 +302,7 @@ namespace Stroika::Foundation::Debug {
      */
 #ifndef DbgTrace
 #if qDefaultTracingOn
-#define DbgTrace Stroika::Foundation::Debug::Emitter::Get ().EmitTraceMessage
+#define DbgTrace Stroika::Foundation::Debug::Private_::Emitter::Get ().EmitTraceMessage
 #else
 #define DbgTrace _NoOp_
 #endif

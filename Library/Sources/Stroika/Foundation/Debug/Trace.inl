@@ -29,11 +29,11 @@ namespace Stroika::Foundation::Debug {
 
     /*
      ********************************************************************************
-     ******************************* Trace::Emitter *********************************
+     ******************************* Debug::Private_::Emitter ***********************
      ********************************************************************************
      */
     template <typename CHARTYPE>
-    inline void Emitter::EmitUnadornedText (const CHARTYPE* p)
+    inline void Private_::Emitter::EmitUnadornedText (const CHARTYPE* p)
     {
         DoEmit_ (p);
     }
