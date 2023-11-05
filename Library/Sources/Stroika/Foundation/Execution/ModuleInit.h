@@ -17,7 +17,6 @@
 
 namespace Stroika::Foundation::Execution {
 
-   
     class [[deprecated ("Since Stroika v3.0d4 - use call_once or static inline")]] ModuleDependency {
     public:
         ModuleDependency (void (*start) (), void (*end) ());
@@ -27,9 +26,8 @@ namespace Stroika::Foundation::Execution {
         void (*fEnd_) ();
     };
 
-    
     template <typename MODULE_DATA>
-    class [[deprecated("Since Stroika v3.0d4 - use call_once or static inline")]] ModuleInitializer {
+    class [[deprecated ("Since Stroika v3.0d4 - use call_once or static inline")]] ModuleInitializer {
     public:
         /**
          */
