@@ -19,9 +19,7 @@
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
-
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
 
@@ -70,7 +68,6 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
 using std::byte;
-
 
 namespace {
     String xercesString2String_ (const XMLCh* s, const XMLCh* e)
