@@ -39,7 +39,6 @@ namespace Stroika::Foundation::Debug {
 #else
 #define qStroika_Foundation_Debug_Trace_TraceToFile 0
 #endif
-
 #endif
 
     /*
@@ -59,11 +58,12 @@ namespace Stroika::Foundation::Debug {
 #if !defined(qStroika_Foundation_Debug_Trace_DefaultTracingOn)
 
 #if defined(qDefaultTracingOn)
-#warning "use qStroika_Foundation_Debug_Trace_TraceToFile since Stroika v3.0d4 "
+#warning "use qStroika_Foundation_Debug_Trace_DefaultTracingOn since Stroika v3.0d4 "
 #define qStroika_Foundation_Debug_Trace_DefaultTracingOn qDefaultTracingOn
 #else
 #define qStroika_Foundation_Debug_Trace_DefaultTracingOn qDebug
-#endif #endif
+#endif
+#endif
 
     /**
      * \brief if true, emit a much shorter thread ID, making - I suspect (testing) for terser and clearer tracelogs. 

@@ -131,7 +131,7 @@ namespace {
     PrivateModuleData_* sModuleData_{nullptr};
 }
 
-Debug::Private_::ModuleInit_::ModuleInit_ ()
+Debug::Private_::ModuleInit_::ModuleInit_ () noexcept
 {
     Assert (sModuleData_ == nullptr);
     sModuleData_ = new PrivateModuleData_ ();
