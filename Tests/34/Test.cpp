@@ -1362,22 +1362,22 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-            #if qStroika_Foundation_DataExchange_XML_SupportParsing
-            Test_1_SAXParser_ ();
-            Test_SAX_ObjectReader_EXAMPLE_1_ ();
-            T3_SAXObjectReader_ReadDown2Sample_::DoTest ();
-            T4_SAXObjectReader_ReadDown2Sample_MixedContent_::DoTest ();
-            T5_SAXObjectReader_DocSamples_::DoTests ();
-            T6_SAXObjectReader_RepeatedElementReader_Sample_::DoTest ();
-            T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest ();
-            T8_SAXObjectReader_BLKQCL_ReadAlarms_::DoTest ();
-            T9_SAXObjectReader_BLKQCL_ReadScanDetails_::DoTest ();
-            T10_SAXObjectReader_NANValues_::DoTest ();
-            T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::DoTest ();
-            T12_RangeReader_::DoTest ();
-            T13_SAXObjectReader_OverrideTypeInStructInfo_::DoTest ();
-            T14_SAXObjectReader_CustomSimpleType_::DoTest ();
-            #endif
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
+        Test_1_SAXParser_ ();
+        Test_SAX_ObjectReader_EXAMPLE_1_ ();
+        T3_SAXObjectReader_ReadDown2Sample_::DoTest ();
+        T4_SAXObjectReader_ReadDown2Sample_MixedContent_::DoTest ();
+        T5_SAXObjectReader_DocSamples_::DoTests ();
+        T6_SAXObjectReader_RepeatedElementReader_Sample_::DoTest ();
+        T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest ();
+        T8_SAXObjectReader_BLKQCL_ReadAlarms_::DoTest ();
+        T9_SAXObjectReader_BLKQCL_ReadScanDetails_::DoTest ();
+        T10_SAXObjectReader_NANValues_::DoTest ();
+        T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::DoTest ();
+        T12_RangeReader_::DoTest ();
+        T13_SAXObjectReader_OverrideTypeInStructInfo_::DoTest ();
+        T14_SAXObjectReader_CustomSimpleType_::DoTest ();
+#endif
     }
 }
 

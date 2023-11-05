@@ -140,8 +140,6 @@ namespace {
 }
 #endif
 
-
-
 /*
  ********************************************************************************
  *********************** Debug::Private_::EmitFirstTime *************************
@@ -166,11 +164,6 @@ void Debug::Private_::EmitFirstTime (Emitter& emitter)
     emitter.EmitTraceMessage (L"</debug-state>");
 }
 
-
-
-
-
-
 /*
  ********************************************************************************
  ************************* Debug::Private_::ModuleInit_ *************************
@@ -179,39 +172,34 @@ void Debug::Private_::EmitFirstTime (Emitter& emitter)
 
 namespace {
     struct PrivateModuleData_ {
-        recursive_mutex fModuleMutex;       // see GetEmitCritSection_
+        recursive_mutex fModuleMutex; // see GetEmitCritSection_
 #if qTraceToFile
         ofstream fTraceFile;
-        #endif
+#endif
 
-        #if qTraceToFile
-        PrivateModuleData_()
+#if qTraceToFile
+        PrivateModuleData_ ()
         {
             fTraceFile.open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
         }
-        #endif
+#endif
     };
     PrivateModuleData_* sModuleData_{nullptr};
 }
 
-            Debug::Private_::ModuleInit_::ModuleInit_ ()
+Debug::Private_::ModuleInit_::ModuleInit_ ()
 {
     Assert (sModuleData_ == nullptr);
     sModuleData_ = new PrivateModuleData_ ();
-
-            }
-            Debug::Private_::ModuleInit_::~ModuleInit_ ()
-            {
+}
+Debug::Private_::ModuleInit_::~ModuleInit_ ()
+{
     Assert (sModuleData_ != nullptr);
     delete sModuleData_;
-    #if qDebug
+#if qDebug
     sModuleData_ = nullptr;
-    #endif
-            }
-
-
-
-
+#endif
+}
 
 /*
  ********************************************************************************
