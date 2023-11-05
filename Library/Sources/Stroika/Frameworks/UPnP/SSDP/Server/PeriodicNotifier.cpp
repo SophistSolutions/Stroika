@@ -56,7 +56,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
         }
     }
 
-    if constexpr (qDefaultTracingOn) {
+    if constexpr (qStroika_Foundation_Debug_Trace_DefaultTracingOn) {
         Debug::TraceContextBumper ctx{"SSDP PeriodicNotifier - first time notifications"};
         for ([[maybe_unused]] const auto& a : advertisements) {
             DbgTrace (L"(alive,loc=%s,usn=%s,...)", Characters::ToString (a.fLocation).As<wstring> ().c_str (), a.fUSN.As<wstring> ().c_str ());

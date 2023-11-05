@@ -97,7 +97,7 @@ public:
             }
             catch (...) {
                 // other exceptions WARNING WITH DEBUG MESSAGE - but otherwise - EAT/IGNORE
-                if constexpr (kEmitDbgTraceOnThreadPoolEntryExceptions_ and qDefaultTracingOn) {
+                if constexpr (kEmitDbgTraceOnThreadPoolEntryExceptions_ and qStroika_Foundation_Debug_Trace_DefaultTracingOn) {
                     DbgTrace (L"in threadpool, ignoring exception running task: %s", Characters::ToString (current_exception ()).c_str ());
                 }
             }

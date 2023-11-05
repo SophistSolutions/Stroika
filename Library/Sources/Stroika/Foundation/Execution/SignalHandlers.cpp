@@ -603,7 +603,7 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
     Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_", L"signal = %s",
                                      SignalToName (signal).c_str ()};
 #endif
-#if qDoBacktraceOnFirstPassSignalHandler_ and qDefaultTracingOn
+#if qDoBacktraceOnFirstPassSignalHandler_ and qStroika_Foundation_Debug_Trace_DefaultTracingOn
     {
         wstring tmp{Debug::BackTrace ()};
         if (not tmp.empty ()) {

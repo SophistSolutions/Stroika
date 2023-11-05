@@ -35,8 +35,8 @@ namespace Stroika::Foundation::Execution {
      *  This is only meant for debugging. If true, track the running threads (and provide API to access)
      *  and DbgTrace() automatically in construction/destruction.
      */
-#ifndef qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-#define qStroika_Foundation_Exection_Thread_SupportThreadStatistics qDebug
+#ifndef qStroika_Foundation_Execution_Thread_SupportThreadStatistics
+#define qStroika_Foundation_Execution_Thread_SupportThreadStatistics qDebug
 #endif
 
     /**
@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Execution {
      *
      *          Note the Thread 'smartpointer' wrapper can be constructed/destructed statically (before/after main). You
      *          just cannot start a thread before main, nor allow it to still be running (not completed) before exiting.
-     *          #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics (defaults true in debug builds) an attempt
+     *          #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics (defaults true in debug builds) an attempt
      *          is made to auto-detect this and diagnose it in the tracelog and with assertions.
      *
      *  \note   Considered adding an API to return the underlying std::thread or std::thread::native_handle (), but
@@ -520,7 +520,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note   This does a tiny bit more than waiting for the done state to be set - it also
              *          'joins' (frees memory for) underlying thread if still allocated. This should not be visible/noticed
-             *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+             *          except for in a debugger or #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
              *
              *  \note ***Cancelation Point***
              *
@@ -539,7 +539,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \note   This does a tiny bit more than waiting for the done state to be set - it also
              *          'joins' (frees memory for) underlying thread if still allocated. This should not be visible/noticed
-             *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+             *          except for in a debugger or #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
              *
              *  \note ***Cancelation Point***
              *
@@ -981,7 +981,7 @@ namespace Stroika::Foundation::Execution {
 
         class SuppressInterruptionInContext;
 
-#if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         /**
          */
         struct Statistics {

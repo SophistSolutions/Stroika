@@ -74,7 +74,7 @@ namespace {
     thread_local unsigned int t_InterruptionSuppressDepth_{0};
 }
 
-#if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
 namespace {
     // use mutex and set<> to avoid interdependencies between low level Stroika facilities
     mutex               sThreadSupportStatsMutex_;
@@ -512,7 +512,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 
         [[maybe_unused]] IDType thisThreadID = GetCurrentThreadID (); // NOTE - CANNOT call thisThreadRep->GetID () or in any way touch thisThreadRep->fThread_
 
-#if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         {
             Require (Debug::AppearsDuringMainLifetime ());
             [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
@@ -941,7 +941,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) 
     if (fRep_->fThreadDoneAndCanJoin_.WaitUntilQuietly (timeoutAt) == WaitableEvent::WaitStatus::eTriggered) {
         /*
          *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
-         *  This really only has effect #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+         *  This really only has effect #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
          *  because thats the only time we have an imporant side effect of the threads finalizing.
          *
          *  @see https://stroika.atlassian.net/browse/STK-496
@@ -978,7 +978,7 @@ void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType tim
         }
         Platform::Windows::WaitAndPumpMessages (nullptr, {thread}, time2Wait);
     }
-    WaitForDone (); // just to get the qStroika_Foundation_Exection_Thread_SupportThreadStatistics / join ()
+    WaitForDone (); // just to get the qStroika_Foundation_Execution_Thread_SupportThreadStatistics / join ()
 }
 #endif
 
@@ -1049,7 +1049,7 @@ Thread::Configuration Thread::DefaultConfiguration (const optional<Configuration
     return result;
 }
 
-#if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
 Thread::Statistics Thread::GetStatistics ()
 {
     [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
@@ -1231,7 +1231,7 @@ void Execution::Thread::CheckForInterruption ()
                 }
             }
         }
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
         else if (thisRunningThreadRep->fInterruptionState_) {
             static atomic<unsigned int> sSuperSuppress_{};
             if (++sSuperSuppress_ <= 1) {

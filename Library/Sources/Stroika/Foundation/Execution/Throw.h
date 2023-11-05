@@ -33,31 +33,31 @@
 namespace Stroika::Foundation::Execution {
 
     /**
-     *  qStroika_Foundation_Exection_Throw_TraceThrowpoint controls whether or not Stroika will DbgTrace () on
+     *  qStroika_Foundation_Execution_Throw_TraceThrowpoint controls whether or not Stroika will DbgTrace () on
      *  (essentially) all exception throws.
      *
      *  This is nearly always desirable, but in applications that do lots of exceptions (probably not a good idea), this can produce
      *  alot of tracelog noise, and some people object to it.
      *
-     *  Since this only affects calls to DbgTrace () - it only has effect if qDefaultTracingOn is on.
+     *  Since this only affects calls to DbgTrace () - it only has effect if qStroika_Foundation_Debug_Trace_DefaultTracingOn is on.
      *
      *  \note - to turn this on, you can add the flag
-     *          --c-define '\#define qStroika_Foundation_Exection_Throw_TraceThrowpoint 0'
+     *          --c-define '\#define qStroika_Foundation_Execution_Throw_TraceThrowpoint 0'
      *          to your configure line
      */
-#ifndef qStroika_Foundation_Exection_Throw_TraceThrowpoint
-#define qStroika_Foundation_Exection_Throw_TraceThrowpoint qDefaultTracingOn
+#ifndef qStroika_Foundation_Execution_Throw_TraceThrowpoint
+#define qStroika_Foundation_Execution_Throw_TraceThrowpoint qStroika_Foundation_Debug_Trace_DefaultTracingOn
 #endif
 
     /**
-     *  qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace is only meant for debugging. If true, then the
+     *  qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace is only meant for debugging. If true, then the
      *  overloads to Throw will also include a call to BackTrace, so its easier to track in TraceLogs where an exception 
      *  is thrown from (helpful when you don't have a debugger).
      *
-     *  This has no effect unless qStroika_Foundation_Exection_Throw_TraceThrowpoint is also true.
+     *  This has no effect unless qStroika_Foundation_Execution_Throw_TraceThrowpoint is also true.
      */
-#ifndef qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-#define qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace qDefaultTracingOn
+#ifndef qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
+#define qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace qStroika_Foundation_Debug_Trace_DefaultTracingOn
 #endif
 
     /**

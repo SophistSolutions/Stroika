@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Execution {
         /**
          *  If enabled, fTraceLocksName field available, and if its set, DbgTrace calls on lock/unlock.
          */
-        static constexpr bool kDbgTraceLockUnlockIfNameSet = qDefaultTracingOn;
+        static constexpr bool kDbgTraceLockUnlockIfNameSet = qStroika_Foundation_Debug_Trace_DefaultTracingOn;
 
         /**
          */

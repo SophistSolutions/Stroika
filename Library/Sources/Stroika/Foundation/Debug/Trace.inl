@@ -7,13 +7,11 @@
 #ifndef _Stroika_Foundation_Debug_Trace_inl_
 #define _Stroika_Foundation_Debug_Trace_inl_ 1
 
-#if qTraceToFile
 #include <filesystem>
-#endif
 #include <mutex>
 
-CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
-CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qDefaultTracingOn);
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qStroika_Foundation_Debug_Trace_TraceToFile);
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qStroika_Foundation_Debug_Trace_DefaultTracingOn);
 
 #include "../Execution/ModuleInit.h"
 
@@ -35,7 +33,7 @@ namespace Stroika::Foundation::Debug {
     public:
         static Emitter& Get () noexcept;
 
-#if qTraceToFile
+#if qStroika_Foundation_Debug_Trace_TraceToFile
     public:
         static filesystem::path GetTraceFileName ();
 #endif
@@ -91,11 +89,11 @@ namespace Stroika::Foundation::Debug {
      */
     inline TraceContextBumper::TraceContextBumper () noexcept
     {
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
         IncCount_ ();
 #endif
     }
-#if !qDefaultTracingOn
+#if !qStroika_Foundation_Debug_Trace_DefaultTracingOn
     inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName) noexcept
     {
     }

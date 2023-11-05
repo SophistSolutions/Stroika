@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Debug {
         : WhenTimeExceeded
     {
         warnIfLongerThan,
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
             [] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("(timeTaken=%f seconds)", timeTaken); }
 #else
             nullptr
@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Debug {
         : WhenTimeExceeded
     {
         warnIfLongerThan,
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
             [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("%s (timeTaken=%f seconds)", label, timeTaken); }
 #else
             nullptr
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Debug {
         : WhenTimeExceeded
     {
         warnIfLongerThan,
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
             [=] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label, timeTaken); }
 #else
             nullptr
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Debug {
         : WhenTimeExceeded
     {
         warnIfLongerThan,
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
             [=] (Time::DurationSecondsType timeTaken) noexcept {
                 DbgTrace (L"%s (timeTaken=%f seconds)", label.As<wstring> ().c_str (), timeTaken);
             }

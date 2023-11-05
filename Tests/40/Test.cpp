@@ -528,7 +528,7 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest6_ThreadWaiting_"};
         Debug::TimingTrace        tt;
-#if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         // if this triggers - add waits to end of procedure - so we assure no 'side effects' moving on to next test...
         [[maybe_unused]] auto&& cleanupReport = Finally ([] () {
             again:
@@ -1326,7 +1326,7 @@ namespace {
         using MutexType                                    = mymutex_;
         static constexpr bool kIsRecursiveReadMutex        = true;
         static constexpr bool kIsRecursiveLockMutex        = true;
-        static constexpr bool kDbgTraceLockUnlockIfNameSet = qDefaultTracingOn;
+        static constexpr bool kDbgTraceLockUnlockIfNameSet = qStroika_Foundation_Debug_Trace_DefaultTracingOn;
         static constexpr bool kSupportsTimedLocks          = true;
         static constexpr bool kSupportSharedLocks          = false;
         using ReadLockType  = conditional_t<kSupportSharedLocks, shared_lock<MutexType>, unique_lock<MutexType>>;
@@ -1386,7 +1386,7 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-#if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+#if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         [[maybe_unused]] auto&& cleanupReport = Finally ([] () noexcept {
             auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
             DbgTrace ("Total Running threads at end: %d", runningThreads.size ());

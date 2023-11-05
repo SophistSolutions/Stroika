@@ -14,5 +14,5 @@ This folder contains all the Stroika Library [Foundation](../)::Debug source cod
 - [MallocGuard.h](MallocGuard.h)
 - [Sanitizer.h](Sanitizer.h)
 - [TimingTrace.h](TimingTrace.h)
-- [Trace.h](Trace.h) - function **DbgTrace()** and **TraceContextBumper** and **qTraceToFile** - handy builtin threaded logging feature
+- [Trace.h](Trace.h) - function **DbgTrace()** and **TraceContextBumper** and **qStroika_Foundation_Debug_Trace_TraceToFile** - handy builtin threaded logging feature
 - [Valgrind.h](Valgrind.h)

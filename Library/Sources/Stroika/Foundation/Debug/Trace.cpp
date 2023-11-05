@@ -26,7 +26,7 @@
 #include "../Time/DateTime.h"
 #include "../Time/Realtime.h"
 
-#if qTraceToFile
+#if qStroika_Foundation_Debug_Trace_TraceToFile
 #include "../IO/FileSystem/WellKnownLocations.h"
 #include "../Time/DateTime.h"
 #endif
@@ -50,8 +50,8 @@ using Debug::Private_::Emitter;
  *              -- LGP 2011-10-03
  */
 
-CompileTimeFlagChecker_SOURCE (Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
-CompileTimeFlagChecker_SOURCE (Stroika::Foundation::Debug, qDefaultTracingOn, qDefaultTracingOn);
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::Debug, qTraceToFile, qStroika_Foundation_Debug_Trace_TraceToFile);
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::Debug, qDefaultTracingOn, qStroika_Foundation_Debug_Trace_DefaultTracingOn);
 
 namespace {
     // This is MOSTLY to remove NEWLINES from the MIDDLE of a message - replace with kBadChar.
@@ -87,7 +87,7 @@ namespace {
 }
 
 namespace {
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
     thread_local unsigned int tTraceContextDepth_{0}; // no need for atomic access because thread_local
 #endif
 
@@ -117,11 +117,11 @@ namespace {
         recursive_mutex fModuleMutex; // see GetEmitCritSection_
         Emitter         fEmitter;
 
-#if qTraceToFile
+#if qStroika_Foundation_Debug_Trace_TraceToFile
         ofstream fTraceFile;
 #endif
 
-#if qTraceToFile
+#if qStroika_Foundation_Debug_Trace_TraceToFile
         PrivateModuleData_ ()
         {
             fTraceFile.open (Debug::Private_::Emitter::GetTraceFileName ().native ().c_str (), ios::out | ios::binary);
@@ -157,8 +157,8 @@ auto Debug::Private_::Emitter::Get () noexcept -> Emitter&
         // which is why this function takes Emitter as argument!
         sModuleData_->fEmitter.EmitTraceMessage (L"***Starting TraceLog***");
         sModuleData_->fEmitter.EmitTraceMessage (L"Starting at %s", Time::DateTime::Now ().Format ().c_str ());
-#if qTraceToFile
-        sModuleData_->fEmitter.EmitTraceMessage (L"qTraceToFile: %s", Characters::ToString (Emitter::GetTraceFileName ()).c_str ());
+#if qStroika_Foundation_Debug_Trace_TraceToFile
+        sModuleData_->fEmitter.EmitTraceMessage (L"TraceFileName: %s", Characters::ToString (Emitter::GetTraceFileName ()).c_str ());
 #endif
         sModuleData_->fEmitter.EmitTraceMessage (L"EXEPath=%s", Characters::ToString (Execution::GetEXEPath ()).c_str ());
         sModuleData_->fEmitter.EmitTraceMessage (L"<debug-state {>");
@@ -177,7 +177,7 @@ auto Debug::Private_::Emitter::Get () noexcept -> Emitter&
     return sModuleData_->fEmitter;
 }
 
-#if qTraceToFile
+#if qStroika_Foundation_Debug_Trace_TraceToFile
 filesystem::path Debug::Private_::Emitter::GetTraceFileName ()
 {
     auto mkTraceFileName_ = [] () -> filesystem::path {
@@ -226,7 +226,7 @@ filesystem::path Debug::Private_::Emitter::GetTraceFileName ()
 }
 #endif
 
-#if qTraceToFile
+#if qStroika_Foundation_Debug_Trace_TraceToFile
 namespace {
     void Emit2File_ (const char* text) noexcept
     {
@@ -258,7 +258,7 @@ namespace {
 /*
 @DESCRIPTION:   <p>This function takes a 'format' argument and then any number of additional arguments - exactly
             like std::printf (). It calls std::vsprintf () internally. This can be called directly - regardless of the
-             @'qDefaultTracingOn' flag - but is typically just called indirectly by calling
+             @'qStroika_Foundation_Debug_Trace_DefaultTracingOn' flag - but is typically just called indirectly by calling
              @'DbgTrace'.</p>
 */
 void Debug::Private_::Emitter::EmitTraceMessage (const char* format, ...) noexcept
@@ -418,7 +418,7 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
         }
         DoEmit_ (buf);
     }
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
     unsigned int contextDepth = TraceContextBumper::GetCount ();
     for (unsigned int i = 0; i < contextDepth; ++i) {
         DoEmit_ (L"\t");
@@ -498,7 +498,7 @@ void Debug::Private_::Emitter::DoEmit_ (const char* p) noexcept
         ::OutputDebugStringA (GetEOL<char> ());
     }
 #endif
-#if qTraceToFile
+#if qStroika_Foundation_Debug_Trace_TraceToFile
     Emit2File_ (p);
 #endif
 }
@@ -519,7 +519,7 @@ void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p) noexcept
         ::OutputDebugStringW (GetEOL<wchar_t> ());
     }
 #endif
-#if qTraceToFile
+#if qStroika_Foundation_Debug_Trace_TraceToFile
     Emit2File_ (p);
 #endif
 }
@@ -567,7 +567,7 @@ string Debug::GetDbgTraceThreadName_A (thread::id threadID)
  ****************************** TraceContextBumper ******************************
  ********************************************************************************
  */
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
 TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
     : fDoEndMarker{true}
 {

@@ -23,7 +23,7 @@ namespace {
         if (auto exc = current_exception ()) {
             DbgTrace (L"Uncaught exception", Characters::ToString (exc).c_str ());
         }
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
         {
             wstring tmp{Debug::BackTrace::Capture ()};
             if (not tmp.empty ()) {

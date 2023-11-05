@@ -173,7 +173,7 @@ namespace Stroika::Frameworks::WebServer {
         ConnectionManager (const SocketAddress& bindAddress, const Sequence<Route>& routes, const Options& options = kDefaultOptions);
         ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Sequence<Route>& routes, const Options& options = kDefaultOptions);
         ConnectionManager (const ConnectionManager&) = delete;
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
         ~ConnectionManager ();
 #else
         ~ConnectionManager () = default;

@@ -65,7 +65,7 @@ struct Listener::Rep_ {
             },
             Thread::eAutoStart, "Socket Listener: " + Characters::ToString (addrs));
     }
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
     ~Rep_ ()
     {
         DbgTrace (L"Starting destructor for Listener::Rep_ (%p)", this);

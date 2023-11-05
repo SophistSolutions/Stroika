@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Execution {
     {
         return logLevel >= fMinLogLevel_ and GetAppender () != nullptr;
     }
-#if !qDefaultTracingOn
+#if !qStroika_Foundation_Debug_Trace_DefaultTracingOn
     inline void Logger::Log (Priority logLevel, const wchar_t* format, ...)
     {
         if (WouldLog (logLevel)) {

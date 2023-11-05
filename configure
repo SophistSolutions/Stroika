@@ -2131,10 +2131,10 @@ sub GetDefaultCZZFLAGS_flags_
 			push @flags, $dashFlag . "qHasFeature_LZMA=" . ZERO_OR_1_ (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_boost=" . ZERO_OR_1_ (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem));
 			if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
-				push @flags, $dashFlag . "qTraceToFile=" . ZERO_OR_1_ ($ENABLE_TRACE2FILE);
+				push @flags, $dashFlag . "qStroika_Foundation_Debug_Trace_TraceToFile=" . ZERO_OR_1_ ($ENABLE_TRACE2FILE);
 				#override the default (true iff qDebug) - if set the trace2file option set 
 				if ($ENABLE_TRACE2FILE == 1) {
-					push @flags, $dashFlag . "qDefaultTracingOn=1";
+					push @flags, $dashFlag . "qStroika_Foundation_Debug_Trace_DefaultTracingOn=1";
 				}
 			}
 

@@ -814,7 +814,7 @@ void ActiveLedItControl::RemoveFrameLevelUI ()
 
 BOOL ActiveLedItControl::OnSetObjectRects (LPCRECT lprcPosRect, LPCRECT lprcClipRect)
 {
-#if qDefaultTracingOn
+#if qStroika_Foundation_Debug_Trace_DefaultTracingOn
     if (lprcClipRect == NULL) {
         DbgTrace (
             Led_SDK_TCHAROF (
