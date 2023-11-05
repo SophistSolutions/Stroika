@@ -16,7 +16,6 @@
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Time/Realtime.h"
@@ -55,6 +54,7 @@ namespace {
     }
 }
 
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
 namespace {
     void Test_1_SAXParser_ ()
     {
@@ -1356,12 +1356,13 @@ namespace T14_SAXObjectReader_CustomSimpleType_ {
         }
     }
 }
+#endif
 
 namespace {
 
     void DoRegressionTests_ ()
     {
-        try {
+            #if qStroika_Foundation_DataExchange_XML_SupportParsing
             Test_1_SAXParser_ ();
             Test_SAX_ObjectReader_EXAMPLE_1_ ();
             T3_SAXObjectReader_ReadDown2Sample_::DoTest ();
@@ -1376,15 +1377,7 @@ namespace {
             T12_RangeReader_::DoTest ();
             T13_SAXObjectReader_OverrideTypeInStructInfo_::DoTest ();
             T14_SAXObjectReader_CustomSimpleType_::DoTest ();
-        }
-        catch (const Execution::RequiredComponentMissingException&) {
-#if !qHasLibrary_Xerces
-// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-// This is more like the absence of a feature beacuse of the missing component.
-#else
-            Execution::ReThrow ();
-#endif
-        }
+            #endif
     }
 }
 
