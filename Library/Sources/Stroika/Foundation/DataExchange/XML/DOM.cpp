@@ -1141,9 +1141,7 @@ namespace {
 namespace {
     class MyNodeRep : public Node::Rep, Memory::UseBlockAllocationIfAppropriate<MyNodeRep> {
     public:
-        MyNodeRep (
-            DOMNode* n
-            )
+        MyNodeRep (DOMNode* n)
             : fNode (n)
         {
             RequireNotNull (n);

@@ -22,7 +22,6 @@
 
 namespace Stroika::Foundation::DataExchange::XML {
 
-
     /**
      * Parse will throw an exception if it encounters any errors parsing.
      *
@@ -33,7 +32,7 @@ namespace Stroika::Foundation::DataExchange::XML {
                    const optional<Schema>& schema = nullopt, Execution::ProgressMonitor::Updater progress = nullptr);
     void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const optional<Schema>& schema = nullopt,
                    Execution::ProgressMonitor::Updater progress = nullptr);
-    #endif
+#endif
 
 }
 

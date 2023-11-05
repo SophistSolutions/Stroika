@@ -14,7 +14,6 @@
 
 #include "DOM.h"
 
-
 #if qHasFeature_Xerces
 namespace xercesc_3_2 {
     class XMLGrammarPool;

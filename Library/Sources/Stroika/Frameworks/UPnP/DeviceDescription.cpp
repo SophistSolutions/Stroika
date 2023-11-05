@@ -306,7 +306,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         XML::SAXParse (b, ctx);
     }
 #else
-    WeakAssertNotImplemented(); // may want to allow to continue, as this may not be critical functionality, but you probably want XML parser when running this code...
+    WeakAssertNotImplemented (); // may want to allow to continue, as this may not be critical functionality, but you probably want XML parser when running this code...
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"deviceDescription: %s", Characters::ToString (deviceDescription).c_str ());

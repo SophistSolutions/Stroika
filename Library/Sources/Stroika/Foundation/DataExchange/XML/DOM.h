@@ -15,7 +15,6 @@
 
 #include "Namespace.h"
 
-
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
 namespace Stroika::Foundation::DataExchange::XML {
     class Schema;
