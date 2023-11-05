@@ -6,9 +6,6 @@
 
 #include "../../StroikaPreComp.h"
 
-#if !__has_include(<filesystem>)
-static_assert (false, "std::filesystem is required by Stroika v2.1b2 or later");
-#endif
 #include <filesystem>
 
 namespace Stroika::Foundation::Characters {

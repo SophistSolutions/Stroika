@@ -6,16 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
-#if qPlatform_Windows
-#include <windows.h>
-
-#include <tchar.h>
-#endif
 #include <array>
+#include <filesystem>
 #include <thread>
 
-#include "../Characters/SDKChar.h"
-#include "../Characters/SDKString.h"
 #include "../Configuration/Common.h"
 #include "../Time/Realtime.h"
 #include "CompileTimeFlagChecker.h"
@@ -28,9 +22,6 @@
  */
 
 namespace Stroika::Foundation::Debug {
-
-    using Characters::SDKChar;
-    using Characters::SDKString;
 
     /**
      *  If qTraceToFile is set true, then DbgTrace () and other Trace calls all go both to the usual debugger output
@@ -92,7 +83,7 @@ namespace Stroika::Foundation::Debug {
 
 #if qTraceToFile
         public:
-            static SDKString GetTraceFileName ();
+            static filesystem::path GetTraceFileName ();
 #endif
 
         public:

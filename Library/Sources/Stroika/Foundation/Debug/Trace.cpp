@@ -112,7 +112,7 @@ namespace {
 #if qTraceToFile
         PrivateModuleData_ ()
         {
-            fTraceFile.open (Private_::Emitter::GetTraceFileName ().c_str (), ios::out | ios::binary);
+            fTraceFile.open (Debug::Private_::Emitter::GetTraceFileName ().native ().c_str (), ios::out | ios::binary);
         }
 #endif
     };
@@ -138,7 +138,7 @@ Debug::Private_::ModuleInit_::~ModuleInit_ ()
  ************************** Private_::Emitter ***********************************
  ********************************************************************************
  */
-Private_::Emitter& Private_::Emitter::Get () noexcept
+auto Debug::Private_::Emitter::Get () noexcept -> Emitter&
 {
     auto emitFirstTime = [] () {
         // Cannot call DbgTrace or TraceContextBumper in this code (else hang cuz calls back to Emitter::Get ())
@@ -146,7 +146,7 @@ Private_::Emitter& Private_::Emitter::Get () noexcept
         sModuleData_->fEmitter.EmitTraceMessage (L"***Starting TraceLog***");
         sModuleData_->fEmitter.EmitTraceMessage (L"Starting at %s", Time::DateTime::Now ().Format ().c_str ());
 #if qTraceToFile
-        sModuleData_->fEmitter.EmitTraceMessage (L"qTraceToFile: %s", String::FromSDKString (Emitter::GetTraceFileName ()).c_str ());
+        sModuleData_->fEmitter.EmitTraceMessage (L"qTraceToFile: %s", Characters::ToString (Emitter::GetTraceFileName ()).c_str ());
 #endif
         sModuleData_->fEmitter.EmitTraceMessage (L"EXEPath=%s", Characters::ToString (Execution::GetEXEPath ()).c_str ());
         sModuleData_->fEmitter.EmitTraceMessage (L"<debug-state {>");
@@ -166,7 +166,7 @@ Private_::Emitter& Private_::Emitter::Get () noexcept
 }
 
 #if qTraceToFile
-SDKString Private_::Emitter::GetTraceFileName ()
+filesystem::path Debug::Private_::Emitter::GetTraceFileName ()
 {
     auto mkTraceFileName_ = [] () -> filesystem::path {
         // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
@@ -249,7 +249,7 @@ namespace {
              @'qDefaultTracingOn' flag - but is typically just called indirectly by calling
              @'DbgTrace'.</p>
 */
-void Private_::Emitter::EmitTraceMessage (const char* format, ...) noexcept
+void Debug::Private_::Emitter::EmitTraceMessage (const char* format, ...) noexcept
 {
     if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
         return;
@@ -271,7 +271,7 @@ void Private_::Emitter::EmitTraceMessage (const char* format, ...) noexcept
     }
 }
 
-void Private_::Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept
+void Debug::Private_::Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept
 {
     if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
         return;
@@ -293,7 +293,7 @@ void Private_::Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept
     }
 }
 
-Private_::Emitter::TraceLastBufferedWriteTokenType Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept
+auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept -> TraceLastBufferedWriteTokenType
 {
     if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
         return 0;
@@ -316,7 +316,7 @@ Private_::Emitter::TraceLastBufferedWriteTokenType Private_::Emitter::EmitTraceM
     }
 }
 
-Private_::Emitter::TraceLastBufferedWriteTokenType Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept
+auto Debug::Private_::Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept -> TraceLastBufferedWriteTokenType
 {
     if (TraceContextSuppressor::GetSuppressTraceInThisThread ()) {
         return 0;
@@ -376,7 +376,7 @@ namespace {
     }
 }
 template <typename CHARTYPE>
-Private_::Emitter::TraceLastBufferedWriteTokenType Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* s, const CHARTYPE* e)
+auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* s, const CHARTYPE* e) -> TraceLastBufferedWriteTokenType
 {
     [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
     FlushBufferedCharacters_ ();
@@ -426,7 +426,7 @@ Private_::Emitter::TraceLastBufferedWriteTokenType Private_::Emitter::DoEmitMess
     return fLastNCharBuf_Token_;
 }
 
-void Private_::Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
+void Debug::Private_::Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
 {
     Assert (bufferLastNChars < Memory::NEltsOf (fLastNCharBuf_CHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
@@ -434,7 +434,7 @@ void Private_::Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
     fLastNCharBuf_WCHARFlag_ = false;
 }
 
-void Private_::Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
+void Debug::Private_::Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
 {
     Assert (bufferLastNChars < Memory::NEltsOf (fLastNCharBuf_WCHAR_));
     fLastNCharBufCharCount_ = bufferLastNChars;
@@ -442,7 +442,7 @@ void Private_::Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p
     fLastNCharBuf_WCHARFlag_ = true;
 }
 
-void Private_::Emitter::FlushBufferedCharacters_ ()
+void Debug::Private_::Emitter::FlushBufferedCharacters_ ()
 {
     if (fLastNCharBufCharCount_ != 0) {
         if (fLastNCharBuf_WCHARFlag_) {
@@ -455,7 +455,7 @@ void Private_::Emitter::FlushBufferedCharacters_ ()
     }
 }
 
-bool Private_::Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
+bool Debug::Private_::Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
 {
     RequireNotNull (sModuleData_);
     [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
@@ -470,7 +470,7 @@ bool Private_::Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBuffer
     return false; // assume old behavior for now
 }
 
-void Private_::Emitter::DoEmit_ (const char* p) noexcept
+void Debug::Private_::Emitter::DoEmit_ (const char* p) noexcept
 {
 #if qPlatform_Windows
     constexpr size_t kMaxLen_ = 1023; // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
@@ -491,7 +491,7 @@ void Private_::Emitter::DoEmit_ (const char* p) noexcept
 #endif
 }
 
-void Private_::Emitter::DoEmit_ (const wchar_t* p) noexcept
+void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p) noexcept
 {
 #if qPlatform_Windows
     constexpr size_t kMaxLen_ = 1023; // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
@@ -512,7 +512,7 @@ void Private_::Emitter::DoEmit_ (const wchar_t* p) noexcept
 #endif
 }
 
-void Private_::Emitter::DoEmit_ (const char* p, const char* e) noexcept
+void Debug::Private_::Emitter::DoEmit_ (const char* p, const char* e) noexcept
 {
     try {
         size_t            len = e - p;
@@ -526,7 +526,7 @@ void Private_::Emitter::DoEmit_ (const char* p, const char* e) noexcept
     }
 }
 
-void Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
+void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
 {
     try {
         size_t               len = e - p;

@@ -3,6 +3,7 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../Characters/SDKChar.h"
 #include "../Characters/ToString.h"
 
 #include "BackTrace.h"
@@ -12,6 +13,7 @@
 #include "Fatal.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Debug;
 
 namespace {
