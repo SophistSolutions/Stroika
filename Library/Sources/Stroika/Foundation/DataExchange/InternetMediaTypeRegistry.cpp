@@ -490,7 +490,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             }
             // SAX parse /usr/share/mime/TYPE/SUBTYPE.xml file and look for <comment> element (default with no language for now)
             // Simpler - just take the first - seems empirically fine/OK
-#if qHasFeature_Xerces
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
             try {
                 struct myHander_ : StructuredStreamEvents::IConsumer {
                     optional<String> fResult;

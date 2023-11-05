@@ -26,6 +26,8 @@
 
 #include "DOM.h"
 
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
@@ -96,7 +98,6 @@ namespace {
     };
 }
 
-#if qHasFeature_Xerces
 // avoid namespace conflcit with some Xerces code
 #undef Assert
 
@@ -125,12 +126,10 @@ namespace {
 #define Assert(c) ((void)0)
 #endif
 XERCES_CPP_NAMESPACE_USE
-#endif
 
 /*
  *  UnderlyingXMLLibExcptionMapping layer
  */
-#if qHasFeature_Xerces
 #define START_LIB_EXCEPTION_MAPPER try {
 #define END_LIB_EXCEPTION_MAPPER                                                                                                           \
     }                                                                                                                                      \
@@ -142,12 +141,7 @@ XERCES_CPP_NAMESPACE_USE
     {                                                                                                                                      \
         Execution::ReThrow ();                                                                                                             \
     }
-#else
-#define START_LIB_EXCEPTION_MAPPER
-#define END_LIB_EXCEPTION_MAPPER
-#endif
 
-#if qHasFeature_Xerces
 namespace {
     const XMLCh        kDOMImplFeatureDeclaration[] = u"Core";
     DOMImplementation& GetDOMIMPL_ ()
@@ -159,7 +153,6 @@ namespace {
         return *impl;
     }
 }
-#endif
 
 namespace {
     constexpr bool qDumpXMLOnValidationError = qDebug;
@@ -167,22 +160,14 @@ namespace {
 
 // Simple 'roughly analagous' type wrappers - start with 'T_'
 namespace {
-#if qHasFeature_Xerces
     typedef XERCES_CPP_NAMESPACE::DOMNode T_DOMNode;
-#endif
 
-#if qHasFeature_Xerces
     typedef XERCES_CPP_NAMESPACE::DOMElement T_DOMElement;
-#endif
 
-#if qHasFeature_Xerces
     typedef XERCES_CPP_NAMESPACE::DOMDocument T_XMLDOMDocument;
     typedef shared_ptr<T_XMLDOMDocument>      T_XMLDOMDocumentSmartPtr;
-#endif
 
-#if qHasFeature_Xerces
     typedef XERCES_CPP_NAMESPACE::DOMNodeList T_DOMNodeList;
-#endif
 }
 
 #if qDebug
@@ -200,9 +185,7 @@ namespace {
 }
 #endif
 
-#if qHasFeature_Xerces
 namespace {
-
     class StrmFmtTarget : public XMLFormatTarget {
     public:
         ostream& fOut;
@@ -254,9 +237,7 @@ namespace {
         return resultBuf.str ();
     }
 }
-#endif
 
-#if qHasFeature_Xerces
 namespace {
     T_DOMNode* RecursivelySetNamespace_ (T_DOMNode* n, const XMLCh* namespaceURI)
     {
@@ -276,21 +257,17 @@ namespace {
         return n;
     }
 }
-#endif
 
-#if qHasFeature_Xerces
 namespace {
     constexpr XMLCh* kXerces2XMLDBDocumentKey = nullptr; // just a unique key to lookup our doc object from the xerces doc object.
                                                          // Could use real str, then xerces does strcmp() - but this appears slightly faster
                                                          // so long as no conflict....
 }
-#endif
 
 namespace {
     String GetTextForDOMNode_ (const T_DOMNode* node)
     {
         RequireNotNull (node);
-#if qHasFeature_Xerces
         if (node->getNodeType () == DOMNode::COMMENT_NODE) {
             // The below hack doesn't seem to work for comment nodes - at least in one case - they had
             // no children nodes so just returned empty string...
@@ -332,7 +309,6 @@ namespace {
          */
         DbgTrace ("WARNING: GetTextForDOMNode_::BackupMode used");
         return node->getTextContent ();
-#endif
     }
 }
 
@@ -416,7 +392,6 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_Xerces
     class MyErrorReproter : public XMLErrorReporter, public ErrorHandler {
         // XMLErrorReporter
     public:
@@ -448,11 +423,9 @@ namespace {
         }
     };
     static MyErrorReproter sMyErrorReproter;
-#endif
 }
 
 namespace {
-#if qHasFeature_Xerces
     inline void SetupCommonParserFeatures_ (SAX2XMLReader& reader)
     {
         reader.setFeature (XMLUni::fgSAX2CoreNameSpaces, true);
@@ -476,17 +449,14 @@ namespace {
         // is global/shared.
         reader.setFeature (XMLUni::fgXercesCacheGrammarFromParse, false);
     }
-#endif
 }
 
 namespace {
     inline void MakeXMLDoc_ (T_XMLDOMDocumentSmartPtr& newXMLDoc)
     {
         Require (newXMLDoc == nullptr);
-#if qHasFeature_Xerces
         newXMLDoc = T_XMLDOMDocumentSmartPtr (GetDOMIMPL_ ().createDocument (0, nullptr, 0));
         newXMLDoc->setXmlStandalone (true);
-#endif
     }
 
 }
@@ -496,7 +466,6 @@ RecordNotFoundException::RecordNotFoundException ()
 {
 }
 
-#if qHasFeature_Xerces
 namespace {
     // These SHOULD be part of xerces! Perhaps someday post them?
     class BinaryInputStream_InputSource : public InputSource {
@@ -602,9 +571,7 @@ namespace {
         Execution::ProgressMonitor::Updater fProgressCallback;
     };
 }
-#endif
 
-#if qHasFeature_Xerces
 class MyMaybeSchemaDOMParser {
 public:
     shared_ptr<Schema::AccessCompiledXSD> fSchemaAccessor;
@@ -642,7 +609,6 @@ public:
         }
     }
 };
-#endif
 
 /*
  ********************************************************************************
@@ -670,11 +636,9 @@ public:
     {
         START_LIB_EXCEPTION_MAPPER
         {
-#if qHasFeature_Xerces
             fXMLDoc = T_XMLDOMDocumentSmartPtr (dynamic_cast<T_XMLDOMDocument*> (from.fXMLDoc->cloneNode (true)));
             fXMLDoc->setXmlStandalone (true);
             fXMLDoc->setUserData (kXerces2XMLDBDocumentKey, this, nullptr);
-#endif
         }
         END_LIB_EXCEPTION_MAPPER
         EnsureNotNull (fXMLDoc);
@@ -716,10 +680,7 @@ public:
         lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
         START_LIB_EXCEPTION_MAPPER
         {
-#if qHasFeature_Xerces
             MyMaybeSchemaDOMParser myDOMParser (fSchema);
-#endif
-#if qHasFeature_Xerces
             if (!encrypted) {
                 try {
                     myDOMParser.fParser->parse (BinaryInputStream_InputSource_WithProgress{
@@ -739,7 +700,6 @@ public:
                 }
                 goto CompletedParse;
             }
-#endif
 
             {
                 u16string xmlText = Streams::TextReader::New (in).ReadAll ().As<u16string> ();
@@ -748,13 +708,11 @@ public:
                 myDOMParser.fParser->parse (memBufIS);
             }
 
-#if qHasFeature_Xerces
         CompletedParse:
             fXMLDoc.reset ();
             fXMLDoc = T_XMLDOMDocumentSmartPtr (myDOMParser.fParser->adoptDocument ());
             fXMLDoc->setXmlStandalone (true);
             fXMLDoc->setUserData (kXerces2XMLDBDocumentKey, this, nullptr);
-#endif
         }
         END_LIB_EXCEPTION_MAPPER
         progressCallback.SetProgress (1.0f);
@@ -765,9 +723,6 @@ public:
     {
         TraceContextBumper          ctx{"XMLDB::Document::Rep::SetRootElement"};
         lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
-#if qHasFeature_Xerces
-        // revist this for Xerces - better way???
-#endif
         AssertNotNull (fXMLDoc);
         Node replacementRoot = CreateDocumentElement (newRoot.GetName ());
         // next copy all children
@@ -802,7 +757,6 @@ public:
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
-#if qHasFeature_Xerces
             Node        result;
             DOMElement* n       = fSchema == nullptr ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
                                                      : fXMLDoc->createElementNS (fSchema->GetTargetNamespace ().As<u16string> ().c_str (),
@@ -834,7 +788,6 @@ public:
             }
             Assert (fXMLDoc->getDocumentElement () == n);
             result = WrapImpl_ (n);
-#endif
             return result;
         }
         END_LIB_EXCEPTION_MAPPER
@@ -848,7 +801,6 @@ public:
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
-#if qHasFeature_Xerces
             MyMaybeSchemaDOMParser myDOMParser (fSchema);
             MemBufInputSource memBufIS (reinterpret_cast<const XMLByte*> (xml.As<u16string> ().c_str ()), xml.length () * sizeof (XMLCh), u"XMLDB");
             memBufIS.setEncoding (XMLUni::fgUTF16LEncodingString2);
@@ -857,7 +809,6 @@ public:
             fXMLDoc = T_XMLDOMDocumentSmartPtr (myDOMParser.fParser->adoptDocument ());
             fXMLDoc->setXmlStandalone (true);
             fXMLDoc->setUserData (kXerces2XMLDBDocumentKey, this, nullptr);
-#endif
         }
         END_LIB_EXCEPTION_MAPPER
     }
@@ -885,9 +836,7 @@ public:
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
-#if qHasFeature_Xerces
             DoWrite2Stream_ (fXMLDoc.get (), out, false);
-#endif
         }
         END_LIB_EXCEPTION_MAPPER
     }
@@ -901,9 +850,7 @@ public:
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
-#if qHasFeature_Xerces
             return SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep> (fXMLDoc.get ())};
-#endif
         }
         END_LIB_EXCEPTION_MAPPER
     }
@@ -922,7 +869,6 @@ public:
             }
             try {
                 DbgTrace (L"Validating against target namespace '%s'", fSchema->GetTargetNamespace ().c_str ());
-#if qHasFeature_Xerces
                 // As this CAN be expensive - especially if we need to externalize the file, and re-parse it!!! - just shortcut by
                 // checking the top-level DOM-node and assure that has the right namespace. At least quickie first check that works when
                 // reading files (doesnt help in pre-save check, of course)
@@ -962,7 +908,6 @@ public:
                         parser->parse (readReadSrc);
                     }
                 }
-#endif
             }
             catch (...) {
                 if constexpr (qDumpXMLOnValidationError) {
@@ -1197,9 +1142,7 @@ namespace {
     class MyNodeRep : public Node::Rep, Memory::UseBlockAllocationIfAppropriate<MyNodeRep> {
     public:
         MyNodeRep (
-#if qHasFeature_Xerces
             DOMNode* n
-#endif
             )
             : fNode (n)
         {
@@ -1212,7 +1155,6 @@ namespace {
             AssertNotNull (fNode);
             START_LIB_EXCEPTION_MAPPER
             {
-#if qHasFeature_Xerces
                 switch (fNode->getNodeType ()) {
                     case DOMNode::ELEMENT_NODE:
                         return Node::eElementNT;
@@ -1225,7 +1167,6 @@ namespace {
                     default:
                         return Node::eOtherNT;
                 }
-#endif
             }
             END_LIB_EXCEPTION_MAPPER
         }
@@ -1235,10 +1176,8 @@ namespace {
             Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
             START_LIB_EXCEPTION_MAPPER
             {
-#if qHasFeature_Xerces
                 AssertNotNull (fNode->getNamespaceURI ());
                 return fNode->getNamespaceURI ();
-#endif
             }
             END_LIB_EXCEPTION_MAPPER
         }
@@ -1311,7 +1250,6 @@ namespace {
             AssertNotNull (fNode);
             START_LIB_EXCEPTION_MAPPER
             {
-#if qHasFeature_Xerces
                 if (fNode->getNodeType () == DOMNode::ELEMENT_NODE) {
                     AssertMember (fNode, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
                     T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (fNode);
@@ -1325,7 +1263,6 @@ namespace {
                     }
                 }
                 return false;
-#endif
             }
             END_LIB_EXCEPTION_MAPPER
         }
@@ -1334,7 +1271,6 @@ namespace {
             AssertNotNull (fNode);
             START_LIB_EXCEPTION_MAPPER
             {
-#if qHasFeature_Xerces
                 if (fNode->getNodeType () == DOMNode::ELEMENT_NODE) {
                     AssertMember (fNode, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
                     T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (fNode);
@@ -1343,7 +1279,6 @@ namespace {
                     return s;
                 }
                 return String ();
-#endif
             }
             END_LIB_EXCEPTION_MAPPER
         }
@@ -1394,7 +1329,6 @@ namespace {
             Require (ValidNewNodeName_ (name));
             START_LIB_EXCEPTION_MAPPER
             {
-#if qHasFeature_Xerces
                 T_XMLDOMDocument* doc          = fNode->getOwnerDocument ();
                 const XMLCh*      namespaceURI = fNode->getNamespaceURI ();
                 // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
@@ -1402,7 +1336,6 @@ namespace {
                 T_DOMNode* childx = fNode->appendChild (child);
                 ThrowIfNull (childx);
                 return WrapImpl_ (childx);
-#endif
             }
             END_LIB_EXCEPTION_MAPPER
         }
@@ -1558,9 +1491,7 @@ SubNodeIterator MyNodeRep::GetChildren () const
     AssertNotNull (fNode);
     START_LIB_EXCEPTION_MAPPER
     {
-#if qHasFeature_Xerces
         return SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep> (fNode)};
-#endif
     }
     END_LIB_EXCEPTION_MAPPER
 }
@@ -1585,73 +1516,6 @@ Node MyNodeRep::GetChildNodeByID (const String& id) const
     }
     END_LIB_EXCEPTION_MAPPER
 }
-
-#if 0
-
-/*
- ********************************************************************************
- ******************* SubNodeIteratorOver_vectorDOMNODE_Rep_ *********************
- ********************************************************************************
- */
-Node SubNodeIteratorOver_vectorDOMNODE_Rep_::Current () const
-{
-    Require (not IsAtEnd ());
-    return WrapImpl_ (fDOMNodes[fCur]);
-}
-#endif
-
-#if 0
-/*
- ********************************************************************************
- ********************** SubNodeIteratorOver_DOMNodeList_Rep *********************
- ********************************************************************************
- */
-SubNodeIteratorOver_DOMNodeList_Rep::SubNodeIteratorOver_DOMNodeList_Rep (T_DOMNodeList* dnl)
-    : fMainNodeList{dnl}
-    , fMainListLen (0)
-    , fAttrsListLen (0)
-    , fCur (0)
-{
-    START_LIB_EXCEPTION_MAPPER
-    {
-#if qHasFeature_Xerces
-        fMainListLen = dnl->getLength ();
-#endif
-    }
-    END_LIB_EXCEPTION_MAPPER
-}
-
-bool SubNodeIteratorOver_DOMNodeList_Rep::IsAtEnd () const
-{
-    return fCur == (fAttrsListLen + fMainListLen);
-}
-
-void SubNodeIteratorOver_DOMNodeList_Rep::Next ()
-{
-    RequireNotNull (fMainNodeList);
-    Require (not IsAtEnd ());
-    Assert (fCur < GetLength ());
-    ++fCur;
-}
-
-Node SubNodeIteratorOver_DOMNodeList_Rep::Current () const
-{
-    Require (fCur < GetLength ());
-    START_LIB_EXCEPTION_MAPPER
-    {
-#if qHasFeature_Xerces
-        AssertNotNull (fMainNodeList);
-        return WrapImpl_ (fMainNodeList->item (fCur));
-#endif
-    }
-    END_LIB_EXCEPTION_MAPPER
-}
-
-size_t SubNodeIteratorOver_DOMNodeList_Rep::GetLength () const
-{
-    return fAttrsListLen + fMainListLen;
-}
-#endif
 
 /*
  ********************************************************************************
@@ -1705,3 +1569,4 @@ size_t SubNodeIteratorOver_SiblingList_Rep::GetLength () const
     }
     return fCachedMainListLen;
 }
+#endif

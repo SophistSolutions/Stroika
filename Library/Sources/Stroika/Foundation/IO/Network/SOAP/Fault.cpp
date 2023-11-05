@@ -23,6 +23,7 @@ using namespace Stroika::Foundation::IO::Network::SOAP;
  */
 optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<byte>::Ptr& from)
 {
+    #if qStroika_Foundation_DataExchange_XML_SupportParsing
     using namespace ObjectReader;
     static const Registry kSOAPTypeMapper_ = [] () -> Registry {
         //      using   namespace DataExchange::StructuredStreamEvents;
@@ -48,6 +49,9 @@ optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<byte>::Ptr& 
         // not a bug, but a feature...
         return nullopt;
     }
+    #else
+        return nullopt;
+    #endif
 }
 
 optional<Fault> SOAP::Deserialize_Fault (const Memory::BLOB& from)

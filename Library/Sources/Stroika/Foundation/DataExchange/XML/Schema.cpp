@@ -16,12 +16,12 @@ using namespace Stroika::Foundation::Memory;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+#if qStroika_Foundation_DataExchange_XML_SupportSchema
 using std::byte;
 
 using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::DataExchange::XML::DOM;
 
-#if qHasFeature_Xerces
 // avoid namespace conflcit with some Xerces code
 #undef Assert
 

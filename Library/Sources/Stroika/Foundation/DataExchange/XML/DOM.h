@@ -15,11 +15,14 @@
 
 #include "Namespace.h"
 
-#if qHasFeature_Xerces
+
+#if qStroika_Foundation_DataExchange_XML_SupportSchema
 namespace Stroika::Foundation::DataExchange::XML {
     class Schema;
 }
+#endif
 
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     using DataExchange::BadFormatException;

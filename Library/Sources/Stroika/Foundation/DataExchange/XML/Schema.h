@@ -14,11 +14,14 @@
 
 #include "DOM.h"
 
+
 #if qHasFeature_Xerces
 namespace xercesc_3_2 {
     class XMLGrammarPool;
 }
+#endif
 
+#if qStroika_Foundation_DataExchange_XML_SupportSchema
 namespace Stroika::Foundation::DataExchange::XML {
 
     // Schema objects can be shared among XMLDB Document objects.

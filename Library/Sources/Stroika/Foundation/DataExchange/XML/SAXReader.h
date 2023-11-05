@@ -22,12 +22,13 @@
 
 namespace Stroika::Foundation::DataExchange::XML {
 
+
     /**
      * Parse will throw an exception if it encounters any errors parsing.
      *
      *  @see ObjectReaderRegistry for examples of one way to use this
      */
-#if qHasFeature_Xerces
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
     void SAXParse (const Streams::InputStream<byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback,
                    const optional<Schema>& schema = nullopt, Execution::ProgressMonitor::Updater progress = nullptr);
     void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const optional<Schema>& schema = nullopt,

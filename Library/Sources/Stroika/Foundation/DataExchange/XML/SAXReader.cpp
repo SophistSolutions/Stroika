@@ -19,7 +19,7 @@
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qHasFeature_Xerces
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
 
 // Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
 #define XML_LIBRARY 1
@@ -56,7 +56,6 @@
 #else
 #define Assert(c)
 #endif
-#endif
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Debug;
@@ -70,7 +69,6 @@ using std::byte;
 
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
 
-#if qHasFeature_Xerces
 namespace {
     String xercesString2String_ (const XMLCh* s, const XMLCh* e)
     {
@@ -103,13 +101,8 @@ namespace {
         }
     }
 }
-#endif
-
-#if qHasFeature_Xerces
 XERCES_CPP_NAMESPACE_USE
-#endif
 
-#if qHasFeature_Xerces
 class MyErrorReproter_ : public XMLErrorReporter, public ErrorHandler {
     // XMLErrorReporter
 public:
