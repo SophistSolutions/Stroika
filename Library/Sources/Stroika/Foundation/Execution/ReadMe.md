@@ -22,7 +22,6 @@ Execution pattern classes (external process runner, exception handling support, 
 - [Logger.h](Logger.h)
 - [Module.h](Module.h)
 - [ModuleGetterSetter.h](ModuleGetterSetter.h)
-- [ModuleInit.h](ModuleInit.h)
 - [NullMutex.h](NullMutex.h)
 - [OperationNotSupportedException.h](OperationNotSupportedException.h)
 - [PIDLoop.h](PIDLoop.h)
