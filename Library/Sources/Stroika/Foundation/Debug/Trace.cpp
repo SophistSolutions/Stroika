@@ -14,7 +14,6 @@
 #include "../Characters/Format.h"
 #include "../Characters/LineEndings.h"
 #include "../Characters/ToString.h"
-#include "../Common/TemplateUtilities.h"
 #include "../Debug/Sanitizer.h"
 #include "../Debug/Valgrind.h"
 #include "../Execution/Common.h"
@@ -141,15 +140,7 @@ namespace {
 }
 #endif
 
-namespace {
-    inline recursive_mutex& GetEmitCritSection_ ()
-    {
-        // Immortalize, so can be used in static dtors called in semi-random order. Could force order with module-init, but no need todo that,
-        // since this DTOR doesn't do anything useful
-        static auto&& sEmitTraceCritSec_ = Common::Immortalize<recursive_mutex> ();
-        return sEmitTraceCritSec_;
-    }
-}
+
 
 /*
  ********************************************************************************
@@ -175,6 +166,53 @@ void Debug::Private_::EmitFirstTime (Emitter& emitter)
     emitter.EmitTraceMessage (L"</debug-state>");
 }
 
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************* Debug::Private_::ModuleInit_ *************************
+ ********************************************************************************
+ */
+
+namespace {
+    struct PrivateModuleData_ {
+        recursive_mutex fModuleMutex;       // see GetEmitCritSection_
+#if qTraceToFile
+        ofstream fTraceFile;
+        #endif
+
+        #if qTraceToFile
+        PrivateModuleData_()
+        {
+            fTraceFile.open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
+        }
+        #endif
+    };
+    PrivateModuleData_* sModuleData_{nullptr};
+}
+
+            Debug::Private_::ModuleInit_::ModuleInit_ ()
+{
+    Assert (sModuleData_ == nullptr);
+    sModuleData_ = new PrivateModuleData_ ();
+
+            }
+            Debug::Private_::ModuleInit_::~ModuleInit_ ()
+            {
+    Assert (sModuleData_ != nullptr);
+    delete sModuleData_;
+    #if qDebug
+    sModuleData_ = nullptr;
+    #endif
+            }
+
+
+
+
+
 /*
  ********************************************************************************
  ************************************ Emitter ***********************************
@@ -193,13 +231,11 @@ namespace {
     void Emit2File_ (Emitter& emitter, const char* text) noexcept
     {
         RequireNotNull (text);
-        // Note, we Immortalize ofstream so that calls to DbgTrace at end of application, during static destructors, can still
-        // be logged.
-        static auto&& sTraceFile_ = Common::Immortalize<ofstream> (emitter.GetTraceFileName ().c_str (), ios::out | ios::binary);
+        AssertNotNull (sModuleData_);
         try {
-            if (sTraceFile_.is_open ()) {
-                sTraceFile_ << text;
-                sTraceFile_.flush ();
+            if (sModuleData_->fTraceFile.is_open ()) {
+                sModuleData_->fTraceFile << text;
+                sModuleData_->fTraceFile.flush ();
             }
         }
         catch (...) {
@@ -354,7 +390,7 @@ namespace {
 template <typename CHARTYPE>
 Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* s, const CHARTYPE* e)
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
+    [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
     FlushBufferedCharacters_ ();
     Time::DurationSecondsType curRelativeTime = Time::GetTickCount ();
     {
@@ -433,7 +469,8 @@ void Emitter::FlushBufferedCharacters_ ()
 
 bool Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
+    RequireNotNull (sModuleData_);
+    [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
     // If the fLastNCharBuf_Token_ matches (no new tokens written since the saved one) and the time
     // hasn't been too long (we currently write 1/100th second timestamp resolution).
     // then blank unput (ignore) buffered characters, and return true so caller knows to write
@@ -591,7 +628,8 @@ TraceContextBumper::~TraceContextBumper ()
 {
     DecrCount_ ();
     if (fDoEndMarker) {
-        [[maybe_unused]] auto&& critSec = lock_guard{GetEmitCritSection_ ()};
+        RequireNotNull (sModuleData_);
+        [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
         if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
             Emitter::Get ().EmitUnadornedText ("/>");
             Emitter::Get ().EmitUnadornedText (GetEOL<char> ());

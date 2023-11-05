@@ -15,10 +15,18 @@
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qDefaultTracingOn);
 
+#include "../Execution/ModuleInit.h"
+
 namespace Stroika::Foundation::Debug {
 
     namespace Private_ {
         void EmitFirstTime (Emitter& emitter);
+
+        struct ModuleInit_ {
+            ModuleInit_ ();
+            ~ModuleInit_ ();
+        };
+        const inline Execution::ModuleInitializer<ModuleInit_> _MI_;
     }
 
     /*
