@@ -80,12 +80,13 @@ namespace Stroika::Foundation::Debug {
 #define qStroika_Foundation_Debug_Trace_ShowThreadIndex 1
 #endif
 
+    // @todo wrap in private namespace
     /**
      *  Emitter is not meant to be used directly - but can be. Mostly users are expected to
      *  use DbgTrace () or TraceContextBumper.
      */
     class Emitter {
-    private:
+    public:
         Emitter ()               = default;
         Emitter (const Emitter&) = delete;
 
@@ -94,7 +95,7 @@ namespace Stroika::Foundation::Debug {
 
 #if qTraceToFile
     public:
-        nonvirtual SDKString GetTraceFileName () const;
+        static SDKString GetTraceFileName ();
 #endif
 
     public:

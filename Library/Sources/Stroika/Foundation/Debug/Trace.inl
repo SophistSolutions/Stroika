@@ -20,8 +20,6 @@ CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qD
 namespace Stroika::Foundation::Debug {
 
     namespace Private_ {
-        void EmitFirstTime (Emitter& emitter);
-
         struct ModuleInit_ {
             ModuleInit_ ();
             ~ModuleInit_ ();
@@ -34,13 +32,6 @@ namespace Stroika::Foundation::Debug {
      ******************************* Trace::Emitter *********************************
      ********************************************************************************
      */
-    inline Emitter& Emitter::Get () noexcept
-    {
-        static Emitter   sEmitter_;
-        static once_flag sOnceFlag_;
-        call_once (sOnceFlag_, [] () { Private_::EmitFirstTime (sEmitter_); });
-        return sEmitter_;
-    }
     template <typename CHARTYPE>
     inline void Emitter::EmitUnadornedText (const CHARTYPE* p)
     {

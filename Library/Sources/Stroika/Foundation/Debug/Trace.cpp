@@ -93,10 +93,80 @@ namespace {
     Thread::IDType sMainThread_ = Execution::Thread::GetCurrentThreadID ();
 }
 
-#if qTraceToFile
+/*
+ ********************************************************************************
+ ************************* Debug::Private_::ModuleInit_ *************************
+ ********************************************************************************
+ */
 namespace {
-    filesystem::path mkTraceFileName_ ()
-    {
+    struct PrivateModuleData_ {
+        recursive_mutex fModuleMutex; // see GetEmitCritSection_
+        Emitter         fEmitter;
+
+#if qTraceToFile
+        ofstream fTraceFile;
+#endif
+
+#if qTraceToFile
+        PrivateModuleData_ ()
+        {
+            fTraceFile.open (Emitter::GetTraceFileName ().c_str (), ios::out | ios::binary);
+        }
+#endif
+    };
+    PrivateModuleData_* sModuleData_{nullptr};
+}
+
+Debug::Private_::ModuleInit_::ModuleInit_ ()
+{
+    Assert (sModuleData_ == nullptr);
+    sModuleData_ = new PrivateModuleData_ ();
+}
+Debug::Private_::ModuleInit_::~ModuleInit_ ()
+{
+    Assert (sModuleData_ != nullptr);
+    delete sModuleData_;
+#if qDebug
+    sModuleData_ = nullptr;
+#endif
+}
+
+/*
+ ********************************************************************************
+ ************************************ Emitter ***********************************
+ ********************************************************************************
+ */
+Emitter& Emitter::Get () noexcept
+{
+    auto emitFirstTime = [] () {
+        // Cannot call DbgTrace or TraceContextBumper in this code (else hang cuz calls back to Emitter::Get ())
+        // which is why this function takes Emitter as argument!
+        sModuleData_->fEmitter.EmitTraceMessage (L"***Starting TraceLog***");
+        sModuleData_->fEmitter.EmitTraceMessage (L"Starting at %s", Time::DateTime::Now ().Format ().c_str ());
+#if qTraceToFile
+        sModuleData_->fEmitter.EmitTraceMessage (L"qTraceToFile: %s", String::FromSDKString (Emitter::GetTraceFileName ()).c_str ());
+#endif
+        sModuleData_->fEmitter.EmitTraceMessage (L"EXEPath=%s", Characters::ToString (Execution::GetEXEPath ()).c_str ());
+        sModuleData_->fEmitter.EmitTraceMessage (L"<debug-state {>");
+        sModuleData_->fEmitter.EmitTraceMessage (L"  Debug::kBuiltWithAddressSanitizer = %s",
+                                                 Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
+        sModuleData_->fEmitter.EmitTraceMessage (L"  Debug::kBuiltWithThreadSanitizer = %s",
+                                                 Characters::ToString (Debug::kBuiltWithThreadSanitizer).c_str ());
+        sModuleData_->fEmitter.EmitTraceMessage (L"  Debug::kBuiltWithUndefinedBehaviorSanitizer = %s(?)",
+                                                 Characters::ToString (Debug::kBuiltWithUndefinedBehaviorSanitizer).c_str ()); // warning maybe falsely reported as false on gcc
+        sModuleData_->fEmitter.EmitTraceMessage (L"  Debug::IsRunningUnderValgrind () = %s",
+                                                 Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
+        sModuleData_->fEmitter.EmitTraceMessage (L"</debug-state>");
+    };
+    static once_flag sOnceFlag_;
+    call_once (sOnceFlag_, [=] () { emitFirstTime (); });
+    return sModuleData_->fEmitter;
+}
+
+#if qTraceToFile
+SDKString Emitter::GetTraceFileName ()
+{
+    auto mkTraceFileName_ = [] () -> filesystem::path {
         // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
         // (could fix of course, but I'm not sure desirable - reasonable defaults)
         //
@@ -136,79 +206,7 @@ namespace {
         }
         return IO::FileSystem::WellKnownLocations::GetTemporary () /
                CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
-    }
-}
-#endif
-
-/*
- ********************************************************************************
- *********************** Debug::Private_::EmitFirstTime *************************
- ********************************************************************************
- */
-void Debug::Private_::EmitFirstTime (Emitter& emitter)
-{
-    // Cannot call DbgTrace or TraceContextBumper in this code (else hang cuz calls back to Emitter::Get ())
-    // which is why this function takes Emitter as argument!
-    emitter.EmitTraceMessage (L"***Starting TraceLog***");
-    emitter.EmitTraceMessage (L"Starting at %s", Time::DateTime::Now ().Format ().c_str ());
-#if qTraceToFile
-    emitter.EmitTraceMessage (L"qTraceToFile: %s", String::FromSDKString (emitter.GetTraceFileName ()).c_str ());
-#endif
-    emitter.EmitTraceMessage (L"EXEPath=%s", Characters::ToString (Execution::GetEXEPath ()).c_str ());
-    emitter.EmitTraceMessage (L"<debug-state {>");
-    emitter.EmitTraceMessage (L"  Debug::kBuiltWithAddressSanitizer = %s", Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
-    emitter.EmitTraceMessage (L"  Debug::kBuiltWithThreadSanitizer = %s", Characters::ToString (Debug::kBuiltWithThreadSanitizer).c_str ());
-    emitter.EmitTraceMessage (L"  Debug::kBuiltWithUndefinedBehaviorSanitizer = %s(?)",
-                              Characters::ToString (Debug::kBuiltWithUndefinedBehaviorSanitizer).c_str ()); // warning maybe falsely reported as false on gcc
-    emitter.EmitTraceMessage (L"  Debug::IsRunningUnderValgrind () = %s", Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
-    emitter.EmitTraceMessage (L"</debug-state>");
-}
-
-/*
- ********************************************************************************
- ************************* Debug::Private_::ModuleInit_ *************************
- ********************************************************************************
- */
-
-namespace {
-    struct PrivateModuleData_ {
-        recursive_mutex fModuleMutex; // see GetEmitCritSection_
-#if qTraceToFile
-        ofstream fTraceFile;
-#endif
-
-#if qTraceToFile
-        PrivateModuleData_ ()
-        {
-            fTraceFile.open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
-        }
-#endif
     };
-    PrivateModuleData_* sModuleData_{nullptr};
-}
-
-Debug::Private_::ModuleInit_::ModuleInit_ ()
-{
-    Assert (sModuleData_ == nullptr);
-    sModuleData_ = new PrivateModuleData_ ();
-}
-Debug::Private_::ModuleInit_::~ModuleInit_ ()
-{
-    Assert (sModuleData_ != nullptr);
-    delete sModuleData_;
-#if qDebug
-    sModuleData_ = nullptr;
-#endif
-}
-
-/*
- ********************************************************************************
- ************************************ Emitter ***********************************
- ********************************************************************************
- */
-#if qTraceToFile
-SDKString Emitter::GetTraceFileName () const
-{
     static filesystem::path sTraceFileName_ = mkTraceFileName_ ();
     return sTraceFileName_;
 }
@@ -216,7 +214,7 @@ SDKString Emitter::GetTraceFileName () const
 
 #if qTraceToFile
 namespace {
-    void Emit2File_ (Emitter& emitter, const char* text) noexcept
+    void Emit2File_ (const char* text) noexcept
     {
         RequireNotNull (text);
         AssertNotNull (sModuleData_);
@@ -230,11 +228,11 @@ namespace {
             AssertNotReached ();
         }
     }
-    void Emit2File_ (Emitter& emitter, const wchar_t* text) noexcept
+    void Emit2File_ (const wchar_t* text) noexcept
     {
         RequireNotNull (text);
         try {
-            Emit2File_ (emitter, String{text}.AsNarrowSDKString (AllowMissingCharacterErrorsFlag::eIgnoreErrors).c_str ());
+            Emit2File_ (String{text}.AsNarrowSDKString (AllowMissingCharacterErrorsFlag::eIgnoreErrors).c_str ());
         }
         catch (...) {
             AssertNotReached ();
@@ -487,7 +485,7 @@ void Emitter::DoEmit_ (const char* p) noexcept
     }
 #endif
 #if qTraceToFile
-    Emit2File_ (*this, p);
+    Emit2File_ (p);
 #endif
 }
 
@@ -508,7 +506,7 @@ void Emitter::DoEmit_ (const wchar_t* p) noexcept
     }
 #endif
 #if qTraceToFile
-    Emit2File_ (*this, p);
+    Emit2File_ (p);
 #endif
 }
 
