@@ -348,6 +348,7 @@ namespace Stroika::Foundation::Execution {
         };
         /*
          *  fCriticalSection_ protectes fThreads_ and fPendingTasks_
+         *      only recursive cuz maybe need to be with ThreadPool::SetPoolSize?? - @todo cleanup so probably dont need recursive
          */
         mutable recursive_mutex         fCriticalSection_;
         atomic<bool>                    fAborted_{false};

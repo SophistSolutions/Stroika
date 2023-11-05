@@ -240,14 +240,12 @@ void ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
         fPendingTasks_.clear ();
-    }
-    {
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
         for (const TPInfo_& ti : fThreads_) {
             ti.fThread.Abort ();
         }
     }
     {
+        // @todo maybe fix unsafe - waiting here holding the critsec lock - seems deadlock waiting to happen - LGP 2023-11-05
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
         for (const TPInfo_& ti : fThreads_) {
             // @todo fix wrong timeout value here
@@ -270,8 +268,16 @@ bool ThreadPool::IsPresent (const TaskType& task) const
                 return true;
             }
         }
+        // then check if running
+        for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
+            shared_ptr<MyRunnable_> tr{i->fRunnable};
+            TaskType                rTask{tr->GetCurrentTask ()};
+            if (task == rTask) {
+                return true;
+            }
+        }
     }
-    return IsRunning (task);
+    return false;
 }
 
 bool ThreadPool::IsRunning (const TaskType& task) const
@@ -291,7 +297,7 @@ bool ThreadPool::IsRunning (const TaskType& task) const
 void ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType timeout) const
 {
     Debug::TraceContextBumper ctx{"ThreadPool::WaitForTask"};
-    // Inefficient / VERY SLOPPY impl
+    // Inefficient / VERY SLOPPY impl - @todo fix use WaitableEvent or conidtion variables...
     using Time::DurationSecondsType;
     DurationSecondsType timeoutAt = timeout + Time::GetTickCount ();
     while (true) {
