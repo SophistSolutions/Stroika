@@ -8,11 +8,12 @@
 
 #include <mutex>
 
-#if qPlatform_Windows
-#include <process.h>
-#elif qPlatform_POSIX
+#if qPlatform_POSIX
 #include <sys/types.h>
 #include <unistd.h>
+#elif qPlatform_Windows
+#include <Windows.h>
+#include <process.h>
 #endif
 
 #include "../Configuration/Common.h"

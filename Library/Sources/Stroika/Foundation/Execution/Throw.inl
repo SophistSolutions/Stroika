@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Execution {
     {
         if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-            DbgTrace ("ReThrow from %s", Private_::GetBT_s ().c_str ());
+            DbgTrace ("ReThrow from %s", Execution::Private_::GetBT_s ().c_str ());
 #else
             DbgTrace ("ReThrow");
 #endif
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Execution {
     {
         if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-            DbgTrace ("ReThrow from %s", Private_::GetBT_s ().c_str ());
+            DbgTrace ("ReThrow from %s", Execution::Private_::GetBT_s ().c_str ());
 #else
             DbgTrace ("ReThrow");
 #endif
@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Execution {
     {
         if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-            DbgTrace ("ReThrow %s from %s", traceMsg, Private_::GetBT_s ().c_str ());
+            DbgTrace ("ReThrow %s from %s", traceMsg, Execution::Private_::GetBT_s ().c_str ());
 #else
             DbgTrace ("ReThrow: %s", traceMsg);
 #endif
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Execution {
     [[noreturn]] inline void ReThrow (const exception_ptr& e, [[maybe_unused]] const char* traceMsg)
     {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-        DbgTrace ("ReThrow: %s from %s", traceMsg, Private_::GetBT_s ().c_str ());
+        DbgTrace ("ReThrow: %s from %s", traceMsg, Execution::Private_::GetBT_s ().c_str ());
 #else
         DbgTrace ("ReThrow: %s", traceMsg);
 #endif
@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Execution {
     {
         if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-            DbgTrace (L"ReThrow: %s from %s", traceMsg, Private_::GetBT_ws ().c_str ());
+            DbgTrace (L"ReThrow: %s from %s", traceMsg, Execution::Private_::GetBT_ws ().c_str ());
 #else
             DbgTrace (L"ReThrow: %s", traceMsg);
 #endif
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Execution {
     {
         if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-            DbgTrace (L"ReThrow: %s from %s", traceMsg, Private_::GetBT_ws ().c_str ());
+            DbgTrace (L"ReThrow: %s from %s", traceMsg, Execution::Private_::GetBT_ws ().c_str ());
 #else
             DbgTrace (L"ReThrow: %s", traceMsg);
 #endif

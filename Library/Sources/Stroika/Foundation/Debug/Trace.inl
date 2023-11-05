@@ -27,16 +27,62 @@ namespace Stroika::Foundation::Debug {
         const inline Execution::ModuleInitializer<ModuleInit_> _MI_;
     }
 
-    /*
-     ********************************************************************************
-     ******************************* Debug::Private_::Emitter ***********************
-     ********************************************************************************
-     */
-    template <typename CHARTYPE>
-    inline void Private_::Emitter::EmitUnadornedText (const CHARTYPE* p)
-    {
-        DoEmit_ (p);
-    }
+    class Private_::Emitter final {
+    public:
+        Emitter ()               = default;
+        Emitter (const Emitter&) = delete;
+
+    public:
+        static Emitter& Get () noexcept;
+
+#if qTraceToFile
+    public:
+        static filesystem::path GetTraceFileName ();
+#endif
+
+    public:
+        /**
+         *   \note DbgTrace() is NOT a cancelation point, so you can call this freely without worrying about Throw (ThreadAbortException) etc
+         */
+        nonvirtual void EmitTraceMessage (const char* format, ...) noexcept;
+        nonvirtual void EmitTraceMessage (const wchar_t* format, ...) noexcept;
+
+        nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept;
+        nonvirtual TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept;
+
+    public:
+        // if the last write matches the given token (no writes since then) and the timestamp is unchanged, abandon
+        // the buffered characters and return true. Else flush(write) them, and return false.
+        nonvirtual bool UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token);
+
+        template <typename CHARTYPE>
+        nonvirtual void EmitUnadornedText (const CHARTYPE* p);
+
+    private:
+        // This is the same as EmitTraceMessage_ - but it takes a plain string - and assumes the caller does any 'sprintf' stuff...
+        template <typename CHARTYPE>
+        nonvirtual TraceLastBufferedWriteTokenType DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e);
+
+    private:
+        size_t fLastNCharBufCharCount_{0}; // len of valid data in fLastNCharBuf_CHAR_ or fLastNCharBuf_WCHAR_
+        char fLastNCharBuf_CHAR_[10]; // always filled in before used, so no need to initialize - NOT nul-terminated(see fLastNCharBufCharCount_)
+        wchar_t fLastNCharBuf_WCHAR_[10];
+        bool    fLastNCharBuf_WCHARFlag_{false}; // determines (if fLastNCharBufCharCount_!=0) which buffer CHAR or WCHAR to use
+        TraceLastBufferedWriteTokenType fLastNCharBuf_Token_{0};
+        Time::DurationSecondsType       fLastNCharBuf_WriteTickcount_{0.0};
+
+        nonvirtual void BufferNChars_ (size_t nChars, const char* p);
+        nonvirtual void BufferNChars_ (size_t nChars, const wchar_t* p);
+
+    private:
+        nonvirtual void FlushBufferedCharacters_ ();
+
+    private:
+        nonvirtual void DoEmit_ (const char* p) noexcept;
+        nonvirtual void DoEmit_ (const wchar_t* p) noexcept;
+        nonvirtual void DoEmit_ (const char* p, const char* e) noexcept;
+        nonvirtual void DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept;
+    };
 
     /*
      ********************************************************************************
