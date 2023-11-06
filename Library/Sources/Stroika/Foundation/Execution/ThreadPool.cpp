@@ -450,22 +450,27 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
         Thread::AbortAndWaitForDone (threadsToShutdown);
     }
     catch (...) {
-        DbgTrace (L"serious bug");
+        DbgTrace ("ThreadPool::AbortAndWaitForDone_: serious bug/exception");
         AssertNotReached (); // this should never happen due to the SuppressInterruptionInContext...
     }
 }
 
 String ThreadPool::ToString () const
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-    StringBuilder           sb;
+    StringBuilder sb;
     sb << "{"sv;
-    if (fThreadPoolName_) {
-        sb << Characters::Format (L"pool-name: '%s'", fThreadPoolName_->As<wstring> ().c_str ()) << ", "sv;
+    {
+        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        if (fThreadPoolName_) {
+            sb << Characters::Format (L"pool-name: '%s'", fThreadPoolName_->As<wstring> ().c_str ()) << ", "sv;
+        }
     }
     sb << Characters::Format (L"pending-task-count: %d", GetPendingTasksCount ()) << ", "sv;
     sb << Characters::Format (L"running-task-count: %d", GetRunningTasks ().size ()) << ", "sv;
-    sb << Characters::Format (L"pool-thread-count: %d", fThreads_.size ());
+    {
+        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        sb << Characters::Format (L"pool-thread-count: %d", fThreads_.size ());
+    }
     sb << "}"sv;
     return sb.str ();
 }
