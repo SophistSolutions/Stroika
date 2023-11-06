@@ -40,14 +40,14 @@ public:
 public:
     TaskType GetCurrentTask () const
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
+       // [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool_.fCriticalSection_};
         return fCurTask_;
     }
 
 public:
     tuple<TaskType, Time::DurationSecondsType, optional<String>> GetCurTaskInfo () const
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
+       // [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool_.fCriticalSection_};
         return make_tuple (fCurTask_, fCurTaskStartedAt_, fCurName_); // note curTask can be null, in which case these other things are meaningless
     }
 
@@ -59,19 +59,22 @@ public:
         // Keep grabbing new tasks, and running them
         while (true) {
             {
-                ThreadPool::TaskType nextTask;
-                optional<String>     nextTaskName;
-                fThreadPool_.WaitForNextTask_ (&nextTask, &nextTaskName); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
-                [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
-                Assert (fCurTask_ == nullptr);
-                fCurTask_ = nextTask;
-                fCurName_ = nextTaskName;
-                Assert (fCurTask_ != nullptr);
+                if constexpr (qDebug) {
+                    [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool_.fCriticalSection_};
+                    Assert (fCurTask_ == nullptr);
+                }
+                // Subtle point, but we must copy directly into fCurTask_ (WaitForNextTask_ call) so its filled in under lock
+                // while being moved so task moves from pending to in-use without ever temporarily disappearing from known tasks lists
+                fThreadPool_.WaitForNextTask_ (&fCurTask_, &fCurName_); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
+                if constexpr (qDebug) {
+                    [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool_.fCriticalSection_};
+                    Assert (fCurTask_ != nullptr);
+                }
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept {
                 Time::DurationSecondsType taskStartedAt;
                 {
-                    [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
+                    [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool_.fCriticalSection_};
                     fCurTask_                       = nullptr;
                     taskStartedAt                   = fCurTaskStartedAt_;
                 }
@@ -86,7 +89,7 @@ public:
                 // Use lock to access fCurTask_, but don't hold the lock during run, so others can call getcurrenttask
                 ThreadPool::TaskType task2Run;
                 {
-                    [[maybe_unused]] auto&& critSec = lock_guard{fCurTaskUpdateCritSection_};
+                    [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool_.fCriticalSection_};
                     task2Run                        = fCurTask_;
                     fCurTaskStartedAt_              = Time::GetTickCount ();
                 }
@@ -105,11 +108,11 @@ public:
     }
 
 private:
-    mutable mutex             fCurTaskUpdateCritSection_; // protect access to fCurTask_/fCurTaskStartedAt_/fCurName_ - very short duration
-    ThreadPool&               fThreadPool_;
-    ThreadPool::TaskType      fCurTask_;
-    Time::DurationSecondsType fCurTaskStartedAt_{0}; // meaningless if fCurTask_==nullptr
-    optional<Characters::String> fCurName_;          // ""
+    ThreadPool&                  fThreadPool_;
+    // fThreadPool_.fCriticalSection_ protect access to fCurTask_/fCurTaskStartedAt_/fCurName_ - very short duration
+    ThreadPool::TaskType         fCurTask_;
+    Time::DurationSecondsType    fCurTaskStartedAt_{0}; // meaningless if fCurTask_==nullptr
+    optional<Characters::String> fCurName_;             // ""
 };
 
 /*
@@ -177,7 +180,7 @@ ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task, const optional<C
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
         fPendingTasks_.push_back (PendingTaskInfo_{.fTask = task, .fName = name});
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if USE_NOISY_TRACE_IN_THIS_MODULE_ || 1
         DbgTrace (L"fPendingTasks.size () now = %d", (int)fPendingTasks_.size ());
 #endif
         ++fCollectedTaskStats_.fNumberOfTasksAdded;
@@ -487,6 +490,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result, optional<Characters::String
 {
     RequireNotNull (result);
     RequireNotNull (resultName);
+    Require (*result == nullptr);
     while (true) {
         if (fAborted_) [[unlikely]] {
             Execution::Throw (Thread::AbortException::kThe);
@@ -501,6 +505,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result, optional<Characters::String
                 DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving "
                           "pending-task-list-size = %d",
                           fPendingTasks_.size ());
+                Ensure (*result != nullptr);
                 return;
             }
         }
