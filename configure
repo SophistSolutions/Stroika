@@ -853,19 +853,6 @@ sub	SetDefaultForCompilerDriver_
 		$CXXWARNING_FLAGS = '';
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 			$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_GCC;
-			# avoid release (FTO) warnings like this:
-			#/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2004_x86_64/IntermediateFiles/g++-12-release++2b/ThirdPartyComponents/Xerces/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp:319:12: warning: function may return address of local variable [-Wreturn-local-addr]
-			if (getUbuntuVersion() == 20.04 or getUbuntuVersion() == 22.04) {
-				$EXTRA_PREFIX_LINKER_ARGS = $EXTRA_PREFIX_LINKER_ARGS  . "-Wno-return-local-addr ";
-			}
-			# Lots of apparently spurrious warnings, which we cannot (easily) suppress locally with #pragma warn...
-			#	EG
-			#		In function 'CRYPTO_cfb128_encrypt',
-    		#		inlined from 'SEED_cfb128_encrypt' at ../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/seed/seed_cfb.c:24:5,
-			#		../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/modes/cfb128.c:122:33: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
-			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
-				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-stringop-overflow ';
-			}
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_CLANG;
@@ -2205,6 +2192,24 @@ sub PostProcessOptions_ ()
 			push @CXXFLAGS, "-GL";			#	Whole Program Optimization
 			$EXTRA_PREFIX_LINKER_ARGS .= " -LTCG";
 		}
+
+		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
+			# avoid release (FTO) warnings like this:
+			#/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2004_x86_64/IntermediateFiles/g++-12-release++2b/ThirdPartyComponents/Xerces/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp:319:12: warning: function may return address of local variable [-Wreturn-local-addr]
+			my $ubuntuVersion = getUbuntuVersion();
+			if ( 20.04 <= $ubuntuVersion and $ubuntuVersion <= 23.10) {
+				$EXTRA_PREFIX_LINKER_ARGS = $EXTRA_PREFIX_LINKER_ARGS  . "-Wno-return-local-addr ";
+			}
+			# Lots of apparently spurrious warnings, which we cannot (easily) suppress locally with #pragma warn...
+			#	EG
+			#		In function 'CRYPTO_cfb128_encrypt',
+    		#		inlined from 'SEED_cfb128_encrypt' at ../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/seed/seed_cfb.c:24:5,
+			#		../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/modes/cfb128.c:122:33: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
+				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-stringop-overflow ';
+			}
+		}
+
 	}
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ("$^O" eq "linux")) {
 		# As of 2023-09-26 - only seen with clang++-15 Ubuntu 22.04 and with boost library
