@@ -2198,7 +2198,7 @@ sub PostProcessOptions_ ()
 			#/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2004_x86_64/IntermediateFiles/g++-12-release++2b/ThirdPartyComponents/Xerces/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp:319:12: warning: function may return address of local variable [-Wreturn-local-addr]
 			my $ubuntuVersion = getUbuntuVersion();
 			if ( 20.04 <= $ubuntuVersion and $ubuntuVersion <= 23.10) {
-				$EXTRA_PREFIX_LINKER_ARGS = $EXTRA_PREFIX_LINKER_ARGS  . "-Wno-return-local-addr ";
+				$EXTRA_PREFIX_LINKER_ARGS = $EXTRA_PREFIX_LINKER_ARGS  . " -Wno-return-local-addr";
 			}
 			# Lots of apparently spurrious warnings, which we cannot (easily) suppress locally with #pragma warn...
 			#	EG
@@ -2206,7 +2206,7 @@ sub PostProcessOptions_ ()
     		#		inlined from 'SEED_cfb128_encrypt' at ../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/seed/seed_cfb.c:24:5,
 			#		../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/modes/cfb128.c:122:33: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
 			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
-				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-stringop-overflow ';
+				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . ' -Wno-stringop-overflow';
 			}
 		}
 
