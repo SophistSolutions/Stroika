@@ -346,12 +346,12 @@ namespace Stroika::Foundation::Execution {
             TaskType                     fTask;
             optional<Characters::String> fName;
         };
-        mutable mutex                   fCriticalSection_;      // fCriticalSection_ protectes fThreads_ and fPendingTasks_ and the fields of the MyRunnable_ members inside each thread (fThreads_).
-                                                                // Each should be a very short critical section, except for SetPoolSize()
+        mutable mutex fCriticalSection_; // fCriticalSection_ protectes fThreads_ and fPendingTasks_ and the fields of the MyRunnable_ members inside each thread (fThreads_).
+            // Each should be a very short critical section, except for SetPoolSize()
         atomic<bool>                    fAborted_{false};
-        Containers::Collection<TPInfo_> fThreads_;              // all threads, and a data member for thread object, and one for running task, if any
-        list<PendingTaskInfo_>          fPendingTasks_;         // tasks not yet running - somewhat like a queue, but allow remove from middle
-        WaitableEvent                   fTasksMaybeAdded_{};    // recheck for new tasks (or other events - wakeup waiters on fTasks);
+        Containers::Collection<TPInfo_> fThreads_; // all threads, and a data member for thread object, and one for running task, if any
+        list<PendingTaskInfo_>          fPendingTasks_;      // tasks not yet running - somewhat like a queue, but allow remove from middle
+        WaitableEvent                   fTasksMaybeAdded_{}; // recheck for new tasks (or other events - wakeup waiters on fTasks);
         atomic<unsigned int>            fNextThreadEntryNumber_{1};
         optional<Characters::String>    fThreadPoolName_;
 
