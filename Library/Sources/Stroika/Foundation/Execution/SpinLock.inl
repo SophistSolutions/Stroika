@@ -63,6 +63,7 @@ namespace Stroika::Foundation::Execution {
     inline void SpinLock::unlock ()
     {
         // See notes in try_lock () for cooresponding thread_fence calls()
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wtsan\""); // Needed in g++-13 and later, it appears, with --sanitize=thread, but so far no obvious real problems
         switch (fBarrierFlag_) {
             case BarrierType::eReleaseAcquire:
                 atomic_thread_fence (memory_order_release);
@@ -73,6 +74,7 @@ namespace Stroika::Foundation::Execution {
             default:
                 break;
         }
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wtsan\""); // Needed in g++-13 and later, it appears, with --sanitize=thread, but so far no obvious real problems
         // release lock
         fLock_.clear (memory_order_release);
     }
