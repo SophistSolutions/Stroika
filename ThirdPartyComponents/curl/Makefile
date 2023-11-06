@@ -18,7 +18,7 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
 
-#VERSION=8.4.0
+#VERSION=8.4.0		# Fails to build on Ubuntu  - so wait for next release and hope fixed
 VERSION=8.3.0
 #VERSION=8.2.1
 #VERSION=7.86.0
