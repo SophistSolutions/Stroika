@@ -81,7 +81,7 @@ AppTempFileManager::AppTempFileManager (const Options& options)
     catch (...) {
         DbgTrace (L"Error creating tmpdirs, so adjusting and retrying : %s", Characters::ToString (current_exception ()).c_str ());
         // tmpDir == GetEXEPath (): happens in regtests - maybe better way to handle -
-        tmpDir.replace_filename (GetEXEPath ().stem ().native () + "-tmpdir");
+        tmpDir.replace_filename (GetEXEPath ().stem ().generic_string () + "-tmpdir");
         create_directories (tmpDir); // if that doesn't do it, just throw
     }
     for (int i = 0; i < INT_MAX; ++i) {
