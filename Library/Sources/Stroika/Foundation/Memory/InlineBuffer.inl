@@ -299,7 +299,10 @@ namespace Stroika::Foundation::Memory {
             return BUF_SIZE;
         }
         else {
+            // this case happens precisely in InlineBuffer<T, BUF_SIZE>::reserve() when the capacity is set > BUF_SIZE so initialized then...
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wmaybe-uninitialized\""); // RASPI RELEASE COMPILER gcc12 ONLY
             return fCapacityOfFreeStoreAllocation_;
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"");
         }
     }
     template <typename T, size_t BUF_SIZE>
