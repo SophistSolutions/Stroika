@@ -105,7 +105,9 @@ LibraryContext::LibraryContext ()
 
         Set<CipherAlgorithm> results{cipherNames.Map<CipherAlgorithm> (
             [] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::CipherAlgorithm::GetByNameQuietly (n); })};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
+#endif
         return results;
     }}
     , pStandardCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
@@ -169,8 +171,9 @@ LibraryContext::LibraryContext ()
 
         Set<DigestAlgorithm> results{digestNames.Map<DigestAlgorithm> (
             [] (const String& n) -> optional<DigestAlgorithm> { return OpenSSL::DigestAlgorithm::GetByNameQuietly (n); })};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Found pAvailableDigestAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
-
+#endif
         return results;
     }}
     , pStandardDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
