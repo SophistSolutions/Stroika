@@ -2209,8 +2209,16 @@ sub PostProcessOptions_ ()
 				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . ' -Wno-stringop-overflow';
 			}
 		}
-
 	}
+
+	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
+		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		if (12.0 <= $itsVersion && $itsVersion < 13 && not ($COPTIMIZE_FLAGS eq "")) {
+			# With gcc 12 - release builds - we get lots of spurrious uninitialized warnings, raspi and direct x86
+			$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-maybe-uninitialized ';
+		}
+	}
+
 	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ("$^O" eq "linux")) {
 		# As of 2023-09-26 - only seen with clang++-15 Ubuntu 22.04 and with boost library
 		#/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
