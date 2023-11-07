@@ -412,8 +412,8 @@ namespace Stroika::Foundation::Characters {
         unique_ptr<STD_CODE_CVT_T> fCodeCvt_;
         optional<Character>        fInvalidCharacterReplacement_;
         optional<span<byte>>       fInvalidCharacterReplacementBytes_;
-        alignas (CHAR_T) byte fInvalidCharacterReplacementBytesBuf[8]; // WAG at sufficient size, but sb enuf
         using extern_type = typename STD_CODE_CVT_T::extern_type;
+        extern_type fInvalidCharacterReplacementBytesBuf[8]; // WAG at sufficient size, but sb enuf
         static_assert (is_same_v<CHAR_T, typename STD_CODE_CVT_T::intern_type>);
         CodeCvt_WrapStdCodeCvt_ (const Options& options, unique_ptr<STD_CODE_CVT_T>&& codeCvt)
             : fCodeCvt_{move (codeCvt)}
@@ -424,16 +424,14 @@ namespace Stroika::Foundation::Characters {
                 Memory::StackBuffer<CHAR_T> tmpBuf;
                 span<const CHAR_T>          invalCharPartlyEncode = fInvalidCharacterReplacement_->As<CHAR_T> (&tmpBuf);
                 const CHAR_T*               ignoreCharsConsumed   = nullptr;
-                extern_type*                bytesInvalChar        = reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf);
-                auto                        r                     = fCodeCvt_->out (
-                    ignoredMBState, invalCharPartlyEncode.data (), invalCharPartlyEncode.data () + invalCharPartlyEncode.size (),
-                    ignoreCharsConsumed, reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf),
-                    reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf + Memory::NEltsOf (fInvalidCharacterReplacementBytesBuf)),
-                    bytesInvalChar);
+                extern_type*                bytesInvalChar        = fInvalidCharacterReplacementBytesBuf;
+                auto                        r =
+                    fCodeCvt_->out (ignoredMBState, invalCharPartlyEncode.data (), invalCharPartlyEncode.data () + invalCharPartlyEncode.size (),
+                                    ignoreCharsConsumed, fInvalidCharacterReplacementBytesBuf,
+                                    fInvalidCharacterReplacementBytesBuf + Memory::NEltsOf (fInvalidCharacterReplacementBytesBuf), bytesInvalChar);
                 if (r == STD_CODE_CVT_T::ok) {
-                    fInvalidCharacterReplacementBytes_ =
-                        span<byte>{&fInvalidCharacterReplacementBytesBuf[0],
-                                   static_cast<size_t> (bytesInvalChar - reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf))};
+                    fInvalidCharacterReplacementBytes_ = Memory::SpanReInterpretCast<byte> (
+                        span{fInvalidCharacterReplacementBytesBuf}.subspan (0, bytesInvalChar - fInvalidCharacterReplacementBytesBuf));
                 }
                 else {
                     Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ();
