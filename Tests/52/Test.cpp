@@ -1241,6 +1241,10 @@ namespace {
                            const function<void (const string&, unsigned int)>& function2Test, const string& testName)
         {
             GetOutStream_ () << testName << ": " << p << endl;
+            if (not filesystem::exists (p)) {
+                GetOutStream_ () << "\t\t***SKIPPED CUZ TEST FILE MISSING: " << p << endl;
+                return;
+            }
             std::string data2ParseAsString = [&p] () {
                 if constexpr (true) {
                     // write the same thing in a simpler stroika-based style
