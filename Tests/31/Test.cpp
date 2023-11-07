@@ -542,7 +542,8 @@ namespace {
                 providers2Try += OpenSSL::LibraryContext::kLegacyProvider;
             }
             for (String provider : providers2Try) {
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"trying provider", L"provider=%s", Characters::ToString (provider).c_str ())};
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"trying provider", L"provider=%s",
+                                                                                             Characters::ToString (provider).c_str ())};
                 shared_ptr<OpenSSL::LibraryContext::TemporarilyAddProvider> providerAdder;
                 try {
 #if qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
@@ -572,23 +573,25 @@ namespace {
                 MultiSet<String> failingCiphers;
                 [[maybe_unused]] const size_t totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().size ();
                 for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
-                    // No idea why, but we get a hard fail (uncatchable exception from ASAN) - if we test these on raspi with ASAN -- LGP 2023-11-07
-                    #ifdef __arm__
+                    // No idea why, but we get a hard fail (uncatchable exception from ASAN) - if we test these on raspi with ASAN (maybe rethrow of execpt caught to print it?) -- LGP 2023-11-07
+#ifdef __arm__
                     constexpr bool kArm_ = true;
-                    #else
+#else
                     constexpr bool kArm_ = false;
-                    #endif
-                    if (kArm_ and Debug::kBuiltWithAddressSanitizer and  
-                    (
+#endif
+                    if (kArm_ and Debug::kBuiltWithAddressSanitizer and
+                        (
+                            // clang-format off
                         ci.pName () == "id-aes128-GCM" or ci.pName () == "id-aes192-GCM" or ci.pName () == "id-aes256-GCM"
                         or ci.pName () == "AES-128-XTS" or  ci.pName () == "AES-256-XTS"
                         or ci.pName () == "id-aes128-CCM" or ci.pName () == "id-aes192-CCM" or ci.pName () == "id-aes256-CCM" 
                         or ci.pName () == "id-aes128-wrap" or ci.pName () == "id-aes192-wrap" or ci.pName () == "id-aes256-wrap" 
                         or ci.pName () == "AES-128-OCB" or  ci.pName () == "AES-192-OCB" or ci.pName () == "AES-256-OCB"
-                        or ci.pName () == "ARIA-128-GCM" or  ci.pName () == "ARIA-192-GCM" or ci.pName () == "ARIA-256-GCM"
-                        or ci.pName () == "ARIA-128-CCM" or  ci.pName () == "ARIA-192-CCM" or ci.pName () == "ARIA-256-CCM"
+                        or ci.pName () == "ARIA-128-GCM" or ci.pName () == "ARIA-192-GCM" or ci.pName () == "ARIA-256-GCM"
+                        or ci.pName () == "ARIA-128-CCM" or ci.pName () == "ARIA-192-CCM" or ci.pName () == "ARIA-256-CCM"
                         or ci.pName () == "id-smime-alg-CMS3DESwrap"
-                    )) {
+                            // clang-format on
+                            )) {
                         DbgTrace (L"Skipping ci='%s' on raspi/asan", ci.pName ().As<wstring> ().c_str ());
                         continue;
                     }
