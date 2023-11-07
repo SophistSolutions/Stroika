@@ -56,9 +56,9 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename TO_T, typename FROM_T>
     constexpr std::span<TO_T> SpanReInterpretCast (span<FROM_T> src)
-        requires (sizeof (FROM_T) == sizeof (TO_T))
+        requires (sizeof (FROM_T) % sizeof (TO_T) == 0)
     {
-        return span<TO_T>{reinterpret_cast<TO_T*> (src.data ()), src.size ()};
+        return span<TO_T>{reinterpret_cast<TO_T*> (src.data ()), src.size () * (sizeof (FROM_T) / sizeof (TO_T))};
     }
 
     /*
