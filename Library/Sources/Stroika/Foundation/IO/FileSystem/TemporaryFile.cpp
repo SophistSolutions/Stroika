@@ -74,7 +74,16 @@ AppTempFileManager::AppTempFileManager (const Options& options)
     // to disambiguiate.
     //
     tmpDir /= GetSysTmpRelativePath_ (options);
-    create_directories (tmpDir);
+    DbgTrace (L"about to create dirs : %s", Characters::ToString (tmpDir).c_str ());
+    try {
+        create_directories (tmpDir);
+    }
+    catch (...) {
+        DbgTrace (L"Error creating tmpdirs, so adjusting and retrying : %s", Characters::ToString (current_exception ()).c_str ());
+        // tmpDir == GetEXEPath (): happens in regtests - maybe better way to handle - 
+        tmpDir.replace_filename (GetEXEPath ().stem ().native () + "-tmpdir");
+         create_directories (tmpDir);   // if that doesn't do it, just throw
+    }
     for (int i = 0; i < INT_MAX; ++i) {
         filesystem::path trialD =
             tmpDir / ToPath (Format (L"%s-%d-%d", FromPath (exeFileName).c_str (), Execution::GetCurrentProcessID (), i + rand ()));
