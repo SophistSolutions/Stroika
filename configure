@@ -2203,8 +2203,16 @@ sub PostProcessOptions_ ()
 
 	if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 		my $itsVersion = GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus);
-		if (12.0 <= $itsVersion && $itsVersion < 13 && not ($COPTIMIZE_FLAGS eq "")) {
-			# With gcc 12 - release builds - we get lots of spurrious uninitialized warnings, raspi and direct x86
+		if (12.0 <= $itsVersion && $itsVersion < 14 && not ($COPTIMIZE_FLAGS eq "")) {
+			# With gcc 12/13 - release builds - we get lots of spurrious uninitialized warnings, raspi and direct x86
+			#EG:
+			#	In member function 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::size_type std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::length() const [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]',
+			#		inlined from 'constexpr std::__cxx11::basic_string<_CharT, _Traits, _Alloc>& std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::operator=(std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&&) [with _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]' at /usr/include/c++/13/bits/basic_string.h:887:15,
+			#		inlined from 'Stroika::Foundation::Time::Duration& Stroika::Foundation::Time::Duration::operator=(Stroika::Foundation::Time::Duration&&)' at ../Time/Duration.inl:157:56,
+			#		inlined from 'void Stroika::Foundation::Execution::Sleep(const Stroika::Foundation::Time::Duration&, Stroika::Foundation::Time::Duration*)' at Sleep.cpp:38:49:
+			#	/usr/include/c++/13/bits/basic_string.h:1067:16: warning: '<unnamed>.Stroika::Foundation::Time::Duration::<unnamed>.Stroika::Foundation::Time::Duration::._anon_544::fStringRep_.std::__cxx11::basic_string<char>::_M_string_length' may be used uninitialized [-Wmaybe-uninitialized]
+			#	1067 |       { return _M_string_length; }
+			#		|                ^~~~~~~~~~~~~~~~
 			$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-maybe-uninitialized ';
 		}
 		if ($itsVersion < 12) {
