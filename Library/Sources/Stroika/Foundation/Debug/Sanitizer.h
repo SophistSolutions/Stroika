@@ -24,6 +24,10 @@
 #undef __sanitizer_annotate_contiguous_container
 #endif
 
+#if qCompilerAndStdLib_undefined_behavior_macro_Buggy
+        extern "C" void __attribute__((weak)) __ubsan_handle_builtin_unreachable();
+#endif
+
 /**
  *  \file
  *
@@ -168,7 +172,18 @@ namespace Stroika::Foundation::Debug {
      * 
      *  \note WARNING: This incorrectly reports false on GCC builds, at least up to gcc 12, it appears.
      */
+    #if qCompilerAndStdLib_undefined_behavior_macro_Buggy
+    namespace Private_ {
+        bool isUndefinedBehavorSanitizerRunning_ ()
+        {  
+            // trick from https://stackoverflow.com/questions/39371798/how-can-i-determine-if-ubsan-has-been-compiled-in-using-clang-or-gcc
+            return &__ubsan_handle_builtin_unreachable;
+        }
+    }
+    static inline bool kBuiltWithUndefinedBehaviorSanitizer = Private_::isUndefinedBehavorSanitizerRunning_ ();
+    #else
     constexpr bool kBuiltWithUndefinedBehaviorSanitizer = Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer;
+    #endif
 
     /**
      *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED

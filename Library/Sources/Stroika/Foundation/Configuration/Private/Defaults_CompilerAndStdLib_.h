@@ -584,6 +584,17 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 
 #endif
 
+#ifndef qCompilerAndStdLib_undefined_behavior_macro_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// FIRST SEEN BROKEN IN GCC 11
+#define qCompilerAndStdLib_undefined_behavior_macro_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+#else
+#define qCompilerAndStdLib_undefined_behavior_macro_Buggy 0
+#endif
+
+#endif
+
 /*
     Compiling Tests/11/Test.cpp ...
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
