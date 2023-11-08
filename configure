@@ -856,16 +856,6 @@ sub	SetDefaultForCompilerDriver_
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			$CXXWARNING_FLAGS = $CXXWARNING_FLAGS . $DEFAULT_CXXWARNING_FLAGS_CLANG;
-			if ("$^O" eq "darwin")  {
-				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 14.0) {
-					$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
-				}
-			}
-			else {
-				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 15.0) {
-					$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
-				}
-			}
 		}
 	}
 
@@ -2217,14 +2207,32 @@ sub PostProcessOptions_ ()
 			# With gcc 12 - release builds - we get lots of spurrious uninitialized warnings, raspi and direct x86
 			$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-maybe-uninitialized ';
 		}
+		if ($itsVersion < 12) {
+			# With gcc 11 cannot seem to suppress with pragma warning
+			$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-stringop-overflow ';
+		}
 	}
 
-	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ("$^O" eq "linux")) {
-		# As of 2023-09-26 - only seen with clang++-15 Ubuntu 22.04 and with boost library
-		#/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
-		#/tmp/lto-llvm-26a395.o: in function `Stroika::Foundation::DataExchange::Variant::JSON::Reader::BoostRep_::Read(Stroika::Foundation::Streams::InputStream<std::byte>::Ptr const&)':
-		$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
+	if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		if ("$^O" eq "linux") {
+			# As of 2023-09-26 - only seen with clang++-15 Ubuntu 22.04 and with boost library
+			#/usr/bin/ld: /usr/bin/ld: DWARF error: invalid or unhandled FORM value: 0x23
+			#/tmp/lto-llvm-26a395.o: in function `Stroika::Foundation::DataExchange::Variant::JSON::Reader::BoostRep_::Read(Stroika::Foundation::Streams::InputStream<std::byte>::Ptr const&)':
+			$HasMakefileBugWorkaround_lto_skipping_undefined_incompatible = true;
+		}
+		if ("$^O" eq "darwin")  {
+			if ($itsVersion >= 14.0) {
+				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
+			}
+		}
+		else {
+			if ($itsVersion >= 15.0) {
+				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
+			}
+		}
 	}
+
 	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
 		{
 			my %inNoSanitizeList = map { $_ => 1 } @noSanitizerFlags;
