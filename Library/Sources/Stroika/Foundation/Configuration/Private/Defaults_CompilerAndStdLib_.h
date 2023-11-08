@@ -611,7 +611,7 @@ raspberrypi-g++-11-debug-sanitize_undefined - running on raspi
 */
 #ifndef qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
 
-#if defined(__GNUC__) && !defined(__clang__) && defined (__arm__)
+#if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
 // FIRST SEEN BROKEN IN GCC 11
 // appears broken in GCC 12 (ubuntu 22.04 cross-compile)
 #define qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
@@ -620,7 +620,6 @@ raspberrypi-g++-11-debug-sanitize_undefined - running on raspi
 #endif
 
 #endif
-
 
 /*
     Compiling Tests/11/Test.cpp ...

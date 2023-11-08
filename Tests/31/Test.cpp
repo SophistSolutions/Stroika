@@ -542,7 +542,7 @@ namespace {
                 providers2Try += OpenSSL::LibraryContext::kLegacyProvider;
             }
             for (String provider : providers2Try) {
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"trying provider", L"provider=%s",
+                Debug::TraceContextBumper ctxp{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"trying provider", L"provider=%s",
                                                                                              Characters::ToString (provider).c_str ())};
                 shared_ptr<OpenSSL::LibraryContext::TemporarilyAddProvider> providerAdder;
                 try {

@@ -25,7 +25,7 @@
 #endif
 
 #if qCompilerAndStdLib_undefined_behavior_macro_Buggy
-        extern "C" void __attribute__((weak)) __ubsan_handle_builtin_unreachable();
+extern "C" void __attribute__ ((weak)) __ubsan_handle_builtin_unreachable ();
 #endif
 
 /**
@@ -166,24 +166,24 @@ namespace Stroika::Foundation::Debug {
 #define Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer 0
 #endif
 
-    /**
+/**
      *  \brief kBuiltWithUndefinedBehaviorSanitizer can be checked in compiled code to see if the undfined behavior sanitizer
      *         support is compiled into this executable
      * 
      *  \note WARNING: This incorrectly reports false on GCC builds, at least up to gcc 12, it appears.
      */
-    #if qCompilerAndStdLib_undefined_behavior_macro_Buggy
+#if qCompilerAndStdLib_undefined_behavior_macro_Buggy
     namespace Private_ {
         inline bool isUndefinedBehavorSanitizerRunning_ ()
-        {  
+        {
             // trick from https://stackoverflow.com/questions/39371798/how-can-i-determine-if-ubsan-has-been-compiled-in-using-clang-or-gcc
             return &__ubsan_handle_builtin_unreachable;
         }
     }
-     inline const bool kBuiltWithUndefinedBehaviorSanitizer = Private_::isUndefinedBehavorSanitizerRunning_ ();
-    #else
+    inline const bool kBuiltWithUndefinedBehaviorSanitizer = Private_::isUndefinedBehavorSanitizerRunning_ ();
+#else
     constexpr bool kBuiltWithUndefinedBehaviorSanitizer = Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer;
-    #endif
+#endif
 
     /**
      *  Macro: Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
