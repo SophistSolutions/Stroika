@@ -1364,12 +1364,13 @@ namespace {
 
         Set<String> failedTests;
 
-        #if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
-            Stroika::TestHarness::WarnTestIssue (L"qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy and Debug::kBuiltWithUndefinedBehaviorSanitizer so skipping test");
+            Stroika::TestHarness::WarnTestIssue (L"qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy and "
+                                                 L"Debug::kBuiltWithUndefinedBehaviorSanitizer so skipping test");
             return;
         }
-        #endif
+#endif
 
         Tester (L"Test of simple locking strategies (mutex v shared_ptr copy)", Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
                 Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy", 24500, .86, &failedTests);

@@ -543,7 +543,7 @@ namespace {
             }
             for (String provider : providers2Try) {
                 Debug::TraceContextBumper ctxp{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"trying provider", L"provider=%s",
-                                                                                             Characters::ToString (provider).c_str ())};
+                                                                                              Characters::ToString (provider).c_str ())};
                 shared_ptr<OpenSSL::LibraryContext::TemporarilyAddProvider> providerAdder;
                 try {
 #if qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
