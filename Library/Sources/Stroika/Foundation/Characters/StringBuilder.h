@@ -231,6 +231,14 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  ONLY valid til the next non-const call to StringBuilder.
+         *  See also GetData (to select a different charType).
+         */
+        nonvirtual span<BufferElementType> data ();
+        nonvirtual span<const BufferElementType> data () const;
+
+    public:
+        /**
          *  \brief access a span of data located inside the StringBuilder. Return internal pointer, or pointer internal to possiblyUsedBuffer
          * 
          *  \note Lifetime of resulting span is ONLY until the next change to the StackBuffer OR the StringBuilder.

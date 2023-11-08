@@ -331,6 +331,18 @@ namespace Stroika::Foundation::Characters {
         return size ();
     }
     template <typename OPTIONS>
+    inline auto StringBuilder<OPTIONS>::data () -> span<BufferElementType>
+    {
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_}; // doesn't do much good bit a little
+        return fData_.data ();
+    }
+    template <typename OPTIONS>
+    inline auto StringBuilder<OPTIONS>::data () const -> span<const BufferElementType>
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_}; // doesn't do much good bit a little
+        return fData_.data ();
+    }
+    template <typename OPTIONS>
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline span<const CHAR_T> StringBuilder<OPTIONS>::GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
         requires (not is_const_v<CHAR_T>)
