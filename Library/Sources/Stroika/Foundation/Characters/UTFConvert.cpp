@@ -761,31 +761,91 @@ namespace {
 auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source, span<char16_t> target)
     -> ConversionResultWithStatus
 {
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+    if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+        return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target,
+                                                       [] (const char8_t** sourceStart, const char8_t* sourceEnd, char16_t** targetStart,
+                                                           char16_t* targetEnd, optional<char32_t> missingCharacterReplacement) {
+                                                           return UTFConvert_libutfxx_::ConvertUTF8toUTF16_ (
+                                                               sourceStart, sourceEnd, targetStart, targetEnd, missingCharacterReplacement);
+                                                       });
+    }
+#endif
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF16_);
 }
 auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source, span<char32_t> target)
     -> ConversionResultWithStatus
 {
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+    if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+        return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target,
+                                                       [] (const char8_t** sourceStart, const char8_t* sourceEnd, char32_t** targetStart,
+                                                           char32_t* targetEnd, optional<char32_t> missingCharacterReplacement) {
+                                                           return UTFConvert_libutfxx_::ConvertUTF8toUTF32_ (
+                                                               sourceStart, sourceEnd, targetStart, targetEnd, missingCharacterReplacement);
+                                                       });
+    }
+#endif
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF32_);
 }
 auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source,
                                                   span<char32_t> target) -> ConversionResultWithStatus
 {
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+    if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+        return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target,
+                                                       [] (const char16_t** sourceStart, const char16_t* sourceEnd, char32_t** targetStart,
+                                                           char32_t* targetEnd, optional<char32_t> missingCharacterReplacement) {
+                                                           return UTFConvert_libutfxx_::ConvertUTF16toUTF32_ (
+                                                               sourceStart, sourceEnd, targetStart, targetEnd, missingCharacterReplacement);
+                                                       });
+    }
+#endif
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF32_);
 }
 auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source,
                                                   span<char16_t> target) -> ConversionResultWithStatus
 {
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+    if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+        return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target,
+                                                       [] (const char32_t** sourceStart, const char32_t* sourceEnd, char16_t** targetStart,
+                                                           char16_t* targetEnd, optional<char32_t> missingCharacterReplacement) {
+                                                           return UTFConvert_libutfxx_::ConvertUTF32toUTF16_ (
+                                                               sourceStart, sourceEnd, targetStart, targetEnd, missingCharacterReplacement);
+                                                       });
+    }
+#endif
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF32toUTF16_);
 }
 auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source, span<char8_t> target)
     -> ConversionResultWithStatus
 {
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+    if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+        return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target,
+                                                       [] (const char32_t** sourceStart, const char32_t* sourceEnd, char8_t** targetStart,
+                                                           char8_t* targetEnd, optional<char32_t> missingCharacterReplacement) {
+                                                           return UTFConvert_libutfxx_::ConvertUTF32toUTF8_ (
+                                                               sourceStart, sourceEnd, targetStart, targetEnd, missingCharacterReplacement);
+                                                       });
+    }
+#endif
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF32toUTF8_);
 }
 auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source, span<char8_t> target)
     -> ConversionResultWithStatus
 {
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+    if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+        return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target,
+                                                       [] (const char16_t** sourceStart, const char16_t* sourceEnd, char8_t** targetStart,
+                                                           char8_t* targetEnd, optional<char32_t> missingCharacterReplacement) {
+                                                           return UTFConvert_libutfxx_::ConvertUTF16toUTF8_ (
+                                                               sourceStart, sourceEnd, targetStart, targetEnd, missingCharacterReplacement);
+                                                       });
+    }
+#endif
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF8_);
 }
 

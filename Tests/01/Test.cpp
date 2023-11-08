@@ -188,19 +188,14 @@ namespace {
                 // or still simpler
                 DiskSpaceUsageType LookupDiskStats_Try3 (String diskName)
                 {
-#ifdef __arm__
-            constexpr bool kArm_ = true;
-#else
-            constexpr bool kArm_ = false;
-#endif
-                    if (kArm_ and Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+                    #if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+                    if (  Debug::kBuiltWithUndefinedBehaviorSanitizer) {
                         // Arm/Raspi g++-11 at least, broken here and generate either badcode for below, or more likely just spurious warning from ubsan...
                         // -- LGP 2023-11-08
                         return LookupDiskStats_Try2 (diskName);
                     }
-                    else {
-                        return sDiskUsageCache_.LookupValue (diskName, LookupDiskStats_);
-                    }
+                    #endif
+                    return sDiskUsageCache_.LookupValue (diskName, LookupDiskStats_);
                 }
                 void DoIt ()
                 {

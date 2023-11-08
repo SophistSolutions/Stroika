@@ -174,13 +174,13 @@ namespace Stroika::Foundation::Debug {
      */
     #if qCompilerAndStdLib_undefined_behavior_macro_Buggy
     namespace Private_ {
-        bool isUndefinedBehavorSanitizerRunning_ ()
+        inline bool isUndefinedBehavorSanitizerRunning_ ()
         {  
             // trick from https://stackoverflow.com/questions/39371798/how-can-i-determine-if-ubsan-has-been-compiled-in-using-clang-or-gcc
             return &__ubsan_handle_builtin_unreachable;
         }
     }
-    static inline bool kBuiltWithUndefinedBehaviorSanitizer = Private_::isUndefinedBehavorSanitizerRunning_ ();
+     inline const bool kBuiltWithUndefinedBehaviorSanitizer = Private_::isUndefinedBehavorSanitizerRunning_ ();
     #else
     constexpr bool kBuiltWithUndefinedBehaviorSanitizer = Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer;
     #endif

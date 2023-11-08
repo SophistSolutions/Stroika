@@ -584,16 +584,43 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 
 #endif
 
+/*
+ Symptom if broken - is that for sanitizer=undefined builds, we still get kBuiltWithUndefinedBehaviorSanitizer == false
+ especially relevant in tests for qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy workarounds!
+ */
 #ifndef qCompilerAndStdLib_undefined_behavior_macro_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 11
+// Still broken in GCC 12
 #define qCompilerAndStdLib_undefined_behavior_macro_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
 #else
 #define qCompilerAndStdLib_undefined_behavior_macro_Buggy 0
 #endif
 
 #endif
+
+/*
+
+raspberrypi-g++-11-debug-sanitize_undefined - running on raspi
+
+ UTFConvert.cpp:769:119: runtime error: reference binding to misaligned address 0x014a84e5 for type '<unknown>', which requires 2 byte alignment
+0x014a84e5: note: pointer points here
+ 37 5c 02 b0 b5 8c b0  02 af f8 60 b9 60 7a 60  3b 60 00 23 bb 61 fb 68  fa 68 00 2a 03 d0 03 f0  03
+             ^ 
+*/
+#ifndef qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__) && defined (__arm__)
+// FIRST SEEN BROKEN IN GCC 11
+// appears broken in GCC 12 (ubuntu 22.04 cross-compile)
+#define qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+#else
+#define qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy 0
+#endif
+
+#endif
+
 
 /*
     Compiling Tests/11/Test.cpp ...
