@@ -17,6 +17,7 @@ endif
 
 SubDirs	=	\
 	Platform \
+	Resources \
 
 
 .PHONY:				$(SubDirs)

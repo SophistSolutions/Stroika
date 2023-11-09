@@ -25,7 +25,7 @@ private:
 
 public:
     Rep_ (HMODULE hModule)
-        : fModule_ (hModule)
+        : fModule_{hModule}
     {
     }
     virtual Accessor ReadResource (const Name& name) const override
@@ -50,6 +50,6 @@ public:
 ********************************************************************************
 */
 WindowsResourceManager::WindowsResourceManager (HMODULE hModule)
-    : Manager (make_shared<Rep_> (hModule))
+    : Manager{make_shared<Rep_> (hModule)}
 {
 }

@@ -31,6 +31,7 @@ namespace Stroika::Foundation::Execution::Resources::Concrete {
     public:
         ElfResourceManager ();
     };
+
 }
 
 /*
