@@ -234,8 +234,8 @@ jobs:
       matrix: ${{fromJson(needs.WindowsMatrixPrep.outputs.matrix)}}
 
     env:
-      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=2 (empirical sometimes run out of RAM jobs=3), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=2 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
     steps:
       - uses: actions/checkout@v3
