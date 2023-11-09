@@ -1421,6 +1421,14 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  mimic https://en.cppreference.com/w/cpp/string/basic_string/back
+         * 
+         *  \req not empty ()
+         */
+        nonvirtual Character back () const;
+
+    public:
+        /**
          *  Compatable with STL::basic_string::subtr() - which interprets second argument as count. Not the same
          *  as Stroika::String::SubString (where the second argument is a 'to')
          *
