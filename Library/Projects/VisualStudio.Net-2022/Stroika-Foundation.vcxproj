@@ -985,6 +985,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.inl" />
@@ -993,6 +994,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionRecursiveMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl" />
@@ -1002,7 +1004,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\ElfResourceManager.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.inl" />

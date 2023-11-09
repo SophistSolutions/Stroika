@@ -3537,6 +3537,18 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.inl">
       <Filter>Sources\DataExchange\XML</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Makefile">
+      <Filter>Sources\Execution\Platform</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Makefile">
+      <Filter>Sources\Execution\Resources</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\Makefile">
+      <Filter>Sources\Execution\Resources\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Makefile">
+      <Filter>Sources\Execution\Platform\Windows</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />
