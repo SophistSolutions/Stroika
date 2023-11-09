@@ -4,7 +4,7 @@
 #include "../../StroikaPreComp.h"
 
 #include <cstdarg>
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wformat-truncation\"");  // for g++-13 g++-release-sanitize_address_undefined x86_64-linux-gnu/bits/stdio2.h:68:36: warning: null format string [-Wformat-truncation=]
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wformat-truncation\""); // for g++-13 g++-release-sanitize_address_undefined x86_64-linux-gnu/bits/stdio2.h:68:36: warning: null format string [-Wformat-truncation=]
 #include <cstdio>
 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wformat-truncation\"");
 #include <iomanip>
