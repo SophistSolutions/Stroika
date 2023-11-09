@@ -1034,7 +1034,7 @@ namespace Stroika::Foundation::Characters {
         Require (not empty ());
         _SafeReadRepAccessor accessor{this};
         size_t               thisLen = accessor._ConstGetRep ().size ();
-        return accessor._ConstGetRep ().GetAt (thisLen-1);
+        return accessor._ConstGetRep ().GetAt (thisLen - 1);
     }
     inline String String::substr (size_t from, size_t count) const
     {
