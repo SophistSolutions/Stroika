@@ -139,8 +139,8 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
             static VariantValue                  kDefaultMapper_RawToCombined_BLOB (const Mapping<String, VariantValue>& fields2Map);
             static VariantValue                  kDefaultMapper_RawToCombined_String (const Mapping<String, VariantValue>& fields2Map);
-            static Mapping<String, VariantValue> kDefaultMapper_CombinedToRaw_BLOB (const VariantValue& fields2Map);
-            static Mapping<String, VariantValue> kDefaultMapper_CombinedToRaw_String (const VariantValue& fields2Map);
+            static Mapping<String, VariantValue> kDefaultMapper_CombinedToRaw_BLOB (const VariantValue& map2Fields);
+            static Mapping<String, VariantValue> kDefaultMapper_CombinedToRaw_String (const VariantValue& map2Fields);
         };
 
         /**

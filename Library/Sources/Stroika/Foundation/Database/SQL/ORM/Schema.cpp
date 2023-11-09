@@ -43,8 +43,19 @@ function<VariantValue (const Mapping<String, VariantValue>& fields2Map)> ORM::Sc
     Require (fVariantValueType);
     switch (*fVariantValueType) {
         case VariantValue::eBLOB:
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+            if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+                return [] (const Mapping<String, VariantValue>& fields2Map) { return kDefaultMapper_RawToCombined_BLOB (fields2Map); };
+            }
+#endif
+
             return kDefaultMapper_RawToCombined_BLOB;
         case VariantValue::eString:
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+            if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+                return [] (const Mapping<String, VariantValue>& fields2Map) { return kDefaultMapper_RawToCombined_String (fields2Map); };
+            }
+#endif
             return kDefaultMapper_RawToCombined_String;
         default:
             RequireNotReached ();
@@ -60,8 +71,18 @@ function<Mapping<String, VariantValue> (const VariantValue& map2Fields)> ORM::Sc
     Require (fVariantValueType);
     switch (*fVariantValueType) {
         case VariantValue::eBLOB:
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+            if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+                return [] (const VariantValue& map2Fields) { return kDefaultMapper_CombinedToRaw_BLOB (map2Fields); };
+            }
+#endif
             return kDefaultMapper_CombinedToRaw_BLOB;
         case VariantValue::eString:
+#if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
+            if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
+                return [] (const VariantValue& map2Fields) { return kDefaultMapper_CombinedToRaw_String (map2Fields); };
+            }
+#endif
             return kDefaultMapper_CombinedToRaw_String;
         default:
             RequireNotReached ();
@@ -79,21 +100,22 @@ VariantValue ORM::Schema::CatchAllField::kDefaultMapper_RawToCombined_String (co
     return DataExchange::Variant::JSON::Writer{}.WriteAsString (VariantValue{fields2Map});
 }
 
-Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_CombinedToRaw_BLOB (const VariantValue& fields2Map)
+Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_CombinedToRaw_BLOB (const VariantValue& map2Fields)
 {
-    if (fields2Map.empty ()) {
+    if (map2Fields.empty ()) {
         return Mapping<String, VariantValue>{};
     }
-    return DataExchange::Variant::JSON::Reader{}.Read (fields2Map.As<Memory::BLOB> ()).As<Mapping<String, VariantValue>> ();
+    return DataExchange::Variant::JSON::Reader{}.Read (map2Fields.As<Memory::BLOB> ()).As<Mapping<String, VariantValue>> ();
 }
 
-Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_CombinedToRaw_String (const VariantValue& fields2Map)
+Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_CombinedToRaw_String (const VariantValue& map2Fields)
 {
-    if (fields2Map.empty ()) {
+    if (map2Fields.empty ()) {
         return Mapping<String, VariantValue>{};
     }
-    return DataExchange::Variant::JSON::Reader{}.Read (fields2Map.As<String> ()).As<Mapping<String, VariantValue>> ();
+    return DataExchange::Variant::JSON::Reader{}.Read (map2Fields.As<String> ()).As<Mapping<String, VariantValue>> ();
 }
+using namespace std;
 
 /*
  ********************************************************************************
