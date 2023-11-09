@@ -1005,8 +1005,10 @@ sub	SetDefaultForCompilerDriver_
 				# are hard to figure out what todo about --LGP 2023-10-04
 				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-subobject-linkage ';
 
+				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
 				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-odr ';
 				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-lto-type-mismatch ';
+				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-tsan ';
 			}
 
 			# MOSTLY UNRELATED ISSUE
