@@ -11,7 +11,7 @@
 #include <vector>
 
 #if __has_include("boost/json/value.hpp")
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\"");  // for g++-13 g++-release-sanitize_address_undefined warning: 'long unsigned int __atomic_sub_fetch_8(volatile void*, long unsigned int, int)' writing 8 bytes into a region of size 0 overflows the destination [-Wstringop-overflow=
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // for g++-13 g++-release-sanitize_address_undefined warning: 'long unsigned int __atomic_sub_fetch_8(volatile void*, long unsigned int, int)' writing 8 bytes into a region of size 0 overflows the destination [-Wstringop-overflow=
 #include <boost/json/value.hpp>
 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
 #endif
