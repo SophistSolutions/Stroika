@@ -251,6 +251,22 @@ namespace Stroika::Foundation::Common {
         }
     }
 
+    /*
+     ********************************************************************************
+     ******************************* ReverseCompareOrder ****************************
+     ********************************************************************************
+     */
+    constexpr strong_ordering ReverseCompareOrder (strong_ordering so)
+    {
+        if (so == strong_ordering::less) {
+            return strong_ordering::greater;
+        }
+        else if (so == strong_ordering::greater) {
+            return strong_ordering::less;
+        }
+        return so;
+    }
+
     /********************************DEPRECATED STUFF ************************************************** */
     /********************************DEPRECATED STUFF ************************************************** */
     /********************************DEPRECATED STUFF ************************************************** */

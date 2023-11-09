@@ -38,13 +38,15 @@ namespace Stroika::Foundation::DataExchange {
      * 
      *  \par Example Usage (specializing and USING DefaultSerializer)
      *      \code
-     *          template <>
-     *          struct DefaultSerializer<Stroika::Foundation::IO::Network::InternetAddress> {
-     *              Memory::BLOB operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const
-     *              {
-     *                  return DefaultSerializer<Characters::String>{}(arg.As<Characters::String> ());
-     *              }
-     *          };
+     *          namespace Stroika::Foundation::DataExchange
+     *              template <>
+     *              struct DefaultSerializer<Stroika::Foundation::IO::Network::InternetAddress> {
+     *                  Memory::BLOB operator() (const Stroika::Foundation::IO::Network::InternetAddress& arg) const
+     *                  {
+     *                      return DefaultSerializer<Characters::String>{}(arg.As<Characters::String> ());
+     *                  }
+     *              };
+     *          }
      *      \endcode
      * 
      *  \note \em Design Note

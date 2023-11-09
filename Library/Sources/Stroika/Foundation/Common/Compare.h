@@ -419,6 +419,11 @@ namespace Stroika::Foundation::Common {
     template <typename FROM_INT_TYPE>
     constexpr strong_ordering CompareResultNormalizer (FROM_INT_TYPE f);
 
+    /**
+     *  Map equals to equals, but less becomes greater and greater becomes less
+     */
+    constexpr strong_ordering ReverseCompareOrder (strong_ordering so);
+
 }
 
 /*
