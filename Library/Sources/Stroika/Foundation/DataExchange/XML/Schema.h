@@ -44,7 +44,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         Schema (const Schema& from) = default;
         // The targetNamespace argument is optional (we can have a schema with a blank target namespace).
         // The referencedSchema to support load/define the given schema (e.g. for xsd:import directives).
-        Schema (const String& targetNamespace, const Memory::BLOB& targetNamespaceData, const vector<SourceComponent>& otherSources,
+        Schema (const String& targetNamespace, const Memory::BLOB& targetNamespaceData, const vector<SourceComponent>& otherSources = {},
                 const NamespaceDefinitionsList& namespaceDefs = {});
 
     public:
