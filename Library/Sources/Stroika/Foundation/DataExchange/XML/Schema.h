@@ -84,10 +84,10 @@ namespace Stroika::Foundation::DataExchange::XML {
         nonvirtual Memory::BLOB GetSchemaData_ () const;
 
     private:
-        struct SchemaRep;
+        struct Rep_;
 
     private:
-        shared_ptr<SchemaRep> fRep;
+        shared_ptr<Rep_> fRep;
 
     private:
         friend class AccessCompiledXSD;

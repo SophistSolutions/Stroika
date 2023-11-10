@@ -205,13 +205,17 @@ Schema::T_CompiledXSDRep Schema::AccessCompiledXSD::GetCachedTRep () const
  ********************************************************************************
  */
 
-struct Schema::SchemaRep {
-    SchemaRep (String targetNamespace, vector<SourceComponent> sourceComponents, NamespaceDefinitionsList namespaceDefinitions)
+struct Schema::Rep_ {
+    Rep_ (const String& targetNamespace, const Memory::BLOB& targetNamespaceData, const vector<SourceComponent>& sourceComponents,
+          const NamespaceDefinitionsList& namespaceDefinitions)
         : fTargetNamespace{targetNamespace}
         , fSourceComponents{sourceComponents}
         , fNamespaceDefinitions{namespaceDefinitions}
     {
-        Memory::BLOB schemaData = GetSchemaData_ ();
+        if (not targetNamespace.empty ()) {
+            fSourceComponents.push_back (SourceComponent{.fBLOB = targetNamespaceData, .fNamespace = targetNamespace});
+        }
+        Memory::BLOB schemaData = targetNamespaceData;
         AssertNotNull (XMLPlatformUtils::fgMemoryManager);
         XMLGrammarPoolImpl* grammarPool = new (XMLPlatformUtils::fgMemoryManager) XMLGrammarPoolImpl (XMLPlatformUtils::fgMemoryManager);
         try {
@@ -243,22 +247,10 @@ struct Schema::SchemaRep {
         }
         fCachedGrammarPool = grammarPool;
     }
-    SchemaRep (const SchemaRep& from) = delete;
-    ~SchemaRep ()
+    Rep_ (const Rep_& from) = delete;
+    ~Rep_ ()
     {
         delete fCachedGrammarPool;
-    }
-
-    Memory::BLOB GetSchemaData_ () const
-    {
-        auto targetNS = fTargetNamespace;
-        for (vector<Schema::SourceComponent>::const_iterator i = fSourceComponents.begin (); i != fSourceComponents.end (); ++i) {
-            if (targetNS == i->fNamespace) {
-                return i->fBLOB;
-            }
-        }
-        Require (false); // must have provided data by now or we cannot construct the actual implementaiton object for the schema
-        return Memory::BLOB{};
     }
     String                   fTargetNamespace;
     vector<SourceComponent>  fSourceComponents;
@@ -268,14 +260,8 @@ struct Schema::SchemaRep {
 
 Schema::Schema (const String& targetNamespace, const Memory::BLOB& targetNamespaceData, const vector<SourceComponent>& otherSources,
                 const NamespaceDefinitionsList& namespaceDefs)
-    : fRep{make_shared<SchemaRep> (targetNamespace, otherSources, namespaceDefs)}
+    : fRep{make_shared<Rep_> (targetNamespace, targetNamespaceData, otherSources, namespaceDefs)}
 {
-    if (not targetNamespace.empty ()) {
-        SourceComponent sc;
-        sc.fNamespace = targetNamespace;
-        sc.fBLOB      = targetNamespaceData;
-        fRep->fSourceComponents.push_back (sc);
-    }
 }
 
 vector<Schema::SourceComponent> Schema::GetSourceComponents () const
