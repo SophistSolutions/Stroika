@@ -177,12 +177,18 @@ namespace Stroika::Foundation::Memory {
     {
         return Raw (&s, &s + 1);
     }
-    template <typename BYTEISH>
-    inline BLOB BLOB::Attach (span<const BYTEISH> s)
-        requires (convertible_to<BYTEISH, byte> or convertible_to<BYTEISH, uint8_t>)
+    template <typename BYTEISH, size_t EXTENT>
+    inline BLOB BLOB::Attach (span<BYTEISH, EXTENT> s)
+        requires (convertible_to<BYTEISH, const byte> or convertible_to<BYTEISH, const uint8_t>)
     {
         const byte* b = reinterpret_cast<const byte*> (s.data ());
         return BLOB{_MakeSharedPtr<AdoptRep_> (b, b + s.size ())};
+    }
+    template <typename BYTEISH, size_t EXTENT>
+    inline BLOB BLOB::Attach (BYTEISH (&data)[EXTENT])
+        requires (convertible_to<BYTEISH, const byte> or convertible_to<BYTEISH, const uint8_t>)
+    {
+        return Attach (span<const BYTEISH>{data, EXTENT});
     }
     inline BLOB BLOB::AttachAndDelete (const byte* b, size_t arrayLen)
     {

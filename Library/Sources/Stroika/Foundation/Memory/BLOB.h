@@ -174,11 +174,16 @@ namespace Stroika::Foundation::Memory {
         /*
          *  \brief  Create a BLOB from the given data - without copying the data (dangerous if not used carefully, but can be used to efficiently reference constant data).
          *
+         *  \note its ILLEGAL and may cause grave disorder, if the caller changes the data passed to Attach() while the derived BLOB (or a copy) exists.
+         * 
          *  \see also AttachAndDelete
          */
-        template <typename BYTEISH>
-        static BLOB Attach (span<const BYTEISH> s)
-            requires (convertible_to<BYTEISH, byte> or convertible_to<BYTEISH, uint8_t>);
+        template <typename BYTEISH, size_t EXTENT = dynamic_extent>
+        static BLOB Attach (span<BYTEISH, EXTENT> s)
+            requires (convertible_to<BYTEISH, const byte> or convertible_to<BYTEISH, const uint8_t>);
+        template <typename BYTEISH, size_t EXTENT>
+        static BLOB Attach (BYTEISH (&data)[EXTENT])
+            requires (convertible_to<BYTEISH, const byte> or convertible_to<BYTEISH, const uint8_t>);
 
     public:
         /*
