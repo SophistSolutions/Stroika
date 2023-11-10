@@ -473,7 +473,9 @@ namespace {
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         if (kRunningValgrind_) {
+            // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not lock without valgrind however
             DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            return;
         }
         {
             struct FRED {
