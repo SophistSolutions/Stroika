@@ -31,7 +31,7 @@ namespace Stroika::Foundation::DataExchange {
     using Characters::String;
 
     /**
-     * Default is single global registey. Implemnt using compact storage - with strings allocated
+     * Default is single global registey. Implement using compact storage - with strings allocated
      *  in memory blcoks next to one another (not full string objects)
      *  and then return String_Constant objects that point into it.
      *

@@ -28,7 +28,7 @@
  *      @todo   Consider making LineEnd format (LF,CR,CRLF, or Auto) an optional param to ReadLine().
  *              Then it would ONLY require Seekable() for CRLF or Auto.
  *
- *      @todo   Consider if IsAtEOF() should be added to the virtual rep? Easy, and can provide (current) default implemntation. But
+ *      @todo   Consider if IsAtEOF() should be added to the virtual rep? Easy, and can provide (current) default implementation. But
  *              putting it there allows it to be much cheaper and its called pretty often (avoid seek logic). Wouldnt change semantics (about possibly blocking).
  */
 
