@@ -103,11 +103,6 @@ BLOB::AdoptRep_::AdoptRep_ (const byte* start, const byte* end)
     Require (start <= end);
 }
 
-BLOB::AdoptRep_::~AdoptRep_ ()
-{
-    delete[] fStart;
-}
-
 span<const byte> BLOB::AdoptRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
@@ -116,17 +111,22 @@ span<const byte> BLOB::AdoptRep_::GetBounds () const
 
 /*
  ********************************************************************************
- ******************* Memory::BLOB::AdoptAppLifetimeRep_ *************************
+ ******************* Memory::BLOB::AdoptAndDeleteRep_ ***************************
  ********************************************************************************
  */
-BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const byte* start, const byte* end)
+BLOB::AdoptAndDeleteRep_::AdoptAndDeleteRep_ (const byte* start, const byte* end)
     : fStart{start}
     , fEnd{end}
 {
     Require (start <= end);
 }
 
-span<const byte> BLOB::AdoptAppLifetimeRep_::GetBounds () const
+BLOB::AdoptAndDeleteRep_::~AdoptAndDeleteRep_ ()
+{
+    delete[] fStart;
+}
+
+span<const byte> BLOB::AdoptAndDeleteRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
     return span<const byte>{fStart, fEnd};

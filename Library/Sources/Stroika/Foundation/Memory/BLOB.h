@@ -26,9 +26,6 @@
  *      @todo   SHOULD add template CTOR args - but must be careful to say iterator <byte> and
  *              only (or handle differently) random access iterators versus just plain forward iterators.
  *
- *      @todo   Consider the name Attach() and AttachApplicationLifetime (). This was meant to parallel
- *              what we do with Socket::Attach(). Would Adopt() be a better name (in all cases?).
- *
  *      @todo   Closely consider Streams::TODO.md item about a new Streams::BLOB class. This may replace
  *              several of the BELOW TODO items more elegantly (wthout th eSeekOffsetType change would
  *              might cause some difficultties. So you have Memory::BLOB when you Know i tmust be in ram
@@ -175,35 +172,37 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /*
-         *  \brief  Create a BLOB from the given data - without copying the data (dangerous).
+         *  \brief  Create a BLOB from the given data - without copying the data (dangerous if not used carefully, but can be used to efficiently reference constant data).
          *
-         *  Attach () causes 'move semantics' on the pointer - where
-         *  the BLOB takes over ownership of the pointer, and will call delete[] (start)
-         *  on the 'start' pointer. Note - DANGEROUS IF MISUSED.
-         *
-         *  \req (start == nullptr and end == nullptr) or (start != nullptr and end != nullptr)
-         *  \req (start <= end)
-         *
-         *  @see AttachApplicationLifetime
+         *  \see also AttachAndDelete
          */
-        static BLOB Attach (const byte* start, const byte* end);
-        static BLOB Attach (span<const byte> s);
+        template <typename BYTEISH>
+        static BLOB Attach (span<const BYTEISH> s)
+            requires (convertible_to<BYTEISH, byte> or convertible_to<BYTEISH, uint8_t>);
 
     public:
         /*
-         *  \brief  Create a BLOB from the given data - without copying the data (dangerous), and never deletes
-         *
-         *  AttachApplicationLifetime () may save and use pointer indefinitely, but will never modify what it
-         *  points to nor delete it. The caller \em must do likewise.
-         *
-         *  \req (start == nullptr and end == nullptr) or (start != nullptr and end != nullptr)
-         *  \req (start <= end)
-         *
-         *  @see Attach
+         *  \brief  like Attach () - but at last reference to BLOB, will call delete[] data
+         * 
+         *  RARELY useful, but could be needed if you must manually fill in the data after allocation, before wrapping it in a BLOB.
+         *  Note - because of how the data is deleted, you must allocate with new byte[nnn].
          */
-        static BLOB AttachApplicationLifetime (const byte* start, const byte* end);
+        static BLOB AttachAndDelete (const byte* s, size_t arrayLen);
+
+    public:
+        [[deprecated ("Since Stroika v3.0d4 use span")]] static BLOB Attach (const byte* start, const byte* end)
+        {
+            return Attach (span{start, end});
+        }
+        [[deprecated ("Since Stroika v3.0d4 use Attach")]] static BLOB AttachApplicationLifetime (const byte* start, const byte* end)
+        {
+            return Attach (span{start, end});
+        }
         template <size_t SIZE>
-        static BLOB AttachApplicationLifetime (const byte (&data)[SIZE]);
+        [[deprecated ("Since Stroika v3.0d4 use Attach")]] static BLOB AttachApplicationLifetime (const byte (&data)[SIZE])
+        {
+            return Attach (span{data, SIZE});
+        }
 
     public:
         /**
@@ -340,8 +339,8 @@ namespace Stroika::Foundation::Memory {
     private:
         struct BasicRep_;
         struct ZeroRep_;
-        struct AdoptRep_;
-        struct AdoptAppLifetimeRep_;
+        struct AdoptRep_;          // e.g. for static constexpr arrays
+        struct AdoptAndDeleteRep_; // for user allocated new byte[]....
 
     private:
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;

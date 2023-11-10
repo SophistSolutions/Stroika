@@ -52,19 +52,19 @@ namespace Stroika::Foundation::Memory {
 
         AdoptRep_ (const AdoptRep_&) = delete;
         AdoptRep_ (const byte* start, const byte* end);
-        ~AdoptRep_ ();
+        ~AdoptRep_ ()                                         = default;
         AdoptRep_&               operator= (const AdoptRep_&) = delete;
         virtual span<const byte> GetBounds () const override;
     };
 
-    struct BLOB::AdoptAppLifetimeRep_ final : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptAppLifetimeRep_> {
+    struct BLOB::AdoptAndDeleteRep_ final : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptAndDeleteRep_> {
         const byte* fStart;
         const byte* fEnd;
 
-        AdoptAppLifetimeRep_ ()                            = delete;
-        AdoptAppLifetimeRep_ (const AdoptAppLifetimeRep_&) = delete;
-        AdoptAppLifetimeRep_ (const byte* start, const byte* end);
-        AdoptAppLifetimeRep_&    operator= (const AdoptAppLifetimeRep_&) = delete;
+        AdoptAndDeleteRep_ (const AdoptAndDeleteRep_&) = delete;
+        AdoptAndDeleteRep_ (const byte* start, const byte* end);
+        ~AdoptAndDeleteRep_ ();
+        AdoptAndDeleteRep_&      operator= (const AdoptAndDeleteRep_&) = delete;
         virtual span<const byte> GetBounds () const override;
     };
 
@@ -177,27 +177,16 @@ namespace Stroika::Foundation::Memory {
     {
         return Raw (&s, &s + 1);
     }
-    inline BLOB BLOB::Attach (const byte* start, const byte* end)
+    template <typename BYTEISH>
+    inline BLOB BLOB::Attach (span<const BYTEISH> s)
+        requires (convertible_to<BYTEISH, byte> or convertible_to<BYTEISH, uint8_t>)
     {
-        Require ((start == nullptr and end == nullptr) or (start != nullptr and end != nullptr));
-        Require (start <= end);
-        return BLOB{_MakeSharedPtr<AdoptRep_> (start, end)};
+        const byte* b = reinterpret_cast<const byte*> (s.data ());
+        return BLOB{_MakeSharedPtr<AdoptRep_> (b, b + s.size ())};
     }
-    inline BLOB BLOB::Attach (span<const byte> s)
+    inline BLOB BLOB::AttachAndDelete (const byte* b, size_t arrayLen)
     {
-        const byte* b = s.data ();
-        return Attach (b, b + s.size ());
-    }
-    inline BLOB BLOB::AttachApplicationLifetime (const byte* start, const byte* end)
-    {
-        Require ((start == nullptr and end == nullptr) or (start != nullptr and end != nullptr));
-        Require (start <= end);
-        return BLOB{_MakeSharedPtr<AdoptAppLifetimeRep_> (start, end)};
-    }
-    template <size_t SIZE>
-    inline BLOB BLOB::AttachApplicationLifetime (const byte (&data)[SIZE])
-    {
-        return AttachApplicationLifetime (Containers::Start (data), Containers::Start (data) + SIZE);
+        return BLOB{_MakeSharedPtr<AdoptAndDeleteRep_> (b, b + arrayLen)};
     }
     template <>
     inline void BLOB::As (span<const byte>* into) const
