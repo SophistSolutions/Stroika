@@ -19,7 +19,6 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)CommonInsertersAndExtractors${OBJ_SUFFIX}\
 	$(ObjDir)FStreamSupport${OBJ_SUFFIX}\
 	$(ObjDir)SerializeItemToBLOB${OBJ_SUFFIX}\
 	$(ObjDir)Utilities${OBJ_SUFFIX}\
