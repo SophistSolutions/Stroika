@@ -1421,6 +1421,14 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  mimic https://en.cppreference.com/w/cpp/string/basic_string/front
+         * 
+         *  \req not empty ()
+         */
+        nonvirtual Character front () const;
+
+    public:
+        /**
          *  mimic https://en.cppreference.com/w/cpp/string/basic_string/back
          * 
          *  \req not empty ()
