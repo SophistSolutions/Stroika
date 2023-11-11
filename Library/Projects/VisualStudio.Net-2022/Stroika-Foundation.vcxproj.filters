@@ -447,9 +447,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.cpp">
       <Filter>Sources\Cryptography</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.cpp">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
@@ -519,9 +516,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Reader.cpp">
       <Filter>Sources\DataExchange\Archive\Zip</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.cpp">
-      <Filter>Sources\DataExchange\Archive</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\JSON\Reader.cpp">
       <Filter>Sources\DataExchange\Variant\JSON</Filter>
     </ClCompile>
@@ -581,12 +575,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.cpp">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.cpp">
-      <Filter>Sources\Math\LinearAlgebra</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Matrix.cpp">
-      <Filter>Sources\Math\LinearAlgebra</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -679,9 +667,6 @@
       <Filter>Sources\Execution</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp">

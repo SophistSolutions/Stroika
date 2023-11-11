@@ -19,7 +19,6 @@ endif
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Reader${OBJ_SUFFIX}\
 
 SubDirs	=	\
 	7z \
