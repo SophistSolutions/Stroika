@@ -3051,9 +3051,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Makefile">
       <Filter>Sources\Traversal</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Makefile">
-      <Filter>Sources</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Makefile">
       <Filter>Sources\Characters</Filter>
     </None>
@@ -3534,6 +3531,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Makefile">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Makefile" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />
