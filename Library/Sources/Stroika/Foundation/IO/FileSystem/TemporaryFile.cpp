@@ -48,7 +48,8 @@ namespace {
 
 AppTempFileManager::AppTempFileManager (const Options& options)
 {
-    filesystem::path tmpDir = WellKnownLocations::GetTemporary ();
+    Debug::TraceContextBumper ctx{L"AppTempFileManager::CTOR"};
+    filesystem::path          tmpDir = WellKnownLocations::GetTemporary ();
 
     filesystem::path cleanedExePath = Execution::GetEXEPath ();
 
@@ -74,7 +75,7 @@ AppTempFileManager::AppTempFileManager (const Options& options)
     // to disambiguiate.
     //
     tmpDir /= GetSysTmpRelativePath_ (options);
-    DbgTrace (L"about to create dirs : %s", Characters::ToString (tmpDir).c_str ());
+    DbgTrace (L"tmpDir=%s (assuring created now...)", Characters::ToString (tmpDir).c_str ());
     try {
         create_directories (tmpDir);
     }
@@ -96,7 +97,6 @@ AppTempFileManager::AppTempFileManager (const Options& options)
         break;
     }
     fTmpDir_ = tmpDir;
-    DbgTrace (L"AppTempFileManager::CTOR: created '%s'", Characters::ToString (fTmpDir_).c_str ());
 }
 
 AppTempFileManager::~AppTempFileManager ()
