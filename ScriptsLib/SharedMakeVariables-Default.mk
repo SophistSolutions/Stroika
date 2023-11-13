@@ -214,6 +214,7 @@ endif
 ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 # Windows now tends to run out of command-line space (depending on root dir name) - and this helps (see https://www.gnu.org/software/make/manual/html_node/File-Function.html)
 DEFAULT_LIBRARY_GEN_LINE+=\
+	$(shell mkdir -p `dirname $1`)\
 	$(file > $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1).in,$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2))\
 	"$(LIBTOOL)" \
 		-OUT:$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
