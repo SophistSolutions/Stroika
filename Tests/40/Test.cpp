@@ -1372,7 +1372,6 @@ namespace {
             Thread::Ptr               t1 = Thread::New ([&] () { Sleep (30s); }, "t1"sv);
             t1.AbortAndWaitForDone ();
         }
-
     }
 }
 

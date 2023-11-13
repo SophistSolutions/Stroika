@@ -7,6 +7,685 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+-------------
+
+
+- Scripts
+  - simplifiy ScriptsLib/RunInDockerEnvironment slightly since DNS workaorund not working anyhow
+  - configure
+    - better error checking in configure script for bad args
+    - no longer need add -lboost... stuff on macos in configure script
+    - disable some libcurl LIBS settings which dont appear needed and appear to contribute to warning noise on macos
+    - configure: for xcode/darwin: EXTRA_SUFFIX_LINKER_ARGS = -Wl,-no_warn_duplicate_libraries
+
+
+- Build Systems
+  - Docker
+    - support Ubuntu (23.04 initiallly and then instead) 23.10 and cleanup unix docker containers to include fewer compilers we dont support (old clangs mostly)
+
+- Compilers supported
+  - g++-13 build added to github actions, and compiler bug defines and scripted in regtests
+  - Added configs to makefile for clang++-16
+  - desupport clang++-13 (since libstdc++ version 13 doesn't compile (at least boost build) with that version of clang++ - not my problme
+  - VS_17_7_5 in docker container for testing
+  - Compiler bug defines for xcode 15
+  - just check __GNUC__ not __GNUC_MINOR__ in compiler bug dversion detector
+
+- ThirdPartyComponents
+  - libcurl
+    - curl 8.3.0
+    - TRIED 8.4.0 but fails to build on linux so back to 8.3.0
+  - openssl
+    - 3.1.3
+  - Xerces
+    - makefile comments/cleanups for makefile - losing legacy workaround comments, lose MAKE-Trampoline BWA for Xercxes makefile - no longer needed and caused trouble with -flto=auto on unix , no longer needed so can simplify (ones for windows/visual studio)
+
+- Library
+  - General
+    - Cleanup use of std::byte - imported in Stroika namespace mostly and lose most of the redundent specs
+    - Use [[nodiscard]] on many classes throughout Stroika to improve compiler warning reports
+
+- Foundation::Characters
+  - minor cleanup to ToString() method for exception_ptr (handle nullcase better)
+- Foundation::Configuration
+  - new concept INoThrowInvocable
+- Foundation::Database
+  - SQL
+    - ***not fully backward compatible*** - Database::SQL::Connection no longer quasi-namespace, but actual namespace, and did a bit of refactoring of its use of AssertExternallySynchronizedMutex
+    - ***not fully backward compatible*** - moved SQLite and OODBC Options to inside Connection namespace
+
+- Foundation::Execution
+  - lose kEveryNTimes template version of CheckForInterruption - just asking for bugs (not interuption point when looks like one) and was not currently being used
+  - Execution::FinallySentry -> Execution::Private_::FinallySentry; and then Finally now uses new concept Configuration::INoThrowInvocable to assure argument lambda noexcept, and cleanup usage to comply
+  - BlockingQueue
+    - various cleanups (todos)
+    - new GetQueue () method
+    - Remove.. methods now throw Streams::EOFException on EOF, not TimeoutException
+    - Fixed serious bugs in condition variable usage (masked by earlier stop-ever-.25 seconds
+      crap in older ConditionVariable code)
+  - ConditionVariable
+    - many cleanups/changes, relating to new C++ 20 stop_token support, and others
+    - lose fThreadAbortCheckFrequency support
+    - fixed https://stroika.atlassian.net/browse/STK-993 - wait forever bug  (substantial changes to threadrep code)
+    - new kSupportsStopToken flag (cuz not all std::condition_variables support stop_token)
+    - ConditionVariable - use condition_variable_any instead of condition_variable by default (for stop_token support)
+    - now defaults conditionvariable template arg to condition_variable_any not condition_variable
+    - more docs on what is cancelation point
+    - major changes to wait_until() to support stop tokens (automatically)
+    - more ConditionVariable fixes for new stop-token coding and recent Thread abort simplifications
+  - Thread
+    - rewrite using jthread/stop_token (where available)
+    - #if __cpp_lib_jthread cuz libc++ still doesnt support jthread
+    - new Thread::GetCurrent() function
+    - cleanups - but especially to Thread rep fInterruptionState_ code - now not using thread_local variable, but intead atomic part of weak_ptr current thread (which is now new htread local variable)
+    - new utility Thread::GetCurrentThreadStopToken
+    - simplified Interrupt flag handling in Thread code - now boolean rather than containing redundant data
+    - tighten timeline on SuppressInterruptionInContext for initial fRefCountBumpedEvent_
+    coding
+    - Improved ToString() reporitng
+    - stop_callback stopCallback in threadmain tweaks
+    - assertion and comment cleanups
+    - lose mutex on fAccessSTDThreadMutex_ - did more harm than good
+    - fixed POSIX-only ThreadMain_ bug - with incRefCnt smart ptr
+    - new Thread::IsCurrentThreadInterruptible ()
+    - Simplified Ptr::AbortAndWaitForDoneUntil - so just calls abort/wait. But hten had to fix serious bug with condition variable code - processing new stop tokens (tricky case); and commented out one bit of POSIX thread code for interupt handling I think no longer needed (must test; commented)
+    - Cleanup (orthoganal more) Thread::New overloads
+    - ***not backward compatible*** - lose Thread::Interrupt and InterruptException support; only support AbortException and Abort(); removed call IgnoreExceptionsExceptThreadInterruptForCall and replace with IgnoreExceptionsExceptThreadAbortForCall; Documented rationale in Thread.h
+
+  - ThreadPool
+    - ThreadPool: many small cleanups; and incompatible change to GetTasks () - returning Collection<TaskInfo> - describing stats about tasks (more to come here); and better dbgtrace logging and other small docs cleanups
+  - WaitableEvent:
+    - GetIsSet method and refined PeekIsSet tonotwait
+    - Set methnow now uses MutateDataNotifyAll
+    - slightly incompatible changes versus Stroika 2.1 - WaitableEvent WaitQuietly and WaitUntilQuietly now return WaitStatus instead of bool and deprecated kWaitQuietlyTimeoutResult kWaitQuietlySetResult (which basically acted as the enums)
+    - qExecution_WaitableEvent_SupportWaitForMultipleObjects now defaults off; 
+    - WaitableEvent no longer supports AutoReset events - but instead has new 'AndReset' APIs
+
+- Foundation::IO::Network
+  - Connection Transfer code no longer using quasi-namespace
+
+- Makefiles
+  - remove a few unneeded CPP files from foundation
+  - + on make fules to address -flto=auto issue (finally figured out what this meant)
+
+- github actions
+  -  fixed missing cpp_version args in unix .github/workflows/build-N-test-Matrix.json
+  - lots of effort to debug why running out of space in some github actions, and tightened size of docker containers
+    and other tricks to workaround (see action itself for stuff removed)
+ - github action tweaks so we see if-no-files-found: warn on  actions/upload-artifact
+ - play with macos version used/settings
+   - cannot use macos-14 yet. try xcode 15 on macos 13 (their example says can do 15.0-beta on macos13
+   - cleanup xcode 15 github actions
+   - update docs to reflect bulding and testing with xcode 15 (at least most regtests)
+  - append CXXFLAGS -O0 for building analyze github actions
+
+- RegressionTests
+  -  Debug::SetWeakAssertionHandler () - in regtests - to show the errors on the screen/stdout
+
+- Foundation::Debug
+  - check __cpp_lib_stacktrace >= 202011 and if present/valid, use that for Debug::BackTrace::Capture () API
+
+
+- Foundation::Configuration
+  - Compiler bug defines
+    - qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy BWA
+    - Lose qCompilerAndStdLib_copy_warning_overflow_Buggy from header file, and instead workaround with -Wno-stringop-overflow in configure so can be added to LINK line - needed for link-time warnings
+    - qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
+    - simplification of qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy bug define
+    - cleanups to qStroika_FeatureSupported_Valgrind
+
+- Cleanup docs (esp building docs) and lose project-files generation for windows on vs2k17/vs2k19
+
+- dont install clang++13 in docker containers cuz not supported (and running out of space on github actions sometimes)
+
+-  STL\Compare deleted
+
+- Build System
+  - new makefile feature WRITE_PREPROCESSOR_OUTPUT=1 - which may help reporting compiler bugs
+
+
+- Library::Foundation::IO::Networking
+  - restructured Socket, ConnectionOrientedStreamSocket, ConnectionOrientedMasterSocket, ConnectionlessSocket use namespace instead of quasi-namespace classes
+
+- RegressionTests
+  - new  RegressionTest25_AbortNotYetStartedThread_ regtest
+  - cleanup threads regtest
+  - draft regregression test DoSkelTest
+  - Valgrind
+    - Tweak regtests so run faster with valgrind memochgeck and better DbgTrace messages
+    - DeSupport helgrind
+      It appears too buggy with modern C++, and its been years since I found a bug because of its help. I spend all
+      my time working around its bugs. And TSAN seems to address the same purpose. Keep using memcheck for now (since setup
+      but not sure thats worth it anymore either, due to other google sanitizers).
+- Sanitizers
+  - fixed memory alignment bug found by ubsan (I think)
+  - remove one apparently no longer needed tsan workaround (and document one still needed)
+  - Added tean supression for pthread_mutex_unlock - believe TSAN bug
+  - big cleanup of qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy support (mostly renamed to qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy - separately fix / handle tsan case - big enuf change will require a bit ot testing to assure I did all teh scripting etc right; but TSAN on ubuntu 23.04 seems to work now and helgrind on same still fails (more testing to finetune)
+
+
+
+- Supported Platform (regtests and docker builds)
+  - Ubuntu 23.10
+
+    
+- lose clang++14 from ubuntu 23.10 cuz not working in too many ways - not worth debugging
+
+
+ - Scripts/Skel
+   - tweak Skel script
+   - lose VS2k19 support from Skel
+
+
+commit 09acd3e61b64f57cf6a641943a4879e929e699de
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 25 12:11:39 2023 -0400
+
+    use Characters::AllowMissingCharacterErrorsFlag::eIgnoreErrors in a few more calls to AsNarrowSDKString - as for logging / already doing exception reporitng - that orig expciotn more important than issues converting codepage of text in report - probably)
+
+commit a694b719b74926ce7f1b4b27746684d2aaa01a50
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 25 12:11:57 2023 -0400
+
+    another Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer && defined(__arm__) workaround
+
+commit 3269b2976ed423ca3e70d1b8060e93ab40e6be04
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 25 14:17:32 2023 -0400
+
+    threadpool - changed default CTOR so defaults to thread::hardware_concurrency () poolsize
+
+commit 7af97ab324413202ca2acc251e6e2452bafe775c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 25 15:09:02 2023 -0400
+
+    draft support for Threadpool Task names, and other docs cleanups
+
+commit 3a723427b9834a0105bf6eef7581c687f733d704
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Oct 25 15:40:09 2023 -0400
+
+    simplified internals of ThreadPool task get next, and better supproted tracking tasknames
+
+commit f16fd3387515ae223bdf66232792d933d408c71f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 26 09:31:59 2023 -0400
+
+    draft support for collecting minimal threadpool statistics
+
+commit 2524247114492e974af35ed6a1a1cd0a62143d33
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 26 10:56:32 2023 -0400
+
+    Add and use new IsTargettingASAN_ util in configure script, and use it workaround https://stroika.atlassian.net/browse/STK-996 issue with LTO and ASAN
+
+commit 506a349db432192ed88646ea3235805b069ef102
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 26 10:57:36 2023 -0400
+
+    more cleanups for https://stroika.atlassian.net/browse/STK-996 BWA
+
+commit 53d0644443fa41ed0dd276fa46df6b15a29165fc
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 26 11:40:23 2023 -0400
+
+    more patches to -flto= stuff so no warnings and not too slow building
+
+commit df6b515c20e7c18b71e4b1989a85982605860a1f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Oct 26 12:09:49 2023 -0400
+
+    mostly comsmetic attempts at tweak Xerces Makefile
+
+commit 9ce06fb46877766d7fe809627a16e806a007d710
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 26 15:16:41 2023 -0400
+
+    Atom<>::As<AtomInternalType> support
+
+commit e30e9bd725f11cacc8c3d6eb0525e677b83dab3a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 26 16:30:06 2023 -0400
+
+    simplify and improve IConvertibleToString so not IConvertibleToString<char> (cuz that means String x = 3 would work; confusing with ovarloads
+
+commit ca8d011b272e216539adaf7f7bd169587916ee1a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 26 16:31:01 2023 -0400
+
+    Minor tweaks to Atom code: CTOR exactly AtomInternalType so no mismatch on convertibletostring CTOR; and a few noexcepts on constructors for Atom
+    And if const_evaluiated assertion cehck on one CTOR.
+
+commit cb4e68c936f09b8d43fa343d3a9677e01c6ee25e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Oct 26 22:24:58 2023 -0400
+
+    alignas in CodeCvt logic to possible fix issue that shows up on arm machine
+
+commit 0a22638ab5b00b0e001a9ec06d6f9e3d40c29111
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 27 11:20:12 2023 -0400
+
+    Minor cleanups to PRogressMonitor::Updater for HF compat
+
+commit e44c0599c11466fde47a47ebf3395df241f0cdda
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 27 13:41:40 2023 -0400
+
+    attempt to debug/reproduce sporadic RegressionTest8_ThreadPool_ failure on macos
+
+commit 045f7b26707230a475ffb9231cc09e0a89950f9f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 27 23:12:55 2023 -0400
+
+    experiment with issue with macos trhead bug
+
+commit 02f45683481cb9004bdb14f59893885433b23c2f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Oct 27 23:31:21 2023 -0400
+
+    revised TSAN suppression so works for another situation where we have teh same bogus report
+
+commit 0122a8d9eeb90f45d1de15068a4cdec618e20a0d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Oct 27 23:34:49 2023 -0400
+
+    tweak skel running in regtests
+
+commit 828f93f633baefb945db4380d3e5ab6803f4c002
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 28 07:55:54 2023 -0400
+
+    dbg help for hard to reproduce thread bug with threadpool
+
+commit f791e3a35a2f91f913d003620f96e68a44e9914f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Oct 28 21:31:51 2023 -0400
+
+    tweak regtest for macos thread issue
+
+commit 093a2cc34a1b80ed6edd5083aaca8fe3097c5062
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Oct 28 21:33:07 2023 -0400
+
+    fixed a few small bugs with new conditionVariable code (regressions due to recent restructure)
+
+commit 66448da2ddbe2f05ebefb08c33e0ab6015556f58
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Oct 28 21:35:38 2023 -0400
+
+    windows specific regtest should run on unix too (threads)
+
+commit ec4c6d062fe11c0c0a631f9a5f4db748592be56d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Oct 28 21:38:01 2023 -0400
+
+    disable RegressionTest5_Aborting_ under valgrind cuz too slow (even memcheck)
+
+commit dc08f76aff16918af432208c78cd66c6427a753a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Oct 31 13:22:47 2023 -0400
+
+    cleanup Xerces/XML support - prepare to add more support
+
+commit 62011595ab705a8e26a58dd69f8fbf1f1cd3633e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 1 13:11:56 2023 -0400
+
+    Added String::find overload
+
+commit 724e240b6061d55db8dfb0b8a4d8b3be5e91a108
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 1 13:12:28 2023 -0400
+
+    Minor tweaks to IO::Filesystem code
+
+commit 10d14a1477447dada68fdbdc34fdbcdc95688f75
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 1 14:17:44 2023 -0400
+
+    Progress on XML DOM and Schema support (incomplete/untested)
+
+commit c1aa42df3f523830fbe6eaa5e68ba0aa3f835188
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 2 16:02:16 2023 -0400
+
+    cleanups to FileSystem/TemporaryFile support
+
+commit 80b9e99710c924faef76572bf52618d9322555e7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 2 16:02:46 2023 -0400
+
+    add missing TemporaryFile to Makefile
+
+commit 216859da5afb4f6c432dcd3fd591d61be257b79e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 2 16:50:00 2023 -0400
+
+    significant cleanups to AppTmpFileManager (not backward comaptible but probably unused cuz was cruddy)
+
+commit d973673ff54c221467bf57f17c17aa7caab10117
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 2 17:04:30 2023 -0400
+
+    more TemporaryFile cleanups
+
+commit 1baf4a6c0fc700d24c49527e8da4805d7d6bd236
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 2 17:05:47 2023 -0400
+
+    more substantial proccess on DOM/Scehma code for XML (still untested)
+
+commit cbd3534c69500a31e89a6c47cd1e5a2e9e1586fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 3 11:41:38 2023 -0400
+
+    Tweak DbgTrace code internals
+
+commit 9d94323fce05a351e1ccecbca283c973b5f35031
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 3 11:56:54 2023 -0400
+
+    Debug Trace AdvisoryLockSoTraceOutputNotIntermixed_ fix - for intermodule dependencies calls to DbgTrace during app destruction
+
+commit 58ffc7310637477cc79ab48cbc24f8d3096bba61
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 3 12:23:37 2023 -0400
+
+    Revert "Debug Trace AdvisoryLockSoTraceOutputNotIntermixed_ fix - for intermodule dependencies calls to DbgTrace during app destruction"
+    
+    This reverts commit 9d94323fce05a351e1ccecbca283c973b5f35031.
+
+commit b6268ee2e2466e79f75d9bc45ab8620083ae71e2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 3 12:30:25 2023 -0400
+
+    Allow perfect forwarding args to Immortalize() function
+
+commit 3329ef1f310eda457cadf2d933c34927efd275a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 3 12:31:42 2023 -0400
+
+    redo DbgTrace logic to use Immortalize() for fstream and mutex so can be called uncoordinated (witout extra ModuleInit stuff) after main, when destorying other objects in arbitrary order
+
+commit 99a751333271117ee849700e07866341357becb2
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Nov 3 12:50:21 2023 -0400
+
+    GetTmpFile uses wide-open permissions now on unix created tmpfiles
+
+commit 83819564cfb794695f047f148719acbf1039cef4
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Nov 3 15:05:29 2023 -0400
+
+    Thread wrap fSavedExeption_ in Syncrhonized<> to avoid warnings in use from DbgTrace calls (could in principle be called elsewhere is why we must fix)
+
+commit c159a37394cd694a4971029f1e256f64041f5e9d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Nov 3 15:09:52 2023 -0400
+
+    silence tsan warning from gcc about atomoc_thread_fence
+
+commit 855af4b292342071b9011895c13a23a2cd410c36
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 4 00:53:30 2023 -0400
+
+    tweak Xerces code for compat with building iwthout Xerces
+
+commit faac26355f396de4188a0823a2d33a65c7292eca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 4 09:53:29 2023 -0400
+
+    react better to SAX-PARSE not available if ! qHasFeature_Xerces
+
+commit 672c0dab3c5a0a79ea91e3eb06caf93099cd120d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Nov 5 08:58:28 2023 -0500
+
+    cleanup/start using new qStroika_Foundation_DataExchange_XML_Support XXX flags
+
+commit 03bc42d7bc47778da0f2aad910ba75a601f3c487
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Nov 5 09:27:37 2023 -0500
+
+    cleanup qStroika_Foundation_DataExchange_XML_SupportParsing usage
+
+commit f0936eaa0851f8f2700609defab34b659866684f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 5 10:10:29 2023 -0500
+
+    experiment with moduleInit instead of Immortalize due to warnings (no easy way to localize suppress in library code) leak warnings using it
+
+commit cf9aff908594e374c3a8775e1a12f89338cb93cf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 5 10:46:22 2023 -0500
+
+    more cleanups to Debug Trace code
+
+commit b5fb9c114f6915aa60f2ea132cf41e4fb154a0f4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 5 11:00:30 2023 -0500
+
+    Make Debug::Emitter private
+
+commit fb6e630ed5e5021c77805d2925bdd3e231ce3127
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 5 11:19:00 2023 -0500
+
+    Make Debug::Emitter private
+
+commit e5787421688a0f51699a882253e6a43a5a84fa33
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 5 12:41:48 2023 -0500
+
+    replaced macro qDefaultTracingOn with qStroika_Foundation_Debug_Trace_DefaultTracingOn and qTraceToFile with qStroika_Foundation_Debug_Trace_DefaultTracingOn
+
+commit 02bcd68db453ecfb7c590aa888e99b8144656b88
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 5 12:49:07 2023 -0500
+
+    more cleanups to recent Debug Trace code
+
+commit a5d5ab7f4b6d6b8afc4a4b8f723183440d811de6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 5 13:13:46 2023 -0500
+
+    Mark ModuleInit module as deprecated
+
+commit f6a9ec69d8ddbd64747d3d1a42bc0915d16a7cc3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 5 15:36:13 2023 -0500
+
+    ThreadPool cleanup and maybe fixed race we see on macos
+
+commit 032faa0297f00b003d333c12686841f265a7e53b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 6 09:09:34 2023 -0500
+
+    solved race (recent regression I believe) in ThreadPool code, and simplified and switched to non-recursive mutex and improved docs
+
+commit 15b87b3d9472282c4c47157caafe5700f78e2e78
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 6 09:10:52 2023 -0500
+
+    remove some no longer needed test code from regression tests (cuz solved bug)
+
+commit b4e0e70a5630b176dac54e23b88338505aa6be8e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 6 09:33:01 2023 -0500
+
+    More small celanups to ThreadPool code - mostly MyRunnable_ with less abstraction/data hiding - really part of ThreadPool logic (due to locking policies)
+
+commit 4a1d16de40471f7c97e56b02effa8b319131c9ce
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 6 11:09:55 2023 -0500
+
+    sqlite 3.4.4; openssl 3.1.4
+
+commit 21b43345b04a60445e252baab31cdcd6995acbbb
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 6 16:17:11 2023 -0500
+
+    tweak compiler warning generation in configure script to address issue with LTO suprrious gcc warnings on ubuntu 23.10
+
+commit 42ed6d1024f37a5e89dbd391ad265eacb4734067
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 7 10:18:48 2023 -0500
+
+    Loosened requiresments on SpanReInterpretCast type arguments
+
+commit 27294c949ee27f76545da3a57d6f722203816328
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 7 10:19:33 2023 -0500
+
+    simplified a bit of fInvalidCharacterReplacementBytesBuf in CodeCvt in hopes gets past compiler (bug/issue) raspi - but at least cleaner/simpler
+
+commit c7a1e64dfdb6fa976224f647f02118f942a6a9f8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 7 10:54:18 2023 -0500
+
+    workaround / suppress raspi gcc 12 warning and comment why OK
+
+commit 246bfc72281b97ddacc87711e3cc0ccb718b869e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 7 11:48:00 2023 -0500
+
+    o-maybe-uninitializ flag compiling g++13 needed alot
+
+commit f011dca4791eb3cf601f4a76699564add987e650
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 7 12:23:55 2023 -0500
+
+    tune error handling in TemporarytFile AppTempFileManager
+
+commit 4f60a81ca1705a66b7eeef7757240b59ec84ecfe
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 7 12:35:43 2023 -0500
+
+    Bullet proof performance regtest for missing files
+
+commit b5aded0075625f8339dd2acdc712a60228a18b6c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 7 13:33:39 2023 -0500
+
+    wrap some dbgtraces in USE_NOISY_TRACE_IN_THIS_MODULE_
+
+commit 5a42d92de907274bcbf773b81ea855fccc7d9bf9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 7 13:34:56 2023 -0500
+
+    cleanup cryto regtest a bit, and workaround issues running ASAN/crypto on raspi
+
+commit ba623bc08322c112d9bdcd12f9c4de0317b597f9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 8 09:07:19 2023 -0500
+
+    Minor configure cleanups, and placed workaround for Wstringop-overflow warning for g++11 in configure since didn't work with prama suppression
+
+commit c0b9aa684d4efa7a3ec5c35314303c79322c2cf6
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 8 09:49:23 2023 -0500
+
+    qCompilerAndStdLib_undefined_behavior_macro_Buggy so now Debug::kBuiltWithUndefinedBehaviorSanitizer works (though not constexpr); and used to workaround bug on raspi
+
+commit 1522dbe1ae1382fce2f98313ec65dfcf93ee0a89
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 8 11:21:38 2023 -0500
+
+    new qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy bug define and workrounads, and Debug::kBuiltWithUndefinedBehaviorSanitizer cleanups/bug workarounds
+
+commit 0dcd4eeb7f192d8d5a3ac1fd51dda3de7bc7dc4a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 8 11:25:13 2023 -0500
+
+    do Wno-maybe-uninitialized workaround in configure for g++13 as well
+
+commit c28b3f778e01c0d685410e7ff85395c509954fcb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 8 13:33:37 2023 -0500
+
+    StringBuilder data() method/overloads
+
+commit 404cd4276ef2ac241c5c86528fc8d7b67972c02b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 9 10:52:37 2023 -0500
+
+    added String::back () helper
+
+commit ebf7c87498b96d4d7c10ec179f0ee5a3b2b95b7a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 9 12:12:01 2023 -0500
+
+    more qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy BWAs
+
+commit 00c3accf31c3803976a78e4912c1ce40305e553e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 9 12:41:22 2023 -0500
+
+    -Wno-tsan needed as linker flag with LTO on gcc/g++13
+
+commit e025bd2f7d7cec879ff1d0c011c416cd16f47a5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 9 12:50:07 2023 -0500
+
+    github actions windows use --jobs=2 to avoid occasionally run out of RAM compiling
+
+commit 56dea2b830dd695093806e67939e958c3c2ea200
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 9 15:15:41 2023 -0500
+
+    fixed misisng Makefiles for Execution/Resources code
+
+commit ddb50d9dd787484a7e7854986e8e653247b316dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 9 17:50:02 2023 -0500
+
+    new ReverseCompareOrder utility
+
+commit 61a8ceeecf035770dba4ee21e1f5d1d10c8fa993
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 9 21:37:18 2023 -0500
+
+    deprecated AttachApplicationLifetime and redid slightly the Attach code for BLOB making it a bit more flexible and better documented
+
+commit faf8d7deb4e0b60adaf724bfd7d09107394cd031
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 9 22:41:05 2023 -0500
+
+    improved BLOB::Attach API
+
+commit c00dd172ae284ee3ef68b5ec06d803a6642fd0c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Nov 10 08:41:53 2023 -0500
+
+    more (new code) XML Schema cleanus (port from old RFLLib code)
+
+commit e8367b4b010b5f8237985d5552420ffb021a49d3
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Nov 10 11:52:33 2023 -0500
+
+    tweak timing of ubuntu valgrind memcheck test
+
+commit 3a781c4bb05f386dc2e23d71bc360ed08f153834
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 11 08:01:41 2023 -0500
+
+    Added String::front()
+
+commit 27bbef5100a77938cafd25b0886dd999c74dedeb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 11 12:33:37 2023 -0500
+
+    restructure lib lines to use response file on WINDOZE due to command-line length being exceeded(occasionally depending on root dir name)
+
+commit 5e7c3804848e07a8725aea26357ce71cdfabf2b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 12 19:20:46 2023 -0500
+
+    hopefully workaround/address flakey failure building sqlite due to changes in DEFAULT_LIBRARY_GEN_LINE macro
+
+-----------
+
 ### 3.0d3 {2023-10-01} {[diff](../../compare/v3.0d2...v3.0d3)}
 
 #### TLDR

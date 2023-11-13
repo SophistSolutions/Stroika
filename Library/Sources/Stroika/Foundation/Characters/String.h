@@ -477,7 +477,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         * Remove the characters at 'charAt' (RemoveAt/1) or between 'from' and 'to'.
+         * Remove the characters at 'charAt' (RemoveAt/1) or between 'from' and 'to' (const method - doesn't modify this)
          *
          * It is an error if this implies removing characters off the end of the string.
          *
@@ -502,7 +502,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  Remove the first occurence of Character 'c' from the string. Not an error if none
-         *  found.
+         *  found. Doesn't modify this (const method) - returns resulting string.
          *
          *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
          */
