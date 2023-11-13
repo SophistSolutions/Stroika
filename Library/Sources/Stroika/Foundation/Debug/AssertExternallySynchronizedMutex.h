@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Debug {
     /**
      *  \brief NOT a real mutex - just a debugging infrastructure support tool so in debug builds can be assured threadsafe which is syntactically used like a mutex, for SIMILAR reasons in similar places
      *
-     *  This class is a 'no op' in production builds, as a 'recursive mutex' for a class that needs
+     *  This class is a 'no op' in production builds. It is used as a fake 'recursive mutex' for a class that needs
      *  no thread locking because its externally synchronized.
      *
      *  AssertExternallySynchronizedMutex is recursive (a recursive-mutex) - or really super-recursive - because it allows

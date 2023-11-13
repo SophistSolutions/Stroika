@@ -37,7 +37,7 @@
 namespace Stroika::Foundation::Characters {
 
     /**
-     *  \brief rarely used - defaults generally fine
+     *  \brief rarely used  directly - defaults generally fine
      * 
      *  BUF_CHAR_T of char32_t probably does better if definitely using alot of wide unicode characters.
      *  BUF_CHAR_T of char8_t probably best for mostly ASCII text. Note - GetCharAt/SetCharAt very slow
@@ -58,6 +58,8 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
+     *  \brief Similar to String, but intended to more efficiently construct a String. Mutable type (String is largly immutable).
+     * 
      *  @see String
      *  @see .Net StringBuilder - http://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx
      *  @see Java StringBuilder - http://docs.oracle.com/javase/7/docs/api/java/lang/StringBuilder.html

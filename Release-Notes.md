@@ -94,6 +94,10 @@ especially those they need to be aware of when upgrading.
 
   - ThreadPool
     - ThreadPool: many small cleanups; and incompatible change to GetTasks () - returning Collection<TaskInfo> - describing stats about tasks (more to come here); and better dbgtrace logging and other small docs cleanups
+    - threadpool - changed default CTOR so defaults to thread::hardware_concurrency () poolsize
+    - draft support for Threadpool Task names, and other docs cleanups
+    - simplified internals of ThreadPool task get next, and better supproted tracking tasknames
+    - draft support for collecting minimal threadpool statistics
   - WaitableEvent:
     - GetIsSet method and refined PeekIsSet tonotwait
     - Set methnow now uses MutateDataNotifyAll
@@ -177,41 +181,11 @@ especially those they need to be aware of when upgrading.
    - lose VS2k19 support from Skel
 
 
-commit 09acd3e61b64f57cf6a641943a4879e929e699de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 25 12:11:39 2023 -0400
+- Foundation::Characters
+  - use Characters::AllowMissingCharacterErrorsFlag::eIgnoreErrors in a few more calls to AsNarrowSDKString - as for logging / already doing exception reporitng - that orig expciotn more important than issues converting codepage of text in report - probably)
 
-    use Characters::AllowMissingCharacterErrorsFlag::eIgnoreErrors in a few more calls to AsNarrowSDKString - as for logging / already doing exception reporitng - that orig expciotn more important than issues converting codepage of text in report - probably)
 
-commit a694b719b74926ce7f1b4b27746684d2aaa01a50
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 25 12:11:57 2023 -0400
 
-    another Stroika_Foundation_Debug_Sanitizer_HAS_AddressSanitizer && defined(__arm__) workaround
-
-commit 3269b2976ed423ca3e70d1b8060e93ab40e6be04
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 25 14:17:32 2023 -0400
-
-    threadpool - changed default CTOR so defaults to thread::hardware_concurrency () poolsize
-
-commit 7af97ab324413202ca2acc251e6e2452bafe775c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 25 15:09:02 2023 -0400
-
-    draft support for Threadpool Task names, and other docs cleanups
-
-commit 3a723427b9834a0105bf6eef7581c687f733d704
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Oct 25 15:40:09 2023 -0400
-
-    simplified internals of ThreadPool task get next, and better supproted tracking tasknames
-
-commit f16fd3387515ae223bdf66232792d933d408c71f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Oct 26 09:31:59 2023 -0400
-
-    draft support for collecting minimal threadpool statistics
 
 commit 2524247114492e974af35ed6a1a1cd0a62143d33
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
