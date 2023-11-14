@@ -92,7 +92,7 @@ public:
     ~Rep_ ()
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::~Rep_"};
+        Debug::TraceContextBumper ctx{"FileInputStream::Rep_::~Rep_"};
         if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {
             DbgTrace (L"closing %d", fFD_);
         }

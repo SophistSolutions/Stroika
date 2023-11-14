@@ -11,7 +11,7 @@
 #include "SimpleClass.h"
 #include "TestHarness.h"
 
-using namespace Stroika;
+using namespace Stroika::TestHarness;
 
 /*
  ********************************************************************************

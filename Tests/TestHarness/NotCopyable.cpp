@@ -9,5 +9,3 @@
 #include "Stroika/Foundation/Debug/Debugger.h"
 
 #include "NotCopyable.h"
-
-using namespace Stroika;

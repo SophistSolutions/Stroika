@@ -7,7 +7,6 @@
 
 #include "BlockAllocator.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Memory::Private_;

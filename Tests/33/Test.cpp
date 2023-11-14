@@ -55,7 +55,7 @@ namespace {
         }
         void DoAll ()
         {
-            Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_BasicDataRoundtrips_1_"};
+            Debug::TraceContextBumper ctx{"{}::DoRegressionTests_BasicDataRoundtrips_1_"};
             RoundTripMinMax_<int> ();
             RoundTripMinMax_<unsigned int> ();
             RoundTripMinMax_<long> ();
@@ -84,7 +84,7 @@ namespace {
 namespace {
     void DoRegressionTests_SimpleMapToFromJSON_2_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_SimpleMapToFromJSON_2_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_SimpleMapToFromJSON_2_"};
         const bool                kWrite2FileAsWell_ = true; // just for debugging
 
         struct SharedContactsConfig_ {
@@ -152,7 +152,7 @@ namespace {
 namespace {
     void DoRegressionTests_SimpleMapToFromJSON_3_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_SimpleMapToFromJSON_3_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_SimpleMapToFromJSON_3_"};
         const bool                kWrite2FileAsWell_ = true; // just for debugging
 
         struct SharedContactsConfig_ {
@@ -215,7 +215,7 @@ namespace {
 namespace {
     void DoRegressionTests_SimpleMapRangeTypes_4_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_SimpleMapRangeTypes_4_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_SimpleMapRangeTypes_4_"};
         using namespace Traversal;
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
@@ -272,7 +272,7 @@ namespace {
 namespace {
     void DoRegressionTests_SimpleEnumTypes_5_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_SimpleEnumTypes_5_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_SimpleEnumTypes_5_"};
         using namespace Traversal;
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
@@ -430,7 +430,7 @@ namespace {
 namespace {
     void DoRegressionTests_VariantValue_7_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_VariantValue_7_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_VariantValue_7_"};
         using namespace Traversal;
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
@@ -471,7 +471,7 @@ namespace {
 namespace {
     void DoRegressionTests_MakeCommonSerializer_8_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_MakeCommonSerializer_8_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_MakeCommonSerializer_8_"};
         using namespace Traversal;
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
@@ -601,7 +601,7 @@ namespace {
 namespace {
     void DoRegressionTests_FileTypeConverterOverride_10_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_FileTypeConverterOverride_10_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_FileTypeConverterOverride_10_"};
         using namespace Traversal;
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
@@ -685,7 +685,7 @@ namespace {
 
     void DoRegressionTests_CustomMapper_11_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_CustomMapper_11_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_CustomMapper_11_"};
         {
             struct RGBColor {
                 uint8_t red;
@@ -745,7 +745,7 @@ namespace {
 namespace {
     void DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_"};
         using namespace Traversal;
         const bool kWrite2FileAsWell_ = true; // just for debugging
 

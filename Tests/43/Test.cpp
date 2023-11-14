@@ -31,7 +31,6 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;

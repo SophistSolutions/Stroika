@@ -13,6 +13,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
 using std::byte;
+
 using Streams::iostream::InputStreamFromStdIStream;
 
 /*

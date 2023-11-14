@@ -240,7 +240,7 @@ InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const Interne
 void Response::Flush ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{L"Response::Flush"};
+    Debug::TraceContextBumper ctx{"Response::Flush"};
     DbgTrace (L"fState_ = %s", Characters::ToString (fState_).c_str ());
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{*this};

@@ -18,7 +18,6 @@
 
 #include "WaitSupport.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::Platform;

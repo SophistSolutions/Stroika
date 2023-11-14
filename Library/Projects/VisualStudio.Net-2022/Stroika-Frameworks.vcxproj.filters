@@ -601,9 +601,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\GDI.cpp">
       <Filter>Led</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.cpp">
-      <Filter>Led</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HiddenText.cpp">
       <Filter>Led</Filter>
     </ClCompile>
@@ -665,9 +662,6 @@
       <Filter>Led</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractor.cpp">
-      <Filter>Led</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractorMixins.cpp">
       <Filter>Led</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextStore.cpp">

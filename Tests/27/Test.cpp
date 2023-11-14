@@ -15,9 +15,10 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+
+using namespace Stroika::TestHarness;
 
 using Concrete::SortedMultiSet_stdmap;
 
@@ -42,7 +43,7 @@ namespace {
     template <typename CONCRETE_CONTAINER, typename SCHEMA = UseBasicTestingSchemas_<CONCRETE_CONTAINER>>
     void DoTestForConcreteContainer_ (const SCHEMA& schema = {})
     {
-        Debug::TraceContextBumper ctx{L"{}::DoTestForConcreteContainer_"};
+        Debug::TraceContextBumper ctx{"{}::DoTestForConcreteContainer_"};
         CommonTests::MultiSetTests::All_For_Type (schema);
     }
 }

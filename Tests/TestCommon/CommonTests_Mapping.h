@@ -51,7 +51,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test1_BasicConstruction"};
+                    Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test1_BasicConstruction"};
                     using ConcreteContainerType  = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     using ArchetypeContainerType = typename DEFAULT_TESTING_SCHEMA::ArchetypeContainerType;
                     ConcreteContainerType s      = testingSchema.Factory ();
@@ -67,7 +67,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test2_AddRemove"};
+                    Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test2_AddRemove"};
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
@@ -117,7 +117,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_3_Iteration"};
+                    Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test_3_Iteration"};
                     using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
@@ -165,7 +165,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test4_Equals"};
+                    Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test4_Equals"};
                     using key_type                       = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using mapped_type                    = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType          = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
@@ -195,7 +195,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test5_ToFromSTLMap"};
+                    Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test5_ToFromSTLMap"};
                     using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
@@ -219,7 +219,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test6_AsSTLVector"};
+                    Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test6_AsSTLVector"};
                     using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
@@ -244,7 +244,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test7_Keys"};
+                    Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test7_Keys"};
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     static const size_t   K     = qDebug ? (Debug::IsRunningUnderValgrind () ? 25 : 50) : 100;
                     ConcreteContainerType c     = testingSchema.Factory ();
@@ -274,7 +274,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_8_Iteration_With_Value_Comparer"};
+                    Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test_8_Iteration_With_Value_Comparer"};
                     using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
@@ -321,7 +321,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test9_RetainAll"};
+                    Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test9_RetainAll"};
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType c     = testingSchema.Factory ();
                     for (int i = 0; i < 100; ++i) {
@@ -343,7 +343,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test10_NewIteratorPatching"};
+                    Debug::TraceContextBumper ctx{"CommonTests::MappingTests::Test10_NewIteratorPatching"};
                     using ConcreteContainerType   = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType headers = testingSchema.Factory ();
                     headers.Add (1, 2);
@@ -362,7 +362,7 @@ namespace CommonTests {
         template <typename DEFAULT_TESTING_SCHEMA>
         void SimpleMappingTest_All_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
         {
-            Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_"};
+            Debug::TraceContextBumper ctx{"CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_"};
             Private_::Test1_BasicConstruction::DoAllTests_ (testingSchema);
             Private_::Test2_AddRemove::DoAllTests_ (testingSchema);
             Private_::Test_3_Iteration::DoAllTests_ (testingSchema);
@@ -376,7 +376,7 @@ namespace CommonTests {
         template <typename DEFAULT_TESTING_SCHEMA>
         void SimpleMappingTest_WithDefaultEqCompaerer_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
         {
-            Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_"};
+            Debug::TraceContextBumper ctx{"CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_"};
             Private_::Test5_ToFromSTLMap::DoAllTests_ (testingSchema);
 
             // @todo FIX - RetainAll has no good reason to require operator < etc to work o it but current impl does - LGP 2018-04-14

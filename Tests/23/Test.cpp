@@ -5,9 +5,6 @@
 //      STATUS  Alpha-Late
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
-#include <sstream>
-
 #include "Stroika/Foundation/Containers/Concrete/SortedAssociation_stdmultimap.h"
 #include "Stroika/Foundation/Containers/SortedAssociation.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -18,9 +15,10 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+
+using namespace Stroika::TestHarness;
 
 using Concrete::SortedAssociation_stdmultimap;
 

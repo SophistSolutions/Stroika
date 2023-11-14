@@ -5,9 +5,6 @@
 //      STATUS  Alpha-Late
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
-#include <sstream>
-
 #include "Stroika/Foundation/Containers/Collection.h"
 
 #include "Stroika/Foundation/Characters/String.h"
@@ -23,9 +20,10 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+
+using namespace Stroika::TestHarness;
 
 using Concrete::Association_Array;
 using Concrete::Association_LinkedList;
@@ -51,7 +49,7 @@ namespace {
 namespace {
     void Test2_SimpleBaseClassConversionTraitsConfusion_ ()
     {
-        Debug::TraceContextBumper     ctx{L"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
+        Debug::TraceContextBumper     ctx{"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
         SortedAssociation<int, float> xxxyy  = Concrete::SortedAssociation_stdmultimap<int, float> ();
         Association<int, float>       xxxyy1 = Concrete::Association_stdmultimap<int, float> ();
     }
@@ -84,7 +82,7 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper ctx{L"{}::Test4_AssociationCTOROverloads_"};
+            Debug::TraceContextBumper ctx{"{}::Test4_AssociationCTOROverloads_"};
             using namespace xPrivate_;
             Association<int, A> from;
 
@@ -104,7 +102,7 @@ namespace {
     namespace ExampleCTORS_Test_5_ {
         void DoTest ()
         {
-            Debug::TraceContextBumper ctx{L"{}::ExampleCTORS_Test_5_"};
+            Debug::TraceContextBumper ctx{"{}::ExampleCTORS_Test_5_"};
             // From Association<> CTOR docs
             Collection<pair<int, int>> c;
             std::multimap<int, int>    m;

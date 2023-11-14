@@ -11,7 +11,6 @@
 #include "../../Foundation/Debug/CompileTimeFlagChecker.h"
 #include "../../Foundation/Execution/Throw.h"
 #include "../../Foundation/Memory/Common.h"
-#include "../../Foundation/StroikaPreComp.h"
 #include "../../Foundation/Time/Realtime.h"
 
 #if qPlatform_Windows

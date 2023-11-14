@@ -18,7 +18,6 @@ endif
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Accessor${OBJ_SUFFIX}\
 	$(ObjDir)Manager${OBJ_SUFFIX}\
 	$(ObjDir)Name${OBJ_SUFFIX}\
 	$(ObjDir)ResourceNotFoundException${OBJ_SUFFIX}\

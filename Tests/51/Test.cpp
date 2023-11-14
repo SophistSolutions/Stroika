@@ -764,7 +764,7 @@ namespace {
 namespace {
     void Test15_Partition_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test15_Partition_"};
+        Debug::TraceContextBumper ctx{"{}::Test15_Partition_"};
         {
             using Containers::Sequence;
             using RangeTraits::Explicit;
@@ -1072,7 +1072,7 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_"};
+        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_"};
         Test_1_BasicRange_ ();
         Test_2_BasicDiscreteRangeIteration_ ();
         Test_3_SimpleDiscreteRangeWithEnumsTest_ ();

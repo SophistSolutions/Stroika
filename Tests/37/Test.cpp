@@ -164,21 +164,21 @@ namespace {
 
                 try {
                     // something that will throw
-                    Execution::Throw (Exception<> (L"testing 123"));
+                    Execution::Throw (Exception<> ("testing 123"));
                 }
                 catch (...) {
                     String msg = Characters::ToString (current_exception ());
-                    VerifyTestResult (msg.Contains (L"testing 123"));
-                    VerifyTestResult (msg.Contains (L"a1"));
-                    VerifyTestResult (msg.Contains (L"kOtherActivity"));
-                    VerifyTestResult (msg.Contains (L"otherActivity"));
-                    VerifyTestResult (msg.Contains (L"xxx"));
+                    VerifyTestResult (msg.Contains ("testing 123"));
+                    VerifyTestResult (msg.Contains ("a1"));
+                    VerifyTestResult (msg.Contains ("kOtherActivity"));
+                    VerifyTestResult (msg.Contains ("otherActivity"));
+                    VerifyTestResult (msg.Contains ("xxx"));
                 }
             }
         }
         void TestAll_ ()
         {
-            Debug::TraceContextBumper ctx{L"Test4_Activities_"};
+            Debug::TraceContextBumper ctx{"Test4_Activities_"};
             Private::T1_Basics_ ();
         }
     }
@@ -272,7 +272,7 @@ namespace {
         namespace Private {
             void ThrowCatchStringException_ ()
             {
-                Debug::TraceContextBumper ctx{L"ThrowCatchStringException_"};
+                Debug::TraceContextBumper ctx{"ThrowCatchStringException_"};
                 {
                     try {
                         Throw (Exception (L"HiMom"));
@@ -295,7 +295,7 @@ namespace {
         }
         void TestAll_ ()
         {
-            Debug::TraceContextBumper ctx{L"Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_"};
+            Debug::TraceContextBumper ctx{"Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_"};
             auto                      prevValue = Debug::BackTrace::Options::sDefault_IncludeSourceLines;
             DbgTrace ("sDefault_IncludeSourceLines = true");
             Debug::BackTrace::Options::sDefault_IncludeSourceLines = true;
@@ -314,7 +314,7 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        Debug::TraceContextBumper ctx{L"DoRegressionTests_"};
+        Debug::TraceContextBumper ctx{"DoRegressionTests_"};
         Test2_ThrowCatchStringException_ ();
         Test3_SystemErrorException_::TestAll_ ();
         Test4_Activities_::TestAll_ ();

@@ -11,9 +11,6 @@
 
 #include "WindowsResourceManager.h"
 
-using std::byte;
-
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::Resources;

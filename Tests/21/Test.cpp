@@ -4,11 +4,7 @@
 //  TEST    Foundation::Containers::Sequence
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
 #include <list>
-#include <sstream>
-#include <typeindex>
-#include <vector>
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Collection.h"
@@ -26,9 +22,10 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+
+using namespace Stroika::TestHarness;
 
 using Concrete::Sequence_Array;
 using Concrete::Sequence_DoublyLinkedList;

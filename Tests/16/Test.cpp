@@ -5,8 +5,6 @@
 //      STATUS  Alpha-Late
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
-#include <sstream>
 #include <typeindex>
 
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_Array.h"
@@ -21,9 +19,10 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+
+using namespace Stroika::TestHarness;
 
 namespace {
     namespace Test_KeyedCollectionTypeIndexUsesStdSet_ {

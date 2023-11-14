@@ -25,7 +25,7 @@ using Characters::String;
 namespace {
     void RegressionTest1_ ()
     {
-        Debug::TraceContextBumper        ctx{L"RegressionTest1_"};
+        Debug::TraceContextBumper        ctx{"RegressionTest1_"};
         Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
         // quickie about to test..
         ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
@@ -33,7 +33,7 @@ namespace {
     }
     void RegressionTest2_ ()
     {
-        Debug::TraceContextBumper        ctx{L"RegressionTest2_"};
+        Debug::TraceContextBumper        ctx{"RegressionTest2_"};
         Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
         // quickie about to test..
         ProcessRunner pr (L"echo hi mom");
@@ -42,7 +42,7 @@ namespace {
     }
     void RegressionTest3_Pipe_ ()
     {
-        Debug::TraceContextBumper        ctx{L"RegressionTest3_Pipe_"};
+        Debug::TraceContextBumper        ctx{"RegressionTest3_Pipe_"};
         Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
         ProcessRunner                    pr1 (L"echo hi mom");
         Streams::MemoryStream<byte>::Ptr pipe = Streams::MemoryStream<byte>::New ();
@@ -62,7 +62,7 @@ namespace {
     }
     void RegressionTest4_DocSample_ ()
     {
-        Debug::TraceContextBumper ctx{L"RegressionTest4_DocSample_"};
+        Debug::TraceContextBumper ctx{"RegressionTest4_DocSample_"};
         // cat doesn't exist on windows (without cygwin or some such) - but the regression test code depends on that anyhow
         // so this should be OK for now... -- LGP 2017-06-31
         Memory::BLOB                     kData_{Memory::BLOB::Raw ("this is a test")};
@@ -99,7 +99,7 @@ namespace {
         }
         void DoTests ()
         {
-            Debug::TraceContextBumper ctx{L"LargeDataSentThroughPipe_Test5_::DoTests"};
+            Debug::TraceContextBumper ctx{"LargeDataSentThroughPipe_Test5_::DoTests"};
             Private_::SingleProcessLargeDataSend_ ();
         }
     }
@@ -136,7 +136,7 @@ namespace {
         }
         void DoTests ()
         {
-            Debug::TraceContextBumper ctx{L"LargeDataSentThroughPipeBackground_Test6_::DoTests"};
+            Debug::TraceContextBumper ctx{"LargeDataSentThroughPipeBackground_Test6_::DoTests"};
             Private_::SingleProcessLargeDataSend_ ();
         }
     }
@@ -144,7 +144,7 @@ namespace {
 
 void RegressionTes7_FaledRun_ ()
 {
-    Debug::TraceContextBumper ctx{L"RegressionTes7_FaledRun_"};
+    Debug::TraceContextBumper ctx{"RegressionTes7_FaledRun_"};
     try {
         ProcessRunner pr (L"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//");
         pr.Run ();
@@ -159,7 +159,7 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        Debug::TraceContextBumper ctx{L"DoRegressionTests_"};
+        Debug::TraceContextBumper ctx{"DoRegressionTests_"};
 #if qPlatform_POSIX
         // Many performance instruments use pipes
         // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?

@@ -6,7 +6,6 @@
 
 using namespace Stroika::Foundation;
 
-using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 

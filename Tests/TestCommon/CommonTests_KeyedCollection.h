@@ -65,7 +65,7 @@ namespace CommonTests {
         template <typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
         void SimpleKeyedCollectionTest_TestBasics (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
         {
-            Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::SimpleKeyedCollectionTest_TestBasics"};
+            Debug::TraceContextBumper ctx{"CommonTests::CollectionTests::SimpleKeyedCollectionTest_TestBasics"};
             Test1_Basics_::RunTest (factory (), applyToContainer);
         }
 

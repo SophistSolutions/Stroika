@@ -339,7 +339,7 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     {
-                        Debug::TraceContextBumper ctx{L"{}::Test1_MiscStarterTests_::DoAllTests_"};
+                        Debug::TraceContextBumper ctx{"{}::Test1_MiscStarterTests_::DoAllTests_"};
                         using CONCRETE_CONTAINER = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                         CONCRETE_CONTAINER s     = testingSchema.Factory ();
                         SimpleMultiSetTests_ (testingSchema, s);
@@ -351,7 +351,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"{}::Test2_Equals::DoAllTests_"};
+                    Debug::TraceContextBumper ctx{"{}::Test2_Equals::DoAllTests_"};
                     using CONCRETE_CONTAINER = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     CONCRETE_CONTAINER s     = testingSchema.Factory ();
                     CONCRETE_CONTAINER s2    = s;
@@ -372,7 +372,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"{}::Test3_Elements::DoAllTests_"};
+                    Debug::TraceContextBumper ctx{"{}::Test3_Elements::DoAllTests_"};
                     {
                         using CONCRETE_CONTAINER = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                         using TALLY_ARCHTYPE     = typename CONCRETE_CONTAINER::ArchetypeContainerType;
@@ -391,7 +391,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"{}::Test4_UniqueElements::DoAllTests_"};
+                    Debug::TraceContextBumper ctx{"{}::Test4_UniqueElements::DoAllTests_"};
                     using CONCRETE_CONTAINER = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     {
                         CONCRETE_CONTAINER s = mk_ (testingSchema.Factory, initializer_list<int>{1, 2, 3, 4, 4, 4, 4});
@@ -405,7 +405,7 @@ namespace CommonTests {
                 template <typename DEFAULT_TESTING_SCHEMA>
                 void T1_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
-                    Debug::TraceContextBumper ctx{L"{}::Test5_Elements_Crasher_::DoAllTests_"};
+                    Debug::TraceContextBumper ctx{"{}::Test5_Elements_Crasher_::DoAllTests_"};
                     using CONCRETE_CONTAINER = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     CONCRETE_CONTAINER s     = testingSchema.Factory ();
                     const size_t       K     = 500;
@@ -455,7 +455,7 @@ namespace CommonTests {
         template <typename DEFAULT_TESTING_SCHEMA>
         void All_For_Type (const DEFAULT_TESTING_SCHEMA& testingSchema)
         {
-            Debug::TraceContextBumper ctx{L"{}::All_For_Type"};
+            Debug::TraceContextBumper ctx{"{}::All_For_Type"};
             PRIVATE_::Test1_MiscStarterTests_::DoAllTests_ (testingSchema);
             PRIVATE_::Test2_Equals::DoAllTests_ (testingSchema);
             PRIVATE_::Test3_Elements::DoAllTests_ (testingSchema);

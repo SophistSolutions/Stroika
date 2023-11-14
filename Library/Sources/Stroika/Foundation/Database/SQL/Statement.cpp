@@ -10,8 +10,6 @@
 
 #include "Statement.h"
 
-using std::byte;
-
 using namespace Stroika::Foundation;
 
 using namespace Characters;

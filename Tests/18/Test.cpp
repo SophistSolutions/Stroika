@@ -4,9 +4,6 @@
 //  TEST    Foundation::Containers::MultiSet
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
-#include <sstream>
-
 #include "Stroika/Foundation/Containers/Collection.h"
 
 #include "Stroika/Foundation/Containers/MultiSet.h"
@@ -22,9 +19,10 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+
+using namespace Stroika::TestHarness;
 
 using Concrete::MultiSet_Array;
 using Concrete::MultiSet_LinkedList;
@@ -34,7 +32,7 @@ namespace {
     template <typename CONCRETE_CONTAINER, typename SCHEMA = CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>>
     void DoTestForConcreteContainer_ (const SCHEMA& schema = {})
     {
-        Debug::TraceContextBumper ctx{L"{}::DoTestForConcreteContainer_"};
+        Debug::TraceContextBumper ctx{"{}::DoTestForConcreteContainer_"};
         CommonTests::MultiSetTests::All_For_Type (schema);
     }
 }

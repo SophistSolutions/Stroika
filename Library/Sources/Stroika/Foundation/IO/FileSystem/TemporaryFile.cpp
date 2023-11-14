@@ -48,7 +48,7 @@ namespace {
 
 AppTempFileManager::AppTempFileManager (const Options& options)
 {
-    Debug::TraceContextBumper ctx{L"AppTempFileManager::CTOR"};
+    Debug::TraceContextBumper ctx{"AppTempFileManager::CTOR"};
     filesystem::path          tmpDir = WellKnownLocations::GetTemporary ();
 
     filesystem::path cleanedExePath = Execution::GetEXEPath ();

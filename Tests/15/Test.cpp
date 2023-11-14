@@ -5,9 +5,6 @@
 //      STATUS  PRELIMINARY
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
-#include <sstream>
-
 #include "Stroika/Foundation/Containers/Deque.h"
 
 #include "Stroika/Foundation/Containers/Concrete/Deque_DoublyLinkedList.h"
@@ -18,9 +15,10 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+
+using namespace Stroika::TestHarness;
 
 using Concrete::Deque_DoublyLinkedList;
 

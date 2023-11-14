@@ -202,7 +202,7 @@ namespace {
         }
         void DoAll_ ()
         {
-            Debug::TraceContextBumper ctx{L"Test1_7zArchive_"};
+            Debug::TraceContextBumper ctx{"Test1_7zArchive_"};
             Private_::ReadHardwired7zFile_ ();
         }
     }
@@ -398,7 +398,7 @@ namespace {
         }
         void DoAll_ ()
         {
-            Debug::TraceContextBumper ctx{L"Test2_ZipArchive_"};
+            Debug::TraceContextBumper ctx{"Test2_ZipArchive_"};
             Private_::ReadHardwiredZipFile_ ();
         }
     }
@@ -471,7 +471,7 @@ namespace {
 
         void DoAll_ ()
         {
-            Debug::TraceContextBumper ctx{L"INI_ONLY_::DoAll_"};
+            Debug::TraceContextBumper ctx{"INI_ONLY_::DoAll_"};
             DoBasicReader1_ ();
             DoReadWriteTest2_ ();
         }
@@ -547,7 +547,7 @@ namespace {
 
         void DoAll_ ()
         {
-            Debug::TraceContextBumper ctx{L"CharacterDelimitedLines_ONLY_::DoAll_"};
+            Debug::TraceContextBumper ctx{"CharacterDelimitedLines_ONLY_::DoAll_"};
             DoBasicReader1_ ();
             DoBasicWriterAndReader1_ ();
         }
@@ -581,7 +581,7 @@ namespace {
             }
             void DoIt ()
             {
-                Debug::TraceContextBumper ctx{L"JSON_ONLY_::DoAll_"};
+                Debug::TraceContextBumper ctx{"JSON_ONLY_::DoAll_"};
                 {
                     VariantValue v1 = L"hello world";
                     CheckMatchesExpected_WRITER_ (v1, "\"hello world\"\n");
@@ -777,7 +777,7 @@ namespace Test_04_CheckStringQuoting_ {
 
     void DoIt ()
     {
-        Debug::TraceContextBumper ctx{L"Test_04_CheckStringQuoting_::DoAll_"};
+        Debug::TraceContextBumper ctx{"Test_04_CheckStringQuoting_::DoAll_"};
         CheckRoundtrip_encode_decode_unchanged (VariantValue{L"\t\r\n\f\x3"}); // proper read/write control characters
         CheckRoundtrip_encode_decode_unchanged (VariantValue{L"test\?"});
         CheckRoundtrip_encode_decode_unchanged (VariantValue{L"test\\?"});
@@ -808,7 +808,7 @@ namespace Test_04_CheckStringQuoting_ {
 namespace Test_05_ParseRegressionTest_1_ {
     void DoIt ()
     {
-        Debug::TraceContextBumper ctx{L"Test_05_ParseRegressionTest_1_::DoAll_"};
+        Debug::TraceContextBumper ctx{"Test_05_ParseRegressionTest_1_::DoAll_"};
         {
             const char   kJSONExample_[] = "{"
                                            "    \"Automated Backups\" : {"
@@ -873,7 +873,7 @@ namespace Test_05_ParseRegressionTest_1_ {
 namespace Test_06_ParseRegressionTest_2_ {
     void DoIt ()
     {
-        Debug::TraceContextBumper ctx{L"Test_06_ParseRegressionTest_2_::DoAll_"};
+        Debug::TraceContextBumper ctx{"Test_06_ParseRegressionTest_2_::DoAll_"};
         auto                      f = [] () {
             map<wstring, VariantValue> mv;
             mv[L"MaxFiles"] = VariantValue{405};
@@ -900,7 +900,7 @@ namespace Test_06_ParseRegressionTest_2_ {
 namespace Test_05_ParseRegressionTest_3_ {
     void DoIt ()
     {
-        Debug::TraceContextBumper ctx{L"Test_05_ParseRegressionTest_3_::DoAll_"};
+        Debug::TraceContextBumper ctx{"Test_05_ParseRegressionTest_3_::DoAll_"};
         {
             const char   kJSONExample_[] = "{"
                                            "    \"T1\" : \"\","
@@ -925,7 +925,7 @@ namespace Test_05_ParseRegressionTest_3_ {
 namespace Test_07_ParserTestReadWriteBasictypes_ {
     void DoIt ()
     {
-        Debug::TraceContextBumper ctx{L"Test_07_ParserTestReadWriteBasictypes_::DoAll_"};
+        Debug::TraceContextBumper ctx{"Test_07_ParserTestReadWriteBasictypes_::DoAll_"};
         using namespace Time;
         auto f = [] (VariantValue v) {
             string encoded;
@@ -979,7 +979,7 @@ namespace Test_07_ParserTestReadWriteBasictypes_ {
 namespace Test_08_ReadEmptyStreamShouldFail_ {
     void DoIt ()
     {
-        Debug::TraceContextBumper ctx{L"Test_08_ReadEmptyStreamShouldFail_::DoAll_"};
+        Debug::TraceContextBumper ctx{"Test_08_ReadEmptyStreamShouldFail_::DoAll_"};
         try {
             VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (Streams::MemoryStream<byte>::New (nullptr, nullptr));
             VerifyTestResult (false);
@@ -1010,7 +1010,7 @@ namespace Test_09_ReadWriteNANShouldNotFail_ {
 
     void DoIt ()
     {
-        Debug::TraceContextBumper ctx{L"Test_09_ReadWriteNANShouldNotFail_::DoAll_"};
+        Debug::TraceContextBumper ctx{"Test_09_ReadWriteNANShouldNotFail_::DoAll_"};
         CheckRoundtrip_encode_decode_unchanged (VariantValue{Math::nan<double> ()});
         CheckRoundtrip_encode_decode_unchanged (VariantValue{-numeric_limits<double>::infinity ()});
         CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<double>::infinity ()});

@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2023.  All rights reserved
  */
-#include "../../../Foundation/StroikaPreComp.h"
+#include "../../StroikaPreComp.h"
 
 #include <climits>
 
@@ -24,6 +24,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 #endif
 
 using namespace Stroika::Foundation;
+
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 

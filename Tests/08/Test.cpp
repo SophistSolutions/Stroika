@@ -15,16 +15,17 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Containers::DataStructures;
+
+using namespace Stroika::TestHarness;
 
 namespace {
     static void Test1 ()
     {
         DataStructures::DoublyLinkedList<size_t> someLL;
-        const size_t                             kBigSize = 1001;
+        constexpr size_t                         kBigSize = 1001;
 
         Assert (kBigSize > 100);
         VerifyTestResult (someLL.size () == 0);

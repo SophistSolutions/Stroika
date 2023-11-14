@@ -65,7 +65,7 @@ Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
 Memory::BLOB Request::GetBody ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{L"Request::GetBody"};
+    Debug::TraceContextBumper ctx{"Request::GetBody"};
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     if (not fBody_.has_value ()) {
@@ -77,7 +77,7 @@ Memory::BLOB Request::GetBody ()
 Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{L"Request::GetBodyStream"};
+    Debug::TraceContextBumper ctx{"Request::GetBodyStream"};
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     if (fBodyInputStream_ == nullptr) {

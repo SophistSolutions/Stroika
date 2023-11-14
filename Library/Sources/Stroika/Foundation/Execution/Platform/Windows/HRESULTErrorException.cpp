@@ -20,7 +20,6 @@
 
 #include "HRESULTErrorException.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;

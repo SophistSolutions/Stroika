@@ -13,7 +13,6 @@
 
 #include "Common.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 
 /*

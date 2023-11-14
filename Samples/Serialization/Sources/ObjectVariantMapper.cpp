@@ -30,7 +30,7 @@ using std::byte;
 namespace {
     void SimpleGettingStarted_ ()
     {
-        Debug::TraceContextBumper ctx{L"SimpleGettingStarted_"};
+        Debug::TraceContextBumper ctx{"SimpleGettingStarted_"};
 
         // Define some types that you want serialized
         struct MyType2Serialize1_ {
@@ -75,7 +75,7 @@ namespace {
 namespace {
     void UseObjectVariantMapperTry2_ ()
     {
-        Debug::TraceContextBumper ctx{L"UseObjectVariantMapperTry2_"};
+        Debug::TraceContextBumper ctx{"UseObjectVariantMapperTry2_"};
 
         // Define some types that you want serialized
         struct SharedContactsConfig_ {
@@ -160,7 +160,7 @@ namespace {
 namespace {
     void GeneratingReadOnlyFieldsTry3_ ()
     {
-        Debug::TraceContextBumper ctx{L"GeneratingReadOnlyFieldsTry3_"};
+        Debug::TraceContextBumper ctx{"GeneratingReadOnlyFieldsTry3_"};
 
         // Define some types that you want serialized
         struct MyType2Serialize1_ {

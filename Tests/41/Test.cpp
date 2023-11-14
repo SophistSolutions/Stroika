@@ -32,13 +32,12 @@
 #include "../TestHarness/NotCopyable.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Characters;
 using namespace Containers;
 using namespace Execution;
 
-using namespace TestHarness;
+using namespace Stroika::TestHarness;
 
 namespace {
     bool kVerySlow_  = qDebug and (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer);

@@ -82,7 +82,7 @@ namespace {
     {
         AssertNotNull (pFwRule);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"{}ReadRule_"};
+        Debug::TraceContextBumper ctx{"{}ReadRule_"};
 #endif
         BSTR                    name        = nullptr;
         BSTR                    desc        = nullptr;
@@ -142,7 +142,7 @@ namespace {
     {
         AssertNotNull (pFwRules);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"{}ReadRule_"};
+        Debug::TraceContextBumper ctx{"{}ReadRule_"};
 #endif
         INetFwRule*             pFwRule           = nullptr;
         [[maybe_unused]] auto&& cleanupCOMObjects = Execution::Finally ([=] () noexcept {
@@ -259,7 +259,7 @@ Traversal::Iterable<Rule> SystemFirewall::Manager::LookupByGroup (const String& 
 
 Traversal::Iterable<Rule> SystemFirewall::Manager::LookupAll () const
 {
-    Debug::TraceContextBumper ctx{L"SystemFirewall::Manager::LookupAll"};
+    Debug::TraceContextBumper ctx{"SystemFirewall::Manager::LookupAll"};
     Collection<Rule>          rules;
 #if qPlatform_Windows
     COMInitializer          comInitializeContext{COINIT_APARTMENTTHREADED};

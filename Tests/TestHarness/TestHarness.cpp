@@ -17,8 +17,8 @@
 
 #include "TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
+
 using namespace Stroika::TestHarness;
 
 namespace {
@@ -74,7 +74,7 @@ namespace {
     }
 }
 
-void TestHarness::Setup ()
+void Stroika::TestHarness::Setup ()
 {
 #if qDebug
     Stroika::Foundation::Debug::SetAssertionHandler (ASSERT_HANDLER_);
@@ -85,7 +85,7 @@ void TestHarness::Setup ()
     SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{FatalSignalHandler_, SignalHandler::Type::eDirect});
 }
 
-int TestHarness::PrintPassOrFail (void (*regressionTest) ())
+int Stroika::TestHarness::PrintPassOrFail (void (*regressionTest) ())
 {
     try {
         (*regressionTest) ();
@@ -103,7 +103,7 @@ int TestHarness::PrintPassOrFail (void (*regressionTest) ())
     return EXIT_SUCCESS;
 }
 
-void TestHarness::Test_ (bool failIfFalse, bool isFailureElseWarning, const char* regressionTestText, const char* fileName, int lineNum)
+void Stroika::TestHarness::Test_ (bool failIfFalse, bool isFailureElseWarning, const char* regressionTestText, const char* fileName, int lineNum)
 {
     if (not failIfFalse) {
         if (isFailureElseWarning) {
@@ -117,13 +117,13 @@ void TestHarness::Test_ (bool failIfFalse, bool isFailureElseWarning, const char
     }
 }
 
-void TestHarness::WarnTestIssue (const char* issue)
+void Stroika::TestHarness::WarnTestIssue (const char* issue)
 {
     cerr << "WARNING: REGRESSION TEST ISSUE: '" << issue << "'" << endl;
     DbgTrace ("WARNING: REGRESSION TEST ISSUE: '%s", issue);
 }
 
-void TestHarness::WarnTestIssue (const wchar_t* issue)
+void Stroika::TestHarness::WarnTestIssue (const wchar_t* issue)
 {
     using namespace Characters;
     WarnTestIssue (SDK2Narrow (Wide2SDK (issue)).c_str ());

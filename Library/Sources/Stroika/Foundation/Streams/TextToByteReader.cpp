@@ -13,8 +13,6 @@
 
 #include "TextToByteReader.h"
 
-using std::byte;
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 

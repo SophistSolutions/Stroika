@@ -201,7 +201,7 @@ public:
     virtual unique_ptr<IRep> Clone () const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Entering DirectoryIterator::Rep_::Clone"};
+        Debug::TraceContextBumper ctx{"Entering DirectoryIterator::Rep_::Clone"};
 #endif
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
 #if qPlatform_POSIX

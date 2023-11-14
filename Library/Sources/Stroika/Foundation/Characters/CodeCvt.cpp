@@ -3,18 +3,18 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../Common/Common.h"
 #include "../Execution/Exceptions.h"
 
 #include "CharacterEncodingException.h"
 
 #include "CodeCvt.h"
 
-using namespace Stroika;
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
-
-using std::byte;
 
 // #define qGenTableDumper_ 1
 

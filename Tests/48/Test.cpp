@@ -22,11 +22,10 @@
 
 using std::byte;
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Memory;
 
-using namespace TestHarness;
+using namespace Stroika::TestHarness;
 
 namespace {
     void Test1_Optional ()

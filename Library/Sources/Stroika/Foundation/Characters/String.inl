@@ -753,7 +753,7 @@ namespace Stroika::Foundation::Characters {
         span<const char8_t>          thisData = GetData (&maybeIgnoreBuf1);
         return SDKString{thisData.begin (), thisData.end ()}; // @todo DOCUMENT THAT MACOS USES UTF8 - SRC - LOGIC/RATIONALE
 #else
-        return AsNarrowString (locale{}); // @todo document why - linux one rationale - default - similar
+        return AsNarrowString (locale{});                // @todo document why - linux one rationale - default - similar
 #endif
     }
     inline SDKString String::AsSDKString (AllowMissingCharacterErrorsFlag) const

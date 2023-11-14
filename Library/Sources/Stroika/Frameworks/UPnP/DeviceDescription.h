@@ -26,6 +26,7 @@
 namespace Stroika::Frameworks::UPnP {
 
     using namespace Stroika::Foundation;
+
     using Characters::String;
     using Containers::Collection;
     using DataExchange::InternetMediaType;

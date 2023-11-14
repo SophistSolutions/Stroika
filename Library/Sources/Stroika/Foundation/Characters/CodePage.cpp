@@ -7,6 +7,7 @@
 #include <mutex>
 #include <set>
 
+#include "../Common/Common.h"
 #include "../Configuration/Common.h"
 #include "../Containers/Common.h"
 #include "../Execution/Common.h"
@@ -21,12 +22,11 @@
 
 #include "CodePage.h"
 
-using namespace Stroika;
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
-
-using std::byte;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1

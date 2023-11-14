@@ -4,9 +4,6 @@
 //  TEST    Foundation::Containers::SortedCollection
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
-#include <sstream>
-
 #include "Stroika/Foundation/Containers/SortedCollection.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -19,9 +16,10 @@
 #include "Stroika/Foundation/Containers/Concrete/SortedCollection_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedCollection_stdmultiset.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+
+using namespace Stroika::TestHarness;
 
 using Concrete::SortedCollection_LinkedList;
 using Concrete::SortedCollection_stdmultiset;

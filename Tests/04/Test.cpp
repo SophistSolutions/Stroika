@@ -19,22 +19,23 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
+
+using namespace Stroika::TestHarness;
 
 namespace {
     void Test1_Version_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test1_Version_"};
+        Debug::TraceContextBumper ctx{"{}::Test1_Version_"};
         using namespace Configuration;
         {
             constexpr Version kTestVersion_ = Version (1, 0, VersionStage::Alpha, 1, false);
-            VerifyTestResult (kTestVersion_.AsPrettyVersionString () == L"1.0a1x");
-            VerifyTestResult (kTestVersion_ == Configuration::Version::FromPrettyVersionString (L"1.0a1x"));
+            VerifyTestResult (kTestVersion_.AsPrettyVersionString () == "1.0a1x");
+            VerifyTestResult (kTestVersion_ == Configuration::Version::FromPrettyVersionString ("1.0a1x"));
         }
-        VerifyTestResult (Version (1, 0, VersionStage::Release, 0) == Version::FromPrettyVersionString (L"1.0"));
-        VerifyTestResult (Version (1, 0, VersionStage::Release, 1) == Version::FromPrettyVersionString (L"1.0.1"));
-        VerifyTestResult (Version (2, 0, VersionStage::Beta, 3) == Version::FromPrettyVersionString (L"2.0b3"));
+        VerifyTestResult (Version (1, 0, VersionStage::Release, 0) == Version::FromPrettyVersionString ("1.0"));
+        VerifyTestResult (Version (1, 0, VersionStage::Release, 1) == Version::FromPrettyVersionString ("1.0.1"));
+        VerifyTestResult (Version (2, 0, VersionStage::Beta, 3) == Version::FromPrettyVersionString ("2.0b3"));
 
         auto verifier = [] (const Version& v, const String& prettyName, const String& win32VersionString) {
             VerifyTestResult (Version::FromPrettyVersionString (prettyName).AsWin32Version4DotString () == win32VersionString);
@@ -50,9 +51,9 @@ namespace {
          *      So Release 3.0.1 would be (in decimal place separated octets):
          *          3.0.160.3  (in hex 0x3.0x0.0xa0.0x3)
          */
-        verifier (Version (1, 2, VersionStage::Beta, 4, true), L"1.2b4", L"1.2.96.9");
-        verifier (Version (3, 0, VersionStage::Release, 0, true), L"3.0", L"3.0.160.1");
-        verifier (Version (3, 0, VersionStage::Release, 1, true), L"3.0.1", L"3.0.160.3");
+        verifier (Version{1, 2, VersionStage::Beta, 4, true}, "1.2b4", "1.2.96.9");
+        verifier (Version{3, 0, VersionStage::Release, 0, true}, "3.0", "3.0.160.1");
+        verifier (Version{3, 0, VersionStage::Release, 1, true}, "3.0.1", "3.0.160.3");
         {
             auto testRoundTrip = [] (uint32_t fullVer, uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint16_t verSubStage, bool finalBuild) {
                 Version sv{fullVer};
@@ -91,7 +92,7 @@ namespace Stroika::Foundation::Configuration {
 namespace {
     void Test2_EnumNames_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test2_EnumNames_"};
+        Debug::TraceContextBumper ctx{"{}::Test2_EnumNames_"};
         using namespace Test2_EnumNames_Private_;
         VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
         VerifyTestResult (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
@@ -115,7 +116,7 @@ namespace {
 namespace {
     void Test3_Endian_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test3_Endian_"};
+        Debug::TraceContextBumper ctx{"{}::Test3_Endian_"};
         using namespace Configuration;
         VerifyTestResult (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle) == 0xBBAA);
         VerifyTestResult (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle) == 0xDDCCBBAA);
@@ -126,7 +127,7 @@ namespace {
     namespace Test4_SystemConfigruation_ {
         void DoAll ()
         {
-            Debug::TraceContextBumper ctx{L"{}::Test4_SystemConfigruation_"};
+            Debug::TraceContextBumper ctx{"{}::Test4_SystemConfigruation_"};
             using namespace Configuration;
             SystemConfiguration sc = GetSystemConfiguration ();
             DbgTrace (L"systemConfig=%s", Characters::ToString (sc).c_str ());

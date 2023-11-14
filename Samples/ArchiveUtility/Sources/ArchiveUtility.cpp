@@ -144,7 +144,7 @@ namespace {
     }
     void ExtractArchive_ (const filesystem::path& archiveName, const filesystem::path& toDirectory)
     {
-        Debug::TraceContextBumper ctx{L"ExtractArchive_"};
+        Debug::TraceContextBumper ctx{"ExtractArchive_"};
         DbgTrace (L"(archiveName=%s, toDir=%s)", archiveName.c_str (), toDirectory.c_str ());
         DataExchange::Archive::Reader archive{OpenArchive_ (archiveName)};
         for (String i : archive.GetContainedFiles ()) {

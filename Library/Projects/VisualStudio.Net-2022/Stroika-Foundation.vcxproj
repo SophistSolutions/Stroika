@@ -175,7 +175,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\ElfResourceManager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.cpp" />
@@ -298,6 +297,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TextConvert.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ToString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\GUID.h" />

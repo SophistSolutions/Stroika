@@ -327,9 +327,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.cpp">
       <Filter>Sources\Execution\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.cpp">
-      <Filter>Sources\Execution\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.cpp">
       <Filter>Sources\Execution\Resources</Filter>
     </ClCompile>
@@ -2135,6 +2132,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.h">
       <Filter>Sources\DataExchange\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Common.h">
+      <Filter>Sources\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

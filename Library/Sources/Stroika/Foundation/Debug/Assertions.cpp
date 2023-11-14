@@ -16,7 +16,6 @@
 #include <cstdio>
 #endif
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Debug;
 

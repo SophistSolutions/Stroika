@@ -7,7 +7,6 @@
 
 #include "Realtime.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Time;
 

@@ -15,7 +15,6 @@
 
 #include "WinSock.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;

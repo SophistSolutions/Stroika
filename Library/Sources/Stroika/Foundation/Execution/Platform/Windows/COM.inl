@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
      */
     inline COMInitializer::COMInitializer (COINIT initFlag, bool worksWithAnyCoInitFlag)
     {
-        Debug::TraceContextBumper ctx{L"Execution::Platform::Windows::COMInitializer::CTOR"};
+        Debug::TraceContextBumper ctx{"Execution::Platform::Windows::COMInitializer::CTOR"};
         HRESULT                   hr = ::CoInitializeEx (nullptr, initFlag);
         switch (hr) {
             case S_OK:
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     }
     inline COMInitializer::~COMInitializer ()
     {
-        Debug::TraceContextBumper ctx{L"Execution::Platform::Windows::COMInitializer::~COMInitializer"};
+        Debug::TraceContextBumper ctx{"Execution::Platform::Windows::COMInitializer::~COMInitializer"};
         if (fNeedsShutdown_) {
             ::CoUninitialize ();
         }

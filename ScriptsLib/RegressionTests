@@ -451,8 +451,8 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 	if [ $DO_SKEL_TEST -ne 0 ]; then
 		echo >>$TEST_OUT_FILE 2>&1
 		echo >>$TEST_OUT_FILE 2>&1
-		echo -n "SKEL_TEST ..."
-		echo -n "$PREFIX_OUT_LABEL" "SKEL_TEST ..." >>$TEST_OUT_FILE 2>&1
+		echo -n "SKEL_TEST ... "
+		echo -n "$PREFIX_OUT_LABEL" "SKEL_TEST ... " >>$TEST_OUT_FILE 2>&1
 		STAGE_STARTAT_INT=$(date +%s)
 		echo "ScriptsLib/Skel --appRoot $USE_TEST_BASENAME-skel" >>$TEST_OUT_FILE 2>&1
 		rm -rf $USE_TEST_BASENAME-skel

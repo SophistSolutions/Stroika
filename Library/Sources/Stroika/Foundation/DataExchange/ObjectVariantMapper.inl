@@ -1054,7 +1054,7 @@ namespace Stroika::Foundation::DataExchange {
         }
         FromObjectMapperType<CLASS> fromObjectMapper = [fields, extends] (const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjectMapper"};
+            Debug::TraceContextBumper ctx{"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjectMapper"};
 #endif
             Mapping<String, VariantValue> m;
             if (extends) [[unlikely]] {
@@ -1084,7 +1084,7 @@ namespace Stroika::Foundation::DataExchange {
         ToObjectMapperType<CLASS> toObjectMapper = [fields, extends] (const ObjectVariantMapper& mapper, const VariantValue& d,
                                                                       CLASS* intoObjOfTypeT) -> void {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper"};
+            Debug::TraceContextBumper ctx{"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper"};
 #endif
             RequireNotNull (intoObjOfTypeT);
             if (extends) {

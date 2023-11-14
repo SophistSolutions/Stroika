@@ -163,7 +163,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
             void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, [[maybe_unused]] TEST_FUNCTION applyToContainer)
             {
-                Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test1_OldMiscBagTests_"};
+                Debug::TraceContextBumper ctx{"CommonTests::CollectionTests::Test1_OldMiscBagTests_"};
                 CONCRETE_CONTAINER        s = factory ();
                 On_Container_<CONCRETE_CONTAINER> (s);
             }
@@ -265,7 +265,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
             void DoAllTests_ ()
             {
-                Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test2_TestsWithComparer_"};
+                Debug::TraceContextBumper ctx{"CommonTests::CollectionTests::Test2_TestsWithComparer_"};
                 CONCRETE_CONTAINER        s;
                 On_Container_<CONCRETE_CONTAINER, EQUALS_COMPARER> (s);
                 TestLotsOfAddsAndRemovesByValue_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
@@ -317,7 +317,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
             void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, [[maybe_unused]] TEST_FUNCTION applyToContainer)
             {
-                Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test4_IteratorsBasics_"};
+                Debug::TraceContextBumper ctx{"CommonTests::CollectionTests::Test4_IteratorsBasics_"};
                 BasicIteratorTest_<CONCRETE_CONTAINER> (factory);
             }
         }
@@ -355,7 +355,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
             void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
             {
-                Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test5_Apply_"};
+                Debug::TraceContextBumper ctx{"CommonTests::CollectionTests::Test5_Apply_"};
                 DoIt_<CONCRETE_CONTAINER> (factory, applyToContainer);
             }
         }
@@ -365,7 +365,7 @@ namespace CommonTests {
         template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
         void SimpleCollectionTest_Generic (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
         {
-            Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::SimpleCollectionTest_Generic"};
+            Debug::TraceContextBumper ctx{"CommonTests::CollectionTests::SimpleCollectionTest_Generic"};
             Test1_OldMiscBagTests_::DoAllTests_<CONCRETE_CONTAINER> (factory, applyToContainer);
             Test4_IteratorsBasics_::DoAllTests_<CONCRETE_CONTAINER> (factory, applyToContainer);
             Test5_Apply_::DoAllTests_<CONCRETE_CONTAINER> (factory, applyToContainer);
@@ -376,7 +376,7 @@ namespace CommonTests {
         template <typename CONCRETE_CONTAINER, typename WITH_COMPARE_EQUALS>
         void SimpleCollectionTest_TestsWhichRequireEquals ()
         {
-            Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::SimpleCollectionTest_TestsWhichRequireEquals"};
+            Debug::TraceContextBumper ctx{"CommonTests::CollectionTests::SimpleCollectionTest_TestsWhichRequireEquals"};
             Test2_TestsWithComparer_::DoAllTests_<CONCRETE_CONTAINER, WITH_COMPARE_EQUALS> ();
         }
     }

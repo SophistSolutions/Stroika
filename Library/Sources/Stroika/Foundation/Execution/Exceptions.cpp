@@ -19,9 +19,7 @@
 
 #include "Exceptions.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
-
 using namespace Characters;
 using namespace Execution;
 

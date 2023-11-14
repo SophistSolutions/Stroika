@@ -19,8 +19,6 @@
 
 #include "MallocGuard.h"
 
-using std::byte;
-
 using namespace Stroika::Foundation;
 
 #if qStroika_Foundation_Debug_MallocGuard

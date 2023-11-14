@@ -11,7 +11,7 @@
 
 #include "Stroika/Foundation/Configuration/Common.h"
 
-namespace Stroika {
+namespace Stroika::TestHarness {
 
     /**
      *  Object NOT default constructible, is copyable, assignable; supports operator+ and operator==, and operator<

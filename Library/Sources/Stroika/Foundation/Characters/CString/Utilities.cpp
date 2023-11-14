@@ -24,7 +24,6 @@ DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wformat-truncation\
 
 #include "Utilities.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Characters::CString;

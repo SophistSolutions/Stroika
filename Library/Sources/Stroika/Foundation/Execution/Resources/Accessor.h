@@ -30,8 +30,8 @@ namespace Stroika::Foundation::Execution::Resources {
 
     public:
         /*
-            * @todo    Consider different return value - streams? - or some new BLOB type.
-            */
+         * @todo    Consider different return value - streams? - or some new BLOB type.
+         */
         nonvirtual vector<byte> GetData () const;
 
     private:

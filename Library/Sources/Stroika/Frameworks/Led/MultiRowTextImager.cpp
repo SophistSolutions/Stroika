@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2023.  All rights reserved
  */
-#include "../../Foundation/StroikaPreComp.h"
+#include "../StroikaPreComp.h"
 
 #include <climits>
 
@@ -13,6 +13,7 @@
 #include "MultiRowTextImager.h"
 
 using namespace Stroika::Foundation;
+
 using namespace Stroika::Frameworks::Led;
 
 /*

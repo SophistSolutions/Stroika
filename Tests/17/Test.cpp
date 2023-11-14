@@ -5,9 +5,6 @@
 //      STATUS  Alpha-Late
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <iostream>
-#include <sstream>
-
 #include "Stroika/Foundation/Containers/Collection.h"
 
 #include "Stroika/Foundation/Characters/String.h"
@@ -24,9 +21,10 @@
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+
+using namespace Stroika::TestHarness;
 
 using Concrete::Mapping_Array;
 using Concrete::Mapping_LinkedList;
@@ -53,7 +51,7 @@ namespace {
 namespace {
     void Test2_SimpleBaseClassConversionTraitsConfusion_ ()
     {
-        Debug::TraceContextBumper ctx{L"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
+        Debug::TraceContextBumper ctx{"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
         SortedMapping<int, float> xxxyy  = Concrete::SortedMapping_stdmap<int, float> ();
         Mapping<int, float>       xxxyy1 = Concrete::Mapping_stdmap<int, float> ();
     }
@@ -86,7 +84,7 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper ctx{L"{}::Test4_MappingCTOROverloads_"};
+            Debug::TraceContextBumper ctx{"{}::Test4_MappingCTOROverloads_"};
             using namespace xPrivate_;
             Mapping<int, A> from;
 
@@ -106,7 +104,7 @@ namespace {
     namespace ExampleCTORS_Test_5_ {
         void DoTest ()
         {
-            Debug::TraceContextBumper ctx{L"{}::ExampleCTORS_Test_5_"};
+            Debug::TraceContextBumper ctx{"{}::ExampleCTORS_Test_5_"};
             // From Mapping<> CTOR docs
             Collection<pair<int, int>> c;
             std::map<int, int>         m;
@@ -123,13 +121,12 @@ namespace {
 
             {
                 using Characters::String;
-                const auto kReference1a_ = Mapping<String, String>{{KeyValuePair<String, String>{L"Content-Length", L"3"}}};
+                const auto kReference1a_ = Mapping<String, String>{{KeyValuePair<String, String>{"Content-Length", "3"}}};
                 const auto kReference1b_ =
                     Mapping<String, String>{{KeyValuePair<String, String>{L"Content-Length", L"3"}, KeyValuePair<String, String>{L"xx", L"3"}}};
                 const auto kReference1c_ = Mapping<String, String>{KeyValuePair<String, String>{L"Content-Length", L"3"}};
                 const auto kReference2a_ = Mapping<String, String>{{pair<String, String>{L"Content-Length", L"3"}}};
-                const auto kReference2b_ =
-                    Mapping<String, String>{{pair<String, String>{L"Content-Length", L"3"}, pair<String, String>{L"xx", L"3"}}};
+                const auto kReference2b_ = Mapping<String, String>{{pair<String, String>{"Content-Length", "3"}, pair<String, String>{L"xx", L"3"}}};
                 const auto kReference2c_ =
                     Mapping<String, String>{pair<String, String>{L"Content-Length", L"3"}, pair<String, String>{L"xx", L"3"}};
                 const auto kReference3a_ = Mapping<String, String>{{{L"Content-Length", L"3"}}};

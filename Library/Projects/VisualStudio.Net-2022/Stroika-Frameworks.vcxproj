@@ -70,7 +70,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Command.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\FlavorPackage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\GDI.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HandySimple.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\HiddenText.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\IdleManager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\LineBasedPartition.cpp" />
@@ -186,7 +185,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractor.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextInteractorMixins.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\TextStore.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordProcessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextImager.cpp" />

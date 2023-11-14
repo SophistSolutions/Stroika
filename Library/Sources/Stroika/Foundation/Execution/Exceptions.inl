@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Execution {
     inline void ThrowPOSIXErrNo (errno_t errNo)
     {
 #if Stroia_Foundation_Execution_Exceptions_USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContenxtBumper tctx{L"Execution::ThrowPOSIXErrNo (%d)", errNo};
+        TraceContenxtBumper tctx{L"Execution::ThrowPOSIXErrNo", L"(%d)", errNo};
 #endif
         Require (errNo != 0);
 #if qPlatform_POSIX
