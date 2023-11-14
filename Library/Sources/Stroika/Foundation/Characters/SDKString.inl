@@ -248,7 +248,6 @@ namespace Stroika::Foundation::Characters {
 
     DISABLE_COMPILER_MSC_WARNING_START (4996);
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    //DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     [[deprecated (
         "Since Stroika v3.0d1 use String::FromNarrowSDKString (s).As<wstring> () - less efficent but this is never used")]] inline wstring
     NarrowSDKStringToWide (const string& s)
@@ -309,7 +308,6 @@ namespace Stroika::Foundation::Characters {
     }
     DISABLE_COMPILER_MSC_WARNING_END (4996);
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    //DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");        fails on clang++16 - verify really needed on older clangs???
 
 }
 

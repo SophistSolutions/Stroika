@@ -277,7 +277,6 @@ namespace {
     template <typename WIDESTRING_IMPL>
     void Test_StructWithStringsFillingAndCopying ()
     {
-        //DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
         struct S {
             WIDESTRING_IMPL fS1;
             WIDESTRING_IMPL fS2;
@@ -292,7 +291,6 @@ namespace {
             {
             }
         };
-        //DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
         S s1;
         S s2{L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144"};
         s1 = s2;
@@ -309,7 +307,6 @@ namespace {
     template <typename WIDESTRING_IMPL>
     void Test_StructWithStringsFillingAndCopying2 ()
     {
-        //DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
         struct S {
             WIDESTRING_IMPL fS1;
             WIDESTRING_IMPL fS2;
@@ -326,7 +323,6 @@ namespace {
             {
             }
         };
-        //DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wreorder\""); // clang appears confused
         S s1;
         S s2{L"hi mom", L"124 south vanbergan highway", L"Los Angeles 201243", L"834-313-2144"};
         s1 = s2;
