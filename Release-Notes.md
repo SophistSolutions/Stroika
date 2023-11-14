@@ -12,7 +12,14 @@ especially those they need to be aware of when upgrading.
 ### 3.0d4 {2023-11-14xxxxxx} {[diff](../../compare/v3.0d3...v3-Dev)}
 
 #### TLDR
-@todo fill in
+- @todo REVIEW
+- Redo threading support using new C++20 stop_token/jthread feature (retain backward compatability since some stdc++ not fully supporting jthread). Related BlockingQueue, ConditionVariable,  WaitableEvent fixes/changes.
+- ThreadPool fixes and new features (stats, task names, implementation simplification).
+- XML support improvement, notably DOM and Schema (and schema validation) support (no regtests yet)
+- arm/raspberry pi testing now works again (new raspbian release)
+- lose much 'quasi-namespace' support, in favor of actual namespaces (still some remaining - not sure what todo about Streams)
+- Lose Helgrind support (was more pain than it was worth).
+- Added Ubuntu 23.10 support and g++13, clang-16, XCode 15
 
 #### Change Details
 
