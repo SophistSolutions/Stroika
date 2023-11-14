@@ -194,8 +194,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Get a copy of the entire owned Queue. NOTE - modifications to the returned copy have no effect on Queue associated 
-         *  Queue with the BlockingQueue
+         *  Get a copy of the entire owned Queue. NOTE - modifications of the returned copy have no effect on Queue associated 
+         *  with the BlockingQueue.
          */
         nonvirtual Containers::Queue<T> GetQueue () const;
 
