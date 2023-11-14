@@ -54,6 +54,7 @@ namespace Stroika::Foundation::Characters {
     enum class AllowMissingCharacterErrorsFlag {
         eIgnoreErrors
     };
+    constexpr AllowMissingCharacterErrorsFlag eIgnoreErrors = AllowMissingCharacterErrorsFlag::eIgnoreErrors;
 
     /**
      *  Convert string/span of 'char' - interpretting the char in the locale/active code page of the current

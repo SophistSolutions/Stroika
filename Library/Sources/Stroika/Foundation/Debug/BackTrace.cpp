@@ -73,7 +73,7 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         }
         o << eText;
     }
-    return Characters::NarrowSDK2Wide (o.str (), AllowMissingCharacterErrorsFlag::eIgnoreErrors);
+    return Characters::NarrowSDK2Wide (o.str (), eIgnoreErrors);
 #elif qHasFeature_boost
     using namespace boost;
 

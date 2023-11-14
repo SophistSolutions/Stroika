@@ -767,7 +767,7 @@ namespace Stroika::Foundation::Characters {
         span<const char8_t> thisData = GetData (&maybeIgnoreBuf1); // Note this always works, since we can always map to UTF-8 any Stroika string
         return SDKString{thisData.begin (), thisData.end ()};      // @todo DOCUMENT THAT MACOS USES UTF8 - SRC - LOGIC/RATIONALE
 #else
-        return AsNarrowString (locale{}, AllowMissingCharacterErrorsFlag::eIgnoreErrors); // @todo document why - linux one rationale - default - similar
+        return AsNarrowString (locale{}, eIgnoreErrors); // @todo document why - linux one rationale - default - similar
 #endif
     }
     inline string String::AsNarrowSDKString () const
@@ -776,7 +776,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline string String::AsNarrowSDKString (AllowMissingCharacterErrorsFlag) const
     {
-        return SDK2Narrow (AsSDKString (AllowMissingCharacterErrorsFlag::eIgnoreErrors), AllowMissingCharacterErrorsFlag::eIgnoreErrors);
+        return SDK2Narrow (AsSDKString (eIgnoreErrors), AllowMissingCharacterErrorsFlag::eIgnoreErrors);
     }
     template <typename T>
     inline T String::AsASCII () const

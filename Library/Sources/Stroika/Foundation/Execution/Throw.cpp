@@ -40,5 +40,5 @@ wstring Private_::GetBT_ws ()
 
 string Private_::ToString_ (const type_info& s)
 {
-    return Characters::ToString (s).AsNarrowSDKString (Characters::AllowMissingCharacterErrorsFlag::eIgnoreErrors);
+    return Characters::ToString (s).AsNarrowSDKString (Characters::eIgnoreErrors);
 }

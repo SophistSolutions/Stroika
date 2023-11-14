@@ -246,7 +246,7 @@ namespace {
     {
         RequireNotNull (text);
         try {
-            Emit2File_ (String{text}.AsNarrowSDKString (AllowMissingCharacterErrorsFlag::eIgnoreErrors).c_str ());
+            Emit2File_ (String{text}.AsNarrowSDKString (eIgnoreErrors).c_str ());
         }
         catch (...) {
             AssertNotReached ();
