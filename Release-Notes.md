@@ -7,16 +7,15 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
------------
-### @todo patch data and ... target in diff
-### 3.0d4 {2023-11-14xxxxxx} {[diff](../../compare/v3.0d3...v3-Dev)}
+---
+
+### 3.0d4 {2023-11-14} {[diff](../../compare/v3.0d3...v3.0d4)}
 
 #### TLDR
-- @todo REVIEW
 - Redo threading support using new C++20 stop_token/jthread feature (retain backward compatability since some stdc++ not fully supporting jthread). Related BlockingQueue, ConditionVariable,  WaitableEvent fixes/changes.
 - ThreadPool fixes and new features (stats, task names, implementation simplification).
-- XML support improvement, notably DOM and Schema (and schema validation) support (no regtests yet)
-- arm/raspberry pi testing now works again (new raspbian release)
+- XML support improvement, notably DOM and Schema (and schema validation) support (no regtests/xpath yet)
+- ARM/Raspberry Pi testing now works again (new raspbian bookworm release)
 - lose much 'quasi-namespace' support, in favor of actual namespaces (still some remaining - not sure what todo about Streams)
 - Lose Helgrind support (was more pain than it was worth).
 - Added Ubuntu 23.10 support and g++13, clang-16, XCode 15
@@ -69,16 +68,14 @@ especially those they need to be aware of when upgrading.
           And if const_evaluiated assertion cehck on one CTOR.
       - XML
         - cleanup Xerces/XML support - prepare to add more support
-        - Progress on XML DOM and Schema support (incomplete/untested)
-        - more substantial proccess on DOM/Scehma code for XML (still untested)
-        - react better to SAX-PARSE not available if ! qHasFeature_Xerces
+        - Progress on XML DOM and Schema support (incomplete/untested port from old RFLLib code)
+        - more substantial proccess on DOM/Schema code for XML
         - cleanup/start using new qStroika_Foundation_DataExchange_XML_Support XXX flags
         - cleanup qStroika_Foundation_DataExchange_XML_SupportParsing usage
-        - more (new code) XML Schema cleans (port from old RFLLib code)
     - Debug
       - Trace
         - Tweak DbgTrace code internals
-        - experiment with moduleInit instead of Immortalize due to warnings (no easy way to localize suppress in library code) leak warnings using it
+        - experiment with moduleInit instead of Immortalize due to warnings (no easy way to localize suppress in library code) leak warnings using it; instead settle on just using static module initializer using standard c++ inline static support
         - Make Debug::Emitter private
         - **not fully backward compatible** replaced macro qDefaultTracingOn with qStroika_Foundation_Debug_Trace_DefaultTracingOn and qTraceToFile with qStroika_Foundation_Debug_Trace_DefaultTracingOn
         - more cleanups to recent Debug Trace code
@@ -119,8 +116,6 @@ especially those they need to be aware of when upgrading.
         - tighten timeline on SuppressInterruptionInContext for initial fRefCountBumpedEvent_
         coding
         - Improved ToString() reporitng
-        - stop_callback stopCallback in threadmain tweaks
-        - assertion and comment cleanups
         - lose mutex on fAccessSTDThreadMutex_ - did more harm than good
         - fixed POSIX-only ThreadMain_ bug - with incRefCnt smart ptr
         - new Thread::IsCurrentThreadInterruptible ()
@@ -133,7 +128,7 @@ especially those they need to be aware of when upgrading.
         - threadpool - changed default CTOR so defaults to thread::hardware_concurrency () poolsize
         - draft support for Threadpool Task names, and other docs cleanups
         - simplified internals of ThreadPool task get next, and better supproted tracking tasknames
-        - draft support for collecting minimal threadpool statistics
+        - support for collecting minimal threadpool statistics
         - More small celanups to ThreadPool code - mostly MyRunnable_ with less abstraction/data hiding - really part of ThreadPool logic (due to locking policies)
       - WaitableEvent:
         - GetIsSet method and refined PeekIsSet tonotwait
@@ -157,7 +152,7 @@ especially those they need to be aware of when upgrading.
         - deprecated AttachApplicationLifetime and redid slightly the Attach code for BLOB making it a bit more flexible and better documented
         - improved BLOB::Attach API
       - Span
-        - Loosened requiresments on SpanReInterpretCast type arguments
+        - Loosened requirements on SpanReInterpretCast type arguments
   - Frameworks
 - ThirdPartyComponents
   - libcurl
@@ -172,14 +167,37 @@ especially those they need to be aware of when upgrading.
 - Build System and Testing
   - Build System
     - new makefile feature WRITE_PREPROCESSOR_OUTPUT=1 - which may help reporting compiler bugs
-  - Scripts/Skel
-    - tweak Skel script
-    - lose VS2k19 support from Skel
-  - Makefiles
-    - remove a few unneeded CPP files from foundation
-    - + on make fules to address -flto=auto issue (finally figured out what this meant)
-    - restructure lib lines to use response file on WINDOZE due to command-line length being exceeded(occasionally depending on root dir name)
-    - hopefully workaround/address flakey failure building sqlite due to changes in DEFAULT_LIBRARY_GEN_LINE macro
+    - Makefiles
+      - remove a few unneeded CPP files from foundation
+      - + on make fules to address -flto=auto issue (finally figured out what this meant)
+      - restructure lib lines to use response file on WINDOZE due to command-line length being exceeded(occasionally depending on root dir name)
+      - hopefully workaround/address flakey failure building sqlite due to changes in DEFAULT_LIBRARY_GEN_LINE macro
+    - Scripts
+      - simplifiy ScriptsLib/RunInDockerEnvironment slightly since DNS workaorund not working anyhow
+      - configure
+        - better error checking in configure script for bad args
+        - no longer need add -lboost... stuff on macos in configure script
+        - disable some libcurl LIBS settings which dont appear needed and appear to contribute to warning noise on macos
+        - configure: for xcode/darwin: EXTRA_SUFFIX_LINKER_ARGS = -Wl,-no_warn_duplicate_libraries
+        - Add and use new IsTargettingASAN_ util in configure script, and use it workaround https://stroika.atlassian.net/browse/STK-996 issue with LTO and ASAN
+        - tweak compiler warning generation in configure script to address issue with LTO suprrious gcc warnings on ubuntu 23.10
+        - Minor configure cleanups, and placed workaround for Wstringop-overflow warning for g++11 in configure since didn't work with prama suppression
+        - do Wno-maybe-uninitialized workaround in configure for g++13 as well
+        - -Wno-tsan needed as linker flag with LTO on gcc/g++13
+      - Build Systems
+        - Docker
+          - support Ubuntu (23.04 initiallly and then instead) 23.10 and cleanup unix docker containers to include fewer compilers we dont support (old clangs mostly)
+      - Compilers supported
+        - g++-13 build added to github actions, and compiler bug defines and scripted in regtests
+        - Added configs to makefile for clang++-16
+        - desupport clang++-13 (since libstdc++ version 13 doesn't compile (at least boost build) with that version of clang++ - not my problme
+        - VS_17_7_5 in docker container for testing
+        - Compiler bug defines for xcode 15
+        - just check __GNUC__ not __GNUC_MINOR__ in compiler bug dversion detector
+        - dont install clang++13 in docker containers cuz not supported (and running out of space on github actions sometimes)
+    - Scripts/Skel
+      - tweak Skel script
+      - lose VS2k19 support from Skel
   - github actions
     -  fixed missing cpp_version args in unix .github/workflows/build-N-test-Matrix.json
     - lots of effort to debug why running out of space in some github actions, and tightened size of docker containers
@@ -210,29 +228,6 @@ especially those they need to be aware of when upgrading.
       but not sure thats worth it anymore either, due to other google sanitizers).
     - disable RegressionTest5_Aborting_ under valgrind cuz too slow (even memcheck)
     - tweak timing of ubuntu valgrind memcheck test
-- Scripts
-  - simplifiy ScriptsLib/RunInDockerEnvironment slightly since DNS workaorund not working anyhow
-  - configure
-    - better error checking in configure script for bad args
-    - no longer need add -lboost... stuff on macos in configure script
-    - disable some libcurl LIBS settings which dont appear needed and appear to contribute to warning noise on macos
-    - configure: for xcode/darwin: EXTRA_SUFFIX_LINKER_ARGS = -Wl,-no_warn_duplicate_libraries
-    - Add and use new IsTargettingASAN_ util in configure script, and use it workaround https://stroika.atlassian.net/browse/STK-996 issue with LTO and ASAN
-    - tweak compiler warning generation in configure script to address issue with LTO suprrious gcc warnings on ubuntu 23.10
-    - Minor configure cleanups, and placed workaround for Wstringop-overflow warning for g++11 in configure since didn't work with prama suppression
-    - do Wno-maybe-uninitialized workaround in configure for g++13 as well
-    - -Wno-tsan needed as linker flag with LTO on gcc/g++13
-  - Build Systems
-    - Docker
-      - support Ubuntu (23.04 initiallly and then instead) 23.10 and cleanup unix docker containers to include fewer compilers we dont support (old clangs mostly)
-  - Compilers supported
-    - g++-13 build added to github actions, and compiler bug defines and scripted in regtests
-    - Added configs to makefile for clang++-16
-    - desupport clang++-13 (since libstdc++ version 13 doesn't compile (at least boost build) with that version of clang++ - not my problme
-    - VS_17_7_5 in docker container for testing
-    - Compiler bug defines for xcode 15
-    - just check __GNUC__ not __GNUC_MINOR__ in compiler bug dversion detector
-    - dont install clang++13 in docker containers cuz not supported (and running out of space on github actions sometimes)
 
 #### Release-Validation
 - Compilers Tested/Supported
@@ -249,7 +244,7 @@ especially those they need to be aware of when upgrading.
   - MacOS
     - 13 (on github actions)
     - 14 - arm64/m1 chip
-  - Linux: { Ubuntu: [20.04, 22.04, 23.10], Raspbian(cross-compiled, MUST TARGET VERSIONX???) }
+  - Linux: { Ubuntu: [20.04, 22.04, 23.10], Raspbian(cross-compiled from Ubuntu 22.04, Raspbian (bookworm)) }
 - Hardware Tested/Supported
   - x86, x86_64, arm (linux/raspberrypi - cross-compiled, DEBIABVERSION###), arm64 (macos/m1)
 - Sanitizers and Code Quality Validators
