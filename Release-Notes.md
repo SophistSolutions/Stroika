@@ -193,7 +193,7 @@ especially those they need to be aware of when upgrading.
         - desupport clang++-13 (since libstdc++ version 13 doesn't compile (at least boost build) with that version of clang++ - not my problme
         - VS_17_7_5 in docker container for testing
         - Compiler bug defines for xcode 15
-        - just check __GNUC__ not __GNUC_MINOR__ in compiler bug dversion detector
+        - just check __GNUC__ not __GNUC_MINOR__ in compiler bug version detector
         - dont install clang++13 in docker containers cuz not supported (and running out of space on github actions sometimes)
     - Scripts/Skel
       - tweak Skel script
