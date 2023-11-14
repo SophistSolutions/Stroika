@@ -26,7 +26,7 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 # in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
 # Build with -m 4GB cuz default of 1GB pages alot
 EXTRA_DOCKER_BUILD_ARGS_=
-#EXTRA_DOCKER_BUILD_ARGS_= --network "Default Switch" 
+EXTRA_DOCKER_BUILD_ARGS_= --network "Default Switch" 
 endif
 build-images:
 ifeq (${DETECTED_HOST_OS},Linux)
