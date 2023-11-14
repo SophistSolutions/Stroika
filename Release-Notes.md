@@ -8,13 +8,201 @@ especially those they need to be aware of when upgrading.
 ## History
 
 -----------
-
-### 3.0d4 {2023-11-14xxxxxx} {[diff](../../compare/v3.0d3...v3.0d4)}
+### @todo patch data and ... target in diff
+### 3.0d4 {2023-11-14xxxxxx} {[diff](../../compare/v3.0d3...v3-Dev)}
 
 #### TLDR
+@todo fill in
 
 #### Change Details
 
+- Documentation
+  - Cleanup docs (esp building docs) and lose project-files generation for windows on vs2k17/vs2k19
+- Library
+  - General
+    - Cleanup use of std::byte - imported in Stroika namespace mostly and lose most of the redundent specs
+    - Use [[nodiscard]] on many classes throughout Stroika to improve compiler warning reports
+    - use Characters::AllowMissingCharacterErrorsFlag::eIgnoreErrors in a few more calls to AsNarrowSDKString - as for logging / already doing exception reporting - that orig exception is more important than issues converting codepage of text in report)
+  - Foundation
+    - Characters
+      - CodeCvt
+        - alignas in CodeCvt logic to possible fix issue that shows up on arm machine
+        - simplified a bit of fInvalidCharacterReplacementBytesBuf in CodeCvt in hopes gets past compiler (bug/issue) raspi - but at least cleaner/simpler
+      - String
+        - simplify and improve IConvertibleToString so not IConvertibleToString<char> (cuz that means String x = 3 would work; confusing with ovarloads
+        - Added String::find overload
+        - added String::back () helper
+        - Added String::front()
+      - StringBuilder
+        - StringBuilder data() method/overloads
+      - ToString
+        - minor cleanup to ToString() method for exception_ptr (handle nullcase better)
+    - Common
+      - new ReverseCompareOrder
+    - Configuration
+      - new concept INoThrowInvocable
+      - Allow perfect forwarding args to Immortalize() function
+      - Compiler bug defines
+        - qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy BWA
+        - Lose qCompilerAndStdLib_copy_warning_overflow_Buggy from header file, and instead workaround with -Wno-stringop-overflow in configure so can be added to LINK line - needed for link-time warnings
+        - qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
+        - simplification of qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy bug define
+        - cleanups to qStroika_FeatureSupported_Valgrind
+        - new qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy bug define and workrounads, and Debug::kBuiltWithUndefinedBehaviorSanitizer cleanups/bug workarounds
+    - Containers
+      - STL\Compare deleted
+    - Database
+      - SQL
+        - ***not fully backward compatible*** - Database::SQL::Connection no longer quasi-namespace, but actual namespace, and did a bit of refactoring of its use of AssertExternallySynchronizedMutex
+        - ***not fully backward compatible*** - moved SQLite and OODBC Options to inside Connection namespace
+    - DataExchange
+      - Atom
+        - Atom<>::As<AtomInternalType> support
+        - Minor tweaks to Atom code: CTOR exactly AtomInternalType so no mismatch on convertibletostring CTOR; and a few noexcepts on constructors for Atom
+          And if const_evaluiated assertion cehck on one CTOR.
+      - XML
+        - cleanup Xerces/XML support - prepare to add more support
+        - Progress on XML DOM and Schema support (incomplete/untested)
+        - more substantial proccess on DOM/Scehma code for XML (still untested)
+        - react better to SAX-PARSE not available if ! qHasFeature_Xerces
+        - cleanup/start using new qStroika_Foundation_DataExchange_XML_Support XXX flags
+        - cleanup qStroika_Foundation_DataExchange_XML_SupportParsing usage
+        - more (new code) XML Schema cleans (port from old RFLLib code)
+    - Debug
+      - Trace
+        - Tweak DbgTrace code internals
+        - experiment with moduleInit instead of Immortalize due to warnings (no easy way to localize suppress in library code) leak warnings using it
+        - Make Debug::Emitter private
+        - **not fully backward compatible** replaced macro qDefaultTracingOn with qStroika_Foundation_Debug_Trace_DefaultTracingOn and qTraceToFile with qStroika_Foundation_Debug_Trace_DefaultTracingOn
+        - more cleanups to recent Debug Trace code
+      - check __cpp_lib_stacktrace >= 202011 and if present/valid, use that for Debug::BackTrace::Capture () API
+    - Execution
+      - Misc
+        - silence tsan warning from gcc about atomoc_thread_fence
+        - lose kEveryNTimes template version of CheckForInterruption - just asking for bugs (not interuption point when looks like one) and was not currently being used
+        - Execution::FinallySentry -> Execution::Private_::FinallySentry; and then Finally now uses new concept Configuration::INoThrowInvocable to assure argument lambda noexcept, and cleanup usage to comply
+      - BlockingQueue
+        - various cleanups (todos)
+        - new GetQueue () method
+        - Remove.. methods now throw Streams::EOFException on EOF, not TimeoutException
+        - Fixed serious bugs in condition variable usage (masked by earlier stop-ever-.25 seconds
+          crap in older ConditionVariable code)
+      - ConditionVariable
+        - many cleanups/changes, relating to new C++ 20 stop_token support, and others
+        - lose fThreadAbortCheckFrequency support
+        - fixed https://stroika.atlassian.net/browse/STK-993 - wait forever bug  (substantial changes to threadrep code)
+        - new kSupportsStopToken flag (cuz not all std::condition_variables support stop_token)
+        - ConditionVariable - use condition_variable_any instead of condition_variable by default (for stop_token support)
+        - now defaults conditionvariable template arg to condition_variable_any not condition_variable
+        - more docs on what is cancelation point
+        - major changes to wait_until() to support stop tokens (automatically)
+        - more ConditionVariable fixes for new stop-token coding and recent Thread abort simplifications
+      - ModuleInit module deprecated
+      - Progress
+        - Minor cleanups to ProgressMonitor::Updater for HF compat
+      - Resources
+        - fixed misisng Makefiles for Execution/Resources code
+      - Thread
+        - rewrite using jthread/stop_token (where available)
+        - #if __cpp_lib_jthread cuz libc++ still doesnt support jthread
+        - new Thread::GetCurrent() function
+        - cleanups - but especially to Thread rep fInterruptionState_ code - now not using thread_local variable, but intead atomic part of weak_ptr current thread (which is now new htread local variable)
+        - new utility Thread::GetCurrentThreadStopToken
+        - simplified Interrupt flag handling in Thread code - now boolean rather than containing redundant data
+        - tighten timeline on SuppressInterruptionInContext for initial fRefCountBumpedEvent_
+        coding
+        - Improved ToString() reporitng
+        - stop_callback stopCallback in threadmain tweaks
+        - assertion and comment cleanups
+        - lose mutex on fAccessSTDThreadMutex_ - did more harm than good
+        - fixed POSIX-only ThreadMain_ bug - with incRefCnt smart ptr
+        - new Thread::IsCurrentThreadInterruptible ()
+        - Simplified Ptr::AbortAndWaitForDoneUntil - so just calls abort/wait. But hten had to fix serious bug with condition variable code - processing new stop tokens (tricky case); and commented out one bit of POSIX thread code for interupt handling I think no longer needed (must test; commented)
+        - Cleanup (orthoganal more) Thread::New overloads
+        - ***not backward compatible*** - lose Thread::Interrupt and InterruptException support; only support AbortException and Abort(); removed call IgnoreExceptionsExceptThreadInterruptForCall and replace with IgnoreExceptionsExceptThreadAbortForCall; Documented rationale in Thread.h
+        - Thread wrap fSavedExeption_ in Syncrhonized<> to avoid warnings in use from DbgTrace calls (could in principle be called elsewhere is why we must fix)
+      - ThreadPool
+        - ThreadPool: many small cleanups; and incompatible change to GetTasks () - returning Collection<TaskInfo> - describing stats about tasks (more to come here); and better dbgtrace logging and other small docs cleanups
+        - threadpool - changed default CTOR so defaults to thread::hardware_concurrency () poolsize
+        - draft support for Threadpool Task names, and other docs cleanups
+        - simplified internals of ThreadPool task get next, and better supproted tracking tasknames
+        - draft support for collecting minimal threadpool statistics
+        - More small celanups to ThreadPool code - mostly MyRunnable_ with less abstraction/data hiding - really part of ThreadPool logic (due to locking policies)
+      - WaitableEvent:
+        - GetIsSet method and refined PeekIsSet tonotwait
+        - Set methnow now uses MutateDataNotifyAll
+        - slightly incompatible changes versus Stroika 2.1 - WaitableEvent WaitQuietly and WaitUntilQuietly now return WaitStatus instead of bool and deprecated kWaitQuietlyTimeoutResult kWaitQuietlySetResult (which basically acted as the enums)
+        - qExecution_WaitableEvent_SupportWaitForMultipleObjects now defaults off; 
+        - WaitableEvent no longer supports AutoReset events - but instead has new 'AndReset' APIs
+    - IO
+      - Filesystem
+        - TemporaryFile
+          - big cleanups 
+          - add missing TemporaryFile to Makefile
+          - significant cleanups to AppTmpFileManager (not backward comaptible but probably unused cuz was cruddy)
+          - GetTmpFile uses wide-open permissions now on unix created tmpfiles
+          - tune error handling in TemporarytFile AppTempFileManager
+      - Network
+        - Connection Transfer code no longer using quasi-namespace
+        - restructured Socket, ConnectionOrientedStreamSocket, ConnectionOrientedMasterSocket, ConnectionlessSocket use namespace instead of quasi-namespace classes
+    - Memory
+      - BLOB
+        - deprecated AttachApplicationLifetime and redid slightly the Attach code for BLOB making it a bit more flexible and better documented
+        - improved BLOB::Attach API
+      - Span
+        - Loosened requiresments on SpanReInterpretCast type arguments
+  - Frameworks
+- ThirdPartyComponents
+  - libcurl
+    - curl 8.3.0
+    - TRIED 8.4.0 but fails to build on linux so back to 8.3.0
+  - openssl
+    - 3.1.4
+  - sqlite
+    - 3.4.4
+  - Xerces
+    - makefile comments/cleanups for makefile - losing legacy workaround comments, lose MAKE-Trampoline BWA for Xercxes makefile - no longer needed and caused trouble with -flto=auto on unix , no longer needed so can simplify (ones for windows/visual studio)
+- Build System and Testing
+  - Build System
+    - new makefile feature WRITE_PREPROCESSOR_OUTPUT=1 - which may help reporting compiler bugs
+  - Scripts/Skel
+    - tweak Skel script
+    - lose VS2k19 support from Skel
+  - Makefiles
+    - remove a few unneeded CPP files from foundation
+    - + on make fules to address -flto=auto issue (finally figured out what this meant)
+    - restructure lib lines to use response file on WINDOZE due to command-line length being exceeded(occasionally depending on root dir name)
+    - hopefully workaround/address flakey failure building sqlite due to changes in DEFAULT_LIBRARY_GEN_LINE macro
+  - github actions
+    -  fixed missing cpp_version args in unix .github/workflows/build-N-test-Matrix.json
+    - lots of effort to debug why running out of space in some github actions, and tightened size of docker containers
+      and other tricks to workaround (see action itself for stuff removed)
+    - github action tweaks so we see if-no-files-found: warn on  actions/upload-artifact
+    - play with macos version used/settings
+    - cannot use macos-14 yet. add use of xcode 15 on macos 13
+    - update docs to reflect bulding and testing with xcode 15 (at least most regtests)
+    - append CXXFLAGS -O0 for building analyze github actions
+    - github actions windows use --jobs=2 to avoid occasionally run out of RAM compiling
+  - RegressionTests
+    - Debug::SetWeakAssertionHandler () - in regtests - to show the errors on the screen/stdout
+    - Bullet proof performance regtest for missing files (so works on raspberrypi)
+    - new  RegressionTest25_AbortNotYetStartedThread_ regtest
+    - cleanup threads regtest
+    - draft regregression test DoSkelTest
+    - cleanup cryto regtest a bit, and workaround issues running ASAN/crypto on raspi
+  - Sanitizers
+    - fixed memory alignment bug found by ubsan (I think)
+    - remove one apparently no longer needed tsan workaround (and document one still needed)
+    - Added tean supression for pthread_mutex_unlock - believe TSAN bug
+    - big cleanup of qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy support (mostly renamed to qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy - separately fix / handle tsan case - big enuf change will require a bit ot testing to assure I did all teh scripting etc right; but TSAN on ubuntu 23.04 seems to work now and helgrind on same still fails (more testing to finetune)
+  - Valgrind
+    - Tweak regtests so run faster with valgrind memochgeck and better DbgTrace messages
+    - DeSupport helgrind
+      It appears too buggy with modern C++, and its been years since I found a bug because of its help. I spend all
+      my time working around its bugs. And TSAN seems to address the same purpose. Keep using memcheck for now (since setup
+      but not sure thats worth it anymore either, due to other google sanitizers).
+    - disable RegressionTest5_Aborting_ under valgrind cuz too slow (even memcheck)
+    - tweak timing of ubuntu valgrind memcheck test
 - Scripts
   - simplifiy ScriptsLib/RunInDockerEnvironment slightly since DNS workaorund not working anyhow
   - configure
@@ -27,228 +215,23 @@ especially those they need to be aware of when upgrading.
     - Minor configure cleanups, and placed workaround for Wstringop-overflow warning for g++11 in configure since didn't work with prama suppression
     - do Wno-maybe-uninitialized workaround in configure for g++13 as well
     - -Wno-tsan needed as linker flag with LTO on gcc/g++13
-
-
-- Build Systems
-  - Docker
-    - support Ubuntu (23.04 initiallly and then instead) 23.10 and cleanup unix docker containers to include fewer compilers we dont support (old clangs mostly)
-
-- Compilers supported
-  - g++-13 build added to github actions, and compiler bug defines and scripted in regtests
-  - Added configs to makefile for clang++-16
-  - desupport clang++-13 (since libstdc++ version 13 doesn't compile (at least boost build) with that version of clang++ - not my problme
-  - VS_17_7_5 in docker container for testing
-  - Compiler bug defines for xcode 15
-  - just check __GNUC__ not __GNUC_MINOR__ in compiler bug dversion detector
-
-
-- Library
-  - General
-    - Cleanup use of std::byte - imported in Stroika namespace mostly and lose most of the redundent specs
-    - Use [[nodiscard]] on many classes throughout Stroika to improve compiler warning reports
-    - use Characters::AllowMissingCharacterErrorsFlag::eIgnoreErrors in a few more calls to AsNarrowSDKString - as for logging / already doing exception reporitng - that orig expciotn more important than issues converting codepage of text in report - probably)
-  - Characters
-    - CodeCvt
-      - alignas in CodeCvt logic to possible fix issue that shows up on arm machine
-      - simplified a bit of fInvalidCharacterReplacementBytesBuf in CodeCvt in hopes gets past compiler (bug/issue) raspi - but at least cleaner/simpler
-    - String
-      - simplify and improve IConvertibleToString so not IConvertibleToString<char> (cuz that means String x = 3 would work; confusing with ovarloads
-      - Added String::find overload
-      - added String::back () helper
-      - Added String::front()
-    - StringBuilder
-      - StringBuilder data() method/overloads
-    - ToString
-      - minor cleanup to ToString() method for exception_ptr (handle nullcase better)
-  - Common
-    - new ReverseCompareOrder
-  - Configuration
-    - new concept INoThrowInvocable
-    - Allow perfect forwarding args to Immortalize() function
-    - Compiler bug defines
-      - qCompilerAndStdLib_ThreadLocalInlineDupSymbol_Buggy BWA
-      - Lose qCompilerAndStdLib_copy_warning_overflow_Buggy from header file, and instead workaround with -Wno-stringop-overflow in configure so can be added to LINK line - needed for link-time warnings
-      - qCompilerAndStdLib_lambdas_in_unevaluatedContext_warning_Buggy
-      - simplification of qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy bug define
-      - cleanups to qStroika_FeatureSupported_Valgrind
-      - new qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy bug define and workrounads, and Debug::kBuiltWithUndefinedBehaviorSanitizer cleanups/bug workarounds
-  - Database
-    - SQL
-      - ***not fully backward compatible*** - Database::SQL::Connection no longer quasi-namespace, but actual namespace, and did a bit of refactoring of its use of AssertExternallySynchronizedMutex
-      - ***not fully backward compatible*** - moved SQLite and OODBC Options to inside Connection namespace
-  - DataExchange
-    - Atom
-      - Atom<>::As<AtomInternalType> support
-      - Minor tweaks to Atom code: CTOR exactly AtomInternalType so no mismatch on convertibletostring CTOR; and a few noexcepts on constructors for Atom
-        And if const_evaluiated assertion cehck on one CTOR.
-    - XML
-      - cleanup Xerces/XML support - prepare to add more support
-      - Progress on XML DOM and Schema support (incomplete/untested)
-      - more substantial proccess on DOM/Scehma code for XML (still untested)
-      - react better to SAX-PARSE not available if ! qHasFeature_Xerces
-      - cleanup/start using new qStroika_Foundation_DataExchange_XML_Support XXX flags
-      - cleanup qStroika_Foundation_DataExchange_XML_SupportParsing usage
-      - more (new code) XML Schema cleans (port from old RFLLib code)
-  - Debug
-    - Trace
-      - Tweak DbgTrace code internals
-      - experiment with moduleInit instead of Immortalize due to warnings (no easy way to localize suppress in library code) leak warnings using it
-      - Make Debug::Emitter private
-      - **not fully backward compatible** replaced macro qDefaultTracingOn with qStroika_Foundation_Debug_Trace_DefaultTracingOn and qTraceToFile with qStroika_Foundation_Debug_Trace_DefaultTracingOn
-      - more cleanups to recent Debug Trace code
-    - check __cpp_lib_stacktrace >= 202011 and if present/valid, use that for Debug::BackTrace::Capture () API
-  - Execution
-    - Misc
-      - silence tsan warning from gcc about atomoc_thread_fence
-      - lose kEveryNTimes template version of CheckForInterruption - just asking for bugs (not interuption point when looks like one) and was not currently being used
-      - Execution::FinallySentry -> Execution::Private_::FinallySentry; and then Finally now uses new concept Configuration::INoThrowInvocable to assure argument lambda noexcept, and cleanup usage to comply
-    - BlockingQueue
-      - various cleanups (todos)
-      - new GetQueue () method
-      - Remove.. methods now throw Streams::EOFException on EOF, not TimeoutException
-      - Fixed serious bugs in condition variable usage (masked by earlier stop-ever-.25 seconds
-        crap in older ConditionVariable code)
-    - ConditionVariable
-      - many cleanups/changes, relating to new C++ 20 stop_token support, and others
-      - lose fThreadAbortCheckFrequency support
-      - fixed https://stroika.atlassian.net/browse/STK-993 - wait forever bug  (substantial changes to threadrep code)
-      - new kSupportsStopToken flag (cuz not all std::condition_variables support stop_token)
-      - ConditionVariable - use condition_variable_any instead of condition_variable by default (for stop_token support)
-      - now defaults conditionvariable template arg to condition_variable_any not condition_variable
-      - more docs on what is cancelation point
-      - major changes to wait_until() to support stop tokens (automatically)
-      - more ConditionVariable fixes for new stop-token coding and recent Thread abort simplifications
-    - ModuleInit module deprecated
-    - Progress
-      - Minor cleanups to ProgressMonitor::Updater for HF compat
-    - Resources
-      - fixed misisng Makefiles for Execution/Resources code
-    - Thread
-      - rewrite using jthread/stop_token (where available)
-      - #if __cpp_lib_jthread cuz libc++ still doesnt support jthread
-      - new Thread::GetCurrent() function
-      - cleanups - but especially to Thread rep fInterruptionState_ code - now not using thread_local variable, but intead atomic part of weak_ptr current thread (which is now new htread local variable)
-      - new utility Thread::GetCurrentThreadStopToken
-      - simplified Interrupt flag handling in Thread code - now boolean rather than containing redundant data
-      - tighten timeline on SuppressInterruptionInContext for initial fRefCountBumpedEvent_
-      coding
-      - Improved ToString() reporitng
-      - stop_callback stopCallback in threadmain tweaks
-      - assertion and comment cleanups
-      - lose mutex on fAccessSTDThreadMutex_ - did more harm than good
-      - fixed POSIX-only ThreadMain_ bug - with incRefCnt smart ptr
-      - new Thread::IsCurrentThreadInterruptible ()
-      - Simplified Ptr::AbortAndWaitForDoneUntil - so just calls abort/wait. But hten had to fix serious bug with condition variable code - processing new stop tokens (tricky case); and commented out one bit of POSIX thread code for interupt handling I think no longer needed (must test; commented)
-      - Cleanup (orthoganal more) Thread::New overloads
-      - ***not backward compatible*** - lose Thread::Interrupt and InterruptException support; only support AbortException and Abort(); removed call IgnoreExceptionsExceptThreadInterruptForCall and replace with IgnoreExceptionsExceptThreadAbortForCall; Documented rationale in Thread.h
-      - Thread wrap fSavedExeption_ in Syncrhonized<> to avoid warnings in use from DbgTrace calls (could in principle be called elsewhere is why we must fix)
-    - ThreadPool
-      - ThreadPool: many small cleanups; and incompatible change to GetTasks () - returning Collection<TaskInfo> - describing stats about tasks (more to come here); and better dbgtrace logging and other small docs cleanups
-      - threadpool - changed default CTOR so defaults to thread::hardware_concurrency () poolsize
-      - draft support for Threadpool Task names, and other docs cleanups
-      - simplified internals of ThreadPool task get next, and better supproted tracking tasknames
-      - draft support for collecting minimal threadpool statistics
-      - More small celanups to ThreadPool code - mostly MyRunnable_ with less abstraction/data hiding - really part of ThreadPool logic (due to locking policies)
-    - WaitableEvent:
-      - GetIsSet method and refined PeekIsSet tonotwait
-      - Set methnow now uses MutateDataNotifyAll
-      - slightly incompatible changes versus Stroika 2.1 - WaitableEvent WaitQuietly and WaitUntilQuietly now return WaitStatus instead of bool and deprecated kWaitQuietlyTimeoutResult kWaitQuietlySetResult (which basically acted as the enums)
-      - qExecution_WaitableEvent_SupportWaitForMultipleObjects now defaults off; 
-      - WaitableEvent no longer supports AutoReset events - but instead has new 'AndReset' APIs
-  - IO
-    - Filesystem
-      - TemporaryFile
-        - big cleanups 
-        - add missing TemporaryFile to Makefile
-        - significant cleanups to AppTmpFileManager (not backward comaptible but probably unused cuz was cruddy)
-        - GetTmpFile uses wide-open permissions now on unix created tmpfiles
-        - tune error handling in TemporarytFile AppTempFileManager
-    - Network
-      - Connection Transfer code no longer using quasi-namespace
-      - restructured Socket, ConnectionOrientedStreamSocket, ConnectionOrientedMasterSocket, ConnectionlessSocket use namespace instead of quasi-namespace classes
-  - Memory
-    - BLOB
-      - deprecated AttachApplicationLifetime and redid slightly the Attach code for BLOB making it a bit more flexible and better documented
-      - improved BLOB::Attach API
-    - Span
-      - Loosened requiresments on SpanReInterpretCast type arguments
-
-- ThirdPartyComponents
-  - libcurl
-    - curl 8.3.0
-    - TRIED 8.4.0 but fails to build on linux so back to 8.3.0
-  - openssl
-    - 3.1.4
-  - sqlite
-    - 3.4.4
-  - Xerces
-    - makefile comments/cleanups for makefile - losing legacy workaround comments, lose MAKE-Trampoline BWA for Xercxes makefile - no longer needed and caused trouble with -flto=auto on unix , no longer needed so can simplify (ones for windows/visual studio)
-
-- Makefiles
-  - remove a few unneeded CPP files from foundation
-  - + on make fules to address -flto=auto issue (finally figured out what this meant)
-  - restructure lib lines to use response file on WINDOZE due to command-line length being exceeded(occasionally depending on root dir name)
-  - hopefully workaround/address flakey failure building sqlite due to changes in DEFAULT_LIBRARY_GEN_LINE macro
-
-- github actions
-  -  fixed missing cpp_version args in unix .github/workflows/build-N-test-Matrix.json
-  - lots of effort to debug why running out of space in some github actions, and tightened size of docker containers
-    and other tricks to workaround (see action itself for stuff removed)
- - github action tweaks so we see if-no-files-found: warn on  actions/upload-artifact
- - play with macos version used/settings
-   - cannot use macos-14 yet. try xcode 15 on macos 13 (their example says can do 15.0-beta on macos13
-   - cleanup xcode 15 github actions
-   - update docs to reflect bulding and testing with xcode 15 (at least most regtests)
-  - append CXXFLAGS -O0 for building analyze github actions
-  - github actions windows use --jobs=2 to avoid occasionally run out of RAM compiling
-
-- RegressionTests
-  - Debug::SetWeakAssertionHandler () - in regtests - to show the errors on the screen/stdout
-  - Bullet proof performance regtest for missing files (so works on raspberrypi)
-
-
-- Cleanup docs (esp building docs) and lose project-files generation for windows on vs2k17/vs2k19
-
-- dont install clang++13 in docker containers cuz not supported (and running out of space on github actions sometimes)
-
--  STL\Compare deleted
-
-- Build System
-  - new makefile feature WRITE_PREPROCESSOR_OUTPUT=1 - which may help reporting compiler bugs
-
-- RegressionTests
-  - new  RegressionTest25_AbortNotYetStartedThread_ regtest
-  - cleanup threads regtest
-  - draft regregression test DoSkelTest
-  - cleanup cryto regtest a bit, and workaround issues running ASAN/crypto on raspi
-  - Valgrind
-    - Tweak regtests so run faster with valgrind memochgeck and better DbgTrace messages
-    - DeSupport helgrind
-      It appears too buggy with modern C++, and its been years since I found a bug because of its help. I spend all
-      my time working around its bugs. And TSAN seems to address the same purpose. Keep using memcheck for now (since setup
-      but not sure thats worth it anymore either, due to other google sanitizers).
-    - disable RegressionTest5_Aborting_ under valgrind cuz too slow (even memcheck)
-    - tweak timing of ubuntu valgrind memcheck test
-- Sanitizers
-  - fixed memory alignment bug found by ubsan (I think)
-  - remove one apparently no longer needed tsan workaround (and document one still needed)
-  - Added tean supression for pthread_mutex_unlock - believe TSAN bug
-  - big cleanup of qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy support (mostly renamed to qCompiler_HelgrindDoubleLockWithConditionVariables_Buggy - separately fix / handle tsan case - big enuf change will require a bit ot testing to assure I did all teh scripting etc right; but TSAN on ubuntu 23.04 seems to work now and helgrind on same still fails (more testing to finetune)
-
-- Supported Platform (regtests and docker builds)
-  - Ubuntu 23.10
-
-- lose clang++14 from ubuntu 23.10 cuz not working in too many ways - not worth debugging
-
- - Scripts/Skel
-   - tweak Skel script
-   - lose VS2k19 support from Skel
+  - Build Systems
+    - Docker
+      - support Ubuntu (23.04 initiallly and then instead) 23.10 and cleanup unix docker containers to include fewer compilers we dont support (old clangs mostly)
+  - Compilers supported
+    - g++-13 build added to github actions, and compiler bug defines and scripted in regtests
+    - Added configs to makefile for clang++-16
+    - desupport clang++-13 (since libstdc++ version 13 doesn't compile (at least boost build) with that version of clang++ - not my problme
+    - VS_17_7_5 in docker container for testing
+    - Compiler bug defines for xcode 15
+    - just check __GNUC__ not __GNUC_MINOR__ in compiler bug dversion detector
+    - dont install clang++13 in docker containers cuz not supported (and running out of space on github actions sometimes)
 
 #### Release-Validation
 - Compilers Tested/Supported
-  - g++ { 11, 12 }
-  - Clang++ { unix: 13, 14, 15; XCode: 14.3 }
-  - MSVC: { 17.7.4 }
+  - g++ { 11, 12, 13 }
+  - Clang++ { unix: 14, 15, 16; XCode: 14.3, 15.0 }
+  - MSVC: { 17.7.5 }
 - OS/Platforms Tested/Supported
   - Windows
     - Windows 11 version 22H2
@@ -257,10 +240,11 @@ especially those they need to be aware of when upgrading.
       - MSYS (msys2-base-x86_64-20230127.sfx.exe)
     - WSL v2
   - MacOS
-    - 13.0.1 - arm64/m1 chip
-  - Linux: { Ubuntu: [20.04, 22.04], Raspbian(cross-compiled) }
+    - 13 (on github actions)
+    - 14 - arm64/m1 chip
+  - Linux: { Ubuntu: [20.04, 22.04, 23.10], Raspbian(cross-compiled, MUST TARGET VERSIONX???) }
 - Hardware Tested/Supported
-  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled, DEBIABVERSION###), arm64 (macos/m1)
 - Sanitizers and Code Quality Validators
   - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
   - Valgrind (helgrind/memcheck)
@@ -270,11 +254,9 @@ especially those they need to be aware of when upgrading.
   - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
 - Known (minor) issues with regression test output
   - raspberrypi
-    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
 
-
-
------------
+---
 
 ### 3.0d3 {2023-10-01} {[diff](../../compare/v3.0d2...v3.0d3)}
 
