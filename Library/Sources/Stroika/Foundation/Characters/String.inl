@@ -269,7 +269,7 @@ namespace Stroika::Foundation::Characters {
         : inherited{mk_ (src)}
     {
     }
-    inline String::String (const Character& c)
+    inline String::String (Character c)
         : String{span{&c, 1}}
     {
     }

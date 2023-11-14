@@ -197,6 +197,7 @@ namespace Stroika::Foundation::Characters {
          *      @todo   basic_string_view<> UNICODE constructors - like char8_t etc, should also use STRINGCONSTANT code and avoid copying.
          */
         String ();
+        explicit String (Character c);
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         String (const CHAR_T* cString);
         template <Memory::ISpanT SPAN_OF_CHAR_T>
@@ -211,7 +212,6 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         String (const Iterable<CHAR_T>& src)
             requires (not Memory::ISpanT<CHAR_T>);
-        explicit String (const Character& c);
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
 
@@ -1624,7 +1624,7 @@ namespace Stroika::Foundation::Characters {
 
     // Some some docs/testing...
     static_assert (not IConvertibleToString<int>);
-    static_assert (not IConvertibleToString<char>);     // would have been sensible to allow, but easily generates confusing results: cuz that means String x = 3 would work; confusing with ovarloads)
+    static_assert (not IConvertibleToString<char>); // would have been sensible to allow, but easily generates confusing results: cuz that means String x = 3 would work; confusing with ovarloads)
     static_assert (IConvertibleToString<string>);
     static_assert (IConvertibleToString<wstring>);
     static_assert (IConvertibleToString<u8string>);
