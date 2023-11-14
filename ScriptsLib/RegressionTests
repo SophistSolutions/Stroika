@@ -457,7 +457,7 @@ if [ $INCLUDE_LOCAL_TESTS -eq 1 ]; then
 		echo "ScriptsLib/Skel --appRoot $USE_TEST_BASENAME-skel" >>$TEST_OUT_FILE 2>&1
 		rm -rf $USE_TEST_BASENAME-skel
 		ScriptsLib/Skel --appRoot $USE_TEST_BASENAME-skel >>$TEST_OUT_FILE 2>&1
-		echo -n "cd $USE_TEST_BASENAME-skel && make CONFIGURATION=Debug" 2>&1
+		echo -n "cd $USE_TEST_BASENAME-skel && make CONFIGURATION=Debug ... " 2>&1
 		echo "cd $USE_TEST_BASENAME-skel && make CONFIGURATION=Debug $PARALELLMAKEFLAG" >>$TEST_OUT_FILE 2>&1
 		(cd $USE_TEST_BASENAME-skel && make CONFIGURATION=Debug $PARALELLMAKEFLAG) >>$TEST_OUT_FILE 2>&1
 		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
