@@ -1624,7 +1624,7 @@ namespace Stroika::Foundation::Characters {
 
     // Some some docs/testing...
     static_assert (not IConvertibleToString<int>);
-    static_assert (not IConvertibleToString<char>);
+    static_assert (not IConvertibleToString<char>);     // would have been sensible to allow, but easily generates confusing results: cuz that means String x = 3 would work; confusing with ovarloads)
     static_assert (IConvertibleToString<string>);
     static_assert (IConvertibleToString<wstring>);
     static_assert (IConvertibleToString<u8string>);
