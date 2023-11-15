@@ -192,6 +192,8 @@ namespace Stroika::Foundation::Debug {
  *          }
  *          But using funny !! and || syntax to allow use in expressions
  *
+ *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false.
+ * 
  *  @see GetAssertionHandler
  *
  *  \hideinitializer
@@ -216,6 +218,8 @@ namespace Stroika::Foundation::Debug {
  *  @see GetAssertionHandler
  *  @see Assert
  *
+ *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false.
+ * 
  *  \hideinitializer
  */
 #define Require(c)                                                                                                                                            \
@@ -244,8 +248,8 @@ namespace Stroika::Foundation::Debug {
 #else
 
 #define WeakAssert(c) ((void)0)
-#define Assert(c) ((void)0)
-#define Require(c) ((void)0)
+#define Assert(c) (_ASSUME_ATTRIBUTE_ (c) (void) 0)
+#define Require(c) (_ASSUME_ATTRIBUTE_ (c) (void) 0)
 #define Ensure(c) ((void)0)
 
 #endif
