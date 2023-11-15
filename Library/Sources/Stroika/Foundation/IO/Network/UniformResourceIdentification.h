@@ -120,7 +120,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *          o   schemes are case-insensitive  @see https://tools.ietf.org/html/rfc3986#section-3.1
      */
-    class SchemeType : public String {
+    class [[nodiscard]] SchemeType : public String {
         using inherited = String;
 
     public:
@@ -181,7 +181,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *              note that when comparing hosts, if they are registered names, they are compared case insensitively.
      *              @see https://tools.ietf.org/html/rfc3986#section-6.2.2.1
      */
-    class Host {
+    class [[nodiscard]] Host {
     public:
         /**
          *  Technically accoridng to https://tools.ietf.org/html/rfc3986#section-3.2.2, the registered-name
@@ -315,7 +315,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *          Because https://tools.ietf.org/html/rfc3986 says nothing about case sensativity or comparing userInfo,
      *          These are compared as case-senstive strings.
      */
-    class UserInfo {
+    class [[nodiscard]] UserInfo {
     public:
         /**
          *  Note, though https://tools.ietf.org/html/rfc3986#section-3.2.1 allows for an empty UserInfo, we instead
@@ -406,7 +406,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
-    class Authority {
+    class [[nodiscard]] Authority {
     public:
         /**
          *  \todo https://stroika.atlassian.net/browse/STK-750
@@ -525,7 +525,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      * According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before doing % etc substitution, so support u8string overload.
      */
-    class Query {
+    class [[nodiscard]] Query {
     public:
         /**
          */
@@ -598,7 +598,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *
      *  This is mostly used INTERNALLY in parsing URLs, and probably should not be used otherwise.
      */
-    struct PCTEncodeOptions {
+    struct [[nodiscard]] PCTEncodeOptions {
         // From https://tools.ietf.org/html/rfc3986#appendix-A
         // sub-delims    = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
         // gen-delims    = ":" / "/" / "?" / "#" / "[" / "]" / "@"

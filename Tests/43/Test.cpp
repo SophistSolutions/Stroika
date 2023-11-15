@@ -4,22 +4,9 @@
 //  TEST    Foundation::IO::Network
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
-#if qHasFeature_ATLMFC
-#include <atlbase.h>
-#endif
-
-#include <Windows.h>
-
-#include <URLMon.h>
-#endif
-
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#if qPlatform_Windows
-#include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
-#endif
 #include "Stroika/Foundation/IO/Network/CIDR.h"
 #include "Stroika/Foundation/IO/Network/DNS.h"
 #include "Stroika/Foundation/IO/Network/Interface.h"
@@ -35,64 +22,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
-#if qPlatform_Windows && qHasFeature_ATLMFC
-namespace {
-    DISABLE_COMPILER_MSC_WARNING_START (6262)
-    void OLD_Cracker_ (const String& w, String* protocol, String* host, [[maybe_unused]] String* port, String* relPath, String* query)
-    {
-        using Stroika::Foundation::Execution::Platform::Windows::ThrowIfErrorHRESULT;
-        RequireNotNull (protocol);
-        RequireNotNull (host);
-        RequireNotNull (relPath);
-        RequireNotNull (query);
-
-        DWORD   ignr = 0;
-        wchar_t outBuf[10 * 1024];
-
-        String canonical;
-        ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR{w.As<wstring> ().c_str ()}, PARSE_CANONICALIZE, 0, outBuf,
-                                                   static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0));
-        canonical = outBuf;
-
-        {
-            size_t e = canonical.find (':');
-            if (e != String::npos) {
-                *protocol = canonical.SubString (0, e);
-            }
-        }
-
-        if (SUCCEEDED (::CoInternetParseUrl (CComBSTR{canonical.As<wstring> ().c_str ()}, PARSE_DOMAIN, 0, outBuf,
-                                             static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0))) {
-            *host = outBuf;
-        }
-
-        // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
-        {
-            String matchStr    = *protocol + L"://"sv + *host;
-            size_t startOfPath = canonical.Find (matchStr).value_or (String::npos);
-            if (startOfPath == String::npos) {
-                matchStr    = *protocol + L":"sv;
-                startOfPath = canonical.Find (matchStr).value_or (String::npos);
-            }
-            if (startOfPath == String::npos) {
-                startOfPath = canonical.length ();
-            }
-            else {
-                startOfPath += matchStr.length ();
-            }
-            *relPath = canonical.SubString (startOfPath);
-
-            size_t startOfQuery = relPath->find ('?');
-            if (startOfQuery != String::npos) {
-                *query = relPath->SubString (startOfQuery + 1);
-                relPath->erase (startOfQuery);
-            }
-        }
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (6262)
-}
-#endif
-
 namespace {
     namespace Test1_URI_ {
         namespace Private_ {
@@ -102,28 +31,27 @@ namespace {
                 using UniformResourceIdentification::Host;
                 VerifyTestResult ((Host{Network::V4::kLocalhost}.AsEncoded () == L"127.0.0.1"sv));
                 VerifyTestResult ((Host{InternetAddress{169, 254, 0, 1}}.AsEncoded () == L"169.254.0.1"sv));
-                VerifyTestResult ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncoded () == L"[fe80::44de:4247:5b76:ddc9]"sv));
-                VerifyTestResult (
-                    (Host::Parse (L"[fe80::44de:4247:5b76:ddc9]").AsInternetAddress () == InternetAddress{L"fe80::44de:4247:5b76:ddc9"}));
-                VerifyTestResult ((Host{L"www.sophists.com"}.AsEncoded () == L"www.sophists.com"sv));
-                VerifyTestResult ((Host{L"hello mom"}.AsEncoded () == L"hello%20mom"sv));
-                VerifyTestResult ((Host::Parse (L"hello%20mom") == Host{L"hello mom"}));
+                VerifyTestResult ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncoded () == "[fe80::44de:4247:5b76:ddc9]"sv));
+                VerifyTestResult ((Host::Parse ("[fe80::44de:4247:5b76:ddc9]"sv).AsInternetAddress () == InternetAddress{"fe80::44de:4247:5b76:ddc9"sv}));
+                VerifyTestResult ((Host{"www.sophists.com"}.AsEncoded () == "www.sophists.com"sv));
+                VerifyTestResult ((Host{"hello mom"}.AsEncoded () == L"hello%20mom"sv));
+                VerifyTestResult ((Host::Parse ("hello%20mom") == Host{"hello mom"}));
                 {
                     // negative tests - must throw
                     try {
-                        Host::Parse (L"%%%");
+                        (void)Host::Parse ("%%%");
                         VerifyTestResult (false); // must throw
                     }
                     catch (const runtime_error&) {
                     }
                     try {
-                        Host::Parse (L"%a");
+                        (void)Host::Parse (L"%a");
                         VerifyTestResult (false); // must throw
                     }
                     catch (const runtime_error&) {
                     }
                     try {
-                        Host::Parse (L"%ag");
+                        (void)Host::Parse (L"%ag");
                         VerifyTestResult (false); // must throw
                     }
                     catch (const runtime_error&) {
@@ -136,12 +64,12 @@ namespace {
                 Debug::TraceContextBumper ctx{"Test1_URI_::Private_::SimpleURITests_"};
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
-                    VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == L"localhost");
+                    VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "localhost");
                     VerifyTestResult (uri.GetAuthority ()->GetPort () == 1234);
                     VerifyTestResult (uri.As<String> () == L"http://localhost:1234");
                 }
                 {
-                    IO::Network::URI uri = IO::Network::URI::Parse (L"localhost:1234");
+                    IO::Network::URI uri = IO::Network::URI::Parse ("localhost:1234");
                     VerifyTestResult (not uri.GetAuthority ().has_value ()); // treated as a scheme
                     VerifyTestResult (uri.As<String> () == L"localhost:1234");
                 }
@@ -152,9 +80,9 @@ namespace {
                     VerifyTestResult (uri.As<String> () == L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
                 }
                 {
-                    IO::Network::URI uri = IO::Network::URI::Parse (L"/uri/#Related");
+                    IO::Network::URI uri = IO::Network::URI::Parse ("/uri/#Related");
                     VerifyTestResult (not uri.GetAuthority ().has_value ());
-                    VerifyTestResult (uri.As<String> () == L"/uri/#Related");
+                    VerifyTestResult (uri.As<String> () == "/uri/#Related");
                 }
                 {
                     // This behavior appears to meet the needs of my URL::eStroikaPre20a50BackCompatMode tests - so may work for Stroika - just replace its use with URI -- LGP 2019-04-04
@@ -186,48 +114,48 @@ namespace {
                 URI base = URI::Parse (L"http://a/b/c/d;p?q");
 
                 // https://tools.ietf.org/html/rfc3986#section-5.4.1
-                VerifyTestResult (base.Combine (URI::Parse (L"g:h")).As<String> () == L"g:h");
-                VerifyTestResult (base.Combine (URI::Parse (L"g")).As<String> () == L"http://a/b/c/g");
-                VerifyTestResult (base.Combine (URI::Parse (L"./g")).As<String> () == L"http://a/b/c/g");
-                VerifyTestResult (base.Combine (URI::Parse (L"/g")).As<String> () == L"http://a/g");
-                VerifyTestResult (base.Combine (URI::Parse (L"//g")).As<String> () == L"http://g");
-                VerifyTestResult (base.Combine (URI::Parse (L"?y")).As<String> () == L"http://a/b/c/d;p?y");
-                VerifyTestResult (base.Combine (URI::Parse (L"g?y")).As<String> () == L"http://a/b/c/g?y");
-                VerifyTestResult (base.Combine (URI::Parse (L"#s")).As<String> () == L"http://a/b/c/d;p?q#s");
-                VerifyTestResult (base.Combine (URI::Parse (L"g#s")).As<String> () == L"http://a/b/c/g#s");
-                VerifyTestResult (base.Combine (URI::Parse (L"g?y#s")).As<String> () == L"http://a/b/c/g?y#s");
-                VerifyTestResult (base.Combine (URI::Parse (L";x")).As<String> () == L"http://a/b/c/;x");
-                VerifyTestResult (base.Combine (URI::Parse (L"g;x")).As<String> () == L"http://a/b/c/g;x");
-                VerifyTestResult (base.Combine (URI::Parse (L"")).As<String> () == L"http://a/b/c/d;p?q");
-                VerifyTestResult (base.Combine (URI::Parse (L".")).As<String> () == L"http://a/b/c/");
-                VerifyTestResult (base.Combine (URI::Parse (L"./")).As<String> () == L"http://a/b/c/");
-                VerifyTestResult (base.Combine (URI::Parse (L"..")).As<String> () == L"http://a/b/");
-                VerifyTestResult (base.Combine (URI::Parse (L"../")).As<String> () == L"http://a/b/");
-                VerifyTestResult (base.Combine (URI::Parse (L"../g")).As<String> () == L"http://a/b/g");
-                VerifyTestResult (base.Combine (URI::Parse (L"../..")).As<String> () == L"http://a/");
-                VerifyTestResult (base.Combine (URI::Parse (L"../../")).As<String> () == L"http://a/");
-                VerifyTestResult (base.Combine (URI::Parse (L"../../g")).As<String> () == L"http://a/g");
+                VerifyTestResult (base.Combine (URI::Parse ("g:h")).As<String> () == L"g:h");
+                VerifyTestResult (base.Combine (URI::Parse ("g")).As<String> () == L"http://a/b/c/g");
+                VerifyTestResult (base.Combine (URI::Parse ("./g")).As<String> () == L"http://a/b/c/g");
+                VerifyTestResult (base.Combine (URI::Parse ("/g")).As<String> () == L"http://a/g");
+                VerifyTestResult (base.Combine (URI::Parse ("//g")).As<String> () == L"http://g");
+                VerifyTestResult (base.Combine (URI::Parse ("?y")).As<String> () == L"http://a/b/c/d;p?y");
+                VerifyTestResult (base.Combine (URI::Parse ("g?y")).As<String> () == L"http://a/b/c/g?y");
+                VerifyTestResult (base.Combine (URI::Parse ("#s")).As<String> () == L"http://a/b/c/d;p?q#s");
+                VerifyTestResult (base.Combine (URI::Parse ("g#s")).As<String> () == L"http://a/b/c/g#s");
+                VerifyTestResult (base.Combine (URI::Parse ("g?y#s")).As<String> () == L"http://a/b/c/g?y#s");
+                VerifyTestResult (base.Combine (URI::Parse (";x")).As<String> () == L"http://a/b/c/;x");
+                VerifyTestResult (base.Combine (URI::Parse ("g;x")).As<String> () == L"http://a/b/c/g;x");
+                VerifyTestResult (base.Combine (URI::Parse ("")).As<String> () == L"http://a/b/c/d;p?q");
+                VerifyTestResult (base.Combine (URI::Parse (".")).As<String> () == L"http://a/b/c/");
+                VerifyTestResult (base.Combine (URI::Parse ("./")).As<String> () == L"http://a/b/c/");
+                VerifyTestResult (base.Combine (URI::Parse ("..")).As<String> () == L"http://a/b/");
+                VerifyTestResult (base.Combine (URI::Parse ("../")).As<String> () == L"http://a/b/");
+                VerifyTestResult (base.Combine (URI::Parse ("../g")).As<String> () == L"http://a/b/g");
+                VerifyTestResult (base.Combine (URI::Parse ("../..")).As<String> () == L"http://a/");
+                VerifyTestResult (base.Combine (URI::Parse ("../../")).As<String> () == L"http://a/");
+                VerifyTestResult (base.Combine (URI::Parse ("../../g")).As<String> () == L"http://a/g");
 
                 // https://tools.ietf.org/html/rfc3986#section-5.4.2 Abnormal Examples
-                VerifyTestResult (base.Combine (URI::Parse (L"../../../g")).As<String> () == L"http://a/g");
-                VerifyTestResult (base.Combine (URI::Parse (L"../../../../g")).As<String> () == L"http://a/g");
-                VerifyTestResult (base.Combine (URI::Parse (L"/./g")).As<String> () == L"http://a/g");
-                VerifyTestResult (base.Combine (URI::Parse (L"/../g")).As<String> () == L"http://a/g");
-                VerifyTestResult (base.Combine (URI::Parse (L"g.")).As<String> () == L"http://a/b/c/g.");
-                VerifyTestResult (base.Combine (URI::Parse (L".g")).As<String> () == L"http://a/b/c/.g");
-                VerifyTestResult (base.Combine (URI::Parse (L"g..")).As<String> () == L"http://a/b/c/g..");
-                VerifyTestResult (base.Combine (URI::Parse (L"..g")).As<String> () == L"http://a/b/c/..g");
-                VerifyTestResult (base.Combine (URI::Parse (L"./../g")).As<String> () == L"http://a/b/g");
-                VerifyTestResult (base.Combine (URI::Parse (L"./g/.")).As<String> () == L"http://a/b/c/g/");
-                VerifyTestResult (base.Combine (URI::Parse (L"g/./h")).As<String> () == L"http://a/b/c/g/h");
-                VerifyTestResult (base.Combine (URI::Parse (L"g/../h")).As<String> () == L"http://a/b/c/h");
-                VerifyTestResult (base.Combine (URI::Parse (L"g;x=1/./y")).As<String> () == L"http://a/b/c/g;x=1/y");
-                VerifyTestResult (base.Combine (URI::Parse (L"g;x=1/../y")).As<String> () == L"http://a/b/c/y");
-                VerifyTestResult (base.Combine (URI::Parse (L"g?y/./x")).As<String> () == L"http://a/b/c/g?y/./x");
-                VerifyTestResult (base.Combine (URI::Parse (L"g?y/../x")).As<String> () == L"http://a/b/c/g?y/../x");
-                VerifyTestResult (base.Combine (URI::Parse (L"g#s/./x")).As<String> () == L"http://a/b/c/g#s/./x");
-                VerifyTestResult (base.Combine (URI::Parse (L"g#s/../x")).As<String> () == L"http://a/b/c/g#s/../x");
-                VerifyTestResult (base.Combine (URI::Parse (L"http:g")).As<String> () == L"http:g"); // strict interpretation "for strict parsers"
+                VerifyTestResult (base.Combine (URI::Parse ("../../../g")).As<String> () == L"http://a/g");
+                VerifyTestResult (base.Combine (URI::Parse ("../../../../g")).As<String> () == L"http://a/g");
+                VerifyTestResult (base.Combine (URI::Parse ("/./g")).As<String> () == L"http://a/g");
+                VerifyTestResult (base.Combine (URI::Parse ("/../g")).As<String> () == L"http://a/g");
+                VerifyTestResult (base.Combine (URI::Parse ("g.")).As<String> () == L"http://a/b/c/g.");
+                VerifyTestResult (base.Combine (URI::Parse (".g")).As<String> () == L"http://a/b/c/.g");
+                VerifyTestResult (base.Combine (URI::Parse ("g..")).As<String> () == L"http://a/b/c/g..");
+                VerifyTestResult (base.Combine (URI::Parse ("..g")).As<String> () == L"http://a/b/c/..g");
+                VerifyTestResult (base.Combine (URI::Parse ("./../g")).As<String> () == L"http://a/b/g");
+                VerifyTestResult (base.Combine (URI::Parse ("./g/.")).As<String> () == L"http://a/b/c/g/");
+                VerifyTestResult (base.Combine (URI::Parse ("g/./h")).As<String> () == L"http://a/b/c/g/h");
+                VerifyTestResult (base.Combine (URI::Parse ("g/../h")).As<String> () == L"http://a/b/c/h");
+                VerifyTestResult (base.Combine (URI::Parse ("g;x=1/./y")).As<String> () == L"http://a/b/c/g;x=1/y");
+                VerifyTestResult (base.Combine (URI::Parse ("g;x=1/../y")).As<String> () == L"http://a/b/c/y");
+                VerifyTestResult (base.Combine (URI::Parse ("g?y/./x")).As<String> () == L"http://a/b/c/g?y/./x");
+                VerifyTestResult (base.Combine (URI::Parse ("g?y/../x")).As<String> () == L"http://a/b/c/g?y/../x");
+                VerifyTestResult (base.Combine (URI::Parse ("g#s/./x")).As<String> () == L"http://a/b/c/g#s/./x");
+                VerifyTestResult (base.Combine (URI::Parse ("g#s/../x")).As<String> () == L"http://a/b/c/g#s/../x");
+                VerifyTestResult (base.Combine (URI::Parse ("http:g")).As<String> () == L"http:g"); // strict interpretation "for strict parsers"
             }
             void TestEmptyURI_ ()
             {
@@ -620,9 +548,9 @@ namespace {
                     catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
 #if qPlatform_Linux
                         if (e.code () == errc::no_such_file_or_directory) {
-                            Stroika::TestHarness::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " +
-                                                         Characters::ToString (current_exception ()))
-                                                            .c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
+                            Stroika::TestHarness::WarnTestIssue (
+                                (L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " + Characters::ToString (current_exception ()))
+                                    .c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
                             return;
                         }
 #endif
