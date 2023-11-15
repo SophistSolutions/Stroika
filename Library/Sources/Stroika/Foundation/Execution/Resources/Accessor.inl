@@ -16,29 +16,25 @@ namespace Stroika::Foundation::Execution::Resources {
      ************************************* Accessor *********************************
      ********************************************************************************
      */
-    inline Accessor::Accessor (const byte* start, const byte* end)
-        : fDataStart_{start}
-        , fDataEnd_{end}
+    inline Accessor::Accessor (span<const byte> s)
+        : fData_{s}
     {
-        Require (start != nullptr or (start == end));
-        Require (end != nullptr or (start == end));
-        Require (start <= end);
     }
     inline const byte* Accessor::begin () const
     {
-        return fDataStart_;
+        return fData_.data ();
     }
     inline const byte* Accessor::end () const
     {
-        return fDataEnd_;
+        return fData_.data () + fData_.size ();
     }
     inline size_t Accessor::size () const
     {
-        return fDataEnd_ - fDataStart_;
+        return fData_.size ();
     }
-    inline vector<byte> Accessor::GetData () const
+    inline span<const byte> Accessor::GetData () const
     {
-        return vector<byte> (fDataStart_, fDataEnd_);
+        return fData_;
     }
 
 }

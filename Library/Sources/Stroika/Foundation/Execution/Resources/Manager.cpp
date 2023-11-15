@@ -21,6 +21,6 @@ Accessor Manager::CheckedReadResource (const Name& name) const noexcept
     }
     catch (...) {
         AssertNotReached ();
-        return Accessor (nullptr, nullptr);
+        return Accessor{span<const byte>{}};
     }
 }

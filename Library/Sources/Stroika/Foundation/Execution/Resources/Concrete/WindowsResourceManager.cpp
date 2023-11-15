@@ -3,8 +3,7 @@
  */
 #include "../../../StroikaPreComp.h"
 
-#include "../../../Characters/SDKString.h"
-#include "../../../Configuration/Common.h"
+#include "../../../Common/Common.h"
 #include "../../../Memory/BlockAllocated.h"
 
 #include "../ResourceNotFoundException.h"
@@ -16,7 +15,7 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::Resources;
 using namespace Stroika::Foundation::Execution::Resources::Concrete;
 
-class WindowsResourceManager::Rep_ : public Manager::_IRep {
+class WindowsResourceManager::Rep_ final : public Manager::_IRep {
 private:
     HMODULE fModule_;
 
@@ -34,7 +33,7 @@ public:
                 const void* lr = ::LockResource (lglbl);
                 AssertNotNull (lr);
                 const byte* start = reinterpret_cast<const byte*> (lr);
-                return Manager::_mkAccessor (start, start + ::SizeofResource (fModule_, hres));
+                return Manager::_mkAccessor (span{start, ::SizeofResource (fModule_, hres)});
             }
         }
         Throw (ResourceNotFoundException::kThe);

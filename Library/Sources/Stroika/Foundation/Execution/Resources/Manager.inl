@@ -24,9 +24,9 @@ namespace Stroika::Foundation::Execution::Resources {
     {
         return fRep_->ReadResource (name);
     }
-    inline Accessor Manager::_mkAccessor (const byte* start, const byte* end)
+    inline Accessor Manager::_mkAccessor (span<const byte> s)
     {
-        return Accessor (start, end);
+        return Accessor{s};
     }
 
 }

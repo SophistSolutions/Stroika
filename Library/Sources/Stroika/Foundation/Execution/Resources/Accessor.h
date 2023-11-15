@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Execution::Resources {
      */
     class Accessor {
     private:
-        Accessor (const byte* start, const byte* end);
+        Accessor (span<const byte> s);
 
     public:
         nonvirtual const byte* begin () const;
@@ -30,13 +30,12 @@ namespace Stroika::Foundation::Execution::Resources {
 
     public:
         /*
-         * @todo    Consider different return value - streams? - or some new BLOB type.
+         * \note - In Stroika v2.1 and earlier, this returned a vector<byte>.
          */
-        nonvirtual vector<byte> GetData () const;
+        nonvirtual span<const byte> GetData () const;
 
     private:
-        const byte* fDataStart_;
-        const byte* fDataEnd_;
+        span<const byte> fData_;
 
     private:
         friend class Manager;
