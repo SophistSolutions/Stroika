@@ -57,10 +57,10 @@ namespace {
             static constexpr size_t CHUNK_ = 16384;
 
         public:
-            Streams::InputStream<Memory::byte>::Ptr fInStream_;
-            z_stream                                fZStream_{};
-            byte                                    fInBuf_[CHUNK_];
-            SeekOffsetType                          _fSeekOffset{};
+            Streams::InputStream<byte>::Ptr fInStream_;
+            z_stream                        fZStream_{};
+            byte                            fInBuf_[CHUNK_];
+            SeekOffsetType                  _fSeekOffset{};
             BaseRep_ (const Streams::InputStream<byte>::Ptr& in)
                 : fInStream_{in}
             {
