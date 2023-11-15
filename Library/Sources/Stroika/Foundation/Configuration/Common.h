@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Configuration {
 	 *	So use _ASSUME_ATTRIBUTE_ () to conditionaly use [[assume(X)]]
 	 */
 #if __has_cpp_attribute(assume)
-#define _ASSUME_ATTRIBUTE_(X) [[assume (X)]]
+#define _ASSUME_ATTRIBUTE_(X) [[assume (X)]];
 #else
 #define _ASSUME_ATTRIBUTE_(X)
 #endif
