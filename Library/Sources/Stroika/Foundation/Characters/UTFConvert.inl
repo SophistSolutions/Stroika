@@ -268,7 +268,7 @@ namespace Stroika::Foundation::Characters {
             const char8_t* e = b + s.size ();
             for (const char8_t* i = b; i < e;) {
                 auto n = NextCharacter (span<const char8_t>{i, e});
-                if (not n.has_value () or n > 2) [[unlikely]] {
+                if (not n.has_value () or *n > 2) [[unlikely]] {
                     return false;
                 }
                 i += *n;
