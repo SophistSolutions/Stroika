@@ -620,7 +620,7 @@ namespace {
                     catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
 #if qPlatform_Linux
                         if (e.code () == errc::no_such_file_or_directory) {
-                            TestHarness::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " +
+                            Stroika::TestHarness::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " +
                                                          Characters::ToString (current_exception ()))
                                                             .c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
                             return;
