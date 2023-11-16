@@ -393,6 +393,10 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
     [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
     FlushBufferedCharacters_ ();
     Time::DurationSecondsType curRelativeTime = Time::GetTickCount ();
+
+    //tmphack to test new zero-relative and timepoint code
+    curRelativeTime = Time::ToAppStartRelative (Time::New_GetTickCount ()).time_since_epoch ().count ();
+
     {
         char               buf[1024];
         Thread::IDType     threadID     = Execution::Thread::GetCurrentThreadID ();

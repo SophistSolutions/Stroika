@@ -82,6 +82,9 @@ namespace Stroika::Foundation::Time {
      */
     constexpr DurationSecondsType kInfinite = numeric_limits<DurationSecondsType>::infinity ();
 
+    DurationSecondsTimePoint FromAppStartRelative (const DurationSecondsTimePoint& tp);
+    DurationSecondsTimePoint ToAppStartRelative (const DurationSecondsTimePoint& tp);
+
 }
 
 /*

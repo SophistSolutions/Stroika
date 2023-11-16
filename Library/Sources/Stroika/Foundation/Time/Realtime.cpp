@@ -33,3 +33,23 @@ namespace Stroika::Foundation::Time::Private_ {
         return kFirstTC_;
     }
 }
+
+namespace {
+    inline DurationSecondsTimePoint::duration GetAppStartOffset_ ()
+    {
+        // @todo not sure this is right --LGP 2023-11-16 - at least if it is needs better comment/explanation...
+        static const DurationSecondsTimePoint kTimeAppStarted_ =
+            chrono::time_point_cast<DurationSecondsTimePoint::duration> (chrono::steady_clock::now ());
+        return kTimeAppStarted_.time_since_epoch ();
+    }
+}
+
+DurationSecondsTimePoint Time::FromAppStartRelative (const DurationSecondsTimePoint& tp)
+{
+    return tp + GetAppStartOffset_ ();
+}
+
+DurationSecondsTimePoint Time::ToAppStartRelative (const DurationSecondsTimePoint& tp)
+{
+    return tp - GetAppStartOffset_ ();
+}
