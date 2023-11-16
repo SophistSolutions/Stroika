@@ -33,6 +33,12 @@ namespace Stroika::Foundation::Time {
      */
     using DurationSecondsType = double;
 
+    // EXPERIMENTING - switch many uses of DurationSecondsType to one or the other...
+    using DurationSeconds          = chrono::duration<double>;
+    using DurationSecondsTimePoint = time_point<chrono::steady_clock, DurationSeconds>;
+    static_assert (sizeof (DurationSecondsType) == sizeof (DurationSeconds));
+    static_assert (sizeof (DurationSecondsType) == sizeof (DurationSecondsTimePoint));
+
     /**
      *  Computes the offset of the time_point from the beginning time for the given clock.
      *
