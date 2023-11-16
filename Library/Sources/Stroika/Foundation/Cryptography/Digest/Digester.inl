@@ -22,7 +22,9 @@ namespace Stroika::Foundation::Cryptography::Digest {
     template <typename ALGORITHM, typename RETURN_TYPE>
     inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const byte* from, const byte* to)
     {
+        #if qDebug
         Require (not fCompleted_);
+        #endif
         Require ((from == nullptr and to == nullptr) or (from != nullptr and from <= to));
         fDigesterAlgorithm_.Write (from, to);
     }

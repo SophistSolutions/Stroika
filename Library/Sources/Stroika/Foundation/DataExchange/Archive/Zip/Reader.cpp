@@ -2528,7 +2528,9 @@ private:
             this->zread_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, void* buf, uLong size) -> uLong {
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+                #if qDebug
                 Assert (myThis->fOpened_);
+                #endif
                 size_t sz = myThis->fInStream_.Read (reinterpret_cast<byte*> (buf), reinterpret_cast<byte*> (buf) + size);
                 Assert (sz <= size);
                 return static_cast<uLong> (sz);
@@ -2540,13 +2542,17 @@ private:
             this->ztell64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+                #if qDebug
                 Assert (myThis->fOpened_);
+                #endif
                 return myThis->fInStream_.GetOffset ();
             };
             this->zseek64_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream, ZPOS64_T offset, int origin) -> long {
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+                #if qDebug
                 Assert (myThis->fOpened_);
+                #endif
                 switch (origin) {
                     case ZLIB_FILEFUNC_SEEK_SET:
                         myThis->fInStream_.Seek (offset);
@@ -2575,14 +2581,18 @@ private:
             this->zerror_file = [] (voidpf opaqueStream, [[maybe_unused]] voidpf stream) -> int {
                 Require (opaqueStream == stream); // our use is one stream per zlib_filefunc64_def object
                 [[maybe_unused]] MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaqueStream);
+                #if qDebug
                 Assert (myThis->fOpened_);
+                #endif
                 return UNZ_OK; // @todo - see what this means?
             };
             this->opaque = this;
         }
         ~MyISeekInStream ()
         {
+            #if qDebug
             Assert (not fOpened_);
+            #endif
         }
     };
     MyISeekInStream fInSeekStream_;

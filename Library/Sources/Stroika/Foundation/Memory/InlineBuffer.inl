@@ -116,8 +116,10 @@ namespace Stroika::Foundation::Memory {
             Ensure (src.fSize_ == 0);
             Ensure (src.capacity () == BUF_SIZE);
         }
+        #if qDebug
         Ensure (this->size () == origSize);
         Ensure (this->capacity () == origCapacity);
+        #endif
     }
     template <typename T, size_t BUF_SIZE>
     inline InlineBuffer<T, BUF_SIZE>::~InlineBuffer ()
@@ -178,8 +180,10 @@ namespace Stroika::Foundation::Memory {
             Ensure (rhs.fSize_ == 0);
             Ensure (rhs.capacity () == BUF_SIZE);
         }
+        #if qDebug
         Ensure (this->size () == origFromSize);
         Ensure (this->capacity () == origFromCapacity);
+        #endif
         return *this;
     }
     template <typename T, size_t BUF_SIZE>

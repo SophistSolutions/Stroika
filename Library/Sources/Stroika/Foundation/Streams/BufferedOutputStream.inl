@@ -117,7 +117,9 @@ namespace Stroika::Foundation ::Streams {
             size_t oldCap = fBuffer_.capacity ();
 #endif
             fBuffer_.insert (fBuffer_.end (), start, start + copy2Buffer);
+            #if qDebug
             Assert (oldCap == fBuffer_.capacity ());
+            #endif
 
             Assert (size2WriteRemaining >= copy2Buffer);
             size2WriteRemaining -= copy2Buffer;
@@ -129,7 +131,9 @@ namespace Stroika::Foundation ::Streams {
                 Flush_ ();
                 Assert (fBuffer_.empty ());
             }
+            #if qDebug
             Assert (oldCap == fBuffer_.capacity ());
+            #endif
 
             // If the remaining will fit in the buffer, then buffer. But if it won't - no point in using the buffer - just write directly to avoid the copy.
             // And no point - even if equal to buffer size - since it won't save any writes...

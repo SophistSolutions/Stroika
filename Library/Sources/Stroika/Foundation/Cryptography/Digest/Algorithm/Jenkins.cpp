@@ -44,7 +44,9 @@ namespace {
  */
 void Algorithm::DigesterAlgorithm<Algorithm::Jenkins>::Write (const byte* start, const byte* end)
 {
+    #if qDebug
     Require (not fCompleted_);
+    #endif
     DoMore_ (&fData_, start, end);
 }
 

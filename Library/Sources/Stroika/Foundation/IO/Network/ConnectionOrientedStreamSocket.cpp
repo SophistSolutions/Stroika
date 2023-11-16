@@ -192,8 +192,8 @@ namespace {
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
 
-            Assert (fCurrentPendingReadsCount++ == 0);
 #if qDebug
+            Assert (fCurrentPendingReadsCount++ == 0);
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
 
@@ -211,11 +211,11 @@ namespace {
         virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-            Assert (fCurrentPendingReadsCount++ == 0);
 #if qDebug
+            Assert (fCurrentPendingReadsCount++ == 0);
             [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
-#if qPlatform_POSIX || qPlatform_Windows
+#if qPlatform_POSIX or qPlatform_Windows
             {
                 fd_set input;
                 FD_ZERO (&input);

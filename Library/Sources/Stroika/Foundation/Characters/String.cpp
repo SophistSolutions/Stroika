@@ -83,7 +83,9 @@ namespace {
             }
             Rep& operator= (span<const CHAR_T> s)
             {
+                #if qDebug
                 Require (fOutsandingIterators_ == 0);
+                #endif
                 if constexpr (is_same_v<CHAR_T, char> or is_same_v<CHAR_T, char8_t>) {
                     Require (Character::IsASCII (s));
                 }
@@ -1088,7 +1090,9 @@ bool String::StartsWith (const String& subString, CompareOptions co) const
     span<const Character>          subStrData = subString.GetData (&maybeIgnoreBuf1);
     span<const Character>          thisData   = GetData (&maybeIgnoreBuf2);
     bool                           result     = Character::Compare (thisData.subspan (0, subStrData.size ()), subStrData, co) == 0;
-    Assert (result == referenceResult);
+    #if qDebug
+    Ensure (result == referenceResult);
+    #endif
     return result;
 }
 
@@ -1120,7 +1124,9 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
     span<const Character>          subStrData = subString.GetData (&maybeIgnoreBuf1);
     span<const Character>          thisData   = GetData (&maybeIgnoreBuf2);
     bool                           result     = Character::Compare (thisData.subspan (thisStrLen - subStrLen), subStrData, co) == 0;
-    Assert (result == referenceResult);
+#if qDebug
+    Ensure (result == referenceResult);
+    #endif
     return result;
 }
 

@@ -224,9 +224,11 @@ namespace Stroika::Foundation::Traversal {
     inline REP_SUB_TYPE& Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
     {
         EnsureNotNull (fRepReference_);
+    #if qDebug
         EnsureNotNull (fIterableEnvelope_);
         EnsureNotNull (fIterableEnvelope_->_fRep);
         Ensure (fIterableEnvelope_->_fRep.use_count () == 1);
+        #endif
         return *fRepReference_;
     }
 
@@ -411,17 +413,21 @@ namespace Stroika::Foundation::Traversal {
         if (useIterableSize) {
 #if qDebug
             auto re{rhs.end ()};
-#endif
             Assert ((li != le) == (ri != re)); // cuz same length, and this requires size cannot change during call
+#endif
             while (li != le) {
                 if (not equalsComparer (*li, *ri)) {
                     return false;
                 }
                 ++li;
                 ++ri;
+#if qDebug
                 Assert ((li != le) == (ri != re)); // cuz same length, and this requires size cannot change during call
+#endif
             }
+#if qDebug
             Assert (li == le and ri == re);
+            #endif
             return true;
         }
         else {
