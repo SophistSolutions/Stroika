@@ -98,13 +98,13 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const shared_ptr<_IRep>& rep) noexcept
-        : inherited{(RequireNotNull (rep), rep)}
+        : inherited{(RequireExpression (rep != nullptr), rep)}
     {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (shared_ptr<_IRep>&& rep) noexcept
-        : inherited{(RequireNotNull (rep), move (rep))}
+        : inherited{(RequireExpression (rep != nullptr), move (rep))}
     {
         _AssertRepValidType ();
     }

@@ -42,13 +42,13 @@ namespace Stroika::Foundation::Containers {
 #endif
     template <typename T>
     inline Stack<T>::Stack (const shared_ptr<_IRep>& src) noexcept
-        : inherited{(RequireNotNull (src), src)}
+        : inherited{(RequireExpression (src != nullptr), src)}
     {
         _AssertRepValidType ();
     }
     template <typename T>
     inline Stack<T>::Stack (shared_ptr<_IRep>&& src) noexcept
-        : inherited{(RequireNotNull (src), move (src))}
+        : inherited{(RequireExpression (src != nullptr), move (src))}
     {
         _AssertRepValidType ();
     }

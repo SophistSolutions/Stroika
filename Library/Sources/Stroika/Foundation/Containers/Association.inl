@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (shared_ptr<_IRep>&& rep) noexcept
-        : inherited{(RequireNotNull (rep), move (rep))}
+        : inherited{(RequireExpression (rep != nullptr), move (rep))}
     {
         _AssertRepValidType ();
     }

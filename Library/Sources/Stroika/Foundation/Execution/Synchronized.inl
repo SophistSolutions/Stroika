@@ -369,7 +369,7 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const Synchronized* s, _ExternallyLocked)
-        : fT{(RequireNotNull (s), &s->fProtectedValue_)}
+        : fT{(RequireExpression (s != nullptr), &s->fProtectedValue_)}
     {
         RequireNotNull (s);
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -381,7 +381,7 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const Synchronized* s, ReadLockType_&& readLock)
-        : fT{(RequireNotNull (s), &s->fProtectedValue_)}
+        : fT{(RequireExpression (s != nullptr), &s->fProtectedValue_)}
         , fSharedLock_{move (readLock)}
     {
         RequireNotNull (s);
@@ -394,8 +394,8 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const Synchronized* s)
-        : fT{(RequireNotNull (s), &s->fProtectedValue_)}
-        , fSharedLock_{(RequireNotNull (s), s->fMutex_)}
+        : fT{(RequireExpression (s != nullptr), &s->fProtectedValue_)}
+        , fSharedLock_{(RequireExpression (s != nullptr), s->fMutex_)}
     {
         RequireNotNull (fT);
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_

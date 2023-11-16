@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Streams {
      */
     template <typename ELEMENT_TYPE>
     inline Stream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep) noexcept
-        : fRep_{(RequireNotNull (rep), rep)}
+        : fRep_{(RequireExpression (rep != nullptr), rep)}
         , fSeekable_{rep->IsSeekable ()}
     {
         RequireNotNull (rep);

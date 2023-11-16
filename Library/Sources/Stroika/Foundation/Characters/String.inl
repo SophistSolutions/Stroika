@@ -235,7 +235,7 @@ namespace Stroika::Foundation::Characters {
         _AssertRepValidType ();
     }
     inline String::String (shared_ptr<_IRep>&& rep) noexcept
-        : inherited{(RequireNotNull (rep), move (rep))}
+        : inherited{(RequireExpression (rep != nullptr), move (rep))}
     {
         _AssertRepValidType ();
     }

@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (_IRepSharedPtr&& src) noexcept
-        : inherited{(RequireNotNull (src), move (src))}
+        : inherited{(RequireExpression (src != nullptr), move (src))}
     {
         _AssertRepValidType ();
     }

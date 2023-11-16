@@ -543,7 +543,7 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
 template <>
 #endif
 String::String (const basic_string_view<char>& str)
-    : String{(Require (Character::IsASCII (span{str.data (), str.size ()})),
+    : String{(RequireExpression (Character::IsASCII (span{str.data (), str.size ()})),
               Memory::MakeSharedPtr<StringConstant_::Rep<ASCII>> (span{str.data (), str.size ()}))}
 {
 }

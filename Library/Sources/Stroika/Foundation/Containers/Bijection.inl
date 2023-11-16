@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (shared_ptr<_IRep>&& src) noexcept
-        : inherited{(RequireNotNull (src), move (src))}
+        : inherited{(RequireExpression (src != nullptr), move (src))}
     {
         _AssertRepValidType ();
     }

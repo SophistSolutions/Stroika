@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers {
         TemporaryElementReference_ (const TemporaryElementReference_&) = default;
         TemporaryElementReference_ (TemporaryElementReference_&& from) = default;
         TemporaryElementReference_ (Sequence<X>* s, size_t i)
-            : fV{(RequireNotNull (s), s)}
+            : fV{(RequireExpression (s != nullptr), s)}
             , fIndex{i}
         {
         }
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers {
         TemporaryElementReference_ (const TemporaryElementReference_&) = default;
         TemporaryElementReference_ (TemporaryElementReference_&&)      = default;
         TemporaryElementReference_ (Sequence<X>* s, size_t i)
-            : X{(RequireNotNull (s), s->GetAt (i))}
+            : X{(RequireExpression (s != nullptr), s->GetAt (i))}
             , fV{s}
             , fIndex{i}
         {
@@ -120,13 +120,13 @@ namespace Stroika::Foundation::Containers {
 #endif
     template <typename T>
     inline Sequence<T>::Sequence (const shared_ptr<_IRep>& rep) noexcept
-        : inherited{(RequireNotNull (rep), rep)}
+        : inherited{(RequireExpression (rep != nullptr), rep)}
     {
         _AssertRepValidType ();
     }
     template <typename T>
     inline Sequence<T>::Sequence (shared_ptr<_IRep>&& rep) noexcept
-        : inherited{(RequireNotNull (rep), move (rep))}
+        : inherited{(RequireExpression (rep != nullptr), move (rep))}
     {
         _AssertRepValidType ();
     }

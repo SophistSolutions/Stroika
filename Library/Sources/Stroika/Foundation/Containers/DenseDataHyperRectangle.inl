@@ -25,13 +25,13 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename... INDEXES>
     inline DenseDataHyperRectangle<T, INDEXES...>::DenseDataHyperRectangle (const shared_ptr<typename inherited::_IRep>& src) noexcept
-        : inherited{(RequireNotNull (src), src)}
+        : inherited{(RequireExpression (src != nullptr), src)}
     {
         this->_AssertRepValidType ();
     }
     template <typename T, typename... INDEXES>
     inline DenseDataHyperRectangle<T, INDEXES...>::DenseDataHyperRectangle (shared_ptr<typename inherited::_IRep>&& src) noexcept
-        : inherited{(RequireNotNull (src), move (src))}
+        : inherited{(RequireExpression (src != nullptr), move (src))}
     {
         this->_AssertRepValidType ();
     }

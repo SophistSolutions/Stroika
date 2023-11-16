@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename... INDEXES>
     inline DataHyperRectangle<T, INDEXES...>::DataHyperRectangle (shared_ptr<_IRep>&& src) noexcept
-        : inherited{(RequireNotNull (src), move (src))}
+        : inherited{(RequireExpression (src != nullptr), move (src))}
     {
         _AssertRepValidType ();
     }

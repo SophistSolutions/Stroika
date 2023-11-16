@@ -29,13 +29,13 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (const shared_ptr<_IRep>& src) noexcept
-        : inherited{(RequireNotNull (src), src)}
+        : inherited{(RequireExpression (src != nullptr), src)}
     {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (shared_ptr<_IRep>&& src) noexcept
-        : inherited{(RequireNotNull (src), move (src))}
+        : inherited{(RequireExpression (src != nullptr), move (src))}
     {
         _AssertRepValidType ();
     }

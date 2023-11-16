@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Collection<T>::Collection (shared_ptr<_IRep>&& src) noexcept
-        : inherited{(RequireNotNull (src), move (src))}
+        : inherited{(RequireExpression (src != nullptr), move (src))}
     {
         _AssertRepValidType ();
     }

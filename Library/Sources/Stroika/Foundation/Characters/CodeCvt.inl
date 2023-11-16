@@ -730,7 +730,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const shared_ptr<IRep>& rep)
-        : fRep_{(RequireNotNull (rep), rep)}
+        : fRep_{(RequireExpression (rep != nullptr), rep)}
     {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>

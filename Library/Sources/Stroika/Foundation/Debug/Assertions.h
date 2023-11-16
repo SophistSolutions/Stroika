@@ -184,13 +184,20 @@ namespace Stroika::Foundation::Debug {
 #endif
 
 /**
+ *  \def AssertExpression(c)
+ *
+ *  Like Assert(), but without [[assume]] support, and in the form of an expression
+ */
+#define AssertExpression(c)                                                                                                                \
+    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+
+/**
  *  \def Assert(c)
  *
  *  \note   logically
  *          if (!(c)) {
  *              Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
  *          }
- *          But using funny !! and || syntax to allow use in expressions
  *
  *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false.
  * 
@@ -198,33 +205,29 @@ namespace Stroika::Foundation::Debug {
  *
  *  \hideinitializer
  */
-#define Assert(c)                                                                                                                          \
-    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
+#define Assert(c) AssertExpression (c);
 
 /**
- *  \def Ensure(c)
- *
- *  @see GetAssertionHandler
- *  @see Assert
- *
- *  \hideinitializer
+ *  \def EnsureExpression(c) - alias for AssertExpression(), but with a different message, and used to declare an assertion promised about the state at the end of a function.
  */
-#define Ensure(c)                                                                                                                          \
+#define EnsureExpression(c)                                                                                                                \
     (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
 
+    /**
+  *  \def Ensure(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion promised about the state at the end of a function.
+  */
+#define Ensure(c) EnsureExpression (c);
+
 /**
- *  \def Require(c)
- *
- *  @see GetAssertionHandler
- *  @see Assert
- *
- *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false.
- * 
- *  \hideinitializer
+ *  \def RequireExpression(c) - alias for AssertExpression(), but with a different message: used at the start of a function to declare calling conventions - expected arguments to the function
  */
-#define Require(c)                                                                                                                                            \
+#define RequireExpression(c)                                                                                                                                  \
     (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), \
                false))
+
+/**
+ */
+#define Require(c) RequireExpression (c);
 
 /**
  *  \brief  A WeakAssert() is for things that arent guaranteed to be true, but are overwhelmingly likely to be true. Use this so you see debug logs of rare events you way want to dig into, but don't want to fail/crash the program just because it fails.
@@ -248,11 +251,12 @@ namespace Stroika::Foundation::Debug {
 #else
 
 #define WeakAssert(c) ((void)0)
-//#define Assert(c) (_ASSUME_ATTRIBUTE_ (c) (void) 0)
-//#define Require(c) (_ASSUME_ATTRIBUTE_ (c) (void) 0)
-#define Assert(c) (_ASSUME_ATTRIBUTE_ (c) (void) 0)
-#define Require(c) (_ASSUME_ATTRIBUTE_ (c) (void) 0)
-#define Ensure(c) ((void)0)
+#define AssertExpression(c) ((void)0)
+#define Assert(c) _ASSUME_ATTRIBUTE_ (c);
+#define RequireExpression(c) ((void)0)
+#define Require(c) _ASSUME_ATTRIBUTE_ (c);
+#define EnsureExpression(c) ((void)0)
+#define Ensure(c) _ASSUME_ATTRIBUTE_ (c);
 
 #endif
 

@@ -77,13 +77,13 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     inline MultiSet<T, TRAITS>::MultiSet (const shared_ptr<_IRep>& rep) noexcept
-        : inherited{(RequireNotNull (rep), rep)}
+        : inherited{(RequireExpression (rep != nullptr), rep)}
     {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
     inline MultiSet<T, TRAITS>::MultiSet (shared_ptr<_IRep>&& rep) noexcept
-        : inherited{(RequireNotNull (rep), move (rep))}
+        : inherited{(RequireExpression (rep != nullptr), move (rep))}
     {
         _AssertRepValidType ();
     }
