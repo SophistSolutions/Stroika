@@ -391,9 +391,15 @@ namespace Stroika::Foundation::Debug {
 
 #else
 
+#if __cpp_lib_unreachable < 202202
 #define AssertNotReached()
 #define EnsureNotReached()
 #define RequireNotReached()
+#else
+#define AssertNotReached() unreachable ()
+#define EnsureNotReached() unreachable ()
+#define RequireNotReached() unreachable ()
+#endif
 #define WeakAsserteNotReached()
 
 #define AssertNotImplemented()
