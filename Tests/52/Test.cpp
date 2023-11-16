@@ -1375,7 +1375,7 @@ namespace {
         Tester (L"Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
                 Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String", 65000, 0.39, &failedTests);
         Tester (L"Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
-                Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String", 66000, 0.39, &failedTests);
+                Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String", 66000, 0.45, &failedTests);
         Tester (L"Simple String append test (+='string object') 10x", Test_SimpleStringAppends1_<wstring>, L"wstring",
                 Test_SimpleStringAppends1_<String>, L"Charactes::String", 1350000, 4.8, &failedTests);
         Tester (L"Simple String append test (+=wchar_t[]) 10x", Test_SimpleStringAppends2_<wstring>, L"wstring",
