@@ -124,7 +124,9 @@ void StyleMarkerSummarySink::SplitIfNeededAt (size_t markerPos)
             RunElement newElt = *i;
             (*i).fLength      = markerPos - eltStart;
             newElt.fLength    = eltEnd - markerPos;
+#if qDebug
             Assert (oldLength == (*i).fLength + newElt.fLength);
+#endif
             Assert ((*i).fLength != 0);
             Assert (newElt.fLength != 0);
             fBuckets.insert (i + 1, newElt);

@@ -754,8 +754,10 @@ vector<StandardStyledTextImager::InfoSummaryRecord> StandardStyledTextIOSrcStrea
 #endif
     Require (effectiveFrom >= fSelStart);
     Require (effectiveFrom <= fSelEnd);
+#if qDebug
     Require (effectiveTo >= fSelStart);
     Require (effectiveTo <= fSelEnd);
+#endif
     return (fStyleRunDatabase->GetStyleInfo (effectiveFrom, len));
 }
 

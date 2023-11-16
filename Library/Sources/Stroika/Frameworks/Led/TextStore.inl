@@ -414,12 +414,16 @@ namespace Stroika::Frameworks::Led {
                 return end == start;
             }
             else {
+#if qDebug
                 Ensure (oldAlgorithmAnswer == true);
+#endif
                 return true;
             }
         }
         else {
+#if qDebug
             Ensure (oldAlgorithmAnswer == false);
+#endif
             return false;
         }
     }

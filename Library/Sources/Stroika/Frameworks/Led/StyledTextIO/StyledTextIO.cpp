@@ -813,7 +813,7 @@ void StyledTextIOWriterSinkStream_FileDescriptor::UpdateEOF ()
 #if qPlatform_MacOS
     Led_ThrowOSErr (::SetEOF (fFileDescriptor, fCurSeekPos));
 #else
-    Assert (false); // NYI
+    AssertNotImplemented ();
 #endif
 }
 
@@ -822,7 +822,6 @@ void StyledTextIOWriterSinkStream_FileDescriptor::UpdateEOF ()
  ***************************** StyledTextIOReader *******************************
  ********************************************************************************
  */
-
 string StyledTextIOReader::GrabString (size_t from, size_t to)
 {
     size_t onEntrySeekPos = GetSrcStream ().current_offset ();

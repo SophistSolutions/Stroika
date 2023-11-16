@@ -4605,9 +4605,9 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
         size_t nCellsWritten = 0;
 #endif
         for (size_t c = 0; c < columns; ++c) {
-            unique_ptr<StyledTextIOWriter::SrcStream> srcStream = unique_ptr<StyledTextIOWriter::SrcStream> (table->MakeCellSubSrcStream (r, c));
+            unique_ptr<StyledTextIOWriter::SrcStream> srcStream = unique_ptr<StyledTextIOWriter::SrcStream>{table->MakeCellSubSrcStream (r, c)};
             if (srcStream.get () != nullptr) {
-                WriterContext                                       wc (writerContext, *srcStream.get ());
+                WriterContext                                       wc{writerContext, *srcStream.get ()};
                 vector<StandardStyledTextImager::InfoSummaryRecord> x = fStyleRunSummary;
                 fStyleRunSummary.clear ();
                 AssureStyleRunSummaryBuilt (wc);
@@ -4619,7 +4619,9 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
 #endif
             }
         }
+#if qDebug
         Assert (nCellsWritten == cellInfos.size ()); //  must write same number of cells as celldefs
+#endif
         WriteTag ("row");
         write ("\r\n"); // should write a newline every once in a while...
         // according to RTF spec
@@ -4632,14 +4634,8 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
 
 bool StyledTextIOWriter_RTF::PossiblyWriteUnknownRTFEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
 {
-// Now see if it is an RTF embedding, and if so, write it out.
-#if qNoDeclaringVarInsideCondition
-    RTFIO::UnknownRTFEmbedding* ee;
-    if (ee = dynamic_cast<RTFIO::UnknownRTFEmbedding*> (embedding))
-#else
-    if (RTFIO::UnknownRTFEmbedding* ee = dynamic_cast<RTFIO::UnknownRTFEmbedding*> (embedding))
-#endif
-    {
+    // Now see if it is an RTF embedding, and if so, write it out.
+    if (RTFIO::UnknownRTFEmbedding* ee = dynamic_cast<RTFIO::UnknownRTFEmbedding*> (embedding)) {
         // Since UnknownRTFEmbedding is a simple typedef, it will map to any undefiend object embedding.
         // Which is fine, its what we want. But we only want to insert the ones which we created from RTF.
         // This is important cuz others probably don't actually contain valid rtf. And important to tkae
@@ -4656,14 +4652,8 @@ bool StyledTextIOWriter_RTF::PossiblyWriteUnknownRTFEmbedding (WriterContext& /*
 
 bool StyledTextIOWriter_RTF::PossiblyWriteOLERTFEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
 {
-// Now see if it is an OLE RTF embedding, and if so, write it out.
-#if qNoDeclaringVarInsideCondition
-    RTFIO::RTFOLEEmbedding* anRTFOLEEmbedding;
-    if (anRTFOLEEmbedding = dynamic_cast<RTFIO::RTFOLEEmbedding*> (embedding))
-#else
-    if (RTFIO::RTFOLEEmbedding* anRTFOLEEmbedding = dynamic_cast<RTFIO::RTFOLEEmbedding*> (embedding))
-#endif
-    {
+    // Now see if it is an OLE RTF embedding, and if so, write it out.
+    if (RTFIO::RTFOLEEmbedding* anRTFOLEEmbedding = dynamic_cast<RTFIO::RTFOLEEmbedding*> (embedding)) {
         // Get encoded format of the object in OLE1 OLESTREAM format
         size_t nBytes;
         byte*  theDataBytes = nullptr;
@@ -4715,14 +4705,8 @@ bool StyledTextIOWriter_RTF::PossiblyWriteOLERTFEmbedding (WriterContext& /*writ
 #define qWriteAsDIB 1
 bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
 {
-// Now see if it is an OLE RTF embedding, and if so, write it out.
-#if qNoDeclaringVarInsideCondition
-    StandardDIBStyleMarker* aPictEmbedding;
-    if (aPictEmbedding = dynamic_cast<StandardDIBStyleMarker*> (embedding))
-#else
-    if (StandardDIBStyleMarker* aPictEmbedding = dynamic_cast<StandardDIBStyleMarker*> (embedding))
-#endif
-    {
+    // Now see if it is an OLE RTF embedding, and if so, write it out.
+    if (StandardDIBStyleMarker* aPictEmbedding = dynamic_cast<StandardDIBStyleMarker*> (embedding)) {
         write ("\r\n");
         write ("{");
         WriteTag ("pict");

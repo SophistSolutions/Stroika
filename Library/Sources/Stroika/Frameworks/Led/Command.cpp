@@ -82,7 +82,9 @@ SingleUndoCommandHandler::SingleUndoCommandHandler ()
 
 void SingleUndoCommandHandler::Post (Command* newCommand)
 {
+#if qDebug
     Require (not fDoingCommands);
+#endif
     IdleManager::NonIdleContext nonIdleContext;
     delete fLastCmd;
     fLastCmd = newCommand;
@@ -222,7 +224,9 @@ MultiLevelUndoCommandHandler::~MultiLevelUndoCommandHandler ()
 void MultiLevelUndoCommandHandler::Post (Command* newCommand)
 {
     RequireNotNull (newCommand);
+#if qDebug
     Require (not fDoingCommands);
+#endif
 
     IdleManager::NonIdleContext nonIdleContext;
 

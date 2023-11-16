@@ -802,11 +802,13 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
         Characters::Platform::Windows::PlatformCodePageConverter{fCodePage}.MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt,
                                                                                             win32TstBuf.data (), &win32TstCharCnt);
 
-        // SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -
-        // used for bad conversions. Reason is cuz for characters that don't map - our table and
-        // the system table can differ in how they map depending on current OS code page.
+// SPR#0813 (and SPR#1277) - assert this produces the right result OR a '?' character -
+// used for bad conversions. Reason is cuz for characters that don't map - our table and
+// the system table can differ in how they map depending on current OS code page.
+#if qDebug
         Assert ((win32TstCharCnt + countOfBOMCharsAdded) == *outCharCnt or outChars[0] == '?');
         Assert (memcmp (win32TstBuf.data (), outChars + countOfBOMCharsAdded, win32TstCharCnt) == 0 or outChars[0] == '?');
+#endif
     }
 #endif
 }

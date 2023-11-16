@@ -4487,9 +4487,11 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (WordProcessor* wp,
 
 WordProcessorTextIOSinkStream::~WordProcessorTextIOSinkStream ()
 {
+#if qDebug
     Assert (fTableOpenLevel == 0);
     Assert (not fTableRowOpen);
     Assert (not fTableCellOpen);
+#endif
     try {
         Flush ();
         Ensure (GetCachedTextSize () == 0); // If flush succeeds, then these must be zero
@@ -6970,7 +6972,9 @@ void Table::GetRealCell (size_t* row, size_t* column) const
                 changed = true;
 #endif
             }
+#if qDebug
             Assert (changed);
+#endif
         }
     }
 }
