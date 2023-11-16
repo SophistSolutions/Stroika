@@ -114,6 +114,10 @@ namespace Stroika::Foundation::Time {
             return 0;
         }
     }
+    inline DurationSecondsTimePoint New_GetTickCount () noexcept
+    {
+        return chrono::steady_clock::now ();
+    }
 
 }
 

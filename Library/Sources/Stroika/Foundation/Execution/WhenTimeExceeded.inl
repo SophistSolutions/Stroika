@@ -17,22 +17,22 @@ namespace Stroika::Foundation::Execution {
      ************************ Execution::WhenTimeExceeded ***************************
      ********************************************************************************
      */
-    inline WhenTimeExceeded::WhenTimeExceeded ([[maybe_unused]] Time::DurationSecondsType callIfTakesLongerThan, [[maybe_unused]] nullptr_t f)
+    inline WhenTimeExceeded::WhenTimeExceeded ([[maybe_unused]] Time::DurationSeconds callIfTakesLongerThan, [[maybe_unused]] nullptr_t f)
         : fRunIfTakesTooLong_{nullptr}
     {
     }
-    inline WhenTimeExceeded::WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void (Time::DurationSecondsType)>& f)
+    inline WhenTimeExceeded::WhenTimeExceeded (Time::DurationSeconds callIfTakesLongerThan, const function<void (Time::DurationSeconds)>& f)
         : fCallIfTakesLongerThan_{callIfTakesLongerThan}
         , fRunIfTakesTooLong_{f}
     {
         if (f != nullptr) {
-            fStartedAt_ = Time::GetTickCount ();
+            fStartedAt_ = Time::New_GetTickCount ();
         }
     }
     inline WhenTimeExceeded::~WhenTimeExceeded ()
     {
         if (fRunIfTakesTooLong_ != nullptr) {
-            Time::DurationSecondsType timeTaken = Time::GetTickCount () - fStartedAt_;
+            Time::DurationSeconds timeTaken = Time::New_GetTickCount () - fStartedAt_;
             if (timeTaken >= fCallIfTakesLongerThan_) {
                 IgnoreExceptionsForCall (fRunIfTakesTooLong_ (timeTaken));
             }

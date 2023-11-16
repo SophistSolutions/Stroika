@@ -55,10 +55,10 @@ namespace Stroika::Foundation::Debug {
      */
     class TimingTrace : private Execution::WhenTimeExceeded {
     public:
-        TimingTrace (Time::DurationSecondsType warnIfLongerThan = 0.0);
-        TimingTrace (const char* label, Time::DurationSecondsType warnIfLongerThan = 0.0);
-        TimingTrace (const wchar_t* label, Time::DurationSecondsType warnIfLongerThan = 0.0);
-        TimingTrace (const Characters::String& label, Time::DurationSecondsType warnIfLongerThan = 0.0);
+        TimingTrace (Time::DurationSeconds warnIfLongerThan = 0s);
+        TimingTrace (const char* label, Time::DurationSeconds warnIfLongerThan = 0s);
+        TimingTrace (const wchar_t* label, Time::DurationSeconds warnIfLongerThan = 0s);
+        TimingTrace (const Characters::String& label, Time::DurationSeconds warnIfLongerThan = 0s);
     };
 
 }

@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          WhenTimeExceeded    whenTimeExceeded{1.0, [] (DurationSecondsType timeTaken) { Logger::sThe.Log (Logger::eWarning, "Took along time  to do 'x'"); }};
+     *          WhenTimeExceeded    whenTimeExceeded{1.0s, [] (DurationSeconds timeTaken) { Logger::sThe.Log (Logger::eWarning, "Took along time  to do 'x'"); }};
      *      \endcode
      * 
      *  \note this can be hopefully, mostly, optimized away if passed a nullptr_t constructor argument, or perhaps even if passed a null
@@ -29,14 +29,14 @@ namespace Stroika::Foundation::Execution {
         /**
          *  note - the called function f can be nullptr, in which case this does nothing.
          */
-        WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, nullptr_t f);
-        WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void (Time::DurationSecondsType)>& f);
+        WhenTimeExceeded (Time::DurationSeconds callIfTakesLongerThan, nullptr_t f);
+        WhenTimeExceeded (Time::DurationSeconds callIfTakesLongerThan, const function<void (Time::DurationSeconds)>& f);
         ~WhenTimeExceeded ();
 
     private:
-        Time::DurationSecondsType                  fStartedAt_;
-        Time::DurationSecondsType                  fCallIfTakesLongerThan_;
-        function<void (Time::DurationSecondsType)> fRunIfTakesTooLong_;
+        Time::DurationSecondsTimePoint         fStartedAt_;
+        Time::DurationSeconds                  fCallIfTakesLongerThan_;
+        function<void (Time::DurationSeconds)> fRunIfTakesTooLong_;
     };
 
 }
