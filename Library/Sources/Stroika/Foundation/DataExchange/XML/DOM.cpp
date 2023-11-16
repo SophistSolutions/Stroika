@@ -752,9 +752,9 @@ public:
     nonvirtual Node CreateDocumentElement (const String& name)
     {
         TraceContextBumper ctx{"XMLDB::Document::Rep::CreateDocumentElement"};
-        #if qDebug
+#if qDebug
         Require (ValidNewNodeName_ (name));
-        #endif
+#endif
         lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
@@ -1195,9 +1195,9 @@ namespace {
         virtual void SetName (const String& name) override
         {
             AssertNotNull (fNode);
-            #if qDebug
+#if qDebug
             Require (ValidNewNodeName_ (name));
-            #endif
+#endif
             START_LIB_EXCEPTION_MAPPER
             {
                 T_XMLDOMDocument* doc = fNode->getOwnerDocument ();
@@ -1304,9 +1304,9 @@ namespace {
         }
         virtual Node InsertChild (const String& name, const String* ns, Node afterNode) override
         {
-            #if qDebug
+#if qDebug
             Require (ValidNewNodeName_ (name));
-            #endif
+#endif
             START_LIB_EXCEPTION_MAPPER
             {
                 T_XMLDOMDocument* doc = fNode->getOwnerDocument ();
@@ -1330,9 +1330,9 @@ namespace {
         }
         virtual Node AppendChild (const String& name) override
         {
-            #if qDebug
+#if qDebug
             Require (ValidNewNodeName_ (name));
-            #endif
+#endif
             START_LIB_EXCEPTION_MAPPER
             {
                 T_XMLDOMDocument* doc          = fNode->getOwnerDocument ();
@@ -1347,9 +1347,9 @@ namespace {
         }
         virtual void AppendChild (const String& name, const String* ns, const VariantValue& v) override
         {
-            #if qDebug
+#if qDebug
             Require (ValidNewNodeName_ (name));
-            #endif
+#endif
             START_LIB_EXCEPTION_MAPPER
             {
                 T_XMLDOMDocument* doc = fNode->getOwnerDocument ();
@@ -1364,9 +1364,9 @@ namespace {
         }
         virtual void AppendChildIfNotEmpty (const String& name, const String* ns, const VariantValue& v) override
         {
-            #if qDebug
+#if qDebug
             Require (ValidNewNodeName_ (name));
-            #endif
+#endif
             if (not v.empty ()) {
                 AppendChild (name, ns, v);
             }

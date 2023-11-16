@@ -337,9 +337,9 @@ Algorithm::DigesterAlgorithm<Algorithm::MD5>::DigesterAlgorithm ()
 
 void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Write (const byte* start, const byte* end)
 {
-    #if qDebug
+#if qDebug
     Require (not fCompleted_);
-    #endif
+#endif
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
     MD5Update_ (&fCtx_, reinterpret_cast<const unsigned char*> (start), static_cast<unsigned int> (end - start));

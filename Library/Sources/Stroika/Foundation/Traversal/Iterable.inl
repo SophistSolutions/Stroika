@@ -224,11 +224,11 @@ namespace Stroika::Foundation::Traversal {
     inline REP_SUB_TYPE& Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
     {
         EnsureNotNull (fRepReference_);
-    #if qDebug
+#if qDebug
         EnsureNotNull (fIterableEnvelope_);
         EnsureNotNull (fIterableEnvelope_->_fRep);
         Ensure (fIterableEnvelope_->_fRep.use_count () == 1);
-        #endif
+#endif
         return *fRepReference_;
     }
 
@@ -427,7 +427,7 @@ namespace Stroika::Foundation::Traversal {
             }
 #if qDebug
             Assert (li == le and ri == re);
-            #endif
+#endif
             return true;
         }
         else {

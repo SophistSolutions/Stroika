@@ -53,9 +53,9 @@ namespace {
  */
 void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const byte* start, const byte* end)
 {
-    #if qDebug
+#if qDebug
     Require (not fCompleted_);
-    #endif
+#endif
     /*
      *  Require() here cuz of following cast.
      *  NB: apparently broken if large data input! > 4gig on 64bit machine.

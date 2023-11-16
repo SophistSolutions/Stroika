@@ -199,7 +199,8 @@ namespace Stroika::Foundation::Debug {
  *              Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
  *          }
  *
- *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false.
+ *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
+ *        build, they must be syntactic (new requirement in Stroika v3.0).
  * 
  *  @see GetAssertionHandler
  *
@@ -213,9 +214,12 @@ namespace Stroika::Foundation::Debug {
 #define EnsureExpression(c)                                                                                                                \
     (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
 
-    /**
-  *  \def Ensure(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion promised about the state at the end of a function.
-  */
+/**
+ *  \def Ensure(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion promised about the state at the end of a function.
+ *
+ *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
+ *        build, they must be syntactic (new requirement in Stroika v3.0).
+ */
 #define Ensure(c) EnsureExpression (c);
 
 /**
@@ -226,6 +230,10 @@ namespace Stroika::Foundation::Debug {
                false))
 
 /**
+ *  \def Require(c) - alias for Assert(), but with a different message upon failure, and used to declare an assertion about the incoming contract - arguments to a function.
+ *
+ *  \note As of C++23, Stroika uses the [[assume(X)]] attribute in the case of qDebug false. This means that - though the arguments will not be evaluated in a release
+ *        build, they must be syntactic (new requirement in Stroika v3.0).
  */
 #define Require(c) RequireExpression (c);
 
