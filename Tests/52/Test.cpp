@@ -1369,7 +1369,7 @@ namespace {
 #endif
 
         Tester (L"Test of simple locking strategies (mutex v shared_ptr copy)", Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
-                Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy", 24500, .86, &failedTests);
+                Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy", 24500, .90, &failedTests);
         Tester (L"Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
                 Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, .51, &failedTests);
         Tester (L"Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
