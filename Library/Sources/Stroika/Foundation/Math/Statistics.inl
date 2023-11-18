@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Math {
             // when you do it twice.
             nth_element (tmp.begin (), tmp.begin () + size / 2 - 1, tmp.end (), compare);
             result += tmp[size / 2 - 1];
-            result /= static_cast<RESULT_TYPE> (2);
+            result /= 2;
         }
         return result;
     }

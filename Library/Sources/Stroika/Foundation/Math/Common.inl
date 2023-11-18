@@ -96,6 +96,7 @@ namespace Stroika::Foundation::Math {
     }
     template <typename T>
     constexpr T RoundUpTo (T x, T toNearest)
+        requires (is_arithmetic_v<T>)
     {
         return Private::RoundUpTo_ (x, toNearest);
     }
@@ -107,6 +108,7 @@ namespace Stroika::Foundation::Math {
      */
     template <typename T>
     constexpr T RoundDownTo (T x, T toNearest)
+        requires (is_arithmetic_v<T>)
     {
         return Private::RoundDownTo_ (x, toNearest);
     }
@@ -116,7 +118,7 @@ namespace Stroika::Foundation::Math {
      ********************************* Math::Round **********************************
      ********************************************************************************
      */
-    template <typename INT_TYPE, typename FLOAT_TYPE>
+    template <integral INT_TYPE, floating_point FLOAT_TYPE>
     constexpr INT_TYPE Round (FLOAT_TYPE x)
     {
         FLOAT_TYPE tmp = ::round (x);
@@ -286,6 +288,7 @@ namespace Stroika::Foundation::Math {
      */
     template <typename T, typename RESULT_TYPE>
     inline RESULT_TYPE Abs (T v)
+        requires (is_arithmetic_v<T>)
     {
         return v < 0 ? -v : v;
     }
@@ -360,10 +363,9 @@ namespace Stroika::Foundation::Math {
      ********************************** Math::IsOdd *********************************
      ********************************************************************************
      */
-    template <typename T>
+    template <integral T>
     constexpr bool IsOdd (T v)
     {
-        static_assert (is_integral_v<T>);
         return v % 2 == 1;
     }
 
@@ -372,7 +374,7 @@ namespace Stroika::Foundation::Math {
      ********************************* Math::IsEven *********************************
      ********************************************************************************
      */
-    template <typename T>
+    template <integral T>
     constexpr bool IsEven (T v)
     {
         static_assert (is_integral_v<T>);
@@ -384,11 +386,10 @@ namespace Stroika::Foundation::Math {
      ******************************** Math::IsPrime *********************************
      ********************************************************************************
      */
-    template <typename T>
+    template <integral T>
     bool IsPrime (T v)
     {
         Require (v >= 0); // no negative numbers
-        static_assert (is_integral_v<T>);
         // @todo - redo this as http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes but this is simpler and
         // has no memory requirements and is good enuf for me to test...
         if (v == 1) {

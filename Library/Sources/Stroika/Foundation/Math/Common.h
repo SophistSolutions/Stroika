@@ -43,7 +43,8 @@ namespace Stroika::Foundation::Math {
      *  \note - to RoundUp - just use ceil ()
      */
     template <typename T>
-    constexpr T RoundUpTo (T x, T toNearest);
+    constexpr T RoundUpTo (T x, T toNearest)
+        requires (is_arithmetic_v<T>);
 
     /**
      *  RoundDownTo() - round towards negative infinity.
@@ -53,7 +54,8 @@ namespace Stroika::Foundation::Math {
      *  to this list)
      */
     template <typename T>
-    constexpr T RoundDownTo (T x, T toNearest);
+    constexpr T RoundDownTo (T x, T toNearest)
+        requires (is_arithmetic_v<T>);
 
     /**
      *  Convert from a floating point value to an integer value - like std::round () - except that round () returns a floating
@@ -63,7 +65,7 @@ namespace Stroika::Foundation::Math {
      *      The conversion truncates; that is, the fractional part is discarded. The behavior is undefined
      *      if the truncated value cannot be represented in the destination type
      */
-    template <typename INT_TYPE, typename FLOAT_TYPE>
+    template <integral INT_TYPE, floating_point FLOAT_TYPE>
     constexpr INT_TYPE Round (FLOAT_TYPE x);
 
     /**
@@ -160,18 +162,19 @@ namespace Stroika::Foundation::Math {
      *  \note std::abs() not constexpr until C++ 23 (which is why this isn't)
      */
     template <typename T, typename RESULT_TYPE = T>
-    RESULT_TYPE Abs (T v);
+    RESULT_TYPE Abs (T v)
+        requires (is_arithmetic_v<T>);
 
     /**
      *  \note - when we port stroika bignum package - this should support those bignums.
      */
-    template <typename T>
+    template <integral T>
     constexpr bool IsOdd (T v);
 
     /**
      *  Note - when we port stroika bignum package - this should support those bignums.
      */
-    template <typename T>
+    template <integral T>
     constexpr bool IsEven (T v);
 
     /**
@@ -182,7 +185,7 @@ namespace Stroika::Foundation::Math {
      *
      *  \req v >= 0
      */
-    template <typename T>
+    template <integral T>
     bool IsPrime (T v);
 
 }
