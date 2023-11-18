@@ -597,7 +597,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *************************** FloatConversion::ToFloat ***************************
      ********************************************************************************
      */
-    template <typename T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     T ToFloat (span<const CHAR_T> s)
     {
         if constexpr (is_same_v<remove_cv_t<CHAR_T>, char>) {
@@ -640,7 +640,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         return Private_::ToFloat_RespectingLocale_<T> (s, nullptr); // fallback for non-ascii strings to old code
     }
-    template <typename T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    template <floating_point T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder)
     {
         RequireNotNull (remainder); // use other overload if 'null'
@@ -684,7 +684,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         return Private_::ToFloat_RespectingLocale_<T> (s, remainder); // fallback for non-ascii strings to strtod etc code
     }
-    template <typename T, typename STRINGISH_ARG>
+    template <floating_point T, typename STRINGISH_ARG>
     inline T ToFloat (STRINGISH_ARG&& s)
         requires (IConvertibleToString<STRINGISH_ARG> or is_convertible_v<STRINGISH_ARG, std::string>)
     {
@@ -707,7 +707,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             return ToFloat<T> (String{forward<STRINGISH_ARG> (s)});
         }
     }
-    template <typename T>
+    template <floating_point T>
     inline T ToFloat (const String& s, String* remainder)
     {
         RequireNotNull (remainder);
