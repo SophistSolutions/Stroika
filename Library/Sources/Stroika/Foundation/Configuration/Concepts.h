@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <chrono>
 #include <concepts>
 #include <functional> // needed for std::equal_to
 #include <iterator>   // needed for std::begin/std::end calls
@@ -76,6 +77,15 @@ namespace Stroika::Foundation::Configuration {
             noexcept (f (args...))
         };
     };
+
+    // From https://stackoverflow.com/questions/74383254/concept-that-models-only-the-stdchrono-duration-types
+    template <typename T>
+    concept IDuration = requires { []<class Rep, class Period> (type_identity<chrono::duration<Rep, Period>>) {}(type_identity<T> ()); };
+
+    // From https://stackoverflow.com/questions/74383254/concept-that-models-only-the-stdchrono-duration-types
+    template <typename T>
+    concept ITimePoint =
+        requires { []<class CLOCK, class DURATION> (type_identity<chrono::time_point<CLOCK, DURATION>>) {}(type_identity<T> ()); };
 
     namespace Private_ {
         template <typename T>
