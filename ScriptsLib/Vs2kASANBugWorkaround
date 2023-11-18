@@ -12,6 +12,9 @@ do
     then
         echo "Copying ASAN dlls for $cfg"
        cp C\:/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/VC/Tools/MSVC/*/bin/HostX64/x64/clang* Builds/$cfg/Tests 
-       #cp C\:/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/VC/Tools/MSVC/*/bin/HostX64/x64/clang* Builds/$cfg/Samples-*
-    fi
+       for trgDir in ./Builds/$cfg/Samples-*
+       do
+         cp C\:/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/VC/Tools/MSVC/*/bin/HostX64/x64/clang* $trgDir
+        done
+   fi
 done
