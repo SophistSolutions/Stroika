@@ -464,6 +464,7 @@ namespace Stroika::Foundation::DataExchange {
          *      o   Date
          *      o   DateTime
          *      o   Duration
+         *      o   DurationSeconds
          *      o   Common::GUID
          *      o   InternetMediaType
          *      o   IO::Network::InternetAddress
@@ -1047,6 +1048,8 @@ namespace Stroika::Foundation::DataExchange {
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<VariantValue> ();
     template <>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ();
+    template <>
+    ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::DurationSeconds> ();
     template <>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ();
     template <>

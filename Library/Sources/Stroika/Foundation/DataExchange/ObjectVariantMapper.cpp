@@ -27,6 +27,7 @@ using namespace Stroika::Foundation::DataExchange;
 using Time::Date;
 using Time::DateTime;
 using Time::Duration;
+using Time::DurationSeconds;
 using Time::TimeOfDay;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -222,12 +223,25 @@ template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ()
 {
     FromObjectMapperType<Time::Duration> fromObjectMapper = [] (const ObjectVariantMapper&, const Time::Duration* fromObjOfTypeT) -> VariantValue {
-        return VariantValue{(fromObjOfTypeT)->As<String> ()};
+        return VariantValue{fromObjOfTypeT->As<String> ()};
     };
     ToObjectMapperType<Time::Duration> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, Time::Duration* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = Duration{d.As<String> ()};
     };
     return TypeMappingDetails{typeid (Duration), fromObjectMapper, toObjectMapper};
+}
+
+template <>
+TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::DurationSeconds> ()
+{
+    FromObjectMapperType<Time::DurationSeconds> fromObjectMapper = [] (const ObjectVariantMapper&, const Time::DurationSeconds* fromObjOfTypeT) -> VariantValue {
+        return VariantValue{Time::Duration{*fromObjOfTypeT}.As<String> ()};
+    };
+    ToObjectMapperType<Time::DurationSeconds> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d,
+                                                                   Time::DurationSeconds* intoObjOfTypeT) -> void {
+        *intoObjOfTypeT = Duration{d.As<String> ()};
+    };
+    return TypeMappingDetails{typeid (DurationSeconds), fromObjectMapper, toObjectMapper};
 }
 
 template <>
@@ -397,6 +411,7 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<Date> (),
             ObjectVariantMapper::MakeCommonSerializer<DateTime> (),
             ObjectVariantMapper::MakeCommonSerializer<Duration> (),
+            ObjectVariantMapper::MakeCommonSerializer<DurationSeconds> (),
             ObjectVariantMapper::MakeCommonSerializer<Common::GUID> (),
             ObjectVariantMapper::MakeCommonSerializer<InternetMediaType> (),
             ObjectVariantMapper::MakeCommonSerializer<IO::Network::InternetAddress> (),
@@ -429,6 +444,7 @@ namespace {
             ObjectVariantMapper::MakeCommonSerializer<optional<Date>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<DateTime>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Duration>> (),
+            ObjectVariantMapper::MakeCommonSerializer<optional<DurationSeconds>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<Common::GUID>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<InternetMediaType>> (),
             ObjectVariantMapper::MakeCommonSerializer<optional<IO::Network::InternetAddress>> (),
