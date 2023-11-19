@@ -285,7 +285,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitQuietly
          *  @see WaitQuietlyUntil
          */
-        nonvirtual Containers::Set<T> WaitUntil (Time::TimePointSeconds timeoutAt = Time::kInfinity);
+        nonvirtual Containers::Set<T> WaitUntil (Time::TimePointSeconds timeoutAt = Time::TimePointSeconds{Time::kInfinity});
 
     public:
         /*
@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitQuietly
          *  @see WaitUntil
          */
-        nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::TimePointSeconds timeoutAt = Time::kInfinity);
+        nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::TimePointSeconds timeoutAt = Time::TimePointSeconds{Time::kInfinity});
 
     private:
         // Fill two buffers, one with the data needed to pass to _WaitQuietlyUntil, and the other with

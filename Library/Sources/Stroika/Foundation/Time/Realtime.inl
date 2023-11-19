@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Time {
     [[deprecated ("Since Stroika v3.0d5 - use TimePointSeconds")]] time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t)
     {
         Require (t >= 0);
-        return TimePointSeconds{t};
+        return TimePointSeconds{DurationSeconds{t}};
     }
     DISABLE_COMPILER_MSC_WARNING_END (4996);
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");

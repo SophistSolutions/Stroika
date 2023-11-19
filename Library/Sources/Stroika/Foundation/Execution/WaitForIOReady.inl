@@ -66,11 +66,29 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     auto WaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::TimePointSeconds timeoutAt) -> Containers::Set<T>
     {
+        // Fill two buffers, one with the data needed to pass to _WaitQuietlyUntil, and the other with
+        // corresponding 'T' smart wrapper objects, which we map back to and return as our API result (in same order)
+        auto fillBuffer = [] (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer) -> void {
+            RequireNotNull (pollBuffer);
+            RequireNotNull (mappedObjectBuffer);
+            Require (pollBuffer->size () == 0);
+            Require (mappedObjectBuffer->size () == 0);
+            pollBuffer->reserve (fPollData_.size ());
+            mappedObjectBuffer->reserve (fPollData_.size ());
+            for (const auto& i : fPollData_) {
+                pollBuffer->push_back (pair<SDKPollableType, TypeOfMonitorSet>{TRAITS::GetSDKPollable (i.first), i.second});
+                mappedObjectBuffer->push_back (i.first);
+            }
+            if (fPollable2Wakeup_) {
+                pollBuffer->push_back (pair<SDKPollableType, TypeOfMonitorSet>{fPollable2Wakeup_.value ().first, fPollable2Wakeup_.value ().second});
+            }
+        };
+
         Thread::CheckForInterruption ();
         vector<pair<SDKPollableType, TypeOfMonitorSet>> pollBuffer;
         vector<T>                                       mappedObjectBuffer;
         // @todo REDO THIS calling FillBuffer_ from CTOR (since always used at least once, but could be more than once.
-        FillBuffer_ (&pollBuffer, &mappedObjectBuffer);
+        fillBuffer (&pollBuffer, &mappedObjectBuffer);
         Assert (pollBuffer.size () == mappedObjectBuffer.size () or pollBuffer.size () == mappedObjectBuffer.size () + 1);
         Containers::Set<T> result;
         for (size_t i : _WaitQuietlyUntil (Containers::Start (pollBuffer), Containers::End (pollBuffer), timeoutAt)) {
@@ -83,23 +101,6 @@ namespace Stroika::Foundation::Execution {
             }
         }
         return result;
-    }
-    template <typename T, typename TRAITS>
-    void WaitForIOReady<T, TRAITS>::FillBuffer_ (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer)
-    {
-        RequireNotNull (pollBuffer);
-        RequireNotNull (mappedObjectBuffer);
-        Require (pollBuffer->size () == 0);
-        Require (mappedObjectBuffer->size () == 0);
-        pollBuffer->reserve (fPollData_.size ());
-        mappedObjectBuffer->reserve (fPollData_.size ());
-        for (const auto& i : fPollData_) {
-            pollBuffer->push_back (pair<SDKPollableType, TypeOfMonitorSet>{TRAITS::GetSDKPollable (i.first), i.second});
-            mappedObjectBuffer->push_back (i.first);
-        }
-        if (fPollable2Wakeup_) {
-            pollBuffer->push_back (pair<SDKPollableType, TypeOfMonitorSet>{fPollable2Wakeup_.value ().first, fPollable2Wakeup_.value ().second});
-        }
     }
 
 }
