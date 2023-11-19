@@ -151,8 +151,8 @@ namespace {
             outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << FloatConversion::ToString (performanceScore, fo).AsNarrowSDKString () << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
-        outTo << "[baseline test " << baselineTime.count () << " secs, and comparison " << compareWithTime.count () << " sec, and warnIfPerfScore > "
-              << warnIfPerformanceScoreHigherThan << ", and perfScore=" << performanceScore << "]" << endl;
+        outTo << "[baseline test " << baselineTime.count () << " secs, and comparison " << compareWithTime.count ()
+              << " sec, and warnIfPerfScore > " << warnIfPerformanceScoreHigherThan << ", and perfScore=" << performanceScore << "]" << endl;
         outTo << kOneTab_ << "                 " << kOneTab_;
         if (performanceScore < 1) {
             outTo << compareWithTName.AsNarrowSDKString () << " is FASTER" << endl;
