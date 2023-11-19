@@ -197,7 +197,7 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
         case CommandArgs::MajorOperation::eRunDirectly: {
             optional<Time::Duration> runFor;
             if (args.fUnusedArguments.size () >= 1) {
-                runFor = Time::Duration{Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (args.fUnusedArguments[0])};
+                runFor = Time::Duration{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (args.fUnusedArguments[0])};
             }
             RunDirectly (runFor);
         } break;
@@ -205,7 +205,7 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
             if (out != nullptr) {
                 out.Write ("Starting..."sv);
             }
-            constexpr Time::DurationSecondsType kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
+            constexpr Time::DurationSeconds kTimeOut_{30.0s}; // a vaguely reasonable default - apps can override by handling before calling Run
             Start (kTimeOut_);
             if (out != nullptr) {
                 out.Write ("done\n"sv);
@@ -215,7 +215,7 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
             if (out != nullptr) {
                 out.Write ("Stopping..."sv);
             }
-            constexpr Time::DurationSecondsType kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
+            constexpr Time::DurationSeconds kTimeOut_{30.0s}; // a vaguely reasonable default - apps can override by handling before calling Run
             Stop (kTimeOut_);
             if (out != nullptr) {
                 out.Write ("done\n"sv);
@@ -229,7 +229,7 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
             if (out != nullptr) {
                 out.Write ("Restarting..."sv);
             }
-            constexpr Time::DurationSecondsType kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
+            constexpr Time::DurationSeconds kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
             Restart (kTimeOut_);
             if (out != nullptr) {
                 out.Write ("done\n"sv);
@@ -295,7 +295,7 @@ void Main::RunDirectly (const optional<Time::Duration>& runFor)
     GetServiceRep_ ()._RunDirectly (runFor);
 }
 
-void Main::ForcedRestart ([[maybe_unused]] Time::DurationSecondsType timeout, [[maybe_unused]] Time::DurationSecondsType unforcedStopTimeout)
+void Main::ForcedRestart ([[maybe_unused]] Time::DurationSeconds timeout, [[maybe_unused]] Time::DurationSeconds unforcedStopTimeout)
 {
     AssertNotImplemented ();
 }
@@ -329,7 +329,7 @@ Main::ServiceDescription Main::GetServiceDescription () const
     return GetAppRep_ ().GetServiceDescription ();
 }
 
-void Main::Restart (Time::DurationSecondsType timeout)
+void Main::Restart (Time::DurationSeconds timeout)
 {
     Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::Restart", L"timeout = %e", timeout};
 
@@ -337,7 +337,7 @@ void Main::Restart (Time::DurationSecondsType timeout)
     Stop (timeout);
     Start (timeout);
 #if 0
-    Time::DurationSecondsType endAt =   Time::GetTickCount () + timeout;
+    Time::DurationSeconds endAt =   Time::GetTickCount () + timeout;
     IgnoreExceptionsForCall (Stop (timeout));
 #if qPlatform_POSIX
     // REALY should WAIT for server to stop and only do this it fails -
@@ -432,17 +432,17 @@ void Main::LoggerServiceWrapper::_RunDirectly (const optional<Time::Duration>& r
     Logger::sThe.Log (Logger::eNotice, L"Service stopped normally");
 }
 
-void Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout)
+void Main::LoggerServiceWrapper::_Start (Time::DurationSeconds timeout)
 {
     fDelegateTo_->_Start (timeout);
 }
 
-void Main::LoggerServiceWrapper::_Stop (Time::DurationSecondsType timeout)
+void Main::LoggerServiceWrapper::_Stop (Time::DurationSeconds timeout)
 {
     fDelegateTo_->_Stop (timeout);
 }
 
-void Main::LoggerServiceWrapper::_ForcedStop (Time::DurationSecondsType timeout)
+void Main::LoggerServiceWrapper::_ForcedStop (Time::DurationSeconds timeout)
 {
     fDelegateTo_->_ForcedStop (timeout);
 }
@@ -585,15 +585,15 @@ void Main::BasicUNIXServiceImpl::_RunDirectly (const optional<Time::Duration>& r
     t.Join ();
 }
 
-void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
+void Main::BasicUNIXServiceImpl::_Start (Time::DurationSeconds timeout)
 {
     Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::Start", L"timeout = %e", timeout};
 
-    Time::DurationSecondsType timeoutAt = Time::GetTickCount () + timeout;
+    Time::TimePointSeconds timeoutAt = Time::GetTickCount () + timeout;
 
     // REALLY should use GETSTATE - and return state based on if PID file exsits...
     if (_GetServicePID () > 0) {
-        Execution::Throw (Execution::Exception{L"Cannot Start service because its already running"sv});
+        Execution::Throw (Execution::Exception{"Cannot Start service because its already running"sv});
     }
 
     (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String>{{String{}, ("--"sv + String{CommandNames::kRunAsService})}});
@@ -604,7 +604,7 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
     }
 }
 
-void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
+void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSeconds timeout)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Stop", L"timeout=%e", timeout};
@@ -614,7 +614,7 @@ void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
         /// kill running....
     }
     else {
-        Time::DurationSecondsType timeoutAt = Time::GetTickCount () + timeout;
+        Time::TimePointSeconds timeoutAt = Time::GetTickCount () + timeout;
         // Send signal to server to stop
         if (_GetServicePID () > 0) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -622,10 +622,10 @@ void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
 #endif
             Execution::ThrowPOSIXErrNoIfNegative (::kill (_GetServicePID (), SIGTERM));
 
-            Time::DurationSecondsType waitFor = 0.001; // wait just a little at first but then progressively longer (avoid busy wait)
+            Time::DurationSeconds waitFor = 0.001s; // wait just a little at first but then progressively longer (avoid busy wait)
             while (_GetServicePID () > 0) {
                 Execution::Sleep (waitFor);
-                if (waitFor < timeout and waitFor < 5) {
+                if (waitFor < timeout and waitFor < 5s) {
                     waitFor *= 2;
                 }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -640,7 +640,7 @@ void Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
     }
 }
 
-void Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeout)
+void Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSeconds timeout)
 {
     Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop"};
     // Send signal to server to stop
@@ -876,13 +876,13 @@ void Main::WindowsService::_RunDirectly (const optional<Time::Duration>& runFor)
     fRunThread_.Join ();
 }
 
-void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
+void Main::WindowsService::_Start (Time::DurationSeconds timeout)
 {
     // @todo - timeout not supported
     Debug::TraceContextBumper traceCtx{L"Stroika::Frameworks::Service::Main::WindowsService::Start", L"timeout = %e", timeout};
 
     const DWORD kServiceMgrAccessPrivs = SERVICE_START;
-    SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
+    SC_HANDLE   hSCM                   = ::OpenSCManager (nullptr, nullptr, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
     [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([hSCM] () noexcept {
         AssertNotNull (hSCM);
@@ -900,7 +900,7 @@ void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
     Execution::Platform::Windows::ThrowIfZeroGetLastError (::StartService (hService, dwNumServiceArgs, lpServiceArgVectors));
 }
 
-void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType timeout)
+void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSeconds timeout)
 {
     // @todo - timeout not supported
     Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::_Stop"};
@@ -930,7 +930,7 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType tim
     }
 }
 
-void Main::WindowsService::_ForcedStop ([[maybe_unused]] Time::DurationSecondsType timeout)
+void Main::WindowsService::_ForcedStop ([[maybe_unused]] Time::DurationSeconds timeout)
 {
     AssertNotImplemented ();
 }

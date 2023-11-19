@@ -79,13 +79,13 @@ public:
                                     // a little bit apart even if addition to longer retry interval
                                     // http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
     Retry:
-        optional<Time::DurationSecondsType> retrySendAt;
+        optional<Time::TimePointSeconds> retrySendAt;
         if (not didFirstRetry) {
-            retrySendAt   = Time::GetTickCount () + 2;
+            retrySendAt   = Time::GetTickCount () + 2s;
             didFirstRetry = true;
         }
         else if (autoRetryInterval.has_value ()) {
-            retrySendAt = Time::GetTickCount () + autoRetryInterval->As<Time::DurationSecondsType> ();
+            retrySendAt = Time::GetTickCount () + *autoRetryInterval;
         }
         for (ConnectionlessSocket::Ptr s : fSockets_) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -133,7 +133,7 @@ public:
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
         Execution::WaitForIOReady<ConnectionlessSocket::Ptr> readyChecker{fSockets_};
         while (1) {
-            for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (retrySendAt.value_or (Time::kInfinite))) {
+            for (ConnectionlessSocket::Ptr s : readyChecker.WaitQuietlyUntil (retrySendAt.value_or (Time::TimePointSeconds{Time::kInfinity}))) {
                 try {
                     byte          buf[8 * 1024]; // not sure of max packet size
                     SocketAddress from;

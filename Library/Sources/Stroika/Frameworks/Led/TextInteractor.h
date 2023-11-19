@@ -299,26 +299,26 @@ namespace Stroika::Frameworks::Led {
         virtual void    HookGainedNewTextStore () override;
         nonvirtual void HookGainedNewTextStore_ ();
 
-        /*
-     *  Mouse clicks.
-     */
     protected:
+        /*
+         *  Mouse clicks.
+         */
         virtual bool ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor);
 
     public:
         nonvirtual unsigned GetCurClickCount () const;
-        nonvirtual void     SetCurClickCount (unsigned curClickCount, Foundation::Time::DurationSecondsType lastClickAt);
+        nonvirtual void     SetCurClickCount (unsigned curClickCount, Foundation::Time::TimePointSeconds lastClickAt);
 
     protected:
-        nonvirtual void IncrementCurClickCount (Foundation::Time::DurationSecondsType lastClickAt);
-        nonvirtual void UpdateClickCount (Foundation::Time::DurationSecondsType clickAtTime, const Led_Point& clickAtLocation);
-        virtual bool    ClickTimesAreCloseForDoubleClick (Foundation::Time::DurationSecondsType thisClick);
+        nonvirtual void IncrementCurClickCount (Foundation::Time::TimePointSeconds lastClickAt);
+        nonvirtual void UpdateClickCount (Foundation::Time::TimePointSeconds clickAtTime, const Led_Point& clickAtLocation);
+        virtual bool    ClickTimesAreCloseForDoubleClick (Foundation::Time::TimePointSeconds thisClick);
         virtual bool    PointsAreCloseForDoubleClick (const Led_Point& p);
 
     private:
-        unsigned                              fClickCount;
-        Foundation::Time::DurationSecondsType fLastClickedAt;
-        Led_Point                             fLastMouseDownAt;
+        unsigned                           fClickCount;
+        Foundation::Time::TimePointSeconds fLastClickedAt{};
+        Led_Point                          fLastMouseDownAt;
 
     protected:
         virtual void WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor);
@@ -655,7 +655,7 @@ namespace Stroika::Frameworks::Led {
         virtual bool DelaySomeForScrollBarClick ();
 
     private:
-        Foundation::Time::DurationSecondsType fLastScrolledAt;
+        Foundation::Time::TimePointSeconds fLastScrolledAt{0s};
 
     public:
         nonvirtual bool GetCaretShown () const;

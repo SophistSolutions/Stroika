@@ -348,7 +348,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>See also @'TextInteractor::GetCurClickCount' (). This is seldom called directly - except perhaps to RESET
                 the count to zero or one. This is typically just called internally through @'TextInteractor::UpdateClickCount'.</p>
     */
-    inline void TextInteractor::SetCurClickCount (unsigned curClickCount, Foundation::Time::DurationSecondsType lastClickAt)
+    inline void TextInteractor::SetCurClickCount (unsigned curClickCount, Foundation::Time::TimePointSeconds lastClickAt)
     {
         fClickCount    = curClickCount;
         fLastClickedAt = lastClickAt;
@@ -358,7 +358,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>See also @'TextInteractor::GetCurClickCount' () and @'TextInteractor::SetCurClickCount' ().
                 This is typically just called internally through @'TextInteractor::UpdateClickCount'.</p>
     */
-    inline void TextInteractor::IncrementCurClickCount (Foundation::Time::DurationSecondsType lastClickAt)
+    inline void TextInteractor::IncrementCurClickCount (Foundation::Time::TimePointSeconds lastClickAt)
     {
         ++fClickCount;
         fLastClickedAt = lastClickAt;

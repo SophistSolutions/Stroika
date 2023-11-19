@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Cache {
         /**
          * @see TimedCache::Lookup
          */
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt = nullptr) const;
+        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const;
         nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
 
     public:

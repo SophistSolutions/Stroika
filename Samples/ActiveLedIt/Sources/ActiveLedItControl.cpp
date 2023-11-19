@@ -459,7 +459,6 @@ ActiveLedItControl::ActiveLedItControl ()
     , fPredefinedMenus ()
     , fAcceleratorTable ()
     , fWin32AccelTable (NULL)
-    , fLastAccelTableUpdateAt (0)
     , fCurrentEventArguments ()
     , fEditor ()
     , fDataDirty (false)
@@ -3002,8 +3001,8 @@ void ActiveLedItControl::OLE_SetAcceleratorTable (VARIANT& newValue)
 
 HACCEL ActiveLedItControl::GetCurrentWin32AccelTable ()
 {
-    const float kTimeBetweenRecomputes = 10.0f;
-    if (fWin32AccelTable == NULL or Time::GetTickCount () - fLastAccelTableUpdateAt > kTimeBetweenRecomputes) {
+    constexpr Time::DurationSeconds kTimeBetweenRecomputes = 10.0s;
+    if (fWin32AccelTable == nullptr or Time::GetTickCount () - fLastAccelTableUpdateAt > kTimeBetweenRecomputes) {
         {
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALAcceleratorTable> accelTable = (IDispatch*)fAcceleratorTable;

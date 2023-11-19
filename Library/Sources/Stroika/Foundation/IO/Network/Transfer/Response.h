@@ -42,7 +42,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     using DataExchange::InternetMediaType;
     using Memory::BLOB;
     using Streams::InputStream;
-    using Time::DurationSecondsType;
 
     /**
      *  DESIGN NOTES:

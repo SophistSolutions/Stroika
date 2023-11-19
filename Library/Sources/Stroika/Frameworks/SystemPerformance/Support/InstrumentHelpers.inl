@@ -25,23 +25,16 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         RequireNotNull (_fContext.cget ().cref ());
     }
     template <typename OPTIONS, typename CONTEXT>
-    inline optional<DurationSecondsType> InstrumentRep_COMMON<OPTIONS, CONTEXT>::_GetCaptureContextTime () const
+    inline optional<Time::TimePointSeconds> InstrumentRep_COMMON<OPTIONS, CONTEXT>::_GetCaptureContextTime () const
     {
         AssertNotNull (_fContext.cget ().cref ());
         return _fContext.cget ().cref ()->fCaptureContextAt;
     }
     template <typename OPTIONS, typename CONTEXT>
-    void InstrumentRep_COMMON<OPTIONS, CONTEXT>::_NoteCompletedCapture (DurationSecondsType at)
+    void InstrumentRep_COMMON<OPTIONS, CONTEXT>::_NoteCompletedCapture (Time::TimePointSeconds at)
     {
         AssertNotNull (_fContext.cget ().cref ());
         _fContext.rwget ().rwref ()->fCaptureContextAt = at;
-#if 0
-        if (not _fContext.rwget ().rwref ()->fCaptureContextAt.has_value () or (at - *_fContext.rwget ().rwref ()->fCaptureContextAt) >= _fOptions.fMinimumAveragingInterval) {
-            _fContext.rwget ().rwref ()->fCaptureContextAt = at;
-            return true;
-        }
-        return false;
-#endif
     }
 
 }

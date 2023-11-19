@@ -23,8 +23,6 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Execution::Platform;
 using namespace Stroika::Foundation::Execution::Platform::Windows;
 
-using Time::DurationSecondsType;
-
 /*
  ********************************************************************************
  ********************************** WaitSupport *********************************
@@ -34,17 +32,17 @@ using Time::DurationSecondsType;
 /*
  *  Call this if you want to pump messages and want to block/wait for a while if need be (to avoid busy-waiting).
  */
-void Windows::WaitAndPumpMessages (HWND dialog, Time::DurationSecondsType forNSecs)
+void Windows::WaitAndPumpMessages (HWND dialog, Time::DurationSeconds forNSecs)
 {
     Windows::WaitAndPumpMessages (dialog, vector<HANDLE> (), forNSecs);
 }
 
-void Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Time::DurationSecondsType forNSecs)
+void Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Time::DurationSeconds forNSecs)
 {
-    DurationSecondsType startAt = Time::GetTickCount ();
-    DurationSecondsType endAt   = startAt + forNSecs;
+    Time::TimePointSeconds startAt = Time::GetTickCount ();
+    Time::TimePointSeconds endAt   = startAt + forNSecs;
 
-    for (DurationSecondsType timeLeft = endAt - Time::GetTickCount (); timeLeft > 0; timeLeft = endAt - Time::GetTickCount ()) {
+    for (Time::DurationSeconds timeLeft = endAt - Time::GetTickCount (); timeLeft > 0s; timeLeft = endAt - Time::GetTickCount ()) {
         Thread::CheckForInterruption ();
         DWORD waitResult = ::MsgWaitForMultipleObjectsEx (static_cast<DWORD> (waitOn.size ()), Containers::Start (waitOn),
                                                           Platform::Windows::Duration2Milliseconds (timeLeft), QS_ALLEVENTS, MWMO_INPUTAVAILABLE);
@@ -62,7 +60,7 @@ void Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Ti
             catch (...) {
             }
             timeLeft = endAt - Time::GetTickCount ();
-            if (timeLeft < 0) {
+            if (timeLeft < 0s) {
                 break;
             }
         }
@@ -73,10 +71,10 @@ void Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Ti
  *  Call this if you want to pump messages, but return immediately if none available (e.g. when you are
  *  doing something else).
  */
-void Windows::PumpMessagesWhileInputAvailable (HWND dialog, Time::DurationSecondsType atMostNSecs)
+void Windows::PumpMessagesWhileInputAvailable (HWND dialog, Time::DurationSeconds atMostNSecs)
 {
-    DurationSecondsType startAt = Time::GetTickCount ();
-    DurationSecondsType endAt   = startAt + atMostNSecs;
+    Time::TimePointSeconds startAt = Time::GetTickCount ();
+    Time::TimePointSeconds endAt   = startAt + atMostNSecs;
 
     MSG msg;
     while (::PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) {

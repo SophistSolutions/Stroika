@@ -31,7 +31,6 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
 
     using IO::Network::InternetAddress;
     using Time::Duration;
-    using Time::DurationSecondsType;
 
     /**
      */
@@ -124,7 +123,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
         Memory::InlineBuffer<byte>                               fSendPacket_;
         IO::Network::ConnectionlessSocket::Ptr                   fSocket_;
         uint16_t                                                 fNextSequenceNumber_;
-        Time::DurationSecondsType                                fPingTimeout_;
+        Time::DurationSeconds                                    fPingTimeout_;
     };
 
     /**

@@ -145,7 +145,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::CPU {
          *
          *  \req fMinimumAveragingInterval > 0
          */
-        Time::DurationSecondsType fMinimumAveragingInterval{1.0};
+        Time::DurationSeconds fMinimumAveragingInterval{1.0s};
     };
 
     /**
@@ -173,7 +173,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  Specialization to improve performance
      */
     template <>
-    Instruments::CPU::Info Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
+    Instruments::CPU::Info Instrument::CaptureOneMeasurement (Range<Time::TimePointSeconds>* measurementTimeOut);
 
 }
 

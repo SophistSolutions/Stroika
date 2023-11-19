@@ -189,26 +189,26 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          * Only specifically specialized variants are supported. Defined for
-         *      time_t
-         *      timeval
-         *      int
-         *      long int
-         *      long long int
-         *      wstring
-         *      String
-         *      float
-         *      double
-         *      long double
-         *      chrono::duration<double>
-         *      std::chrono::seconds
-         *      std::chrono::milliseconds
-         *      std::chrono::microseconds
-         *      std::chrono::nanoseconds
+         *  o   timeval
+         *  o   integral<T>
+         *  o   floating_point<T>
+         *  o   String
+         *  o   Configuration::IDuration<T>
+         *  o   Configuration::ITimePoint<T>
+         * 
+         *  Note this implies inclusion of:
+         *      o   time_t
+         *      o   int, float, etc...
+         *      o   std::chrono::milliseconds etc...
          *
          *  Note - if 'empty' - As<> for numeric types returns 0.
+         * 
+         *      \note Stroika v2.1 also supproted wstring, which was (tentiatively) desupported in Stroika v3.0d5
          */
         template <typename T>
-        nonvirtual T As () const;
+        nonvirtual T As () const
+            requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or
+                      Configuration::IDuration<T> or Configuration::ITimePoint<T>);
 
     public:
         /**
@@ -220,6 +220,8 @@ namespace Stroika::Foundation::Time {
          *
          *  Same as As<> - except that it handles overflows, so if you pass in Duration {numeric_limits<long double>::max ()} and convert to seconds, you wont overflow,
          *  but get chrono::seconds::max
+         * 
+         *      @todo same requires stuff as we have with As<T>()
          */
         template <typename T>
         nonvirtual T AsPinned () const;
@@ -368,33 +370,6 @@ namespace Stroika::Foundation::Time {
         void destroy_ (); // allow call if already empty
     };
     template <>
-    int Duration::As () const;
-    template <>
-    long int Duration::As () const;
-    template <>
-    long long int Duration::As () const;
-    template <>
-    wstring Duration::As () const;
-    template <>
-    Characters::String Duration::As () const;
-    template <>
-    float Duration::As () const;
-    template <>
-    double Duration::As () const;
-    template <>
-    long double Duration::As () const;
-    template <>
-    chrono::duration<double> Duration::As () const;
-    template <>
-    chrono::seconds Duration::As () const;
-    template <>
-    chrono::milliseconds Duration::As () const;
-    template <>
-    chrono::microseconds Duration::As () const;
-    template <>
-    chrono::nanoseconds Duration::As () const;
-
-    template <>
     chrono::seconds Duration::AsPinned () const;
     template <>
     chrono::milliseconds Duration::AsPinned () const;
@@ -430,7 +405,7 @@ namespace Stroika::Foundation::Time {
      *
      *  Must operators not needed (inherited from duration<>) - but these needed when LHS of operator is not a duration type
      */
-    Duration operator+ (const DurationSecondsType& lhs, const Duration& rhs);
+    Duration operator+ (const DurationSeconds& lhs, const Duration& rhs);
 
     /**
      *  Multiply the duration by the floating point argument
@@ -446,7 +421,7 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     template <>
     struct DefaultOpenness<Time::Duration> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {};
     template <>
-    struct DefaultDifferenceTypes<Time::Duration> : ExplicitDifferenceTypes<Time::DurationSecondsType> {};
+    struct DefaultDifferenceTypes<Time::Duration> : ExplicitDifferenceTypes<Time::DurationSeconds> {};
     /**
      *  \note   This type's properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
      *          static de-initialization.

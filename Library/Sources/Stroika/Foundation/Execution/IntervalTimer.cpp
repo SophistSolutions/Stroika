@@ -52,14 +52,14 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     {
         Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: AddOneShot"};
         auto                      lk = fData_.rwget ();
-        lk->Add (RegisteredTask{intervalTimer, Time::GetTickCount () + when.As<DurationSecondsType> ()});
+        lk->Add (RegisteredTask{intervalTimer, Time::GetTickCount () + when});
         DataChanged_ ();
     }
     void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
     {
         Debug::TraceContextBumper ctx{"IntervalTimer::Manager: default implementation: AddRepeating"};
         auto                      lk = fData_.rwget ();
-        lk->Add ({intervalTimer, Time::GetTickCount () + repeatInterval.As<DurationSecondsType> (), repeatInterval, hysteresis});
+        lk->Add ({intervalTimer, Time::GetTickCount () + repeatInterval, repeatInterval, hysteresis});
         DataChanged_ ();
     }
     void RemoveRepeating (const TimerCallback& intervalTimer) noexcept
@@ -82,15 +82,15 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     WaitableEvent                                fDataChanged_{};
 
     // this is where a priorityq would be better
-    DurationSecondsType GetNextWakeupTime_ ()
+    TimePointSeconds GetNextWakeupTime_ ()
     {
-        DurationSecondsType funResult =
-            fData_.cget ()->Map<DurationSecondsType> ([] (const RegisteredTask& i) { return i.fCallNextAt; }).MinValue (kInfinite);
+        TimePointSeconds funResult =
+            fData_.cget ()->Map<TimePointSeconds> ([] (const RegisteredTask& i) { return i.fCallNextAt; }).MinValue (TimePointSeconds{kInfinity});
 #if qDebug
         auto dataLock = fData_.cget ();
         // note: usually (not dataLock->empty ()), but it can be empty temporarily as we are shutting down this process
         // from one thread, while checking this simultaneously from another
-        DurationSecondsType r = kInfinite;
+        TimePointSeconds r = TimePointSeconds{kInfinity};
         for (const RegisteredTask& i : dataLock.cref ()) {
             r = min (r, i.fCallNextAt);
         }
@@ -110,7 +110,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             // now process any timer events that are ready (could easily be more than one).
             // if we had a priority q, we would do them in order, but for now, just do all that are ready
             // NOTE - to avoid holding a lock (in case these guys remove themselves or whatever) - lock/run through list twice
-            DurationSecondsType        now      = Time::GetTickCount ();
+            TimePointSeconds           now      = Time::GetTickCount ();
             Collection<RegisteredTask> elts2Run = fData_.cget ()->Where ([=] (const RegisteredTask& i) { return i.fCallNextAt <= now; });
             // note - this could EASILY be empty, for example, if fDataChanged_ wakes too early due to a change/Signal/Set
             for (const RegisteredTask& i : elts2Run) {
@@ -122,10 +122,10 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             for (const RegisteredTask& i : elts2Run) {
                 if (i.fFrequency.has_value ()) {
                     RegisteredTask newE = i;
-                    newE.fCallNextAt    = now + i.fFrequency->As<DurationSecondsType> ();
+                    newE.fCallNextAt    = now + *i.fFrequency;
                     if (i.fHysteresis) {
-                        uniform_real_distribution<> dis{-i.fHysteresis->As<DurationSecondsType> (), i.fHysteresis->As<DurationSecondsType> ()};
-                        newE.fCallNextAt += dis (gen); // can use fCallNextAt to be called immediately again... or even be < now
+                        uniform_real_distribution<> dis{-i.fHysteresis->count (), i.fHysteresis->count ()};
+                        newE.fCallNextAt += Time::DurationSeconds{dis (gen)}; // can use fCallNextAt to be called immediately again... or even be < now
                     }
                     rwDataLock->Add (newE); // just replaces
                 }

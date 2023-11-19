@@ -7,15 +7,11 @@
 #include "../StroikaPreComp.h"
 
 #include <chrono>
-#include <limits>
 
 /**
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- *      @todo   Consider making DurationSecondsType = long double. Tried and worked, but didnt have time
- *              to test impact/performance, and possibly pointless without changing internal rep of Duration at the same time.
  */
 namespace Stroika::Foundation {
     using namespace std;
@@ -26,64 +22,53 @@ namespace Stroika::Foundation::Time {
     using chrono::time_point;
 
     /**
-     *  Use double instead of long double because we don't have time to test performance impact, and only some (gcc/unix)
-     *  systems make a difference anyhow (not on ppc).
+     *  \brief chrono::duration<double> - a time span (length of time) measured in seconds.
      *
-     *  <<<OBSOLETE COMMENT>>>>Use long double because sometimes the basis of tickcount can get large (if we run for a year or so).
+     *  DurationSeconds is just a choice of what chrono::duration template parameters to use to make use much simpler.
+     *  Converting to a common sensible base format greatly simplifies a number of Stroika APIs, so rather than having to
+     *  template all your 'duration' arguments, just use this DurationSeconds for simplicity, clarity, and at only
+     * a small cost.
+     * 
+     *  \note this is one of two types which replaces the Stroika v2.1 DurationSecondsType (DurationSeconds and TimePointSeconds)
+     * 
+     *  \note Use double instead of long double (as the rep) because we don't have time to test performance impact, and only some (gcc/unix)
+     *  systems make a difference anyhow (not on ppc). Everything else in Stroika should key off this choice, so this is the place to change
+     *  the basic rep used throughout Stroika if I need to experiment (float/long double).
      */
-    using DurationSecondsType = double;
-
-    // EXPERIMENTING - switch many uses of DurationSecondsType to one or the other...
-    using DurationSeconds          = chrono::duration<double>;
-    using DurationSecondsTimePoint = time_point<chrono::steady_clock, DurationSeconds>;
-    static_assert (sizeof (DurationSecondsType) == sizeof (DurationSeconds));
-    static_assert (sizeof (DurationSecondsType) == sizeof (DurationSecondsTimePoint));
+    using DurationSeconds = chrono::duration<double>;
+    static_assert (sizeof (DurationSeconds::rep) == sizeof (DurationSeconds));
 
     /**
-     *  Computes the offset of the time_point from the beginning time for the given clock.
-     *
-     *  \note Starts At Zero
-     *      To avoid issues with roundoff, we start this at zero when the software first boots.
-     *
-     *  \todo - never implement assure done asap or at startup time - when not = chrono::steady_clock. Basline is from first call. Should add static init call as well.
+     *  \brief TimePointSeconds is a simpler approach to chrono::time_point, which doesn't require using templates everywhere.
+     * 
+     *  But - TimePointSeconds - since it uses chrono::time_point - is fully interoperable with the other time_point etc objects.
+     * 
+     *  The clock it uses IS guaraneed to be a 'steady' clock, though not necessarily THE 'steady_clock' class.
      */
-    template <typename Clock = chrono::steady_clock, class Duration = typename Clock::duration>
-    DurationSecondsType time_point2DurationSeconds (const time_point<Clock, Duration>& tp);
+    using TimePointSeconds = time_point<chrono::steady_clock, DurationSeconds>;
+    static_assert (sizeof (DurationSeconds::rep) == sizeof (TimePointSeconds));
+    static_assert (TimePointSeconds::clock::is_steady);
 
     /**
-     *  Map a 'tickcount' value to a time_point (which references a particular clock). This is used to interact
-     *  with chrono calls, like condition_variable<>::wait_until (), etc.
-     *
-     *  Note - those routines - due to use of fixed point arithmatic - have a large issue with overflow. As a result,
-     *  DurationSeconds2time_point will often return a much smaller time_point than might have made sense, but this is
-     *  just to avoid overflows.
-     *
-     *  This may need to be revisisted... @see @See https://stroika.atlassian.net/browse/STK-619
+     *  \note no longer true, but in Stroika v2.1:
+     *      this always started at offset zero for start of app (instead see FromAppStartRelative).
+     *      this always used steady_clock (now see TimePointSeconds).
+     *      it used to return a 'float' type and now returns a chrono::time_point<> type (for better type safety).
      */
-    template <typename Clock = chrono::steady_clock, class Duration = typename Clock::duration>
-    time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t);
+    TimePointSeconds GetTickCount () noexcept;
 
     /**
-     *  Get the number of seconds since time_point2DurationSeconds, etc APIs first called (typically since this process started).
-     *
-     *  This uses chrono::steady_clock.
-     *
-     *  \note Starts At Zero
-     *      To avoid issues with roundoff, we start this at zero when the software first boots.
-     *
-     *  \note - this value is convertible to time_point<chrono::steady_clock> via DurationSeconds2time_point, and so can be used with wait_until etc APIs
+     *  @See https://stroika.atlassian.net/browse/STK-619    CONSIDER LOSING THIS - AND USE special TYPE and overloading, and handle kInfinity differently - no arithmatic, just no timeout
      */
-    DurationSecondsType GetTickCount () noexcept;
-
-    DurationSecondsTimePoint New_GetTickCount () noexcept;
+    constexpr DurationSeconds kInfinity = DurationSeconds{numeric_limits<DurationSeconds::rep>::infinity ()};
 
     /**
-     *  @See https://stroika.atlassian.net/browse/STK-619    CONSIDER LOSING THIS - AND USE special TYPE and overloading, and handle kInfinite differently - no arithmatic, just no timeout
      */
-    constexpr DurationSecondsType kInfinite = numeric_limits<DurationSecondsType>::infinity ();
+    TimePointSeconds FromAppStartRelative (const TimePointSeconds& tp);
 
-    DurationSecondsTimePoint FromAppStartRelative (const DurationSecondsTimePoint& tp);
-    DurationSecondsTimePoint ToAppStartRelative (const DurationSecondsTimePoint& tp);
+    /**
+     */
+    TimePointSeconds ToAppStartRelative (const TimePointSeconds& tp);
 
 }
 

@@ -65,11 +65,11 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     {
         fRep_->Close ();
     }
-    inline DurationSecondsType Connection::Ptr::GetTimeout () const
+    inline Time::DurationSeconds Connection::Ptr::GetTimeout () const
     {
         return fRep_->GetTimeout ();
     }
-    inline void Connection::Ptr::SetTimeout (DurationSecondsType timeout)
+    inline void Connection::Ptr::SetTimeout (Time::DurationSeconds timeout)
     {
         fRep_->SetTimeout (timeout);
     }

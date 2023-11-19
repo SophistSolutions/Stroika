@@ -627,21 +627,21 @@ namespace {
     {
         static DateTime sTimeZero_ = [] () {
             DateTime now = DateTime::Now ();
-            return now.AddSeconds (-static_cast<int64_t> (Time::GetTickCount ()));
+            return now.AddSeconds (-static_cast<int64_t> (Time::GetTickCount ().time_since_epoch ().count ()));
         }();
         return sTimeZero_;
     }
 }
 
-DurationSecondsType DateTime::ToTickCount () const
+Time::TimePointSeconds DateTime::ToTickCount () const
 {
-    return (AsLocalTime () - GetDateTimeTickCountZeroOffset_ ()).As<DurationSecondsType> ();
+    return TimePointSeconds{(AsLocalTime () - GetDateTimeTickCountZeroOffset_ ()).As<Time::DurationSeconds> ()};
 }
 
-DateTime DateTime::FromTickCount (DurationSecondsType tickCount)
+DateTime DateTime::FromTickCount (Time::TimePointSeconds tickCount)
 {
     Assert (GetDateTimeTickCountZeroOffset_ ().GetTimezone () == Timezone::kLocalTime);
-    return GetDateTimeTickCountZeroOffset_ ().AddSeconds (Math::Round<int64_t> (tickCount));
+    return GetDateTimeTickCountZeroOffset_ ().AddSeconds (Math::Round<int64_t> (tickCount.time_since_epoch ().count ()));
 }
 
 optional<bool> DateTime::IsDaylightSavingsTime () const
@@ -927,9 +927,9 @@ Duration DateTime::Difference (const DateTime& rhs) const
 {
     if (GetTimezone () == rhs.GetTimezone ()) {
         int64_t dayDiff = static_cast<int64_t> (GetDate ().GetJulianRep ()) - static_cast<int64_t> (rhs.GetDate ().GetJulianRep ());
-        DurationSecondsType intraDaySecDiff = static_cast<DurationSecondsType> (GetSecondCount_ (GetTimeOfDay ())) -
-                                              static_cast<DurationSecondsType> (GetSecondCount_ (rhs.GetTimeOfDay ()));
-        return Duration{DurationSecondsType (kSecondsPerDay_ * dayDiff) + intraDaySecDiff};
+        Time::DurationSeconds intraDaySecDiff = static_cast<Time::DurationSeconds> (GetSecondCount_ (GetTimeOfDay ())) -
+                                                static_cast<Time::DurationSeconds> (GetSecondCount_ (rhs.GetTimeOfDay ()));
+        return Duration{Time::DurationSeconds (kSecondsPerDay_ * dayDiff) + intraDaySecDiff};
     }
     else {
         return AsUTC ().Difference (rhs.AsUTC ());
@@ -1008,16 +1008,11 @@ Duration Time::operator- (const DateTime& lhs, const DateTime& rhs)
  */
 bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r)
 {
-    return NearlyEquals (l, r, static_cast<Time::DurationSecondsType> (1.0));
+    return NearlyEquals (l, r, static_cast<Time::DurationSeconds> (1.0));
 }
 
-bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon)
+bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSeconds epsilon)
 {
-    return l == r or
-           Math::NearlyEquals (static_cast<DurationSecondsType> (l.As<time_t> ()), static_cast<DurationSecondsType> (r.As<time_t> ()), epsilon);
-}
-
-bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r, const Time::Duration& epsilon)
-{
-    return NearlyEquals (l, r, epsilon.As<Time::DurationSecondsType> ());
+    return l == r or Math::NearlyEquals (static_cast<Time::DurationSeconds::rep> (l.As<time_t> ()),
+                                         static_cast<Time::DurationSeconds::rep> (r.As<time_t> ()), epsilon.count ());
 }

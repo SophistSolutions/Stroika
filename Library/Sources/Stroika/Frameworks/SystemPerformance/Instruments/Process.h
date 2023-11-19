@@ -31,7 +31,8 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
     using Foundation::Containers::Mapping;
     using Foundation::DataExchange::ObjectVariantMapper;
     using Foundation::Execution::pid_t;
-    using Foundation::Time::DurationSecondsType;
+    using Foundation::Time::DurationSeconds;
+    using Foundation::Time::TimePointSeconds;
 
     using MemorySizeType = uint64_t;
 
@@ -184,7 +185,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
          *
          *  So - if you have two cores running constantly, this returns 2.0;
          */
-        optional<DurationSecondsType> fAverageCPUTimeUsed;
+        optional<DurationSeconds> fAverageCPUTimeUsed;
 
         /**
          *     In seconds - combines system and user time, and is NOT a time over the interval, but rather is
@@ -193,7 +194,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
          *     This is in units of a single CPU, so if you have a 2 CPU system running flat out for 3 seconds,
          *     this number would be 6 (2 * 3).
          */
-        optional<DurationSecondsType> fTotalCPUTimeEverUsed;
+        optional<DurationSeconds> fTotalCPUTimeEverUsed;
 
         /**
          */
@@ -301,7 +302,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
          *
          *  \req fMinimumAveragingInterval > 0
          */
-        Time::DurationSecondsType fMinimumAveragingInterval{1.0};
+        Time::DurationSeconds fMinimumAveragingInterval{1.0};
 
         /*
          * Assign nullptr to disable commandline capture.
@@ -356,7 +357,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  Specialization to improve performance
      */
     template <>
-    Instruments::Process::Info Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
+    Instruments::Process::Info Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut);
 
 }
 

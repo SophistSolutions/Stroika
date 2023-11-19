@@ -289,8 +289,8 @@ namespace {
 
     void Test_1_TestTickCountGrowsMonotonically_ ()
     {
-        TraceContextBumper  ctx{"Test_1_TestTickCountGrowsMonotonically_"};
-        DurationSecondsType start = Time::GetTickCount ();
+        TraceContextBumper     ctx{"Test_1_TestTickCountGrowsMonotonically_"};
+        Time::TimePointSeconds start = Time::GetTickCount ();
         Execution::Sleep (100ms);
         VerifyTestResult (start <= Time::GetTickCount ());
     }
@@ -608,28 +608,29 @@ namespace {
             VerifyTestResult (diff == days{12}); // note not a leap year
         }
         {
-            using Time::DurationSecondsType;
-            DurationSecondsType now = Time::GetTickCount ();
+            Time::TimePointSeconds now = Time::GetTickCount ();
 
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-            static const auto kInitList_ = initializer_list<DurationSecondsType>{3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300};
+            static const auto kInitList_ =
+                initializer_list<Time::DurationSeconds>{3s, 995s, 3.4s, 3004.5s, 1055646.4s, 60 * 60 * 24 * 300s};
 #endif
-            for (DurationSecondsType ds :
+            for (Time::DurationSeconds dso :
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                  kInitList_
 #else
-                 initializer_list<DurationSecondsType>{3, 995, 3.4, 3004.5, 1055646.4, 60 * 60 * 24 * 300}
+                 initializer_list<Time::DurationSeconds>{3s, 995s, 3.4s, 3004.5s, 1055646.4s, 60s * 60 * 24 * 300}
 #endif
             ) {
-                ds += now;
-                DateTime dt = DateTime::FromTickCount (ds);
+                Time::TimePointSeconds ds = dso + now;
+                DateTime               dt = DateTime::FromTickCount (ds);
                 VerifyTestResult (Math::NearlyEquals (dt, DateTime::FromTickCount (dt.ToTickCount ())));
                 // crazy large epsilon for now because we represent datetime to nearest second
                 // (note - failed once with clang++ on vm - could be something else slowed vm down - LGP 2018-04-17 - ignore for now)
                 // But even the 1.1 failed once (--LGP 2019-05-03) - so change to warning and use bigger number (2.1) for error check
                 // Failed again on (slowish) vm under VS2k17 - but rarely --LGP 2021-05-20
-                VerifyTestResultWarning (Math::NearlyEquals (dt.ToTickCount (), ds, 1.1));
-                VerifyTestResult (Math::NearlyEquals (dt.ToTickCount (), ds, 5)); // failed once - with value 2.1 - 2023-11-10, so up this to 5 (sometimes run on slow machines)
+                VerifyTestResultWarning (Math::NearlyEquals (dt.ToTickCount ().time_since_epoch ().count (), ds.time_since_epoch ().count (), 1.1));
+                VerifyTestResult (Math::NearlyEquals (dt.ToTickCount ().time_since_epoch ().count (), ds.time_since_epoch ().count (),
+                                                      5)); // failed once - with value 2.1 - 2023-11-10, so up this to 5 (sometimes run on slow machines)
             }
         }
         {
@@ -671,10 +672,10 @@ namespace {
                 constexpr Date kDate_{Time::Year {2016}, Time::MonthOfYear{9}, Time::DayOfMonth{29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 constexpr TimeOfDay kTOD2_{10, 21, 35};
-                VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_, kTOD2_}).As<Time::DurationSecondsType> () == -3);
-                VerifyTestResult ((DateTime {kDate_, kTOD2_} - DateTime {kDate_, kTOD_}).As<Time::DurationSecondsType> () == 3);
-                VerifyTestResult ((DateTime {kDate_.Add (1), kTOD_} - DateTime {kDate_, kTOD_}).As<Time::DurationSecondsType> () == 24 * 60 * 60);
-                VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_.Add (1), kTOD_}).As<Time::DurationSecondsType> () == -24 * 60 * 60);
+                VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_, kTOD2_}).As<Time::DurationSeconds::rep> () == -3);
+                VerifyTestResult ((DateTime {kDate_, kTOD2_} - DateTime {kDate_, kTOD_}).As<Time::DurationSeconds::rep> () == 3);
+                VerifyTestResult ((DateTime {kDate_.Add (1), kTOD_} - DateTime {kDate_, kTOD_}).As<Time::DurationSeconds::rep> () == 24 * 60 * 60);
+                VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_.Add (1), kTOD_}).As<Time::DurationSeconds::rep> () == -24 * 60 * 60);
             }
             {
                 VerifyTestResult ((DateTime::Now () - DateTime::kMin) > "P200Y"_duration);
@@ -685,21 +686,21 @@ namespace {
             {
                 constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
-                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::kISO8601Format);
+                DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-04:00", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
                 VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
             {
                 constexpr Date      kDate_ = Date {Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
-                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::kISO8601Format);
+                DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-0400", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
                 VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
             {
                 constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth {29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
-                DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::kISO8601Format);
+                DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-04", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
                 VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
@@ -817,20 +818,20 @@ namespace {
             VerifyTestResult (k30Days.As<time_t> () == 30 * kSecondsPerDay);
         }
         {
-            const Duration k6Months = Duration{L"P6M"};
+            const Duration k6Months = Duration{"P6M"};
             VerifyTestResult (k6Months.As<time_t> () == 6 * 30 * kSecondsPerDay);
         }
         {
-            const Duration kP1Y = Duration{L"P1Y"};
+            const Duration kP1Y = Duration{"P1Y"};
             VerifyTestResult (kP1Y.As<time_t> () == 365 * kSecondsPerDay);
         }
         {
-            const Duration kP2Y = Duration{L"P2Y"};
+            const Duration kP2Y = Duration{"P2Y"};
             VerifyTestResult (kP2Y.As<time_t> () == 2 * 365 * kSecondsPerDay);
-            VerifyTestResult (Duration{2 * 365 * kSecondsPerDay}.As<wstring> () == L"P2Y");
+            VerifyTestResult (Duration{2 * 365 * kSecondsPerDay}.As<String> () == "P2Y");
         }
         {
-            const Duration kHalfMinute = Duration{L"PT0.5M"};
+            const Duration kHalfMinute = Duration{"PT0.5M"};
             VerifyTestResult (kHalfMinute.As<time_t> () == 30);
         }
         {
@@ -874,35 +875,34 @@ namespace {
             const Duration kD = Duration{"PT0.000045S"};
             VerifyTestResult (kD.PrettyPrint () == L"45 \u00b5s");
             VerifyTestResult ((-kD).PrettyPrint () == L"-45 \u00b5s");
-            VerifyTestResult ((-kD).As<wstring> () == L"-PT0.000045S");
+            VerifyTestResult ((-kD).As<String> () == "-PT0.000045S");
         }
         VerifyTestResult (Duration{"P30S"}.As<time_t> () == 30);
         VerifyTestResult (Duration{"PT30S"}.As<time_t> () == 30);
-        VerifyTestResult (Duration{60}.As<wstring> () == L"PT1M");
+        VerifyTestResult (Duration{60}.As<String> () == L"PT1M");
         VerifyTestResult (Duration{"-PT1H1S"}.As<time_t> () == -3601);
         VerifyTestResult (-Duration{"-PT1H1S"}.As<time_t> () == 3601);
 
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1;
             for (time_t i = -45; i < 60 * 3 * 60 + 99; i += K) {
-                VerifyTestResult (Duration{Duration{i}.As<wstring> ()}.As<time_t> () == i);
+                VerifyTestResult (Duration{Duration{i}.As<String> ()}.As<time_t> () == i);
             }
         }
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 2630 : 263;
             for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += K) {
-                VerifyTestResult (Duration{Duration{i}.As<wstring> ()}.As<time_t> () == i);
+                VerifyTestResult (Duration{Duration{i}.As<String> ()}.As<time_t> () == i);
             }
         }
         VerifyTestResult (Duration::min () < Duration::max ());
         VerifyTestResult (Duration::min () != Duration::max ());
         VerifyTestResult (Duration::min () < Duration{"P30S"} and Duration{"P30S"} < Duration::max ());
         {
-            using Time::DurationSecondsType;
             Duration d = Duration{L"PT0.1S"};
             VerifyTestResult (d == "PT0.1S"_duration);
             d += chrono::milliseconds{30};
-            VerifyTestResult (Math::NearlyEquals (d.As<DurationSecondsType> (), static_cast<DurationSecondsType> (.130)));
+            VerifyTestResult (Math::NearlyEquals (d.As<DurationSeconds::rep> (), static_cast<DurationSeconds::rep> (.130)));
         }
         {
             VerifyTestResult (Duration{"PT1.4S"}.PrettyPrintAge () == "now");
@@ -992,10 +992,10 @@ namespace {
         VerifyTestResult (k30Seconds.As<String> () == L"PT30S");
         VerifyTestResult (k30Seconds.As<chrono::duration<double>> () == chrono::duration<double>{30.0});
         VerifyTestResult (Duration{chrono::duration<double> (4)}.As<time_t> () == 4);
-        VerifyTestResult (Math::NearlyEquals (Duration{chrono::milliseconds{50}}.As<Time::DurationSecondsType> (), 0.050));
-        VerifyTestResult (Math::NearlyEquals (Duration{chrono::microseconds{50}}.As<Time::DurationSecondsType> (), 0.000050));
-        VerifyTestResult (Math::NearlyEquals (Duration{chrono::nanoseconds{50}}.As<Time::DurationSecondsType> (), 0.000000050));
-        VerifyTestResult (Math::NearlyEquals (Duration{chrono::nanoseconds{1}}.As<Time::DurationSecondsType> (), 0.000000001));
+        VerifyTestResult (Math::NearlyEquals (Duration{chrono::milliseconds{50}}.As<Time::DurationSeconds::rep> (), 0.050));
+        VerifyTestResult (Math::NearlyEquals (Duration{chrono::microseconds{50}}.As<Time::DurationSeconds::rep> (), 0.000050));
+        VerifyTestResult (Math::NearlyEquals (Duration{chrono::nanoseconds{50}}.As<Time::DurationSeconds::rep> (), 0.000000050));
+        VerifyTestResult (Math::NearlyEquals (Duration{chrono::nanoseconds{1}}.As<Time::DurationSeconds::rep> (), 0.000000001));
         VerifyTestResult (Duration{5.0}.As<chrono::milliseconds> () == chrono::milliseconds{5000});
         VerifyTestResult (Duration{-5.0}.As<chrono::milliseconds> () == chrono::milliseconds{-5000});
         VerifyTestResult (Duration{1.0}.As<chrono::nanoseconds> () == chrono::nanoseconds{1000 * 1000 * 1000});
@@ -1095,7 +1095,7 @@ namespace {
             Range<DateTime> d1{DateTime{Date{Year{2000}, April, DayOfMonth{20}}}, DateTime{Date{Year{2000}, April, DayOfMonth{22}}}};
             VerifyTestResult (d1.GetDistanceSpanned () / 2 == Duration{"PT1D"});
             // SEE https://stroika.atlassian.net/browse/STK-514 for accuracy of compare (sb .1 or less)
-            VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date{Year{2000}, April, DayOfMonth{21}}, DurationSecondsType{2}));
+            VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date{Year{2000}, April, DayOfMonth{21}}, DurationSeconds{2}));
         }
     }
 }
@@ -1104,9 +1104,8 @@ namespace {
     void Test_14_timepoint_ ()
     {
         TraceContextBumper ctx{"Test_14_timepoint_"};
-        // @see https://stroika.atlassian.net/browse/STK-619 - VerifyTestResult (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinite) == time_point<chrono::steady_clock>::max ());
-        VerifyTestResult (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinite) >
-                          chrono::steady_clock::now () + chrono::seconds (10000));
+        // @see https://stroika.atlassian.net/browse/STK-619 - VerifyTestResult (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinity) == time_point<chrono::steady_clock>::max ());
+        VerifyTestResult (Time::GetTickCount () + Time::kInfinity > chrono::steady_clock::now () + chrono::seconds (10000));
     }
 }
 

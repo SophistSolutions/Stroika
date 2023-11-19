@@ -34,6 +34,11 @@ namespace Stroika::Foundation::Execution {
      *  Sleep\1:    will restart sleeping to use up the full given sleep time, if interrupted (unless thread interruption causes throw)
      *  Sleep\2:    may not use up the entire time given as argument, and if not, will place in remainingInSleep the time remaining.
      *
+     *  \par Example Usage
+     *      \code
+     *          Execution::Sleep (30ms);
+     *      \endcode
+     *
      *  \note   Sleep (0) will still yield the processor (so like std::thread::yield ())
      *
      *  \req    seconds2Wait >= 0
@@ -46,11 +51,10 @@ namespace Stroika::Foundation::Execution {
      *  \note   ***Cancelation Point***
      *
      *  \note   Very similar to std::this_thread::sleep_for () - except for the overload returning remaining amount, and cancelation support
+     *
      */
-    void Sleep (Time::DurationSecondsType seconds2Wait);
-    void Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep);
-    void Sleep (const Time::Duration& wait);
-    void Sleep (const Time::Duration& wait, Time::Duration* remainingInSleep);
+    void Sleep (Time::Duration seconds2Wait);
+    void Sleep (Time::Duration seconds2Wait, Time::DurationSeconds* remainingInSleep);
 
     /**
      *  Wait until the tickCount is >= the given value.
@@ -59,7 +63,7 @@ namespace Stroika::Foundation::Execution {
      *      \code
      *          Time::DurationSeconds startedAt =   Time::GetTickCount ();
      *          do_something_dont_know_how_long_it_will_take();
-     *          Execution::SleepUntil (1.0 + startedAt);        // make sure do_something_dont_know_how_long_it_will_take () took at least one second
+     *          Execution::SleepUntil (1.0s + startedAt);        // make sure do_something_dont_know_how_long_it_will_take () took at least one second
      *      \endcode
      *
      *  @see Sleep ();
@@ -74,7 +78,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   Very similar to std::this_thread::sleep_until () - except for the cancelation support
      */
-    void SleepUntil (Time::DurationSecondsType untilTickCount);
+    void SleepUntil (Time::DurationSeconds untilTickCount);
 
 }
 

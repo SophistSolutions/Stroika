@@ -541,9 +541,9 @@ void WordProcessor::WPIdler::SpendIdleTime ()
     AbstractParagraphDatabaseRep* pdbRep = fWP->GetParagraphDatabase ().get ();
     AssertNotNull (pdbRep);
     if (pdbRep->fSomeInvalidTables) {
-        const float                           kMaxTime  = 0.2f;
-        Foundation::Time::DurationSecondsType startTime = Time::GetTickCount ();
-        Foundation::Time::DurationSecondsType endTime   = startTime + kMaxTime;
+        constexpr Foundation::Time::DurationSeconds kMaxTime  = 0.2s;
+        Foundation::Time::TimePointSeconds          startTime = Time::GetTickCount ();
+        Foundation::Time::TimePointSeconds          endTime   = startTime + kMaxTime;
         AssertNotNull (fWP);
         using Table                    = WordProcessor::Table;
         vector<Table*> tables          = fWP->GetTablesInRange (0, fWP->GetEnd ());
@@ -1001,7 +1001,7 @@ WordProcessor::WordProcessor ()
 {
     fWPIdler.fWP = this;
     IdleManager::Get ().AddIdler (&fWPIdler);
-    IdleManager::Get ().SetIdlerFrequncy (&fWPIdler, 0.25f);
+    IdleManager::Get ().SetIdlerFrequncy (&fWPIdler, 0.25s);
 }
 
 WordProcessor::~WordProcessor ()

@@ -40,7 +40,7 @@ using Stroika::Foundation::Time::Duration;
  ****************************** WaitableEvent::WE_ ******************************
  ********************************************************************************
  */
-void WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
+void WaitableEvent::WE_::WaitUntil (Time::TimePointSeconds timeoutAt)
 {
     if (WaitUntilQuietly (timeoutAt) == WaitStatus::eTimeout) {
 // note - safe use of TimeOutException::kThe because you cannot really wait except when threads are running, so
@@ -54,7 +54,7 @@ void WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
     }
 }
 
-auto WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) -> WaitStatus
+auto WaitableEvent::WE_::WaitUntilQuietly (Time::TimePointSeconds timeoutAt) -> WaitStatus
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{L"WaitableEvent::WE_::WaitUntilQuietly", L"timeout = %e", timeoutAt};

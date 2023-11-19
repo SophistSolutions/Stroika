@@ -20,8 +20,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
      */
     struct KeepAlive {
-        optional<unsigned int>              fMessages;
-        optional<Time::DurationSecondsType> fTimeoutAt;
+        optional<unsigned int>          fMessages;
+        optional<Time::DurationSeconds> fTimeout;
 
         /**
          */

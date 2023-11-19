@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline optional<VALUE> SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key,
-                                                                               Time::DurationSecondsType* lastRefreshedAt) const
+                                                                               Time::TimePointSeconds* lastRefreshedAt) const
     {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
         return inherited::Lookup (key);

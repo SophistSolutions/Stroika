@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Execution {
              *                     clearer, but its easier to validate/assert the returned INDEXES are valid than the returned POINTERS are valid.
              */
             static auto _WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end,
-                                           Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>;
+                                           Time::TimePointSeconds timeoutAt) -> Containers::Set<size_t>;
         };
 
         /**
@@ -257,8 +257,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitUntil
          *  @see WaitQuietlyUntil
          */
-        nonvirtual Containers::Set<T> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
-        nonvirtual Containers::Set<T> Wait (const Time::Duration& waitFor);
+        nonvirtual Containers::Set<T> Wait (Time::DurationSeconds waitFor = Time::kInfinity);
 
     public:
         /*
@@ -272,8 +271,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitUntil
          *  @see WaitQuietlyUntil
          */
-        nonvirtual Containers::Set<T> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
-        nonvirtual Containers::Set<T> WaitQuietly (const Time::Duration& waitFor);
+        nonvirtual Containers::Set<T> WaitQuietly (Time::DurationSeconds waitFor = Time::kInfinity);
 
     public:
         /*
@@ -287,7 +285,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitQuietly
          *  @see WaitQuietlyUntil
          */
-        nonvirtual Containers::Set<T> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+        nonvirtual Containers::Set<T> WaitUntil (Time::TimePointSeconds timeoutAt = Time::kInfinity);
 
     public:
         /*
@@ -303,7 +301,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitQuietly
          *  @see WaitUntil
          */
-        nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+        nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::TimePointSeconds timeoutAt = Time::kInfinity);
 
     private:
         // Fill two buffers, one with the data needed to pass to _WaitQuietlyUntil, and the other with

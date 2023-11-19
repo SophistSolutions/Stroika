@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Execution {
      *              Thread::eAutoStart,
      *              "Consumer"_k
      *          );
-     *          Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
+     *          Time::TimePointSeconds killAt = 10.0 + Time::GetTickCount ();
      *          while (counter != expectedValue and Time::GetTickCount () < killAt) {
      *              Execution::Sleep (500ms);
      *          }
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note this is illegal to call (assertion error) if SignalEndOfInput () has been called on this BlockingQueue.
          */
-        nonvirtual void AddTail (const T& e, Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual void AddTail (const T& e, Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
@@ -147,7 +147,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  @see RemoveHeadIfPossible()
          */
-        nonvirtual T RemoveHead (Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual T RemoveHead (Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  Analagous to the java BlockingQueue<T>::poll () method.
          */
-        nonvirtual optional<T> RemoveHeadIfPossible (Time::DurationSecondsType timeout = 0);
+        nonvirtual optional<T> RemoveHeadIfPossible (Time::DurationSeconds timeout = 0s);
 
     public:
         /**

@@ -301,24 +301,24 @@ namespace Stroika::Frameworks::Service {
     public:
         /**
          */
-        nonvirtual void Start (Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual void Start (Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
          */
-        nonvirtual void Stop (Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual void Stop (Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
          *  Does a regular stop, but if that doesn't work (by the given timeout), do low-level
          *  force stop and cleanup as best as possible.
          */
-        nonvirtual void ForcedStop (Time::DurationSecondsType timeout);
+        nonvirtual void ForcedStop (Time::DurationSeconds timeout);
 
     public:
         /**
         */
-        nonvirtual void Restart (Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual void Restart (Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
@@ -326,8 +326,7 @@ namespace Stroika::Frameworks::Service {
          *  This only fails if it couldn't (even forced) stop the service (ignoring timeout) or if
          *  it fails to restart the service.
          */
-        nonvirtual void ForcedRestart (Time::DurationSecondsType timeout             = Time::kInfinite,
-                                       Time::DurationSecondsType unforcedStopTimeout = Time::kInfinite);
+        nonvirtual void ForcedRestart (Time::DurationSeconds timeout = Time::kInfinity, Time::DurationSeconds unforcedStopTimeout = Time::kInfinity);
 
     public:
         /**
@@ -600,17 +599,17 @@ namespace Stroika::Frameworks::Service {
     protected:
         /**
          */
-        virtual void _Start (Time::DurationSecondsType timeout) = 0;
+        virtual void _Start (Time::DurationSeconds timeout) = 0;
 
     protected:
         /**
          */
-        virtual void _Stop (Time::DurationSecondsType timeout) = 0;
+        virtual void _Stop (Time::DurationSeconds timeout) = 0;
 
     protected:
         /**
          */
-        virtual void _ForcedStop (Time::DurationSecondsType timeout) = 0;
+        virtual void _ForcedStop (Time::DurationSeconds timeout) = 0;
 
     protected:
         /**
@@ -640,9 +639,9 @@ namespace Stroika::Frameworks::Service {
         virtual void                                        _UnInstall () override;
         virtual void                                        _RunAsService () override;
         virtual void                                        _RunDirectly (const optional<Time::Duration>& runFor) override;
-        virtual void                                        _Start (Time::DurationSecondsType timeout) override;
-        virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
-        virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
+        virtual void                                        _Start (Time::DurationSeconds timeout) override;
+        virtual void                                        _Stop (Time::DurationSeconds timeout) override;
+        virtual void                                        _ForcedStop (Time::DurationSeconds timeout) override;
         virtual pid_t                                       _GetServicePID () const override;
 
     private:
@@ -663,9 +662,9 @@ namespace Stroika::Frameworks::Service {
         virtual void                                        _UnInstall () override;
         virtual void                                        _RunAsService () override;
         virtual void                                        _RunDirectly (const optional<Time::Duration>& runFor) override;
-        virtual void                                        _Start (Time::DurationSecondsType timeout) override;
-        virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
-        virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
+        virtual void                                        _Start (Time::DurationSeconds timeout) override;
+        virtual void                                        _Stop (Time::DurationSeconds timeout) override;
+        virtual void                                        _ForcedStop (Time::DurationSeconds timeout) override;
         virtual pid_t                                       _GetServicePID () const override;
 
     private:
@@ -690,9 +689,9 @@ namespace Stroika::Frameworks::Service {
         virtual void                                        _UnInstall () override;
         virtual void                                        _RunAsService () override;
         virtual void                                        _RunDirectly (const optional<Time::Duration>& runFor) override;
-        virtual void                                        _Start (Time::DurationSecondsType timeout) override;
-        virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
-        virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
+        virtual void                                        _Start (Time::DurationSeconds timeout) override;
+        virtual void                                        _Stop (Time::DurationSeconds timeout) override;
+        virtual void                                        _ForcedStop (Time::DurationSeconds timeout) override;
         virtual pid_t                                       _GetServicePID () const override;
 
     protected:
@@ -762,9 +761,9 @@ namespace Stroika::Frameworks::Service {
         virtual void                                        _UnInstall () override;
         virtual void                                        _RunAsService () override;
         virtual void                                        _RunDirectly (const optional<Time::Duration>& runFor) override;
-        virtual void                                        _Start (Time::DurationSecondsType timeout) override;
-        virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
-        virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
+        virtual void                                        _Start (Time::DurationSeconds timeout) override;
+        virtual void                                        _Stop (Time::DurationSeconds timeout) override;
+        virtual void                                        _ForcedStop (Time::DurationSeconds timeout) override;
         virtual pid_t                                       _GetServicePID () const override;
 
     private:

@@ -74,7 +74,6 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
     using Characters::String;
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
-    using Time::DurationSecondsType;
 
     class IRep;
     struct Options;
@@ -103,12 +102,12 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
          * Send should timeout after this amount of time. Note - the initial Send may do
          * much more work (nslookup and tcp connect) than subsequent ones, and this same timeout is used for the combined time.
          */
-        nonvirtual DurationSecondsType GetTimeout () const;
+        nonvirtual Time::DurationSeconds GetTimeout () const;
 
     public:
         /**
          */
-        nonvirtual void SetTimeout (DurationSecondsType timeout);
+        nonvirtual void SetTimeout (Time::DurationSeconds timeout);
 
     public:
         /**
@@ -442,13 +441,13 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
         nonvirtual IRep& operator= (const IRep&) = delete;
 
     public:
-        virtual Options             GetOptions () const                                   = 0;
-        virtual URI                 GetSchemeAndAuthority () const                        = 0;
-        virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) = 0;
-        virtual DurationSecondsType GetTimeout () const                                   = 0;
-        virtual void                SetTimeout (DurationSecondsType timeout)              = 0;
-        virtual void                Close ()                                              = 0;
-        virtual Response            Send (const Request& r)                               = 0;
+        virtual Options               GetOptions () const                                   = 0;
+        virtual URI                   GetSchemeAndAuthority () const                        = 0;
+        virtual void                  SetSchemeAndAuthority (const URI& schemeAndAuthority) = 0;
+        virtual Time::DurationSeconds GetTimeout () const                                   = 0;
+        virtual void                  SetTimeout (Time::DurationSeconds timeout)            = 0;
+        virtual void                  Close ()                                              = 0;
+        virtual Response              Send (const Request& r)                               = 0;
     };
 
 }

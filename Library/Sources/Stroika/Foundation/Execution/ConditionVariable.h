@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Execution {
          *                
          *      \note in Stroika v2.1 this was called sThreadAbortCheckFrequency_Default
          */
-        static inline Time::DurationSecondsType sConditionVariableWaitChunkTime{0.25};
+        static inline Time::DurationSeconds sConditionVariableWaitChunkTime{0.25s};
 
         /**
          */
@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Execution {
          *  \note   ***Cancelation Point***
          *
          *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_until () - except
-         *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
+         *          for adding support for thread interruption (and a minor point - Time::TimePointSeconds)
          * 
          *  \note the cv_status returning overload CAN return/wakeup spurriously (not timeout, and not desired condition true)
          *        The PREDICATE (readyToWake) overload, never returns a spurrious wake (so only returns timeout (false) or true if readyToWake returned true.
@@ -236,9 +236,9 @@ namespace Stroika::Foundation::Execution {
          * 
          * @todo maybe lose the (no predicate) overload --LGP 2023-10-09
          */
-        nonvirtual cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
+        nonvirtual cv_status wait_until (LockType& lock, Time::TimePointSeconds timeoutAt);
         template <invocable PREDICATE>
-        nonvirtual bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE&& readyToWake);
+        nonvirtual bool wait_until (LockType& lock, Time::TimePointSeconds timeoutAt, PREDICATE&& readyToWake);
 
         /**
          * Like condition_variable wait_for, except
@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Execution {
          *  \note   ***Cancelation Point***
          *
          *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_for () - except
-         *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
+         *          for adding support for thread interruption (and a minor point - Time::TimePointSeconds)
          * 
          *  \note the cv_status returning overload CAN return/wakeup spurriously (not timeout, and not desired condition true)
          *        The PREDICATE (readyToWake) overload, never returns a spurrious wake (so only returns timeout (false) or true if readyToWake returned true.
@@ -262,9 +262,9 @@ namespace Stroika::Foundation::Execution {
          *  \req (lock.owns_lock ());
          *  \ensure (lock.owns_lock ());
          */
-        nonvirtual cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
+        nonvirtual cv_status wait_for (LockType& lock, Time::DurationSeconds timeout);
         template <invocable PREDICATE>
-        nonvirtual bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE&& readyToWake);
+        nonvirtual bool wait_for (LockType& lock, Time::DurationSeconds timeout, PREDICATE&& readyToWake);
 
         /**
          *  Idea is you pass lambda to do actual data change, and this acquires lock first, and notifies all after.

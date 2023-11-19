@@ -62,7 +62,7 @@ namespace {
             for (int i = 0; i < 10; i++) {
                 lock_guard<recursive_mutex> critSect{sharedCriticalSection_};
                 int                         tmp = *argP;
-                Execution::Sleep (.001);
+                Execution::Sleep (1ms);
                 //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
                 *argP = tmp + 1;
             }
@@ -144,7 +144,7 @@ namespace {
                     for (int i = 0; i < 10; i++) {
                         sRegTest3Event_T1_.WaitAndReset (5.0);
                         int tmp = *argP;
-                        Execution::Sleep (.001);
+                        Execution::Sleep (1ms);
                         // Since fred1/fred2 always take turns, and Fred1 always goes first...
                         VerifyTestResult (tmp % 2 == 0);
                         //DbgTrace ("FRED1: Updating value in of %d", tmp);
@@ -160,7 +160,7 @@ namespace {
                     for (int i = 0; i < 10; i++) {
                         sRegTest3Event_T2_.WaitAndReset (5.0);
                         int tmp = *argP;
-                        Execution::Sleep (.001);
+                        Execution::Sleep (1ms);
                         //DbgTrace ("FRED2: Updating value in of %d", tmp);
                         *argP = tmp + 1;
                         sRegTest3Event_T1_.Set ();
@@ -192,7 +192,7 @@ namespace {
             auto                      startAt = Time::GetTickCount ();
             sRegTest3Event_T1_.Reset ();
             try {
-                sRegTest3Event_T1_.Wait (0.5); // should timeout
+                sRegTest3Event_T1_.Wait (0.5s); // should timeout
             }
             catch (const Execution::TimeOutException&) {
                 passed = true;
@@ -200,7 +200,7 @@ namespace {
             catch (...) {
             }
             VerifyTestResult (passed);
-            if (Time::GetTickCount () - startAt > 1.0) {
+            if (Time::GetTickCount () - startAt > 1.0s) {
                 Stroika::TestHarness::WarnTestIssue ("TEST_TIMEOUT_EXECPETIONS_ took too long");
             }
         }
@@ -209,9 +209,9 @@ namespace {
             Debug::TraceContextBumper traceCtx{"Deadlock block on waitable event and abort thread (thread cancelation)- "
                                                "WAITABLE_EVENTS_::TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_"};
             // Make a thread to wait a 'LONG TIME' on a single event, and verify it gets cancelled reasonably
-            static constexpr Time::DurationSecondsType kLONGTimeForThread2Wait_{60.0}; // just has to be much more than the waits below
-            static WaitableEvent                       s_autoResetEvent_{};
-            auto                                       myWaitingThreadProc = [] () {
+            static constexpr Time::DurationSeconds kLONGTimeForThread2Wait_{60.0s}; // just has to be much more than the waits below
+            static WaitableEvent                   s_autoResetEvent_{};
+            auto                                   myWaitingThreadProc = [] () {
                 Debug::TraceContextBumper innerThreadLoopCtx{"innerThreadLoop"};
                 s_autoResetEvent_.Wait (kLONGTimeForThread2Wait_);
             };
@@ -222,13 +222,13 @@ namespace {
             // At this point the thread 't' SHOULD block and wait kLONGTimeForThread2Wait_ seconds
             // So we wait a shorter time for it, and that should fail
             {
-                Debug::TraceContextBumper           ctx1{"expect-failed-wait"};
-                constexpr Time::DurationSecondsType kMarginOfErrorLo_ = .5;
-                constexpr Time::DurationSecondsType kMarginOfErrorHi_Warn_ = qDebug ? 5.0 : 3.0; // if sys busy, thread could be put to sleep almost any amount of time
-                constexpr Time::DurationSecondsType kMarginOfErrorHi_Error_ = 10.0; // ""
-                constexpr Time::DurationSecondsType kWaitOnAbortFor         = 1.0;
-                Time::DurationSecondsType           startTestAt             = Time::GetTickCount ();
-                Time::DurationSecondsType           caughtExceptAt          = 0;
+                Debug::TraceContextBumper       ctx1{"expect-failed-wait"};
+                constexpr Time::DurationSeconds kMarginOfErrorLo_ = .5s;
+                constexpr Time::DurationSeconds kMarginOfErrorHi_Warn_ = qDebug ? 5.0s : 3.0s; // if sys busy, thread could be put to sleep almost any amount of time
+                constexpr Time::DurationSeconds kMarginOfErrorHi_Error_ = 10.0s; // ""
+                constexpr Time::DurationSeconds kWaitOnAbortFor         = 1.0s;
+                Time::TimePointSeconds          startTestAt             = Time::GetTickCount ();
+                Time::TimePointSeconds          caughtExceptAt          = Time::TimePointSeconds{};
 
                 try {
                     t.WaitForDone (kWaitOnAbortFor);
@@ -236,9 +236,10 @@ namespace {
                 catch (const Execution::TimeOutException&) {
                     caughtExceptAt = Time::GetTickCount ();
                 }
-                Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
+                Time::TimePointSeconds expectedEndAt = startTestAt + kWaitOnAbortFor;
                 if (not(expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_)) {
-                    DbgTrace ("expectedEndAt=%f, caughtExceptAt=%f", double (expectedEndAt), double (caughtExceptAt));
+                    DbgTrace ("expectedEndAt=%f, caughtExceptAt=%f", double (expectedEndAt.time_since_epoch ().count ()),
+                              double (caughtExceptAt.time_since_epoch ().count ()));
                 }
                 VerifyTestResult (expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt);
                 // FAILURE:
@@ -266,8 +267,8 @@ namespace {
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
             {
                 Debug::TraceContextBumper ctx1{"expect-abort-to-work-and-wait-to-succceed"};
-                constexpr Time::DurationSecondsType kMarginOfError_ = 10; // larger margin of error cuz sometimes fails on raspberrypi (esp with asan)
-                constexpr Time::DurationSecondsType kWaitOnAbortFor = qDebug ? 7.0 : 3.0;
+                constexpr Time::DurationSeconds kMarginOfError_ = 10s; // larger margin of error cuz sometimes fails on raspberrypi (esp with asan)
+                constexpr Time::DurationSeconds kWaitOnAbortFor = qDebug ? 7.0s : 3.0s;
                 // use such a long timeout cuz we run this on 'debug' builds,
                 // with asan, valgrind, and on small arm devices. Upped from 2.0 to 2.5 seconds
                 // due to timeout on raspberrypi (rare even there)
@@ -277,7 +278,7 @@ namespace {
                 //
                 // Upped from 3 to 6 since failed running under docker / windows on laptop -- LGP 2020-03-09
                 // Upped to 7 for debug, but back to 3 otherwise -- LGP 2020-03-20
-                Time::DurationSecondsType startTestAt = Time::GetTickCount ();
+                Time::TimePointSeconds startTestAt = Time::GetTickCount ();
                 try {
                     t.AbortAndWaitForDone (kWaitOnAbortFor);
                 }
@@ -345,10 +346,11 @@ namespace {
                     //
                     // Now once saw on (slow windows VM on hercules) system, during builds, so probably nothing -- LGP 2021-02-27
                 }
-                Time::DurationSecondsType doneAt        = Time::GetTickCount ();
-                Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
+                Time::TimePointSeconds doneAt        = Time::GetTickCount ();
+                Time::TimePointSeconds expectedEndAt = startTestAt + kWaitOnAbortFor;
                 if (not(startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_)) {
-                    DbgTrace (L"startTestAt=%f, doneAt=%f, expectedEndAt=%f", double (startTestAt), double (doneAt), double (expectedEndAt));
+                    DbgTrace (L"startTestAt=%f, doneAt=%f, expectedEndAt=%f", double (startTestAt.time_since_epoch ().count ()),
+                              double (doneAt.time_since_epoch ().count ()), double (expectedEndAt.time_since_epoch ().count ()));
                 }
                 VerifyTestResult (startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_);
             }
@@ -404,7 +406,7 @@ namespace {
 #if 0
                                 lock_guard<recursive_mutex> critSect (*argP);
                                 int tmp = *argP;
-                                Execution::Sleep (.01);
+                                Execution::Sleep (10ms);
                                 //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
                                 *argP = tmp + 1;
 #endif
@@ -422,13 +424,13 @@ namespace {
             }
             void Test2_LongWritesBlock_ ()
             {
-                Debug::TraceContextBumper                  ctx{"Test2_LongWritesBlock_"};
-                static constexpr int                       kBaseRepititionCount_ = 100;
-                static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.001;
-                Synchronized<int>                          syncData{0};
-                atomic<bool>                               writerDone{false};
-                atomic<unsigned int>                       readsDoneAfterWriterDone{0};
-                Thread::Ptr                                readerThread = Thread::New ([&] () {
+                Debug::TraceContextBumper              ctx{"Test2_LongWritesBlock_"};
+                static constexpr int                   kBaseRepititionCount_ = 100;
+                static constexpr Time::DurationSeconds kBaseSleepTime_       = 0.001s;
+                Synchronized<int>                      syncData{0};
+                atomic<bool>                           writerDone{false};
+                atomic<unsigned int>                   readsDoneAfterWriterDone{0};
+                Thread::Ptr                            readerThread = Thread::New ([&] () {
                     Debug::TraceContextBumper ctx{"readerThread"};
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
                     for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
@@ -439,7 +441,7 @@ namespace {
                         Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0 (note - on ubuntu 1804 and fast host, inside vm, median sleep time here is really about 2ms despite division - LGP 2018-06-20)
                     }
                 });
-                Thread::Ptr                                writerThread = Thread::New ([&] () {
+                Thread::Ptr                            writerThread = Thread::New ([&] () {
                     Debug::TraceContextBumper ctx{"writerThread"};
                     for (int i = 0; i < kBaseRepititionCount_; ++i) {
                         auto rwLock = syncData.rwget ();
@@ -489,7 +491,7 @@ namespace {
             Thread::Ptr thread = Thread::New (&FRED::DoIt);
             thread.Start ();
             try {
-                thread.WaitForDone (0.3); // should timeout
+                thread.WaitForDone (0.3s); // should timeout
                 VerifyTestResult (false);
             }
             catch (const Execution::TimeOutException&) {
@@ -510,7 +512,7 @@ namespace {
             });
             thread.Start ();
             try {
-                thread.WaitForDone (0.3); // should timeout
+                thread.WaitForDone (0.3s); // should timeout
                 VerifyTestResult (false);
             }
             catch (const Execution::TimeOutException&) {
@@ -573,7 +575,7 @@ namespace {
                 Thread::Ptr thread = Thread::New (&FRED::DoIt);
                 thread.Start ();
                 thread.WaitForDone ();
-                thread.WaitForDone (1.0); // doesn't matter how long cuz its already DONE
+                thread.WaitForDone (1.0s); // doesn't matter how long cuz its already DONE
                 thread.WaitForDone ();
                 thread.WaitForDone ();
             }
@@ -706,18 +708,18 @@ namespace {
             Thread::Ptr testThread  = Thread::New (
                 [&innerThread] () {
                     innerThread.Start ();
-                    Execution::Sleep (1000);
+                    Execution::Sleep (1000s);
                     innerThread.AbortAndWaitForDone ();
                 },
                 Thread::eAutoStart, "testThread");
-            Execution::Sleep (1); // wait til both threads running and blocked in sleeps
+            Execution::Sleep (1s); // wait til both threads running and blocked in sleeps
             testThread.AbortAndWaitForDone ();
             // This is the BUG SuppressInterruptionInContext was meant to solve!
             VerifyTestResult (innerThread.GetStatus () == Thread::Status::eRunning);
             innerThread.AbortAndWaitForDone ();
         };
         auto testInnerThreadProperlyShutDownByOuterThread = [] () {
-            Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000); }, "innerThread");
+            Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000s); }, "innerThread");
             Thread::Ptr testThread  = Thread::New (
                 [&innerThread] () {
                     innerThread.Start ();
@@ -725,10 +727,10 @@ namespace {
                         Thread::SuppressInterruptionInContext suppressInterruptions;
                         innerThread.AbortAndWaitForDone ();
                     });
-                    Execution::Sleep (1000);
+                    Execution::Sleep (1000s);
                 },
                 Thread::eAutoStart, "testThread");
-            Execution::Sleep (1); // wait til both threads running and blocked in sleeps
+            Execution::Sleep (1s); // wait til both threads running and blocked in sleeps
             // This is the BUG SuppressInterruptionInContext was meant to solve!
             testThread.AbortAndWaitForDone ();
             VerifyTestResult (innerThread.GetStatus () == Thread::Status::eCompleted);
@@ -745,18 +747,18 @@ namespace {
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
         Debug::TimingTrace tt;
         // EXPERIMENTAL
-        WaitableEvent                              we1{};
-        WaitableEvent                              we2{};
-        static constexpr Time::DurationSecondsType kMaxWaitTime_{5.0};
-        Thread::Ptr                                t1      = Thread::New ([&we1] () {
+        WaitableEvent                          we1{};
+        WaitableEvent                          we2{};
+        static constexpr Time::DurationSeconds kMaxWaitTime_{5.0s};
+        Thread::Ptr                            t1      = Thread::New ([&we1] () {
             Execution::Sleep (kMaxWaitTime_); // wait long enough that we are pretty sure t2 will always trigger before we do
             we1.Set ();
         });
-        Thread::Ptr                                t2      = Thread::New ([&we2] () {
+        Thread::Ptr                            t2      = Thread::New ([&we2] () {
             Execution::Sleep (0.1);
             we2.Set ();
         });
-        Time::DurationSecondsType                  startAt = Time::GetTickCount ();
+        Time::TimePointSeconds                 startAt = Time::GetTickCount ();
         Thread::Start ({t1, t2});
         /*
          *  Saw this: FAILED: RegressionTestFailure; WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2});;..\..\..\38\Test.cpp: 712
@@ -770,7 +772,7 @@ namespace {
          */
         VerifyTestResultWarning (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) ==
                                  set<WaitableEvent*> ({&we2})); // may not indicate a real problem if triggered rarely - just threads ran in queer order, but can happen
-        Time::DurationSecondsType timeTaken = Time::GetTickCount () - startAt;
+        Time::DurationSeconds timeTaken = Time::GetTickCount () - startAt;
         VerifyTestResult (timeTaken <= kMaxWaitTime_); // make sure we didnt wait for the full kMaxWaitTime_ on first thread
         // They capture so must wait for them to complete
         t1.AbortAndWaitForDone ();
@@ -791,12 +793,12 @@ namespace {
         bool          w1Fired = false;
         bool          w2Fired = false;
         Thread::Ptr   t1      = Thread::New ([&we1, &w1Fired] () {
-            Execution::Sleep (0.5);
+            Execution::Sleep (0.5s);
             w1Fired = true;
             we1.Set ();
         });
         Thread::Ptr   t2      = Thread::New ([&we2, &w2Fired] () {
-            Execution::Sleep (0.1);
+            Execution::Sleep (0.1s);
             w2Fired = true;
             we2.Set ();
         });
@@ -820,14 +822,14 @@ namespace {
         int                       sum = 0;
         Thread::Ptr               t1  = Thread::New ([&lock, &sum] () {
             for (int i = 0; i < 100; ++i) {
-                Execution::Sleep (0.001);
+                Execution::Sleep (0.001s);
                 lock_guard<SpinLock> critSec{lock};
                 sum += i;
             }
         });
         Thread::Ptr               t2  = Thread::New ([&lock, &sum] () {
             for (int i = 0; i < 100; ++i) {
-                Execution::Sleep (0.001);
+                Execution::Sleep (0.001s);
                 lock_guard<SpinLock> critSec{lock};
                 sum -= i;
             }
@@ -853,28 +855,28 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest15_ThreadPoolStarvationBug_"};
         Debug::TimingTrace        tt;
         {
-            Time::DurationSecondsType testStartedAt       = Time::GetTickCount ();
+            Time::TimePointSeconds    testStartedAt       = Time::GetTickCount ();
             static constexpr unsigned kThreadPoolSize_    = 10;
             static constexpr unsigned kStepsToGetTrouble_ = 100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
-            static constexpr Time::DurationSecondsType kTime2WaitPerTask_{0.01};
-            static constexpr Time::DurationSecondsType kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
-            ThreadPool p{kThreadPoolSize_};
-            auto       doItHandler = [] () { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
+            static constexpr Time::DurationSeconds kTime2WaitPerTask_{0.01s};
+            static constexpr Time::DurationSeconds kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
+            ThreadPool                             p{kThreadPoolSize_};
+            auto                                   doItHandler = [] () { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
 
             for (int i = 0; i < kStepsToGetTrouble_; ++i) {
                 p.AddTask (doItHandler);
             }
 
             const double kBigSafetyMultiplierIncaseRunningUnderValgrind_{10000}; // valgrind not speedy ;-)
-            Time::DurationSecondsType betterFinishBy = Time::GetTickCount () + kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_;
+            Time::TimePointSeconds betterFinishBy = Time::GetTickCount () + kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_;
             while (Time::GetTickCount () <= betterFinishBy) {
                 if (p.GetTasksCount () == 0) {
                     break;
                 }
-                Execution::Sleep (.5); // dont spin too aggressively.
+                Execution::Sleep (.5s); // dont spin too aggressively.
             }
             VerifyTestResult (p.GetTasksCount () == 0);
-            Time::DurationSecondsType totalTestTime = Time::GetTickCount () - testStartedAt;
+            Time::DurationSeconds totalTestTime = Time::GetTickCount () - testStartedAt;
             Verify (totalTestTime < kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_);
         }
     }
@@ -940,11 +942,11 @@ namespace {
             }
             void Test2_LongWritesBlock_ ()
             {
-                Debug::TraceContextBumper                  ctx{"Test2_LongWritesBlock_"};
-                static constexpr int                       kBaseRepititionCount_ = 500;
-                static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.001;
-                RWSynchronized<int>                        syncData{0};
-                Thread::Ptr                                readerThread = Thread::New (
+                Debug::TraceContextBumper              ctx{"Test2_LongWritesBlock_"};
+                static constexpr int                   kBaseRepititionCount_ = 500;
+                static constexpr Time::DurationSeconds kBaseSleepTime_       = 0.001s;
+                RWSynchronized<int>                    syncData{0};
+                Thread::Ptr                            readerThread = Thread::New (
                     [&] () {
                         Debug::TraceContextBumper ctx{"readerThread"};
                         // Do 10x more reads than writer loop, but sleep 1/10th as long
@@ -1234,7 +1236,7 @@ namespace {
                 Sleep (30s);
             },
             Thread::eAutoStart, L"t1");
-        [[maybe_unused]] Time::DurationSecondsType waitStart = Time::GetTickCount ();
+        [[maybe_unused]] Time::TimePointSeconds waitStart = Time::GetTickCount ();
         Sleep (1s); // long enough so t1 running
         try {
             test.load (5ms);
@@ -1336,7 +1338,7 @@ namespace {
                 Sleep (30s);
             },
             Thread::eAutoStart, L"t1");
-        [[maybe_unused]] Time::DurationSecondsType waitStart = Time::GetTickCount ();
+        [[maybe_unused]] Time::TimePointSeconds waitStart = Time::GetTickCount ();
         Sleep (1s); // long enough so t1 running
         try {
             test.load (5ms);

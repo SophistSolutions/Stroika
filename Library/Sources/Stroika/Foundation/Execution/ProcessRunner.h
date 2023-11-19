@@ -232,9 +232,9 @@ namespace Stroika::Foundation::Execution {
          *  @see RunInBackground
          */
         nonvirtual void Run (optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr,
-                             Time::DurationSecondsType timeout = Time::kInfinite);
+                             Time::DurationSeconds timeout = Time::kInfinity);
         nonvirtual Characters::String Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult = nullptr,
-                                           ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                                           ProgressMonitor::Updater progress = nullptr, Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         class BackgroundProcess;
@@ -332,7 +332,7 @@ namespace Stroika::Foundation::Execution {
          *  @see Join ()
          *  @see JoinUntil ()
          */
-        nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+        nonvirtual void WaitForDone (Time::DurationSeconds timeout = Time::kInfinity) const;
 
     public:
         /**
@@ -344,7 +344,7 @@ namespace Stroika::Foundation::Execution {
          *  @see JoinUntil ()
          *  @see WaitForDone ()
          */
-        nonvirtual void Join (Time::DurationSecondsType timeout = Time::kInfinite) const;
+        nonvirtual void Join (Time::DurationSeconds timeout = Time::kInfinity) const;
 
     public:
         /**
@@ -353,7 +353,7 @@ namespace Stroika::Foundation::Execution {
          *  @see Join ()
          *  @see WaitForDone ()
          */
-        nonvirtual void JoinUntil (Time::DurationSecondsType timeoutAt) const;
+        nonvirtual void JoinUntil (Time::TimePointSeconds timeoutAt) const;
 
     public:
         /**

@@ -108,7 +108,7 @@ namespace Stroika::Foundation::IO::Network {
              *  \note ***Cancelation Point***
              */
             nonvirtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress,
-                                           Time::DurationSecondsType timeout = Time::kInfinite) const;
+                                           Time::DurationSeconds timeout = Time::kInfinity) const;
 
         protected:
             /**
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::IO::Network {
             virtual ~_IRep () = default;
 
             virtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) = 0;
-            virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
+            virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout) = 0;
             virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
             virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
             virtual uint8_t GetMulticastTTL () const                                                               = 0;

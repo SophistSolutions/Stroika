@@ -304,8 +304,8 @@ private:
     nonvirtual HACCEL GetCurrentWin32AccelTable ();
 
 private:
-    HACCEL                    fWin32AccelTable;
-    Time::DurationSecondsType fLastAccelTableUpdateAt; // speed tweek
+    HACCEL                 fWin32AccelTable;
+    Time::TimePointSeconds fLastAccelTableUpdateAt{}; // speed tweek
 
 protected:
     afx_msg VARIANT OLE_GetCurrentEventArguments ();

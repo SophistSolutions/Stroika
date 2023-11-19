@@ -60,7 +60,7 @@ namespace {
                 SignalHandlerRegistry::Get ().SetSignalHandlers (
                     SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) -> void { called = true; }});
                 ::raise (SIGINT);
-                Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
+                Execution::Sleep (0.5s); // delivery could be delayed because signal is pushed to another thread
                 VerifyTestResult (called);
             }
         }
@@ -73,7 +73,7 @@ namespace {
                 SignalHandlerRegistry::Get ().SetSignalHandlers (
                     SIGINT, SignalHandler ([&called] ([[maybe_unused]] SignalID signal) -> void { called = true; }));
                 ::raise (SIGINT);
-                Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
+                Execution::Sleep (0.5s); // delivery could be delayed because signal is pushed to another thread
                 VerifyTestResult (called);
             }
         }

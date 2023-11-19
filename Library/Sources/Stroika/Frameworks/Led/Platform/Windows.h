@@ -1283,10 +1283,10 @@ namespace Stroika::Frameworks::Led::Platform {
         }
 
 #if qDynamiclyChooseAutoScrollIncrement
-        Foundation::Time::DurationSecondsType        now              = Foundation::Time::GetTickCount ();
-        static Foundation::Time::DurationSecondsType sLastTimeThrough = 0.0f;
-        const Foundation::Time::DurationSecondsType  kClickThreshold  = Led_GetDoubleClickTime () / 3;
-        bool                                         firstClick       = (now - sLastTimeThrough > kClickThreshold);
+        Foundation::Time::TimePointSeconds        now = Foundation::Time::GetTickCount ();
+        static Foundation::Time::TimePointSeconds sLastTimeThrough{};
+        const Foundation::Time::DurationSeconds   kClickThreshold = Led_GetDoubleClickTime () / 3;
+        bool                                      firstClick      = (now - sLastTimeThrough > kClickThreshold);
 
         int increment = firstClick ? 1 : 2;
 #else
@@ -1397,10 +1397,10 @@ namespace Stroika::Frameworks::Led::Platform {
         }
 
 #if qDynamiclyChooseAutoScrollIncrement
-        Foundation::Time::DurationSecondsType        now              = Foundation::Time::GetTickCount ();
-        static Foundation::Time::DurationSecondsType sLastTimeThrough = 0.0f;
-        const Foundation::Time::DurationSecondsType  kClickThreshold  = Led_GetDoubleClickTime ();
-        bool                                         firstClick       = (now - sLastTimeThrough > kClickThreshold);
+        Foundation::Time::TimePointSeconds        now = Foundation::Time::GetTickCount ();
+        static Foundation::Time::TimePointSeconds sLastTimeThrough{};
+        const Foundation::Time::DurationSeconds   kClickThreshold = Led_GetDoubleClickTime ();
+        bool                                      firstClick      = (now - sLastTimeThrough > kClickThreshold);
 
         int increment = firstClick ? 1 : 10;
 #else

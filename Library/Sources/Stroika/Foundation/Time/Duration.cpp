@@ -74,6 +74,7 @@ Duration& Duration::operator-= (const Duration& rhs)
     return *this;
 }
 
+#if 0
 template <>
 wstring Duration::As () const
 {
@@ -89,6 +90,7 @@ wstring Duration::As () const
     AssertNotReached ();
     return wstring{};
 }
+#endif
 
 namespace {
     template <typename T>
@@ -311,12 +313,12 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     timeLeft -= 1.0e-9 * nNanoSeconds;
                 }
             }
-            Time::DurationSecondsType nPicoSeconds = timeLeft * 1.0e12;
+            Duration::InternalNumericFormatType_ nPicoSeconds = timeLeft * 1.0e12;
             if (nPicoSeconds > 1.0e-5) {
                 if (not result.empty ()) {
                     result << kCommaSpace_;
                 }
-                Time::DurationSecondsType extraBits = nPicoSeconds - floor (nPicoSeconds);
+                Duration::InternalNumericFormatType_ extraBits = nPicoSeconds - floor (nPicoSeconds);
                 if (extraBits > 1.0e-2) {
                     result << Characters::Format (L"%f", nPicoSeconds) << kSpaceBeforeUnit_
                            << lingMgr->PluralizeNoun (prettyPrintInfo.fLabels.fPicoSecond, prettyPrintInfo.fLabels.fPicoSeconds, 2);
@@ -620,9 +622,8 @@ DISABLE_COMPILER_MSC_WARNING_END (6262)
  ********************************************************************************
  */
 namespace Stroika::Foundation::Math {
-    template <>
     Time::Duration Abs (Time::Duration v)
     {
-        return (v.As<DurationSecondsType> () < 0) ? -v : v;
+        return (v.count () < 0) ? -v : v;
     }
 }

@@ -58,10 +58,10 @@ namespace Stroika::Foundation::Execution {
          *  Used for reporting from the ItervalTimer::Manager (e.g. for debugging, to dump the status).
          */
         struct RegisteredTask {
-            TimerCallback             fCallback;
-            Time::DurationSecondsType fCallNextAt;
-            optional<Time::Duration>  fFrequency; // if missing, this is a one-shot event
-            optional<Time::Duration>  fHysteresis;
+            TimerCallback            fCallback;
+            Time::TimePointSeconds   fCallNextAt;
+            optional<Time::Duration> fFrequency; // if missing, this is a one-shot event
+            optional<Time::Duration> fHysteresis;
 
         public:
             /**

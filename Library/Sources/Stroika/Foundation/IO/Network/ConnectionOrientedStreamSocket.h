@@ -45,9 +45,9 @@ namespace Stroika::Foundation::IO::Network {
         struct KeepAliveOptions {
             bool fEnabled{};
 #if qPlatform_Linux or qPlatform_Windows
-            optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
-            optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
-            optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
+            optional<unsigned int>          fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
+            optional<Time::DurationSeconds> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
+            optional<Time::DurationSeconds> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
 #endif
             /**
              *  @see Characters::ToString ();
@@ -162,13 +162,13 @@ namespace Stroika::Foundation::IO::Network {
              *
              *  @see SetAutomaticTCPDisconnectOnClose ()
              */
-            nonvirtual optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const;
+            nonvirtual optional<Time::DurationSeconds> GetAutomaticTCPDisconnectOnClose () const;
 
         public:
             /**
              *  @see GetAutomaticTCPDisconnectOnClose ()
              */
-            nonvirtual void SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor) const;
+            nonvirtual void SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSeconds>& waitFor) const;
 
         public:
             /**
@@ -239,8 +239,8 @@ namespace Stroika::Foundation::IO::Network {
             virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) const                                 = 0;
             virtual void             Write (const byte* start, const byte* end) const                                       = 0;
             virtual optional<IO::Network::SocketAddress> GetPeerAddress () const                                            = 0;
-            virtual optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                          = 0;
-            virtual void             SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor)  = 0;
+            virtual optional<Time::DurationSeconds>      GetAutomaticTCPDisconnectOnClose () const                          = 0;
+            virtual void             SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSeconds>& waitFor)      = 0;
             virtual KeepAliveOptions GetKeepAlives () const                                                                 = 0;
             virtual void             SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                               = 0;
         };

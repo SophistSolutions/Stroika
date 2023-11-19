@@ -58,7 +58,6 @@ using namespace Stroika::Frameworks::SystemPerformance;
 using Characters::String2Int;
 using IO::FileSystem::FileInputStream;
 using Streams::TextReader;
-using Time::DurationSecondsType;
 
 using Instruments::Filesystem::BlockDeviceKind;
 using Instruments::Filesystem::DiskInfoType;
@@ -318,8 +317,8 @@ namespace {
         nonvirtual void ReadAndApplyProcFS_diskstats_ (Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>* volumes)
         {
             try {
-                Mapping<dev_t, PerfStats_> diskStats            = ReadProcFS_diskstats_ ();
-                DurationSecondsType        timeSinceLastMeasure = Time::GetTickCount () - _GetCaptureContextTime ().value_or (0);
+                Mapping<dev_t, PerfStats_> diskStats = ReadProcFS_diskstats_ ();
+                Time::DurationSeconds timeSinceLastMeasure = Time::GetTickCount () - _GetCaptureContextTime ().value_or (Time::TimePointSeconds{});
                 for (Iterator<KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType>> i = volumes->begin (); i != volumes->end (); ++i) {
                     MountedFilesystemInfoType vi = i->fValue;
                     if (vi.fDeviceOrVolumeName.has_value ()) {
@@ -347,14 +346,14 @@ namespace {
                                 readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
                                 readStats.fTotalTransfers  = oNew->fReadsCompleted - oOld->fReadsCompleted;
                                 if (timeSinceLastMeasure > _fOptions.fMinimumAveragingInterval) {
-                                    readStats.fQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
+                                    readStats.fQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure.count ();
                                 }
 
                                 IOStatsType writeStats;
                                 writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
                                 writeStats.fTotalTransfers  = oNew->fWritesCompleted - oOld->fWritesCompleted;
                                 if (timeSinceLastMeasure > _fOptions.fMinimumAveragingInterval) {
-                                    writeStats.fQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
+                                    writeStats.fQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure.count ();
                                 }
 
                                 IOStatsType combinedStats;
@@ -366,7 +365,8 @@ namespace {
                                 vi.fWriteIOStats = writeStats;
                                 // @todo DESCRIBE divide by time between 2 and * 1000 - NYI
                                 if (timeSinceLastMeasure > _fOptions.fMinimumAveragingInterval) {
-                                    combinedStats.fQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
+                                    combinedStats.fQLength =
+                                        ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure.count ());
                                 }
                                 vi.fCombinedIOStats = combinedStats;
                             }
@@ -645,11 +645,11 @@ namespace {
             }
 
 #if qUseWMICollectionSupport_
-            auto                                contextLock = scoped_lock{_fContext};
-            auto                                contextPtr  = _fContext.rwget ().rwref ();
-            optional<Time::DurationSecondsType> timeCollecting;
+            auto                            contextLock = scoped_lock{_fContext};
+            auto                            contextPtr  = _fContext.rwget ().rwref ();
+            optional<Time::DurationSeconds> timeCollecting;
             {
-                optional<Time::DurationSecondsType> timeOfPrevCollection = contextPtr->fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
+                optional<Time::TimePointSeconds> timeOfPrevCollection = contextPtr->fLogicalDiskWMICollector_.GetTimeOfLastCollection ();
                 if (_fOptions.fIOStatistics) {
                     contextPtr->fLogicalDiskWMICollector_.Collect ();
                 }
@@ -716,10 +716,10 @@ namespace {
                         IOStatsType readStats;
                         if (timeCollecting) {
                             if (auto o = contextPtr->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadBytesPerSec_)) {
-                                readStats.fBytesTransfered = *o * *timeCollecting;
+                                readStats.fBytesTransfered = *o * timeCollecting->count ();
                             }
                             if (auto o = contextPtr->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
-                                readStats.fTotalTransfers = *o * *timeCollecting;
+                                readStats.fTotalTransfers = *o * timeCollecting->count ();
                             }
                         }
                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
@@ -738,10 +738,10 @@ namespace {
                         IOStatsType writeStats;
                         if (timeCollecting) {
                             if (auto o = contextPtr->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWriteBytesPerSec_)) {
-                                writeStats.fBytesTransfered = *o * *timeCollecting;
+                                writeStats.fBytesTransfered = *o * timeCollecting->count ();
                             }
                             if (auto o = contextPtr->fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
-                                writeStats.fTotalTransfers = *o * *timeCollecting;
+                                writeStats.fTotalTransfers = *o * timeCollecting->count ();
                             }
                         }
                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
@@ -863,7 +863,7 @@ namespace {
         FilesystemInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
-            Require (_fOptions.fMinimumAveragingInterval > 0);
+            Require (_fOptions.fMinimumAveragingInterval > 0s);
         }
         virtual MeasurementSet Capture () override
         {
@@ -873,7 +873,7 @@ namespace {
             results.fMeasurements.Add (m);
             return results;
         }
-        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        nonvirtual Info Capture_Raw (Range<TimePointSeconds>* outMeasuredAt)
         {
             return Do_Capture_Raw<Info> ([this] () { return _InternalCapture (); }, outMeasuredAt);
         }
@@ -1054,7 +1054,7 @@ Instruments::Filesystem::Instrument::Instrument (const Options& options)
  ********************************************************************************
  */
 template <>
-Instruments::Filesystem::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+Instruments::Filesystem::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement"};
     FilesystemInstrumentRep_* myCap = dynamic_cast<FilesystemInstrumentRep_*> (fCaptureRep_.get ());

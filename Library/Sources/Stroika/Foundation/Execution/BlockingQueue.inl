@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Execution {
         Require (useQueue.empty ()); // this constructor is only used to control the 'type' (data structure/backend) used by the Blocking Queue
     }
     template <typename T>
-    inline void BlockingQueue<T>::AddTail (const T& e, Time::DurationSecondsType /*timeout*/)
+    inline void BlockingQueue<T>::AddTail (const T& e, Time::DurationSeconds /*timeout*/)
     {
         // Our locks are short-lived, so its safe to ignore the timeout - this will always be fast
         //
@@ -56,9 +56,9 @@ namespace Stroika::Foundation::Execution {
         return fEndOfInput_ and fQueue_.empty ();
     }
     template <typename T>
-    T BlockingQueue<T>::RemoveHead (Time::DurationSecondsType timeout)
+    T BlockingQueue<T>::RemoveHead (Time::DurationSeconds timeout)
     {
-        Time::DurationSecondsType waitTil = Time::GetTickCount () + timeout;
+        Time::TimePointSeconds waitTil = Time::GetTickCount () + timeout;
         while (true) {
             typename ConditionVariable<>::LockType waitableLock{fCondtionVariable_.fMutex}; // despite appearances to the contrary, not holding lock lock cuz condition variable unlocks before waiting
             if (optional<T> tmp = fQueue_.RemoveHeadIf ()) {
@@ -73,9 +73,9 @@ namespace Stroika::Foundation::Execution {
         }
     }
     template <typename T>
-    optional<T> BlockingQueue<T>::RemoveHeadIfPossible (Time::DurationSecondsType timeout)
+    optional<T> BlockingQueue<T>::RemoveHeadIfPossible (Time::DurationSeconds timeout)
     {
-        Time::DurationSecondsType waitTil = Time::GetTickCount () + timeout;
+        Time::TimePointSeconds waitTil = Time::GetTickCount () + timeout;
         while (true) {
             typename ConditionVariable<>::LockType waitableLock{fCondtionVariable_.fMutex}; // despite appearances to the contrary, not holding lock lock cuz condition variable unlocks before waiting
             if (optional<T> tmp = fQueue_.RemoveHeadIf ()) {

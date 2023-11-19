@@ -29,8 +29,7 @@ KeepAlive KeepAlive::Parse (const String& headerValue)
         if (kvp.length () == 2) {
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
             if (kvp[0] == "timeout"sv) {
-                Time::DurationSecondsType toAt = Characters::FloatConversion::ToFloat<> (kvp[1]);
-                r.fTimeoutAt                   = Time::GetTickCount () + toAt;
+                r.fTimeout = Time::DurationSeconds{Characters::FloatConversion::ToFloat<> (kvp[1])};
                 return r;
             }
             else if (kvp[0] == "max"sv) {
@@ -52,9 +51,9 @@ KeepAlive KeepAlive::Parse (const String& headerValue)
 optional<KeepAlive> KeepAlive::Merge (const optional<KeepAlive>& lhs, const optional<KeepAlive>& rhs)
 {
     if (lhs and rhs) {
-        KeepAlive r  = *lhs;
-        r.fMessages  = Memory::NullCoalesce (lhs->fMessages, rhs->fMessages);
-        r.fTimeoutAt = Memory::NullCoalesce (lhs->fTimeoutAt, rhs->fTimeoutAt);
+        KeepAlive r = *lhs;
+        r.fMessages = Memory::NullCoalesce (lhs->fMessages, rhs->fMessages);
+        r.fTimeout  = Memory::NullCoalesce (lhs->fTimeout, rhs->fTimeout);
         return r;
     }
     return Memory::NullCoalesce (lhs, rhs);
@@ -73,8 +72,8 @@ String KeepAlive::ToString () const
     if (fMessages) {
         sb << "Messages: "sv << Characters::ToString (*fMessages) << ", "sv;
     }
-    if (fTimeoutAt) {
-        sb << "Timeout-At: "sv << Characters::ToString (*fTimeoutAt);
+    if (fTimeout) {
+        sb << "Timeout: "sv << Characters::ToString (*fTimeout);
     }
     sb << "}"sv;
     return sb.str ();

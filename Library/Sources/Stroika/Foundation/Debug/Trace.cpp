@@ -392,16 +392,17 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
 {
     [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
     FlushBufferedCharacters_ ();
-    Time::DurationSecondsType curRelativeTime = Time::GetTickCount ();
+    Time::TimePointSeconds curRelativeTime = Time::GetTickCount ();
 
     //tmphack to test new zero-relative and timepoint code
-    curRelativeTime = Time::ToAppStartRelative (Time::New_GetTickCount ()).time_since_epoch ().count ();
+    curRelativeTime = Time::ToAppStartRelative (Time::GetTickCount ());
 
     {
         char               buf[1024];
         Thread::IDType     threadID     = Execution::Thread::GetCurrentThreadID ();
         pair<bool, string> threadIDInfo = mkThreadLabelForThreadID_ (threadID);
-        Verify (::snprintf (buf, Memory::NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (), static_cast<double> (curRelativeTime)) > 0);
+        Verify (::snprintf (buf, Memory::NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (),
+                            static_cast<double> (curRelativeTime.time_since_epoch ().count ())) > 0);
         if (threadIDInfo.first) {
             char buf2[1024]; // intentionally un-initialized
             Verify (snprintf (buf2, Memory::NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (),
@@ -479,7 +480,7 @@ bool Debug::Private_::Emitter::UnputBufferedCharactersForMatchingToken (TraceLas
     // hasn't been too long (we currently write 1/100th second timestamp resolution).
     // then blank unput (ignore) buffered characters, and return true so caller knows to write
     // funky replacement for those characters.
-    if (fLastNCharBuf_Token_ == token and (Time::GetTickCount () - fLastNCharBuf_WriteTickcount_ < 0.02f)) {
+    if (fLastNCharBuf_Token_ == token and (Time::GetTickCount () - fLastNCharBuf_WriteTickcount_ < 0.02s)) {
         fLastNCharBufCharCount_ = 0;
         return true;
     }

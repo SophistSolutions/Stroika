@@ -26,13 +26,13 @@ namespace Stroika::Foundation::Execution {
         , fRunIfTakesTooLong_{f}
     {
         if (f != nullptr) {
-            fStartedAt_ = Time::New_GetTickCount ();
+            fStartedAt_ = Time::GetTickCount ();
         }
     }
     inline WhenTimeExceeded::~WhenTimeExceeded ()
     {
         if (fRunIfTakesTooLong_ != nullptr) {
-            Time::DurationSeconds timeTaken = Time::New_GetTickCount () - fStartedAt_;
+            Time::DurationSeconds timeTaken = Time::GetTickCount () - fStartedAt_;
             if (timeTaken >= fCallIfTakesLongerThan_) {
                 IgnoreExceptionsForCall (fRunIfTakesTooLong_ (timeTaken));
             }

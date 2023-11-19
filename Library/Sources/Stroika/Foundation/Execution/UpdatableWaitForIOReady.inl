@@ -70,24 +70,24 @@ namespace Stroika::Foundation::Execution {
         fEventFD_->Set (); // force wakeup of any waits
     }
     template <typename T, typename TRAITS>
-    inline auto UpdatableWaitForIOReady<T, TRAITS>::Wait (Time::DurationSecondsType waitFor) -> Containers::Set<T>
+    inline auto UpdatableWaitForIOReady<T, TRAITS>::Wait (Time::DurationSeconds waitFor) -> Containers::Set<T>
     {
         return WaitUntil (waitFor + Time::GetTickCount ());
     }
     template <typename T, typename TRAITS>
     inline auto UpdatableWaitForIOReady<T, TRAITS>::Wait (const Time::Duration& waitFor) -> Containers::Set<T>
     {
-        return WaitUntil (waitFor.As<Time::DurationSecondsType> () + Time::GetTickCount ());
+        return WaitUntil (waitFor + Time::GetTickCount ());
     }
     template <typename T, typename TRAITS>
-    inline auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietly (Time::DurationSecondsType waitFor) -> Containers::Set<T>
+    inline auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietly (Time::DurationSeconds waitFor) -> Containers::Set<T>
     {
         return WaitQuietlyUntil (waitFor + Time::GetTickCount ());
     }
     template <typename T, typename TRAITS>
     inline auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietly (const Time::Duration& waitFor) -> Containers::Set<T>
     {
-        return WaitQuietly (waitFor.As<Time::DurationSecondsType> ());
+        return WaitQuietly (waitFor);
     }
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::Add (T fd, const TypeOfMonitorSet& flags)
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Execution {
         SetDescriptors (fds.template Map<pair<T, TypeOfMonitorSet>> ([&] (const T& t) { return make_pair (t, flags); }));
     }
     template <typename T, typename TRAITS>
-    auto UpdatableWaitForIOReady<T, TRAITS>::WaitUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
+    auto UpdatableWaitForIOReady<T, TRAITS>::WaitUntil (Time::TimePointSeconds timeoutAt) -> Containers::Set<T>
     {
         Containers::Set<T> result = WaitQuietlyUntil (timeoutAt);
         if (result.empty ()) {
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Execution {
         return result;
     }
     template <typename T, typename TRAITS>
-    inline auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
+    inline auto UpdatableWaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::TimePointSeconds timeoutAt) -> Containers::Set<T>
     {
         // At some point, we need to clear the flags on the eventFD objects. We could do this before
         // or after starting the wait. If we do it before calling mkWaiter_ (), there is a window after the clear and before the mkWaiter

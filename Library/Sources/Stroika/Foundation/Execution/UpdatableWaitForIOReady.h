@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitUntil
          *  @see WaitQuietlyUntil
          */
-        nonvirtual Containers::Set<T> Wait (Time::DurationSecondsType waitFor = Time::kInfinite);
+        nonvirtual Containers::Set<T> Wait (Time::DurationSeconds waitFor = Time::kInfinity);
         nonvirtual Containers::Set<T> Wait (const Time::Duration& waitFor);
 
     public:
@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitUntil
          *  @see WaitQuietlyUntil
          */
-        nonvirtual Containers::Set<T> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
+        nonvirtual Containers::Set<T> WaitQuietly (Time::DurationSeconds waitFor = Time::kInfinity);
         nonvirtual Containers::Set<T> WaitQuietly (const Time::Duration& waitFor);
 
     public:
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitQuietly
          *  @see WaitQuietlyUntil
          */
-        nonvirtual Containers::Set<T> WaitUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+        nonvirtual Containers::Set<T> WaitUntil (Time::TimePointSeconds timeoutAt = Time::kInfinity);
 
     public:
         /*
@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Execution {
          *  @see WaitQuietly
          *  @see WaitUntil
          */
-        nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+        nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::TimePointSeconds timeoutAt = Time::kInfinity);
 
     private:
         /*

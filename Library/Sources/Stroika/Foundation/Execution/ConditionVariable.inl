@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Execution {
         fConditionVariable.notify_all ();
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
-    cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
+    cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::TimePointSeconds timeoutAt)
     {
         /*
          *  NOTE: this overload CAN return spurrious wakeups, and just checks timeoutAt to see which cv_status to return.
@@ -63,14 +63,13 @@ namespace Stroika::Foundation::Execution {
             return cv_status::timeout;
         }
 
-        // convert DurationSecondsType to time_point for stdc++ calls, but ping to more modest maximum...
-        auto timeoutAtStopPoint = Time::DurationSeconds2time_point (timeoutAt);
+        auto timeoutAtStopPoint = timeoutAt;
 
         if constexpr (kSupportsStopToken) {
             // If no predicate function is provided (to say when we are done) - use stop_requested() as the predicate
 #if __cpp_lib_jthread >= 201911
             if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
-                if (fConditionVariable.wait_until (lock, *ost, timeoutAtStopPoint, [&] () { return ost->stop_requested (); })) [[unlikely]] {
+                if (fConditionVariable.wait_until (lock, *ost, timeoutAt, [&] () { return ost->stop_requested (); })) [[unlikely]] {
                     Thread::CheckForInterruption ();
                 }
                 return (Time::GetTickCount () < timeoutAt) ? cv_status::no_timeout : cv_status::timeout;
@@ -85,7 +84,7 @@ namespace Stroika::Foundation::Execution {
         Assert (not kSupportsStopToken or not currentThreadIsInterruptible); // just cuz of tests above
 
         if (currentThreadIsInterruptible) {
-            timeoutAtStopPoint = Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime));
+            timeoutAtStopPoint = min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime);
         }
 
         Assert (lock.owns_lock ());
@@ -101,7 +100,7 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
     template <invocable PREDICATE>
-    bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE&& readyToWake)
+    bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::TimePointSeconds timeoutAt, PREDICATE&& readyToWake)
     {
         Require (lock.owns_lock ());
         Thread::CheckForInterruption ();
@@ -111,7 +110,7 @@ namespace Stroika::Foundation::Execution {
         if constexpr (kSupportsStopToken) {
 #if __cpp_lib_jthread >= 201911
             if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
-                bool ready = fConditionVariable.wait_until (lock, *ost, Time::DurationSeconds2time_point (timeoutAt), forward<PREDICATE> (readyToWake));
+                bool ready = fConditionVariable.wait_until (lock, *ost, timeoutAt, forward<PREDICATE> (readyToWake));
                 while (ost->stop_requested () and not ready) {
                     // tricky case.
                     //
@@ -127,9 +126,8 @@ namespace Stroika::Foundation::Execution {
                         return ready; // don't throw here - this API doesn't throw timeout...
                     }
                     // must recheck / re-wait ONLY on the condition var itself - no stop token (cuz then this instantly returns and doesn't unlock argument lock so the signaler can progress)
-                    ready = fConditionVariable.wait_until (
-                        lock, Time::DurationSeconds2time_point (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime)),
-                        forward<PREDICATE> (readyToWake));
+                    ready = fConditionVariable.wait_until (lock, min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime),
+                                                           forward<PREDICATE> (readyToWake));
                 }
                 return ready;
             }
@@ -170,18 +168,18 @@ namespace Stroika::Foundation::Execution {
         return true;
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
-    inline cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout)
+    inline cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSeconds timeout)
     {
         Require (lock.owns_lock ());
-        Assert (isinf (timeout) == isinf (timeout + Time::GetTickCount ())); // make sure arithmatic works right with inf
+        Assert (isinf (timeout.count ()) == isinf ((timeout + Time::GetTickCount ()).time_since_epoch ().count ())); // make sure arithmatic works right with inf
         return wait_until (lock, timeout + Time::GetTickCount ());
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
     template <invocable PREDICATE>
-    inline bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE&& readyToWake)
+    inline bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSeconds timeout, PREDICATE&& readyToWake)
     {
         Require (lock.owns_lock ());
-        Assert (isinf (timeout) == isinf (timeout + Time::GetTickCount ())); // make sure arithmatic works right with inf
+        Assert (isinf (timeout.count ()) == isinf ((timeout + Time::GetTickCount ()).time_since_epoch ().count ())); // make sure arithmatic works right with inf
         return wait_until (lock, timeout + Time::GetTickCount (), forward<PREDICATE> (readyToWake));
     }
     template <typename MUTEX, typename CONDITION_VARIABLE>
@@ -192,7 +190,7 @@ namespace Stroika::Foundation::Execution {
         // but call the notify_all() after releasing the lock - also https://stackoverflow.com/questions/35775501/c-should-condition-variable-be-notified-under-lock
         {
             QuickLockType quickLock{fMutex};
-            forward<FUNCTION> (mutatorFunction) ();
+            mutatorFunction ();
         }
         fConditionVariable.notify_all ();
     }
@@ -204,7 +202,7 @@ namespace Stroika::Foundation::Execution {
         // but call the notify_all() after releasing the lock - also https://stackoverflow.com/questions/35775501/c-should-condition-variable-be-notified-under-lock
         {
             QuickLockType quickLock{fMutex};
-            forward<FUNCTION> (mutatorFunction) ();
+            mutatorFunction ();
         }
         fConditionVariable.notify_one ();
     }

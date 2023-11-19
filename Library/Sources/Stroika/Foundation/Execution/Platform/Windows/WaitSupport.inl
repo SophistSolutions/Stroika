@@ -11,9 +11,9 @@
  */
 namespace Stroika::Foundation::Execution::Platform::Windows {
 
-    inline DWORD Duration2Milliseconds (Time::DurationSecondsType nSeconds)
+    inline DWORD Duration2Milliseconds (Time::DurationSeconds nSeconds)
     {
-        return (nSeconds > numeric_limits<DWORD>::max () / 2) ? INFINITE : static_cast<DWORD> (nSeconds * 1000);
+        return (nSeconds.count () > numeric_limits<DWORD>::max () / 2) ? INFINITE : static_cast<DWORD> (nSeconds.count () * 1000);
     }
 
 }

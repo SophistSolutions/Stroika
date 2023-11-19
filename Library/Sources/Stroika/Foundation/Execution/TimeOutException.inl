@@ -34,14 +34,14 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename EXCEPTION>
-    inline void ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount, const EXCEPTION& exception2Throw)
+    inline void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount, const EXCEPTION& exception2Throw)
     {
         if (Time::GetTickCount () > afterTickCount) {
             Throw (exception2Throw);
         }
         Thread::CheckForInterruption ();
     }
-    inline void ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount)
+    inline void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount)
     {
         ThrowTimeoutExceptionAfter (afterTickCount, TimeOutException::kThe);
     }
@@ -52,14 +52,14 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename TIMED_MUTEX, typename EXCEPTION>
-    inline void TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount, const EXCEPTION& exception2Throw)
+    inline void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount, const EXCEPTION& exception2Throw)
     {
         if (not m.try_lock_until (afterTickCount)) {
             Throw (exception2Throw);
         }
     }
     template <typename TIMED_MUTEX>
-    void TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount)
+    void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount)
     {
         TryLockUntil (m, afterTickCount, TimeOutException::kThe);
     }

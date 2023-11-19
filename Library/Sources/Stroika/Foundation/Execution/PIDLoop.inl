@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename CONTROL_VAR_TYPE>
-    PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction,
+    PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSeconds updatePeriod, const function<ValueType ()>& measureFunction,
                                         const function<void (ValueType o)>& outputFunction, ValueType initialSetPoint)
         : fPIDParams_{pidParams}
         , fUpdatePeriod_{updatePeriod}
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Execution {
         fUpdatableParams_.rwget ()->fSetPoint_ = (initialSetPoint);
     }
     template <typename CONTROL_VAR_TYPE>
-    PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (AutoStartFlag, const ControlParams& pidParams, Time::DurationSecondsType updatePeriod,
+    PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (AutoStartFlag, const ControlParams& pidParams, Time::DurationSeconds updatePeriod,
                                         const function<ValueType ()>& measureFunction, const function<void (ValueType o)>& outputFunction,
                                         ValueType initialSetPoint)
         : PIDLoop{pidParams, updatePeriod, measureFunction, outputFunction, initialSetPoint}
@@ -92,14 +92,14 @@ namespace Stroika::Foundation::Execution {
         return fPIDParams_;
     }
     template <typename CONTROL_VAR_TYPE>
-    inline auto PIDLoop<CONTROL_VAR_TYPE>::GetUpdatePeriod () const -> Time::DurationSecondsType
+    inline auto PIDLoop<CONTROL_VAR_TYPE>::GetUpdatePeriod () const -> Time::DurationSeconds
     {
         return fUpdatePeriod_;
     }
     template <typename CONTROL_VAR_TYPE>
     void PIDLoop<CONTROL_VAR_TYPE>::RunDirectly ()
     {
-        Time::DurationSecondsType nextRunAt = Time::GetTickCount ();
+        Time::DurationSeconds nextRunAt = Time::GetTickCount ();
         while (true) {
             SleepUntil (nextRunAt);
             try {

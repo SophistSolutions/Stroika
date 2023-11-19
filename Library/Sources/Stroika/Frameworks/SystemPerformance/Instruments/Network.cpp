@@ -48,7 +48,8 @@ using Containers::Mapping;
 using Containers::Sequence;
 using Containers::Set;
 using IO::FileSystem::FileInputStream;
-using Time::DurationSecondsType;
+using Time::DurationSeconds;
+using Time::TimePointSeconds;
 
 using Instruments::Network::Info;
 using Instruments::Network::IOStatistics;
@@ -148,16 +149,16 @@ namespace {
 #if qPlatform_POSIX
 namespace {
     struct Last {
-        uint64_t            fTotalBytesReceived;
-        uint64_t            fTotalBytesSent;
-        uint64_t            fTotalPacketsReceived;
-        uint64_t            fTotalPacketsSent;
-        DurationSecondsType fAt;
+        uint64_t         fTotalBytesReceived;
+        uint64_t         fTotalBytesSent;
+        uint64_t         fTotalPacketsReceived;
+        uint64_t         fTotalPacketsSent;
+        TimePointSeconds fAt;
     };
     struct LastSum {
-        uint64_t            fTotalTCPSegments;
-        uint64_t            fTotalTCPRetransmittedSegments;
-        DurationSecondsType fAt;
+        uint64_t         fTotalTCPSegments;
+        uint64_t         fTotalTCPRetransmittedSegments;
+        TimePointSeconds fAt;
     };
 
     struct _Context : SystemPerformance::Support::Context {
@@ -182,21 +183,22 @@ namespace {
             IgnoreExceptionsExceptThreadAbortForCall (Read_proc_net_snmp_ (&accumSummary));
 #endif
 
-            DurationSecondsType  now         = Time::GetTickCount ();
+            TimePointSeconds     now         = Time::GetTickCount ();
             auto                 contextLock = scoped_lock{_fContext};
             shared_ptr<_Context> context     = _fContext.rwget ().rwref ();
             if (context->fLastSum and accumSummary.fTotalTCPSegments) {
-                Time::DurationSecondsType timespan{now - context->fLastSum->fAt};
+                Time::DurationSeconds timespan{now - context->fLastSum->fAt};
                 if (timespan >= _fOptions.fMinimumAveragingInterval) {
                     accumSummary.fTCPSegmentsPerSecond =
-                        (NullCoalesce (accumSummary.fTotalTCPSegments) - context->fLastSum->fTotalTCPSegments) / timespan;
+                        (NullCoalesce (accumSummary.fTotalTCPSegments) - context->fLastSum->fTotalTCPSegments) / timespan.count ();
                 }
             }
             if (context->fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
-                Time::DurationSecondsType timespan{now - context->fLastSum->fAt};
+                Time::DurationSeconds timespan{now - context->fLastSum->fAt};
                 if (timespan >= _fOptions.fMinimumAveragingInterval) {
                     accumSummary.fTCPRetransmittedSegmentsPerSecond =
-                        (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - context->fLastSum->fTotalTCPRetransmittedSegments) / timespan;
+                        (NullCoalesce (accumSummary.fTotalTCPRetransmittedSegments) - context->fLastSum->fTotalTCPRetransmittedSegments) /
+                        timespan.count ();
                 }
             }
             if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
@@ -246,14 +248,17 @@ namespace {
                     ii.fIOStatistics.fTotalPacketsDropped =
                         Characters::String2Int<uint64_t> (line[4]) + Characters::String2Int<uint64_t> (line[kOffset2XMit_ + 4]);
 
-                    DurationSecondsType now = Time::GetTickCount ();
+                    TimePointSeconds now = Time::GetTickCount ();
                     if (auto o = _fContext.cget ().cref ()->fLast.Lookup (ii.fInterface.fInternalInterfaceID)) {
-                        double scanTime = now - o->fAt;
+                        DurationSeconds scanTime = now - o->fAt;
                         if (scanTime > _fOptions.fMinimumAveragingInterval) {
-                            ii.fIOStatistics.fBytesPerSecondReceived = (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime;
-                            ii.fIOStatistics.fBytesPerSecondSent = (*ii.fIOStatistics.fTotalBytesSent - o->fTotalBytesSent) / scanTime;
-                            ii.fIOStatistics.fPacketsPerSecondReceived = (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
-                            ii.fIOStatistics.fPacketsPerSecondSent = (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime;
+                            ii.fIOStatistics.fBytesPerSecondReceived =
+                                (*ii.fIOStatistics.fTotalBytesReceived - o->fTotalBytesReceived) / scanTime.count ();
+                            ii.fIOStatistics.fBytesPerSecondSent = (*ii.fIOStatistics.fTotalBytesSent - o->fTotalBytesSent) / scanTime.count ();
+                            ii.fIOStatistics.fPacketsPerSecondReceived =
+                                (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime.count ();
+                            ii.fIOStatistics.fPacketsPerSecondSent =
+                                (*ii.fIOStatistics.fTotalPacketsReceived - o->fTotalPacketsReceived) / scanTime.count ();
                         }
                     }
                     (*accumSummary) += ii.fIOStatistics;
@@ -514,7 +519,7 @@ namespace {
         NetworkInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
-            Require (_fOptions.fMinimumAveragingInterval > 0);
+            Require (_fOptions.fMinimumAveragingInterval > 0s);
         }
         virtual MeasurementSet Capture () override
         {
@@ -525,14 +530,14 @@ namespace {
             results.fMeasurements.Add (m);
             return results;
         }
-        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        nonvirtual Info Capture_Raw (Range<TimePointSeconds>* outMeasuredAt)
         {
             auto before         = _GetCaptureContextTime ();
             Info rawMeasurement = _InternalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()),
-                                                             Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<TimePointSeconds> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()),
+                                                          Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
@@ -621,7 +626,7 @@ Instruments::Network::Instrument::Instrument (const Options& options)
  ********************************************************************************
  */
 template <>
-Instruments::Network::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+Instruments::Network::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Network::Info>"};
     NetworkInstrumentRep_*    myCap = dynamic_cast<NetworkInstrumentRep_*> (fCaptureRep_.get ());

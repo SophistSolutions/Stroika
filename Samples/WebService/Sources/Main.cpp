@@ -36,8 +36,8 @@ int main (int argc, const char* argv[])
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    uint16_t                  portNumber = 8080;
-    Time::DurationSecondsType quitAfter  = numeric_limits<Time::DurationSecondsType>::max ();
+    uint16_t              portNumber = 8080;
+    Time::DurationSeconds quitAfter  = Time::kInfinity;
 
     Sequence<String> args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
@@ -54,7 +54,7 @@ int main (int argc, const char* argv[])
         else if (Execution::MatchesCommandLineArgument (*argi, "quit-after"sv)) {
             ++argi;
             if (argi != args.end ()) {
-                quitAfter = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
+                quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*argi)};
             }
             else {
                 cerr << "Expected arg to -quit-after" << endl;

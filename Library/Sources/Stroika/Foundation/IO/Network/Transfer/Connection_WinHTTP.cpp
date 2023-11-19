@@ -111,11 +111,11 @@ namespace {
         {
             return fOptions_;
         }
-        virtual DurationSecondsType GetTimeout () const override
+        virtual Time::DurationSeconds GetTimeout () const override
         {
             return fTimeout_;
         }
-        virtual void SetTimeout (DurationSecondsType timeout) override
+        virtual void SetTimeout (Time::DurationSeconds timeout) override
         {
             fTimeout_ = timeout; // affects subsequent calls to send...
         }
@@ -156,8 +156,8 @@ namespace {
             HTTP::Status                      status{};
             optional<Response::SSLResultInfo> serverEndpointSSLInfo;
 
-            Time::DurationSecondsType startOfSendAt = Time::GetTickCount ();
-            Time::DurationSecondsType endBy         = fTimeout_ == Time::kInfinite ? Time::kInfinite : (startOfSendAt + fTimeout_);
+            Time::TimePointSeconds startOfSendAt = Time::GetTickCount ();
+            Time::TimePointSeconds endBy = fTimeout_ == Time::kInfinity ? Time::TimePointSeconds{Time::kInfinity} : (startOfSendAt + fTimeout_);
 
             /*
              * Though we could create a DIFFERENT API - that managed a session object - like the WinHTTP session object, for now,
@@ -531,7 +531,7 @@ namespace {
 
     private:
         Connection::Options           fOptions_;
-        DurationSecondsType           fTimeout_{Time::kInfinite};
+        Time::DurationSeconds         fTimeout_{Time::kInfinity};
         URI                           fURL_;
         shared_ptr<AutoWinHINTERNET_> fSessionHandle_;
         String                        fSessionHandle_UserAgent_;

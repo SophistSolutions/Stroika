@@ -29,6 +29,9 @@ namespace Stroika::Foundation::Cache {
      *  @see CallerStalenessCache<> - for unsynchronized base version
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     * 
+     *  TODO:
+     *      o   @todo consider if better hiding using aggregation instead of private inheritance.
      */
     template <typename KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
     class SynchronizedCallerStalenessCache : private CallerStalenessCache<KEY, VALUE, TIME_TRAITS> {

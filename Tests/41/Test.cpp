@@ -262,7 +262,7 @@ namespace {
                     Thread::AbortAndWaitForDone ({reader, adder});
                 });
                 // wait long time cuz of debuggers (esp valgrind) etc
-                Thread::WaitForDone ({reader, adder}, 15 * 60);
+                Thread::WaitForDone ({reader, adder}, 15 * 60s);
                 VerifyTestResult (sharedValue.load () == kMaxVal_);
             }
             catch (...) {
@@ -706,8 +706,8 @@ namespace {
                 Debug::TraceContextBumper traceCtx{"{}SyncCallerStalenessCacheT1_..."};
                 using namespace Cache;
                 SynchronizedCallerStalenessCache<int, int> cache;
-                auto mapValue = [&cache] (int value, optional<Time::DurationSecondsType> allowedStaleness = {}) -> int {
-                    return cache.LookupValue (value, cache.Ago (allowedStaleness.value_or (30)), [=] (int v) {
+                auto mapValue = [&cache] (int value, optional<Time::DurationSeconds> allowedStaleness = {}) -> int {
+                    return cache.LookupValue (value, cache.Ago (allowedStaleness.value_or (30s)), [=] (int v) {
                         return v; // could be more expensive computation
                     });
                 };

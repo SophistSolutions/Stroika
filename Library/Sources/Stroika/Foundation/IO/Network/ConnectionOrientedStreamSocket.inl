@@ -66,12 +66,12 @@ namespace Stroika::Foundation::IO::Network {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _cref ().GetPeerAddress ();
     }
-    inline optional<Time::DurationSecondsType> ConnectionOrientedStreamSocket::Ptr::GetAutomaticTCPDisconnectOnClose () const
+    inline optional<Time::DurationSeconds> ConnectionOrientedStreamSocket::Ptr::GetAutomaticTCPDisconnectOnClose () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _cref ().GetAutomaticTCPDisconnectOnClose ();
     }
-    inline void ConnectionOrientedStreamSocket::Ptr::SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& linger) const
+    inline void ConnectionOrientedStreamSocket::Ptr::SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSeconds>& linger) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         _ref ().SetAutomaticTCPDisconnectOnClose (linger);

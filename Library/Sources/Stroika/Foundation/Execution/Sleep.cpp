@@ -15,25 +15,12 @@ using namespace Stroika::Foundation::Execution;
  ***************************** Execution::Sleep *********************************
  ********************************************************************************
  */
-void Execution::Sleep (Time::DurationSecondsType seconds2Wait)
+void Execution::Sleep (Time::Duration seconds2Wait)
 {
-    Require (seconds2Wait >= 0.0);
+    Require (seconds2Wait >= 0s);
     Thread::CheckForInterruption ();
-    Time::DurationSecondsType timeRemaining = seconds2Wait;
-    while (timeRemaining > 0) {
+    Time::DurationSeconds timeRemaining = seconds2Wait;
+    while (timeRemaining > 0s) {
         Sleep (timeRemaining, &timeRemaining);
     }
-}
-
-void Execution::Sleep (const Time::Duration& wait)
-{
-    Sleep (wait.As<Time::DurationSecondsType> ());
-}
-
-void Execution::Sleep (const Time::Duration& wait, Time::Duration* remainingInSleep)
-{
-    RequireNotNull (remainingInSleep);
-    Time::DurationSecondsType remaining = 0;
-    Sleep (wait.As<Time::DurationSecondsType> (), &remaining);
-    *remainingInSleep = Time::Duration{remaining};
 }

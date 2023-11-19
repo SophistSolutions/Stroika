@@ -68,27 +68,19 @@ namespace Stroika::Foundation::Execution {
     {
         return fWE_.PeekIsSet ();
     }
-    inline void WaitableEvent::Wait (Time::DurationSecondsType timeout)
+    inline void WaitableEvent::Wait (Time::DurationSeconds timeout)
     {
         fWE_.WaitUntil (timeout + Time::GetTickCount ());
     }
-    inline void WaitableEvent::Wait (Time::Duration timeout)
-    {
-        Wait (timeout.As<Time::DurationSecondsType> ());
-    }
-    inline auto WaitableEvent::WaitQuietly (Time::DurationSecondsType timeout) -> WaitStatus
+    inline auto WaitableEvent::WaitQuietly (Time::DurationSeconds timeout) -> WaitStatus
     {
         return fWE_.WaitUntilQuietly (timeout + Time::GetTickCount ());
     }
-    inline auto WaitableEvent::WaitQuietly (const Time::Duration& timeout) -> WaitStatus
-    {
-        return WaitQuietly (timeout.As<Time::DurationSecondsType> ());
-    }
-    inline void WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
+    inline void WaitableEvent::WaitUntil (Time::TimePointSeconds timeoutAt)
     {
         fWE_.WaitUntil (timeoutAt);
     }
-    inline auto WaitableEvent::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) -> WaitStatus
+    inline auto WaitableEvent::WaitUntilQuietly (Time::TimePointSeconds timeoutAt) -> WaitStatus
     {
         return fWE_.WaitUntilQuietly (timeoutAt);
     }
@@ -98,7 +90,7 @@ namespace Stroika::Foundation::Execution {
         //Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
         Reset ();
     }
-    inline void WaitableEvent::WaitUntilAndReset (Time::DurationSecondsType timeoutAt)
+    inline void WaitableEvent::WaitUntilAndReset (Time::TimePointSeconds timeoutAt)
     {
         WaitUntil (timeoutAt);
         //Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
@@ -111,7 +103,7 @@ namespace Stroika::Foundation::Execution {
         Reset ();
         return r;
     }
-    inline auto WaitableEvent::WaitUntilQuietlyAndReset (Time::DurationSecondsType timeoutAt) -> WaitStatus
+    inline auto WaitableEvent::WaitUntilQuietlyAndReset (Time::TimePointSeconds timeoutAt) -> WaitStatus
     {
         auto r = WaitUntilQuietly (timeoutAt);
         // Require (fWE_.fTriggered); // This wait-and-reset approach only really works with a single waiter (else this is a race) - so caller must use that way
@@ -120,24 +112,24 @@ namespace Stroika::Foundation::Execution {
     }
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
     template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
-    inline SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)
+    inline SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSeconds timeout)
     {
         return WaitForAnyUntil (waitableEvents, timeout + Time::GetTickCount ());
     }
     template <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
     inline SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart,
-                                                                    ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout)
+                                                                    ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSeconds timeout)
     {
         return WaitForAnyUntil (waitableEventsStart, waitableEventsEnd, timeout + Time::GetTickCount ());
     }
     template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
-    inline SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt)
+    inline SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::TimePointSeconds timeoutAt)
     {
         return WaitForAnyUntil (begin (waitableEvents), end (waitableEvents), timeoutAt);
     }
     template <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
     SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart,
-                                                                  ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
+                                                                  ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::TimePointSeconds timeoutAt)
     {
         SET_OF_WAITABLE_EVENTS_RESULT result;
         /*
@@ -177,24 +169,24 @@ namespace Stroika::Foundation::Execution {
         return result;
     }
     template <typename CONTAINER_OF_WAITABLE_EVENTS>
-    inline void WaitableEvent::WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)
+    inline void WaitableEvent::WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSeconds timeout)
     {
         WaitForAllUntil (waitableEvents, timeout + Time::GetTickCount ());
     }
     template <typename ITERATOR_OF_WAITABLE_EVENTS>
     inline void WaitableEvent::WaitForAll (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
-                                           Time::DurationSecondsType timeout)
+                                           Time::DurationSeconds timeout)
     {
         WaitForAllUntil (waitableEventsStart, waitableEventsEnd, timeout + Time::GetTickCount ());
     }
     template <typename CONTAINER_OF_WAITABLE_EVENTS>
-    inline void WaitableEvent::WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt)
+    inline void WaitableEvent::WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::TimePointSeconds timeoutAt)
     {
         WaitForAllUntil (begin (waitableEvents), end (waitableEvents), timeoutAt);
     }
     template <typename ITERATOR_OF_WAITABLE_EVENTS>
     void WaitableEvent::WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
-                                         Time::DurationSecondsType timeoutAt)
+                                         Time::TimePointSeconds timeoutAt)
     {
         /*
          *  Create another WE as shared.

@@ -352,7 +352,7 @@ namespace Stroika::Foundation::Time {
          *
          *  \note - if this DateTime is out of range with respect to TickCount, then this function will throw a range_error.
          */
-        nonvirtual DurationSecondsType ToTickCount () const;
+        nonvirtual Time::TimePointSeconds ToTickCount () const;
 
     public:
         /**
@@ -363,7 +363,7 @@ namespace Stroika::Foundation::Time {
          *
          *  This function Requires a valid tickCount argument (in range - so meaning > 0)
          */
-        static DateTime FromTickCount (DurationSecondsType tickCount);
+        static DateTime FromTickCount (Time::TimePointSeconds tickCount);
 
     public:
         /**
@@ -602,8 +602,7 @@ namespace Stroika::Foundation::Time {
 
 namespace Stroika::Foundation::Math {
     bool NearlyEquals (Time::DateTime l, Time::DateTime r);
-    bool NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon);
-    bool NearlyEquals (Time::DateTime l, Time::DateTime r, const Time::Duration& epsilon);
+    bool NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSeconds epsilon);
 }
 
 namespace Stroika::Foundation::Time {

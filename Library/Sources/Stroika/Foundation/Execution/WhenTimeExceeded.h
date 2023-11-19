@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Execution {
         ~WhenTimeExceeded ();
 
     private:
-        Time::DurationSecondsTimePoint         fStartedAt_;
+        Time::TimePointSeconds                 fStartedAt_;
         Time::DurationSeconds                  fCallIfTakesLongerThan_;
         function<void (Time::DurationSeconds)> fRunIfTakesTooLong_;
     };

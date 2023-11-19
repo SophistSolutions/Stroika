@@ -159,13 +159,13 @@ namespace Stroika::Foundation::Execution {
          * 
          *  The function doesn't return until the task has been successfully cancelled, or it throws if timeout.
          */
-        nonvirtual void AbortTask (const TaskType& task, Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual void AbortTask (const TaskType& task, Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
          *  See AbortTask () - it aborts all tasks - if any.
          */
-        nonvirtual void AbortTasks (Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual void AbortTasks (Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
@@ -189,15 +189,15 @@ namespace Stroika::Foundation::Execution {
          *
          *  \req task != nullptr
          */
-        nonvirtual void WaitForTask (const TaskType& task, Time::DurationSecondsType timeout = Time::kInfinite) const;
+        nonvirtual void WaitForTask (const TaskType& task, Time::DurationSeconds timeout = Time::kInfinity) const;
 
     public:
         /**
          */
         struct TaskInfo {
-            TaskType                            fTask;
-            optional<Characters::String>        fName;
-            optional<Time::DurationSecondsType> fRunningSince; // if missing, cuz not running
+            TaskType                         fTask;
+            optional<Characters::String>     fName;
+            optional<Time::TimePointSeconds> fRunningSince; // if missing, cuz not running
 
             nonvirtual bool IsRunning () const;
         };
@@ -249,8 +249,8 @@ namespace Stroika::Foundation::Execution {
         *
         *  \note ***Cancelation Point***
         */
-        nonvirtual void WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSecondsType timeout = Time::kInfinite) const;
-        nonvirtual void WaitForTasksDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+        nonvirtual void WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSeconds timeout = Time::kInfinity) const;
+        nonvirtual void WaitForTasksDone (Time::DurationSeconds timeout = Time::kInfinity) const;
 
     public:
         /**
@@ -265,8 +265,8 @@ namespace Stroika::Foundation::Execution {
         *
         *  \note ***Cancelation Point***
         */
-        nonvirtual void WaitForTasksDoneUntil (const Traversal::Iterable<TaskType>& tasks, Time::DurationSecondsType timeoutAt) const;
-        nonvirtual void WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) const;
+        nonvirtual void WaitForTasksDoneUntil (const Traversal::Iterable<TaskType>& tasks, Time::TimePointSeconds timeoutAt) const;
+        nonvirtual void WaitForTasksDoneUntil (Time::TimePointSeconds timeoutAt) const;
 
     public:
         /**
@@ -284,10 +284,10 @@ namespace Stroika::Foundation::Execution {
              *  It doesn't contain tasks not yet run. Number of tasks reporting COULD exceed number added (since you can reset counters
              *  while there are tasks in queue).
              */
-            unsigned int              fNumberOfTasksReporting{0};
-            Time::DurationSecondsType fTotalTimeConsumed{0.0};
+            unsigned int          fNumberOfTasksReporting{0};
+            Time::DurationSeconds fTotalTimeConsumed{0.0};
 
-            Time::DurationSecondsType GetMeanTimeConsumed () const;
+            Time::DurationSeconds GetMeanTimeConsumed () const;
         };
 
     public:

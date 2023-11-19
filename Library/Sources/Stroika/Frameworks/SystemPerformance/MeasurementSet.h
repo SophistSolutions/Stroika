@@ -27,7 +27,6 @@ namespace Stroika::Frameworks::SystemPerformance {
     using namespace Stroika::Foundation;
     using Characters::String;
     using Containers::Collection;
-    using Time::DurationSecondsType;
     using Traversal::Range;
 
     /**
@@ -37,7 +36,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     struct MeasurementSet {
-        Range<DurationSecondsType> fMeasuredAt;
+        Range<Time::TimePointSeconds> fMeasuredAt;
 
         // @todo - this should use KeyedCollection, as the Measurement::fType is a KEY to this collection
         Collection<Measurement> fMeasurements;

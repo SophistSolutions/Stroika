@@ -55,7 +55,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
     using Foundation::Characters::String;
     using Foundation::Containers::Mapping;
     using Foundation::Containers::Set;
-    using Foundation::Time::DurationSecondsType;
+    using Foundation::Time::TimePointSeconds;
     using Foundation::Traversal::Iterable;
 
     /**
@@ -104,7 +104,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         nonvirtual void Collect ();
 
     public:
-        nonvirtual optional<DurationSecondsType> GetTimeOfLastCollection () const;
+        nonvirtual optional<TimePointSeconds> GetTimeOfLastCollection () const;
 
     public:
         /**
@@ -169,9 +169,9 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         nonvirtual optional<double> PeekCurrentValue (const String& instance, const String& counterName);
 
     private:
-        optional<DurationSecondsType> fTimeOfLastCollection_{};
-        String                        fObjectName_;
-        Set<String>                   fCounterNames_;
+        optional<TimePointSeconds> fTimeOfLastCollection_{};
+        String                     fObjectName_;
+        Set<String>                fCounterNames_;
 
     private:
         struct PerInstanceData_ {

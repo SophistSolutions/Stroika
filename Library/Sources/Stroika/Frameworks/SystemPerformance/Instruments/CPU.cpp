@@ -39,8 +39,6 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
 
-using Time::DurationSecondsType;
-
 using Instruments::CPU::Info;
 using Instruments::CPU::Options;
 
@@ -97,7 +95,7 @@ namespace {
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
 namespace {
     template <typename ELT>
-    double EstimateRunQFromLoadAveArray_ (Time::DurationSecondsType backNSeconds, ELT loadAveArray[3])
+    double EstimateRunQFromLoadAveArray_ (Time::DurationSeconds::rep backNSeconds, ELT loadAveArray[3])
     {
         // NB: Currently this is TOO simple. We should probably fit a curve to 3 points and use that to extrapolate. Maybe just fit 4 line segments?
         Require (backNSeconds >= 0);
@@ -248,7 +246,8 @@ namespace {
                 int    lr = ::getloadavg (loadAve, NEltsOf (loadAve));
                 if (lr == 3) {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
-                    result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - _GetCaptureContextTime ().value_or (0), loadAve);
+                    result.fRunQLength  = EstimateRunQFromLoadAveArray_ (
+                        (Time::GetTickCount () - _GetCaptureContextTime ().value_or (TimePointSeconds{})).count (), loadAve);
                     Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (),
                                                   std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }
@@ -279,7 +278,7 @@ namespace {
                     nonIdleTime += (newVal.softirq - baseline->softirq);
 
                     double totalTime = idleTime + nonIdleTime;
-                    if (totalTime <= this->_fOptions.fMinimumAveragingInterval) {
+                    if (totalTime <= this->_fOptions.fMinimumAveragingInterval.count ()) {
                         // can happen if called too quickly together. No good answer
                         DbgTrace ("Warning - times too close together for cputime_");
                         return nullopt;
@@ -356,7 +355,7 @@ namespace {
                      *  Must be that idle time is somehow INCLUDED in either kernel or user time.
                      */
                     double sys = kernelTimeOverInterval + userTimeOverInterval;
-                    if (sys > _fOptions.fMinimumAveragingInterval) {
+                    if (Time::Duration{sys} > _fOptions.fMinimumAveragingInterval) {
                         double cpu = 1 - idleTimeOverInterval / sys;
                         return cpu * ::GetNumberOfLogicalCPUCores ();
                     }
@@ -408,7 +407,7 @@ namespace {
         CPUInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
-            Require (_fOptions.fMinimumAveragingInterval > 0);
+            Require (_fOptions.fMinimumAveragingInterval > 0s);
         }
         virtual MeasurementSet Capture () override
         {
@@ -418,7 +417,7 @@ namespace {
                 kCPUMeasurment_, Instruments::CPU::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
             return results;
         }
-        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        nonvirtual Info Capture_Raw (Range<TimePointSeconds>* outMeasuredAt)
         {
             return Do_Capture_Raw<Info> ([this] () { return _InternalCapture (); }, outMeasuredAt);
         }
@@ -485,7 +484,7 @@ Instruments::CPU::Instrument::Instrument (const Options& options)
  ********************************************************************************
  */
 template <>
-Instruments::CPU::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+Instruments::CPU::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<CPU::Info>"};
     CPUInstrumentRep_*        myCap = dynamic_cast<CPUInstrumentRep_*> (fCaptureRep_.get ());

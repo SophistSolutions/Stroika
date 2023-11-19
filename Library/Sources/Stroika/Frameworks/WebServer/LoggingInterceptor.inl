@@ -17,9 +17,9 @@ namespace Stroika::Frameworks::WebServer {
      ***************************** Implementation Details ***************************
      ********************************************************************************
      */
-    inline ILogHandler::MessageInstance::MessageInstance (Message* m, Time::DurationSecondsType startedAt)
-        : fMessage (m)
-        , fStartedAt (startedAt)
+    inline ILogHandler::MessageInstance::MessageInstance (Message* m, Time::TimePointSeconds startedAt)
+        : fMessage{m}
+        , fStartedAt{startedAt}
     {
     }
 

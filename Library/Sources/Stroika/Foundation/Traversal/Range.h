@@ -234,7 +234,8 @@ namespace Stroika::Foundation::Traversal {
         struct Default
             : conditional_t<is_enum_v<T>, typename Common::LazyType<Default_Enum, T>::type,
                             conditional_t<is_integral_v<T>, typename Common::LazyType<Default_Integral, T>::type,
-                                          conditional_t<is_arithmetic_v<T>, typename Common::LazyType<Default_Arithmetic, T>::type, void>>> {};
+                                          conditional_t<is_arithmetic_v<T> or true, typename Common::LazyType<Default_Arithmetic, T>::type, void>>> {
+        };
 
     }
 

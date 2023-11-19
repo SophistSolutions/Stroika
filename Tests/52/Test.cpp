@@ -139,19 +139,19 @@ namespace {
 namespace {
 
     void DEFAULT_TEST_PRINTER (const String& testName, const String& baselineTName, const String& compareWithTName,
-                               double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)
+                               double warnIfPerformanceScoreHigherThan, Duration baselineTime, Duration compareWithTime)
     {
         ostream& outTo = GetOutStream_ ();
         outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs "
               << compareWithTName.AsNarrowSDKString () << ")" << endl;
-        double     performanceScore = (baselineTime == 0) ? 1000000 : compareWithTime / baselineTime;
-        const char kOneTab_[]       = "\t";
+        double         performanceScore = (baselineTime == 0s) ? 1000000 : compareWithTime.count () / baselineTime.count ();
+        constexpr char kOneTab_[]       = "\t";
         {
             FloatConversion::ToStringOptions fo = FloatConversion::ToStringOptions{FloatConversion::eDontTrimZeros, FloatConversion::Precision{2}};
             outTo << kOneTab_ << "PERFORMANCE_SCORE" << kOneTab_ << FloatConversion::ToString (performanceScore, fo).AsNarrowSDKString () << endl;
         }
         outTo << kOneTab_ << "DETAILS:         " << kOneTab_;
-        outTo << "[baseline test " << baselineTime << " secs, and comparison " << compareWithTime << " sec, and warnIfPerfScore > "
+        outTo << "[baseline test " << baselineTime.count () << " secs, and comparison " << compareWithTime.count () << " sec, and warnIfPerfScore > "
               << warnIfPerformanceScoreHigherThan << ", and perfScore=" << performanceScore << "]" << endl;
         outTo << kOneTab_ << "                 " << kOneTab_;
         if (performanceScore < 1) {
@@ -170,14 +170,14 @@ namespace {
         outTo << endl;
     }
 
-    DurationSecondsType RunTest_ (function<void ()> t, unsigned int runCount)
+    DurationSeconds RunTest_ (function<void ()> t, unsigned int runCount)
     {
         runCount = Math::AtLeast<unsigned int> (runCount, 1);
-        const size_t                             kNParts2Divide_{10};
-        Memory::StackBuffer<DurationSecondsType> times{kNParts2Divide_};
-        unsigned int                             actualRanCount{};
+        const size_t                              kNParts2Divide_{10};
+        Memory::StackBuffer<DurationSeconds::rep> times{kNParts2Divide_};
+        unsigned int                              actualRanCount{};
         for (size_t i = 0; i < kNParts2Divide_; ++i) {
-            DurationSecondsType start = Time::GetTickCount ();
+            TimePointSeconds start = Time::GetTickCount ();
             for (unsigned int ii = 0; ii < Math::AtLeast<unsigned int> (runCount / kNParts2Divide_, 1); ++ii) {
                 if (actualRanCount >= runCount) {
                     break;
@@ -185,44 +185,42 @@ namespace {
                 t ();
                 actualRanCount++;
             }
-            times[i] = Time::GetTickCount () - start;
+            times[i] = (Time::GetTickCount () - start).count ();
         }
-        DurationSecondsType m = Math::Median (times.begin (), times.end ());
-        return m * kNParts2Divide_; // this should provide a more stable estimate than the total time
+        DurationSeconds::rep m = Math::Median (times.begin (), times.end ());
+        return DurationSeconds{m * kNParts2Divide_}; // this should provide a more stable estimate than the total time
     }
 
     // return true if test failed (slower than expected)
     bool Tester (String testName, function<void ()> baselineT, String baselineTName, function<void ()> compareWithT,
                  String compareWithTName, unsigned int runCount, double warnIfPerformanceScoreHigherThan,
-                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan,
-                                DurationSecondsType baselineTime, DurationSecondsType compareWithTime)>
+                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, Duration baselineTime, Duration compareWithTime)>
                      printResults = DEFAULT_TEST_PRINTER)
     {
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Tester", L"testName=%s, runCount=%d", testName.c_str (), runCount)};
 #if qDebug
         runCount = static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio);
 #endif
-        DurationSecondsType baselineTime    = RunTest_ (baselineT, runCount);
-        DurationSecondsType compareWithTime = RunTest_ (compareWithT, runCount);
+        Duration baselineTime    = RunTest_ (baselineT, runCount);
+        Duration compareWithTime = RunTest_ (compareWithT, runCount);
 #if qPrintOutIfBaselineOffFromOneSecond
-        if (not NearlyEquals<DurationSecondsType> (baselineTime, 1, .15)) {
-            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount
-                 << " so try using runCount = " << int (runCount / baselineTime) << endl;
+        if (not NearlyEquals<Duration::rep> (baselineTime.count (), 1, .15)) {
+            cerr << "SUGGESTION: Baseline Time: " << baselineTime.count () << " and runCount = " << runCount
+                 << " so try using runCount = " << int (runCount / baselineTime.count ()) << endl;
         }
 #endif
         printResults (testName, baselineTName, compareWithTName, warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
         if constexpr (kPrintOutIfFailsToMeetPerformanceExpectations_) {
-            double ratio = compareWithTime / baselineTime;
+            double ratio = compareWithTime.count () / baselineTime.count ();
             return ratio > warnIfPerformanceScoreHigherThan;
         }
         else {
             return false;
         }
     }
-    bool Tester (String testName, DurationSecondsType baselineTime, function<void ()> compareWithT, String compareWithTName,
-                 unsigned int runCount, double warnIfPerformanceScoreHigherThan,
-                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan,
-                                DurationSecondsType baselineTime, DurationSecondsType compareWithTime)>
+    bool Tester (String testName, Duration baselineTime, function<void ()> compareWithT, String compareWithTName, unsigned int runCount,
+                 double warnIfPerformanceScoreHigherThan,
+                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, Duration baselineTime, Duration compareWithTime)>
                      printResults = DEFAULT_TEST_PRINTER)
     {
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Tester", L"testName=%s, runCount=%d", testName.c_str (), runCount)};
@@ -230,17 +228,17 @@ namespace {
         runCount = Math::AtLeast<unsigned int> (static_cast<unsigned int> (runCount * qDebugCaseRuncountRatio), 1);
 #endif
         baselineTime *= runCount;
-        DurationSecondsType compareWithTime = RunTest_ (compareWithT, runCount);
+        Duration compareWithTime = RunTest_ (compareWithT, runCount);
 #if qPrintOutIfBaselineOffFromOneSecond
-        if (not NearlyEquals<DurationSecondsType> (baselineTime, 1, .15)) {
-            cerr << "SUGGESTION: Baseline Time: " << baselineTime << " and runCount = " << runCount
-                 << " so try using runCount = " << int (runCount / baselineTime) << endl;
+        if (not NearlyEquals<Duration::rep> (baselineTime.count (), 1, .15)) {
+            cerr << "SUGGESTION: Baseline Time: " << baselineTime.count () << " and runCount = " << runCount
+                 << " so try using runCount = " << int (runCount / baselineTime.count ()) << endl;
         }
 #endif
-        printResults (testName, Characters::Format (L"%f seconds", baselineTime), compareWithTName, warnIfPerformanceScoreHigherThan,
-                      baselineTime, compareWithTime);
+        printResults (testName, Characters::Format (L"%f seconds", baselineTime.count ()), compareWithTName,
+                      warnIfPerformanceScoreHigherThan, baselineTime, compareWithTime);
         if constexpr (kPrintOutIfFailsToMeetPerformanceExpectations_) {
-            double ratio = compareWithTime / baselineTime;
+            double ratio = compareWithTime.count () / baselineTime.count ();
             return ratio > warnIfPerformanceScoreHigherThan;
         }
         else {
@@ -250,11 +248,10 @@ namespace {
 
     void Tester (String testName, function<void ()> compareWithT, String compareWithTName, unsigned int runCount,
                  double warnIfPerformanceScoreHigherThan, Set<String>* failedTestAccumulator,
-                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan,
-                                DurationSecondsType baselineTime, DurationSecondsType compareWithTime)>
+                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, Duration baselineTime, Duration compareWithTime)>
                      printResults = DEFAULT_TEST_PRINTER)
     {
-        DurationSecondsType baselineTime = 1 / double (runCount);
+        Duration baselineTime = 1 / double (runCount);
         if (Tester (testName, baselineTime, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount),
                     warnIfPerformanceScoreHigherThan, printResults)) {
             failedTestAccumulator->Add (testName);
@@ -262,8 +259,7 @@ namespace {
     }
     void Tester (String testName, function<void ()> baselineT, String baselineTName, function<void ()> compareWithT,
                  String compareWithTName, unsigned int runCount, double warnIfPerformanceScoreHigherThan, Set<String>* failedTestAccumulator,
-                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan,
-                                DurationSecondsType baselineTime, DurationSecondsType compareWithTime)>
+                 function<void (String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, Duration baselineTime, Duration compareWithTime)>
                      printResults = DEFAULT_TEST_PRINTER)
     {
         if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName,
@@ -1255,16 +1251,16 @@ namespace {
                     inputfile.seekg (0, std::ios::end);
                     to_parse.reserve (inputfile.tellg ());
                     inputfile.seekg (0, std::ios::beg);
-                    to_parse.assign ((std::istreambuf_iterator<char> (inputfile)), std::istreambuf_iterator<char> ());
+                    to_parse.assign ((std::istreambuf_iterator<char>{inputfile}), std::istreambuf_iterator<char>{});
                     return to_parse;
                 }
             }();
-            Time::DurationSecondsType start = Time::GetTickCount ();
+            Time::TimePointSeconds start = Time::GetTickCount ();
             function2Test (data2ParseAsString, nTimes);
-            Time::DurationSecondsType took = Time::GetTickCount () - start;
+            Time::DurationSeconds took = Time::GetTickCount () - start;
             GetOutStream_ () << "\t"
                              << "DETAILS"
-                             << "\t\t\t" << took << " seconds" << endl;
+                             << "\t\t\t" << took.count () << " seconds" << endl;
             GetOutStream_ () << endl;
         }
         void Run ()

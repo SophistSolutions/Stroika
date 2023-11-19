@@ -537,7 +537,7 @@ namespace {
             Debug::TraceContextBumper ctx{"Test6_Neighbors_::DoTests_"};
             {
                 IO::Network::NeighborsMonitor monitor;
-                Time::DurationSecondsType     timeoutAt = (Time::GetTickCount () + Time::Duration{3s}).As<Time::DurationSecondsType> ();
+                Time::TimePointSeconds        timeoutAt = (Time::GetTickCount () + Time::Duration{3s});
                 while (Time::GetTickCount () < timeoutAt) {
                     // Note - this try/catch is ONLY needed to workaround bug with MSFT WSL (windows subsystem for linux), and when thats fixed we can remove the try/catch -- LGP 2020-03-20
                     try {

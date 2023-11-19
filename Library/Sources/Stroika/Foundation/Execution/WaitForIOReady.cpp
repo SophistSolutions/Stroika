@@ -37,7 +37,8 @@ using namespace Stroika::Foundation::Execution::WaitForIOReady_Support;
 using std::byte;
 
 using Memory::StackBuffer;
-using Time::DurationSecondsType;
+using Time::DurationSeconds;
+using Time::TimePointSeconds;
 
 namespace {
     struct EventFD_Based_ : public EventFD {
@@ -135,10 +136,10 @@ unique_ptr<EventFD> WaitForIOReady_Support::mkEventFD ()
  **************** Execution::WaitForIOReady::WaitForIOReady_Base ****************
  ********************************************************************************
  */
-auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end,
-                                             Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>
+auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start,
+                                             const pair<SDKPollableType, TypeOfMonitorSet>* end, TimePointSeconds timeoutAt) -> Containers::Set<size_t>
 {
-    DurationSecondsType time2Wait = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
+    DurationSeconds time2Wait = Math::AtLeast<DurationSeconds> (timeoutAt - Time::GetTickCount (), 0s);
     Thread::CheckForInterruption ();
     StackBuffer<pollfd> pollData;
     {
@@ -170,19 +171,19 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
     // USE ppoll? Also verify meaning of timeout, as docs on http://linux.die.net/man/2/poll seem to suggest
     // I have this wrong but I suspect docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
     // which sounds backward...
-    [[maybe_unused]] int timeout_msecs = Math::Round<int> (time2Wait * 1000);
-    Assert (timeout_msecs >= 0);
+    [[maybe_unused]] int timeoutMilliseconds = Math::Round<int> (time2Wait.count () * 1000);
+    Assert (timeoutMilliseconds >= 0);
     int pollResult;
 #if qPlatform_Windows
 #if qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks > 0
     while (true) {
         Thread::CheckForInterruption ();
-        DurationSecondsType timeLeft2Wait     = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
-        DurationSecondsType time2WaitThisLoop = Math::AtLeast<Time::DurationSecondsType> (
-            Math::AtMost<Time::DurationSecondsType> (
-                timeLeft2Wait, qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0),
-            0);
-        int time2WaitMillisecondsThisLoop = static_cast<int> (time2WaitThisLoop * 1000);
+        DurationSeconds timeLeft2Wait     = Math::AtLeast<DurationSeconds> (timeoutAt - Time::GetTickCount (), 0s);
+        DurationSeconds time2WaitThisLoop = Math::AtLeast<DurationSeconds> (
+            Math::AtMost<DurationSeconds> (
+                timeLeft2Wait, DurationSeconds{qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0}),
+            0s);
+        int time2WaitMillisecondsThisLoop = static_cast<int> (time2WaitThisLoop.count () * 1000);
         if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), time2WaitMillisecondsThisLoop)) == SOCKET_ERROR) {
             Execution::ThrowSystemErrNo (::WSAGetLastError ());
         }
@@ -191,12 +192,12 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
         }
     }
 #else
-    if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), timeout_msecs)) == SOCKET_ERROR) {
+    if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), timeoutMilliseconds)) == SOCKET_ERROR) {
         Platform::Windows::Exception::Throw (::WSAGetLastError ());
     }
 #endif
 #else
-    pollResult = Handle_ErrNoResultInterruption ([&] () { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); });
+    pollResult = Handle_ErrNoResultInterruption ([&] () { return ::poll (pollData.begin (), pollData.GetSize (), timeoutMilliseconds); });
 #endif
     Set<size_t> result;
     if (pollResult != 0) {

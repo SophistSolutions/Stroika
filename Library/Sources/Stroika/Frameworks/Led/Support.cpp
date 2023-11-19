@@ -181,14 +181,14 @@ unsigned long Led::LedTickCount2XTime (float ledTickCount)
 @DESCRIPTION:   <p>Returns the amount of time (in seconds) between clicks which the OS deems should be interpretted
             as a double click.</p>
 */
-Time::DurationSecondsType Led::Led_GetDoubleClickTime ()
+Time::DurationSeconds Led::Led_GetDoubleClickTime ()
 {
 #if qPlatform_MacOS
     return (float (::GetDblTime ()) / 60.0f);
 #elif qPlatform_Windows
-    return (float (::GetDoubleClickTime ()) / 1000.0f);
+    return Time::DurationSeconds{float (::GetDoubleClickTime ()) / 1000.0f};
 #elif qStroika_FeatureSupported_XWindows
-    return 0.25f; // SAME AS DOUBLE_CLICK_TIME FROM gdkevents.c
+    return 0.25s; // SAME AS DOUBLE_CLICK_TIME FROM gdkevents.c
 #endif
 }
 

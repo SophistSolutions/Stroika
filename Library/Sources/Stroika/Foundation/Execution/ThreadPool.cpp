@@ -38,7 +38,7 @@ public:
     }
 
 public:
-    tuple<TaskType, Time::DurationSecondsType, optional<String>> GetCurTaskInfo () const
+    tuple<TaskType, Time::TimePointSeconds, optional<String>> GetCurTaskInfo () const
     {
         // assume caller holds lock
         return make_tuple (fCurTask, fCurTaskStartedAt, fCurName); // note curTask can be null, in which case these other things are meaningless
@@ -65,7 +65,7 @@ public:
                 }
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept {
-                Time::DurationSecondsType taskStartedAt;
+                Time::TimePointSeconds taskStartedAt;
                 {
                     [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool.fCriticalSection_};
                     fCurTask                        = nullptr;
@@ -104,8 +104,8 @@ public:
     ThreadPool& fThreadPool;
     // fThreadPool.fCriticalSection_ protect access to fCurTask/fCurTaskStartedAt/fCurName - very short duration
     ThreadPool::TaskType         fCurTask;
-    Time::DurationSecondsType    fCurTaskStartedAt{0}; // meaningless if fCurTask==nullptr
-    optional<Characters::String> fCurName;             // ""
+    Time::TimePointSeconds       fCurTaskStartedAt{0s}; // meaningless if fCurTask==nullptr
+    optional<Characters::String> fCurName;              // ""
 };
 
 /*
@@ -185,7 +185,7 @@ ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task, const optional<C
     return task;
 }
 
-void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType timeout)
+void ThreadPool::AbortTask (const TaskType& task, Time::DurationSeconds timeout)
 {
     Debug::TraceContextBumper ctx{"ThreadPool::AbortTask"};
     {
@@ -227,7 +227,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
     }
 }
 
-void ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
+void ThreadPool::AbortTasks (Time::DurationSeconds timeout)
 {
     Debug::TraceContextBumper ctx{"ThreadPool::AbortTasks"};
     auto                      tps = GetPoolSize ();
@@ -285,19 +285,19 @@ bool ThreadPool::IsRunning (const TaskType& task) const
     return false;
 }
 
-void ThreadPool::WaitForTask (const TaskType& task, Time::DurationSecondsType timeout) const
+void ThreadPool::WaitForTask (const TaskType& task, Time::DurationSeconds timeout) const
 {
     Debug::TraceContextBumper ctx{"ThreadPool::WaitForTask"};
     // Inefficient / VERY SLOPPY impl - @todo fix use WaitableEvent or conidtion variables...
-    using Time::DurationSecondsType;
-    DurationSecondsType timeoutAt = timeout + Time::GetTickCount ();
+    using Time::TimePointSeconds;
+    TimePointSeconds timeoutAt = timeout + Time::GetTickCount ();
     while (true) {
         if (not IsPresent (task)) {
             return;
         }
-        DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
+        Time::DurationSeconds remaining = timeoutAt - Time::GetTickCount ();
         Execution::ThrowTimeoutExceptionAfter (timeoutAt);
-        Execution::Sleep (min<DurationSecondsType> (remaining, 1.0));
+        Execution::Sleep (min<Time::DurationSeconds> (remaining, 1.0s));
     }
 }
 
@@ -309,12 +309,12 @@ auto ThreadPool::GetTasks () const -> Collection<TaskInfo>
         result.Add (TaskInfo{.fTask = ti.fTask, .fName = ti.fName});
     }
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
-        tuple<TaskType, Time::DurationSecondsType, optional<String>> curTaskInfo = i->fRunnable->GetCurTaskInfo ();
+        tuple<TaskType, Time::TimePointSeconds, optional<String>> curTaskInfo = i->fRunnable->GetCurTaskInfo ();
         if (get<TaskType> (curTaskInfo) != nullptr) {
             result.Add (TaskInfo{
                 .fTask         = get<TaskType> (curTaskInfo),
                 .fName         = get<optional<String>> (curTaskInfo),
-                .fRunningSince = get<Time::DurationSecondsType> (curTaskInfo),
+                .fRunningSince = get<Time::TimePointSeconds> (curTaskInfo),
             });
         }
     }
@@ -364,7 +364,7 @@ size_t ThreadPool::GetPendingTasksCount () const
     return fPendingTasks_.size ();
 }
 
-void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::DurationSecondsType timeoutAt) const
+void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::TimePointSeconds timeoutAt) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
@@ -378,7 +378,7 @@ void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::D
     }
 }
 
-void ThreadPool::WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) const
+void ThreadPool::WaitForTasksDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForTasksDoneUntil",

@@ -228,9 +228,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
-      <Filter>Sources\Time</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClCompile>

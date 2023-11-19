@@ -55,23 +55,23 @@ namespace Stroika::Frameworks::Service {
         Execution::DeclareActivity           activity{&kUnInstallingService_};
         GetServiceRep_ ()._UnInstall ();
     }
-    inline void Main::Start (Time::DurationSecondsType timeout)
+    inline void Main::Start (Time::DurationSeconds timeout)
     {
-        Debug::TraceContextBumper            traceCtx{L"Stroika::Frameworks::Service::Main::Start", L"timeout = %e", timeout};
+        Debug::TraceContextBumper            traceCtx{L"Stroika::Frameworks::Service::Main::Start", L"timeout = %e", timeout.count ()};
         static constexpr Execution::Activity kStartingService_{"staring service"sv};
         Execution::DeclareActivity           activity{&kStartingService_};
         GetServiceRep_ ()._Start (timeout);
     }
-    inline void Main::Stop (Time::DurationSecondsType timeout)
+    inline void Main::Stop (Time::DurationSeconds timeout)
     {
-        Debug::TraceContextBumper            traceCtx{L"Stroika::Frameworks::Service::Main::Stop", L"timeout = %e", timeout};
+        Debug::TraceContextBumper            traceCtx{L"Stroika::Frameworks::Service::Main::Stop", L"timeout = %e", timeout.count ()};
         static constexpr Execution::Activity kStoppingService_{"stopping service"sv};
         Execution::DeclareActivity           activity{&kStoppingService_};
         GetServiceRep_ ()._Stop (timeout);
     }
-    inline void Main::ForcedStop (Time::DurationSecondsType timeout)
+    inline void Main::ForcedStop (Time::DurationSeconds timeout)
     {
-        Debug::TraceContextBumper            traceCtx{L"Stroika::Frameworks::Service::Main::ForcedStop", L"timeout = %e", timeout};
+        Debug::TraceContextBumper            traceCtx{L"Stroika::Frameworks::Service::Main::ForcedStop", L"timeout = %e", timeout.count ()};
         static constexpr Execution::Activity kForcedStoppingService_{"forced stopping service"sv};
         Execution::DeclareActivity           activity{&kForcedStoppingService_};
         GetServiceRep_ ()._ForcedStop (timeout);

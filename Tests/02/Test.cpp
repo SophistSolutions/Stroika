@@ -148,7 +148,7 @@ namespace {
         {
 #if qPrintTimings
             cout << "Stress testing strings..." << endl;
-            Time::DurationSecondsType t = Time::GetTickCount ();
+            Time::TimePointSeconds t = Time::GetTickCount ();
 #endif
 
             {
@@ -177,7 +177,7 @@ namespace {
         {
 #if qPrintTimings
             cout << "Stress testing buffered strings..." << endl;
-            Time::DurationSecondsType t = Time::GetTickCount ();
+            Time::TimePointSeconds t = Time::GetTickCount ();
 #endif
 
             {
@@ -469,7 +469,7 @@ namespace {
             STRING testString = L"some dump test";
 #if qPrintTimings
             cout << "\tTYPE=" << testMessage << ": Recursive build test with depth " << kRecurseDepth << endl;
-            Time::DurationSecondsType t = Time::GetTickCount ();
+            Time::TimePointSeconds t = Time::GetTickCount ();
 #endif
 
             STRING s = Test6_Helper_<STRING> (testString, kRecurseDepth); // returns length 114688 for depth 6

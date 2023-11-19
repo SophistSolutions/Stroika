@@ -150,8 +150,8 @@ namespace {
 
         MyCapturer_ capturer; // initialized threadsafe, but internally syncrhonized class
 
-        Time::DurationSecondsType doneAt = Time::GetTickCount () + runFor.As<Time::DurationSecondsType> ();
-        unsigned int              pass{};
+        Time::TimePointSeconds doneAt = Time::GetTickCount () + runFor;
+        unsigned int           pass{};
         cout << "Printing most recent measurements (in loop):" << endl;
         while (Time::GetTickCount () < doneAt) {
             auto measurements = capturer.pMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
@@ -166,7 +166,7 @@ namespace {
                 totalCPURatio = om->GetTotalCPURatio ();
             }
             optional<Duration> thisProcUptime;
-            optional<double>   thisProcAverageCPUTimeUsed;
+            optional<Duration> thisProcAverageCPUTimeUsed;
             optional<uint64_t> thisProcWorkingOrResidentSetSize;
             optional<double>   thisProcCombinedIORate;
             if (auto om = capturer.fProcessInstrument.MeasurementAs<Instruments::Process::Info> (measurements)) {
@@ -206,14 +206,14 @@ int main (int argc, const char* argv[])
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    bool                      printUsage            = false;
-    bool                      mostRecentCaptureMode = false;
-    bool                      printNames            = false;
-    bool                      oneLineMode           = false;
-    Time::DurationSecondsType runFor                = 0; // default to runfor 0, so we do each once.
-    Time::DurationSecondsType captureInterval       = 15;
-    Set<InstrumentNameType>   run;
-    Sequence<String>          args = Execution::ParseCommandLine (argc, argv);
+    bool                    printUsage            = false;
+    bool                    mostRecentCaptureMode = false;
+    bool                    printNames            = false;
+    bool                    oneLineMode           = false;
+    Time::DurationSeconds   runFor                = 0s; // default to runfor 0, so we do each once.
+    Time::DurationSeconds   captureInterval       = 15s;
+    Set<InstrumentNameType> run;
+    Sequence<String>        args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
         if (Execution::MatchesCommandLineArgument (*argi, "h"sv) or Execution::MatchesCommandLineArgument (*argi, "help"sv)) {
             printUsage = true;
@@ -240,7 +240,7 @@ int main (int argc, const char* argv[])
         if (Execution::MatchesCommandLineArgument (*argi, "t"sv)) {
             ++argi;
             if (argi != args.end ()) {
-                runFor = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
+                runFor = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*argi)};
             }
             else {
                 cerr << "Expected arg to -t" << endl;
@@ -250,7 +250,7 @@ int main (int argc, const char* argv[])
         if (Execution::MatchesCommandLineArgument (*argi, "c"sv)) {
             ++argi;
             if (argi != args.end ()) {
-                captureInterval = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
+                captureInterval = Duration{Characters::FloatConversion::ToFloat<Duration::rep> (*argi)};
             }
             else {
                 cerr << "Expected arg to -c" << endl;
@@ -276,10 +276,10 @@ int main (int argc, const char* argv[])
             Demo_PrintInstruments_ ();
         }
         else if (mostRecentCaptureMode) {
-            Demo_Using_Capturer_GetMostRecentMeasurements_ (Duration{runFor});
+            Demo_Using_Capturer_GetMostRecentMeasurements_ (runFor);
         }
-        else if (runFor > 0) {
-            Demo_UsingCapturerWithCallbacks_ (run, oneLineMode, Duration{captureInterval}, Duration{runFor});
+        else if (runFor > 0s) {
+            Demo_UsingCapturerWithCallbacks_ (run, oneLineMode, captureInterval, runFor);
         }
         else {
             Demo_Using_Direct_Capture_On_Instrument_ (run, oneLineMode, Duration{captureInterval});

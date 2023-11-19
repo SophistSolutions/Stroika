@@ -40,7 +40,6 @@ using Containers::Mapping;
 using Containers::Sequence;
 using Containers::Set;
 using IO::FileSystem::FileInputStream;
-using Time::DurationSecondsType;
 
 using Instruments::Memory::Info;
 using Instruments::Memory::Options;
@@ -123,10 +122,10 @@ namespace {
 #if qPlatform_Linux
 namespace {
     struct _Context : SystemPerformance::Support::Context {
-        uint64_t                  fSaved_MajorPageFaultsSinceBoot{};
-        uint64_t                  fSaved_MinorPageFaultsSinceBoot{};
-        uint64_t                  fSaved_PageOutsSinceBoot{};
-        Time::DurationSecondsType fSaved_VMPageStats_At{};
+        uint64_t               fSaved_MajorPageFaultsSinceBoot{};
+        uint64_t               fSaved_MinorPageFaultsSinceBoot{};
+        uint64_t               fSaved_PageOutsSinceBoot{};
+        Time::TimePointSeconds fSaved_VMPageStats_At{};
     };
 
     struct InstrumentRep_Linux_ : InstrumentRepBase_<_Context> {
@@ -259,16 +258,16 @@ namespace {
                         }
                     }
                 }
-                Time::DurationSecondsType now            = Time::GetTickCount ();
+                Time::TimePointSeconds now               = Time::GetTickCount ();
                 updateResult->fPaging.fPageOutsSinceBoot = pgpgout;
                 if (pgfault and updateResult->fPaging.fMajorPageFaultsSinceBoot) {
                     updateResult->fPaging.fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fPaging.fMajorPageFaultsSinceBoot;
                 }
-                auto doAve_ = [this] (Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline,
+                auto doAve_ = [this] (Time::TimePointSeconds savedVMPageStatsAt, Time::TimePointSeconds now, uint64_t* savedBaseline,
                                       optional<uint64_t> faultsSinceBoot, optional<double>* faultsPerSecond) {
                     if (faultsSinceBoot) {
-                        if (savedVMPageStatsAt >= _fOptions.fMinimumAveragingInterval) {
-                            *faultsPerSecond = (*faultsSinceBoot - *savedBaseline) / (now - savedVMPageStatsAt);
+                        if (now - savedVMPageStatsAt >= _fOptions.fMinimumAveragingInterval) {
+                            *faultsPerSecond = (*faultsSinceBoot - *savedBaseline) / (now - savedVMPageStatsAt).count ();
                         }
                         *savedBaseline = *faultsSinceBoot;
                     }
@@ -404,7 +403,7 @@ namespace {
         MemoryInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
-            Require (_fOptions.fMinimumAveragingInterval > 0);
+            Require (_fOptions.fMinimumAveragingInterval > 0s);
         }
         virtual MeasurementSet Capture () override
         {
@@ -414,7 +413,7 @@ namespace {
                 kMemoryUsageMeasurement_, Instruments::Memory::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
             return results;
         }
-        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        nonvirtual Info Capture_Raw (Range<TimePointSeconds>* outMeasuredAt)
         {
             return Do_Capture_Raw<Info> ([this] () { return _InternalCapture (); }, outMeasuredAt);
         }
@@ -498,7 +497,7 @@ Instruments::Memory::Instrument::Instrument (const Options& options)
  ********************************************************************************
  */
 template <>
-Instruments::Memory::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+Instruments::Memory::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Memory::Info>"};
     MemoryInstrumentRep_*     myCap = dynamic_cast<MemoryInstrumentRep_*> (fCaptureRep_.get ());

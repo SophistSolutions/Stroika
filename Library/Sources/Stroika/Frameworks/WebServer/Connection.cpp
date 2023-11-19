@@ -300,8 +300,8 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                         oRemaining->fMessages = *oRemaining->fMessages - 1u;
                     }
                 }
-                if (oRemaining->fTimeoutAt) {
-                    if (fConnectionStartedAt_ + *oRemaining->fTimeoutAt < Time::GetTickCount ()) {
+                if (oRemaining->fTimeout) {
+                    if (fConnectionStartedAt_ + *oRemaining->fTimeout < Time::GetTickCount ()) {
                         thisMessageKeepAlive = false;
                     }
                 }

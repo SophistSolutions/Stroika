@@ -178,83 +178,39 @@ namespace Stroika::Foundation::Time {
         }
         fRepType_ = eEmpty_;
     }
-    template <>
-    inline int Duration::As () const
+    template <typename T>
+    inline T Duration::As () const
+        requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or
+                  Configuration::IDuration<T> or Configuration::ITimePoint<T>)
     {
-        return static_cast<int> (count ());
-    }
-    template <>
-    inline long int Duration::As () const
-    {
-        return static_cast<long int> (count ());
-    }
-    template <>
-    inline long long int Duration::As () const
-    {
-        return static_cast<long long int> (count ());
-    }
-    template <>
-    inline float Duration::As () const
-    {
-        return static_cast<float> (count ());
-    }
-    template <>
-    inline double Duration::As () const
-    {
-        return count ();
-    }
-    template <>
-    inline long double Duration::As () const
-    {
-        return count ();
-    }
-    template <>
-    inline chrono::duration<double> Duration::As () const
-    {
-        return chrono::duration<double> (count ());
-    }
-    template <>
-    inline chrono::seconds Duration::As () const
-    {
-        return chrono::seconds (static_cast<chrono::seconds::rep> (count ()));
-    }
-    template <>
-    inline chrono::milliseconds Duration::As () const
-    {
-        return chrono::milliseconds (static_cast<chrono::milliseconds::rep> (count () * 1000));
-    }
-    template <>
-    inline chrono::microseconds Duration::As () const
-    {
-        return chrono::microseconds (static_cast<chrono::microseconds::rep> (count () * 1000 * 1000));
-    }
-    template <>
-    inline chrono::nanoseconds Duration::As () const
-    {
-        return chrono::nanoseconds (static_cast<chrono::nanoseconds::rep> (count () * 1000.0 * 1000.0 * 1000.0));
-    }
-    template <>
-    inline timeval Duration::As () const
-    {
-        auto                       r       = count (); // @todo fix for negative case
-        decltype (timeval::tv_sec) seconds = static_cast<long> (r);
-        r -= seconds;
-        return timeval{seconds, static_cast<decltype (timeval::tv_usec)> (r * 1000 * 1000)};
-    }
-    template <>
-    inline Characters::String Duration::As () const
-    {
-        using Characters::String;
-        switch (fRepType_) {
-            case eEmpty_:
-                return String{};
-            case eString_:
-                return String{fStringRep_};
-            case eNumeric_:
-                return String{UnParseTime_ (count ())};
+        if constexpr (integral<T> or floating_point<T>) {
+            return static_cast<T> (count ());
         }
-        AssertNotReached ();
-        return String{};
+        else if constexpr (same_as<T, timeval>) {
+            auto                       r       = count (); // @todo fix for negative case
+            decltype (timeval::tv_sec) seconds = static_cast<long> (r);
+            r -= seconds;
+            return timeval{seconds, static_cast<decltype (timeval::tv_usec)> (r * 1000 * 1000)};
+        }
+        else if constexpr (Configuration::IDuration<T>) {
+            return T{static_cast<T::rep> (count () * T::period::den / T::period::num)};
+        }
+        else if constexpr (Configuration::ITimePoint<T>) {
+            return T{this->As<typename T::duration> ()};
+        }
+        else if constexpr (same_as<T, Characters::String>) {
+            using Characters::String;
+            switch (fRepType_) {
+                case eEmpty_:
+                    return String{};
+                case eString_:
+                    return String{fStringRep_};
+                case eNumeric_:
+                    return String{UnParseTime_ (count ())};
+            }
+            AssertNotReached ();
+            return String{};
+        }
     }
     inline Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) const
     {
@@ -308,13 +264,13 @@ namespace Stroika::Foundation::Time {
      ***************************** Duration operators *******************************
      ********************************************************************************
      */
-    inline Duration operator+ (const DurationSecondsType& lhs, const Duration& rhs)
+    inline Duration operator+ (const DurationSeconds& lhs, const Duration& rhs)
     {
-        return Duration{lhs + rhs.As<DurationSecondsType> ()};
+        return Duration{lhs + rhs.As<DurationSeconds> ()};
     }
     inline Duration operator* (long double lhs, const Duration& rhs)
     {
-        return Duration (rhs.As<Time::DurationSecondsType> () * lhs);
+        return Duration{rhs.As<DurationSeconds> () * lhs};
     }
 
 }

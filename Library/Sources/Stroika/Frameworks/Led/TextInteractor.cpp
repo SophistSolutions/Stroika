@@ -455,7 +455,6 @@ TextInteractor::TextInteractor ()
     , fDefaultUpdateMode (eDelayedUpdate)
     , fSmartCutAndPasteMode (true)
     , fClickCount (0)
-    , fLastClickedAt (0.0f)
     , fLastMouseDownAt (Led_Point (0, 0))
     , fWholeWindowInvalid (false)
     , fUseSecondaryHilight (false)
@@ -472,7 +471,6 @@ TextInteractor::TextInteractor ()
     ,
     //fScrollBarType (),
     fScrollBarParamsValid (false)
-    , fLastScrolledAt (0.0f)
 #if qMultiByteCharacters
 //fMultiByteInputCharBuf (),
 #endif
@@ -1497,7 +1495,7 @@ bool TextInteractor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCoun
 @METHOD:        TextInteractor::UpdateClickCount
 @DESCRIPTION:   <p>Helper to implemented best feeling UI for double click detection.</p>
 */
-void TextInteractor::UpdateClickCount (Time::DurationSecondsType clickAtTime, const Led_Point& clickAtLocation)
+void TextInteractor::UpdateClickCount (Time::TimePointSeconds clickAtTime, const Led_Point& clickAtLocation)
 {
     if (ClickTimesAreCloseForDoubleClick (clickAtTime) and PointsAreCloseForDoubleClick (clickAtLocation)) {
         IncrementCurClickCount (clickAtTime);
@@ -1512,7 +1510,7 @@ void TextInteractor::UpdateClickCount (Time::DurationSecondsType clickAtTime, co
 @METHOD:        TextInteractor::ClickTimesAreCloseForDoubleClick
 @DESCRIPTION:   <p>Helper to implemented best feeling UI for double click detection. See also @'TextInteractor::UpdateClickCount' ().</p>
 */
-bool TextInteractor::ClickTimesAreCloseForDoubleClick (Time::DurationSecondsType thisClick)
+bool TextInteractor::ClickTimesAreCloseForDoubleClick (Time::TimePointSeconds thisClick)
 {
     return (fLastClickedAt + Led_GetDoubleClickTime () >= thisClick);
 }
@@ -1543,10 +1541,10 @@ bool TextInteractor::PointsAreCloseForDoubleClick (const Led_Point& p)
 void TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor)
 {
 #if qDynamiclyChooseAutoScrollIncrement
-    Foundation::Time::DurationSecondsType        now              = Time::GetTickCount ();
-    static Foundation::Time::DurationSecondsType sLastTimeThrough = 0.0f;
-    const Foundation::Time::DurationSecondsType  kClickThreshold  = Led_GetDoubleClickTime () / 3;
-    bool                                         firstClick       = (now - sLastTimeThrough > kClickThreshold);
+    Foundation::Time::TimePointSeconds        now = Time::GetTickCount ();
+    static Foundation::Time::TimePointSeconds sLastTimeThrough{};
+    const Foundation::Time::DurationSeconds   kClickThreshold = Led_GetDoubleClickTime () / 3;
+    bool                                      firstClick      = (now - sLastTimeThrough > kClickThreshold);
 
     int increment = firstClick ? 1 : 2;
 #else
@@ -3358,14 +3356,14 @@ float TextInteractor::GetTickCountBetweenBlinks ()
 
 bool TextInteractor::DelaySomeForScrollBarClick ()
 {
-    const Time::DurationSecondsType kDelayAfterFirstTicks = 0.20f; // maybe should use ::GetDblClickTime()???
-    const Time::DurationSecondsType kDelayAfterOtherTicks = 0.02f; // This delay is so on really fast computers, text doesn't scroll too quickly
-    const int                       kTimesForFirstClick = 2;
-    const Time::DurationSecondsType kLongTime           = 1.0f; // any click after this time deemed we start again with first-tick
-    static short                    sTimesThruBeforeReset;
+    const Time::DurationSeconds kDelayAfterFirstTicks = 0.20s; // maybe should use ::GetDblClickTime()???
+    const Time::DurationSeconds kDelayAfterOtherTicks = 0.02s; // This delay is so on really fast computers, text doesn't scroll too quickly
+    const int                   kTimesForFirstClick   = 2;
+    const Time::DurationSeconds kLongTime             = 1.0s; // any click after this time deemed we start again with first-tick
+    static short                sTimesThruBeforeReset;
 
-    Foundation::Time::DurationSecondsType now = Time::GetTickCount ();
-    if (fLastScrolledAt == 0 or fLastScrolledAt + kLongTime < now) {
+    Foundation::Time::TimePointSeconds now = Time::GetTickCount ();
+    if (fLastScrolledAt == Time::TimePointSeconds{0s} or fLastScrolledAt + kLongTime < now) {
         fLastScrolledAt       = now + kDelayAfterFirstTicks;
         sTimesThruBeforeReset = 1;
         return true; // first time through - handle click immediately

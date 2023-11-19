@@ -33,7 +33,6 @@ using namespace Stroika::Foundation::Execution;
 using Characters::SDKString;
 using Containers::Mapping;
 using Time::Duration;
-using Time::DurationSecondsType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -54,13 +53,13 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     Synchronized<optional<Duration>> fSuppressDuplicatesThreshold_;
 
     struct LastMsgInfoType_ {
-        Time::DurationSecondsType fLastSentAt{};
-        unsigned int              fRepeatCount_{};
+        Time::TimePointSeconds fLastSentAt{};
+        unsigned int           fRepeatCount_{};
     };
     Synchronized<Mapping<PriorityAndMessageType_, LastMsgInfoType_>> fLastMessages_; // if suppressing duplicates, must save all messages in timerange of suppression to compare with, and track suppression counts
 
     Synchronized<Execution::Thread::Ptr>                                  fBookkeepingThread_;
-    atomic<Time::DurationSecondsType>                                     fMaxWindow_{};
+    atomic<Time::DurationSeconds>                                         fMaxWindow_{};
     Cache::SynchronizedCallerStalenessCache<pair<Priority, String>, bool> fMsgSentMaybeSuppressed_;
 
     Rep_ ()
@@ -82,8 +81,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         if (not lastMsgsLocked->empty ()) {
             Time::Duration suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0s);
             for (auto i = lastMsgsLocked->begin (); i != lastMsgsLocked->end ();) {
-                bool writeThisOne = forceEvenIfNotOutOfDate or
-                                    i->fValue.fLastSentAt + suppressDuplicatesThreshold.As<DurationSecondsType> () < Time::GetTickCount ();
+                bool writeThisOne = forceEvenIfNotOutOfDate or i->fValue.fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ();
                 if (writeThisOne) {
                     switch (i->fValue.fRepeatCount_) {
                         case 0:
@@ -147,7 +145,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                         while (true) {
                             Duration time2Wait = max<Duration> (2s, suppressDuplicatesThreshold); // never wait less than this
                             useRepInThread->FlushSuppressedDuplicates_ ();
-                            if (auto p = useRepInThread->fOutMsgQ_.RemoveHeadIfPossible (time2Wait.As<DurationSecondsType> ())) {
+                            if (auto p = useRepInThread->fOutMsgQ_.RemoveHeadIfPossible (time2Wait)) {
                                 shared_ptr<IAppenderRep> tmp = useRepInThread->fAppender_; // avoid races and critical sections (between check and invoke)
                                 if (tmp != nullptr) {
                                     IgnoreExceptionsExceptThreadAbortForCall (tmp->Log (p->first, p->second));

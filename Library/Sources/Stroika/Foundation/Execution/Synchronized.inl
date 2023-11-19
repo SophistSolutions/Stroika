@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     inline bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference*         lockBeingUpgraded,
                                                                           const function<void (WritableReference&&)>& doWithWriteLock,
-                                                                          const chrono::duration<Time::DurationSecondsType>& timeout)
+                                                                          Time::DurationSeconds                       timeout)
         requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks)
     {
         return UpgradeLockNonAtomicallyQuietly (
@@ -293,9 +293,10 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded,
                                                                    const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
-                                                                   const chrono::duration<Time::DurationSecondsType>& timeout)
+                                                                   Time::DurationSeconds timeout)
         requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks)
     {
+        using Time::DurationSeconds;
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_,
                                       Characters::ToString (timeout).c_str ()};
@@ -310,7 +311,7 @@ namespace Stroika::Foundation::Execution {
             NoteLockStateChanged_ (L"in Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly finally relocked shared");
         });
         typename TRAITS::WriteLockType upgradeLock{fMutex_, std::defer_lock}; // NOTE ONLY held til the end of this and doWithWriteLock
-        if (timeout.count () >= numeric_limits<Time::DurationSecondsType>::max ()) {
+        if (timeout >= Time::DurationSeconds::max ()) {
             upgradeLock.lock (); // if wait 'infinite' use no-time-arg lock call
         }
         else {
@@ -325,9 +326,9 @@ namespace Stroika::Foundation::Execution {
         return doWithWriteLock (std::move (wr), interveningWriteLock);
     }
     template <typename T, typename TRAITS>
-    inline void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference*                lockBeingUpgraded,
-                                                                   const function<void (WritableReference&&)>&        doWithWriteLock,
-                                                                   const chrono::duration<Time::DurationSecondsType>& timeout)
+    inline void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference*         lockBeingUpgraded,
+                                                                   const function<void (WritableReference&&)>& doWithWriteLock,
+                                                                   Time::DurationSeconds                       timeout)
         requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -341,7 +342,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded,
                                                             const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
-                                                            const chrono::duration<Time::DurationSecondsType>& timeout)
+                                                            Time::DurationSeconds timeout)
         requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -489,7 +490,7 @@ namespace Stroika::Foundation::Execution {
                                // and just used outside construct of WritableRefernce to control how lock acquired
     }
     template <typename T, typename TRAITS>
-    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, const chrono::duration<Time::DurationSecondsType>& timeout)
+    inline Synchronized<T, TRAITS>::WritableReference::WritableReference (Synchronized* s, Time::DurationSeconds timeout)
         : ReadableReference{s, ReadableReference::_ExternallyLocked::_eExternallyLocked}
         , fWriteLock_{s->fMutex_, timeout}
     {

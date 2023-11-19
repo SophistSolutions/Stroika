@@ -41,7 +41,6 @@ using namespace Stroika::Foundation;
 
 using Containers::Set;
 using Debug::AssertExternallySynchronizedMutex;
-using Time::DurationSecondsType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -896,7 +895,7 @@ void Thread::Ptr::Abort () const
 #endif
 }
 
-void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
+void Thread::Ptr::AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil",
                                                                                  L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
@@ -920,7 +919,7 @@ void Thread::Ptr::ThrowIfDoneWithException () const
     }
 }
 
-void Thread::Ptr::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
+void Thread::Ptr::WaitForDoneUntil (Time::TimePointSeconds timeoutAt) const
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"*this=%s, timeoutAt=%e",
                                                                                  ToString ().c_str (), timeoutAt)};
@@ -929,7 +928,7 @@ void Thread::Ptr::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
     }
 }
 
-bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) const
+bool Thread::Ptr::WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntilQuietly",
@@ -960,7 +959,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) 
 }
 
 #if qPlatform_Windows
-void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
+void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSeconds timeout) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Require (*this != nullptr);
@@ -969,11 +968,11 @@ void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType tim
     if (thread == INVALID_HANDLE_VALUE) {
         return;
     }
-    DurationSecondsType timeoutAt = Time::GetTickCount () + timeout;
+    Time::TimePointSeconds timeoutAt = Time::GetTickCount () + timeout;
     // CRUDDY impl - but decent enuf for first draft
     while (GetStatus () != Status::eCompleted) {
-        DurationSecondsType time2Wait = timeoutAt - Time::GetTickCount ();
-        if (time2Wait <= 0) {
+        Time::DurationSeconds time2Wait = timeoutAt - Time::GetTickCount ();
+        if (time2Wait <= 0s) {
             Throw (TimeOutException::kThe);
         }
         Platform::Windows::WaitAndPumpMessages (nullptr, {thread}, time2Wait);
@@ -1066,7 +1065,7 @@ void Thread::Abort (const Traversal::Iterable<Ptr>& threads)
     threads.Apply ([] (Ptr t) { t.Abort (); });
 }
 
-void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeoutAt)
+void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::TimePointSeconds timeoutAt)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"threads=%s, timeoutAt=%f",
@@ -1079,7 +1078,7 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, 
     WaitForDoneUntil (threads, timeoutAt);
 }
 
-void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeoutAt)
+void Thread::WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::TimePointSeconds timeoutAt)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"threads=%s, timeoutAt=%f",

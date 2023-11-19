@@ -734,7 +734,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     void Led_MFC_DragAndDropWindow<BASECLASS>::HandleDragSelect (UINT /*nFlags*/, CPoint oPoint)
     {
-        const Foundation::Time::DurationSecondsType kTimeEnoughToRestoreSelection = 0.3f;
+        const Foundation::Time::DurationSeconds kTimeEnoughToRestoreSelection = 0.3s;
 
         using TextInteractor::eDefaultUpdate;
 
@@ -753,7 +753,7 @@ namespace Stroika::Frameworks::Led::Platform {
         this->fDragAnchor             = this->GetCharAtClickLocation (this->fMouseTrackingLastPoint);
 
         Assert (sCurrentDragInfo == NULL);
-        sCurrentDragInfo = new LedStartDragAndDropContext (this);
+        sCurrentDragInfo = new LedStartDragAndDropContext{this};
 
         sCurrentDragInfo->fOurDragStart = this->GetSelectionStart ();
         sCurrentDragInfo->fOurDragEnd   = this->GetSelectionEnd ();
@@ -766,8 +766,7 @@ namespace Stroika::Frameworks::Led::Platform {
             Region selectionRegion;
             this->GetSelectionWindowRegion (&selectionRegion, this->GetSelectionStart (), this->GetSelectionEnd ());
 
-            Foundation::Time::DurationSecondsType startDragSelectAt =
-                Foundation::Time::GetTickCount (); // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).
+            Foundation::Time::TimePointSeconds startDragSelectAt = Foundation::Time::GetTickCount (); // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).
             ::DROPEFFECT dropResult = DROPEFFECT_COPY;
             if (not(this->GetStyle () & ES_READONLY)) {
                 // Assure we don't change read-only text.

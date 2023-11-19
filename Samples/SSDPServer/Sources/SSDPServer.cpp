@@ -49,7 +49,7 @@ namespace {
                                         response.contentType         = DataExchange::InternetMediaTypes::kXML;
                                         response.write (Stroika::Frameworks::UPnP::Serialize (dd));
                                     }}}};
-                    conn.remainingConnectionLimits = HTTP::KeepAlive{0, 0}; // disable keep-alives
+                    conn.remainingConnectionLimits = HTTP::KeepAlive{0, 0s}; // disable keep-alives
                     conn.ReadAndProcessMessage ();
                 });
                 runConnectionOnAnotherThread.SetThreadName ("SSDP Service Connection Thread"sv);
@@ -70,15 +70,15 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
 
-    Time::DurationSecondsType quitAfter    = numeric_limits<Time::DurationSecondsType>::max ();
-    uint16_t                  portForOurWS = 8080;
+    Time::DurationSeconds quitAfter    = Time::kInfinity;
+    uint16_t              portForOurWS = 8080;
 
     Sequence<String> args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
         if (Execution::MatchesCommandLineArgument (*argi, "quit-after"sv)) {
             ++argi;
             if (argi != args.end ()) {
-                quitAfter = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
+                quitAfter = Time::DurationSeconds{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*argi)};
             }
             else {
                 cerr << "Expected arg to -quit-after" << endl;

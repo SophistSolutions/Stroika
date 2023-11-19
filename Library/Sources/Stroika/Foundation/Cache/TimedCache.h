@@ -206,7 +206,7 @@ namespace Stroika::Foundation::Cache {
      *
      *      \code
      *          using ScanFolderKey_ = String;
-     *          static constexpr DurationSecondsType kAgeForScanPersistenceCache_{5 * 60.0};
+     *          static constexpr Time::DurationSeconds kAgeForScanPersistenceCache_{5 * 60.0s};
      *          struct FolderDetails_ {
      *              int size; // ...info to cache about a folder
      *          };
@@ -298,9 +298,9 @@ namespace Stroika::Foundation::Cache {
         /**
          */
         struct CacheElement {
-            KEY            fKey;
-            VALUE          fValue;
-            Time::Duration fLastRefreshedAt;
+            KEY                    fKey;
+            VALUE                  fValue;
+            Time::TimePointSeconds fLastRefreshedAt;
         };
 
     public:
@@ -325,7 +325,7 @@ namespace Stroika::Foundation::Cache {
          *  \note   Before Stroika 3.0d1, this used to support TraitsType::kTrackReadAccess, and if it was true did the same
          *          as the newer Lookup (..., eTreatFoundThroughLookupAsRefreshed)
          */
-        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt = nullptr) const;
+        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, Time::TimePointSeconds* lastRefreshedAt = nullptr) const;
         nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag);
 
     public:
@@ -349,7 +349,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  Updates/adds the given value associated with key, and updates the last-access date to now.
+         *  Updates/adds the given value associated with key, and updates the last-access date to now (or argument freshAsOf).
          * 
          *  The parameter PurgeSpoiledData defaults to eAutomaticallyPurgeSpoiledData; this allows the accumulated data
          *  to automatically be purged as it becomes irrelevant (@see PurgeSpoiledData). But for performance sake,
@@ -358,7 +358,7 @@ namespace Stroika::Foundation::Cache {
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result,
                              PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result,
-                             Time::Duration freshAsOf);
+                             Time::TimePointSeconds freshAsOf);
 
     public:
         /**
@@ -398,8 +398,8 @@ namespace Stroika::Foundation::Cache {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
 
     private:
-        Time::DurationSecondsType fMinimumAllowedFreshness_;
-        Time::DurationSecondsType fNextAutoClearAt_;
+        Time::DurationSeconds  fMinimumAllowedFreshness_;
+        Time::TimePointSeconds fNextAutoClearAt_;
 
     private:
         nonvirtual void ClearIfNeeded_ ();
@@ -407,8 +407,8 @@ namespace Stroika::Foundation::Cache {
 
     private:
         struct MyResult_ {
-            VALUE                     fResult;
-            Time::DurationSecondsType fLastRefreshedAt{Time::GetTickCount ()};
+            VALUE                  fResult;
+            Time::TimePointSeconds fLastRefreshedAt{Time::GetTickCount ()};
         };
 
     private:

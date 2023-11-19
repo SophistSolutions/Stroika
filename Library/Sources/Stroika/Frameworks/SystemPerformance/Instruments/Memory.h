@@ -314,7 +314,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Memory {
          *
          *  \req fMinimumAveragingInterval > 0
          */
-        Time::DurationSecondsType fMinimumAveragingInterval{1.0};
+        Time::DurationSeconds fMinimumAveragingInterval{1.0s};
     };
 
     /**
@@ -341,7 +341,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  Specialization to improve performance
      */
     template <>
-    Instruments::Memory::Info Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
+    Instruments::Memory::Info Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut);
 }
 
 /*

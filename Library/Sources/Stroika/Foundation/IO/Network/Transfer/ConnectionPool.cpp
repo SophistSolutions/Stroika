@@ -49,11 +49,11 @@ namespace {
         {
             return fDelegateTo.GetOptions ();
         }
-        virtual DurationSecondsType GetTimeout () const override
+        virtual Time::DurationSeconds GetTimeout () const override
         {
             return fDelegateTo.GetTimeout ();
         }
-        virtual void SetTimeout (DurationSecondsType timeout) override
+        virtual void SetTimeout (Time::DurationSeconds timeout) override
         {
             fDelegateTo.SetTimeout (timeout);
         }
@@ -117,7 +117,7 @@ public:
          *
          *  If still failed, either throw or allocate new connection (again depending on function argument).
          */
-        Time::DurationSecondsType timeoutAt = Time::GetTickCount () + timeout.value_or (0s).As<Time::DurationSecondsType> ();
+        Time::TimePointSeconds    timeoutAt = Time::GetTickCount () + timeout.value_or (0s);
         optional<Connection::Ptr> poolEntryResult;
     again:
         if (hint) {

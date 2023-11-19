@@ -44,6 +44,7 @@
 #include "../../../Foundation/Streams/MemoryStream.h"
 #include "../../../Foundation/Streams/TextReader.h"
 #include "../../../Foundation/Streams/iostream/FStreamSupport.h"
+#include "../../../Foundation/Time/Duration.h"
 
 #include "../Support/InstrumentHelpers.h"
 
@@ -67,7 +68,8 @@ using std::byte;
 
 using IO::FileSystem::FileInputStream;
 using Streams::TextReader;
-using Time::DurationSecondsType;
+using Time::DurationSeconds;
+using Time::TimePointSeconds;
 
 using Instruments::Process::CachePolicy;
 using Instruments::Process::Info;
@@ -315,10 +317,10 @@ namespace {
      *      >   fPrivateBytes   doesn't work on RedHat5 - must use /proc/PID/map (see http://stackoverflow.com/questions/1401359/understanding-linux-proc-id-maps)
      */
     struct PerfStats_ {
-        DurationSecondsType fCapturedAt;
-        optional<double>    fTotalCPUTimeEverUsed;
-        optional<double>    fCombinedIOReadBytes;
-        optional<double>    fCombinedIOWriteBytes;
+        TimePointSeconds          fCapturedAt;
+        optional<DurationSeconds> fTotalCPUTimeEverUsed;
+        optional<double>          fCombinedIOReadBytes;
+        optional<double>          fCombinedIOWriteBytes;
     };
     struct _Context : ModuleCommonContext_ {
         Mapping<pid_t, PerfStats_> fMap;
@@ -404,8 +406,8 @@ namespace {
                 DbgTrace (L"isAllNumeric=%d, dir= %s, is_dir=%d", isAllNumeric, ToString (dir).c_str (), p.is_directory ());
 #endif
                 if (isAllNumeric and p.is_directory ()) {
-                    pid_t               pid{String2Int<pid_t> (dirFileNameString)};
-                    DurationSecondsType now{Time::GetTickCount ()};
+                    pid_t            pid{String2Int<pid_t> (dirFileNameString)};
+                    TimePointSeconds now{Time::GetTickCount ()};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("reading for pid = %d", pid);
 #endif
@@ -490,11 +492,12 @@ namespace {
                             processDetails.fProcessStartedAt = DateTime{static_cast<time_t> (stats.start_time / kClockTick_ + kUNIXEpochTimeOfBoot_)};
                         }
 
-                        processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
+                        processDetails.fTotalCPUTimeEverUsed = DurationSeconds{(double (stats.utime) + double (stats.stime)) / kClockTick_};
                         if (optional<PerfStats_> p = _fContext.load ()->fMap.Lookup (pid)) {
                             auto diffTime = now - p->fCapturedAt;
                             if (p->fTotalCPUTimeEverUsed and (diffTime >= _fOptions.fMinimumAveragingInterval)) {
-                                processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / diffTime;
+                                processDetails.fAverageCPUTimeUsed =
+                                    DurationSeconds{(*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / diffTime.count ()};
                             }
                         }
                         if (stats.nlwp != 0) {
@@ -525,7 +528,7 @@ namespace {
                         DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld",
                                   Characters::ToString (processDetails.fProcessStartedAt).c_str (), stats.start_time);
                         DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld",
-                                  (*processDetails.fTotalCPUTimeEverUsed), stats.utime, stats.stime);
+                                  processDetails.fTotalCPUTimeEverUsed->count (), stats.utime, stats.stime);
 #endif
                     }
                     catch (...) {
@@ -557,14 +560,15 @@ namespace {
                             processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
                             if (optional<PerfStats_> p = _fContext.load ()->fMap.Lookup (pid)) {
-                                double diffTime = now - p->fCapturedAt;
+                                DurationSeconds diffTime = now - p->fCapturedAt;
                                 if (diffTime >= _fOptions.fMinimumAveragingInterval) {
                                     if (p->fCombinedIOReadBytes) {
-                                        processDetails.fCombinedIOReadRate = (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / diffTime;
+                                        processDetails.fCombinedIOReadRate =
+                                            (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / diffTime.count ();
                                     }
                                     if (p->fCombinedIOWriteBytes) {
                                         processDetails.fCombinedIOWriteRate =
-                                            (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / diffTime;
+                                            (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / diffTime.count ();
                                     }
                                 }
                             }
@@ -1160,7 +1164,7 @@ namespace {
                     int    minutes = 0;
                     int    seconds = 0;
                     sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
-                    processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
+                    processDetails.fTotalCPUTimeEverUsed = DurationSeconds{hours * 60 * 60 + minutes * 60 + seconds};
                 }
                 processDetails.fResidentMemorySize = Characters::String2Int<int> (l[4].Trim ()) * 1024; // RSS in /proc/xx/stat is * pagesize but this is *1024
                 processDetails.fPrivateVirtualMemorySize = Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
@@ -1237,10 +1241,10 @@ namespace {
 #if qPlatform_Windows
 namespace {
     struct PerfStats_ {
-        DurationSecondsType fCapturedAt;
-        optional<double>    fTotalCPUTimeEverUsed;
-        optional<double>    fCombinedIOReadBytes;
-        optional<double>    fCombinedIOWriteBytes;
+        TimePointSeconds          fCapturedAt;
+        optional<DurationSeconds> fTotalCPUTimeEverUsed;
+        optional<double>          fCombinedIOReadBytes;
+        optional<double>          fCombinedIOWriteBytes;
     };
     struct _Context : ModuleCommonContext_ {
 #if qUseWMICollectionSupport_
@@ -1263,10 +1267,10 @@ namespace {
         ProcessMapType _InternalCapture ()
         {
 #if qUseWMICollectionSupport_
-            processWMICollectorLock                  = fProcessWMICollector_.rwget ();
-            DurationSecondsType timeOfPrevCollection = processWMICollectorLock.rwref ().GetTimeOfLastCollection ();
+            processWMICollectorLock               = fProcessWMICollector_.rwget ();
+            TimePointSeconds timeOfPrevCollection = processWMICollectorLock.rwref ().GetTimeOfLastCollection ();
             IgnoreExceptionsForCall (processWMICollectorLock.rwref ().Collect ()); // hack cuz no way to copy
-            DurationSecondsType timeCollecting{processWMICollectorLock.rwref ().GetTimeOfLastCollection () - timeOfPrevCollection};
+            DurationSeconds timeCollecting{processWMICollectorLock.rwref ().GetTimeOfLastCollection () - timeOfPrevCollection};
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             for (const String& i : processWMICollectorLock.rwref ().GetAvailableInstaces ()) {
@@ -1292,7 +1296,7 @@ namespace {
             Mapping<String, double> processStartAt_ByPID   = processWMICollectorLock.rwref ().GetCurrentValues (kElapsedTime_);
 #endif
 
-            DurationSecondsType now{Time::GetTickCount ()};
+            TimePointSeconds now{Time::GetTickCount ()};
 
             Mapping<pid_t, PerfStats_> newContextStats;
 
@@ -1415,7 +1419,7 @@ namespace {
                             }
                         }
                         {
-                            auto convertFILETIME2DurationSeconds = [] (FILETIME ft) -> Time::DurationSecondsType {
+                            auto convertFILETIME2DurationSeconds = [] (FILETIME ft) -> Time::DurationSeconds {
                                 // From https://msdn.microsoft.com/en-us/library/windows/desktop/ms683223%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
                                 // Process kernel mode and user mode times are amounts of time.
                                 // For example, if a process has spent one second in kernel mode, this function
@@ -1426,7 +1430,7 @@ namespace {
                                 ULARGE_INTEGER tmp;
                                 tmp.LowPart  = ft.dwLowDateTime;
                                 tmp.HighPart = ft.dwHighDateTime;
-                                return static_cast<Time::DurationSecondsType> (tmp.QuadPart) * 100e-9;
+                                return Time::DurationSeconds{static_cast<TimePointSeconds::rep> (tmp.QuadPart) * 100e-9};
                             };
                             FILETIME creationTime{};
                             FILETIME exitTime{};
@@ -1496,13 +1500,15 @@ namespace {
                         auto diffTime = now - p->fCapturedAt;
                         if (diffTime >= _fOptions.fMinimumAveragingInterval) {
                             if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
-                                processInfo.fCombinedIOReadRate = (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / diffTime;
+                                processInfo.fCombinedIOReadRate = (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / diffTime.count ();
                             }
                             if (p->fCombinedIOWriteBytes and processInfo.fCombinedIOWriteBytes) {
-                                processInfo.fCombinedIOWriteRate = (*processInfo.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / diffTime;
+                                processInfo.fCombinedIOWriteRate =
+                                    (*processInfo.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / diffTime.count ();
                             }
                             if (p->fTotalCPUTimeEverUsed and processInfo.fTotalCPUTimeEverUsed) {
-                                processInfo.fAverageCPUTimeUsed = (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / diffTime;
+                                processInfo.fAverageCPUTimeUsed =
+                                    (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / diffTime.count ();
                             }
                         }
                     }
@@ -1684,7 +1690,7 @@ namespace {
         ProcessInstrumentRep_ (const Options& options, const shared_ptr<_Context>& context = make_shared<_Context> ())
             : inherited{options, context}
         {
-            Require (_fOptions.fMinimumAveragingInterval > 0);
+            Require (_fOptions.fMinimumAveragingInterval > 0s);
         }
         virtual MeasurementSet Capture () override
         {
@@ -1695,14 +1701,14 @@ namespace {
             results.fMeasurements.Add (m);
             return results;
         }
-        nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        nonvirtual Info Capture_Raw (Range<TimePointSeconds>* outMeasuredAt)
         {
             auto before         = _GetCaptureContextTime ();
             Info rawMeasurement = _InternalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()),
-                                                             Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<TimePointSeconds> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()),
+                                                          Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
@@ -1737,7 +1743,7 @@ const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper
     mapper.AddCommonType<optional<ProcessType::RunStatus>> ();
     mapper.AddCommonType<optional<pid_t>> ();
     mapper.AddCommonType<optional<MemorySizeType>> ();
-    mapper.AddCommonType<optional<DurationSecondsType>> ();
+    mapper.AddCommonType<optional<Time::Duration>> ();
     mapper.AddCommonType<optional<Mapping<String, String>>> ();
     mapper.AddClass<ProcessType::TCPStats> (initializer_list<StructFieldInfo>{
         {"Established"sv, StructFieldMetaInfo{&ProcessType::TCPStats::fEstablished}},
@@ -1793,7 +1799,7 @@ Instruments::Process::Instrument::Instrument (const Options& options)
  ********************************************************************************
  */
 template <>
-Instruments::Process::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+Instruments::Process::Info SystemPerformance::Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut)
 {
     Debug::TraceContextBumper ctx{"SystemPerformance::Instrument::CaptureOneMeasurement<Process::Info>"};
     ProcessInstrumentRep_*    myCap = dynamic_cast<ProcessInstrumentRep_*> (fCaptureRep_.get ());

@@ -210,7 +210,6 @@ namespace {
             namespace Example2_ {
                 using Execution::Synchronized;
                 using Time::Duration;
-                using Time::DurationSecondsType;
 
                 using ScanFolderKey_ = String;
                 const Duration kAgeForScanPersistenceCache_{5min};
@@ -291,11 +290,11 @@ namespace {
         // FROM Example Usage in ???
         namespace Private_ {
             unsigned int  sCalls1_{0};
-            optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSecondsType> allowedStaleness = {})
+            optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
             {
                 using Cache::CallerStalenessCache;
                 static CallerStalenessCache<void, optional<int>> sCache_;
-                return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30)), [] () -> optional<int> {
+                return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30s)), [] () -> optional<int> {
                     sCalls1_++;
                     return 1;
                 });
@@ -308,11 +307,11 @@ namespace {
         }
         namespace Private_ {
             unsigned int  sCalls2_{0};
-            optional<int> MapValue_ (int value, optional<Time::DurationSecondsType> allowedStaleness = {})
+            optional<int> MapValue_ (int value, optional<Time::DurationSeconds> allowedStaleness = {})
             {
                 using Cache::CallerStalenessCache;
                 static CallerStalenessCache<int, optional<int>> sCache_;
-                return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=] (int v) -> optional<int> {
+                return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30s)), [=] (int v) -> optional<int> {
                     sCalls2_++;
                     return v;
                 });
@@ -327,11 +326,11 @@ namespace {
         }
         namespace Private_Sync_ {
             unsigned int  sCalls1_{0};
-            optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSecondsType> allowedStaleness = {})
+            optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
             {
                 using Cache::SynchronizedCallerStalenessCache;
                 static SynchronizedCallerStalenessCache<void, optional<int>> sCache_;
-                return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30)), [] () -> optional<int> {
+                return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30s)), [] () -> optional<int> {
                     sCalls1_++;
                     return 1;
                 });
@@ -344,11 +343,11 @@ namespace {
         }
         namespace Private_Sync_ {
             unsigned int  sCalls2_{0};
-            optional<int> MapValue_ (int value, optional<Time::DurationSecondsType> allowedStaleness = {})
+            optional<int> MapValue_ (int value, optional<Time::DurationSeconds> allowedStaleness = {})
             {
                 using Cache::SynchronizedCallerStalenessCache;
                 static SynchronizedCallerStalenessCache<int, optional<int>> sCache_;
-                return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=] (int v) -> optional<int> {
+                return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30s)), [=] (int v) -> optional<int> {
                     sCalls2_++;
                     return v;
                 });

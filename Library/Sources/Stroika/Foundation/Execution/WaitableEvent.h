@@ -155,8 +155,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   ***Cancelation Point***
          */
-        nonvirtual void Wait (Time::DurationSecondsType timeout = Time::kInfinite);
-        nonvirtual void Wait (Time::Duration timeout);
+        nonvirtual void Wait (Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
@@ -189,8 +188,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   ***Cancelation Point***
          */
-        nonvirtual WaitStatus WaitQuietly (Time::DurationSecondsType timeout = Time::kInfinite);
-        nonvirtual WaitStatus WaitQuietly (const Time::Duration& timeout);
+        nonvirtual WaitStatus WaitQuietly (Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
@@ -204,7 +202,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   ***Cancelation Point***
          */
-        nonvirtual void WaitUntil (Time::DurationSecondsType timeoutAt);
+        nonvirtual void WaitUntil (Time::TimePointSeconds timeoutAt);
 
     public:
         /**
@@ -223,7 +221,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \note   ***Cancelation Point***
          */
-        nonvirtual WaitStatus WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
+        nonvirtual WaitStatus WaitUntilQuietly (Time::TimePointSeconds timeoutAt);
 
     public:
         /**
@@ -237,10 +235,10 @@ namespace Stroika::Foundation::Execution {
          * 
          *  Unclear if this is a good idea. Its a preplacement for 'auto-reset' events in Stroika v2.1.
          */
-        nonvirtual void       WaitAndReset (Time::Duration timeout = Time::kInfinite);
-        nonvirtual void       WaitUntilAndReset (Time::DurationSecondsType timeoutAt);
+        nonvirtual void       WaitAndReset (Time::Duration timeout = Time::kInfinity);
+        nonvirtual void       WaitUntilAndReset (Time::TimePointSeconds timeoutAt);
         nonvirtual WaitStatus WaitQuietlyAndReset (const Time::Duration& timeout);
-        nonvirtual WaitStatus WaitUntilQuietlyAndReset (Time::DurationSecondsType timeoutAt);
+        nonvirtual WaitStatus WaitUntilQuietlyAndReset (Time::TimePointSeconds timeoutAt);
 
     public:
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
@@ -253,10 +251,10 @@ namespace Stroika::Foundation::Execution {
          *  \note   ***Cancelation Point***
          */
         template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
-        static SET_OF_WAITABLE_EVENTS_RESULT WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
+        static SET_OF_WAITABLE_EVENTS_RESULT WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSeconds timeout = Time::kInfinity);
         template <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
         static SET_OF_WAITABLE_EVENTS_RESULT WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
-                                                         Time::DurationSecondsType timeout = Time::kInfinite);
+                                                         Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
@@ -267,10 +265,10 @@ namespace Stroika::Foundation::Execution {
          *  \note   ***Cancelation Point***
          */
         template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
-        static SET_OF_WAITABLE_EVENTS_RESULT WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
+        static SET_OF_WAITABLE_EVENTS_RESULT WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::TimePointSeconds timeoutAt);
         template <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
         static SET_OF_WAITABLE_EVENTS_RESULT WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart,
-                                                              ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+                                                              ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::TimePointSeconds timeoutAt);
 
     public:
         /**
@@ -281,10 +279,10 @@ namespace Stroika::Foundation::Execution {
          *  \note   ***Cancelation Point***
          */
         template <typename CONTAINER_OF_WAITABLE_EVENTS>
-        static void WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
+        static void WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSeconds timeout = Time::kInfinity);
         template <typename ITERATOR_OF_WAITABLE_EVENTS>
         static void WaitForAll (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
-                                Time::DurationSecondsType timeout = Time::kInfinite);
+                                Time::DurationSeconds timeout = Time::kInfinity);
 
     public:
         /**
@@ -295,10 +293,10 @@ namespace Stroika::Foundation::Execution {
          *  \note   ***Cancelation Point***
          */
         template <typename CONTAINER_OF_WAITABLE_EVENTS>
-        static void WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
+        static void WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::TimePointSeconds timeoutAt);
         template <typename ITERATOR_OF_WAITABLE_EVENTS>
         static void WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
-                                     Time::DurationSecondsType timeoutAt);
+                                     Time::TimePointSeconds timeoutAt);
 
     private:
         static inline SpinLock sExtraWaitableEventsMutex_;
@@ -327,8 +325,8 @@ namespace Stroika::Foundation::Execution {
             nonvirtual bool       GetIsSet () const noexcept;
             nonvirtual bool       PeekIsSet () const noexcept;
             nonvirtual void       Set ();
-            nonvirtual void       WaitUntil (Time::DurationSecondsType timeoutAt);
-            nonvirtual WaitStatus WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
+            nonvirtual void       WaitUntil (Time::TimePointSeconds timeoutAt);
+            nonvirtual WaitStatus WaitUntilQuietly (Time::TimePointSeconds timeoutAt);
         };
         WE_ fWE_;
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects

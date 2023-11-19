@@ -131,7 +131,7 @@ namespace Stroika::Frameworks::WebServer {
              *
              *  \note - this defaults to 2 seconds (kDefault_AutomaticTCPDisconnectOnClose)
              */
-            optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose;
+            optional<Time::DurationSeconds> fAutomaticTCPDisconnectOnClose;
 
             /**
              * @see Socket::SetLinger () - SO_LINGER
@@ -162,7 +162,7 @@ namespace Stroika::Frameworks::WebServer {
             static inline const Headers kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, "Stroika/3.0"sv}}};
             static inline const Common::ConstantProperty<CORSOptions> kDefault_CORS{[] () { return kDefault_CORSOptions; }};
             static constexpr bool                                     kDefault_AutoComputeETagResponse{true};
-            static constexpr Time::DurationSecondsType                kDefault_AutomaticTCPDisconnectOnClose{2.0};
+            static constexpr Time::DurationSeconds                    kDefault_AutomaticTCPDisconnectOnClose{2.0s};
             static constexpr optional<int>                            kDefault_Linger{nullopt}; // intentionally optional-valued
         };
         static const Options kDefaultOptions;
@@ -287,14 +287,14 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual void ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue);
 
     private:
-        Options                                                      fEffectiveOptions_;
-        Execution::Synchronized<optional<Interceptor>>               fDefaultErrorHandler_;
-        Execution::Synchronized<Sequence<Interceptor>>               fEarlyInterceptors_;
-        Execution::Synchronized<Sequence<Interceptor>>               fBeforeInterceptors_;
-        Execution::Synchronized<Sequence<Interceptor>>               fAfterInterceptors_;
-        Execution::Synchronized<optional<Time::DurationSecondsType>> fAutomaticTCPDisconnectOnClose_;
-        Router                                                       fRouter_;
-        InterceptorChain fInterceptorChain_; // no need to synchonize cuz internally synchronized
+        Options                                                  fEffectiveOptions_;
+        Execution::Synchronized<optional<Interceptor>>           fDefaultErrorHandler_;
+        Execution::Synchronized<Sequence<Interceptor>>           fEarlyInterceptors_;
+        Execution::Synchronized<Sequence<Interceptor>>           fBeforeInterceptors_;
+        Execution::Synchronized<Sequence<Interceptor>>           fAfterInterceptors_;
+        Execution::Synchronized<optional<Time::DurationSeconds>> fAutomaticTCPDisconnectOnClose_;
+        Router                                                   fRouter_;
+        InterceptorChain                                         fInterceptorChain_; // no need to synchonize cuz internally synchronized
 
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;

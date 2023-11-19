@@ -50,7 +50,7 @@ namespace {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
             if (fSD_ != kINVALID_NATIVE_HANDLE_ and fAutomaticTCPDisconnectOnClose_) {
                 Shutdown (Socket::ShutdownTarget::eWrites);
-                Time::DurationSecondsType timeOutAt = Time::GetTickCount () + *fAutomaticTCPDisconnectOnClose_;
+                Time::TimePointSeconds    timeOutAt = Time::GetTickCount () + *fAutomaticTCPDisconnectOnClose_;
                 Execution::WaitForIOReady ioReady{fSD_};
                 try {
                 again:
@@ -302,12 +302,12 @@ namespace {
             }
             return nullopt;
         }
-        virtual optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const override
+        virtual optional<Time::DurationSeconds> GetAutomaticTCPDisconnectOnClose () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
             return fAutomaticTCPDisconnectOnClose_;
         }
-        virtual void SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor) override
+        virtual void SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSeconds>& waitFor) override
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
             fAutomaticTCPDisconnectOnClose_ = waitFor;
@@ -319,9 +319,9 @@ namespace {
             result.fEnabled = !!getsockopt<int> (SOL_SOCKET, SO_KEEPALIVE);
 #if qPlatform_Linux
             // Only available if linux >= 2.4
-            result.fMaxProbesSentBeforeDrop              = !!getsockopt<int> (SOL_TCP, TCP_KEEPCNT);
-            result.fTimeIdleBeforeSendingKeepalives      = !!getsockopt<int> (SOL_TCP, TCP_KEEPIDLE);
-            result.fTimeBetweenIndividualKeepaliveProbes = !!getsockopt<int> (SOL_TCP, TCP_KEEPINTVL);
+            result.fMaxProbesSentBeforeDrop              = getsockopt<int> (SOL_TCP, TCP_KEEPCNT);
+            result.fTimeIdleBeforeSendingKeepalives      = Time::DurationSeconds{getsockopt<int> (SOL_TCP, TCP_KEEPIDLE)};
+            result.fTimeBetweenIndividualKeepaliveProbes = Time::DurationSeconds{getsockopt<int> (SOL_TCP, TCP_KEEPINTVL)};
 #elif qPlatform_Windows
 // WSAIoctl (..., SIO_KEEPALIVE_VALS) can be used to set some of these values, but I can find no way
 // to fetch them --LGP 2017-02-27
@@ -338,10 +338,10 @@ namespace {
                 setsockopt<int> (SOL_TCP, TCP_KEEPCNT, *keepAliveOptions.fMaxProbesSentBeforeDrop);
             }
             if (keepAliveOptions.fTimeIdleBeforeSendingKeepalives) {
-                setsockopt<int> (SOL_TCP, TCP_KEEPIDLE, *keepAliveOptions.fTimeIdleBeforeSendingKeepalives);
+                setsockopt<int> (SOL_TCP, TCP_KEEPIDLE, static_cast<int> (keepAliveOptions.fTimeIdleBeforeSendingKeepalives->count ()));
             }
             if (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes) {
-                setsockopt<int> (SOL_TCP, TCP_KEEPINTVL, *keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes);
+                setsockopt<int> (SOL_TCP, TCP_KEEPINTVL, static_cast<int> (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes->count ()));
             }
 #elif qPlatform_Windows
             // windows only allows setting these two, and both at the same time
@@ -349,8 +349,8 @@ namespace {
                 (keepAliveOptions.fTimeIdleBeforeSendingKeepalives or keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes)) {
                 tcp_keepalive alive{keepAliveOptions.fEnabled};
                 // from https://msdn.microsoft.com/en-us/library/windows/desktop/dd877220(v=vs.85).aspx - "The default settings when a TCP socket is initialized sets the keep-alive timeout to 2 hours and the keep-alive interval to 1 second"
-                alive.keepalivetime = Math::Round<ULONG> (keepAliveOptions.fTimeIdleBeforeSendingKeepalives.value_or (2 * 60 * 60) * 1000.0);
-                alive.keepaliveinterval = Math::Round<ULONG> (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes.value_or (1) * 1000.0);
+                alive.keepalivetime = Math::Round<ULONG> (keepAliveOptions.fTimeIdleBeforeSendingKeepalives.value_or (2 * 60 * 60s).count () * 1000.0);
+                alive.keepaliveinterval = Math::Round<ULONG> (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes.value_or (1s).count () * 1000.0);
                 DWORD dwBytesRet{};
                 if (::WSAIoctl (fSD_, SIO_KEEPALIVE_VALS, &alive, sizeof (alive), NULL, 0, &dwBytesRet, NULL, NULL) == SOCKET_ERROR) {
                     Execution::ThrowSystemErrNo (::WSAGetLastError ());
@@ -358,7 +358,7 @@ namespace {
             }
 #endif
         }
-        optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose_;
+        optional<Time::DurationSeconds> fAutomaticTCPDisconnectOnClose_;
 #if qDebug
         mutable atomic<int> fCurrentPendingReadsCount{};
 #endif

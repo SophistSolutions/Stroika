@@ -27,7 +27,7 @@
 namespace Stroika::Frameworks::SystemPerformance::Support {
 
     struct Context : Instrument::ICaptureContext {
-        optional<DurationSecondsType> fCaptureContextAt{};
+        optional<Time::TimePointSeconds> fCaptureContextAt{};
     };
 
     /**
@@ -51,7 +51,7 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         /**
          *  If any stored context information was captured (like for averaging over an interval) - this is the start of that interval.
          */
-        nonvirtual optional<DurationSecondsType> _GetCaptureContextTime () const;
+        nonvirtual optional<Time::TimePointSeconds> _GetCaptureContextTime () const;
 
     protected:
         // @todo redo docs
@@ -59,19 +59,19 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
         // This looks at the fMinimumAveragingInterval field of fOptions, which obviously must exist for this to be called
         // and if not enuf time has elapsed, just returns false and doesnt update capture time (and caller should then
         // not update the _fContext data used for computing future references / averages)
-        nonvirtual void _NoteCompletedCapture (DurationSecondsType at = Time::GetTickCount ());
+        nonvirtual void _NoteCompletedCapture (Time::TimePointSeconds at = Time::GetTickCount ());
 
     protected:
         template <typename INFO_TYPE>
-        nonvirtual INFO_TYPE Do_Capture_Raw (function<INFO_TYPE ()> internalCapture, Range<DurationSecondsType>* outMeasuredAt)
+        nonvirtual INFO_TYPE Do_Capture_Raw (function<INFO_TYPE ()> internalCapture, Range<Time::TimePointSeconds>* outMeasuredAt)
         {
             // Timerange returned is from time of last context capture, til now. NOTE: this COULD produce overlapping measurement intervals.
-            auto      before         = _GetCaptureContextTime ().value_or (0);
+            auto      before         = _GetCaptureContextTime ().value_or (Time::TimePointSeconds{});
             INFO_TYPE rawMeasurement = internalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()),
-                                                             Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<Time::TimePointSeconds> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()),
+                                                                Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }

@@ -55,7 +55,7 @@ namespace {
             AssertNotImplemented ();
 #endif
         }
-        virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) override
+        virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout) override
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 
@@ -70,19 +70,19 @@ namespace {
 
             // Note - COULD have implemented timeout with SO_RCVTIMEO, but that would risk statefulness, and confusion setting/resetting the parameter. Could be done, but this seems
             // cleaner...
-            constexpr Time::DurationSecondsType kMaxPolltime_{numeric_limits<int>::max () / 1000.0};
+            constexpr Time::DurationSeconds kMaxPolltime_{numeric_limits<int>::max () / 1000.0};
             if (timeout < kMaxPolltime_) {
-                int    timeout_msecs = Math::Round<int> (timeout * 1000);
+                int    timeout_millisecs = Math::Round<int> (timeout.count () * 1000);
                 pollfd pollData{};
                 pollData.fd     = fSD_;
                 pollData.events = POLLIN;
 #if qPlatform_Windows
                 int nresults;
-                if ((nresults = ::WSAPoll (&pollData, 1, timeout_msecs)) == SOCKET_ERROR) {
+                if ((nresults = ::WSAPoll (&pollData, 1, timeout_millisecs)) == SOCKET_ERROR) {
                     Execution::ThrowSystemErrNo (::WSAGetLastError ());
                 }
 #else
-                int nresults = Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, timeout_msecs); });
+                int nresults = Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, timeout_millisecs); });
 #endif
                 if (nresults == 0) [[unlikely]] {
                     Execution::Throw (Execution::TimeOutException::kThe);

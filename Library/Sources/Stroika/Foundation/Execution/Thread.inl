@@ -247,22 +247,22 @@ namespace Stroika::Foundation::Execution {
         }
         return GetStatus_ ();
     }
-    inline void Thread::Ptr::Join (Time::DurationSecondsType timeout) const
+    inline void Thread::Ptr::Join (Time::DurationSeconds timeout) const
     {
         JoinUntil (timeout + Time::GetTickCount ());
     }
-    inline void Thread::Ptr::JoinUntil (Time::DurationSecondsType timeoutAt) const
+    inline void Thread::Ptr::JoinUntil (Time::TimePointSeconds timeoutAt) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         WaitForDoneUntil (timeoutAt);
         ThrowIfDoneWithException ();
     }
-    inline void Thread::Ptr::WaitForDone (Time::DurationSecondsType timeout) const
+    inline void Thread::Ptr::WaitForDone (Time::DurationSeconds timeout) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         WaitForDoneUntil (timeout + Time::GetTickCount ());
     }
-    inline void Thread::Ptr::AbortAndWaitForDone (Time::DurationSecondsType timeout) const
+    inline void Thread::Ptr::AbortAndWaitForDone (Time::DurationSeconds timeout) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
         AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
@@ -314,7 +314,7 @@ namespace Stroika::Foundation::Execution {
     {
         return New (fun2CallOnce, AutoStartFlag::eAutoStart, nullopt, configuration);
     }
-    inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeout)
+    inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSeconds timeout)
     {
         AbortAndWaitForDoneUntil (threads, timeout + Time::GetTickCount ());
     }
@@ -322,7 +322,7 @@ namespace Stroika::Foundation::Execution {
     {
         threads.Apply ([] (const Ptr& p) { p.Start (); });
     }
-    inline void Thread::WaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeout)
+    inline void Thread::WaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSeconds timeout)
     {
         WaitForDoneUntil (threads, timeout + Time::GetTickCount ());
     }

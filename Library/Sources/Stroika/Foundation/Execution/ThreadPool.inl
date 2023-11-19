@@ -18,11 +18,11 @@ namespace Stroika::Foundation::Execution {
      *********************************** ThreadPool *********************************
      ********************************************************************************
      */
-    inline void ThreadPool::WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSecondsType timeout) const
+    inline void ThreadPool::WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSeconds timeout) const
     {
         WaitForTasksDoneUntil (tasks, Time::GetTickCount () + timeout);
     }
-    inline void ThreadPool::WaitForTasksDone (Time::DurationSecondsType timeout) const
+    inline void ThreadPool::WaitForTasksDone (Time::DurationSeconds timeout) const
     {
         WaitForTasksDoneUntil (Time::GetTickCount () + timeout);
     }
@@ -46,10 +46,10 @@ namespace Stroika::Foundation::Execution {
      *************************** ThreadPool::Statistics *****************************
      ********************************************************************************
      */
-    inline Time::DurationSecondsType ThreadPool::Statistics::GetMeanTimeConsumed () const
+    inline Time::DurationSeconds ThreadPool::Statistics::GetMeanTimeConsumed () const
     {
         if (fNumberOfTasksReporting == 0) {
-            return Math::nan<Time::DurationSecondsType> ();
+            return Math::nan<Time::DurationSeconds> ();
         }
         return fTotalTimeConsumed / fNumberOfTasksReporting;
     }

@@ -29,6 +29,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     using Characters::String;
     using Containers::Mapping;
     using Containers::Set;
+    using Time::TimePointSeconds;
 
 // for MSVC - C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\WDBGEXTS.H
 #ifdef GetContext
@@ -119,7 +120,7 @@ namespace Stroika::Frameworks::SystemPerformance {
          *  doing a sequence of measurements (so they come in regularly spaced time intervals).
          */
         template <typename T>
-        nonvirtual T CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut = nullptr);
+        nonvirtual T CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut = nullptr);
 
     public:
         /**

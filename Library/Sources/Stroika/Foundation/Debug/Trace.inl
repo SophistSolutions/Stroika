@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Debug {
         wchar_t fLastNCharBuf_WCHAR_[10];
         bool    fLastNCharBuf_WCHARFlag_{false}; // determines (if fLastNCharBufCharCount_!=0) which buffer CHAR or WCHAR to use
         TraceLastBufferedWriteTokenType fLastNCharBuf_Token_{0};
-        Time::DurationSecondsType       fLastNCharBuf_WriteTickcount_{0.0};
+        Time::TimePointSeconds          fLastNCharBuf_WriteTickcount_{};
 
         nonvirtual void BufferNChars_ (size_t nChars, const char* p);
         nonvirtual void BufferNChars_ (size_t nChars, const wchar_t* p);

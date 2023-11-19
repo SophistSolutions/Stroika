@@ -459,7 +459,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \req *this != nullptr
              */
-            nonvirtual void Join (Time::DurationSecondsType timeout = Time::kInfinite) const;
+            nonvirtual void Join (Time::DurationSeconds timeout = Time::kInfinity) const;
 
         public:
             /**
@@ -496,7 +496,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \req *this != nullptr
              */
-            nonvirtual void JoinUntil (Time::DurationSecondsType timeoutAt) const;
+            nonvirtual void JoinUntil (Time::TimePointSeconds timeoutAt) const;
 
         public:
             /**
@@ -510,7 +510,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \req *this != nullptr
              */
-            nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+            nonvirtual void WaitForDone (Time::DurationSeconds timeout = Time::kInfinity) const;
 
         public:
             /**
@@ -526,7 +526,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \req *this != nullptr
              */
-            nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
+            nonvirtual void WaitForDoneUntil (Time::TimePointSeconds timeoutAt) const;
 
         public:
             /**
@@ -545,7 +545,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \req *this != nullptr
              */
-            nonvirtual bool WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) const;
+            nonvirtual bool WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) const;
 
         public:
             /**
@@ -562,7 +562,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \req *this != nullptr
              */
-            nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+            nonvirtual void AbortAndWaitForDone (Time::DurationSeconds timeout = Time::kInfinity) const;
 
         public:
             /**
@@ -592,7 +592,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \req *this != nullptr
              */
-            nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
+            nonvirtual void AbortAndWaitForDoneUntil (Time::TimePointSeconds timeoutAt) const;
 
         public:
             /**
@@ -623,7 +623,7 @@ namespace Stroika::Foundation::Execution {
              *
              *  \req *this != nullptr
              */
-            nonvirtual void WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
+            nonvirtual void WaitForDoneWhilePumpingMessages (Time::DurationSeconds timeout = Time::kInfinity) const;
 #endif
 
         public:
@@ -933,14 +933,14 @@ namespace Stroika::Foundation::Execution {
          *
          * \req    foreach Thread t: t != nullptr
          */
-        void WaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
+        void WaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSeconds timeout = Time::kInfinity);
 
         /**
          *  \note ***Cancelation Point***
          *
          * \req    foreach Thread t: t != nullptr
          */
-        void WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeoutAt);
+        void WaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::TimePointSeconds timeoutAt);
 
         /**
          *  \brief - shorthand for AbortAndWaitForDoneUntil (Time::GetTickCount () + timeout)
@@ -958,7 +958,7 @@ namespace Stroika::Foundation::Execution {
          *
          * \req    foreach Thread t: t != nullptr
          */
-        void AbortAndWaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
+        void AbortAndWaitForDone (const Traversal::Iterable<Ptr>& threads, Time::DurationSeconds timeout = Time::kInfinity);
 
         /**
          *   \note ***Cancelation Point***
@@ -972,7 +972,7 @@ namespace Stroika::Foundation::Execution {
          *
          * \req    foreach Thread t: t != nullptr
          */
-        void AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::DurationSecondsType timeoutAt);
+        void AbortAndWaitForDoneUntil (const Traversal::Iterable<Ptr>& threads, Time::TimePointSeconds timeoutAt);
 
         /**
          * Generally should not be reported. It's just to help force a thread to shut itself down

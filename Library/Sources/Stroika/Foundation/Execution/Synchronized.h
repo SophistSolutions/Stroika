@@ -518,13 +518,12 @@ namespace Stroika::Foundation::Execution {
          *          }
          *      \endcode
          */
-        nonvirtual bool UpgradeLockNonAtomicallyQuietly (
-            ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock,
-            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite})
+        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock,
+                                                         Time::DurationSeconds timeout = Time::kInfinity)
             requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks);
-        nonvirtual bool UpgradeLockNonAtomicallyQuietly (
-            ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
-            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite})
+        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded,
+                                                         const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
+                                                         Time::DurationSeconds timeout = Time::kInfinity)
             requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks);
         ;
 
@@ -554,13 +553,12 @@ namespace Stroika::Foundation::Execution {
          *          }
          *      \endcode
          */
-        nonvirtual void
-        UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock,
-                                  const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite})
+        nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock,
+                                                  Time::DurationSeconds timeout = Time::kInfinity)
             requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks);
-        nonvirtual void UpgradeLockNonAtomically (
-            ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
-            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite})
+        nonvirtual void UpgradeLockNonAtomically (ReadableReference*                                                     lockBeingUpgraded,
+                                                  const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
+                                                  Time::DurationSeconds timeout = Time::kInfinity)
             requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks);
         ;
 
@@ -673,7 +671,7 @@ namespace Stroika::Foundation::Execution {
          */
         WritableReference (Synchronized* s);
         WritableReference (Synchronized* s, WriteLockType_&& writeLock);
-        WritableReference (Synchronized* s, const chrono::duration<Time::DurationSecondsType>& timeout);
+        WritableReference (Synchronized* s, Time::DurationSeconds timeout);
         WritableReference (const WritableReference& src) = delete; // must move because both src and dest cannot have the unique lock
 
     public:

@@ -27,7 +27,6 @@ namespace Stroika::Frameworks::NetworkMonitor::Traceroute {
     using Containers::Sequence;
     using IO::Network::InternetAddress;
     using Time::Duration;
-    using Time::DurationSecondsType;
 
     /**
      */

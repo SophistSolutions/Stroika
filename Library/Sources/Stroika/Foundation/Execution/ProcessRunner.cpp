@@ -339,14 +339,14 @@ void ProcessRunner::BackgroundProcess::PropagateIfException () const
     }
 }
 
-void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSecondsType timeout) const
+void ProcessRunner::BackgroundProcess::WaitForDone (Time::DurationSeconds timeout) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Thread::Ptr                                    t{fRep_->fProcessRunner};
     t.WaitForDone (timeout);
 }
 
-void ProcessRunner::BackgroundProcess::Join (Time::DurationSecondsType timeout) const
+void ProcessRunner::BackgroundProcess::Join (Time::DurationSeconds timeout) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Thread::Ptr                                    t{fRep_->fProcessRunner};
@@ -354,7 +354,7 @@ void ProcessRunner::BackgroundProcess::Join (Time::DurationSecondsType timeout) 
     // if he asserts in PropagateIfException () are wrong, I may need to call that here!
 }
 
-void ProcessRunner::BackgroundProcess::JoinUntil (Time::DurationSecondsType timeoutAt) const
+void ProcessRunner::BackgroundProcess::JoinUntil (Time::TimePointSeconds timeoutAt) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     Thread::Ptr                                    t{fRep_->fProcessRunner};
@@ -485,10 +485,10 @@ void ProcessRunner::SetStdErr (const Streams::OutputStream<byte>::Ptr& err)
     fStdErr_ = err;
 }
 
-void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
+void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
 {
     TraceContextBumper ctx{"ProcessRunner::Run"};
-    if (timeout == Time::kInfinite) {
+    if (timeout == Time::kInfinity) {
         if (processResult == nullptr) {
             CreateRunnable_ (nullptr, nullptr, progress) ();
         }
@@ -514,7 +514,7 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
 }
 
 Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult,
-                                       ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
+                                       ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     Streams::InputStream<byte>::Ptr                 oldStdIn  = GetStdIn ();
@@ -826,7 +826,7 @@ namespace {
                 Execution::WaitForIOReady waiter{fd};
                 bool                      eof = false;
                 while (not eof) {
-                    (void)waiter.WaitQuietly (1);
+                    (void)waiter.WaitQuietly (1s);
                     readALittleFromProcess (fd, stream, write2StdErrCache, &eof);
                 }
             };

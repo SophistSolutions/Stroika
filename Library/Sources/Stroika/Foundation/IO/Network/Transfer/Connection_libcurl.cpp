@@ -132,16 +132,16 @@ namespace {
         {
             return fOptions_;
         }
-        virtual DurationSecondsType GetTimeout () const override
+        virtual Time::DurationSeconds GetTimeout () const override
         {
             AssertNotImplemented ();
-            return 0;
+            return 0s;
         }
-        virtual void SetTimeout (DurationSecondsType timeout) override
+        virtual void SetTimeout (Time::DurationSeconds timeout) override
         {
             MakeHandleIfNeeded_ ();
-            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TIMEOUT_MS, static_cast<int> (timeout * 1000)));
-            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TIMEOUT_MS, static_cast<int> (timeout.count () * 1000)));
+            ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout.count () * 1000)));
         }
         virtual URI GetSchemeAndAuthority () const override
         {

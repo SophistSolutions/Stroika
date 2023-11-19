@@ -75,9 +75,9 @@ namespace Stroika::Frameworks::Led {
         bool fInIdleMode_{false};
 
     public:
-        static Foundation::Time::DurationSecondsType  kNeverCallIdler;
-        virtual Foundation::Time::DurationSecondsType GetIdlerFrequncy (Idler* idler);
-        virtual void                                  SetIdlerFrequncy (Idler* idler, Foundation::Time::DurationSecondsType idlerFrequency);
+        static inline Foundation::Time::DurationSeconds kNeverCallIdler{100s}; // @todo crazy never value - switch to using optional<>
+        virtual Foundation::Time::DurationSeconds       GetIdlerFrequncy (Idler* idler);
+        virtual void                                    SetIdlerFrequncy (Idler* idler, Foundation::Time::DurationSeconds idlerFrequency);
 
     public:
         class NonIdleContext;
@@ -109,9 +109,9 @@ namespace Stroika::Frameworks::Led {
 
     private:
         struct IdlerInfo {
-            IdlerInfo ();
-            Foundation::Time::DurationSecondsType fIdlerFrequency;
-            Foundation::Time::DurationSecondsType fLastCalledAt;
+            IdlerInfo () = default;
+            Foundation::Time::DurationSeconds  fIdlerFrequency{IdleManager::kNeverCallIdler};
+            Foundation::Time::TimePointSeconds fLastCalledAt{};
         };
         map<Idler*, IdlerInfo> fIdlers;
         bool                   fNeedMgrIdleCalls;
@@ -141,10 +141,10 @@ namespace Stroika::Frameworks::Led {
         IdleManagerOSImpl () = default;
 
     public:
-        virtual void                                  StartSpendTimeCalls ()                                                           = 0;
-        virtual void                                  TerminateSpendTimeCalls ()                                                       = 0;
-        virtual Foundation::Time::DurationSecondsType GetSuggestedFrequency () const                                                   = 0;
-        virtual void                                  SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency) = 0;
+        virtual void                              StartSpendTimeCalls ()                                                       = 0;
+        virtual void                              TerminateSpendTimeCalls ()                                                   = 0;
+        virtual Foundation::Time::DurationSeconds GetSuggestedFrequency () const                                               = 0;
+        virtual void                              SetSuggestedFrequency (Foundation::Time::DurationSeconds suggestedFrequency) = 0;
 
     protected:
         virtual void CallSpendTime ();

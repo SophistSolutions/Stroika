@@ -42,7 +42,7 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     public:
         // Very primitive definition - should refine - read details on spec on this...
         struct FrequencyInfo {
-            Time::DurationSecondsType fRepeatInterval = 3 * 60.0;
+            Time::DurationSeconds fRepeatInterval{3 * 60.0s};
         };
 
     public:

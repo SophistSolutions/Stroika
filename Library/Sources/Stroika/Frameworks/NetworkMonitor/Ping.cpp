@@ -85,7 +85,7 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
     , fSendPacket_{fICMPPacketSize_}
     , fSocket_{IO::Network::ConnectionlessSocket::New (SocketAddress::INET, Socket::RAW, IPPROTO_ICMP)}
     , fNextSequenceNumber_{static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_))}
-    , fPingTimeout_{options.fTimeout.value_or (Options::kDefaultTimeout).As<Time::DurationSecondsType> ()}
+    , fPingTimeout_{options.fTimeout.value_or (Options::kDefaultTimeout)}
 {
     DbgTrace (L"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", L"addr=%s, options=%s", Characters::ToString (fDestination_).c_str (),
               Characters::ToString (fOptions_).c_str ());
@@ -114,7 +114,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
         tmp.type      = ICMP::V4::ICMP_ECHO_REQUEST;
         tmp.id        = static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_));
         tmp.seq       = ++fNextSequenceNumber_;
-        tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
+        tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount ().time_since_epoch ().count () * 1000);
         return tmp;
     }();
     (void)::memcpy (fSendPacket_.begin (), &pingRequest, sizeof (pingRequest));
@@ -123,7 +123,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
     fSocket_.SendTo (fSendPacket_.begin (), fSendPacket_.end (), SocketAddress{fDestination_, 0});
 
     // Find first packet responding (some packets could be bogus/ignored)
-    Time::DurationSecondsType pingTimeoutAfter = Time::GetTickCount () + fPingTimeout_;
+    Time::TimePointSeconds pingTimeoutAfter = Time::GetTickCount () + fPingTimeout_;
     while (true) {
         ThrowTimeoutExceptionAfter (pingTimeoutAfter);
         SocketAddress    fromAddress;
@@ -194,7 +194,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"reply->ttl = %d, nHops = %d", replyIPHeader->ttl, nHops);
 #endif
-                return ResultType{Duration{Time::GetTickCount () - replyICMPHeader->timestamp / 1000.0}, nHops};
+                return ResultType{Duration{Time::GetTickCount ().time_since_epoch ().count () - replyICMPHeader->timestamp / 1000.0}, nHops};
             }
             case ICMP::V4::ICMP_TTL_EXPIRE: {
                 Execution::Throw (ICMP::V4::TTLExpiredException{InternetAddress{replyIPHeader->saddr}});
@@ -255,20 +255,20 @@ String SampleResults::ToString () const
  */
 SampleResults NetworkMonitor::Ping::Sample (const InternetAddress& addr, const SampleOptions& sampleOptions, const Options& options)
 {
-    Debug::TraceContextBumper       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+    Debug::TraceContextBumper         ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
         L"Frameworks::NetworkMonitor::Ping::Sample", L"addr=%s, sampleOptions=%s, options=%s", Characters::ToString (addr).c_str (),
         Characters::ToString (sampleOptions).c_str (), Characters::ToString (options).c_str ())};
-    Pinger                          pinger{addr, options};
-    Collection<DurationSecondsType> sampleTimes;
-    Collection<unsigned int>        sampleHopCounts;
-    unsigned int                    samplesTaken{};
+    Pinger                            pinger{addr, options};
+    Collection<Time::DurationSeconds> sampleTimes;
+    Collection<unsigned int>          sampleHopCounts;
+    unsigned int                      samplesTaken{};
     while (samplesTaken < sampleOptions.fSampleCount) {
         if (samplesTaken != 0) {
             Execution::Sleep (sampleOptions.fInterval);
         }
         try {
             Pinger::ResultType tmp = pinger.RunOnce ();
-            sampleTimes += tmp.fPingTime.As<DurationSecondsType> ();
+            sampleTimes += tmp.fPingTime;
             sampleHopCounts += tmp.fHopCount;
             ++samplesTaken;
         }

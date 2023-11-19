@@ -155,7 +155,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Network {
          *
          *  \req fMinimumAveragingInterval > 0
          */
-        Time::DurationSecondsType fMinimumAveragingInterval{1.0};
+        Time::DurationSeconds fMinimumAveragingInterval{1.0s};
     };
 
     /**
@@ -183,7 +183,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *  Specialization to improve performance
      */
     template <>
-    Instruments::Network::Info Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut);
+    Instruments::Network::Info Instrument::CaptureOneMeasurement (Range<TimePointSeconds>* measurementTimeOut);
 
 }
 

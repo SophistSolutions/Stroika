@@ -45,27 +45,17 @@ namespace Stroika::Foundation::Execution {
         return fPollData_;
     }
     template <typename T, typename TRAITS>
-    inline auto WaitForIOReady<T, TRAITS>::Wait (Time::DurationSecondsType waitFor) -> Containers::Set<T>
+    inline auto WaitForIOReady<T, TRAITS>::Wait (Time::DurationSeconds waitFor) -> Containers::Set<T>
     {
         return WaitUntil (waitFor + Time::GetTickCount ());
     }
     template <typename T, typename TRAITS>
-    inline auto WaitForIOReady<T, TRAITS>::Wait (const Time::Duration& waitFor) -> Containers::Set<T>
-    {
-        return WaitUntil (waitFor.As<Time::DurationSecondsType> () + Time::GetTickCount ());
-    }
-    template <typename T, typename TRAITS>
-    inline auto WaitForIOReady<T, TRAITS>::WaitQuietly (Time::DurationSecondsType waitFor) -> Containers::Set<T>
+    inline auto WaitForIOReady<T, TRAITS>::WaitQuietly (Time::DurationSeconds waitFor) -> Containers::Set<T>
     {
         return WaitQuietlyUntil (waitFor + Time::GetTickCount ());
     }
     template <typename T, typename TRAITS>
-    inline auto WaitForIOReady<T, TRAITS>::WaitQuietly (const Time::Duration& waitFor) -> Containers::Set<T>
-    {
-        return WaitQuietly (waitFor.As<Time::DurationSecondsType> ());
-    }
-    template <typename T, typename TRAITS>
-    auto WaitForIOReady<T, TRAITS>::WaitUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
+    auto WaitForIOReady<T, TRAITS>::WaitUntil (Time::TimePointSeconds timeoutAt) -> Containers::Set<T>
     {
         Containers::Set<T> result = WaitQuietlyUntil (timeoutAt);
         if (result.empty ()) {
@@ -74,7 +64,7 @@ namespace Stroika::Foundation::Execution {
         return result;
     }
     template <typename T, typename TRAITS>
-    auto WaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<T>
+    auto WaitForIOReady<T, TRAITS>::WaitQuietlyUntil (Time::TimePointSeconds timeoutAt) -> Containers::Set<T>
     {
         Thread::CheckForInterruption ();
         vector<pair<SDKPollableType, TypeOfMonitorSet>> pollBuffer;

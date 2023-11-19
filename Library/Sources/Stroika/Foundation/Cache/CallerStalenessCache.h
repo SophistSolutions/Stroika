@@ -35,7 +35,8 @@ namespace Stroika::Foundation::Cache {
     /**
      */
     struct CallerStalenessCache_Traits_DEFAULT {
-        using TimeStampType = Time::DurationSecondsType; // type must support operator<()
+        using TimeStampType           = Time::TimePointSeconds; // type must support operator<()
+        using TimeStampDifferenceType = Time::DurationSeconds;
         static TimeStampType GetCurrentTimestamp ();
     };
 
@@ -76,7 +77,7 @@ namespace Stroika::Foundation::Cache {
      *  \par Example Usage
      *      \code
      *          // no key cache
-     *          optional<InternetAddress> LookupExternalInternetAddress_ (optional<Time::DurationSecondsType> allowedStaleness = {})
+     *          optional<InternetAddress> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
      *          {
      *              static CallerStalenessCache<void, optional<InternetAddress>> sCache_;
      *              return sCache_.Lookup (sCache_.Ago (allowedStaleness.value_or (30)), []() -> optional<InternetAddress> {
@@ -90,7 +91,7 @@ namespace Stroika::Foundation::Cache {
      *  \par Example Usage
      *      \code
      *          // keyed cache
-     *          optional<int> MapValue_ (int value, optional<Time::DurationSecondsType> allowedStaleness = {})
+     *          optional<int> MapValue_ (int value, optional<Time::DurationSeconds> allowedStaleness = {})
      *          {
      *              static CallerStalenessCache<int, optional<int>> sCache_;
      *              try {
@@ -111,7 +112,7 @@ namespace Stroika::Foundation::Cache {
      *      \code
      *          // using KEY=void (so singleton cache)
      *          unsigned int  sCalls1_{0};
-     *          optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSecondsType> allowedStaleness = {})
+     *          optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSeconds> allowedStaleness = {})
      *          {
      *              using Cache::CallerStalenessCache;
      *              static CallerStalenessCache<void, optional<int>> sCache_;
@@ -139,6 +140,11 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          */
+        using TimeStampDifferenceType = typename TIME_TRAITS::TimeStampDifferenceType;
+
+    public:
+        /**
+         */
         static TimeStampType GetCurrentTimestamp ();
 
     public:
@@ -155,7 +161,7 @@ namespace Stroika::Foundation::Cache {
          *          }
          *      \endcode
          */
-        static TimeStampType Ago (TimeStampType backThisTime);
+        static TimeStampType Ago (TimeStampDifferenceType backThisTime);
 
     public:
         /**

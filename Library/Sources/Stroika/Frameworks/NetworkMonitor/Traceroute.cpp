@@ -113,7 +113,7 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
             pingOptions.fSampleInfo = Ping::Options::SampleInfo{options.fSampleInfo->fInterval, options.fSampleInfo->fSampleCount};
         }
 #endif
-        DurationSecondsType startOfPingRequest = Time::GetTickCount ();
+        Time::TimePointSeconds startOfPingRequest = Time::GetTickCount ();
         try {
             Ping::Pinger::ResultType r = pinger.RunOnce (ttl);
             results += Hop{r.fPingTime, addr};

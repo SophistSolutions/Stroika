@@ -40,10 +40,10 @@ namespace Stroika::Frameworks::Led::Platform {
         ~IdleManagerOSImpl_Win32 ();
 
     public:
-        virtual void                                  StartSpendTimeCalls () override;
-        virtual void                                  TerminateSpendTimeCalls () override;
-        virtual Foundation::Time::DurationSecondsType GetSuggestedFrequency () const override;
-        virtual void SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency) override;
+        virtual void                              StartSpendTimeCalls () override;
+        virtual void                              TerminateSpendTimeCalls () override;
+        virtual Foundation::Time::DurationSeconds GetSuggestedFrequency () const override;
+        virtual void                              SetSuggestedFrequency (Foundation::Time::DurationSeconds suggestedFrequency) override;
 
     protected:
         nonvirtual void OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);
@@ -58,9 +58,9 @@ namespace Stroika::Frameworks::Led::Platform {
         enum {
             eTimerEventID = 34252
         }; // Magic#
-        HWND                                  fIdleWnd;
-        Foundation::Time::DurationSecondsType fSuggestedFrequency;
-        UINT_PTR                              fTimerID;
+        HWND                              fIdleWnd;
+        Foundation::Time::DurationSeconds fSuggestedFrequency;
+        UINT_PTR                          fTimerID;
     };
 
     namespace {
@@ -231,7 +231,7 @@ namespace Stroika::Frameworks::Led::Platform {
         AssertNotNull (fIdleWnd);
         // ignore if already started
         if (fTimerID == 0) {
-            int timeout = static_cast<int> (fSuggestedFrequency * 1000); // cvt specified frequency to milliseconds
+            int timeout = static_cast<int> (fSuggestedFrequency.count () * 1000); // cvt specified frequency to milliseconds
             Verify ((fTimerID = ::SetTimer (fIdleWnd, eTimerEventID, timeout, NULL)) != 0);
         }
     }
@@ -245,12 +245,12 @@ namespace Stroika::Frameworks::Led::Platform {
         }
     }
 
-    Foundation::Time::DurationSecondsType IdleManagerOSImpl_Win32::GetSuggestedFrequency () const
+    Foundation::Time::DurationSeconds IdleManagerOSImpl_Win32::GetSuggestedFrequency () const
     {
         return fSuggestedFrequency;
     }
 
-    void IdleManagerOSImpl_Win32::SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency)
+    void IdleManagerOSImpl_Win32::SetSuggestedFrequency (Foundation::Time::DurationSeconds suggestedFrequency)
     {
         if (fSuggestedFrequency != suggestedFrequency) {
             fSuggestedFrequency = suggestedFrequency;
