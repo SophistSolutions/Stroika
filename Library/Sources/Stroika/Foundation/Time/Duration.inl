@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Time {
             return timeval{seconds, static_cast<decltype (timeval::tv_usec)> (r * 1000 * 1000)};
         }
         else if constexpr (Configuration::IDuration<T>) {
-            return T{static_cast<T::rep> (count () * T::period::den / T::period::num)};
+            return T{static_cast<typename T::rep> (count () * T::period::den / T::period::num)};
         }
         else if constexpr (Configuration::ITimePoint<T>) {
             return T{this->As<typename T::duration> ()};
