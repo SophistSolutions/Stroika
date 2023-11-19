@@ -15,6 +15,8 @@
 #include "../Common/TemplateUtilities.h"
 #include "../Configuration/Common.h"
 
+#include "Common.h"
+
 /**
  *  \file
  *
@@ -33,21 +35,6 @@
  */
 
 namespace Stroika::Foundation::Traversal {
-
-    /**
-     *  Openness is used to define whether an end of a range is open or closed. Open means
-     *  not containing the endpoint, and closed means containing the endpoint.
-     * 
-     *  \note   no support for the concepts of open and closed or neither open nor closed
-     *
-     *  \note   Configuration::DefaultNames<> supported
-     */
-    enum class Openness {
-        eOpen,
-        eClosed,
-
-        Stroika_Define_Enum_Bounds (eOpen, eClosed)
-    };
 
     /**
      *  \note - ALL these RangeTraits helper classes use template <> struct instead of template<> using because

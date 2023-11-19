@@ -2133,6 +2133,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Common.h">
       <Filter>Sources\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Common.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3529,6 +3532,9 @@
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Common.inl">
+      <Filter>Sources\Traversal</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />
