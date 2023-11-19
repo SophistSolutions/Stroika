@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Execution {
     {
         // Fill two buffers, one with the data needed to pass to _WaitQuietlyUntil, and the other with
         // corresponding 'T' smart wrapper objects, which we map back to and return as our API result (in same order)
-        auto fillBuffer = [] (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer) -> void {
+        auto fillBuffer = [this] (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer) -> void {
             RequireNotNull (pollBuffer);
             RequireNotNull (mappedObjectBuffer);
             Require (pollBuffer->size () == 0);
