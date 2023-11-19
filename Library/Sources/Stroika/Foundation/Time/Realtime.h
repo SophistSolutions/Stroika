@@ -8,6 +8,8 @@
 
 #include <chrono>
 
+#include "../Traversal/Common.h"
+
 /**
  *  \file
  *
@@ -69,6 +71,71 @@ namespace Stroika::Foundation::Time {
     /**
      */
     TimePointSeconds ToAppStartRelative (const TimePointSeconds& tp);
+
+}
+
+namespace Stroika::Foundation::Traversal::RangeTraits {
+
+    /*
+     *  Cannot #include Traversal/Range (easily) due to mutual include nightmare. So just forwward declare template, and still
+     *  define it anyhow (only need to #include enuf for Openness enum).
+     * 
+     *  Then we can easily construct Ranges of DurationSeconds, and TimePointSeconds (time ranges).
+     */
+    template <typename T>
+    struct Default;
+
+    template <>
+    struct Default<Time::DurationSeconds> {
+
+        using value_type             = Time::DurationSeconds;
+        using SignedDifferenceType   = Time::DurationSeconds;
+        using UnsignedDifferenceType = Time::DurationSeconds;
+
+        static constexpr inline Openness kLowerBoundOpenness{Openness::eClosed};
+        static constexpr inline Openness kUpperBoundOpenness{Openness::eClosed};
+
+        static constexpr inline Time::DurationSeconds kLowerBound{Time::DurationSeconds::min ()};
+        static constexpr inline Time::DurationSeconds kUpperBound{Time::DurationSeconds::max ()};
+
+        static Time::DurationSeconds GetNext (Time::DurationSeconds i)
+        {
+            using Time::DurationSeconds;
+            return DurationSeconds{::nextafter (i.count (), numeric_limits<Time::DurationSeconds::rep>::max ())};
+        }
+        static Time::DurationSeconds GetPrevious (Time::DurationSeconds i)
+        {
+            using Time::DurationSeconds;
+            return DurationSeconds{::nextafter (i.count (), numeric_limits<Time::DurationSeconds::rep>::min ())};
+        }
+    };
+
+    template <>
+    struct Default<Time::TimePointSeconds> {
+
+        using value_type             = Time::TimePointSeconds;
+        using SignedDifferenceType   = Time::TimePointSeconds;
+        using UnsignedDifferenceType = Time::TimePointSeconds;
+
+        static constexpr inline Openness kLowerBoundOpenness{Openness::eClosed};
+        static constexpr inline Openness kUpperBoundOpenness{Openness::eClosed};
+
+        static constexpr inline Time::TimePointSeconds kLowerBound{Time::TimePointSeconds::min ()};
+        static constexpr inline Time::TimePointSeconds kUpperBound{Time::TimePointSeconds::max ()};
+
+        static Time::TimePointSeconds GetNext (Time::TimePointSeconds i)
+        {
+            using Time::TimePointSeconds;
+            return TimePointSeconds{TimePointSeconds::duration{
+                ::nextafter (i.time_since_epoch ().count (), numeric_limits<Time::TimePointSeconds::duration::rep>::max ())}};
+        }
+        static Time::TimePointSeconds GetPrevious (Time::TimePointSeconds i)
+        {
+            using Time::TimePointSeconds;
+            return TimePointSeconds{TimePointSeconds::duration{
+                ::nextafter (i.time_since_epoch ().count (), numeric_limits<Time::TimePointSeconds::duration::rep>::min ())}};
+        }
+    };
 
 }
 
