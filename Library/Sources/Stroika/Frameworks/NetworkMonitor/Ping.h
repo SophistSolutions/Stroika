@@ -45,7 +45,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
 
         /**
          */
-        static const inline Duration kDefaultTimeout{1.0s};
+        static const inline Duration kDefaultTimeout{3.0s};
 
         /**
          *  time after a single ping is sent before we treat the ping as having timed out (so not total time if multiple samples taken).
