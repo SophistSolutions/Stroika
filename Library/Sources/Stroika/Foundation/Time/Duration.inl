@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Time {
     {
         return As<Characters::String> ().AsUTF8 ();
     }
-    inline Duration::~Duration ()
+    inline constexpr Duration::~Duration ()
     {
         destroy_ ();
     }
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Time {
         }
         return *this;
     }
-    inline void Duration::destroy_ ()
+    inline constexpr void Duration::destroy_ ()
     {
         if (fRepType_ == eString_) {
             fStringRep_.~basic_string ();
@@ -220,13 +220,13 @@ namespace Stroika::Foundation::Time {
     {
         return Format ();
     }
-    inline /*constexpr*/ Duration Duration::min ()
+    inline constexpr Duration Duration::min ()
     {
-        return Duration{numeric_limits<InternalNumericFormatType_>::lowest ()};
+        return inherited::min ();
     }
-    inline /*constexpr*/ Duration Duration::max ()
+    inline constexpr Duration Duration::max ()
     {
-        return Duration{numeric_limits<InternalNumericFormatType_>::max ()};
+        return inherited::max ();
     }
 
     /*
@@ -282,15 +282,17 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
      ****************************** RangeTraits::Default ****************************
      ********************************************************************************
      */
-    inline const Time::Duration Default<Time::Duration>::kLowerBound = Time::Duration::min ();
-    inline const Time::Duration Default<Time::Duration>::kUpperBound = Time::Duration::max ();
-    inline Time::Duration       Default<Time::Duration>::GetNext (Time::Duration i)
+    inline constexpr Time::Duration Default<Time::Duration>::kLowerBound = Time::Duration::min ();
+    inline constexpr Time::Duration Default<Time::Duration>::kUpperBound = Time::Duration::max ();
+    inline Time::Duration           Default<Time::Duration>::GetNext (Time::Duration i)
     {
-        return Time::Duration{::nextafter (i.As<double> (), numeric_limits<double>::max ())};
+        using Time::Duration;
+        return Duration{::nextafter (i.As<Duration::rep> (), numeric_limits<Duration::rep>::max ())};
     }
     inline Time::Duration Default<Time::Duration>::GetPrevious (Time::Duration i)
     {
-        return Time::Duration{::nextafter (i.As<double> (), numeric_limits<double>::min ())};
+        using Time::Duration;
+        return Duration{::nextafter (i.As<Duration::rep> (), numeric_limits<Duration::rep>::min ())};
     }
 
 }

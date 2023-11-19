@@ -22,6 +22,7 @@
 #include "../Traversal/Range.h"
 
 #include "Common.h"
+#include "Realtime.h"
 
 /**
  *  \file
@@ -29,37 +30,6 @@
  *  \version    <a href="Code-Status.md">Beta</a>
  *
  * TODO:
- *      @todo   See if I can get constexpr Duration working.
- *              This appears tricky because we need a DESTRUCTOR, and this cannot be constexpr which prevents
- *              you from having a constexpr object of that type. The closest I can get is that I could lose
- *              the string, and ALWAYS convert to float (or chron::duration) representation. Or I could make
- *              the class into a template class (but thats too close to hte existing chron::duration - so whats the point).
- *
- *                  1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Time\Duration.inl(253,34): error C3615:  constexpr function 'Stroika::Foundation::Time::Duration::min' cannot result in a constant expression (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
- *                  1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Time\Duration.inl(253,34): message :  failure was because type 'Stroika::Foundation::Time::Duration' is not a literal type (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
- *                  1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Time\Duration.inl(106,23): message :  type 'Stroika::Foundation::Time::Duration' is not a literal type because it has a user-defined destructor (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
- *                  1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Time\Duration.h(378,20): message :  type 'Stroika::Foundation::Time::Duration' is not a literal type because its data member 'fStringRep_' is of non-literal type 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp)
- *
- *              Even with this restriction, I COULD store the string elsewhere to eliminate the DTOR. A kludge, but akin
- *              to garbage collection. Keep a list (std::map) of all allocated Duration objects which were given a string.
- *              Store the PTR as key, and the actual string pointer as value; We cannot always (maybe not even often) catch
- *              the leaked objects, but we can check each time a new Duration is constructed. If its constructed, that address
- *              was once destructed, so the associated string can be removed. OR - use a BLOB-BUFFER (stringpool) thing. Each time
- *              we get constructed, look for that string, and re-use the address (readonly afterall). If fail to find, append.
- *              For some cases, this grows indefinitely and could be bad. But for most common cases, it would probably work out fine.
- *
- *              Maybe even better, create a base class 'DurationLite' - that doesn't own a string (could make DurationLite just be
- *              Duration). Just always convert to numbers. THEN - THAT can be constexpr. And subclass Duration inherits all the functionality
- *              except overrides/replaces all the functions that return the underlying string (essentially faking the virtual part).
- *
- *              That gets us 95% of what we want - the same API we have no for Duration, and something just like and interoperable with
- *              Duration that is constexpr. Though - why not just call that chrono::duration? That maybe good enuf (esp since we typically
- *              use stuff like 2ms, etc). Maybe that's good enuf. Making conversion from 3ms to Duration 'super fast' (which I've largely
- *              done in 2.1d18
- *
- *     @todo    Then, when constexpr works, debug why/if we can make work the qCompilerAndStdLib_constexpr_Buggy/constexpr
- *              stuff for min () / max  ()
- *
  *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
  *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
  *              Maybe Float2StringOptions is optional param to As<String> ()???
@@ -80,13 +50,6 @@
  *          o   Number of seconds. Anything less than that number is truncated.
  *          o   So .001 'precision' means show 3.44444 as 3.444 and 60 means show 67 seconds as 'one minute'
  *          o   Maybe add option so can show > or < as in < one minute or > one minute for being passed sentainl values?
- *
- *      @todo   template    <typename   DURATION_REP, typename DURATION_PERIOD>
- *              chrono::duration<DURATION_REP, DURATION_PERIOD>  As () const;
- *
- *              Didn't work (at least on msvc). Try again, and see if I can combine template<> and template partial
- *              specialization to do an As<> function for any duration template. Maybe use SFINAE tricks! Yes, thats
- *              probably it...
  *
  */
 
@@ -156,7 +119,7 @@ namespace Stroika::Foundation::Time {
         constexpr Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d);
 
     public:
-        ~Duration ();
+        constexpr ~Duration ();
 
     public:
         nonvirtual Duration& operator= (Duration&& rhs) noexcept;
@@ -320,20 +283,14 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          * Duration::kMin is the least duration this Duration class supports representing.
-         *
-         *  @todo get constexpr working here (I THINK MAYBE POSSIBLE IN C++20 since you can have constexpr dtor - not sure how but I think can work)
-         *  THEN MAKE kMin
          */
-        static /*constexpr*/ Duration min ();
+        static constexpr Duration min ();
 
     public:
         /**
          * Duration::kMax is the largest duration this Duration class supports representing
-         *
-         *  @todo get constexpr working here (I THINK MAYBE POSSIBLE IN C++20 since you can have constexpr dtor - not sure how but I think can work)
-         *  THEN MAKE kMax
          */
-        static /*constexpr*/ Duration max ();
+        static constexpr Duration max ();
 
     public:
         /**
@@ -367,7 +324,7 @@ namespace Stroika::Foundation::Time {
             char fNonStringRep_{}; // unused except to allow constexpr initialization (allow selecting non fStringRep_ to initialize since union must be initialized)
             string fStringRep_;
         };
-        void destroy_ (); // allow call if already empty
+        constexpr void destroy_ (); // allow call if already empty
     };
     template <>
     chrono::seconds Duration::AsPinned () const;

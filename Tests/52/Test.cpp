@@ -1266,7 +1266,7 @@ namespace {
         void Run ()
         {
             using filesystem::path;
-            unsigned int nTimes = max<unsigned int> (1u, static_cast<unsigned int> (sTimeMultiplier_));
+            unsigned int nTimes = max (1u, static_cast<unsigned int> (sTimeMultiplier_));
 
             using TEST_FUN_TYPE           = function<void (const string&, unsigned int)>;
             static const auto kTestCases_ = vector<tuple<TEST_FUN_TYPE, string>>{
