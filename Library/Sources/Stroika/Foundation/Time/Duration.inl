@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Time {
             return static_cast<T> (count ());
         }
         else if constexpr (same_as<T, timeval>) {
-            rep r       = count (); // @todo fix for negative case
+            rep                        r       = count (); // @todo fix for negative case
             decltype (timeval::tv_sec) seconds = static_cast<long> (r);
             r -= seconds;
             return timeval{seconds, static_cast<decltype (timeval::tv_usec)> (r * 1000 * 1000)};

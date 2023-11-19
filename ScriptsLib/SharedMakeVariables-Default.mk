@@ -161,13 +161,14 @@ endif
 #	$1 input src name
 #	$2 OUTFILE OBJ name
 #
+# note slightly confusingly, CPP is 'c pre processor' not c++ (which is CXX)
 ifeq (Unix,$(ProjectPlatformSubdir))
 DEFAULT_CPP_LINE=\
 	"$(CXX)" \
 		$(CPPFLAGS) \
 		$(CXXFLAGS) \
 		-E $1 \
-		> $2.i
+		> $(shell dirname $2)$(shell basename $2 .o).i
 DEFAULT_CXX_LINE=\
 	"$(CXX)" \
 		$(CPPFLAGS) \
@@ -180,7 +181,7 @@ DEFAULT_CPP_LINE=\
 		$(CPPFLAGS) \
 		$(CXXFLAGS) \
 		-E $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
-		> $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$2).i \
+		> $(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(shell dirname $2)$(shell basename $2 .obj)).i \
 		| sed -n '1!p'
 DEFAULT_CXX_LINE=\
 	"$(CXX)" \
