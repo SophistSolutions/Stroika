@@ -304,11 +304,6 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::TimePointSeconds timeoutAt = Time::TimePointSeconds{Time::kInfinity});
 
     private:
-        // Fill two buffers, one with the data needed to pass to _WaitQuietlyUntil, and the other with
-        // corresponding 'T' smart wrapper objects, which we map back to and return as our API result (in same order)
-        nonvirtual void FillBuffer_ (vector<pair<SDKPollableType, TypeOfMonitorSet>>* pollBuffer, vector<T>* mappedObjectBuffer);
-
-    private:
         Traversal::Iterable<pair<T, TypeOfMonitorSet>>    fPollData_;
         optional<pair<SDKPollableType, TypeOfMonitorSet>> fPollable2Wakeup_;
     };
