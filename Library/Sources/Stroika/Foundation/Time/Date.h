@@ -98,8 +98,10 @@ namespace Stroika::Foundation::Time {
      *  \note - DayOfWeek was an enum in Stroika v2.1, so this is a significant change.
      * 
      *  \note DayOfWeek can be converted from/to unsigned int.
+     *
+     *  \note not [[nodiscard]] cuz can use CTOR just for quiet validation
      */
-    struct [[nodiscard]] DayOfWeek : weekday {
+    struct DayOfWeek : weekday {
         /**
          *  For the purpose of integer constructors, 0==Sunday, 1==Monday, and so on
          */
@@ -122,8 +124,10 @@ namespace Stroika::Foundation::Time {
      *  \note - MonthOfYear was an enum in Stroika v2.1, so this is a significant change.
      * 
      *  \note MonthOfYear can be converted from/to unsigned int.
+     *
+     *  \note not [[nodiscard]] cuz can use CTOR just for quiet validation
      */
-    struct [[nodiscard]] MonthOfYear : month {
+    struct MonthOfYear : month {
         /**
          *  For the purpose of integer constructors, 1==January, 2==February and so on (no zero).
          */
@@ -152,8 +156,10 @@ namespace Stroika::Foundation::Time {
      * 
      *  \note DayOfMonth can be converted from/to unsigned int.
      *  \note You can use the suffix 'd' intead of DayOfMonth{n}
+     *
+     *  \note not [[nodiscard]] cuz can use CTOR just for quiet validation
      */
-    struct [[nodiscard]] DayOfMonth : day {
+    struct DayOfMonth : day {
         /**
          *  For the purpose of integer constructors, 1==1st, 2==2nd, and so on (no zero)
          */
@@ -202,8 +208,10 @@ namespace Stroika::Foundation::Time {
      *  \note Year can be converted from/to signed int.
      * 
      *  \note you can use the suffix y instead of Year{N} (assuming using namespace Foundation::Time).
+     *
+     *  \note not [[nodiscard]] cuz can use CTOR just for quiet validation
      */
-    struct [[nodiscard]] Year : year {
+    struct Year : year {
         /**
          */
         constexpr Year (year y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
