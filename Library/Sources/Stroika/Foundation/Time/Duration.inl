@@ -192,12 +192,6 @@ namespace Stroika::Foundation::Time {
             r -= seconds;
             return timeval{seconds, static_cast<decltype (timeval::tv_usec)> (r * 1000 * 1000)};
         }
-        else if constexpr (Configuration::IDuration<T>) {
-            return T{static_cast<typename T::rep> (count () * T::period::den / T::period::num)};
-        }
-        else if constexpr (Configuration::ITimePoint<T>) {
-            return T{this->As<typename T::duration> ()};
-        }
         else if constexpr (same_as<T, Characters::String>) {
             using Characters::String;
             switch (fRepType_) {
@@ -210,6 +204,12 @@ namespace Stroika::Foundation::Time {
             }
             AssertNotReached ();
             return String{};
+        }
+        else if constexpr (Configuration::IDuration<T>) {
+            return T{static_cast<typename T::rep> (count () * T::period::den / T::period::num)};
+        }
+        else if constexpr (Configuration::ITimePoint<T>) {
+            return T{this->As<typename T::duration> ()};
         }
     }
     inline Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) const
