@@ -860,14 +860,6 @@ timespec DateTime::As_Simple_ () const
 }
 #endif
 
-namespace Stroika::Foundation::Time {
-    template <>
-    String DateTime::As () const
-    {
-        return Format ();
-    }
-}
-
 DateTime DateTime::Add (const Duration& d) const
 {
     return AddSeconds (d.As<int64_t> ());

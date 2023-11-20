@@ -533,6 +533,22 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
+#ifndef qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// first noticed broken in apply clang 15
+#define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy                                                         \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#elif defined(__clang__) && !defined(__APPLE__)
+// first noticed broken in apply clang 16
+#define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy                                                         \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+#else
+#define qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy 0
+#endif
+
+#endif
+
 /*
 
    https://bugs.llvm.org/show_bug.cgi?id=42111

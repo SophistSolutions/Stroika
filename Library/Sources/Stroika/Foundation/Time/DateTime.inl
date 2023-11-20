@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Time {
                 if (++itercnt >= limit)
                     break;
             } while (epsilon > tolerance);
-            return dst_now + (tp - src_now);
+            return dst_now + chrono::duration_cast<typename DstClockT::duration> (tp - src_now);
         }
         template <typename DstTimePointT, typename SrcTimePointT>
         inline DstTimePointT my_clock_cast (const SrcTimePointT tp)
@@ -76,10 +76,12 @@ namespace Stroika::Foundation::Time {
                 return clock_cast<DstClockT> (tp);
             }
             else {
-                return clock_cast_0th<DstTimePointT> (tp);
+                //return clock_cast_0th<DstTimePointT> (tp);
+                return clock_cast_2nd<DstTimePointT> (tp);
             }
             #else
-                return clock_cast_0th<DstTimePointT> (tp);
+                //return clock_cast_0th<DstTimePointT> (tp);
+                return clock_cast_2nd<DstTimePointT> (tp);
             #endif
             // clang-format on
         }
@@ -149,7 +151,7 @@ namespace Stroika::Foundation::Time {
         }
         return ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern, consumedCharacters);
     }
-#if 0
+#if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
     template <>
     time_t DateTime::As_Simple_ () const;
     template <>
@@ -179,13 +181,13 @@ namespace Stroika::Foundation::Time {
     }
     template <typename T>
     inline T DateTime::As () const
-    #if 0
+#if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
         requires (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String> or
 #if qPlatform_Windows
                   same_as<T, SYSTEMTIME> or
 #endif
                   Configuration::ITimePoint<T>)
-                  #endif
+#endif
     {
         if constexpr (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String>) {
             return As_Simple_<T> ();
