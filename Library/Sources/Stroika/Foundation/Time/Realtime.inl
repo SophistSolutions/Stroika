@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <cmath>
 
 #include "../Debug/Assertions.h"
 #include "../Math/Common.h"
@@ -68,6 +69,48 @@ namespace Stroika::Foundation::Time {
     DISABLE_COMPILER_MSC_WARNING_END (4996);
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+
+}
+
+
+
+namespace Stroika::Foundation::Traversal::RangeTraits {
+
+    
+    /*
+     ********************************************************************************
+     *********** Traversal::RangeTraits::Default<Time::DurationSeconds> *************
+     ********************************************************************************
+     */
+        inline Time::DurationSeconds Default<Time::DurationSeconds>::GetNext (Time::DurationSeconds i)
+        {
+            using Time::DurationSeconds;
+            return DurationSeconds{nextafter (i.count (), numeric_limits<Time::DurationSeconds::rep>::max ())};
+        }
+        inline Time::DurationSeconds Default<Time::DurationSeconds>::GetPrevious (Time::DurationSeconds i)
+        {
+            using Time::DurationSeconds;
+            return DurationSeconds{nextafter (i.count (), numeric_limits<Time::DurationSeconds::rep>::min ())};
+        }
+
+
+    /*
+     ********************************************************************************
+     *********** Traversal::RangeTraits::Default<Time::TimePointSeconds> ************
+     ********************************************************************************
+     */
+        inline Time::TimePointSeconds Default<Time::TimePointSeconds> ::GetNext (Time::TimePointSeconds i)
+        {
+            using Time::TimePointSeconds;
+            return TimePointSeconds{TimePointSeconds::duration{
+                nextafter (i.time_since_epoch ().count (), numeric_limits<Time::TimePointSeconds::duration::rep>::max ())}};
+        }
+        inline Time::TimePointSeconds Default<Time::TimePointSeconds>:: GetPrevious (Time::TimePointSeconds i)
+        {
+            using Time::TimePointSeconds;
+            return TimePointSeconds{TimePointSeconds::duration{
+                nextafter (i.time_since_epoch ().count (), numeric_limits<Time::TimePointSeconds::duration::rep>::min ())}};
+        }
 
 }
 

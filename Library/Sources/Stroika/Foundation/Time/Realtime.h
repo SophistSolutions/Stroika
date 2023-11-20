@@ -98,16 +98,8 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         static constexpr inline Time::DurationSeconds kLowerBound{Time::DurationSeconds::min ()};
         static constexpr inline Time::DurationSeconds kUpperBound{Time::DurationSeconds::max ()};
 
-        static Time::DurationSeconds GetNext (Time::DurationSeconds i)
-        {
-            using Time::DurationSeconds;
-            return DurationSeconds{::nextafter (i.count (), numeric_limits<Time::DurationSeconds::rep>::max ())};
-        }
-        static Time::DurationSeconds GetPrevious (Time::DurationSeconds i)
-        {
-            using Time::DurationSeconds;
-            return DurationSeconds{::nextafter (i.count (), numeric_limits<Time::DurationSeconds::rep>::min ())};
-        }
+        static Time::DurationSeconds GetNext (Time::DurationSeconds i);
+        static Time::DurationSeconds GetPrevious (Time::DurationSeconds i);
     };
 
     template <>
@@ -123,18 +115,8 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         static constexpr inline Time::TimePointSeconds kLowerBound{Time::TimePointSeconds::min ()};
         static constexpr inline Time::TimePointSeconds kUpperBound{Time::TimePointSeconds::max ()};
 
-        static Time::TimePointSeconds GetNext (Time::TimePointSeconds i)
-        {
-            using Time::TimePointSeconds;
-            return TimePointSeconds{TimePointSeconds::duration{
-                ::nextafter (i.time_since_epoch ().count (), numeric_limits<Time::TimePointSeconds::duration::rep>::max ())}};
-        }
-        static Time::TimePointSeconds GetPrevious (Time::TimePointSeconds i)
-        {
-            using Time::TimePointSeconds;
-            return TimePointSeconds{TimePointSeconds::duration{
-                ::nextafter (i.time_since_epoch ().count (), numeric_limits<Time::TimePointSeconds::duration::rep>::min ())}};
-        }
+        static Time::TimePointSeconds GetNext (Time::TimePointSeconds i);
+        static Time::TimePointSeconds GetPrevious (Time::TimePointSeconds i);
     };
 
 }
