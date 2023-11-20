@@ -622,12 +622,62 @@ DateTime DateTime::Now () noexcept
 }
 
 namespace {
+    // From https://stackoverflow.com/questions/35282308/convert-between-c11-clocks
+
+    template <typename DstTimePointT, typename SrcTimePointT, typename DstClockT = typename DstTimePointT::clock, typename SrcClockT = typename SrcTimePointT::clock>
+    DstTimePointT clock_cast_0th (const SrcTimePointT tp)
+    {
+        const auto src_now = SrcClockT::now ();
+        const auto dst_now = DstClockT::now ();
+        return dst_now + (tp - src_now);
+    }
+
+    namespace detail {
+        template <typename DurationT, typename ReprT = typename DurationT::rep>
+        constexpr DurationT max_duration () noexcept
+        {
+            return DurationT{std::numeric_limits<ReprT>::max ()};
+        }
+        template <typename DurationT>
+        constexpr DurationT abs_duration (const DurationT d) noexcept
+        {
+            return DurationT{(d.count () < 0) ? -d.count () : d.count ()};
+        }
+    }
+    template <typename DstTimePointT, typename SrcTimePointT, typename DstDurationT = typename DstTimePointT::duration, typename SrcDurationT = typename SrcTimePointT::duration,
+              typename DstClockT = typename DstTimePointT::clock, typename SrcClockT = typename SrcTimePointT::clock>
+    DstTimePointT clock_cast_2nd (const SrcTimePointT tp, const SrcDurationT tolerance = std::chrono::nanoseconds{100}, const int limit = 10)
+    {
+        Assert (limit > 0);
+        auto itercnt = 0;
+        auto src_now = SrcTimePointT{};
+        auto dst_now = DstTimePointT{};
+        auto epsilon = detail::max_duration<SrcDurationT> ();
+        do {
+            const auto src_before  = SrcClockT::now ();
+            const auto dst_between = DstClockT::now ();
+            const auto src_after   = SrcClockT::now ();
+            const auto src_diff    = src_after - src_before;
+            const auto delta       = detail::abs_duration (src_diff);
+            if (delta < epsilon) {
+                src_now = src_before + src_diff / 2;
+                dst_now = dst_between;
+                epsilon = delta;
+            }
+            if (++itercnt >= limit)
+                break;
+        } while (epsilon > tolerance);
+        return dst_now + (tp - src_now);
+    }
+}
+
+namespace {
     // Compute the DateTime which corresponds to a tickcount of zero.
     DateTime GetDateTimeTickCountZeroOffset_ ()
     {
         static DateTime sTimeZero_ = [] () {
             DateTime now = DateTime::Now ();
-            return now.AddSeconds (-static_cast<int64_t> (Time::GetTickCount ().time_since_epoch ().count ()));
+            return now.AddSeconds (-static_cast<int64_t> (ToAppStartRelative (Time::GetTickCount ()).time_since_epoch ().count ()));
         }();
         return sTimeZero_;
     }
@@ -635,13 +685,13 @@ namespace {
 
 Time::TimePointSeconds DateTime::ToTickCount () const
 {
-    return TimePointSeconds{(AsLocalTime () - GetDateTimeTickCountZeroOffset_ ()).As<Time::DurationSeconds> ()};
+    return (AsLocalTime () - GetDateTimeTickCountZeroOffset_ ()).As<Time::TimePointSeconds> ();
 }
 
 DateTime DateTime::FromTickCount (Time::TimePointSeconds tickCount)
 {
     Assert (GetDateTimeTickCountZeroOffset_ ().GetTimezone () == Timezone::kLocalTime);
-    return GetDateTimeTickCountZeroOffset_ ().AddSeconds (Math::Round<int64_t> (tickCount.time_since_epoch ().count ()));
+    return GetDateTimeTickCountZeroOffset_ ().AddSeconds (Math::Round<int64_t> (ToAppStartRelative (tickCount).time_since_epoch ().count ()));
 }
 
 optional<bool> DateTime::IsDaylightSavingsTime () const
