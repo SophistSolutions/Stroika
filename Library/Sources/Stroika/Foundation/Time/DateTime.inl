@@ -64,11 +64,11 @@ namespace Stroika::Foundation::Time {
         inline DstTimePointT my_clock_cast (const SrcTimePointT tp)
         {
             using namespace std::chrono;
+// @todo find better way to check if should use clock_cast or my_private_clock_cast
+#if __cpp_lib_chrono >= 201907L
             using DstClockT = typename DstTimePointT::clock;
             using SrcClockT = typename SrcTimePointT::clock;
-// @todo find better way to check if should use clock_cast or my_private_clock_cast
-// clang-format off
-            #if __cpp_lib_chrono >= 201907L
+            // clang-format off
             if constexpr (
                 (same_as<DstClockT, system_clock> or same_as<DstClockT, utc_clock> or same_as<DstClockT, gps_clock> or same_as<DstClockT, file_clock> or  same_as<DstClockT, tai_clock>)
                 and (same_as<SrcClockT, system_clock> or same_as<SrcClockT, utc_clock> or same_as<SrcClockT, gps_clock> or same_as<SrcClockT, file_clock> or  same_as<SrcClockT, tai_clock>)
@@ -76,13 +76,11 @@ namespace Stroika::Foundation::Time {
                 return clock_cast<DstClockT> (tp);
             }
             else {
-                //return clock_cast_0th<DstTimePointT> (tp);
-                return clock_cast_2nd<DstTimePointT> (tp);
+                return clock_cast_2nd<DstTimePointT> (tp);      //return clock_cast_0th<DstTimePointT> (tp);
             }
-            #else
-                //return clock_cast_0th<DstTimePointT> (tp);
-                return clock_cast_2nd<DstTimePointT> (tp);
-            #endif
+#else
+            return clock_cast_2nd<DstTimePointT> (tp);          //return clock_cast_0th<DstTimePointT> (tp);
+#endif
             // clang-format on
         }
     }
