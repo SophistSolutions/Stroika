@@ -66,8 +66,8 @@ namespace Stroika::Foundation::Time {
             using namespace std::chrono;
             using DstClockT = typename DstTimePointT::clock;
             using SrcClockT = typename SrcTimePointT::clock;
-            // @todo find better way to check if should use clock_cast or my_private_clock_cast
-            // clang-format off
+// @todo find better way to check if should use clock_cast or my_private_clock_cast
+// clang-format off
             #if __cpp_lib_chrono >= 201907L
             if constexpr (
                 (same_as<DstClockT, system_clock> or same_as<DstClockT, utc_clock> or same_as<DstClockT, gps_clock> or same_as<DstClockT, file_clock> or  same_as<DstClockT, tai_clock>)
