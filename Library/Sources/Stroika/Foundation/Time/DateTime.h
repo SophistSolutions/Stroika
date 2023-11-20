@@ -78,6 +78,10 @@ namespace Stroika::Foundation::Time {
      * 
      *  \todo   consider if eRFC1123 could be done as kRFC1123Format; see note about about kISO8601Format/eISO8601, but the same issues
      *          apply (unclear good enuf support for timezones). BUT could reconsider.
+     * 
+     *  \note   c++20 clocks - and clock_cast etc.
+     *          This class roughly corresponds to system_clock. Sadly - for conversions to / from TickCount () - 
+     *          clock_cast doesn't work - https://stackoverflow.com/questions/35282308/convert-between-c11-clocks
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -129,6 +133,8 @@ namespace Stroika::Foundation::Time {
         explicit DateTime (const ::SYSTEMTIME& sysTime, const optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
         explicit DateTime (const ::FILETIME& fileTime, const optional<Timezone>& tz = Timezone::kUTC) noexcept;
 #endif
+        template <Configuration::ITimePoint T>
+        explicit DateTime (T timePoint) noexcept;
 
     public:
         /**
@@ -338,7 +344,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Convert the given datetime to a floating point offset in seconds based on the same reference as the tickcount.
+         *  Convert the given datetime to a floating point offset in seconds (Time::TimePointSeconds) based on the same reference as the tickcount.
          *
          *  \note   Time::GetTickCount () normally returns a positive number but if you go back in time before
          *          its zero point, ToTickCount () will return negative numbers.
@@ -432,6 +438,8 @@ namespace Stroika::Foundation::Time {
          *      SYSTEMTIME          (WINDOWS ONLY)
          *      Date
          *      String              (Format (PrintFormat::eDEFAULT))
+         * 
+         * &&& NEW TIMEPOINT T - NOTE use ToTickCount () to get a value for compare with TickCount () since could be offset...
          *
          *  NB: Intentionally NOT defined for TimeOfDay () - cuz it wouldn't make sense. A DateTime IS a Date, but its not a TimeOfDay. Time of day just
          *  logically extends Date with extra (TOD) information.
@@ -447,7 +455,12 @@ namespace Stroika::Foundation::Time {
          *  \note As<> will throw range_error() if it cannot perform the required conversions and produce a valid value.
          */
         template <typename T>
-        nonvirtual T As () const;
+        nonvirtual T As () const
+            requires (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String> or
+#if qPlatform_Windows
+                      same_as<T, SYSTEMTIME> or
+#endif
+                      Configuration::ITimePoint<T>);
 
     public:
         /**
@@ -527,6 +540,14 @@ namespace Stroika::Foundation::Time {
         struct ThreeWayComparer;
 
     private:
+        template <typename T>
+        nonvirtual T As_Simple_ () const
+            requires (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String>);
+        nonvirtual SYSTEMTIME AsSYSTEMTIME_ () const;
+        template <typename CLOCK_T, typename DURATION_T>
+        nonvirtual time_point<CLOCK_T, DURATION_T> As_TP_ () const;
+
+    private:
         optional<Timezone> fTimezone_;
         Date               fDate_;
         optional<TimeOfDay> fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
@@ -543,19 +564,6 @@ namespace Stroika::Foundation::Time {
         static const FormatException kThe;
     };
     inline const DateTime::FormatException DateTime::FormatException::kThe;
-
-    template <>
-    time_t DateTime::As () const;
-    template <>
-    tm DateTime::As () const;
-    template <>
-    timespec DateTime::As () const;
-#if qPlatform_Windows
-    template <>
-    SYSTEMTIME DateTime::As () const;
-#endif
-    template <>
-    Date DateTime::As () const;
 
     inline const Traversal::Iterable<String> DateTime::kDefaultParseFormats{
         kLocaleStandardFormat,
