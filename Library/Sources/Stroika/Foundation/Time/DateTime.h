@@ -456,11 +456,16 @@ namespace Stroika::Foundation::Time {
          */
         template <typename T>
         nonvirtual T As () const
+
+        // new bug define for clang/xcode? cannot do requires and tmeplate specailize?
+        #if 0
             requires (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String> or
 #if qPlatform_Windows
                       same_as<T, SYSTEMTIME> or
 #endif
-                      Configuration::ITimePoint<T>);
+                      Configuration::ITimePoint<T>)
+                      #endif
+                      ;
 
     public:
         /**
@@ -542,8 +547,14 @@ namespace Stroika::Foundation::Time {
     private:
         template <typename T>
         nonvirtual T As_Simple_ () const
-            requires (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String>);
+        #if 0
+        // broken if inclde this on latest macos xcode but works on msvc... test g++ and find bug define
+            requires (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String>)
+            #endif
+            ;
+#if qPlatform_Windows
         nonvirtual SYSTEMTIME AsSYSTEMTIME_ () const;
+#endif
         template <typename CLOCK_T, typename DURATION_T>
         nonvirtual time_point<CLOCK_T, DURATION_T> As_TP_ () const;
 

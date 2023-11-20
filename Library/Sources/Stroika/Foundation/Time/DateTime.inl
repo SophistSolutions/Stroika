@@ -4,6 +4,7 @@
 #ifndef _Stroika_Foundation_Time_DateTime_inl_
 #define _Stroika_Foundation_Time_DateTime_inl_ 1
 
+#include <chrono>
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
@@ -67,6 +68,7 @@ namespace Stroika::Foundation::Time {
             using SrcClockT = typename SrcTimePointT::clock;
             // @todo find better way to check if should use clock_cast or my_private_clock_cast
             // clang-format off
+            #if __cpp_lib_chrono >= 201907L
             if constexpr (
                 (same_as<DstClockT, system_clock> or same_as<DstClockT, utc_clock> or same_as<DstClockT, gps_clock> or same_as<DstClockT, file_clock> or  same_as<DstClockT, tai_clock>)
                 and (same_as<SrcClockT, system_clock> or same_as<SrcClockT, utc_clock> or same_as<SrcClockT, gps_clock> or same_as<SrcClockT, file_clock> or  same_as<SrcClockT, tai_clock>)
@@ -76,6 +78,9 @@ namespace Stroika::Foundation::Time {
             else {
                 return clock_cast_0th<DstTimePointT> (tp);
             }
+            #else
+                return clock_cast_0th<DstTimePointT> (tp);
+            #endif
             // clang-format on
         }
     }
@@ -144,12 +149,14 @@ namespace Stroika::Foundation::Time {
         }
         return ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern, consumedCharacters);
     }
+#if 0
     template <>
     time_t DateTime::As_Simple_ () const;
     template <>
     tm DateTime::As_Simple_ () const;
     template <>
     timespec DateTime::As_Simple_ () const;
+#endif
     template <>
     inline Date DateTime::As_Simple_ () const
     {
@@ -172,11 +179,13 @@ namespace Stroika::Foundation::Time {
     }
     template <typename T>
     inline T DateTime::As () const
+    #if 0
         requires (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String> or
 #if qPlatform_Windows
                   same_as<T, SYSTEMTIME> or
 #endif
                   Configuration::ITimePoint<T>)
+                  #endif
     {
         if constexpr (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String>) {
             return As_Simple_<T> ();
