@@ -72,8 +72,8 @@ namespace Stroika::Foundation::Time {
     {
         using namespace std::chrono;
         // @todo find better way to check if should use clock_cast or my_private_clock_cast
-#if __cpp_lib_chrono >= 201907L
         using DstTimePointT = typename DESTINATION_CLOCK_T::time_point;
+#if __cpp_lib_chrono >= 201907L
         // clang-format off
         if constexpr (
             (
