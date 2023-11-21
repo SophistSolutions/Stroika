@@ -73,10 +73,6 @@ namespace Stroika::Foundation::Characters {
 
     template <>
     String ToString (const std::filesystem::path& t);
-    template <>
-    String ToString (const std::chrono::duration<double>& t);
-    template <>
-    String ToString (const std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>& t);
 
     namespace Private_ {
 
@@ -270,7 +266,15 @@ namespace Stroika::Foundation::Characters {
         {
             return Format (L"%p", f.template target<remove_cvref_t<FUNCTION_SIGNATURE>> ());
         }
-
+        inline String ToString_ (const std::chrono::duration<double>& t)
+        {
+            return ToString (t.count ()) + " seconds"sv;
+        }
+        template <typename CLOCK_T>
+        inline String ToString_ (const std::chrono::time_point<CLOCK_T, chrono::duration<double>>& t)
+        {
+            return ToString (t.time_since_epoch ().count ()) + " seconds"sv;
+        }
     }
 
     template <>
@@ -334,16 +338,6 @@ namespace Stroika::Foundation::Characters {
     inline String ToString (const std::filesystem::path& t)
     {
         return ToString (t.wstring ()); // wrap in 'ToString' for surrounding quotes
-    }
-    template <>
-    inline String ToString (const std::chrono::duration<double>& t)
-    {
-        return ToString (t.count ()) + " seconds"sv;
-    }
-    template <>
-    inline String ToString (const std::chrono::time_point<chrono::steady_clock, chrono::duration<double>>& t)
-    {
-        return ToString (t.time_since_epoch ().count ()) + " seconds since start"sv;
     }
 
     template <typename T>
