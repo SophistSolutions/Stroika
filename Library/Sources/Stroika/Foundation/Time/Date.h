@@ -362,7 +362,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  Start of UNIX time (see https://docs.kde.org/trunk5/en/kstars/kstars/ai-julianday.html, https://aa.usno.navy.mil/data/JulianDate)
          */
-        static constexpr ReferencePoint KUNIXEpoch{1970y / January / 1, 2440588};
+        static constexpr ReferencePoint kUNIXEpoch{1970y / January / 1, 2440588};
 
     public:
         /**
