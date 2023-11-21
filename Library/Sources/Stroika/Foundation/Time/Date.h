@@ -341,7 +341,10 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          *  Define a few 'reference' points, which define the correspondence between year/month/day in the gregorian(ish)
-         *  calendar with 
+         *  calendar with.
+         * 
+         *  Generally, users of the Date class can ignore this detail. Its used to 'calibrate' the mapping between julian dates and
+         *  year month day dates.
          */
         struct ReferencePoint {
             year_month_day  fYMD;
