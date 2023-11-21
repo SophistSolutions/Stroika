@@ -2136,6 +2136,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Common.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Clock.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3534,6 +3537,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Common.inl">
       <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Clock.inl">
+      <Filter>Sources\Time</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

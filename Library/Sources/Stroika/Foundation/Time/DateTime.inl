@@ -4,86 +4,16 @@
 #ifndef _Stroika_Foundation_Time_DateTime_inl_
 #define _Stroika_Foundation_Time_DateTime_inl_ 1
 
-#include <chrono>
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <chrono>
+
+#include "Clock.h"
 
 namespace Stroika::Foundation::Time {
-
-    namespace Private_ {
-        // From https://stackoverflow.com/questions/35282308/convert-between-c11-clocks
-        // EXPECIALLY read commentary...
-        template <typename DstTimePointT, typename SrcTimePointT, typename DstClockT = typename DstTimePointT::clock, typename SrcClockT = typename SrcTimePointT::clock>
-        DstTimePointT clock_cast_0th (const SrcTimePointT tp)
-        {
-            const auto src_now = SrcClockT::now ();
-            const auto dst_now = DstClockT::now ();
-            return dst_now + chrono::duration_cast<typename DstClockT::duration> (tp - src_now);
-        }
-        namespace detail {
-            template <typename DurationT, typename ReprT = typename DurationT::rep>
-            constexpr DurationT max_duration () noexcept
-            {
-                return DurationT{std::numeric_limits<ReprT>::max ()};
-            }
-            template <typename DurationT>
-            constexpr DurationT abs_duration (const DurationT d) noexcept
-            {
-                return DurationT{(d.count () < 0) ? -d.count () : d.count ()};
-            }
-        }
-        template <typename DstTimePointT, typename SrcTimePointT, typename DstDurationT = typename DstTimePointT::duration, typename SrcDurationT = typename SrcTimePointT::duration,
-                  typename DstClockT = typename DstTimePointT::clock, typename SrcClockT = typename SrcTimePointT::clock>
-        DstTimePointT clock_cast_2nd (const SrcTimePointT tp, const SrcDurationT tolerance = std::chrono::nanoseconds{100}, const int limit = 4)
-        {
-            Assert (limit > 0);
-            auto itercnt = 0;
-            auto src_now = SrcTimePointT{};
-            auto dst_now = DstTimePointT{};
-            auto epsilon = detail::max_duration<SrcDurationT> ();
-            do {
-                const auto src_before  = SrcClockT::now ();
-                const auto dst_between = DstClockT::now ();
-                const auto src_after   = SrcClockT::now ();
-                const auto src_diff    = src_after - src_before;
-                const auto delta       = detail::abs_duration (src_diff);
-                if (delta < epsilon) {
-                    src_now = src_before + src_diff / 2;
-                    dst_now = dst_between;
-                    epsilon = delta;
-                }
-                if (++itercnt >= limit)
-                    break;
-            } while (epsilon > tolerance);
-            return dst_now + chrono::duration_cast<typename DstClockT::duration> (tp - src_now);
-        }
-        template <typename DstTimePointT, typename SrcTimePointT>
-        inline DstTimePointT my_clock_cast (const SrcTimePointT tp)
-        {
-            using namespace std::chrono;
-// @todo find better way to check if should use clock_cast or my_private_clock_cast
-#if __cpp_lib_chrono >= 201907L
-            using DstClockT = typename DstTimePointT::clock;
-            using SrcClockT = typename SrcTimePointT::clock;
-            // clang-format off
-            if constexpr (
-                (same_as<DstClockT, system_clock> or same_as<DstClockT, utc_clock> or same_as<DstClockT, gps_clock> or same_as<DstClockT, file_clock> or  same_as<DstClockT, tai_clock>)
-                and (same_as<SrcClockT, system_clock> or same_as<SrcClockT, utc_clock> or same_as<SrcClockT, gps_clock> or same_as<SrcClockT, file_clock> or  same_as<SrcClockT, tai_clock>)
-               ) {
-                return clock_cast<DstClockT> (tp);
-            }
-            else {
-                return clock_cast_2nd<DstTimePointT> (tp);      //return clock_cast_0th<DstTimePointT> (tp);
-            }
-#else
-            return clock_cast_2nd<DstTimePointT> (tp);          //return clock_cast_0th<DstTimePointT> (tp);
-#endif
-            // clang-format on
-        }
-    }
 
     /*
      ********************************************************************************
@@ -121,7 +51,7 @@ namespace Stroika::Foundation::Time {
     }
     template <Configuration::ITimePoint T>
     DateTime::DateTime (T timePoint) noexcept
-        : DateTime{chrono::system_clock::to_time_t (Private_::my_clock_cast<chrono::system_clock::time_point> (timePoint))}
+        : DateTime{chrono::system_clock::to_time_t (Time::clock_cast<chrono::system_clock> (timePoint))}
     {
     }
     inline constexpr DateTime DateTime::kMin{Date::kMin, optional<TimeOfDay>{TimeOfDay::kMin}, Timezone::kUnknown};
@@ -167,15 +97,16 @@ namespace Stroika::Foundation::Time {
     {
         return this->Format ();
     }
-    template <>
-    inline time_point<chrono::system_clock, chrono::duration<double>> DateTime::As_TP_ () const
-    {
-        return chrono::system_clock::from_time_t (this->As<time_t> ());
-    }
     template <typename CLOCK_T, typename DURATION_T>
     time_point<CLOCK_T, DURATION_T> DateTime::As_TP_ () const
     {
-        return Private_::my_clock_cast<time_point<CLOCK_T, DURATION_T>> (this->As_TP_<chrono::system_clock, chrono::duration<double>> ());
+        auto t = Time::clock_cast<CLOCK_T> (chrono::system_clock::from_time_t (this->As<time_t> ()));
+        if constexpr (same_as<DURATION_T, chrono::system_clock::duration>) {
+            return t;
+        }
+        else {
+            return chrono::time_point_cast<DURATION_T> (t);
+        }
     }
     template <typename T>
     inline T DateTime::As () const

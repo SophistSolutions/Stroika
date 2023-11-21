@@ -686,6 +686,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Clock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Date.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateTime.h" />
@@ -1150,6 +1151,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Clock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl" />
