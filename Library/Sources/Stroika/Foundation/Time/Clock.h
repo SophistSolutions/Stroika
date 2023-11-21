@@ -27,29 +27,27 @@ namespace Stroika::Foundation::Time {
     typename DESTINATION_CLOCK_T::time_point clock_cast (chrono::time_point<SOURCE_CLOCK_T, DURATION_T> tp);
 
     /**
-     *  AppStartZeroedClock is just like std::chrono::steady_clock, except that its time values are magically adjusted so that
-     *  zero corresponds to when the application (code starts) begins.
+     *  AppStartZeroedClock is just like BASE_CLOCK_T, except that its time values are magically adjusted so that
+     *  zero corresponds to when the application (code starts) begins. This defaults to using the base clocks
+     *  duration representation, but its often simpler to use Time::DurationSeconds as this value (so stuff natively prints in seconds).
      */
-    template <typename BASE_CLOCK_T>
+    template <typename BASE_CLOCK_T, typename DURATION_T = typename BASE_CLOCK_T::duration>
     struct AppStartZeroedClock {
     private:
         using Implementation_ = BASE_CLOCK_T;
 
     public:
-        using rep                       = Implementation_::rep;
-        using period                    = Implementation_::period;
-        using duration                  = Implementation_::duration;
-        using time_point                = Implementation_::time_point;
+        using duration                  = DURATION_T;
+        using rep                       = typename duration::rep;
+        using period                    = typename duration::period;
+        using time_point                = chrono::time_point<AppStartZeroedClock<BASE_CLOCK_T, DURATION_T>>;
         static constexpr bool is_steady = Implementation_::is_steady;
 
     public:
-        static [[nodiscard]] time_point now () noexcept
-        {
-            return Implementation_::now () - kTimeAppStartedOffset_;
-        }
+        [[nodiscard]] static time_point now () noexcept;
 
     private:
-        static const inline duration kTimeAppStartedOffset_ = chrono::duration_cast<duration> (chrono::steady_clock::now ().time_since_epoch ());
+        static const inline duration kTimeAppStartedOffset_ = chrono::duration_cast<duration> (BASE_CLOCK_T::now ().time_since_epoch ());
     };
 
 }

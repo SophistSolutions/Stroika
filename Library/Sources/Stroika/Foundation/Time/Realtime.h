@@ -94,7 +94,6 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
 
     template <>
     struct Default<Time::DurationSeconds> {
-
         using value_type             = Time::DurationSeconds;
         using SignedDifferenceType   = Time::DurationSeconds;
         using UnsignedDifferenceType = Time::DurationSeconds;
@@ -111,7 +110,6 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
 
     template <>
     struct Default<Time::TimePointSeconds> {
-
         using value_type             = Time::TimePointSeconds;
         using SignedDifferenceType   = Time::TimePointSeconds;
         using UnsignedDifferenceType = Time::TimePointSeconds;

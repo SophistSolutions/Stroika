@@ -94,5 +94,16 @@ namespace Stroika::Foundation::Time {
 #endif
     }
 
+    /*
+     ********************************************************************************
+     **************** AppStartZeroedClock<BASE_CLOCK_T, DURATION_T> *****************
+     ********************************************************************************
+     */
+    template <typename BASE_CLOCK_T, typename DURATION_T>
+    [[nodiscard]] inline auto AppStartZeroedClock<BASE_CLOCK_T, DURATION_T>::now () noexcept -> time_point
+    {
+        return time_point{Implementation_::now ().time_since_epoch ()} - kTimeAppStartedOffset_;
+    }
+
 }
 #endif /*_Stroika_Foundation_Time_Clock_inl_*/

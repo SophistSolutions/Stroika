@@ -621,16 +621,6 @@ DateTime DateTime::Now () noexcept
 #endif
 }
 
-Time::TimePointSeconds DateTime::ToTickCount () const
-{
-    return AsLocalTime ().As<Time::TimePointSeconds> ();
-}
-
-DateTime DateTime::FromTickCount (Time::TimePointSeconds tickCount)
-{
-    return DateTime{tickCount};
-}
-
 optional<bool> DateTime::IsDaylightSavingsTime () const
 {
     if (optional<Timezone> otz = GetTimezone ()) {

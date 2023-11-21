@@ -344,35 +344,6 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Convert the given datetime to a floating point offset in seconds (Time::TimePointSeconds) based on the same reference as the tickcount.
-         *
-         *  \note   Time::GetTickCount () normally returns a positive number but if you go back in time before
-         *          its zero point, ToTickCount () will return negative numbers.
-         *
-         *  \par Example Usage
-         *      \code
-         *          Assert (Math::NearlyEquals (Time::GetTickCount (), DateTime::Now ().ToTickCount ());    // roughly true
-         *      \endcode
-         *
-         *  @see FromTickCount
-         *
-         *  \note - if this DateTime is out of range with respect to TickCount, then this function will throw a range_error.
-         */
-        nonvirtual Time::TimePointSeconds ToTickCount () const;
-
-    public:
-        /**
-         *  This is like a constructor, but with a more specific static name to avoid confusion with overloads.
-         *  This returns a datetime in localtime.
-         *
-         *  @see ToTickCount
-         *
-         *  This function Requires a valid tickCount argument (in range - so meaning > 0)
-         */
-        static DateTime FromTickCount (Time::TimePointSeconds tickCount);
-
-    public:
-        /**
          *  return true if known true, and false if known false, and {} otherwise.
          */
         nonvirtual optional<bool> IsDaylightSavingsTime () const;
@@ -435,11 +406,10 @@ namespace Stroika::Foundation::Time {
          *      time_t
          *      struct tm
          *      struct timespec
-         *      SYSTEMTIME          (WINDOWS ONLY)
+         *      SYSTEMTIME                              (WINDOWS ONLY)
          *      Date
-         *      String              (Format (PrintFormat::eDEFAULT))
-         * 
-         * &&& NEW TIMEPOINT T - NOTE use ToTickCount () to get a value for compare with TickCount () since could be offset...
+         *      String                                  (Format (PrintFormat::eDEFAULT))
+         *      chrono::time_point<CLOCK,DURATION>      (satisfies Configuration::ITimePoint)
          *
          *  NB: Intentionally NOT defined for TimeOfDay () - cuz it wouldn't make sense. A DateTime IS a Date, but its not a TimeOfDay. Time of day just
          *  logically extends Date with extra (TOD) information.
@@ -560,6 +530,17 @@ namespace Stroika::Foundation::Time {
         optional<Timezone> fTimezone_;
         Date               fDate_;
         optional<TimeOfDay> fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
+
+    public:
+        [[deprecated ("Since Stroika v3.0d5  - just use AsLocalTime ().As<Time::TimePointSeconds> ()")]] Time::TimePointSeconds ToTickCount () const
+        {
+            return AsLocalTime ().As<Time::TimePointSeconds> ();
+        }
+        [[deprecated ("Since Stroika v3.0d5  - just construct the DateTime with the value of GetTickCount()")]] static DateTime
+        FromTickCount (Time::TimePointSeconds tickCount)
+        {
+            return DateTime{tickCount};
+        }
     };
 
     class DateTime::FormatException : public Execution::RuntimeErrorException<> {

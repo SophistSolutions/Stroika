@@ -392,7 +392,8 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
 {
     [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
     FlushBufferedCharacters_ ();
-    Time::TimePointSeconds curRelativeTime = Time::clock_cast<Time::AppStartZeroedClock<Time::RealtimeClock>> (Time::GetTickCount ());
+
+    auto curRelativeTime = DisplayedClock_::now (); // same as Time::clock_cast<DisplayedClock_> (Time::GetTickCount ())
 
     {
         char               buf[1024];
@@ -477,7 +478,7 @@ bool Debug::Private_::Emitter::UnputBufferedCharactersForMatchingToken (TraceLas
     // hasn't been too long (we currently write 1/100th second timestamp resolution).
     // then blank unput (ignore) buffered characters, and return true so caller knows to write
     // funky replacement for those characters.
-    if (fLastNCharBuf_Token_ == token and (Time::GetTickCount () - fLastNCharBuf_WriteTickcount_ < 0.02s)) {
+    if (fLastNCharBuf_Token_ == token and (DisplayedClock_::now () - fLastNCharBuf_WriteTickcount_ < 20ms)) {
         fLastNCharBufCharCount_ = 0;
         return true;
     }

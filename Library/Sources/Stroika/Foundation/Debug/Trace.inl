@@ -13,6 +13,8 @@
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qTraceToFile, qStroika_Foundation_Debug_Trace_TraceToFile);
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::Debug, qDefaultTracingOn, qStroika_Foundation_Debug_Trace_DefaultTracingOn);
 
+#include "../Time/Clock.h"
+
 namespace Stroika::Foundation::Debug {
 
     namespace Private_ {
@@ -65,7 +67,8 @@ namespace Stroika::Foundation::Debug {
         wchar_t fLastNCharBuf_WCHAR_[10];
         bool    fLastNCharBuf_WCHARFlag_{false}; // determines (if fLastNCharBufCharCount_!=0) which buffer CHAR or WCHAR to use
         TraceLastBufferedWriteTokenType fLastNCharBuf_Token_{0};
-        Time::TimePointSeconds          fLastNCharBuf_WriteTickcount_{};
+        using DisplayedClock_ = Time::AppStartZeroedClock<Time::RealtimeClock, Time::DurationSeconds>;
+        DisplayedClock_::time_point fLastNCharBuf_WriteTickcount_{};
 
         nonvirtual void BufferNChars_ (size_t nChars, const char* p);
         nonvirtual void BufferNChars_ (size_t nChars, const wchar_t* p);
