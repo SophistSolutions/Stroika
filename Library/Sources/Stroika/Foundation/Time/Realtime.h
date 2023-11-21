@@ -38,9 +38,12 @@ namespace Stroika::Foundation::Time {
      *  \note Use double instead of long double (as the rep) because we don't have time to test performance impact, and only some (gcc/unix)
      *  systems make a difference anyhow (not on ppc). Everything else in Stroika should key off this choice, so this is the place to change
      *  the basic rep used throughout Stroika if I need to experiment (float/long double).
+     * 
+     *  \note DurationSeconds is a 'floating point version of chrono::seconds'
      */
     using DurationSeconds = chrono::duration<double>;
     static_assert (sizeof (DurationSeconds::rep) == sizeof (DurationSeconds));
+    static_assert (floating_point<DurationSeconds::rep>); // perhaps allow #define control over DurationSeconds, but always promise its a floating point type
 
     /**
      *  \brief this is an alias for steady_clock; this is the clock used for GetTickCount () results.
