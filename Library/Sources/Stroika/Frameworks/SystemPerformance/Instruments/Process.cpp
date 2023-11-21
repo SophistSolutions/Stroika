@@ -1707,8 +1707,7 @@ namespace {
             Info rawMeasurement = _InternalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<TimePointSeconds> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()),
-                                                          Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<TimePointSeconds> (before, _GetCaptureContextTime (), Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }

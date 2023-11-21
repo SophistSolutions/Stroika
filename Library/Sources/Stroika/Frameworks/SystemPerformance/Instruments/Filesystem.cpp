@@ -317,8 +317,8 @@ namespace {
         nonvirtual void ReadAndApplyProcFS_diskstats_ (Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>* volumes)
         {
             try {
-                Mapping<dev_t, PerfStats_> diskStats = ReadProcFS_diskstats_ ();
-                Time::DurationSeconds timeSinceLastMeasure = Time::GetTickCount () - _GetCaptureContextTime ().value_or (Time::TimePointSeconds{});
+                Mapping<dev_t, PerfStats_> diskStats            = ReadProcFS_diskstats_ ();
+                Time::DurationSeconds      timeSinceLastMeasure = Time::GetTickCount () - _GetCaptureContextTime ();
                 for (Iterator<KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType>> i = volumes->begin (); i != volumes->end (); ++i) {
                     MountedFilesystemInfoType vi = i->fValue;
                     if (vi.fDeviceOrVolumeName.has_value ()) {

@@ -66,9 +66,8 @@ namespace Stroika::Foundation::Debug {
         char fLastNCharBuf_CHAR_[10]; // always filled in before used, so no need to initialize - NOT nul-terminated(see fLastNCharBufCharCount_)
         wchar_t fLastNCharBuf_WCHAR_[10];
         bool    fLastNCharBuf_WCHARFlag_{false}; // determines (if fLastNCharBufCharCount_!=0) which buffer CHAR or WCHAR to use
-        TraceLastBufferedWriteTokenType fLastNCharBuf_Token_{0};
-        using DisplayedClock_ = Time::AppStartZeroedClock<Time::RealtimeClock, Time::DurationSeconds>;
-        DisplayedClock_::time_point fLastNCharBuf_WriteTickcount_{};
+        TraceLastBufferedWriteTokenType          fLastNCharBuf_Token_{0};
+        Time::DisplayedRealtimeClock::time_point fLastNCharBuf_WriteTickcount_{};
 
         nonvirtual void BufferNChars_ (size_t nChars, const char* p);
         nonvirtual void BufferNChars_ (size_t nChars, const wchar_t* p);

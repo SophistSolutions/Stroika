@@ -39,7 +39,9 @@ using Containers::Set;
 using Execution::pid_t;
 using Execution::Synchronized;
 using Time::DateTime;
+using Time::DisplayedRealtimeClock;
 using Time::Duration;
+using Time::TimePointSeconds;
 
 namespace {
     string Serialize_ (VariantValue v, bool oneLineMode)
@@ -53,9 +55,14 @@ namespace {
         }
         return result.AsNarrowSDKString ();
     }
-}
-
-namespace {
+    Range<DisplayedRealtimeClock::time_point> toDisp_ (Range<TimePointSeconds> tpRange)
+    {
+        if (tpRange.empty ()) {
+            return Range<DisplayedRealtimeClock::time_point>{};
+        }
+        return Range<DisplayedRealtimeClock::time_point>{Time::clock_cast<DisplayedRealtimeClock> (tpRange.GetLowerBound ()),
+                                                         Time::clock_cast<DisplayedRealtimeClock> (tpRange.GetUpperBound ())};
+    }
     void Demo_PrintInstruments_ ()
     {
         cout << "Instrument:" << endl;
@@ -64,9 +71,6 @@ namespace {
             // print measurements too?
         }
     }
-}
-
-namespace {
     void Demo_UsingCapturerWithCallbacks_ (Set<InstrumentNameType> run, bool oneLineMode, Duration captureInterval, Duration runFor)
     {
         Capturer capturer;
@@ -84,7 +88,7 @@ namespace {
             capturer.AddCaptureSet (cs);
         }
         capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
-            cout << "    Measured-At: " << ms.fMeasuredAt.ToString ().AsNarrowSDKString () << endl;
+            cout << "    Measured-At: " << toDisp_ (ms.fMeasuredAt).ToString ().AsNarrowSDKString () << endl;
             for (const Measurement& mi : ms.fMeasurements) {
                 cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
             }
@@ -93,9 +97,6 @@ namespace {
         // run til timeout and then fall out...
         IgnoreExceptionsForCall (Execution::WaitableEvent{}.Wait (runFor));
     }
-}
-
-namespace {
     void Demo_Using_Direct_Capture_On_Instrument_ (Set<InstrumentNameType> run, bool oneLineMode, Duration captureInterval)
     {
         cout << "Results for each instrument:" << endl;
@@ -112,7 +113,7 @@ namespace {
                 cout << "    NO DATA" << endl;
             }
             else {
-                cout << "    Measured-At: " << m.fMeasuredAt.ToString ().AsNarrowSDKString () << endl;
+                cout << "    Measured-At: " << toDisp_ (m.fMeasuredAt).ToString ().AsNarrowSDKString () << endl;
                 for (const Measurement& mi : m.fMeasurements) {
                     cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
                 }

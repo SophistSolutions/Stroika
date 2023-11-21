@@ -246,8 +246,8 @@ namespace {
                 int    lr = ::getloadavg (loadAve, NEltsOf (loadAve));
                 if (lr == 3) {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
-                    result.fRunQLength  = EstimateRunQFromLoadAveArray_ (
-                        (Time::GetTickCount () - _GetCaptureContextTime ().value_or (TimePointSeconds{})).count (), loadAve);
+                    auto tcNow          = Time::GetTickCount ();
+                    result.fRunQLength  = EstimateRunQFromLoadAveArray_ ((tcNow - _GetCaptureContextTime ()).count (), loadAve);
                     Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (),
                                                   std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }

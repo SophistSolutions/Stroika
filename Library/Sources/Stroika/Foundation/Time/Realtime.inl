@@ -60,12 +60,12 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
      *********** Traversal::RangeTraits::Default<Time::DurationSeconds> *************
      ********************************************************************************
      */
-    inline Time::DurationSeconds Default<Time::DurationSeconds>::GetNext (Time::DurationSeconds i)
+    inline auto Default<Time::DurationSeconds>::GetNext (value_type i) -> value_type
     {
         using namespace Time;
         return DurationSeconds{nextafter (i.count (), numeric_limits<DurationSeconds::rep>::max ())};
     }
-    inline Time::DurationSeconds Default<Time::DurationSeconds>::GetPrevious (Time::DurationSeconds i)
+    inline auto Default<Time::DurationSeconds>::GetPrevious (value_type i) -> value_type
     {
         using namespace Time;
         return DurationSeconds{nextafter (i.count (), numeric_limits<DurationSeconds::rep>::min ())};
@@ -76,17 +76,33 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
      *********** Traversal::RangeTraits::Default<Time::TimePointSeconds> ************
      ********************************************************************************
      */
-    inline Time::TimePointSeconds Default<Time::TimePointSeconds>::GetNext (Time::TimePointSeconds i)
+    inline auto Default<Time::TimePointSeconds>::GetNext (value_type i) -> value_type
     {
         using namespace Time;
         return TimePointSeconds{
             TimePointSeconds::duration{nextafter (i.time_since_epoch ().count (), numeric_limits<TimePointSeconds::duration::rep>::max ())}};
     }
-    inline Time::TimePointSeconds Default<Time::TimePointSeconds>::GetPrevious (Time::TimePointSeconds i)
+    inline auto Default<Time::TimePointSeconds>::GetPrevious (value_type i) -> value_type
     {
         using namespace Time;
         return TimePointSeconds{
             TimePointSeconds::duration{nextafter (i.time_since_epoch ().count (), numeric_limits<TimePointSeconds::duration::rep>::min ())}};
+    }
+
+    /*
+     ********************************************************************************
+     ** RangeTraits::Default<chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>> **
+     ********************************************************************************
+     */
+    inline auto Default<chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>>::GetNext (value_type i) -> value_type
+    {
+        using namespace Time;
+        return value_type{value_type::duration{nextafter (i.time_since_epoch ().count (), numeric_limits<value_type::duration::rep>::max ())}};
+    }
+    inline auto Default<chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>>::GetPrevious (value_type i) -> value_type
+    {
+        using namespace Time;
+        return value_type{value_type::duration{nextafter (i.time_since_epoch ().count (), numeric_limits<value_type::duration::rep>::min ())}};
     }
 
 }

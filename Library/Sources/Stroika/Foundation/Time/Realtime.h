@@ -10,6 +10,8 @@
 
 #include "../Traversal/Common.h"
 
+#include "Clock.h"
+
 /**
  *  \file
  *
@@ -83,6 +85,14 @@ namespace Stroika::Foundation::Time {
      */
     constexpr DurationSeconds kInfinity = DurationSeconds{numeric_limits<DurationSeconds::rep>::infinity ()};
 
+    /**
+     *  If you want to convert tickcount times to be zero based (often helpful for display purposes), you can use:
+     *      \code
+     *          clock_cast<DisplayedRealtimeClock> (GetTickCount ())
+     *      \endcode
+     */
+    using DisplayedRealtimeClock = AppStartZeroedClock<RealtimeClock, DurationSeconds>;
+
 }
 
 namespace Stroika::Foundation::Traversal::RangeTraits {
@@ -105,27 +115,43 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         static constexpr inline Openness kLowerBoundOpenness{Openness::eClosed};
         static constexpr inline Openness kUpperBoundOpenness{Openness::eClosed};
 
-        static constexpr inline Time::DurationSeconds kLowerBound{Time::DurationSeconds::min ()};
-        static constexpr inline Time::DurationSeconds kUpperBound{Time::DurationSeconds::max ()};
+        static constexpr inline value_type kLowerBound{Time::DurationSeconds::min ()};
+        static constexpr inline value_type kUpperBound{Time::DurationSeconds::max ()};
 
-        static Time::DurationSeconds GetNext (Time::DurationSeconds i);
-        static Time::DurationSeconds GetPrevious (Time::DurationSeconds i);
+        static value_type GetNext (value_type i);
+        static value_type GetPrevious (value_type i);
     };
 
     template <>
     struct Default<Time::TimePointSeconds> {
         using value_type             = Time::TimePointSeconds;
-        using SignedDifferenceType   = Time::TimePointSeconds;
-        using UnsignedDifferenceType = Time::TimePointSeconds;
+        using SignedDifferenceType   = Time::DurationSeconds;
+        using UnsignedDifferenceType = Time::DurationSeconds;
 
         static constexpr inline Openness kLowerBoundOpenness{Openness::eClosed};
         static constexpr inline Openness kUpperBoundOpenness{Openness::eClosed};
 
-        static constexpr inline Time::TimePointSeconds kLowerBound{Time::TimePointSeconds::min ()};
-        static constexpr inline Time::TimePointSeconds kUpperBound{Time::TimePointSeconds::max ()};
+        static constexpr inline value_type kLowerBound{value_type{Time::DurationSeconds::min ()}};
+        static constexpr inline value_type kUpperBound{value_type{Time::DurationSeconds::max ()}};
 
-        static Time::TimePointSeconds GetNext (Time::TimePointSeconds i);
-        static Time::TimePointSeconds GetPrevious (Time::TimePointSeconds i);
+        static value_type GetNext (value_type i);
+        static value_type GetPrevious (value_type i);
+    };
+
+    template <>
+    struct Default<chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>> {
+        using value_type             = chrono::time_point<Time::DisplayedRealtimeClock, Time::DurationSeconds>;
+        using SignedDifferenceType   = Time::DurationSeconds;
+        using UnsignedDifferenceType = Time::DurationSeconds;
+
+        static constexpr inline Openness kLowerBoundOpenness{Openness::eClosed};
+        static constexpr inline Openness kUpperBoundOpenness{Openness::eClosed};
+
+        static constexpr inline value_type kLowerBound{value_type{Time::DurationSeconds::min ()}};
+        static constexpr inline value_type kUpperBound{value_type{Time::DurationSeconds::max ()}};
+
+        static value_type GetNext (value_type i);
+        static value_type GetPrevious (value_type i);
     };
 
 }
