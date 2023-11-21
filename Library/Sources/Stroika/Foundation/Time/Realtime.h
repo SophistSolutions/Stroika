@@ -43,20 +43,24 @@ namespace Stroika::Foundation::Time {
     /**
      *  \brief this is an alias for steady_clock; this is the clock used for GetTickCount () results.
      *  
+     *  The clock it uses IS guaraneed to be a 'steady' clock, though not necessarily THE 'steady_clock' class.
+     * 
      *  \note - could use AppStartZeroedClock to get zero-based results, or clock_cast to map from regular tick-counts to zero based.
+     * 
+     *  \todo consider a configuration define that could be used to switch RealtimeClock to chrono::high_resolution_clock
      */
     using RealtimeClock = chrono::steady_clock;
+    static_assert (RealtimeClock::is_steady);
 
     /**
      *  \brief TimePointSeconds is a simpler approach to chrono::time_point, which doesn't require using templates everywhere.
      * 
      *  But - TimePointSeconds - since it uses chrono::time_point - is fully interoperable with the other time_point etc objects.
      * 
-     *  The clock it uses IS guaraneed to be a 'steady' clock, though not necessarily THE 'steady_clock' class.
+     *  \see RealtimeClock for details of how time is measured.
      */
     using TimePointSeconds = time_point<RealtimeClock, DurationSeconds>;
     static_assert (sizeof (DurationSeconds::rep) == sizeof (TimePointSeconds));
-    static_assert (TimePointSeconds::clock::is_steady);
 
     /**
      *  \brief get the current (monontonically increasing) time - from RealtimeClock
