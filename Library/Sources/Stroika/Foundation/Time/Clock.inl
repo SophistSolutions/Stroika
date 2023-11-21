@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Time {
      ********************************************************************************
      */
     template <typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
-    inline auto clock_cast (chrono::time_point<SOURCE_CLOCK_T, DURATION_T> tp) -> DESTINATION_CLOCK_T::time_point
+    inline auto clock_cast (chrono::time_point<SOURCE_CLOCK_T, DURATION_T> tp) -> typename DESTINATION_CLOCK_T::time_point
     {
         using namespace std::chrono;
         // @todo find better way to check if should use clock_cast or my_private_clock_cast
