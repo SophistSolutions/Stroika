@@ -392,10 +392,7 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
 {
     [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
     FlushBufferedCharacters_ ();
-    Time::TimePointSeconds curRelativeTime = Time::GetTickCount ();
-
-    //tmphack to test new zero-relative and timepoint code
-    curRelativeTime = Time::ToAppStartRelative (Time::GetTickCount ());
+    Time::TimePointSeconds curRelativeTime = Time::clock_cast<Time::AppStartZeroedClock<Time::RealtimeClock>> (Time::GetTickCount ());
 
     {
         char               buf[1024];

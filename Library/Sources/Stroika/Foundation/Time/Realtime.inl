@@ -16,25 +16,6 @@
 
 namespace Stroika::Foundation::Time {
 
-    namespace Private_ {
-        inline TimePointSeconds::duration GetAppStartOffset_ ()
-        {
-            // @todo not sure this is right --LGP 2023-11-16 - at least if it is needs better comment/explanation...
-            static const TimePointSeconds kTimeAppStarted_ = chrono::time_point_cast<TimePointSeconds::duration> (chrono::steady_clock::now ());
-            return kTimeAppStarted_.time_since_epoch ();
-        }
-    }
-
-    inline TimePointSeconds FromAppStartRelative (const TimePointSeconds& tp)
-    {
-        return tp + Private_::GetAppStartOffset_ ();
-    }
-
-    inline TimePointSeconds ToAppStartRelative (const TimePointSeconds& tp)
-    {
-        return tp - Private_::GetAppStartOffset_ ();
-    }
-
     /*
      ********************************************************************************
      ******************************* Time::GetTickCount *****************************
@@ -42,7 +23,7 @@ namespace Stroika::Foundation::Time {
      */
     inline TimePointSeconds GetTickCount () noexcept
     {
-        return chrono::steady_clock::now ();
+        return RealtimeClock::now ();
     }
 
     ////////////////// DEPRECATED STUFF BELOW

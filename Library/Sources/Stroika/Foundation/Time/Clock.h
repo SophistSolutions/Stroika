@@ -26,6 +26,32 @@ namespace Stroika::Foundation::Time {
     template <typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
     typename DESTINATION_CLOCK_T::time_point clock_cast (chrono::time_point<SOURCE_CLOCK_T, DURATION_T> tp);
 
+    /**
+     *  AppStartZeroedClock is just like std::chrono::steady_clock, except that its time values are magically adjusted so that
+     *  zero corresponds to when the application (code starts) begins.
+     */
+    template <typename BASE_CLOCK_T>
+    struct AppStartZeroedClock {
+    private:
+        using Implementation_ = BASE_CLOCK_T;
+
+    public:
+        using rep                       = Implementation_::rep;
+        using period                    = Implementation_::period;
+        using duration                  = Implementation_::duration;
+        using time_point                = Implementation_::time_point;
+        static constexpr bool is_steady = Implementation_::is_steady;
+
+    public:
+        static [[nodiscard]] time_point now () noexcept
+        {
+            return Implementation_::now () - kTimeAppStartedOffset_;
+        }
+
+    private:
+        static const inline duration kTimeAppStartedOffset_ = chrono::duration_cast<duration> (chrono::steady_clock::now ().time_since_epoch ());
+    };
+
 }
 
 /*

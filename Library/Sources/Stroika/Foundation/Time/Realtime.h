@@ -41,21 +41,36 @@ namespace Stroika::Foundation::Time {
     static_assert (sizeof (DurationSeconds::rep) == sizeof (DurationSeconds));
 
     /**
+     *  \brief this is an alias for steady_clock; this is the clock used for GetTickCount () results.
+     *  
+     *  \note - could use AppStartZeroedClock to get zero-based results, or clock_cast to map from regular tick-counts to zero based.
+     */
+    using RealtimeClock = chrono::steady_clock;
+
+    /**
      *  \brief TimePointSeconds is a simpler approach to chrono::time_point, which doesn't require using templates everywhere.
      * 
      *  But - TimePointSeconds - since it uses chrono::time_point - is fully interoperable with the other time_point etc objects.
      * 
      *  The clock it uses IS guaraneed to be a 'steady' clock, though not necessarily THE 'steady_clock' class.
      */
-    using TimePointSeconds = time_point<chrono::steady_clock, DurationSeconds>;
+    using TimePointSeconds = time_point<RealtimeClock, DurationSeconds>;
     static_assert (sizeof (DurationSeconds::rep) == sizeof (TimePointSeconds));
     static_assert (TimePointSeconds::clock::is_steady);
 
     /**
+     *  \brief get the current (monontonically increasing) time - from RealtimeClock
+     * 
      *  \note no longer true, but in Stroika v2.1:
-     *      this always started at offset zero for start of app (instead see FromAppStartRelative).
+     *      this always started at offset zero for start of app.
      *      this always used steady_clock (now see TimePointSeconds).
      *      it used to return a 'float' type and now returns a chrono::time_point<> type (for better type safety).
+     * 
+     *      Since Stroika v3.0d5 - defined to be based on RealtimeClock (which is same - steady_clock), and uses double 
+     *      internally (using DurationSeconds = chrono::duration<double>). And to get it to be zero based,
+     *      \code
+     *          Time::clock_cast<Time::AppStartZeroedClock<Time::RealtimeClock>> (Time::GetTickCount ());
+     *      \endcode
      */
     TimePointSeconds GetTickCount () noexcept;
 
@@ -63,14 +78,6 @@ namespace Stroika::Foundation::Time {
      *  @See https://stroika.atlassian.net/browse/STK-619    CONSIDER LOSING THIS - AND USE special TYPE and overloading, and handle kInfinity differently - no arithmatic, just no timeout
      */
     constexpr DurationSeconds kInfinity = DurationSeconds{numeric_limits<DurationSeconds::rep>::infinity ()};
-
-    /**
-     */
-    TimePointSeconds FromAppStartRelative (const TimePointSeconds& tp);
-
-    /**
-     */
-    TimePointSeconds ToAppStartRelative (const TimePointSeconds& tp);
 
 }
 
