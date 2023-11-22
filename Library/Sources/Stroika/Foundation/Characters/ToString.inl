@@ -351,6 +351,18 @@ namespace Stroika::Foundation::Characters {
         return ToStringDefaults::ToString (t, flags);
     }
 
+    //DEPRECATED
+    namespace Private_ {
+        template <typename T>
+        using has_ToString_t = decltype (static_cast<Characters::String> (declval<T&> ().ToString ()));
+    }
+    /*
+     *  \brief Return true iff Characters::ToString (T) is well defined.
+     */
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d5 use IToString")]] constexpr inline bool has_ToString_v =
+        Configuration::is_detected_v<Private_::has_ToString_t, T>;
+
 }
 
 #endif /*_Stroika_Foundation_Characters_ToString_inl_*/

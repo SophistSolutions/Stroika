@@ -79,17 +79,17 @@ namespace Stroika::Foundation::Characters {
      *   @see https://en.cppreference.com/w/cpp/io/ios_base/fmtflags
      */
     template <integral T>
-    String ToString (T t, std::ios_base::fmtflags flags);
+    String ToString (T t, ios_base::fmtflags flags);
 
-    namespace Private_ {
-        template <typename T>
-        using has_ToString_t = decltype (static_cast<Characters::String> (declval<T&> ().ToString ()));
-    }
-    /*
-     *  \brief Return true iff Characters::ToString (T) is well defined.
+    /**
+     *  Check if legal to call Characters::ToString(T)...
      */
     template <typename T>
-    constexpr inline bool has_ToString_v = Configuration::is_detected_v<Private_::has_ToString_t, T>;
+    concept IToString = requires (T t) {
+        {
+            ToString (t)
+        } -> convertible_to<Characters::String>;
+    };
 
 }
 
