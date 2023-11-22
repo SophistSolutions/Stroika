@@ -17,13 +17,13 @@
 using namespace std;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::InternetProtocol;
 using namespace Stroika::Foundation::Time;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::NetworkMonitor;
 
-using Characters::String;
 using Containers::Collection;
 using Containers::Sequence;
 
@@ -39,7 +39,7 @@ int main (int argc, const char* argv[])
     MajorOp               majorOp     = MajorOp::eTraceroute;
     unsigned int          maxHops     = Ping::Options::kDefaultMaxHops;
     unsigned int          sampleCount = 3;
-    static const Duration kInterSampleTime_{"PT.1S"};
+    static const Duration kInterSampleTime_{"PT.1S"}; // aka 1.5s
     size_t packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::V4::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
     auto usage = [] (const optional<String>& extraArg = {}) {
         if (extraArg) {
@@ -133,16 +133,20 @@ int main (int argc, const char* argv[])
                 Sequence<Traceroute::Hop> hops = Traceroute::Run (addr, options);
                 unsigned int              hopIdx{1};
                 for (Traceroute::Hop h : hops) {
-                    String hopName = [=] () {
+                    String hopName = [=] () -> String {
+                        if (h.fAddress.empty ()) {
+                            return "*"sv; 
+                        }
                         String addrStr = h.fAddress.As<String> ();
                         if (auto rdnsName = DNS::kThe.QuietReverseLookup (h.fAddress)) {
-                            return *rdnsName + " ["sv + addrStr + "]"sv;
+                            return *rdnsName + " ["_k + addrStr + "]"_k;
                         }
                         else {
                             return addrStr;
                         }
                     }();
-                    cout << hopIdx++ << "\t" << h.fTime.PrettyPrint ().AsNarrowSDKString () << "\t" << hopName.AsNarrowSDKString () << endl;
+                    String timeStr = h.fTime.empty () ? "timeout"_k : h.fTime.PrettyPrint ();
+                    cout << hopIdx++ << "\t" << timeStr.AsNarrowSDKString () << "\t" << hopName.AsNarrowSDKString () << endl;
                 }
             } break;
         }
