@@ -129,7 +129,7 @@ int main (int argc, const char* argv[])
 
                 // quickie - weak attempt at formatting the output
                 cout << "Hop\tTime\t\tAddress" << endl;
-                unsigned int              hopIdx{1};
+                unsigned int hopIdx{1};
                 auto         perHopCallback = [&] (Traceroute::Hop h) {
                     String hopName = [=] () -> String {
                         if (h.fAddress.empty ()) {
@@ -148,7 +148,7 @@ int main (int argc, const char* argv[])
                 };
                 // can call without callback, and just get all the hops in a list, which is simpler. But using the callback allows you to see
                 // per hop progress as its accumulated, which is more typical for traceroute UI
-                 Traceroute::Run (addr, perHopCallback, options);
+                Traceroute::Run (addr, perHopCallback, options);
             } break;
         }
     }
