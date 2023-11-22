@@ -854,6 +854,12 @@ namespace {
         //
         Debug::TraceContextBumper traceCtx{"RegressionTest15_ThreadPoolStarvationBug_"};
         Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_) {
+            // Test passes, but takes hour with valgrind/memcheck. Not without valgrind however
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            return;
+        }
         {
             Time::TimePointSeconds    testStartedAt       = Time::GetTickCount ();
             static constexpr unsigned kThreadPoolSize_    = 10;
@@ -1079,7 +1085,7 @@ namespace {
                     }
                 }
             },
-            Thread::eAutoStart, L"Consumer");
+            Thread::eAutoStart, "Consumer"sv);
         Execution::Sleep (0.1); // so consume gets a chance to fail removehead at least once...
         Thread::Ptr producerThread = Thread::New (
             [&q, &counter] () {
@@ -1091,7 +1097,7 @@ namespace {
                 }
                 q.SignalEndOfInput ();
             },
-            Thread::eAutoStart, L"Producer");
+            Thread::eAutoStart, "Producer"sv);
         // producer already set to run off the end...
         // consumer will end due to exception reading from end
         Thread::WaitForDone ({producerThread, consumerThread});
