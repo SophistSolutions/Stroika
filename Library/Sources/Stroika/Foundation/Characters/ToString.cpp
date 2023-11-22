@@ -12,7 +12,6 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
-
 /*
  ********************************************************************************
  **************** Characters::ToStringDefaults::ToString ************************

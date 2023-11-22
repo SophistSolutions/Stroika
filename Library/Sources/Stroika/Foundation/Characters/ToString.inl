@@ -178,7 +178,6 @@ namespace Stroika::Foundation::Characters {
                                                     // users can template-specialize ToString(const String&)???
             return "'"sv + static_cast<String> (t).LimitLength (kMaxLen2Display_) + "'"sv;
         }
-
         template <typename T>
         inline String ToString ([[maybe_unused]] const T& t)
             requires (is_convertible_v<T, tuple<>>)
@@ -250,14 +249,16 @@ namespace Stroika::Foundation::Characters {
         inline String ToString (const T& t)
             requires (is_enum_v<T>)
         {
-            #if 1
-            //tmphack til we fix/detect defaultnames better
-            return Characters::ToString ((int)t);
-            #else
-            // SHOULD MAYBE only do if can detect is-defined Configuration::DefaultNames<T>, but right now not easy, and
-            // not a problem: just don't call this, or replace it with a specific specialization of ToString
-            return Configuration::DefaultNames<T>{}.GetName (t);
-            #endif
+            if constexpr (not Configuration::IBoundedEnum<T>) {
+                return Characters::ToString (underlying_type_t<T> (t));
+            }
+            else if constexpr (Configuration::DefaultNames<T>{}.size () == 0) {
+                // emit as number if no EnumNames<> declared
+                return Characters::ToString (underlying_type_t<T> (t));
+            }
+            else {
+                return Configuration::DefaultNames<T>{}.GetName (t);
+            }
         }
         template <floating_point T>
         inline String ToString (T t)
@@ -293,7 +294,6 @@ namespace Stroika::Foundation::Characters {
         {
             return Characters::ToString (t.time_since_epoch ().count ()) + " seconds"sv;
         }
-
         template <integral T>
         inline String ToString (T t, ios_base::fmtflags flags)
         {
@@ -308,7 +308,6 @@ namespace Stroika::Foundation::Characters {
                 return num2Strll_ (t, flags);
             }
         }
-
         template <signed_integral T>
         inline String ToString (T t)
         {
@@ -317,18 +316,23 @@ namespace Stroika::Foundation::Characters {
         template <unsigned_integral T>
         inline String ToString (T t)
         {
-            return Characters::ToString (t, ios_base::hex);
+            // no overwhelmingly good reason todo it this way, but this matches what we had in Stroika 2.1, and its reasonable...
+            if constexpr (sizeof (T) == 1) {
+                return Characters::ToString (t, ios_base::hex);
+            }
+            else {
+                return Characters::ToString (t, ios_base::dec);
+            }
         }
-
         inline String ToString (byte t)
         {
             return Characters::ToString (static_cast<unsigned char> (t), ios_base::hex);
         }
-
         inline String ToString (const filesystem::path& t)
         {
             return Characters::ToString (t.wstring ()); // wrap in 'ToString' for surrounding quotes
         }
+
     }
 
     /*

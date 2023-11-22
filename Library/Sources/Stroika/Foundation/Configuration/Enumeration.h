@@ -116,6 +116,17 @@ namespace Stroika::Foundation::Configuration {
     eSTART = FIRST_ITEM, eEND = LAST_ITEM + 1, eLAST = LAST_ITEM, eCOUNT = eEND - eSTART,
 
     /**
+     *  Check if T is an enum class, with Stroika_Define_Enum_Bounds called on it to specify bounds.
+     */
+    template <typename T>
+    concept IBoundedEnum = is_enum_v<T> && requires (T t) {
+        T::eSTART;
+        T::eEND;
+        T::eLAST;
+        T::eCOUNT;
+    };
+
+    /**
      */
     template <typename ENUM_TYPE>
     using EnumName = pair<ENUM_TYPE, const wchar_t*>;
