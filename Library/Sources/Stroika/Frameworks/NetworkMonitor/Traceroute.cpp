@@ -97,10 +97,8 @@ String Hop::ToString () const
  */
 Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, const Options& options)
 {
-    Sequence<Hop>             results;
-    Run (addr, [&results] (const Hop& h) {
-        results += h;
-    });
+    Sequence<Hop> results;
+    Run (addr, [&results] (const Hop& h) { results += h; });
     return results;
 }
 
@@ -124,7 +122,7 @@ void NetworkMonitor::Traceroute::Run (const InternetAddress& addr, function<void
         Time::TimePointSeconds startOfPingRequest = Time::GetTickCount ();
         try {
             Ping::Pinger::ResultType r = pinger.RunOnce (ttl);
-            perHopCallback (           Hop{r.fPingTime, addr});
+            perHopCallback (Hop{r.fPingTime, addr});
             break;
         }
         catch (const ICMP::V4::TTLExpiredException& ttlExpiredException) {
@@ -133,7 +131,7 @@ void NetworkMonitor::Traceroute::Run (const InternetAddress& addr, function<void
                       Characters::ToString (ttlExpiredException.GetReachedIP ()).c_str ());
 #endif
             // totally normal - this is how we find out the hops
-            perHopCallback ( Hop{Duration{Time::GetTickCount () - startOfPingRequest}, ttlExpiredException.GetUnreachedIP ()});
+            perHopCallback (Hop{Duration{Time::GetTickCount () - startOfPingRequest}, ttlExpiredException.GetUnreachedIP ()});
         }
         catch (const ICMP::V4::DestinationUnreachableException& destinationUnreachableException) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -141,13 +139,13 @@ void NetworkMonitor::Traceroute::Run (const InternetAddress& addr, function<void
                       Characters::ToString (destinationUnreachableException.GetReachedIP ()).c_str ());
 #endif
             // Not sure how normal this is? @todo - research - maybe abandon ping when this happens... -- LGP 2017-03-27
-            perHopCallback ( Hop{Duration{Time::GetTickCount () - startOfPingRequest}, destinationUnreachableException.GetUnreachedIP ()});
+            perHopCallback (Hop{Duration{Time::GetTickCount () - startOfPingRequest}, destinationUnreachableException.GetUnreachedIP ()});
         }
         catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"exception %s ", Characters::ToString (current_exception ()).c_str ());
 #endif
-            perHopCallback ( Hop{});
+            perHopCallback (Hop{});
         }
     }
- }
+}
