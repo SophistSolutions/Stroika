@@ -225,7 +225,7 @@ optional<String> DNS::QuietReverseLookup (const InternetAddress& address) const
     flags |= NI_IDN;
 #endif
     int errCode = ::getnameinfo (reinterpret_cast<const sockaddr*> (&sadata), static_cast<socklen_t> (sa.GetRequiredSize ()), hbuf,
-                                 sizeof (hbuf), NULL, 0, flags);
+                                 sizeof (hbuf), nullptr, 0, flags);
     switch (errCode) {
         case 0:
             //@todo handle I18N more carefully
