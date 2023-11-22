@@ -14,6 +14,7 @@
 #include <filesystem>
 #include <functional>
 #include <ranges>
+#include <thread>
 #include <typeindex>
 #include <typeinfo>
 #include <wchar.h>
@@ -26,65 +27,12 @@
 
 namespace Stroika::Foundation::Characters {
 
-    /*
-     ********************************************************************************
-     ********************************* ToString *************************************
-     ********************************************************************************
-     */
-    template <>
-    String ToString (const exception_ptr& t);
-    template <>
-    String ToString (const type_info& t);
-    template <>
-    String ToString (const type_index& t);
-
-    /*
-     * From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
-     *      There are five standard signed integer types : signed char, short int, int,
-     *      long int, and long long int. In this list, each type provides at least as much
-     *      storage as those preceding it in the list.
-     *      For each of the standard signed integer types, there exists a corresponding (but different)
-     *      standard unsigned integer type: unsigned char, unsigned short int, unsigned int, unsigned long int,
-     *      and unsigned long long int, each of which occupies the same amount of storage and has the
-     *      same alignment requirements.
-     */
-    template <>
-    String ToString (const bool& t);
-    template <>
-    String ToString (const signed char& t);
-    template <>
-    String ToString (const short int& t);
-    template <>
-    String ToString (const int& t);
-    template <>
-    String ToString (const long int& t);
-    template <>
-    String ToString (const long long int& t);
-    template <>
-    String ToString (const unsigned char& t);
-    template <>
-    String ToString (const unsigned short& t);
-    template <>
-    String ToString (const unsigned int& t);
-    template <>
-    String ToString (const unsigned long& t);
-    template <>
-    String ToString (const unsigned long long& t);
-
-    template <>
-    String ToString (const std::filesystem::path& t);
-
     namespace Private_ {
-
-        // template <typename T>
-        // using has_ToStringMethod_t_ = decltype (static_cast<Characters::String> (declval<const T&> ().ToString ()));
 
         /**
          *  \brief checks if the given type has a .ToString () const method returning a string
          */
         template <typename T>
-        //  constexpr inline bool has_ToStringMethod_v = Configuration::is_detected_v<Private_::has_ToStringMethod_t_, T>;
-        // constexpr inline bool has_pair_v = Configuration::is_detected_v<Private_::has_pair_t_, T>;
         concept has_ToStringMethod_v = requires (T t) {
             {
                 t.ToString ()
@@ -94,7 +42,6 @@ namespace Stroika::Foundation::Characters {
          *  \brief this given type appears to be a 'pair' of some sort
          */
         template <typename T>
-        // constexpr inline bool has_pair_v = Configuration::is_detected_v<Private_::has_pair_t_, T>;
         concept has_pair_v = requires (T t) {
             t.first;
             t.second;
@@ -103,7 +50,6 @@ namespace Stroika::Foundation::Characters {
          *  \brief this given type appears to be a 'KeyValuePair' of some sort
          */
         template <typename T>
-        //constexpr inline bool has_KeyValuePair_v = Configuration::is_detected_v<Private_::has_KeyValuePair_t_, T>;
         concept has_KeyValuePair_v = requires (T t) {
             t.fKey;
             t.fValue;
@@ -112,21 +58,98 @@ namespace Stroika::Foundation::Characters {
          *  \brief this given type appears to be a 'CountedValue' of some sort
          */
         template <typename T>
-        //constexpr inline bool has_CountedValue_v = Configuration::is_detected_v<Private_::has_CountedValue_t_, T>;
         concept has_CountedValue_v = requires (T t) {
             t.fValue;
             t.fCount;
         };
 
         template <typename T>
-        inline String ToString_ (const T& t)
-            requires (has_ToStringMethod_v<T>)
+        inline String num2Str_ (T t, ios_base::fmtflags flags)
+        {
+            static_assert (sizeof (t) <= sizeof (int));
+            wchar_t buf[1024];
+            switch (flags) {
+                case ios_base::oct:
+                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%o", t);
+                    break;
+                case ios_base::dec:
+                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%d", t);
+                    break;
+                case ios_base::hex:
+                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"0x%x", t);
+                    break;
+                default:
+                    AssertNotReached (); // @todo support octal
+            }
+            return buf;
+        }
+        template <typename T>
+        inline String num2Strl_ (T t, ios_base::fmtflags flags)
+        {
+            wchar_t buf[1024];
+            static_assert (sizeof (t) == sizeof (long int));
+            switch (flags) {
+                case ios_base::oct:
+                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%lo", t);
+                    break;
+                case ios_base::dec:
+                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%ld", t);
+                    break;
+                case ios_base::hex:
+                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"0x%lx", t);
+                    break;
+                default:
+                    AssertNotReached (); // @todo support octal
+            }
+            return buf;
+        }
+        template <typename T>
+        inline String num2Strll_ (T t, ios_base::fmtflags flags)
+        {
+            wchar_t buf[1024];
+            static_assert (sizeof (t) == sizeof (long long int));
+            switch (flags) {
+                case ios_base::oct:
+                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%llo", t);
+                    break;
+                case ios_base::dec:
+                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"%lld", t);
+                    break;
+                case ios_base::hex:
+                    (void)::swprintf (buf, Memory::NEltsOf (buf), L"0x%llx", t);
+                    break;
+                default:
+                    AssertNotReached (); // @todo support octal
+            }
+            return buf;
+        }
+
+    }
+
+    /**
+     *  Collect all the default ToString() implementations, templates, overloads etc, all in one namespace.
+     * 
+     *  Users of the Stroika library may specialize Characters::ToString(), but (???) probably should not add overloads ot the
+     *  ToStringDefaults namespace --LGP 2023-11-21.
+     */
+    namespace ToStringDefaults {
+
+        // IN CPP FILE
+        String ToString (const exception_ptr& t);
+        String ToString (const exception& t);
+        String ToString (const type_info& t);
+        String ToString (const type_index& t);
+        String ToString (const thread::id& t);
+        String ToString (bool t);
+
+        template <Private_::has_ToStringMethod_v T>
+        inline String ToString (const T& t)
         {
             return t.ToString ();
         }
         template <ranges::range T>
-        String ToString_ (const T& t)
-            requires (not has_ToStringMethod_v<T> and not is_convertible_v<T, String>)
+        String ToString (const T& t)
+            requires (not Private_::has_ToStringMethod_v<T> and not is_convertible_v<T, String>)
         {
             StringBuilder sb;
             sb << "["sv;
@@ -138,7 +161,7 @@ namespace Stroika::Foundation::Characters {
                 else {
                     sb << " "_k;
                 }
-                sb << ToString (i);
+                sb << Characters::ToString (i);
                 didFirst = true;
             }
             if (didFirst) {
@@ -148,7 +171,7 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        inline String ToString_ (const T& t)
+        inline String ToString (const T& t)
             requires (is_convertible_v<T, String>)
         {
             constexpr size_t kMaxLen2Display_{100}; // no idea what a good value here will be or if we should provide ability to override. I suppose
@@ -156,194 +179,172 @@ namespace Stroika::Foundation::Characters {
             return "'"sv + static_cast<String> (t).LimitLength (kMaxLen2Display_) + "'"sv;
         }
 
-        String ToString_ex_ (const exception& t);
-
         template <typename T>
-        inline String ToString_ (const T& t)
-            requires (is_convertible_v<T, const exception&>)
-        {
-            return ToString_ex_ (t);
-        }
-        template <typename T>
-        inline String ToString_ ([[maybe_unused]] const T& t)
+        inline String ToString ([[maybe_unused]] const T& t)
             requires (is_convertible_v<T, tuple<>>)
         {
             return "{}"sv;
         }
         template <typename T1>
-        String ToString_ (const tuple<T1>& t)
+        String ToString (const tuple<T1>& t)
         {
             StringBuilder sb;
-            sb << "{"sv << ToString (t) << "}"sv;
+            sb << "{"sv << Characters::ToString (t) << "}"sv;
             return sb.str ();
         }
         template <typename T1, typename T2>
-        String ToString_ (const tuple<T1, T2>& t)
+        String ToString (const tuple<T1, T2>& t)
         {
             StringBuilder sb;
-            sb << "{"sv << ToString (get<0> (t)) << ", "sv << ToString (get<1> (t)) << "}"sv;
+            sb << "{"sv << Characters::ToString (get<0> (t)) << ", "sv << Characters::ToString (get<1> (t)) << "}"sv;
             return sb.str ();
         }
         template <typename T1, typename T2, typename T3>
-        String ToString_ (const tuple<T1, T2, T3>& t)
+        String ToString (const tuple<T1, T2, T3>& t)
         {
             StringBuilder sb;
             sb << "{"sv;
-            sb << ToString (get<0> (t)) << ", "sv << ToString (get<1> (t)) << ", "sv << ToString (get<2> (t));
+            sb << Characters::ToString (get<0> (t)) << ", "sv << Characters::ToString (get<1> (t)) << ", "sv << Characters::ToString (get<2> (t));
             sb << "}"sv;
             return sb.str ();
         }
         template <typename T1, typename T2, typename T3, typename T4>
-        String ToString_ (const tuple<T1, T2, T3>& t)
+        String ToString (const tuple<T1, T2, T3>& t)
         {
             StringBuilder sb;
             sb << "{"sv;
-            sb << ToString (get<0> (t)) << ", "sv << ToString (get<1> (t)) << ", "sv + ToString (get<2> (t)) << ", "sv << ToString (get<3> (t));
+            sb << Characters::ToString (get<0> (t)) << ", "sv << Characters::ToString (get<1> (t))
+               << ", "sv + Characters::ToString (get<2> (t)) << ", "sv << Characters::ToString (get<3> (t));
             sb << "}"sv;
             return sb.str ();
         }
         template <typename T>
-        String ToString_ (const T& t)
-            requires (has_pair_v<T>)
+        String ToString (const T& t)
+            requires (Private_::has_pair_v<T>)
         {
             StringBuilder sb;
             sb << "{"sv;
-            sb << ToString (t.first) << ": "sv << ToString (t.second);
+            sb << Characters::ToString (t.first) << ": "sv << Characters::ToString (t.second);
+            sb << "}"sv;
+            return sb.str ();
+        }
+        template <Private_::has_KeyValuePair_v T>
+        String ToString (const T& t)
+        {
+            StringBuilder sb;
+            sb << "{"sv;
+            sb << Characters::ToString (t.fKey) << ": "sv << Characters::ToString (t.fValue);
+            sb << "}"sv;
+            return sb.str ();
+        }
+        template <Private_::has_CountedValue_v T>
+        String ToString (const T& t)
+        {
+            StringBuilder sb;
+            sb << "{"sv;
+            sb << "'" << Characters::ToString (t.fValue) << "': "sv << Characters::ToString (t.fCount);
             sb << "}"sv;
             return sb.str ();
         }
         template <typename T>
-        String ToString_ (const T& t)
-            requires (has_KeyValuePair_v<T>)
-        {
-            StringBuilder sb;
-            sb << "{"sv;
-            sb << ToString (t.fKey) << ": "sv << ToString (t.fValue);
-            sb << "}"sv;
-            return sb.str ();
-        }
-        template <typename T>
-        String ToString_ (const T& t)
-            requires (has_CountedValue_v<T>)
-        {
-            StringBuilder sb;
-            sb << "{"sv;
-            sb << "'" << ToString (t.fValue) << "': "sv << ToString (t.fCount);
-            sb << "}"sv;
-            return sb.str ();
-        }
-        template <typename T>
-        inline String ToString_ (const T& t)
+        inline String ToString (const T& t)
             requires (is_enum_v<T>)
         {
+            #if 1
+            //tmphack til we fix/detect defaultnames better
+            return Characters::ToString ((int)t);
+            #else
             // SHOULD MAYBE only do if can detect is-defined Configuration::DefaultNames<T>, but right now not easy, and
             // not a problem: just don't call this, or replace it with a specific specialization of ToString
             return Configuration::DefaultNames<T>{}.GetName (t);
+            #endif
         }
-        template <typename T>
-        inline String ToString_ (const T& t)
-            requires (is_floating_point_v<T>)
+        template <floating_point T>
+        inline String ToString (T t)
         {
             return FloatConversion::ToString (t);
         }
         template <typename T>
-        inline String ToString_ (const shared_ptr<T>& pt)
+        inline String ToString (const shared_ptr<T>& pt)
         {
             return (pt == nullptr) ? L"nullptr"sv : Format (L"%p", pt.get ());
         }
         template <typename T>
-        inline String ToString_ (const unique_ptr<T>& pt)
+        inline String ToString (const unique_ptr<T>& pt)
         {
             return (pt == nullptr) ? L"nullptr"sv : Format (L"%p", pt.get ());
         }
         template <typename T>
-        inline String ToString_ (const optional<T>& o)
+        inline String ToString (const optional<T>& o)
         {
             return o.has_value () ? Characters::ToString (*o) : "[missing]"sv;
         }
         template <typename FUNCTION_SIGNATURE>
-        inline String ToString_ (const function<FUNCTION_SIGNATURE>& f)
+        inline String ToString (const function<FUNCTION_SIGNATURE>& f)
         {
             return Format (L"%p", f.template target<remove_cvref_t<FUNCTION_SIGNATURE>> ());
         }
-        inline String ToString_ (const std::chrono::duration<double>& t)
+        inline String ToString (const chrono::duration<double>& t)
         {
-            return ToString (t.count ()) + " seconds"sv;
+            return Characters::ToString (t.count ()) + " seconds"sv;
         }
         template <typename CLOCK_T>
-        inline String ToString_ (const std::chrono::time_point<CLOCK_T, chrono::duration<double>>& t)
+        inline String ToString (const chrono::time_point<CLOCK_T, chrono::duration<double>>& t)
         {
-            return ToString (t.time_since_epoch ().count ()) + " seconds"sv;
+            return Characters::ToString (t.time_since_epoch ().count ()) + " seconds"sv;
+        }
+
+        template <integral T>
+        inline String ToString (T t, ios_base::fmtflags flags)
+        {
+            using namespace Private_;
+            if constexpr (sizeof (T) < sizeof (long)) {
+                return num2Str_ (t, flags);
+            }
+            else if constexpr (sizeof (T) == sizeof (long)) {
+                return num2Strl_ (t, flags);
+            }
+            else if constexpr (sizeof (T) == sizeof (long long int)) {
+                return num2Strll_ (t, flags);
+            }
+        }
+
+        template <signed_integral T>
+        inline String ToString (T t)
+        {
+            return Characters::ToString (t, ios_base::dec);
+        }
+        template <unsigned_integral T>
+        inline String ToString (T t)
+        {
+            return Characters::ToString (t, ios_base::hex);
+        }
+
+        inline String ToString (byte t)
+        {
+            return Characters::ToString (static_cast<unsigned char> (t), ios_base::hex);
+        }
+
+        inline String ToString (const filesystem::path& t)
+        {
+            return Characters::ToString (t.wstring ()); // wrap in 'ToString' for surrounding quotes
         }
     }
 
-    template <>
-    inline String ToString (const signed char& t)
+    /*
+     ********************************************************************************
+     *************************** Characters::ToString *******************************
+     ********************************************************************************
+     */
+    template <typename T, typename... ARGS>
+    inline String ToString (T&& t, ARGS... args)
     {
-        return ToString (t, std::ios_base::dec);
+        return ToStringDefaults::ToString (forward<T> (t), forward<ARGS> (args)...);
     }
-    template <>
-    inline String ToString (const short int& t)
+    template <integral T>
+    inline String ToString (T t, ios_base::fmtflags flags)
     {
-        return ToString (t, std::ios_base::dec);
-    }
-    template <>
-    inline String ToString (const int& t)
-    {
-        return ToString (t, std::ios_base::dec);
-    }
-    template <>
-    inline String ToString (const long int& t)
-    {
-        return ToString (t, std::ios_base::dec);
-    }
-    template <>
-    inline String ToString (const long long int& t)
-    {
-        return ToString (t, std::ios_base::dec);
-    }
-    template <>
-    inline String ToString (const unsigned char& t)
-    {
-        return ToString (t, std::ios_base::hex);
-    }
-    template <>
-    inline String ToString (const unsigned short& t)
-    {
-        return ToString (t, std::ios_base::dec);
-    }
-    template <>
-    inline String ToString (const unsigned int& t)
-    {
-        return ToString (t, std::ios_base::dec);
-    }
-    template <>
-    inline String ToString (const unsigned long& t)
-    {
-        return ToString (t, std::ios_base::dec);
-    }
-    template <>
-    inline String ToString (const unsigned long long& t)
-    {
-        return ToString (t, std::ios_base::dec);
-    }
-
-    template <>
-    inline String ToString (const byte& t)
-    {
-        return ToString (static_cast<unsigned char> (t), std::ios_base::hex);
-    }
-
-    template <>
-    inline String ToString (const std::filesystem::path& t)
-    {
-        return ToString (t.wstring ()); // wrap in 'ToString' for surrounding quotes
-    }
-
-    template <typename T>
-    inline String ToString (const T& t)
-    {
-        return Private_::ToString_ (t);
+        return ToStringDefaults::ToString (t, flags);
     }
 
 }

@@ -35,12 +35,6 @@
  *                  and more elegant code with those methods.
  */
 
-namespace Stroika::Foundation::Characters {
-    class String;
-    template <typename T>
-    String ToString (const T&);
-}
-
 namespace Stroika::Foundation::Memory {
 
     /**

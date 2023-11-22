@@ -14,8 +14,6 @@
 
 /**
  *  TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-566 ToString (...elipsis) support, and cleanup use of templates in Private_
- *
  *      @todo   ToString(tuple) should use variadic templates and support multiple (past 3) args
  */
 
@@ -69,8 +67,8 @@ namespace Stroika::Foundation::Characters {
      * 
      *  \note @see has_ToString_v to check if Characters::ToString () well defined.
      */
-    template <typename T>
-    String ToString (const T& t);
+    template <typename T, typename... ARGS>
+    String ToString (T&& t, ARGS... args);
 
     /**
      * \brief flags may be std::dec, std::oct, or std::hex
@@ -80,29 +78,8 @@ namespace Stroika::Foundation::Characters {
      * 
      *   @see https://en.cppreference.com/w/cpp/io/ios_base/fmtflags
      */
-    template <typename T, enable_if<is_integral_v<T>>* = nullptr>
+    template <integral T>
     String ToString (T t, std::ios_base::fmtflags flags);
-
-    template <>
-    String ToString (const signed char t, std::ios_base::fmtflags flags);
-    template <>
-    String ToString (const short int t, std::ios_base::fmtflags flags);
-    template <>
-    String ToString (const int t, std::ios_base::fmtflags flags);
-    template <>
-    String ToString (const long int t, std::ios_base::fmtflags flags);
-    template <>
-    String ToString (const long long int t, std::ios_base::fmtflags flags);
-    template <>
-    String ToString (const unsigned char t, std::ios_base::fmtflags flags);
-    template <>
-    String ToString (const unsigned short t, std::ios_base::fmtflags flags);
-    template <>
-    String ToString (const unsigned int t, std::ios_base::fmtflags flags);
-    template <>
-    String ToString (const unsigned long t, std::ios_base::fmtflags flags);
-    template <>
-    String ToString (const unsigned long long t, std::ios_base::fmtflags flags);
 
     namespace Private_ {
         template <typename T>
