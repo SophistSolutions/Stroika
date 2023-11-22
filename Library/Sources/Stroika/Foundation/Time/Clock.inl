@@ -93,11 +93,11 @@ namespace Stroika::Foundation::Time {
 #endif
         return Private_::clock_cast_2nd<typename DESTINATION_CLOCK_T::time_point> (tp); //return clock_cast_0th<DstTimePointT> (tp);
     }
-    template <template <typename> typename RANGE, typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
+    template <typename DESTINATION_CLOCK_T, template <typename> typename RANGE, typename SOURCE_CLOCK_T, typename DURATION_T>
     RANGE<typename DESTINATION_CLOCK_T::time_point> clock_cast (RANGE<chrono::time_point<SOURCE_CLOCK_T, DURATION_T>> tpRange)
     {
-        using RESULT_RANGE_TYPE = RANGE<typename DESTINATION_CLOCK_T::time_point>;
         using RESULT_TIMERANGE  = typename DESTINATION_CLOCK_T::time_point;
+        using RESULT_RANGE_TYPE = RANGE<RESULT_TIMERANGE>;
         if (tpRange.empty ()) {
             return RESULT_RANGE_TYPE{};
         }

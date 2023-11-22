@@ -17,17 +17,19 @@
 namespace Stroika::Foundation::Time {
 
     /*
-     *  \brief like std::chrono::clock_cast, but supports steady_clock, and others not explicitly supported by std::chrono::clock_cast (through experiment/approximation)
+     *  \brief like std::chrono::clock_cast, but supports steady_clock, and others not explicitly supported by std::chrono::clock_cast (through experiment/approximation), and ranges of time_points...
      * 
      *  \see commentary in https://stackoverflow.com/questions/35282308/convert-between-c11-clocks
      * 
      *  \note - for some cases, the conversion is estimated, and may vary slightly from run run to run.
      *  \note - range overload is both HANDY for normal case, and CRITICAL for case where we approximate, so that valid ranges
      *          always map to valid ranges (one jitter, not two). Note also - use of template/template param for RANGE is to avoid mutual inclusion issues.
+     * 
+     *  @todo find better way than forcing EXPLICIT passing of 'Range' template parameter to second overload! - sloppy --LGP 2023-11-22
      */
     template <typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
     typename DESTINATION_CLOCK_T::time_point clock_cast (chrono::time_point<SOURCE_CLOCK_T, DURATION_T> tp);
-    template <template <typename> typename RANGE, typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
+    template <typename DESTINATION_CLOCK_T, template <typename> typename RANGE, typename SOURCE_CLOCK_T, typename DURATION_T>
     RANGE<typename DESTINATION_CLOCK_T::time_point> clock_cast (RANGE<chrono::time_point<SOURCE_CLOCK_T, DURATION_T>> tpRange);
 
     /**
