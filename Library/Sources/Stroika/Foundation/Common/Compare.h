@@ -320,6 +320,20 @@ namespace Stroika::Foundation::Common {
      *  DeclareInOrderComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
      *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
      *
+     *  \par Example Usage:
+     *      \code
+     *          constexpr auto kDefaultPrioritizedName_OrderByDefault_Less =
+     *              Stroika::Foundation::Common::DeclareInOrderComparer ([] (const PrioritizedName& lhs, const PrioritizedName& rhs) -> bool {
+     *                  if (lhs.fPriority > rhs.fPriority) {
+     *                      return true;
+     *                  }
+     *                  else if (lhs.fPriority < rhs.fPriority) {
+     *                      return false;
+     *                  }
+     *                  return lhs.fName < rhs.fName;
+     *              });
+     *      \endcode
+     *
      *  @see DeclareEqualsComparer
      *  @see InOrderComparerAdapter
      *
