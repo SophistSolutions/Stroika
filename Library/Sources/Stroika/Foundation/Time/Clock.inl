@@ -60,6 +60,22 @@ namespace Stroika::Foundation::Time {
             } while (epsilon > tolerance);
             return dst_now + chrono::duration_cast<typename DstClockT::duration> (tp - src_now);
         }
+#if __cpp_lib_chrono >= 201907L
+        // @todo find better way to check if should use clock_cast or my_private_clock_cast
+        // clang-format off
+        template <typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
+        constexpr bool kCanUseStdClockCnv_ = 
+            same_as<DESTINATION_CLOCK_T,SOURCE_CLOCK_T> 
+                or (
+                    ( same_as<DESTINATION_CLOCK_T, chrono::system_clock> or same_as<DESTINATION_CLOCK_T, chrono::utc_clock> or same_as<DESTINATION_CLOCK_T, chrono::gps_clock> or same_as<DESTINATION_CLOCK_T, chrono::file_clock> or  same_as<DESTINATION_CLOCK_T, chrono::tai_clock>)
+                        and (same_as<SOURCE_CLOCK_T, chrono::system_clock> or same_as<SOURCE_CLOCK_T, chrono::utc_clock> or same_as<SOURCE_CLOCK_T, chrono::gps_clock> or same_as<SOURCE_CLOCK_T, chrono::file_clock> or  same_as<SOURCE_CLOCK_T, chrono::tai_clock>)
+                )
+        ;
+        // clang-format on
+#else
+        template <typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
+        constexpr bool kCanUseStdClockCnv_ = false;
+#endif
     }
 
     /*
@@ -70,28 +86,39 @@ namespace Stroika::Foundation::Time {
     template <typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
     inline auto clock_cast (chrono::time_point<SOURCE_CLOCK_T, DURATION_T> tp) -> typename DESTINATION_CLOCK_T::time_point
     {
-        using namespace std::chrono;
-        // @todo find better way to check if should use clock_cast or my_private_clock_cast
-        using DstTimePointT = typename DESTINATION_CLOCK_T::time_point;
 #if __cpp_lib_chrono >= 201907L
-        // clang-format off
-        if constexpr (
-            (
-                same_as<DESTINATION_CLOCK_T,SOURCE_CLOCK_T> 
-                or (
-                    same_as<DESTINATION_CLOCK_T, system_clock> or same_as<DESTINATION_CLOCK_T, utc_clock> or same_as<DESTINATION_CLOCK_T, gps_clock> or same_as<DESTINATION_CLOCK_T, file_clock> or  same_as<DESTINATION_CLOCK_T, tai_clock>)
-                        and (same_as<SOURCE_CLOCK_T, system_clock> or same_as<SOURCE_CLOCK_T, utc_clock> or same_as<SOURCE_CLOCK_T, gps_clock> or same_as<SOURCE_CLOCK_T, file_clock> or  same_as<SOURCE_CLOCK_T, tai_clock>)
-                )
-            ) {
+        if constexpr (Private_::kCanUseStdClockCnv_<DESTINATION_CLOCK_T, SOURCE_CLOCK_T, DURATION_T>) {
             return chrono::clock_cast<DESTINATION_CLOCK_T> (tp);
         }
-        else {
-            return Private_::clock_cast_2nd<DstTimePointT> (tp);        //return clock_cast_0th<DstTimePointT> (tp);
-        }
-        // clang-format on
-#else
-        return Private_::clock_cast_2nd<DstTimePointT> (tp); //return clock_cast_0th<DstTimePointT> (tp);
 #endif
+        return Private_::clock_cast_2nd<typename DESTINATION_CLOCK_T::time_point> (tp); //return clock_cast_0th<DstTimePointT> (tp);
+    }
+    template <template <typename> typename RANGE, typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
+    RANGE<typename DESTINATION_CLOCK_T::time_point> clock_cast (RANGE<chrono::time_point<SOURCE_CLOCK_T, DURATION_T>> tpRange)
+    {
+        using RESULT_RANGE_TYPE = RANGE<typename DESTINATION_CLOCK_T::time_point>;
+        using RESULT_TIMERANGE  = typename DESTINATION_CLOCK_T::time_point;
+        if (tpRange.empty ()) {
+            return RESULT_RANGE_TYPE{};
+        }
+        /*
+         *  Naive implementation:
+         *      return Range<DisplayedRealtimeClock::time_point>{Time::clock_cast<DisplayedRealtimeClock> (tpRange.GetLowerBound ()),
+         *                                                       Time::clock_cast<DisplayedRealtimeClock> (tpRange.GetUpperBound ())};
+         *  wrong because jitter in estimate/conversion and can result in negative Range/assert error. Leverage fact that conversion
+         *  of one is just an offset, and use same offset for the second one.
+         * 
+         *  But not all clock conversions have this jitter issue.
+         */
+        if constexpr (Private_::kCanUseStdClockCnv_<DESTINATION_CLOCK_T, SOURCE_CLOCK_T, DURATION_T>) {
+            return RESULT_RANGE_TYPE{clock_cast<DESTINATION_CLOCK_T> (tpRange.GetLowerBound ()),
+                                     Time::clock_cast<DESTINATION_CLOCK_T> (tpRange.GetUpperBound ())};
+        }
+        else {
+            typename DESTINATION_CLOCK_T::time_point lb   = clock_cast<DESTINATION_CLOCK_T> (tpRange.GetLowerBound ());
+            auto                                     diff = lb.time_since_epoch () - tpRange.GetLowerBound ().time_since_epoch ();
+            return RESULT_RANGE_TYPE{lb, RESULT_TIMERANGE{tpRange.GetUpperBound ().time_since_epoch () + diff}};
+        }
     }
 
     /*

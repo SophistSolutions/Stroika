@@ -22,9 +22,13 @@ namespace Stroika::Foundation::Time {
      *  \see commentary in https://stackoverflow.com/questions/35282308/convert-between-c11-clocks
      * 
      *  \note - for some cases, the conversion is estimated, and may vary slightly from run run to run.
+     *  \note - range overload is both HANDY for normal case, and CRITICAL for case where we approximate, so that valid ranges
+     *          always map to valid ranges (one jitter, not two). Note also - use of template/template param for RANGE is to avoid mutual inclusion issues.
      */
     template <typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
     typename DESTINATION_CLOCK_T::time_point clock_cast (chrono::time_point<SOURCE_CLOCK_T, DURATION_T> tp);
+    template <template <typename> typename RANGE, typename DESTINATION_CLOCK_T, typename SOURCE_CLOCK_T, typename DURATION_T>
+    RANGE<typename DESTINATION_CLOCK_T::time_point> clock_cast (RANGE<chrono::time_point<SOURCE_CLOCK_T, DURATION_T>> tpRange);
 
     /**
      *  AppStartZeroedClock is just like BASE_CLOCK_T, except that its time values are magically adjusted so that
