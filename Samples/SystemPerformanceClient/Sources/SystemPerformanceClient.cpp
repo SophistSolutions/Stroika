@@ -63,8 +63,10 @@ namespace {
     {
 #if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
         return Time::clock_cast<DisplayedRealtimeClock, RANGE_TEMPLATE_BWA> (tpRange);
-#else
+#elif qCompilerAndStdLib_template_template_auto_deduced_Buggy
         return Time::clock_cast<DisplayedRealtimeClock, Range> (tpRange);
+#else
+        return Time::clock_cast<DisplayedRealtimeClock> (tpRange);
 #endif
     }
     void Demo_PrintInstruments_ ()

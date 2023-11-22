@@ -1889,6 +1889,20 @@ Test.cpp:173:31: error: template template argument has different template parame
 #endif
 
 /*
+ * qCompilerAndStdLib_template_template_auto_deduced_Buggy fails on SystemPerofrmanceClient sample
+ */
+#ifndef qCompilerAndStdLib_template_template_auto_deduced_Buggy
+#if defined(_MSC_VER)
+// ifrst noted broken in _MSC_VER_2k22_17Pt8_
+#define qCompilerAndStdLib_template_template_auto_deduced_Buggy                                                                            \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt8_)
+#else
+#define qCompilerAndStdLib_template_template_auto_deduced_Buggy 0
+#endif
+
+#endif
+
+/*
          Compiling Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.cpp ... 
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
 Stack dump:
