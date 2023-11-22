@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Database/SQL/ORM/Versioning.h"
 #include "Stroika/Foundation/Database/SQL/SQLite.h"
 #include "Stroika/Foundation/Database/SQL/Utils.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -752,7 +753,12 @@ namespace {
     void DoRegressionTests_ ()
     {
 #if qHasFeature_sqlite
+        static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
         RegressionTest1_sqlite_ScansDBTest_::DoIt ();
+        if (kRunningValgrind_ and qDebug) {
+            DbgTrace ("Skipping remaining tests cuz too slow");
+            return;
+        }
         RegressionTest2_sqlite_EmployeesDB_with_threads_::DoIt ();
         RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::DoIt ();
 #endif
