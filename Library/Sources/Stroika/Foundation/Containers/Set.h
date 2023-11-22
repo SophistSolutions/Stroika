@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Containers {
          *      \endcode
          */
         Set ()
-            requires (IEqualsComparer<equal_to<value_type>, value_type>);
+            requires (IEqualsComparer<equal_to<T>, T>);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         explicit Set (EQUALS_COMPARER&& equalsComparer);
         Set (Set&& src) noexcept      = default;

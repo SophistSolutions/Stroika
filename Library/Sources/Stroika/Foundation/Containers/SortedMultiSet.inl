@@ -16,6 +16,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename TRAITS>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet ()
+        requires (Common::IInOrderComparer<less<T>, T>)
         : SortedMultiSet{less<T>{}}
     {
         _AssertRepValidType ();

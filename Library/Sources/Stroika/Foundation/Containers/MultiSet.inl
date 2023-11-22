@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename TRAITS>
     MultiSet<T, TRAITS>::MultiSet ()
-        requires (IEqualsComparer<equal_to<value_type>, value_type>)
+        requires (IEqualsComparer<equal_to<T>, T>)
         : MultiSet{equal_to<T>{}}
     {
         _AssertRepValidType ();

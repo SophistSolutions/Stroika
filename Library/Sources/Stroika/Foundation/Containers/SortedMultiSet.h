@@ -76,7 +76,8 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
-        SortedMultiSet ();
+        SortedMultiSet ()
+            requires (Common::IInOrderComparer<less<T>, T>);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedMultiSet (INORDER_COMPARER&& inorderComparer);
         SortedMultiSet (SortedMultiSet&& src) noexcept      = default;

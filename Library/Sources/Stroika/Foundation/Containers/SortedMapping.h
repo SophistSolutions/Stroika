@@ -88,7 +88,8 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
-        SortedMapping ();
+        SortedMapping ()
+            requires (IInOrderComparer<less<KEY_TYPE>, KEY_TYPE>);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit SortedMapping (KEY_INORDER_COMPARER&& inorderComparer);
         SortedMapping (SortedMapping&& src) noexcept      = default;

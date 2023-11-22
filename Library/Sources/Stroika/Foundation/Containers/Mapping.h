@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Containers {
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         Mapping ()
-            requires (IEqualsComparer<equal_to<key_type>, key_type>);
+            requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         explicit Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer);
         Mapping (Mapping&& src) noexcept      = default;

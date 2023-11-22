@@ -16,6 +16,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping ()
+        requires (IInOrderComparer<less<KEY_TYPE>, KEY_TYPE>)
         : SortedMapping{less<KEY_TYPE>{}}
     {
         _AssertRepValidType ();
