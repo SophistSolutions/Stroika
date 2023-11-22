@@ -129,13 +129,11 @@ int main (int argc, const char* argv[])
 
                 // quickie - weak attempt at formatting the output
                 cout << "Hop\tTime\t\tAddress" << endl;
-
-                Sequence<Traceroute::Hop> hops = Traceroute::Run (addr, options);
                 unsigned int              hopIdx{1};
-                for (Traceroute::Hop h : hops) {
+                auto         perHopCallback = [&] (Traceroute::Hop h) {
                     String hopName = [=] () -> String {
                         if (h.fAddress.empty ()) {
-                            return "*"sv; 
+                            return "*"sv;
                         }
                         String addrStr = h.fAddress.As<String> ();
                         if (auto rdnsName = DNS::kThe.QuietReverseLookup (h.fAddress)) {
@@ -145,9 +143,12 @@ int main (int argc, const char* argv[])
                             return addrStr;
                         }
                     }();
-                    String timeStr = h.fTime.empty () ? "timeout"_k : h.fTime.PrettyPrint ();
+                    String timeStr = h.fTime.empty () ? "timeout\t"_k : h.fTime.PrettyPrint ();
                     cout << hopIdx++ << "\t" << timeStr.AsNarrowSDKString () << "\t" << hopName.AsNarrowSDKString () << endl;
-                }
+                };
+                // can call without callback, and just get all the hops in a list, which is simpler. But using the callback allows you to see
+                // per hop progress as its accumulated, which is more typical for traceroute UI
+                 Traceroute::Run (addr, perHopCallback, options);
             } break;
         }
     }
@@ -156,6 +157,5 @@ int main (int argc, const char* argv[])
         cerr << "Exception - " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }

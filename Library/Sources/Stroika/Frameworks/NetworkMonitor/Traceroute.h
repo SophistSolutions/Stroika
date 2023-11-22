@@ -109,6 +109,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Traceroute {
     /**
      */
     Sequence<Hop> Run (const InternetAddress& addr, const Options& options = {});
+    void          Run (const InternetAddress& addr, function<void (Hop)> perHopCallback, const Options& options = {});
 
 }
 
