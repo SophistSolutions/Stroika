@@ -175,7 +175,8 @@ namespace Stroika::Foundation::Containers {
          *          MultiSet<int> s9{ Common::mkEqualsComparer([](int l, int r) { return l == r; }), c};
          *      \endcode
          */
-        MultiSet ();
+        MultiSet ()
+            requires (IEqualsComparer<equal_to<value_type>, value_type>);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         explicit MultiSet (EQUALS_COMPARER&& equalsComparer);
         MultiSet (MultiSet&& src) noexcept      = default;

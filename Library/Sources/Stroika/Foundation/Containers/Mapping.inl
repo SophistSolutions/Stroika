@@ -25,6 +25,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping ()
+        requires (IEqualsComparer<equal_to<key_type>, key_type>)
         : Mapping{equal_to<KEY_TYPE>{}}
     {
         _AssertRepValidType ();

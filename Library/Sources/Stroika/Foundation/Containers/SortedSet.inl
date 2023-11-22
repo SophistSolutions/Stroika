@@ -16,6 +16,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline SortedSet<T>::SortedSet ()
+        requires (IInOrderComparer<less<T>, T>)
         : SortedSet{less<T>{}}
     {
         _AssertRepValidType ();

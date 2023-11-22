@@ -18,6 +18,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Set<T>::Set ()
+        requires (IEqualsComparer<equal_to<value_type>, value_type>)
         : Set{equal_to<value_type>{}}
     {
         _AssertRepValidType ();
