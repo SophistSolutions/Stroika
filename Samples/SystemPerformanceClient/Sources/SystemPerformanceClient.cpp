@@ -57,11 +57,15 @@ namespace {
     }
     Range<DisplayedRealtimeClock::time_point> toDisp_ (Range<TimePointSeconds> tpRange)
     {
+#if 1
+        return Time::clock_cast<Range, DisplayedRealtimeClock> (tpRange);
+#else
         if (tpRange.empty ()) {
             return Range<DisplayedRealtimeClock::time_point>{};
         }
         return Range<DisplayedRealtimeClock::time_point>{Time::clock_cast<DisplayedRealtimeClock> (tpRange.GetLowerBound ()),
                                                          Time::clock_cast<DisplayedRealtimeClock> (tpRange.GetUpperBound ())};
+#endif
     }
     void Demo_PrintInstruments_ ()
     {
