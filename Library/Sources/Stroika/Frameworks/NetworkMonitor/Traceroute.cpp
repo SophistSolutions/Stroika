@@ -98,7 +98,8 @@ String Hop::ToString () const
 Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, const Options& options)
 {
     Sequence<Hop> results;
-    Run (addr, [&results] (const Hop& h) { results += h; });
+    Run (
+        addr, [&results] (const Hop& h) { results += h; }, options);
     return results;
 }
 
