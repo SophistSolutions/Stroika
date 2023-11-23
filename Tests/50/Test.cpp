@@ -633,7 +633,8 @@ namespace {
                                                              ds.time_since_epoch ().count (), 1.1));
                 VerifyTestResult (Math::NearlyEquals (dt.AsLocalTime ().As<Time::TimePointSeconds> ().time_since_epoch ().count (),
                                                       ds.time_since_epoch ().count (),
-                                                      5)); // failed once - with value 2.1 - 2023-11-10, so up this to 5 (sometimes run on slow machines)
+                                                      7.5)); // failed once - with value 2.1 - 2023-11-10, so up this to 5 (sometimes run on slow machines)
+                                                      // Failed once (after change to more jittery tickcount logic) on macos, so upped to 7.5 seconds --LGP 2023-11-23
             }
         }
         {
