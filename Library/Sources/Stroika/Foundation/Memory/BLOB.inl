@@ -125,15 +125,15 @@ namespace Stroika::Foundation::Memory {
     inline BLOB BLOB::FromHex (const char* b)
     {
         RequireNotNull (b);
-        return FromHex (b, b + ::strlen (b));
+        return FromHex (span<const char>{b, ::strlen (b)});
     }
     inline BLOB BLOB::FromHex (const char* s, const char* e)
     {
-        return FromHex (span{s, e});
+        return FromHex (span<const char>{s, e});
     }
     inline BLOB BLOB::FromHex (string_view s)
     {
-        return FromHex (span{s});
+        return FromHex (span<const char>{s});
     }
     template <typename T>
     inline BLOB BLOB::FromRaw (const T* s, const T* e)
