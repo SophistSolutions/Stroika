@@ -34,6 +34,12 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest1_"};
         Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qDebug) {
+            // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            return;
+        }
         struct FRED {
             static void DoIt ([[maybe_unused]] void* ignored)
             {
@@ -55,6 +61,12 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest2_"};
         Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qDebug) {
+            // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            return;
+        }
 
         // Make 2 concurrent threads, which share a critical section object to take turns updating a variable
         auto DoIt = [] (void* ignored) {
@@ -363,6 +375,12 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest3_WaitableEvents_"};
         Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qDebug) {
+            // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            return;
+        }
         WAITABLE_EVENTS_::NOTIMEOUTS_ ();
         WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
         WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
@@ -474,7 +492,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest5_Aborting_"};
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        if (kRunningValgrind_) {
+        if (kRunningValgrind_ and qDebug) {
             // Test passes, but takes 2-3 HRs on ubuntu 23.10 and quite a while (hours) on other ubuntu releases. Not without valgrind however
             DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
             return;

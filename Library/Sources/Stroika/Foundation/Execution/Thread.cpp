@@ -583,6 +583,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
                             "Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state.");
                         // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
                         if (thisThreadRep->fStatus_ != Status::eAborting) [[unlikely]] {
+                            DbgTrace ("DEBUGGING MEMCHECK SLOW ISSUE - SEE IF THIS HAPPENS TOO...--LGP 2023-11-23");
                             IgnoreExceptionsForCall (Ptr{thisThreadRep}.Abort ());
                         }
                     }
@@ -870,6 +871,7 @@ void Thread::Ptr::Abort () const
             DbgTrace (L"Transitioned state from %s to aborting, so calling fThread_.get_stop_source ().request_stop ();",
                       Characters::ToString (prevState).c_str ());
             fRep_->fStopSource_.request_stop ();
+            DbgTrace ("Extra trace message to debug slowness under valgrind memcheck doing this...--LGP 2023-11-23");
         }
 #endif
     }
