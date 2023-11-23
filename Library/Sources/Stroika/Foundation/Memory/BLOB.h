@@ -139,6 +139,7 @@ namespace Stroika::Foundation::Memory {
         static BLOB FromHex (const char* b);
         static BLOB FromHex (const char* s, const char* e);
         static BLOB FromHex (span<const char> s);
+        static BLOB FromHex (const Characters::String& s);
 
     public:
         /**

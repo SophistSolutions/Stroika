@@ -172,6 +172,14 @@ BLOB BLOB::FromHex (span<const char> s)
     return BLOB{buf.begin (), buf.end ()};
 }
 
+BLOB BLOB::FromHex (const Characters::String& s)
+{
+    if (optional<span<const Characters::ASCII>> ps = s.PeekData<Characters::ASCII> ()) [[likely]] {
+        return BLOB::FromHex (*ps);
+    }
+    return BLOB::FromHex (span<const char>{s.AsASCII ()}); // will throw in this case cuz if not ascii... oops...
+}
+
 namespace {
     using namespace Streams;
     struct BLOBBINSTREAM_ : InputStream<byte>::Ptr {
