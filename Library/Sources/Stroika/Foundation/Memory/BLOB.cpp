@@ -137,26 +137,27 @@ span<const byte> BLOB::AdoptAndDeleteRep_::GetBounds () const
  ********************************************************************************
  */
 namespace {
-    byte HexChar2Num_ (char c)
+    inline byte HexChar2Num_ (char c)
     {
-        if ('0' <= c and c <= '9') {
+        if ('0' <= c and c <= '9') [[likely]] {
             return byte (c - '0');
         }
-        if ('A' <= c and c <= 'F') {
+        if ('A' <= c and c <= 'F') [[likely]] {
             return byte ((c - 'A') + 10);
         }
-        if ('a' <= c and c <= 'f') {
+        if ('a' <= c and c <= 'f') [[likely]] {
             return byte ((c - 'a') + 10);
         }
         static const Execution::RuntimeErrorException kException_{"Invalid HEX character in BLOB::Hex"sv};
         Execution::Throw (kException_);
     }
 }
-BLOB BLOB::Hex (const char* s, const char* e)
+BLOB BLOB::FromHex (span<const char> s)
 {
     StackBuffer<byte> buf;
-    for (const char* i = s; i < e; ++i) {
-        if (isspace (*i)) {
+    const char*       e = s.data () + s.size ();
+    for (const char* i = s.data (); i < e; ++i) {
+        if (isspace (*i)) [[unlikely]] {
             continue;
         }
         byte b = HexChar2Num_ (*i);

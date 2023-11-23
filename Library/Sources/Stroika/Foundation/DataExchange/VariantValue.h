@@ -387,12 +387,6 @@ namespace Stroika::Foundation::DataExchange {
         struct IRep_;
 
     private:
-        /**
-         */
-        template <typename T, typename... ARGS_TYPE>
-        static shared_ptr<T> MakeSharedPtr_ (ARGS_TYPE&&... args);
-
-    private:
         shared_ptr<IRep_> fVal_;
 
     private:

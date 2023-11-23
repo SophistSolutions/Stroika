@@ -3,8 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include <sstream>
-
 #include "../Characters/FloatConversion.h"
 #include "../Characters/Format.h"
 #include "../Characters/String2Int.h"
@@ -93,8 +91,8 @@ struct VariantValue::TIRep_ final : VariantValue::IRep_, public Memory::UseBlock
  ******************************** VariantValue **********************************
  ********************************************************************************
  */
-const shared_ptr<VariantValue::IRep_> VariantValue::kFalseRep_ = MakeSharedPtr_<TIRep_<bool>> (false);
-const shared_ptr<VariantValue::IRep_> VariantValue::kTrueRep_  = MakeSharedPtr_<TIRep_<bool>> (true);
+const shared_ptr<VariantValue::IRep_> VariantValue::kFalseRep_ = Memory::MakeSharedPtr<TIRep_<bool>> (false);
+const shared_ptr<VariantValue::IRep_> VariantValue::kTrueRep_  = Memory::MakeSharedPtr<TIRep_<bool>> (true);
 
 VariantValue::VariantValue (bool val)
     : fVal_{val ? kTrueRep_ : kFalseRep_}
@@ -104,115 +102,115 @@ VariantValue::VariantValue (bool val)
 }
 
 VariantValue::VariantValue (const Memory::BLOB& val)
-    : fVal_{MakeSharedPtr_<TIRep_<Memory::BLOB>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<Memory::BLOB>> (val)}
 {
 }
 
 VariantValue::VariantValue (signed char val)
-    : fVal_{MakeSharedPtr_<TIRep_<IntegerType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<IntegerType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (short int val)
-    : fVal_{MakeSharedPtr_<TIRep_<IntegerType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<IntegerType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (int val)
-    : fVal_{MakeSharedPtr_<TIRep_<IntegerType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<IntegerType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (long int val)
-    : fVal_{MakeSharedPtr_<TIRep_<IntegerType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<IntegerType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (long long int val)
-    : fVal_{MakeSharedPtr_<TIRep_<IntegerType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<IntegerType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (unsigned char val)
-    : fVal_{MakeSharedPtr_<TIRep_<UnsignedIntegerType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<UnsignedIntegerType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (unsigned short int val)
-    : fVal_{MakeSharedPtr_<TIRep_<UnsignedIntegerType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<UnsignedIntegerType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (unsigned int val)
-    : fVal_{MakeSharedPtr_<TIRep_<UnsignedIntegerType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<UnsignedIntegerType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (unsigned long int val)
-    : fVal_{MakeSharedPtr_<TIRep_<UnsignedIntegerType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<UnsignedIntegerType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (unsigned long long int val)
-    : fVal_{MakeSharedPtr_<TIRep_<UnsignedIntegerType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<UnsignedIntegerType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (float val)
-    : fVal_{MakeSharedPtr_<TIRep_<FloatType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<FloatType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (double val)
-    : fVal_{MakeSharedPtr_<TIRep_<FloatType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<FloatType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (long double val)
-    : fVal_{MakeSharedPtr_<TIRep_<FloatType_>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<FloatType_>> (val)}
 {
 }
 
 VariantValue::VariantValue (const Date& val)
-    : fVal_{MakeSharedPtr_<TIRep_<Date>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<Date>> (val)}
 {
 }
 
 VariantValue::VariantValue (const DateTime& val)
-    : fVal_{MakeSharedPtr_<TIRep_<DateTime>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<DateTime>> (val)}
 {
 }
 VariantValue::VariantValue (const String& val)
-    : fVal_{MakeSharedPtr_<TIRep_<String>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<String>> (val)}
 {
 }
 VariantValue::VariantValue (const map<wstring, VariantValue>& val)
-    : fVal_{MakeSharedPtr_<TIRep_<Mapping<String, VariantValue>>> (Mapping<String, VariantValue>{val})}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<Mapping<String, VariantValue>>> (Mapping<String, VariantValue>{val})}
 {
 }
 
 VariantValue::VariantValue (const Mapping<String, VariantValue>& val)
-    : fVal_{MakeSharedPtr_<TIRep_<Mapping<String, VariantValue>>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<Mapping<String, VariantValue>>> (val)}
 {
 }
 
 VariantValue::VariantValue (Mapping<String, VariantValue>&& val)
-    : fVal_{MakeSharedPtr_<TIRep_<Mapping<String, VariantValue>>> (move (val))}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<Mapping<String, VariantValue>>> (move (val))}
 {
 }
 
 VariantValue::VariantValue (Sequence<VariantValue>&& val)
-    : fVal_{MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (move (val))}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<Sequence<VariantValue>>> (move (val))}
 {
 }
 
 VariantValue::VariantValue (const Sequence<VariantValue>& val)
-    : fVal_{MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (val)}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<Sequence<VariantValue>>> (val)}
 {
 }
 
 VariantValue::VariantValue (const Traversal::Iterable<VariantValue>& val)
-    : fVal_{MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (Sequence<VariantValue> (val))}
+    : fVal_{Memory::MakeSharedPtr<TIRep_<Sequence<VariantValue>>> (Sequence<VariantValue> (val))}
 {
 }
 

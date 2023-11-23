@@ -79,18 +79,16 @@ namespace Stroika::Foundation::Memory {
     protected:
         struct _IRep;
 
-    protected:
-        /**
-         */
-        template <typename T, typename... ARGS_TYPE>
-        static shared_ptr<T> _MakeSharedPtr (ARGS_TYPE&&... args);
-
     public:
         /**
          *  \par Example Usage
          *      \code
          *           BLOB    b1  =   BLOB{ 0x29, 0x14, 0x4a, };
          *      \endcode
+         * 
+         * 
+         *  \see also FromHex, FromRaw (constructor like static functions with special names to make treatment more clear)
+         *  \see also Attach, and AttachAndDelete, more rarely useful (and dangerous).
          */
         BLOB ();
         // clang-format off
@@ -130,16 +128,17 @@ namespace Stroika::Foundation::Memory {
          *  bytes.
          *
          *  Spaces allowed, but treat as array of (possibly space delimited) hex bytes to BLOB.
+         * 
+         *  Upper/LowerCase OK, but invalid characters generate throw.
          *
          *  \par Example Usage
          *      \code
-         *          Assert  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6") == BLOB { 0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6 }));
+         *          Assert  ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6") == BLOB { 0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6 }));
          *      \endcode
          */
-        static BLOB Hex (const char* b);
-        static BLOB Hex (const char* s, const char* e);
-        static BLOB Hex (const string& s);
-        static BLOB Hex (const string_view& s);
+        static BLOB FromHex (const char* b);
+        static BLOB FromHex (const char* s, const char* e);
+        static BLOB FromHex (span<const char> s);
 
     public:
         /**
@@ -155,19 +154,19 @@ namespace Stroika::Foundation::Memory {
          *  \note ALL overloads require T is be 'trivially_copyable' - just like memcpy()
          */
         template <typename T>
-        static BLOB Raw (const T* s, const T* e)
+        static BLOB FromRaw (const T* s, const T* e)
             requires (is_trivially_copyable_v<T>);
         template <typename T>
-        static BLOB Raw (const T* s, size_t sz)
+        static BLOB FromRaw (const T* s, size_t sz)
             requires (is_trivially_copyable_v<T>);
         template <typename T>
-        static BLOB Raw (const T* s)
+        static BLOB FromRaw (const T* s)
             requires (is_same_v<typename char_traits<T>::char_type, T>);
         template <typename T>
-        static BLOB Raw (const basic_string<T>& s)
+        static BLOB FromRaw (const basic_string<T>& s)
             requires (is_same_v<typename char_traits<T>::char_type, T>);
         template <typename T>
-        static BLOB Raw (const T& s)
+        static BLOB FromRaw (const T& s)
             requires (is_trivially_copyable_v<T>);
 
     public:
@@ -175,6 +174,9 @@ namespace Stroika::Foundation::Memory {
          *  \brief  Create a BLOB from the given data - without copying the data (dangerous if not used carefully, but can be used to efficiently reference constant data).
          *
          *  \note its ILLEGAL and may cause grave disorder, if the caller changes the data passed to Attach() while the derived BLOB (or a copy) exists.
+         * 
+         *  Typically this is intended to be used to wrap permanant constant data, such as static (text space) read-only data, ROM stuff, etc. It can be used to wrap
+         *  data in memory mapped files, but IFF that file mapping will remain permanent (and data immutable). USE WITH CAUTION!
          * 
          *  \see also AttachAndDelete
          */
@@ -193,21 +195,6 @@ namespace Stroika::Foundation::Memory {
          *  Note - because of how the data is deleted, you must allocate with new byte[nnn].
          */
         static BLOB AttachAndDelete (const byte* s, size_t arrayLen);
-
-    public:
-        [[deprecated ("Since Stroika v3.0d4 use span")]] static BLOB Attach (const byte* start, const byte* end)
-        {
-            return Attach (span{start, end});
-        }
-        [[deprecated ("Since Stroika v3.0d4 use Attach")]] static BLOB AttachApplicationLifetime (const byte* start, const byte* end)
-        {
-            return Attach (span{start, end});
-        }
-        template <size_t SIZE>
-        [[deprecated ("Since Stroika v3.0d4 use Attach")]] static BLOB AttachApplicationLifetime (const byte (&data)[SIZE])
-        {
-            return Attach (span{data, SIZE});
-        }
 
     public:
         /**
@@ -255,6 +242,8 @@ namespace Stroika::Foundation::Memory {
          *      \code
          *          Assert  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6"));
          *      \endcode
+         * 
+         *  \see also FromHex ()
          */
         nonvirtual Characters::String AsHex (size_t maxBytesToShow = numeric_limits<size_t>::max ()) const;
 
@@ -340,6 +329,31 @@ namespace Stroika::Foundation::Memory {
          *  Trivial alias BLOB ({*this, rhs});
          */
         nonvirtual BLOB operator+ (const BLOB& rhs) const;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d4 use span")]] static BLOB Attach (const byte* start, const byte* end)
+        {
+            return Attach (span{start, end});
+        }
+        [[deprecated ("Since Stroika v3.0d4 use Attach")]] static BLOB AttachApplicationLifetime (const byte* start, const byte* end)
+        {
+            return Attach (span{start, end});
+        }
+        template <size_t SIZE>
+        [[deprecated ("Since Stroika v3.0d4 use Attach")]] static BLOB AttachApplicationLifetime (const byte (&data)[SIZE])
+        {
+            return Attach (span{data, SIZE});
+        }
+        template <typename... ARGS>
+        [[deprecated ("Since Stroika v3.0d5 use FromHex")]] static BLOB Hex (ARGS... args)
+        {
+            return FromHex (args...);
+        }
+        template <typename... ARGS>
+        [[deprecated ("Since Stroika v3.0d5 use FromRaw")]] static BLOB Raw (ARGS... args)
+        {
+            return FromRaw (args...);
+        }
 
     private:
         struct BasicRep_;

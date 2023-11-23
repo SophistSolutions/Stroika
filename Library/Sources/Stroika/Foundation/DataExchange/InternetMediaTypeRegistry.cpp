@@ -497,7 +497,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                     optional<String> fResult;
                     bool             onContentElt{false};
                     StringBuilder<>  fAccum;
-                    virtual void     StartElement (const Name& name, [[maybe_unused]]const Mapping<Name, String>& attributes) override
+                    virtual void     StartElement (const Name& name, [[maybe_unused]] const Mapping<Name, String>& attributes) override
                     {
                         if (name == Name{"content"_k} and not fResult.has_value ()) {
                             onContentElt = true;

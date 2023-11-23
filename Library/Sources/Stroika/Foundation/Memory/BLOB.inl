@@ -73,19 +73,8 @@ namespace Stroika::Foundation::Memory {
      ************************************** BLOB ************************************
      ********************************************************************************
      */
-    template <typename T, typename... ARGS_TYPE>
-    inline shared_ptr<T> BLOB::_MakeSharedPtr (ARGS_TYPE&&... args)
-    {
-        if constexpr (Memory::UsesBlockAllocation<T> ()) {
-            // use allocate_shared so one allocation for both data and control block (shared ref count) but still use block-allocation)
-            return allocate_shared<T> (Memory::BlockAllocator<T>{}, forward<ARGS_TYPE> (args)...);
-        }
-        else {
-            return make_shared<T> (forward<ARGS_TYPE> (args)...);
-        }
-    }
     inline BLOB::BLOB ()
-        : fRep_{_MakeSharedPtr<ZeroRep_> ()}
+        : fRep_{MakeSharedPtr<ZeroRep_> ()}
     {
     }
     template <ranges::range CONTAINER_OF_BYTE>
@@ -103,7 +92,7 @@ namespace Stroika::Foundation::Memory {
     {
     }
     inline BLOB::BLOB (span<const byte> s)
-        : fRep_{s.empty () ? shared_ptr<_IRep>{_MakeSharedPtr<ZeroRep_> ()} : shared_ptr<_IRep>{_MakeSharedPtr<BasicRep_> (s)}}
+        : fRep_{s.empty () ? shared_ptr<_IRep>{MakeSharedPtr<ZeroRep_> ()} : shared_ptr<_IRep>{MakeSharedPtr<BasicRep_> (s)}}
     {
         Ensure (s.size () == size ());
     }
@@ -118,11 +107,11 @@ namespace Stroika::Foundation::Memory {
         Ensure (static_cast<size_t> (end - start) == size ());
     }
     inline BLOB::BLOB (const initializer_list<pair<const byte*, const byte*>>& startEndPairs)
-        : fRep_{_MakeSharedPtr<BasicRep_> (startEndPairs)}
+        : fRep_{MakeSharedPtr<BasicRep_> (startEndPairs)}
     {
     }
     inline BLOB::BLOB (const initializer_list<BLOB>& list2Concatenate)
-        : fRep_{_MakeSharedPtr<BasicRep_> (list2Concatenate)}
+        : fRep_{MakeSharedPtr<BasicRep_> (list2Concatenate)}
     {
     }
     inline BLOB::BLOB (const shared_ptr<_IRep>& rep)
@@ -133,56 +122,52 @@ namespace Stroika::Foundation::Memory {
         : fRep_{move (rep)}
     {
     }
-    inline BLOB BLOB::Hex (const char* b)
+    inline BLOB BLOB::FromHex (const char* b)
     {
         RequireNotNull (b);
-        return Hex (b, b + ::strlen (b));
+        return FromHex (b, b + ::strlen (b));
     }
-    inline BLOB BLOB::Hex (const string& s)
+    inline BLOB BLOB::FromHex (const char* s, const char* e)
     {
-        return Hex (s.c_str ());
-    }
-    inline BLOB BLOB::Hex (const string_view& s)
-    {
-        return Hex (s.data (), s.data () + s.length ());
+        return FromHex (span{s, e});
     }
     template <typename T>
-    inline BLOB BLOB::Raw (const T* s, const T* e)
+    inline BLOB BLOB::FromRaw (const T* s, const T* e)
         requires (is_trivially_copyable_v<T>)
     {
-        return BLOB (reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (e));
+        return BLOB{span{reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (e)}};
     }
     template <typename T>
-    inline BLOB BLOB::Raw (const T* s, size_t sz)
+    inline BLOB BLOB::FromRaw (const T* s, size_t sz)
         requires (is_trivially_copyable_v<T>)
     {
-        return BLOB (reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (s + sz));
+        return BLOB{span{reinterpret_cast<const byte*> (s), sz}};
     }
     template <typename T>
-    inline BLOB BLOB::Raw (const T* s)
+    inline BLOB BLOB::FromRaw (const T* s)
         requires (is_same_v<typename char_traits<T>::char_type, T>)
     {
         RequireNotNull (s);
-        return Raw (s, s + char_traits<T>::length (s));
+        return FromRaw (s, s + char_traits<T>::length (s));
     }
     template <typename T>
-    inline BLOB BLOB::Raw (const basic_string<T>& s)
+    inline BLOB BLOB::FromRaw (const basic_string<T>& s)
         requires (is_same_v<typename char_traits<T>::char_type, T>)
     {
-        return Raw (s.c_str (), s.c_str () + s.length ());
+        return FromRaw (s.c_str (), s.c_str () + s.length ());
     }
     template <typename T>
-    inline BLOB BLOB::Raw (const T& s)
+    inline BLOB BLOB::FromRaw (const T& s)
         requires (is_trivially_copyable_v<T>)
     {
-        return Raw (&s, &s + 1);
+        return FromRaw (&s, &s + 1);
     }
     template <typename BYTEISH, size_t EXTENT>
     inline BLOB BLOB::Attach (span<BYTEISH, EXTENT> s)
         requires (convertible_to<BYTEISH, const byte> or convertible_to<BYTEISH, const uint8_t>)
     {
         const byte* b = reinterpret_cast<const byte*> (s.data ());
-        return BLOB{_MakeSharedPtr<AdoptRep_> (b, b + s.size ())};
+        return BLOB{MakeSharedPtr<AdoptRep_> (b, b + s.size ())};
     }
     template <typename BYTEISH, size_t EXTENT>
     inline BLOB BLOB::Attach (BYTEISH (&data)[EXTENT])
@@ -192,7 +177,7 @@ namespace Stroika::Foundation::Memory {
     }
     inline BLOB BLOB::AttachAndDelete (const byte* b, size_t arrayLen)
     {
-        return BLOB{_MakeSharedPtr<AdoptAndDeleteRep_> (b, b + arrayLen)};
+        return BLOB{MakeSharedPtr<AdoptAndDeleteRep_> (b, b + arrayLen)};
     }
     template <>
     inline void BLOB::As (span<const byte>* into) const
