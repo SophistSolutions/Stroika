@@ -65,7 +65,7 @@ namespace {
         Debug::TraceContextBumper ctx{"RegressionTest4_DocSample_"};
         // cat doesn't exist on windows (without cygwin or some such) - but the regression test code depends on that anyhow
         // so this should be OK for now... -- LGP 2017-06-31
-        Memory::BLOB                     kData_{Memory::BLOB::Raw ("this is a test")};
+        Memory::BLOB                     kData_{Memory::BLOB::FromRaw ("this is a test")};
         Streams::MemoryStream<byte>::Ptr processStdIn  = Streams::MemoryStream<byte>::New (kData_);
         Streams::MemoryStream<byte>::Ptr processStdOut = Streams::MemoryStream<byte>::New ();
         ProcessRunner                    pr (L"cat", processStdIn, processStdOut);
@@ -77,7 +77,7 @@ namespace {
 namespace {
     namespace LargeDataSentThroughPipe_Test5_ {
         namespace Private_ {
-            const Memory::BLOB k1K_   = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
+            const Memory::BLOB k1K_   = Memory::BLOB::FromRaw ("0123456789abcdef").Repeat (1024 / 16);
             const Memory::BLOB k1MB_  = k1K_.Repeat (1024);
             const Memory::BLOB k16MB_ = k1MB_.Repeat (16);
 
@@ -108,7 +108,7 @@ namespace {
 namespace {
     namespace LargeDataSentThroughPipeBackground_Test6_ {
         namespace Private_ {
-            const Memory::BLOB k1K_   = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
+            const Memory::BLOB k1K_   = Memory::BLOB::FromRaw ("0123456789abcdef").Repeat (1024 / 16);
             const Memory::BLOB k1MB_  = k1K_.Repeat (1024);
             const Memory::BLOB k16MB_ = k1MB_.Repeat (16);
 

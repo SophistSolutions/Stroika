@@ -118,7 +118,7 @@ namespace {
     {
         using Memory::BLOB;
         // par Example Usage from doc header
-        SharedByValue<vector<byte>> b{BLOB::Hex ("abcd1245").Repeat (100).As<vector<byte>> ()};
+        SharedByValue<vector<byte>> b{BLOB::FromHex ("abcd1245").Repeat (100).As<vector<byte>> ()};
         SharedByValue<vector<byte>> c = b; // copied by reference until 'c' or 'b' changed values
         VerifyTestResult (c.cget () == b.cget ());
     }

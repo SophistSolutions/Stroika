@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Execution {
         *      \endcode
         *
         *      \code
-        *          Memory::BLOB                     kData_{ Memory::BLOB::Raw ("this is a test")  };
+        *          Memory::BLOB                     kData_{ Memory::BLOB::FromRaw ("this is a test")  };
         *          Streams::MemoryStream<byte>::Ptr processStdIn = Streams::MemoryStream<byte> { kData_ };
         *          Streams::MemoryStream<byte>::Ptr processStdOut = Streams::MemoryStream<byte> {};
         *          ProcessRunner                    pr{"cat", processStdIn, processStdOut};

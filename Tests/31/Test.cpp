@@ -524,8 +524,8 @@ namespace {
             const char        kKey1_[]        = "Mr Key";
             const char        kKey2_[]        = "One Very Very Very Long key 123";
             static const BLOB kPassphrases_[] = {
-                BLOB::Raw (kKey1_, Memory::NEltsOf (kKey1_) - 1),
-                BLOB::Raw (kKey2_, Memory::NEltsOf (kKey2_) - 1),
+                BLOB::FromRaw (kKey1_, Memory::NEltsOf (kKey1_) - 1),
+                BLOB::FromRaw (kKey2_, Memory::NEltsOf (kKey2_) - 1),
             };
 
             const char kSrc1_[] = "This is a very good test of a very good test";
@@ -534,8 +534,8 @@ namespace {
             const char kSrc4_[] = "0123456789";
 
             static const BLOB kTestMessages_[] = {
-                BLOB::Raw (kSrc1_, Memory::NEltsOf (kSrc1_) - 1), BLOB::Raw (kSrc2_, Memory::NEltsOf (kSrc2_) - 1),
-                BLOB::Raw (kSrc3_, Memory::NEltsOf (kSrc3_) - 1), BLOB::Raw (kSrc4_, Memory::NEltsOf (kSrc4_) - 1)};
+                BLOB::FromRaw (kSrc1_, Memory::NEltsOf (kSrc1_) - 1), BLOB::FromRaw (kSrc2_, Memory::NEltsOf (kSrc2_) - 1),
+                BLOB::FromRaw (kSrc3_, Memory::NEltsOf (kSrc3_) - 1), BLOB::FromRaw (kSrc4_, Memory::NEltsOf (kSrc4_) - 1)};
 
             Set<String> providers2Try{OpenSSL::LibraryContext::kDefaultProvider};
             if constexpr (OPENSSL_VERSION_NUMBER >= 0x30000000L) {
@@ -720,33 +720,34 @@ namespace {
             // openssl rc4 -P -k mypass -md md5 -nosalt
             //      key=A029D0DF84EB5549C641E04A9EF389E5
             checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass",
-                         DerivedKey{BLOB::Hex ("A029D0DF84EB5549C641E04A9EF389E5"), BLOB{}});
+                         DerivedKey{BLOB::FromHex ("A029D0DF84EB5549C641E04A9EF389E5"), BLOB{}});
 
             // openssl rc4 -P -k mypass  -md md5 -S 0102030405060708
             //  salt=0102030405060708
             //  key=56BDFF04895C5D16F5E3F68737000092
-            checkWithSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass", BLOB::Hex ("0102030405060708"),
-                           DerivedKey{BLOB::Hex ("56BDFF04895C5D16F5E3F68737000092"), BLOB{}});
+            checkWithSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass", BLOB::FromHex ("0102030405060708"),
+                           DerivedKey{BLOB::FromHex ("56BDFF04895C5D16F5E3F68737000092"), BLOB{}});
 
             // openssl blowfish -P -k mypass -md sha1 -nosalt
             //      key=E727D1464AE12436E899A726DA5B2F11
             //      iv =D8381B26923E0415
             checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kSHA1, L"mypass",
-                         DerivedKey{BLOB::Hex ("E727D1464AE12436E899A726DA5B2F11"), BLOB::Hex ("D8381B26923E0415")});
+                         DerivedKey{BLOB::FromHex ("E727D1464AE12436E899A726DA5B2F11"), BLOB::FromHex ("D8381B26923E0415")});
 
             // openssl aes-256-cbc -P -k mypass -md md5 -nosalt
             //      key=A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367
             //      iv =541F477059FAEFD57328A0B0D22F2A20
             checkNoSalt (OpenSSL::CipherAlgorithms::kAES_256_CBC, OpenSSL::DigestAlgorithms::kMD5, L"mypass",
-                         DerivedKey{BLOB::Hex ("A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367"),
-                                    BLOB::Hex ("541F477059FAEFD57328A0B0D22F2A20")});
+                         DerivedKey{BLOB::FromHex ("A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367"),
+                                    BLOB::FromHex ("541F477059FAEFD57328A0B0D22F2A20")});
 
             // openssl aes-128-ofb -P -k mypass -md sha1 -S 1122334455667788
             //      salt=1122334455667788
             //      key=36237DC4B90DD237329731E85EE5BB5A
             //      iv =35F1A763D974A002DB1721B8F25498E6
-            checkWithSalt (OpenSSL::CipherAlgorithms::kAES_128_OFB, OpenSSL::DigestAlgorithms::kSHA1, L"mypass", BLOB::Hex ("1122334455667788"),
-                           DerivedKey{BLOB::Hex ("36237DC4B90DD237329731E85EE5BB5A"), BLOB::Hex ("35F1A763D974A002DB1721B8F25498E6")});
+            checkWithSalt (
+                OpenSSL::CipherAlgorithms::kAES_128_OFB, OpenSSL::DigestAlgorithms::kSHA1, L"mypass", BLOB::FromHex ("1122334455667788"),
+                DerivedKey{BLOB::FromHex ("36237DC4B90DD237329731E85EE5BB5A"), BLOB::FromHex ("35F1A763D974A002DB1721B8F25498E6")});
 #endif
         }
     }
@@ -797,8 +798,8 @@ namespace {
             //      0000000 4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d
             //
             checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"abc",
-                         BLOB::Hex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a"),
-                         BLOB::Hex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d"));
+                         BLOB::FromHex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a"),
+                         BLOB::FromHex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d"));
 
             //  echo hi mom| od -t x1 --width=64
             //      0000000 68 69 20 6d 6f 6d 0d 0a
@@ -807,14 +808,14 @@ namespace {
             //  echo hi mom| openssl bf -md md5 -k aaa -nosalt | od -t x1 --width=64
             //      0000000 29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6
             checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kMD5, L"aaa",
-                         BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"sv));
+                         BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::FromHex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"sv));
 
             //  echo hi mom| od -t x1 --width=64
             //      0000000 68 69 20 6d 6f 6d 0d 0a
             //   echo hi mom| openssl aes-128-cbc -md md5 -k aaa -nosalt | od -t x1 --width=64
             //      0000000 6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53
             checkNoSalt (OpenSSL::CipherAlgorithms::kAES_128_CBC, OpenSSL::DigestAlgorithms::kMD5, L"aaa",
-                         BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"sv), BLOB::Hex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
+                         BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a"sv), BLOB::FromHex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
 #endif
         }
     }
@@ -837,12 +838,12 @@ namespace {
                  *      echo -n "This is a very good test of a very good test" | openssl enc -k password -e -aes-256-cbc -nosalt | od -t x1 --width=100
                  *          0000000 62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd
                  */
-                const Memory::BLOB srcText =
-                    Memory::BLOB::Hex ("2d 6e 20 22 54 68 69 73 20 69 73 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 20 6f 66 20 61 "
-                                       "20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 22 20 0d 0a");
-                const Memory::BLOB encResult =
-                    Memory::BLOB::Hex ("62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 "
-                                       "ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd");
+                const Memory::BLOB srcText = Memory::BLOB::FromHex (
+                    "2d 6e 20 22 54 68 69 73 20 69 73 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 20 6f 66 20 61 "
+                    "20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 22 20 0d 0a");
+                const Memory::BLOB encResult = Memory::BLOB::FromHex (
+                    "62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 "
+                    "ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd");
 #if qHasFeature_OpenSSL
                 const OpenSSL::DerivedKey kDerivedKey =
                     OpenSSL::EVP_BytesToKey{OpenSSL::CipherAlgorithms::kAES_256_CBC (), OpenSSL::DigestAlgorithms::kMD5, "password"};

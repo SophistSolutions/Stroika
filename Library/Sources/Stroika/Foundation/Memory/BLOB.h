@@ -135,15 +135,18 @@ namespace Stroika::Foundation::Memory {
          *      \code
          *          Assert  ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6") == BLOB { 0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6 }));
          *      \endcode
+         * 
+         *  \todo probably allow optionally leading 0x....
          */
         static BLOB FromHex (const char* b);
         static BLOB FromHex (const char* s, const char* e);
         static BLOB FromHex (span<const char> s);
+        static BLOB FromHex (string_view s);
         static BLOB FromHex (const Characters::String& s);
 
     public:
         /**
-         *  \brief  Convert pointed to data as raw bytes to BLOB.
+         *  \brief  Convert pointed to/referenced data to BLOB (treating the argument as raw bytes).
          *
          *  Like a constructor, but where you clearly name the intention of how to interpret the
          *  bytes.

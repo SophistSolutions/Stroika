@@ -280,7 +280,7 @@ void Options::SetDefaultNewDocFont ([[maybe_unused]] const FontSpecification& de
 {
 #if qPlatform_Windows
     sOptions_.Update ([&] (Options_ d) {
-        d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ());
+        d.fDefaultNewDocFont = BLOB::FromRaw (defaultNewDocFont.GetOSRep ());
         return d;
     });
 #endif

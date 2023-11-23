@@ -131,6 +131,10 @@ namespace Stroika::Foundation::Memory {
     {
         return FromHex (span{s, e});
     }
+    inline BLOB BLOB::FromHex (string_view s)
+    {
+        return FromHex (span{s});
+    }
     template <typename T>
     inline BLOB BLOB::FromRaw (const T* s, const T* e)
         requires (is_trivially_copyable_v<T>)

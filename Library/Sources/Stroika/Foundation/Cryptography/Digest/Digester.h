@@ -51,15 +51,15 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *
      *  \par Example Usage
      *      \code
-     *          return ComputeDigest<Algorithm::MD5> (Memory::BLOB::Raw (sb.AsUTF8 ())));
+     *          return ComputeDigest<Algorithm::MD5> (Memory::BLOB::FromRaw (sb.AsUTF8 ())));
      *      \endcode
      *
      *  \par Example Usage
      *      \code
      *          // to convert to string
-     *          return Format<String> (ComputeDigest<Algorithm::MD5> (Memory::BLOB::Raw (sb.AsUTF8 ())));
+     *          return Format<String> (ComputeDigest<Algorithm::MD5> (Memory::BLOB::FromRaw (sb)));
      *          // OR
-     *          return ComputeDigest<Algorithm::MD5, String> (Memory::BLOB::Raw (sb.AsUTF8 ())));
+     *          return ComputeDigest<Algorithm::MD5, String> (Memory::BLOB::FromRaw (sb)));
      *      \endcode
      *
      *  \par Example Usage
@@ -203,15 +203,15 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *
      *  \par Example Usage
      *      \code
-     *          return Digester<Algorithm::MD5>{} (Memory::BLOB::Raw (sb.AsUTF8 ())));
+     *          return Digester<Algorithm::MD5>{} (Memory::BLOB::FromRaw (sb.AsASCII ())));
      *      \endcode
      *
      *  \par Example Usage
      *      \code
      *          // to convert to string
-     *          return Format<String> (Digester<Algorithm::MD5>{} (Memory::BLOB::Raw (sb.AsUTF8 ())));
+     *          return Format<String> (Digester<Algorithm::MD5>{} (Memory::BLOB::FromRaw (sb.AsASCII ())));
      *          // OR
-     *          return Digester<Algorithm::MD5, String>{} (Memory::BLOB::Raw (sb.AsUTF8 ())));
+     *          return Digester<Algorithm::MD5, String>{} (Memory::BLOB::FromRaw (sb.AsASCII ())));
      *      \endcode
      *
      *  \par Example Usage

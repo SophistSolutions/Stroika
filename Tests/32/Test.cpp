@@ -801,7 +801,7 @@ namespace Test_04_CheckStringQuoting_ {
         CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned long long int>::min ()});
         CheckRoundtrip_encode_decode_unchanged (VariantValue{numeric_limits<unsigned long long int>::max ()});
         CheckRoundtrip_encode_decode_unchanged (VariantValue{true});
-        CheckRoundtrip_encode_decode_unchanged (VariantValue{Memory::BLOB::Hex ("aa1234abcd01010102030405")});
+        CheckRoundtrip_encode_decode_unchanged (VariantValue{Memory::BLOB::FromHex ("aa1234abcd01010102030405")});
     }
 }
 
@@ -1165,9 +1165,9 @@ namespace {
         void DoAll_ ()
         {
             using PRIVATE_::RoundTripCompressTest_;
-            RoundTripCompressTest_ (Memory::BLOB::Hex ("aa1234abcd01010102030405"));
+            RoundTripCompressTest_ (Memory::BLOB::FromHex ("aa1234abcd01010102030405"));
             {
-                Memory::BLOB bigBlob = Memory::BLOB::Hex ("00112233445566778899aabbccddeeff");
+                Memory::BLOB bigBlob = Memory::BLOB::FromHex ("00112233445566778899aabbccddeeff");
                 Assert (bigBlob.size () == 16);
                 while (bigBlob.size () < 256 * 1024) {
                     bigBlob = bigBlob + bigBlob;

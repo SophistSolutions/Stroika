@@ -217,7 +217,7 @@ namespace {
             using Characters::Character;
             using Characters::String;
             {
-                Memory::BLOB    s  = Memory::BLOB::Raw (u8"Testing 1, 2, 3");
+                Memory::BLOB    s  = Memory::BLOB::FromRaw (u8"Testing 1, 2, 3");
                 TextReader::Ptr tr = TextReader::New (s);
                 VerifyTestResult (tr.ReadAll () == L"Testing 1, 2, 3");
             }
