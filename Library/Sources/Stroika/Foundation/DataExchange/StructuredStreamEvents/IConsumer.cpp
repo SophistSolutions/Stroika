@@ -21,7 +21,7 @@ void IConsumer::EndDocument ()
 {
 }
 
-void IConsumer::StartElement ([[maybe_unused]] const Name& name)
+void IConsumer::StartElement ([[maybe_unused]] const Name& name, [[maybe_unused]] const Mapping<Name, String>& attributes)
 {
 }
 

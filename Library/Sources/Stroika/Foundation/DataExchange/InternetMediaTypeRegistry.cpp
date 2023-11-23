@@ -492,17 +492,18 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             // Simpler - just take the first - seems empirically fine/OK
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
             try {
+                using Name = StructuredStreamEvents::Name;
                 struct myHander_ : StructuredStreamEvents::IConsumer {
                     optional<String> fResult;
                     bool             onContentElt{false};
                     StringBuilder<>  fAccum;
-                    virtual void     StartElement (const StructuredStreamEvents::Name& name) override
+                    virtual void     StartElement (const Name& name, const Mapping<Name, String>& attributes) override
                     {
-                        if (name == StructuredStreamEvents::Name{"content"_k} and not fResult.has_value ()) {
+                        if (name == Name{"content"_k} and not fResult.has_value ()) {
                             onContentElt = true;
                         }
                     }
-                    virtual void EndElement ([[maybe_unused]] const StructuredStreamEvents::Name& name) override
+                    virtual void EndElement ([[maybe_unused]] const Name& name) override
                     {
                         if (onContentElt) {
                             Assert (not fResult);

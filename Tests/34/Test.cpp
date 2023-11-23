@@ -114,7 +114,7 @@ namespace {
             {
                 VerifyTestResult (fEltDepthCount == 0);
             }
-            virtual void StartElement (const StructuredStreamEvents::Name& name) override
+            virtual void StartElement (const StructuredStreamEvents::Name& name, const Mapping<StructuredStreamEvents::Name, String>& attributes) override
             {
                 fEltDepthCount++;
                 fEltStack.push_back (Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);

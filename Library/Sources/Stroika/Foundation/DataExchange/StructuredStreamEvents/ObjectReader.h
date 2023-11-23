@@ -617,7 +617,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         IConsumerDelegateToContext& operator= (const IConsumerDelegateToContext&) = delete;
 
     public:
-        virtual void StartElement (const Name& name) override;
+        virtual void StartElement (const Name& name, const Mapping<Name, String>& attributes) override;
         virtual void EndElement (const Name& name) override;
         virtual void TextInsideElement (const String& text) override;
 

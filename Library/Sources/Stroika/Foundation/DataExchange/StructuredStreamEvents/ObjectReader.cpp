@@ -201,7 +201,7 @@ String Context::TraceLeader_ () const
  ********************* Registry::IConsumerDelegateToContext *********************
  ********************************************************************************
  */
-void IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
+void IConsumerDelegateToContext::StartElement (const Name& name, const Mapping<Name, String>& attributes)
 {
     AssertNotNull (fContext.GetTop ());
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -213,6 +213,13 @@ void IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Nam
     shared_ptr<IElementConsumer> eltToPush = fContext.GetTop ()->HandleChildStart (name);
     AssertNotNull (eltToPush);
     fContext.Push (eltToPush);
+    // and push each attribute, as if called with StartElement (as was done before Stroika v3.0d5)
+    for (auto attr : attributes) {
+        static const Mapping<Name, String> kEmpty_;
+        StartElement (attr.fKey, kEmpty_);
+        TextInsideElement (attr.fValue);
+        EndElement (attr.fKey);
+    }
 }
 void IConsumerDelegateToContext::EndElement ([[maybe_unused]] const StructuredStreamEvents::Name& name)
 {

@@ -63,12 +63,11 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         /**
          *  \note   The default implementation ignores this.
          *
-         *  \note   Some XML-based SAX-event-sink classes have a StartElement() taking a map of attributes. Instead,
-         *          we represent those as sub-elements, with names having the 'IsAttribute' field true.
-         *
-         *          The reason for this departure is to help harmonize SAX-like parsing of JSON and XML.
+         *  \note Before Stroika v3.0d5 - **incompatible change** - StartElement() didn't take a map of attributes.
+         *        Instead, it generated a 'sub-element' for each. To achieve this same effect, a callback may simply
+         *        iterate over each attribute and call 'StartElement/TextInsideElement/EndElement' in its implementation.
          */
-        virtual void StartElement (const Name& name);
+        virtual void StartElement (const Name& name, const Mapping<Name, String>& attributes);
 
     public:
         /**
