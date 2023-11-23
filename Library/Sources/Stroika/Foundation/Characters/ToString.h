@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Characters {
      *  \note *Implementation Note*
      *      This implementation defaults to calling T{}.ToString ().
      * 
-     *  \note @see has_ToString_v to check if Characters::ToString () well defined.
+     *  \note @see IToString to check if Characters::ToString () well defined.
      */
     template <typename T, typename... ARGS>
     String ToString (T&& t, ARGS... args);
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Characters {
     /**
      * \brief flags may be std::dec, std::oct, or std::hex
      * 
-     *  Defaults to DEC for all types except uint8_t (where it defaults to hex).
+     *  Defaults to decimal for all types except uint8_t (where it defaults to hex).
      *  \note Prior to 2.1b6, all ToString<unsigned integer types> were all hex.
      * 
      *   @see https://en.cppreference.com/w/cpp/io/ios_base/fmtflags
