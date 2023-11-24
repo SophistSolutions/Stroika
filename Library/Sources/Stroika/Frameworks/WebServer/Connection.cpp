@@ -244,7 +244,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                                                                                      Characters::ToString (fSocket_).c_str ())};
 #endif
         fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
         fMessage_->SetAssertExternallySynchronizedMutexContext (GetSharedContext ());
 #endif
 

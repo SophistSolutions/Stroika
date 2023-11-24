@@ -142,7 +142,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual Headers& operator= (Headers&& rhs) noexcept;
         nonvirtual Headers& operator= (const Headers& rhs);
 
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     public:
         /**
          *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.

@@ -39,7 +39,7 @@ namespace Stroika::Frameworks::WebServer {
     public:
         nonvirtual Message& operator= (const Message&) = delete;
 
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     public:
         /**
          *  Allow users of the Connection object to have it share a 'assure externally synchronized' context.

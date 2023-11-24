@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Debug {
      *********** Debug::AssertExternallySynchronizedMutex::SharedContext ************
      ********************************************************************************
      */
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     inline AssertExternallySynchronizedMutex::SharedContext ::~SharedContext ()
     {
         Assert (fFullLocks_ == 0);
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Debug {
      **************** Debug::AssertExternallySynchronizedMutex **********************
      ********************************************************************************
      */
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext) noexcept
         // https://stroika.atlassian.net/browse/STK-500
         // NOTE - this will generate a throw and std::unexpected violation if there is no memory and multiset CTOR
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Debug {
         WriteContext writeLockThis{*this}; // we must be able modify this
         return *this;
     }
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     inline auto AssertExternallySynchronizedMutex::GetSharedContext () const -> shared_ptr<SharedContext>
     {
         return fSharedContext_;
@@ -156,25 +156,25 @@ namespace Stroika::Foundation::Debug {
 #endif
     inline void AssertExternallySynchronizedMutex::lock () noexcept
     {
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
         lock_ ();
 #endif
     }
     inline void AssertExternallySynchronizedMutex::unlock () noexcept
     {
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
         unlock_ ();
 #endif
     }
     inline void AssertExternallySynchronizedMutex::lock_shared () const noexcept
     {
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
         lock_shared_ ();
 #endif
     }
     inline void AssertExternallySynchronizedMutex::unlock_shared () const noexcept
     {
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
         unlock_shared_ ();
 #endif
     }

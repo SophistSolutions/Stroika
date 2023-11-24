@@ -53,13 +53,13 @@ Message::Message (Request&& srcRequest, Response&& srcResponse, const optional<I
     , fRequest_{move (srcRequest)}
     , fResponse_{move (srcResponse)}
 {
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     fRequest_.SetAssertExternallySynchronizedMutexContext (fThisAssertExternallySynchronized_.GetSharedContext ());
     fResponse_.SetAssertExternallySynchronizedMutexContext (fThisAssertExternallySynchronized_.GetSharedContext ());
 #endif
 }
 
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
 void Message::SetAssertExternallySynchronizedMutexContext (const shared_ptr<AssertExternallySynchronizedMutex::SharedContext>& sharedContext)
 {
     fThisAssertExternallySynchronized_.SetAssertExternallySynchronizedMutexContext (sharedContext);

@@ -353,7 +353,7 @@ Headers& Headers::operator= (Headers&& rhs) noexcept
     return *this;
 }
 
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
 void Headers::SetAssertExternallySynchronizedMutexContext (const shared_ptr<AssertExternallySynchronizedMutex::SharedContext>& sharedContext)
 {
     fThisAssertExternallySynchronized_.SetAssertExternallySynchronizedMutexContext (sharedContext);

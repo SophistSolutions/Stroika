@@ -44,28 +44,28 @@
 namespace Stroika::Foundation::Debug {
 
     /**
-     *  \brief qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled controls if this threaded access protection
+     *  \brief qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled controls if this threaded access protection
      * 
-     *      The compilation compile-time macro qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled can be used
+     *      The compilation compile-time macro qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled can be used
      *      to control if AssertExternallySynchronizedMutex checking is enabled.
      * 
-     *      If its not defined (typical), we look at qDebug. If that is false, qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled is disabled.
+     *      If its not defined (typical), we look at qDebug. If that is false, qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled is disabled.
      * 
      *      If qDebug is true, BUT, we have TSAN enabled, we STILL (change in Stroika v3.0d1) - DISABLE kAssertExternallySynchronizedMutexEnabled
      *      since its slow, and redundant.
      * 
-     *      Only if qDebug is true, there is no TSAN, and qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled is made
-     *      do we turn on qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled.
+     *      Only if qDebug is true, there is no TSAN, and qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled is made
+     *      do we turn on qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled.
      * 
      *  \note TRIED to do this with constexpr bool kAssertExternallySynchronizedMutexEnabled, but as of C++20 rules
      *        still too much of a PITA to use: cannot conditionally define classes, and nearly anything
      *        based on requires/ifconstexpr, unless it is a template.
      */
-#if not defined(qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled)
+#if not defined(qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled)
 #if qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
-#define qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled 1
+#define qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled 1
 #else
-#define qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled 0
+#define qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled 0
 #endif
 #endif
 
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Debug {
      *          lock() and shared_lock () - here - are NEVER blocking. They just assert there is no conflict.
      */
     class AssertExternallySynchronizedMutex {
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     public:
         /**
          *  Explicit shared context object, so we can construct multiple AssertExternallySynchronizedMutex which all
@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Debug {
          *          NOTE - the 'SharedContext' does NOT get copied by copy constructors, move constructors etc. Its tied
          *          to the l-value.
          */
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
         AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext = nullptr) noexcept;
         AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, AssertExternallySynchronizedMutex&& src) noexcept;
         AssertExternallySynchronizedMutex (AssertExternallySynchronizedMutex&& src) noexcept;
@@ -220,7 +220,7 @@ namespace Stroika::Foundation::Debug {
         nonvirtual AssertExternallySynchronizedMutex& operator= (AssertExternallySynchronizedMutex&& rhs) noexcept;
         nonvirtual AssertExternallySynchronizedMutex& operator= (const AssertExternallySynchronizedMutex& rhs) noexcept;
 
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     public:
         nonvirtual shared_ptr<SharedContext> GetSharedContext () const;
 
@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Debug {
          */
         using WriteContext = lock_guard<AssertExternallySynchronizedMutex>;
 
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     private:
         nonvirtual void lock_ () noexcept;
         nonvirtual void unlock_ () noexcept;

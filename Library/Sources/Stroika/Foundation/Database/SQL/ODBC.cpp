@@ -163,7 +163,7 @@ namespace {
 SQL::ODBC::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
     : inherited{src}
 {
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
     if (src != nullptr) {
         fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (src->fAssertExternallySynchronizedMutex.GetSharedContext ());
     }
@@ -194,7 +194,7 @@ struct Statement::MyRep_ : IRep {
                                Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.As<wstring> ().c_str ())};
 #endif
         RequireNotNull (db);
-#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
+#if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
         _fAssertExternallySynchronizedMutex.SetAssertExternallySynchronizedMutexContext (
             fConnectionPtr_.fAssertExternallySynchronizedMutex.GetSharedContext ());
 #endif
