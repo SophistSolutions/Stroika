@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Execution {
         }
 
         // Not all threads are interuptible. For example, the 'main' thread cannot be interrupted or aborted
-        // @todo NOTE - this is a defect compared to Stroika v2.1 interupption - where you could interupted but not usefully abort the main thread)
+        // @todo NOTE - this is a defect compared to Stroika v2.1 interupption - where you could interrupted but not usefully abort the main thread)
         // But if  kSupportsStopToken, and the current thread supports interruption, we don't get here. So just check the other case
         bool currentThreadIsInterruptible = (not kSupportsStopToken) and Thread::IsCurrentThreadInterruptible ();
         Assert (not kSupportsStopToken or not currentThreadIsInterruptible); // just cuz of tests above

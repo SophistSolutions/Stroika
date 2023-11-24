@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Execution {
      *      class   AbortException;
      *
      *  Thread 'interruption' happens via 'cancelation points'. Cancelation points are points in the code
-     *  where we check to see if the current running thread has been interupted (or aborted) and raise
+     *  where we check to see if the current running thread has been interrupted (or aborted) and raise
      *  the appropriate exception. 
      *
      *  This mechanism is almost completely co-operative, meaning that user
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Execution {
      *  @see Handle_ErrNoResultInterruption
      *
      *  ***Thread Cancelation Points***
-     *      A cancelation point is any (typically but not always blocking) function which will be interupted (cause interruption exception) and stop blocking,
+     *      A cancelation point is any (typically but not always blocking) function which will be interrupted (cause interruption exception) and stop blocking,
      *      when someone calls Thread::Interupt or Thread::Abort() on its thread object.
      *
      *      Roughly, these are subroutines which call 

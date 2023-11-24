@@ -1240,7 +1240,7 @@ void Execution::Thread::CheckForInterruption ()
 void Execution::Thread::Yield ()
 {
     /*
-     *  Check before so we abort more quickly, and after since while we were sleeping we could be interupted.
+     *  Check before so we abort more quickly, and after since while we were sleeping we could be interrupted.
      *  And this (yeild) happens at a non-time critical point, so though checking before and after is redudnant,
      *  not importantly
      */
