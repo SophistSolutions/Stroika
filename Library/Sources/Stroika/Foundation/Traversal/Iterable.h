@@ -217,6 +217,18 @@ namespace Stroika::Foundation::Traversal {
          */
         using value_type = T;
 
+    public:
+        /**
+         *  For Stroika containers, all iteartors are really const_iteartors, but this allows for better STL interoperability.
+         */
+        using iterator = Iterator<T>;
+
+    public:
+        /**
+         *  For better STL interoperability.
+         */
+        using const_iterator = Iterator<T>;
+
     protected:
         class _IRep;
 
