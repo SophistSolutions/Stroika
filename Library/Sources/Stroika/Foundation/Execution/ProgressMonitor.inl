@@ -40,6 +40,17 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
+     *********************** ProgressMonitor::CurrentTaskInfo ***********************
+     ********************************************************************************
+     */
+    inline ProgressMonitor::CurrentTaskInfo::CurrentTaskInfo (const Characters::String& taskName, const DataExchange::VariantValue& details)
+        : fName{taskName}
+        , fDetails{details}
+    {
+    }
+
+    /*
+     ********************************************************************************
      ***************************** ProgressMontitor *********************************
      ********************************************************************************
      */

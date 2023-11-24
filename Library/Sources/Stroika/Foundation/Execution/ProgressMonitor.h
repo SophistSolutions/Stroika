@@ -174,6 +174,9 @@ namespace Stroika::Foundation::Execution {
     struct ProgressMonitor::CurrentTaskInfo {
         Characters::String         fName;
         DataExchange::VariantValue fDetails;
+
+        CurrentTaskInfo (const Characters::String& taskName = {}, const DataExchange::VariantValue& details = {});
+        CurrentTaskInfo (const CurrentTaskInfo&) = default;
     };
 
     /**
@@ -200,6 +203,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
+         *  Progress is a number 0..1. However, if outside that range, it will be silently pinned to be in that range (so
+         *  caller need not check/be careful).
          */
         nonvirtual void SetProgress (ProgressRangeType p);
 
