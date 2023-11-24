@@ -480,6 +480,12 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"RegressionTest4_Synchronized_"};
             Debug::TimingTrace        tt;
+            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            if (kRunningValgrind_ and qDebug) {
+                // Test passes, but takes hours and adds insufficient value to wait
+                DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+                return;
+            }
             Private_::Test1_ ();
             Private_::Test2_LongWritesBlock_ ();
         }
