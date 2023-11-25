@@ -59,6 +59,8 @@ namespace Stroika::Foundation::Memory {
     /**
      *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
      *  change (except by assignement - being assigned over).
+     * 
+     *  A BLOB can be thought of as a 'forever' span<cosnt byte>.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -85,7 +87,6 @@ namespace Stroika::Foundation::Memory {
          *      \code
          *           BLOB    b1  =   BLOB{ 0x29, 0x14, 0x4a, };
          *      \endcode
-         * 
          * 
          *  \see also FromHex, FromRaw (constructor like static functions with special names to make treatment more clear)
          *  \see also Attach, and AttachAndDelete, more rarely useful (and dangerous).

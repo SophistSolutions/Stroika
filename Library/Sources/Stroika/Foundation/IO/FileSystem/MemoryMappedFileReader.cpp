@@ -50,8 +50,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName
     auto fileLength = filesystem::file_size (fileName);
     //WRONG BUT NOT GROSSLY - @todo fix -- AssertNotImplemented (); // size of file - compute -- must check for overlflow and throw...
     //  offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE). from http://linux.die.net/man/2/mmap
-    fFileDataStart_ = reinterpret_cast<const byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0));
-    fFileDataEnd_   = fFileDataStart_ + fileLength;
+    fSpan_          = span{reinterpret_cast<const byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0)), fileLength};
     ::close (fd); //http://linux.die.net/man/2/mmap says don't need to keep FD open while mmapped
 #elif qPlatform_Windows
     try {
@@ -65,9 +64,8 @@ MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName
             fFileMapping_ = ::CreateFileMapping (fFileHandle_, nullptr, PAGE_READONLY, 0, fileSize, 0);
             ThrowIfZeroGetLastError (fFileMapping_);
             AssertNotNull (fFileMapping_);
-            fFileDataStart_ = reinterpret_cast<const byte*> (::MapViewOfFile (fFileMapping_, FILE_MAP_READ, 0, 0, 0));
-            ThrowIfZeroGetLastError (fFileDataStart_);
-            fFileDataEnd_ = fFileDataStart_ + fileSize;
+            fSpan_ = span{reinterpret_cast<const byte*> (::MapViewOfFile (fFileMapping_, FILE_MAP_READ, 0, 0, 0)), fileSize};
+            ThrowIfZeroGetLastError (fSpan_.data ());
         }
     }
     catch (...) {
@@ -87,12 +85,12 @@ MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName
 MemoryMappedFileReader::~MemoryMappedFileReader ()
 {
 #if qPlatform_POSIX
-    if (::munmap (const_cast<byte*> (fFileDataStart_), fFileDataEnd_ - fFileDataStart_)) {
+    if (::munmap (fSpan_.data (), fSpan_.size ())) {
         DbgTrace (L"munmap failed: Cannot throw in DTOR, so just DbgTrace log: errno=%d", errno);
     }
 #elif qPlatform_Windows
-    if (fFileDataStart_ != nullptr) {
-        (void)::UnmapViewOfFile (fFileDataStart_);
+    if (fSpan_.data () != nullptr) {
+        (void)::UnmapViewOfFile (fSpan_.data ());
     }
     if (fFileMapping_ != INVALID_HANDLE_VALUE) {
         ::CloseHandle (fFileMapping_);

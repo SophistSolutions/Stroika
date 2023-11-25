@@ -53,9 +53,14 @@ namespace Stroika::Foundation::IO::FileSystem {
          */
         nonvirtual size_t size () const;
 
+    public:
+        nonvirtual span<const byte> AsSpan () const;
+
+    public:
+        nonvirtual span<const byte> operator() () const;
+
     private:
-        const byte* fFileDataStart_{nullptr};
-        const byte* fFileDataEnd_{nullptr};
+        span<const byte> fSpan_;
 #if qPlatform_Windows
         HANDLE fFileHandle_{INVALID_HANDLE_VALUE};
         HANDLE fFileMapping_{INVALID_HANDLE_VALUE};
