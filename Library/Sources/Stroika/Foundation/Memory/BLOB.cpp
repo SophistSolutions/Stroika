@@ -184,10 +184,10 @@ namespace {
     using namespace Streams;
     struct BLOBBINSTREAM_ : InputStream<byte>::Ptr {
         BLOBBINSTREAM_ (const BLOB& b)
-            : InputStream<byte>::Ptr{make_shared<REP> (b)}
+            : InputStream<byte>::Ptr{Memory::MakeSharedPtr<REP> (b)}
         {
         }
-        struct REP : InputStream<byte>::_IRep {
+        struct REP : InputStream<byte>::_IRep, public Memory::UseBlockAllocationIfAppropriate<REP> {
             bool                                                    fIsOpenForRead_{true};
             [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
             REP (const BLOB& b)
