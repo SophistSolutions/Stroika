@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Configuration {
      ********************************************************************************
      */
     template <typename ENUM>
-    inline constexpr typename underlying_type<ENUM>::type ToInt (ENUM e)
+    inline constexpr underlying_type_t<ENUM> ToInt (ENUM e)
     {
         // https://stroika.atlassian.net/browse/STK-549
         //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
@@ -45,9 +45,9 @@ namespace Stroika::Foundation::Configuration {
      ********************************************************************************
      */
     template <typename ENUM>
-    constexpr make_unsigned_t<typename underlying_type<ENUM>::type> GetDistanceSpanned ()
+    constexpr make_unsigned_t<underlying_type_t<ENUM>> GetDistanceSpanned ()
     {
-        return static_cast<make_unsigned_t<typename underlying_type<ENUM>::type>> (ENUM::eCOUNT);
+        return static_cast<make_unsigned_t<underlying_type_t<ENUM>>> (ENUM::eCOUNT);
     }
 
     /*
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Configuration {
      ********************************************************************************
      */
     template <typename ENUM>
-    inline constexpr ENUM ToEnum (typename underlying_type<ENUM>::type e)
+    inline constexpr ENUM ToEnum (underlying_type_t<ENUM> e)
     {
         // https://stroika.atlassian.net/browse/STK-549
         //static_assert (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);

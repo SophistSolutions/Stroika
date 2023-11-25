@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Configuration {
      *  @todo   See if there is some better way for this.
      */
     template <typename ENUM>
-    constexpr typename underlying_type<ENUM>::type ToInt (ENUM e);
+    constexpr underlying_type_t<ENUM> ToInt (ENUM e);
 
     /**
      *  \brief  return the distance spanned by an enum, e.g. for use in an array
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Configuration {
      *
      */
     template <typename ENUM>
-    constexpr make_unsigned_t<typename underlying_type<ENUM>::type> GetDistanceSpanned (ENUM e);
+    constexpr make_unsigned_t<underlying_type_t<ENUM>> GetDistanceSpanned (ENUM e);
 
     /**
      *  \brief  Cast the given int to the given ENUM type - (like static_cast<int>()) - but check range.
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Configuration {
      *  This function is handy since class enum's cannot be automatically promoted to integers.
      */
     template <typename ENUM>
-    constexpr ENUM ToEnum (typename underlying_type<ENUM>::type e);
+    constexpr ENUM ToEnum (underlying_type_t<ENUM> e);
 
     /**
      *  \brief  offset of given enum from ENUM::eSTART
