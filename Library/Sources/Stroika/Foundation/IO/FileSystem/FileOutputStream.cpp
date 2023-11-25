@@ -50,7 +50,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  ************************* FileSystem::FileOutputStream *************************
  ********************************************************************************
  */
-class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep {
+class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep, public Memory::BlockAllocationUseHelper<FileOutputStream::Rep_> {
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;
@@ -123,7 +123,7 @@ public:
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
 
-        if (start != end) {
+        if (start != end) [[likely]] {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             auto                                            activity = LazyEvalActivity (
                 [&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
@@ -220,17 +220,17 @@ private:
 
 auto FileOutputStream::New (const filesystem::path& fileName, FlushFlag flushFlag) -> Ptr
 {
-    return make_shared<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag);
+    return Memory::MakeSharedPtr<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag);
 }
 
 auto FileOutputStream::New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
 {
-    return make_shared<Rep_> (fileName, appendFlag, flushFlag);
+    return Memory::MakeSharedPtr<Rep_> (fileName, appendFlag, flushFlag);
 }
 
 auto FileOutputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag) -> Ptr
 {
-    return make_shared<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag);
+    return Memory::MakeSharedPtr<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag);
 }
 
 auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, FlushFlag flushFlag) -> Ptr

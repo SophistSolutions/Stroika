@@ -53,7 +53,7 @@ using Streams::SeekOffsetType;
  **************************** FileSystem::FileInputStream ***********************
  ********************************************************************************
  */
-class FileInputStream::Rep_ : public InputStream<byte>::_IRep {
+class FileInputStream::Rep_ : public InputStream<byte>::_IRep, public Memory::BlockAllocationUseHelper<FileInputStream::Rep_> {
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;
@@ -251,12 +251,12 @@ private:
 
 auto FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable) -> Ptr
 {
-    return _mkPtr (make_shared<Rep_> (fileName, seekable));
+    return _mkPtr (Memory::MakeSharedPtr<Rep_> (fileName, seekable));
 }
 
 auto FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable) -> Ptr
 {
-    return _mkPtr (make_shared<Rep_> (fd, adoptFDPolicy, seekable));
+    return _mkPtr (Memory::MakeSharedPtr<Rep_> (fd, adoptFDPolicy, seekable));
 }
 
 auto FileInputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, SeekableFlag seekable) -> Ptr
