@@ -184,139 +184,64 @@ namespace Stroika::Foundation::Memory {
         return BLOB{MakeSharedPtr<AdoptAndDeleteRep_> (b, b + arrayLen)};
     }
     template <>
-    inline void BLOB::As (span<const byte>* into) const
-    {
-        RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        *into = fRep_->GetBounds ();
-    }
-    template <>
-    inline void BLOB::As (span<const uint8_t>* into) const
-    {
-        RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        auto                                                  s = fRep_->GetBounds ();
-        *into = span<const uint8_t>{reinterpret_cast<const uint8_t*> (s.data ()), s.size ()};
-    }
-    template <>
-    inline vector<byte> BLOB::As () const
-    {
-        vector<byte> result;
-        As (&result);
-        return result;
-    }
-    template <>
-    inline vector<uint8_t> BLOB::As () const
-    {
-        vector<uint8_t> result;
-        As (&result);
-        return result;
-    }
-    template <>
-    inline span<const byte> BLOB::As () const
-    {
-        span<const byte>                                      result;
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        As (&result);
-        return result;
-    }
-    template <>
-    inline span<const uint8_t> BLOB::As () const
-    {
-        span<const uint8_t>                                   result;
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        As (&result);
-        return result;
-    }
-    template <>
-    inline pair<const byte*, const byte*> BLOB::As () const
-    {
-        pair<const byte*, const byte*>                        result;
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        As (&result);
-        return result;
-    }
-    template <>
-    inline pair<const uint8_t*, const uint8_t*> BLOB::As () const
-    {
-        pair<const uint8_t*, const uint8_t*>                  result;
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        As (&result);
-        return result;
-    }
+    Streams::InputStream<byte>::Ptr BLOB::As () const;
     template <typename T>
     inline T BLOB::As () const
+#if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+        // clang-format off
+        requires (
+            same_as<T,span<const byte>>
+            or same_as<T,span<const uint8_t>>
+            or same_as<T,pair<const byte*, const byte*>>
+            or same_as<T,pair<const uint8_t*, const uint8_t*>>
+            or same_as<T,vector<byte>>
+            or same_as<T,vector<uint8_t>>
+            or same_as<T,Streams::InputStream<byte>::Ptr>
+            or same_as<T,string>
+            or is_trivially_copyable_v<T>
+        )
+    // clang-format on
+#endif
     {
-        static_assert (is_trivially_copyable_v<T>);
-        Require (size () >= sizeof (T)); // allow object slicing, but not reading garbage data
-        return *(reinterpret_cast<const T*> (begin ()));
-    }
-    template <>
-    inline void BLOB::As (vector<byte>* into) const
-    {
-        RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        span<const byte>                                      tmp = fRep_->GetBounds ();
-        Assert (tmp.begin () <= tmp.end ());
-        into->assign (tmp.begin (), tmp.end ());
-    }
-    template <>
-    inline void BLOB::As (vector<uint8_t>* into) const
-    {
-        RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        span<const byte>                                      tmp = fRep_->GetBounds ();
-        Assert (tmp.begin () <= tmp.end ());
-        into->assign (reinterpret_cast<const uint8_t*> (tmp.data ()), reinterpret_cast<const uint8_t*> (tmp.data () + tmp.size ()));
-    }
-    template <>
-    inline void BLOB::As (string* into) const
-    {
-        RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        span<const byte>                                      tmp = fRep_->GetBounds ();
-        Assert (tmp.begin () <= tmp.end ());
-        into->clear ();
-        into->assign (reinterpret_cast<const char*> (tmp.data ()), reinterpret_cast<const char*> (tmp.data () + tmp.size ()));
-        Ensure (into->size () == tmp.size ());
-    }
-    template <>
-    inline string BLOB::As () const
-    {
-        string r;
-        As (&r);
-        return r;
-    }
-    template <>
-    inline void BLOB::As (pair<const byte*, const byte*>* into) const
-    {
-        RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        auto                                                  s = fRep_->GetBounds ();
-        *into                                                   = make_pair (s.data (), s.data () + s.size ());
-    }
-    template <>
-    inline void BLOB::As (pair<const uint8_t*, const uint8_t*>* into) const
-    {
-        RequireNotNull (into);
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        span<const byte>                                      s = fRep_->GetBounds ();
-        *into = make_pair (reinterpret_cast<const uint8_t*> (s.data ()), reinterpret_cast<const uint8_t*> (s.data () + s.size ()));
-    }
-    template <typename T>
-    inline void BLOB::As (T* into) const
-    {
-        static_assert (is_trivially_copyable_v<T>);
-        Require (size () >= sizeof (T)); // allow object slicing, but not reading garbage data
-        (void)::memccpy (into, begin (), sizeof (T));
+        if constexpr (same_as<T, span<const byte>>) {
+            return fRep_->GetBounds ();
+        }
+        else if constexpr (same_as<T, span<const uint8_t>>) {
+            return T{reinterpret_cast<const uint8_t*> (this->data ()), this->size ()};
+        }
+        else if constexpr (same_as<T, pair<const byte*, const byte*>>) {
+            return make_pair (this->data (), this->data () + this->size ());
+        }
+        else if constexpr (same_as<T, pair<const uint8_t*, const uint8_t*>>) {
+            auto s = this->As<span<const uint8_t>> ();
+            return make_pair (s.data (), s.data () + s.size ());
+        }
+        else if constexpr (same_as<T, vector<byte>>) {
+            return T{this->begin (), this->end ()};
+        }
+        else if constexpr (same_as<T, vector<uint8_t>>) {
+            auto s = this->As<span<const uint8_t>> ();
+            return T{s.begin (), s.end ()};
+        }
+        else if constexpr (same_as<T, Streams::InputStream<byte>::Ptr>) {
+            AssertNotReached (); //template specialized - handled in C++ file
+        }
+        else if constexpr (same_as<T, string>) {
+            span<const byte> tmp = fRep_->GetBounds ();
+            return string{reinterpret_cast<const char*> (tmp.data ()), reinterpret_cast<const char*> (tmp.data () + tmp.size ())};
+        }
+        else if constexpr (is_trivially_copyable_v<T>) {
+            Require (size () >= sizeof (T)); // allow object slicing, but not reading garbage data
+            return *(reinterpret_cast<const T*> (begin ()));
+        }
     }
     inline byte BLOB::operator[] (const size_t i) const
     {
-        pair<const byte*, const byte*>                        result;
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        As<pair<const byte*, const byte*>> (&result);
-        Assert (i < static_cast<size_t> (result.second - result.first));
-        return result.first[i];
+        span<const byte>                                      tmp = fRep_->GetBounds ();
+        Assert (i < tmp.size ());
+        return tmp[i];
     }
     inline bool BLOB::empty () const
     {

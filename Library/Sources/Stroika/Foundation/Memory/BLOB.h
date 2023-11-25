@@ -217,12 +217,12 @@ namespace Stroika::Foundation::Memory {
         /**
          *  Convert BLOB losslessly into a standard C++ type.
          *      Supported Types for 'T' include:
-         *          o   span<byte>
-         *          o   span<uint8_t>
-         *          o   vector<byte>
-         *          o   vector<uint8_t>
+         *          o   span<const byte>
+         *          o   span<const uint8_t>
          *          o   pair<const byte*, const byte*>
          *          o   pair<const uint8_t*, const uint8_t*>
+         *          o   vector<byte>
+         *          o   vector<uint8_t>
          *          o   Streams::InputStream<byte>::Ptr
          *          o   string      (bytes as characters - note this MAY include NUL-bytes - https://stackoverflow.com/questions/2845769/can-a-stdstring-contain-embedded-nulls)
          *          o   any T where is_trivially_copyable
@@ -231,13 +231,23 @@ namespace Stroika::Foundation::Memory {
          *        so use with care.
          */
         template <typename T>
-        nonvirtual T As () const;
-        /**
-         *  Convert BLOB losslessly into a standard C++ type.
-         *      Supported Types for 'T' include (@see same as As/0)
-         */
-        template <typename T>
-        nonvirtual void As (T* into) const;
+        nonvirtual T As () const
+#if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+            // clang-format off
+            requires (
+                same_as<T,span<const byte>>
+                or same_as<T,span<const uint8_t>>
+                or same_as<T,pair<const byte*, const byte*>>
+                or same_as<T,pair<const uint8_t*, const uint8_t*>>
+                or same_as<T,vector<byte>>
+                or same_as<T,vector<uint8_t>>
+                or same_as<T,Streams::InputStream<byte>::Ptr>
+                or same_as<T,string>
+                or is_trivially_copyable_v<T>
+            )
+#endif
+            ;
+        // clang-format on
 
     public:
         /**
@@ -336,6 +346,11 @@ namespace Stroika::Foundation::Memory {
         nonvirtual BLOB operator+ (const BLOB& rhs) const;
 
     public:
+        template <typename T>
+        [[deprecated ("Since Stroika v3.0d5 - use As/0")]] void As (T* into) const
+        {
+            *into = this->As<T> ();
+        }
         [[deprecated ("Since Stroika v3.0d4 use span")]] static BLOB Attach (const byte* start, const byte* end)
         {
             return Attach (span{start, end});
@@ -370,36 +385,6 @@ namespace Stroika::Foundation::Memory {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         shared_ptr<_IRep>                                              fRep_;
     };
-
-    template <>
-    vector<byte> BLOB::As () const;
-    template <>
-    vector<uint8_t> BLOB::As () const;
-    template <>
-    span<const byte> BLOB::As () const;
-    template <>
-    span<const uint8_t> BLOB::As () const;
-    template <>
-    pair<const byte*, const byte*> BLOB::As () const;
-    template <>
-    pair<const uint8_t*, const uint8_t*> BLOB::As () const;
-    template <>
-    Streams::InputStream<byte>::Ptr BLOB::As () const;
-
-    template <>
-    void BLOB::As (vector<byte>* into) const;
-    template <>
-    void BLOB::As (vector<uint8_t>* into) const;
-    template <>
-    void BLOB::As (span<const byte>* into) const;
-    template <>
-    void BLOB::As (span<const uint8_t>* into) const;
-    template <>
-    void BLOB::As (pair<const byte*, const byte*>* into) const;
-    template <>
-    void BLOB::As (pair<const uint8_t*, const uint8_t*>* into) const;
-    template <>
-    void BLOB::As (Streams::InputStream<byte>::Ptr* into) const;
 
     /**
      * This abstract interface defines the behavior of a BLOB.
