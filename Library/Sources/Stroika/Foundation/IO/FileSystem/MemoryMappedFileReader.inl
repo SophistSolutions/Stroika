@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     {
         return fSpan_.size ();
     }
-    inline span<const byte> MemoryMappedFileReader::AsSpan() const
+    inline span<const byte> MemoryMappedFileReader::AsSpan () const
     {
         return fSpan_;
     }
