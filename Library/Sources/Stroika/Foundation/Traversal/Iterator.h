@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Traversal {
      *  Identical type to std::iterator<> - but duplicated here because std::iterator<> was deprecated in C++17.
      *  We just need a handy way to capture all the defaults/properties for our iterator class.
      */
-    template <typename CATEGORY, typename T, typename DIFF = ptrdiff_t, typename POINTER = T*, typename REFERENCE = T&>
+    template <typename CATEGORY, typename T, typename DIFF = ptrdiff_t, typename POINTER = const T*, typename REFERENCE = const T&>
     struct DefaultIteratorTraits {
         using iterator_category = CATEGORY;
         using value_type        = T;
@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Traversal {
 
     /**
      *  \brief
-     *      An Iterator<T> is a copyable object which allows traversing the contents of some container.
+     *      An Iterator<T> is a copyable object which allows traversing the contents of some container. It is like an std::const_iterator.
      *
      *  \@todo EXPLAIN HOW THIS IS CONNECTED TO c++20 'range' and probably make this work with ranges!!!
      * 
