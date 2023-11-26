@@ -556,6 +556,12 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest6_ThreadWaiting_"};
         Debug::TimingTrace        tt;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qDebug) {
+            // Test passes, but takes a while under valgrind.
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            return;
+        }
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         // if this triggers - add waits to end of procedure - so we assure no 'side effects' moving on to next test...
         [[maybe_unused]] auto&& cleanupReport = Finally ([] () {
@@ -631,7 +637,13 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx{"RegressionTest8_ThreadPool_"};
         Debug::TimingTrace        tt;
-        recursive_mutex           useCritSection;
+        static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+        if (kRunningValgrind_ and qDebug) {
+            // Test passes, but takes a while under valgrind.
+            DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
+            return;
+        }
+        recursive_mutex useCritSection;
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
         auto doIt = [&] (int* argP) {
             for (int i = 0; i < 10; i++) {
@@ -879,7 +891,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest15_ThreadPoolStarvationBug_"};
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        if (kRunningValgrind_) {
+        if (kRunningValgrind_ and qDebug) {
             // Test passes, but takes hour with valgrind/memcheck. Not without valgrind however
             DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
             return;
@@ -1072,7 +1084,7 @@ namespace {
             Debug::TraceContextBumper ctx{"RegressionTest19_ThreadPoolAndBlockingQueue_"};
             Debug::TimingTrace        tt;
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-            if (kRunningValgrind_) {
+            if (kRunningValgrind_ and qDebug) {
                 // Test passes, but takes 8 HRs on ubuntu 20.04 ; and quite a while (hours) on other ubuntu releases. Not without valgrind however
                 DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
                 return;
