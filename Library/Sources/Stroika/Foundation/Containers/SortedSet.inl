@@ -42,6 +42,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline SortedSet<T>::SortedSet (const initializer_list<T>& src)
+        requires (IInOrderComparer<less<T>, T>)
         : SortedSet{}
     {
         this->AddAll (src);
@@ -59,7 +60,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline SortedSet<T>::SortedSet (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedSet<T>>)
+        requires (IInOrderComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedSet<T>>)
         : SortedSet{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -77,6 +78,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline SortedSet<T>::SortedSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        requires (IInOrderComparer<less<T>, T>)
         : SortedSet{}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));

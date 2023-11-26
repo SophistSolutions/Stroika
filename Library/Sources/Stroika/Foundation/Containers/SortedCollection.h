@@ -96,17 +96,19 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
-        SortedCollection ();
+        SortedCollection ()
+            requires (IInOrderComparer<less<T>, T>);
         template <IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedCollection (INORDER_COMPARER&& inorderComparer);
         SortedCollection (SortedCollection&& src) noexcept      = default;
         SortedCollection (const SortedCollection& src) noexcept = default;
-        SortedCollection (const initializer_list<T>& src);
+        SortedCollection (const initializer_list<T>& src)
+            requires (IInOrderComparer<less<T>, T>);
         template <IInOrderComparer<T> INORDER_COMPARER>
         SortedCollection (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         explicit SortedCollection (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection<T>>)
+            requires (IInOrderComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : SortedCollection{}
         {
@@ -118,7 +120,8 @@ namespace Stroika::Foundation::Containers {
         template <IInOrderComparer<T> INORDER_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
         SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-        SortedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        SortedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (IInOrderComparer<less<T>, T>);
         template <IInOrderComparer<T> INORDER_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
         SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 

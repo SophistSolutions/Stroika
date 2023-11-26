@@ -16,6 +16,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline SortedCollection<T>::SortedCollection ()
+        requires (IInOrderComparer<less<T>, T>)
         : SortedCollection{less<T>{}}
     {
         _AssertRepValidType ();
@@ -42,6 +43,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline SortedCollection<T>::SortedCollection (const initializer_list<T>& src)
+        requires (IInOrderComparer<less<T>, T>)
         : SortedCollection{}
     {
         this->AddAll (src);
@@ -59,7 +61,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection<T>>)
+        requires (IInOrderComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection<T>>)
         : SortedCollection{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -77,6 +79,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        requires (IInOrderComparer<less<T>, T>)
         : SortedCollection{}
     {
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));

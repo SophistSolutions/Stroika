@@ -42,6 +42,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& src)
+        requires (Common::IInOrderComparer<less<T>, T>)
         : SortedMultiSet{}
     {
         this->AddAll (src);
@@ -57,6 +58,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<value_type>& src)
+        requires (Common::IInOrderComparer<less<T>, T>)
         : SortedMultiSet{}
     {
         this->AddAll (src);
@@ -74,7 +76,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet<T, TRAITS>>)
+        requires (Common::IInOrderComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet<T, TRAITS>>)
         : SortedMultiSet{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -92,6 +94,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        requires (Common::IInOrderComparer<less<T>, T>)
         : SortedMultiSet{}
     {
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));

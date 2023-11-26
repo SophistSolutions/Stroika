@@ -82,15 +82,17 @@ namespace Stroika::Foundation::Containers {
         explicit SortedMultiSet (INORDER_COMPARER&& inorderComparer);
         SortedMultiSet (SortedMultiSet&& src) noexcept      = default;
         SortedMultiSet (const SortedMultiSet& src) noexcept = default;
-        SortedMultiSet (const initializer_list<T>& src);
+        SortedMultiSet (const initializer_list<T>& src)
+            requires (Common::IInOrderComparer<less<T>, T>);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src);
-        SortedMultiSet (const initializer_list<value_type>& src);
+        SortedMultiSet (const initializer_list<value_type>& src)
+            requires (Common::IInOrderComparer<less<T>, T>);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
         template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         explicit SortedMultiSet (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet<T, TRAITS>>)
+            requires (Common::IInOrderComparer<less<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet<T, TRAITS>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : SortedMultiSet{}
         {
@@ -102,7 +104,8 @@ namespace Stroika::Foundation::Containers {
         template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-        SortedMultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        SortedMultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (Common::IInOrderComparer<less<T>, T>);
         template <IInputIterator<typename TRAITS::CountedValueType> INORDER_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
