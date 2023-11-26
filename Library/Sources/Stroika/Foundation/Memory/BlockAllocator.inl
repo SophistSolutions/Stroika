@@ -379,7 +379,7 @@ namespace Stroika::Foundation::Memory {
 #if qAllowBlockAllocation
         T* result = reinterpret_cast<T*> (BlockAllocationPool_<AdjustSizeForPool_ ()>::Allocate (sizeof (T)));
 #else
-        T* result = ::operator new (sizeof (T));
+        T* result = reinterpret_cast<T*> (::operator new (sizeof (T)));
 #endif
         EnsureNotNull (result);
         Ensure (reinterpret_cast<ptrdiff_t> (result) % alignof (T) == 0); // see https://stroika.atlassian.net/browse/STK-511 - assure aligned

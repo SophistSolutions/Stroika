@@ -50,7 +50,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  ************************* FileSystem::FileOutputStream *************************
  ********************************************************************************
  */
-class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep, public Memory::BlockAllocationUseHelper<FileOutputStream::Rep_> {
+class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep, public Memory::UseBlockAllocationIfAppropriate<FileOutputStream::Rep_> {
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;

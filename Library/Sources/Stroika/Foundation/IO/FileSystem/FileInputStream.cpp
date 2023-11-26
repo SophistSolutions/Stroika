@@ -53,7 +53,7 @@ using Streams::SeekOffsetType;
  **************************** FileSystem::FileInputStream ***********************
  ********************************************************************************
  */
-class FileInputStream::Rep_ : public InputStream<byte>::_IRep, public Memory::BlockAllocationUseHelper<FileInputStream::Rep_> {
+class FileInputStream::Rep_ : public InputStream<byte>::_IRep, public Memory::UseBlockAllocationIfAppropriate<FileInputStream::Rep_> {
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;

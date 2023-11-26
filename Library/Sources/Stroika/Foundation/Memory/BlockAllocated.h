@@ -52,6 +52,8 @@ namespace Stroika::Foundation::Memory {
     /**
      *  Use this to force use of block allocation for a given type, by inheriting this class from that type (this ignores qAllowBlockAllocation).
      *
+     *  \note - typically DONT use this, but use UseBlockAllocationIfAppropriate intead.
+     *
      *  \par Example Usage:
      *      \code
      *            struct MyIterRep_ : Iterator<Character>::IRep, public Memory::BlockAllocationUseHelper<MyIterRep_> {
