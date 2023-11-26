@@ -33,6 +33,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection ()
+        requires (IEqualsComparer<equal_to<DOMAIN_TYPE>, DOMAIN_TYPE> and IEqualsComparer<equal_to<RANGE_TYPE>, RANGE_TYPE>)
         : Bijection{equal_to<DOMAIN_TYPE>{}, equal_to<RANGE_TYPE>{}}
     {
         _AssertRepValidType ();
@@ -56,6 +57,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const initializer_list<value_type>& src)
+        requires (IEqualsComparer<equal_to<DOMAIN_TYPE>, DOMAIN_TYPE> and IEqualsComparer<equal_to<RANGE_TYPE>, RANGE_TYPE>)
         : Bijection{}
     {
         AddAll (src);
@@ -93,6 +95,7 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <IInputIterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE>
     Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        requires (IEqualsComparer<equal_to<DOMAIN_TYPE>, DOMAIN_TYPE> and IEqualsComparer<equal_to<RANGE_TYPE>, RANGE_TYPE>)
         : Bijection{}
     {
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));

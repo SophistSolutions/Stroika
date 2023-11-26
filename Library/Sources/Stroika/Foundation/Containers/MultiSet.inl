@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
+        requires (IEqualsComparer<equal_to<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
         : MultiSet{}
     {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -90,6 +90,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename TRAITS>
     MultiSet<T, TRAITS>::MultiSet (const initializer_list<T>& src)
+        requires (IEqualsComparer<equal_to<T>, T>)
         : MultiSet{}
     {
         AddAll (src);
@@ -121,6 +122,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
     MultiSet<T, TRAITS>::MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        requires (IEqualsComparer<equal_to<T>, T>)
         : MultiSet{}
     {
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));

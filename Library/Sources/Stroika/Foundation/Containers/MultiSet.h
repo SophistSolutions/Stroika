@@ -181,7 +181,8 @@ namespace Stroika::Foundation::Containers {
         explicit MultiSet (EQUALS_COMPARER&& equalsComparer);
         MultiSet (MultiSet&& src) noexcept      = default;
         MultiSet (const MultiSet& src) noexcept = default;
-        MultiSet (const initializer_list<T>& src);
+        MultiSet (const initializer_list<T>& src)
+            requires (IEqualsComparer<equal_to<T>, T>);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
         MultiSet (const initializer_list<value_type>& src);
@@ -189,7 +190,7 @@ namespace Stroika::Foundation::Containers {
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
         template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         explicit MultiSet (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
+            requires (IEqualsComparer<equal_to<T>, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : MultiSet{}
         {
@@ -201,7 +202,8 @@ namespace Stroika::Foundation::Containers {
         template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
-        MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (IEqualsComparer<equal_to<T>, T>);
         template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 

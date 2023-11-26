@@ -25,6 +25,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association ()
+        requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>)
         : Association{equal_to<KEY_TYPE>{}}
     {
         _AssertRepValidType ();
@@ -39,6 +40,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>)
         : Association{}
     {
         AddAll (src);
@@ -57,7 +59,8 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>>)
+        requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE> and
+                  not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         : Association{}
     {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -75,6 +78,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
     Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        requires (IEqualsComparer<equal_to<KEY_TYPE>, KEY_TYPE>)
         : Association{}
     {
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));

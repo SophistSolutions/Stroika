@@ -32,6 +32,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     inline Set<T>::Set (const initializer_list<value_type>& src)
+        requires (IEqualsComparer<equal_to<T>, T>)
         : Set{}
     {
         AddAll (src);
@@ -79,6 +80,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Set<T>::Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        requires (IEqualsComparer<equal_to<T>, T>)
         : Set{}
     {
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));

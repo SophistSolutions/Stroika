@@ -163,7 +163,8 @@ namespace Stroika::Foundation::Containers {
         explicit Set (EQUALS_COMPARER&& equalsComparer);
         Set (Set&& src) noexcept      = default;
         Set (const Set& src) noexcept = default;
-        Set (const initializer_list<value_type>& src);
+        Set (const initializer_list<value_type>& src)
+            requires (IEqualsComparer<equal_to<T>, T>);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
@@ -180,7 +181,8 @@ namespace Stroika::Foundation::Containers {
         template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
         Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-        Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (IEqualsComparer<equal_to<T>, T>);
         template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
         Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
