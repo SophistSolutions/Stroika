@@ -89,8 +89,9 @@ using std::byte;
 // This is only intended to alert me when something changes GROSSLY.
 namespace {
 #if defined(_MSC_VER)
-    constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ =
-        not qDebug and qStroika_Foundation_Memory_PreferBlockAllocation and not qStroika_Foundation_Debug_Trace_DefaultTracingOn and sizeof (void*) == sizeof (int64_t);
+    constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ = not qDebug and qStroika_Foundation_Memory_PreferBlockAllocation and
+                                                                    not qStroika_Foundation_Debug_Trace_DefaultTracingOn and
+                                                                    sizeof (void*) == sizeof (int64_t);
 #else
     constexpr bool kPrintOutIfFailsToMeetPerformanceExpectations_ = false;
 #endif

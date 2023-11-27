@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Debug {
      *         only check in DEBUG builds, and there ASSERT != null (if original pointer not null)
      * 
      *  \req arg != nullptr
-
+     *
      *  Use where you would want to check Assert (dynamic_cast<const T*> (&ir) != nullptr) and then do static_cast<> instead;)
      * 
      *      AssertMember (&ir, IteratorRep_);
@@ -36,6 +36,8 @@ namespace Stroika::Foundation::Debug {
      *      \endcode
      * 
      *  \see https://stackoverflow.com/questions/28002/regular-cast-vs-static-cast-vs-dynamic-cast
+     * 
+     *  \note this does NOT work (should be checked somemhow/assert/type info @todo) - with virtual inheritance.
      */
     template <typename T, typename T1>
     T UncheckedDynamicCast (T1&& arg) noexcept;
