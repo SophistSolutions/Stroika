@@ -40,6 +40,14 @@ namespace Stroika::Foundation::Time {
      *  the basic rep used throughout Stroika if I need to experiment (float/long double).
      * 
      *  \note DurationSeconds is a 'floating point version of chrono::seconds'
+     * 
+     *  \note - WHY is it so important Stroika uses a 'floating point' version of duration.
+     *      Consider this code:
+     *          TimeOutAt t = now + REALLY_BIG_TIMOUT;
+     *      say we define REALLY_BIG_TIMEOUT = DURUATION::max();
+     *          if we used fixed point numbers, REALLY_BIG_TIMOUT + tiny number wraps - basically back to zero.
+     *          with floating point numbers, max + small number remains max.
+     *      Thats a HUGE, and USEFUL simplification of wildly common code.
      */
     using DurationSeconds = chrono::duration<double>;
     static_assert (sizeof (DurationSeconds::rep) == sizeof (DurationSeconds));
