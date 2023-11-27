@@ -376,7 +376,7 @@ namespace Stroika::Foundation::Memory {
     {
         using Private_::BlockAllocationPool_;
         Require (n == 1);
-#if qAllowBlockAllocation
+#if qStroika_Foundation_Memory_PreferBlockAllocation
         T* result = reinterpret_cast<T*> (BlockAllocationPool_<AdjustSizeForPool_ ()>::Allocate (sizeof (T)));
 #else
         T* result = reinterpret_cast<T*> (::operator new (sizeof (T)));
@@ -390,7 +390,7 @@ namespace Stroika::Foundation::Memory {
     {
         Require (n == 1);
         using Private_::BlockAllocationPool_;
-#if qAllowBlockAllocation
+#if qStroika_Foundation_Memory_PreferBlockAllocation
         if (p != nullptr) [[likely]] {
             BlockAllocationPool_<AdjustSizeForPool_ ()>::Deallocate (p);
         }
@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Memory {
     void BlockAllocator<T>::Compact ()
     {
         using Private_::BlockAllocationPool_;
-#if qAllowBlockAllocation
+#if qStroika_Foundation_Memory_PreferBlockAllocation
         BlockAllocationPool_<AdjustSizeForPool_ ()>::Compact ();
 #endif
     }

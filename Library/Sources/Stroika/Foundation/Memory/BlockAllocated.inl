@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Memory {
     template <typename... ARGS>
     inline T* ManuallyBlockAllocated<T>::New (ARGS&&... args)
     {
-#if qAllowBlockAllocation
+#if qStroika_Foundation_Memory_PreferBlockAllocation
         return new (BlockAllocator<T>{}.allocate (1)) T{forward<ARGS> (args)...};
 #else
         return new T{forward<ARGS> (args)...};
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     inline void ManuallyBlockAllocated<T>::Delete (T* p) noexcept
     {
-#if qAllowBlockAllocation
+#if qStroika_Foundation_Memory_PreferBlockAllocation
         if (p != nullptr) {
             destroy_at (p);
             BlockAllocator<T>{}.deallocate (p, 1);

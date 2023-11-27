@@ -27,9 +27,9 @@ SSH_REMOTE_WARNINGS_OFF= -o StrictHostKeyChecking=no
 
 # Consider exposing this explicitly (as we once did) in the configuration file
 # But for now this is fine...LGP 2020-04-27
-ifeq (qAllowBlockAllocation=1,$(findstring qAllowBlockAllocation=1,$(CPPFLAGS)))
+ifeq (qStroika_Foundation_Memory_PreferBlockAllocation=1,$(findstring qStroika_Foundation_Memory_PreferBlockAllocation=1,$(CPPFLAGS)))
 USING_BLOCK_ALLOCATION?=1
-else ifeq (qAllowBlockAllocation=0,$(findstring qAllowBlockAllocation=0,$(CPPFLAGS)))
+else ifeq (qStroika_Foundation_Memory_PreferBlockAllocation=0,$(findstring qStroika_Foundation_Memory_PreferBlockAllocation=0,$(CPPFLAGS)))
 USING_BLOCK_ALLOCATION?=0
 else ifeq (qDebug=1,$(findstring qDebug=1,$(CPPFLAGS)))
 USING_BLOCK_ALLOCATION?=1

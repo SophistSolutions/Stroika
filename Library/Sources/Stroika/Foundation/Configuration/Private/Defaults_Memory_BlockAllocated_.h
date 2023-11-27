@@ -10,10 +10,10 @@
  * to help implement the set of Stroika public configuration defines.
  */
 
-//#define   qAllowBlockAllocation                       0
-//#define   qAllowBlockAllocation                       1
-#ifndef qAllowBlockAllocation
-#define qAllowBlockAllocation 1
+//#define   qStroika_Foundation_Memory_PreferBlockAllocation                       0
+//#define   qStroika_Foundation_Memory_PreferBlockAllocation                       1
+#ifndef qStroika_Foundation_Memory_PreferBlockAllocation
+#define qStroika_Foundation_Memory_PreferBlockAllocation 1
 #endif
 
 #endif /*_Stroika_Foundation_Configuration_Private_Defaults_Memory_BlockAllocated_h_*/

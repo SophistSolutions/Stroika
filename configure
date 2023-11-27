@@ -1344,10 +1344,10 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			if ($var eq "enable") {
-				push (@useExtraCDefines, '#define qAllowBlockAllocation 1');
+				push (@useExtraCDefines, '#define qStroika_Foundation_Memory_PreferBlockAllocation 1');
 			}
 			elsif ($var eq "disable") {
-				push (@useExtraCDefines, '#define qAllowBlockAllocation 0');
+				push (@useExtraCDefines, '#define qStroika_Foundation_Memory_PreferBlockAllocation 0');
 			}
 			elsif ($var eq "default") {
 			}

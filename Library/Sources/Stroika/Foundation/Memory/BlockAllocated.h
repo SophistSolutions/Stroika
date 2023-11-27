@@ -27,7 +27,7 @@
  */
 
 /**
- *  \def qAllowBlockAllocation
+ *  \def qStroika_Foundation_Memory_PreferBlockAllocation
  *
  *  \brief  Allow use of block-allocation im classes which uses DECLARE_USE_BLOCK_ALLOCATION()
  *
@@ -40,17 +40,17 @@
  *  \hideinitializer
  */
 #if defined(__Doxygen__)
-#define qAllowBlockAllocation
+#define qStroika_Foundation_Memory_PreferBlockAllocation
 #endif
 
-#if !defined(qAllowBlockAllocation)
-#error "qAllowBlockAllocation should normally be defined indirectly by StroikaConfig.h"
+#if !defined(qStroika_Foundation_Memory_PreferBlockAllocation)
+#error "qStroika_Foundation_Memory_PreferBlockAllocation should normally be defined indirectly by StroikaConfig.h"
 #endif
 
 namespace Stroika::Foundation::Memory {
 
     /**
-     *  Use this to force use of block allocation for a given type, by inheriting this class from that type (this ignores qAllowBlockAllocation).
+     *  Use this to force use of block allocation for a given type, by inheriting this class from that type (this ignores qStroika_Foundation_Memory_PreferBlockAllocation).
      *
      *  \note - typically DONT use this, but use UseBlockAllocationIfAppropriate intead.
      *
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Memory {
      *            };
      *      \endcode
      *
-     *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
+     *  If qStroika_Foundation_Memory_PreferBlockAllocation true (default) - this will use the optimized block allocation store, but if qStroika_Foundation_Memory_PreferBlockAllocation is
      *  false (0), this will just default to the global ::new/::delete
      *
      *  @see Stroika::Foundation::Memory::BlockAllocationUseHelper
@@ -135,15 +135,15 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T, bool andTrueCheck = true>
     using UseBlockAllocationIfAppropriate =
-        conditional_t<qAllowBlockAllocation and andTrueCheck, BlockAllocationUseHelper<T>, Configuration::Empty>;
+        conditional_t<qStroika_Foundation_Memory_PreferBlockAllocation and andTrueCheck, BlockAllocationUseHelper<T>, Configuration::Empty>;
 
     /**
      */
     template <typename T, bool andTrueCheck = true>
-    using BlockAllocatorOrStdAllocatorAsAppropriate = conditional_t<qAllowBlockAllocation and andTrueCheck, BlockAllocator<T>, std::allocator<T>>;
+    using BlockAllocatorOrStdAllocatorAsAppropriate = conditional_t<qStroika_Foundation_Memory_PreferBlockAllocation and andTrueCheck, BlockAllocator<T>, std::allocator<T>>;
 
     /**
-     *   \brief ManuallyBlockAllocated<T> is a simple wrapper on BlockAllocator<T>. If qAllowBlockAllocation defined, this will use block allocation for a given type - at a given call.
+     *   \brief ManuallyBlockAllocated<T> is a simple wrapper on BlockAllocator<T>. If qStroika_Foundation_Memory_PreferBlockAllocation defined, this will use block allocation for a given type - at a given call.
      *
      *   This is in sharp contrast to struct T : UseBlockAllocationIfAppropriate<T> {};
      *   If you use UseBlockAllocationIfAppropriate<> - the blockallocation strategy happens automatically for all new creations of objects of that type.
