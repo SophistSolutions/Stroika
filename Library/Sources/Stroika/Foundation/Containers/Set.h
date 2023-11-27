@@ -118,6 +118,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  @see inherited::const_iterator
+         */
+        using const_iterator = typename inherited::const_iterator;
+
+    public:
+        /**
          *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
          *  we allow any template in the Set<> CTOR for an equalityComparer that follows the IEqualsComparer () concept.
          *
@@ -442,10 +448,19 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          * \brief STL-ish alias for Add ().
+         * 
+         *  \see https://en.cppreference.com/w/cpp/container/set/insert
          *
          *  \note mutates container
+         * 
+         *  \note because of differnt way iteartors handled in Stroika containers, this is more costly than Add () or AddIf, but provided to facilitate
+         *        converting code that was written for the STL API.
          */
-        nonvirtual void insert (ArgByValueType<value_type> item);
+        nonvirtual pair<const_iterator, bool> insert (ArgByValueType<value_type> item);
+        nonvirtual pair<const_iterator, bool> insert (const_iterator ignored, ArgByValueType<value_type> item);
+        template <class InputIt>
+        nonvirtual void insert (InputIt first, InputIt last);
+        nonvirtual void insert (initializer_list<T> ilist);
 
     public:
         /**

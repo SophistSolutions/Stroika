@@ -450,9 +450,26 @@ namespace Stroika::Foundation::Containers {
         return move (r);
     }
     template <typename T>
-    inline void Set<T>::insert (ArgByValueType<value_type> item)
+    inline auto Set<T>::insert (ArgByValueType<value_type> item) -> pair<const_iterator, bool>
     {
-        Add (item);
+        auto i = AddIf (item);
+        return make_pair (this->find (item), i);
+    }
+    template <typename T>
+    inline auto Set<T>::insert (const_iterator /*ignored*/, ArgByValueType<value_type> item) -> pair<const_iterator, bool>
+    {
+        return this->insert (item);
+    }
+    template <typename T>
+    template <class InputIt>
+    inline void Set<T>::insert (InputIt first, InputIt last)
+    {
+        AddAll (first, last);
+    }
+    template <typename T>
+    inline void Set<T>::insert (initializer_list<T> ilist)
+    {
+        AddAll (ilist);
     }
     template <typename T>
     inline void Set<T>::erase (ArgByValueType<value_type> item)
