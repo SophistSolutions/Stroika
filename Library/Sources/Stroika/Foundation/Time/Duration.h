@@ -326,14 +326,6 @@ namespace Stroika::Foundation::Time {
         };
         constexpr void destroy_ (); // allow call if already empty
     };
-    template <>
-    chrono::seconds Duration::AsPinned () const;
-    template <>
-    chrono::milliseconds Duration::AsPinned () const;
-    template <>
-    chrono::microseconds Duration::AsPinned () const;
-    template <>
-    chrono::nanoseconds Duration::AsPinned () const;
 
     class Duration::FormatException : public Execution::RuntimeErrorException<> {
     private:
