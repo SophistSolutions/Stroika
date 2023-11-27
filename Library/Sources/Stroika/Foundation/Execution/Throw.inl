@@ -38,12 +38,12 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T>
-    [[noreturn]] inline void Throw (const T& e2Throw)
+    [[noreturn]] inline void Throw (T&& e2Throw)
     {
-        static_assert (is_convertible_v<T*, exception*>);
+        static_assert (is_convertible_v<remove_cvref_t<T>*, exception*>);
         if constexpr (qStroika_Foundation_Execution_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Execution_Throw_TraceThrowpointBacktrace
-            DbgTrace ("Throwing exception: %s from %s", Private_::ToString_ (e2Throw).c_str (), Private_::GetBT_s ().c_str ());
+            DbgTrace ("Throwing exception: %s from %s", Private_::ToString_ (forward<T> (e2Throw)).c_str (), Private_::GetBT_s ().c_str ());
 #else
             DbgTrace ("Throwing exception: %s", Private_::ToString_ (e2Throw).c_str ());
 #endif
@@ -51,18 +51,18 @@ namespace Stroika::Foundation::Execution {
         throw e2Throw;
     }
     template <typename T>
-    [[noreturn]] inline void Throw (const T& e2Throw, [[maybe_unused]] const char* traceMsg)
+    [[noreturn]] inline void Throw (T&& e2Throw, [[maybe_unused]] const char* traceMsg)
     {
-        static_assert (is_convertible_v<T*, exception*>);
+        static_assert (is_convertible_v<remove_cvref_t<T>*, exception*>);
         DbgTrace ("%s", traceMsg);
-        Throw (e2Throw); // important todo this way to get its template specialization (even though the cost is an extra trace message)
+        Throw (forward<T> (e2Throw)); // important todo this way to get its template specialization (even though the cost is an extra trace message)
     }
     template <typename T>
-    [[noreturn]] inline void Throw (const T& e2Throw, [[maybe_unused]] const wchar_t* traceMsg)
+    [[noreturn]] inline void Throw (T&& e2Throw, [[maybe_unused]] const wchar_t* traceMsg)
     {
-        static_assert (is_convertible_v<T*, exception*>);
+        static_assert (is_convertible_v<remove_cvref_t<T>*, exception*>);
         DbgTrace (L"%s", traceMsg);
-        Throw (e2Throw); // important todo this way to get its template specialization (even though the cost is an extra trace message)
+        Throw (forward<T> (e2Throw)); // important todo this way to get its template specialization (even though the cost is an extra trace message)
     }
 
     /*

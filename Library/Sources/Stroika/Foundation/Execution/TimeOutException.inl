@@ -34,10 +34,11 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename EXCEPTION>
-    inline void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount, const EXCEPTION& exception2Throw)
+    inline void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount, EXCEPTION&& exception2Throw)
     {
-        if (Time::GetTickCount () > afterTickCount) {
-            Throw (exception2Throw);
+        // note the == part important, so the case of TimeoutSeconds == 0s works as 'no blocking'
+        if (Time::GetTickCount () >= afterTickCount) [[unlikely]] {
+            Throw (forward<EXCEPTION> (exception2Throw));
         }
         Thread::CheckForInterruption ();
     }
@@ -52,10 +53,10 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename TIMED_MUTEX, typename EXCEPTION>
-    inline void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount, const EXCEPTION& exception2Throw)
+    inline void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount, EXCEPTION&& exception2Throw)
     {
         if (not m.try_lock_until (afterTickCount)) {
-            Throw (exception2Throw);
+            Throw (forward<EXCEPTION> (exception2Throw));
         }
     }
     template <typename TIMED_MUTEX>
@@ -70,10 +71,10 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename EXCEPTION>
-    inline void ThrowIfTimeout (cv_status conditionVariableStatus, const EXCEPTION& exception2Throw)
+    inline void ThrowIfTimeout (cv_status conditionVariableStatus, EXCEPTION& exception2Throw)
     {
         if (conditionVariableStatus == cv_status::timeout) {
-            Throw (exception2Throw);
+            Throw (forward<EXCEPTION> (exception2Throw));
         }
     }
     inline void ThrowIfTimeout (cv_status conditionVariableStatus)
@@ -87,11 +88,11 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename TIMED_MUTEX, typename EXCEPTION>
-    inline unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d, const EXCEPTION& exception2Throw)
+    inline unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d, EXCEPTION&& exception2Throw)
     {
         unique_lock<TIMED_MUTEX> lock{m, d};
         if (not lock.owns_lock ()) {
-            Throw (exception2Throw);
+            Throw (forward<EXCEPTION> (exception2Throw));
         }
         return lock;
     }

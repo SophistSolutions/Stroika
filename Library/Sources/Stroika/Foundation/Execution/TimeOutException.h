@@ -88,14 +88,14 @@ namespace Stroika::Foundation::Execution {
      *  \note   ***Cancelation Point***
      */
     template <typename EXCEPTION>
-    void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount, const EXCEPTION& exception2Throw);
+    void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount, EXCEPTION&& exception2Throw);
     void ThrowTimeoutExceptionAfter (Time::TimePointSeconds afterTickCount);
 
     /**
      *  Translate timed_mutex, or recursive_timed_mutex try_lock_until () calls which fail into TimeOutException exceptions.
      */
     template <typename TIMED_MUTEX, typename EXCEPTION>
-    void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount, const EXCEPTION& exception2Throw);
+    void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount, EXCEPTION&& exception2Throw);
     template <typename TIMED_MUTEX>
     void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount);
 
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Execution {
      *  \note - this function may not be called outside the context of a running main.
      */
     template <typename EXCEPTION>
-    void ThrowIfTimeout (cv_status conditionVariableStatus, const EXCEPTION& exception2Throw);
+    void ThrowIfTimeout (cv_status conditionVariableStatus, EXCEPTION&& exception2Throw);
     void ThrowIfTimeout (cv_status conditionVariableStatus);
 
     /**
@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Execution {
      *  \see also TimedLockGuard
      */
     template <typename TIMED_MUTEX, typename EXCEPTION>
-    unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d, const EXCEPTION& exception2Throw);
+    unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d, EXCEPTION&& exception2Throw);
     template <typename TIMED_MUTEX>
     unique_lock<TIMED_MUTEX> UniqueLock (TIMED_MUTEX& m, const chrono::duration<double>& d);
 
