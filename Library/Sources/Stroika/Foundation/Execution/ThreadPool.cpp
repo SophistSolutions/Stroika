@@ -114,8 +114,8 @@ public:
  ********************************************************************************
  */
 ThreadPool::ThreadPool (const Options& options)
-    : fThreadPoolName_{options.fThreadPoolName}
-    , fDefaultQMax_{options.fQMax}
+    : fDefaultQMax_{options.fQMax}
+    , fThreadPoolName_{options.fThreadPoolName}
 {
     Require (Debug::AppearsDuringMainLifetime ());
     SetPoolSize (options.fThreadCount);
