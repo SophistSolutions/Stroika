@@ -140,7 +140,8 @@ namespace Stroika::Foundation::Memory {
     /**
      */
     template <typename T, bool andTrueCheck = true>
-    using BlockAllocatorOrStdAllocatorAsAppropriate = conditional_t<qStroika_Foundation_Memory_PreferBlockAllocation and andTrueCheck, BlockAllocator<T>, std::allocator<T>>;
+    using BlockAllocatorOrStdAllocatorAsAppropriate =
+        conditional_t<qStroika_Foundation_Memory_PreferBlockAllocation and andTrueCheck, BlockAllocator<T>, std::allocator<T>>;
 
     /**
      *   \brief ManuallyBlockAllocated<T> is a simple wrapper on BlockAllocator<T>. If qStroika_Foundation_Memory_PreferBlockAllocation defined, this will use block allocation for a given type - at a given call.
