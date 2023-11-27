@@ -113,11 +113,12 @@ public:
  ****************************** Execution::ThreadPool ***************************
  ********************************************************************************
  */
-ThreadPool::ThreadPool (unsigned int nThreads, const optional<String>& threadPoolName)
-    : fThreadPoolName_{threadPoolName}
+ThreadPool::ThreadPool (const Options& options)
+    : fThreadPoolName_{options.fThreadPoolName}
+    , fDefaultQMax_{options.fQMax}
 {
     Require (Debug::AppearsDuringMainLifetime ());
-    SetPoolSize (nThreads);
+    SetPoolSize (options.fThreadCount);
 }
 
 ThreadPool::~ThreadPool ()
@@ -163,10 +164,35 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
     }
 }
 
-ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task, const optional<Characters::String>& name)
+auto ThreadPool::AddTask (const TaskType& task, QMax qmax, const optional<Characters::String>& name) -> TaskType
+{
+    // also INTENTIONALLY dont hold lock long enuf to make this work 100% reliably cuz these magic numbers dont need to be precise, just approximate
+    // @todo rewrite this with condition variables, so more efficient and wakes up/times out appropriately...
+    Time::TimePointSeconds timeoutAt = Time::GetTickCount () + qmax.fAddBlockTimeout;
+#if qDebug
+    bool blockedAtLeastOnce = false;
+#endif
+    while (true) {
+        if (GetPendingTasksCount () >= qmax.fLength) [[unlikely]] {
+#if qDebug
+            if (not blockedAtLeastOnce) {
+                DbgTrace ("Blocking inside ThreadPool::AddTask due to excessive pending task count");
+                blockedAtLeastOnce = true;
+            }
+#endif
+            Execution::ThrowTimeoutExceptionAfter (timeoutAt);
+            Execution::Sleep (500ms); // @todo fix and use condition variable
+        }
+        else {
+            return AddTask_ (task, name);
+        }
+    }
+}
+
+auto ThreadPool::AddTask_ (const TaskType& task, const optional<Characters::String>& name) -> TaskType
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{"ThreadPool::AddTask"};
+    Debug::TraceContextBumper ctx{"ThreadPool::AddTask_"};
 #endif
     Require (not fAborted_);
     {

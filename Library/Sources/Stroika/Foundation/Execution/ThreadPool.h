@@ -71,9 +71,39 @@ namespace Stroika::Foundation::Execution {
     class [[nodiscard]] ThreadPool {
     public:
         /**
+         *  Affects behavior of AddTask command. If a max provided, then attempts to Add
+         *  will check this versus the actual pending Q length, and wait/throw if insufficient space.
+         * 
+         *  Use this overload to assure  thread pools don't 'blow up' with too many tasks.
+         * 
+         *  \note - often only provide QMax::fLength, since the default to not blocking - just throwing cuz Q full - is quite reasonable.
+         */
+        struct QMax {
+            size_t                fLength;
+            Time::DurationSeconds fAddBlockTimeout{0s};
+        };
+
+        /**
+         */
+        struct Options {
+            /**
+             *  number of threads allocated to service tasks.
+             */
+            unsigned int fThreadCount{thread::hardware_concurrency ()};
+
+            /**
+             *  Name used in various debug messages.
+             */
+            optional<Characters::String> fThreadPoolName;
+
+            optional<QMax> fQMax;
+        };
+
+    public:
+        /**
          *  \par Example Usage
          *      \code
-         *          ThreadPool p{3};
+         *          ThreadPool p{ThreadPool::Options{.fThreadCount = 3}};
          *          p.AddTask ([&q, &counter] () {
          *              ..dostuff..
          *          });
@@ -81,7 +111,7 @@ namespace Stroika::Foundation::Execution {
          *          // or call p.WaitForTasksDoneUntil ()
          *      \endcode
          */
-        ThreadPool (unsigned int nThreads = thread::hardware_concurrency (), const optional<Characters::String>& threadPoolName = nullopt);
+        ThreadPool (const Options& options = {});
         ThreadPool (ThreadPool&&)      = delete;
         ThreadPool (const ThreadPool&) = delete;
 
@@ -131,14 +161,20 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  Push the given task into the queue.
+         *  Push the given task into the queue (possibly blocking til space in the Q or throwing if no space in Q, but does NOT block waiting for Q to till).
          *
          *  \par Example Usage
          *      \code
          *          ThreadPool p;
          *          p.AddTask ([] () {doIt ();});
          *      \endcode
-         *
+         * 
+         *  if qmax is provided, it takes precedence over any default value associated with the ThreadPool (constructor). If neither
+         *  provided (as an argument or associated with the pool, this is treated as no max, and the addition just proceeds.
+         * 
+         *  If qMax provided (even indirectly), assure task q lengtth doesn't exceed argument by waiting up to the qMax
+         *  duration, and either timing out, or successfully add the task. 
+         * 
          *  \note   Design Note:
          *      The reason this returns as TaskType is that its easy to convert a lambda or whatever into a TaskType, but if you do
          *      it multiple times you get different (!=) values. So to make the auto conversion work easier without needing
@@ -148,6 +184,10 @@ namespace Stroika::Foundation::Execution {
          *          p.RemoveTask (p);   // fails cuz different 'TaskType' added - f converted to TaskType twice!
          */
         nonvirtual TaskType AddTask (const TaskType& task, const optional<Characters::String>& name = nullopt);
+        nonvirtual TaskType AddTask (const TaskType& task, QMax qmax, const optional<Characters::String>& name = nullopt);
+
+    private:
+        nonvirtual TaskType AddTask_ (const TaskType& task, const optional<Characters::String>& name);
 
     public:
         /**
@@ -316,6 +356,12 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual Characters::String ToString () const;
 
+    public:
+        [[deprecated ("Since Stroika v3.0d5 use Options")]] ThreadPool (unsigned int tc, const optional<Characters::String>& name = nullopt)
+            : ThreadPool{Options{tc, name}}
+        {
+        }
+
     private:
         bool       fCollectingStatistics_{false};
         Statistics fCollectedTaskStats_;
@@ -349,6 +395,7 @@ namespace Stroika::Foundation::Execution {
         mutable mutex fCriticalSection_; // fCriticalSection_ protectes fThreads_ and fPendingTasks_ and the fields of the MyRunnable_ members inside each thread (fThreads_).
             // Each should be a very short critical section, except for SetPoolSize()
         atomic<bool>                    fAborted_{false};
+        optional<QMax>                  fDefaultQMax_;
         Containers::Collection<TPInfo_> fThreads_; // all threads, and a data member for thread object, and one for running task, if any
         list<PendingTaskInfo_>          fPendingTasks_;      // tasks not yet running - somewhat like a queue, but allow remove from middle
         WaitableEvent                   fTasksMaybeAdded_{}; // recheck for new tasks (or other events - wakeup waiters on fTasks);

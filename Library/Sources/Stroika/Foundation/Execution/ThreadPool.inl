@@ -18,6 +18,16 @@ namespace Stroika::Foundation::Execution {
      *********************************** ThreadPool *********************************
      ********************************************************************************
      */
+
+    inline ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task, const optional<Characters::String>& name)
+    {
+        if (fDefaultQMax_) {
+            return AddTask (task, *fDefaultQMax_, name);
+        }
+        else {
+            return AddTask_ (task, name);
+        }
+    }
     inline void ThreadPool::WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSeconds timeout) const
     {
         WaitForTasksDoneUntil (tasks, Time::GetTickCount () + timeout);
