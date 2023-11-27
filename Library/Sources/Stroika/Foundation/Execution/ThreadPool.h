@@ -111,7 +111,8 @@ namespace Stroika::Foundation::Execution {
          *          // or call p.WaitForTasksDoneUntil ()
          *      \endcode
          */
-        ThreadPool (const Options& options = {});
+        ThreadPool ();
+        ThreadPool (const Options& options);
         ThreadPool (ThreadPool&&)      = delete;
         ThreadPool (const ThreadPool&) = delete;
 

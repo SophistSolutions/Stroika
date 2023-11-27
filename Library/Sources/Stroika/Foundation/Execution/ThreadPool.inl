@@ -18,7 +18,10 @@ namespace Stroika::Foundation::Execution {
      *********************************** ThreadPool *********************************
      ********************************************************************************
      */
-
+    inline ThreadPool::ThreadPool ()
+        : ThreadPool{ThreadPool::Options{}}
+    {
+    }
     inline ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task, const optional<Characters::String>& name)
     {
         if (fDefaultQMax_) {
