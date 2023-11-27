@@ -93,49 +93,6 @@ wstring Duration::As () const
 #endif
 
 namespace {
-    template <typename T>
-    inline T DoPin_ (Duration::rep d, Duration::rep multiplier)
-    {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\""); // warning: implicit conversion from 'std::__1::chrono::duration<long long, std::__1::ratio<1, 1> >::rep' (aka 'long long') to 'double' changes value from 9223372036854775807 to 9223372036854775808
-#endif
-        if (d > T::max ().count () / multiplier) {
-            return T::max ();
-        }
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
-    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\"");
-#endif
-        return T{typename T::rep (d * multiplier)}; // () vs {} because we allow narrowing conversion
-    }
-}
-
-template <>
-chrono::seconds Duration::AsPinned () const
-{
-    return DoPin_<chrono::seconds> (count (), 1.0);
-}
-
-template <>
-chrono::milliseconds Duration::AsPinned () const
-{
-    return DoPin_<chrono::milliseconds> (count (), 1000.0);
-}
-
-template <>
-chrono::microseconds Duration::AsPinned () const
-{
-    return DoPin_<chrono::microseconds> (count (), 1000.0 * 1000.0);
-}
-
-template <>
-chrono::nanoseconds Duration::AsPinned () const
-{
-    return DoPin_<chrono::nanoseconds> (count (), 1000.0 * 1000.0 * 1000.0);
-}
-
-namespace {
     string::const_iterator SkipWhitespace_ (string::const_iterator i, string::const_iterator end)
     {
         // GNU LIBC code (header) says that whitespace is allowed (though I've found no external docs to support this).

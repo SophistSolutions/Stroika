@@ -165,6 +165,8 @@ namespace Stroika::Foundation::Time {
          *      o   std::chrono::milliseconds etc...
          *
          *  Note - if 'empty' - As<> for numeric types returns 0.
+         *
+         *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsPinned()
          * 
          *      \note Stroika v2.1 also supproted wstring, which was (tentiatively) desupported in Stroika v3.0d5
          */
@@ -175,11 +177,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         * Defined for
-         *      std::chrono::seconds
-         *      std::chrono::milliseconds
-         *      std::chrono::microseconds
-         *      std::chrono::nanoseconds
+         *  \see As<T>, but automatically takes care of pinning values so always safe and in range.
          *
          *  Same as As<> - except that it handles overflows, so if you pass in Duration {numeric_limits<long double>::max ()} and convert to seconds, you wont overflow,
          *  but get chrono::seconds::max
@@ -187,7 +185,9 @@ namespace Stroika::Foundation::Time {
          *      @todo same requires stuff as we have with As<T>()
          */
         template <typename T>
-        nonvirtual T AsPinned () const;
+        nonvirtual T AsPinned () const
+            requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or
+                      Configuration::IDuration<T> or Configuration::ITimePoint<T>);
 
     public:
         /**

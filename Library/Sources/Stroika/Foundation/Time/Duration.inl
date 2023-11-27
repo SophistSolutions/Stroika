@@ -206,10 +206,64 @@ namespace Stroika::Foundation::Time {
             return String{};
         }
         else if constexpr (Configuration::IDuration<T>) {
-            return T{static_cast<typename T::rep> (count () * T::period::den / T::period::num)};
+            return chrono::duration_cast<T> (*this);
         }
         else if constexpr (Configuration::ITimePoint<T>) {
             return T{this->As<typename T::duration> ()};
+        }
+    }
+    template <typename T>
+    inline T Duration::AsPinned () const
+        requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or
+                  Configuration::IDuration<T> or Configuration::ITimePoint<T>)
+    {
+        if constexpr (integral<T> or floating_point<T>) {
+            if (this->count () < numeric_limits<T>::min ()) [[unlikely]] {
+                return numeric_limits<T>::min ();
+            }
+            else if (this->count () > numeric_limits<T>::max ()) [[unlikely]] {
+                return numeric_limits<T>::max ();
+            }
+            return As<T> ();
+        }
+        else if constexpr (same_as<T, timeval>) {
+            if (this->count () > numeric_limits<long>::max ()) [[unlikely]] {
+                return timeval{numeric_limits<long>::max (), 0}; // close enuf for now - if that big, do the nanoseconds matter?
+            }
+            return As<T> ();
+        }
+        else if constexpr (same_as<T, Characters::String>) {
+            return As<T> ();
+        }
+        else if constexpr (Configuration::IDuration<T>) {
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
+    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\""); // warning: implicit conversion from 'std::__1::chrono::duration<long long, std::__1::ratio<1, 1> >::rep' (aka 'long long') to 'double' changes value from 9223372036854775807 to 9223372036854775808
+#endif
+            /*
+             *  To convert, will do( my_ratio::num/my_ratio::den) * (target::den / target::num) .
+             *  Question is - will any of that overflow.
+             * 
+             *  Hard to be sure as it depends a little on how you get there (deterministic, just complex).
+             *  But easy approximation is:
+             *      do math in floating point, and see if would 'fit' in target rep.
+             */
+            using TRatio   = typename T::period;
+            auto targetRes = (static_cast<long double> (this->count ()) * period::num / period::den) * TRatio ::den / TRatio::num;
+            if (targetRes < T::min ().count ()) [[unlikely]] {
+                return T::min ();
+            }
+            if (targetRes > T::max ().count ()) [[unlikely]] {
+                return T::max ();
+            }
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 10)) ||                                                        \
+    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 12))
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wimplicit-int-float-conversion\"");
+#endif
+            return As<T> ();
+        }
+        else if constexpr (Configuration::ITimePoint<T>) {
+            return T{this->AsPinned<typename T::duration> ()};
         }
     }
     inline Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) const
