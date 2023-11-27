@@ -619,10 +619,10 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest7_SimpleThreadPool_"};
         Debug::TimingTrace        tt;
         {
-            ThreadPool p{1};
+            ThreadPool p{ThreadPool::Options{.fThreadCount = 1}};
         }
         {
-            ThreadPool           p{1};
+            ThreadPool           p{ThreadPool::Options{.fThreadCount = 1}};
             int                  intVal = 3;
             ThreadPool::TaskType task{[&intVal] () { intVal++; }};
             p.AddTask (task);
@@ -655,7 +655,7 @@ namespace {
         };
         {
             for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
-                ThreadPool           p{threadPoolSize};
+                ThreadPool           p{ThreadPool::Options{.fThreadCount = threadPoolSize}};
                 int                  updaterValue = 0;
                 ThreadPool::TaskType task1{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
                 ThreadPool::TaskType task2{[&updaterValue, &doIt] () { doIt (&updaterValue); }};
@@ -902,7 +902,7 @@ namespace {
             static constexpr unsigned kStepsToGetTrouble_ = 100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
             static constexpr Time::DurationSeconds kTime2WaitPerTask_{0.01s};
             static constexpr Time::DurationSeconds kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
-            ThreadPool                             p{kThreadPoolSize_};
+            ThreadPool                             p{ThreadPool::Options{.fThreadCount = kThreadPoolSize_}};
             auto                                   doItHandler = [] () { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
 
             for (int i = 0; i < kStepsToGetTrouble_; ++i) {
@@ -1041,8 +1041,8 @@ namespace {
                 static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
                 static const unsigned int kThreadPoolSize_{kRunningValgrind_ ? 5u : 10u};
-                ThreadPool                consumerThreadPool{kThreadPoolSize_, L"consumers"};
-                ThreadPool                producerThreadPool{kThreadPoolSize_, L"producers"};
+                ThreadPool consumerThreadPool{ThreadPool::Options{.fThreadCount = kThreadPoolSize_, .fThreadPoolName = "consumers"}};
+                ThreadPool producerThreadPool{ThreadPool::Options{.fThreadCount = kThreadPoolSize_, .fThreadPoolName = "producers"}};
 
                 enum {
                     START = 0,

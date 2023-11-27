@@ -444,7 +444,7 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
 {
     shared_ptr<Execution::ThreadPool> usingThreadPool = options.fThreadPool;
     if (usingThreadPool == nullptr) {
-        usingThreadPool = make_shared<Execution::ThreadPool> (1);
+        usingThreadPool = make_shared<Execution::ThreadPool> (ThreadPool::Options{.fThreadCount = 1});
     }
 
     // Note - we return thread not started, so caller must explicitly start, but internal threads start immediately
