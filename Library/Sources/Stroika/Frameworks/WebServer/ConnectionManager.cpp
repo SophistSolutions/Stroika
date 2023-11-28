@@ -198,7 +198,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , pStatistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Statistics {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pStatistics);
         Require (thisObj->fEffectiveOptions_.fCollectStatistics);
-        return Statistics{.pfThreadPoolStatistics = thisObj->fActiveConnectionThreads_.GetCurrentStatistics ()};
+        return Statistics{.fThreadPoolStatistics = thisObj->fActiveConnectionThreads_.GetCurrentStatistics ()};
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
