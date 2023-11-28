@@ -38,44 +38,25 @@ namespace Stroika::Foundation::Time {
      */
 
     /**
-  * calls with ubsan on clang++15 and libc++ seem to require this safety check.
-  * 
-  * https://en.cppreference.com/w/cpp/thread/condition_variable/wait_until says nothing about passing in inf floating point values.
-  * but internally it calls duration_cast<seconds> - and here the docs are clear: 
-  * 
-  *     https://en.cppreference.com/w/cpp/chrono/duration/duration_cast
-  *         Casting from a floating-point duration to an integer duration is subject to undefined behavior when the 
-  *         floating-point value is NaN, infinity, or too large to be representable by the target's integer type. 
-  *         Otherwise, casting to an integer duration is subject to truncation as with any static_cast to an integer type.
-  * 
-  * Basically - this function should be used to sanitize possibly large (eg INF) time-values for timeouts before calling
-  * lock wait_until() methods.
-  */
+     *  Several APIs internally (or explicitly) use duration_cast, and frequently those APIs do duration_cast to
+     *  chrono::seconds.
+     * 
+     *     https://en.cppreference.com/w/cpp/chrono/duration/duration_cast
+     *         Casting from a floating-point duration to an integer duration is subject to undefined behavior when the 
+     *         floating-point value is NaN, infinity, or too large to be representable by the target's integer type. 
+     *         Otherwise, casting to an integer duration is subject to truncation as with any static_cast to an integer type.
+     * 
+     *  In particular, Stroika makes use of INF values (Time::kInfinity) for durations because it so easily works with
+     *  TimePoints and adding etc.
+     * 
+     *  But - we must be careful when calling std c++ APIs (like timed_mutex::wait_until()) to provide conforming timepoint values
+     *  (even though https://en.cppreference.com/w/cpp/thread/condition_variable/wait_until says nothing about passing in inf floating point values).
+     * 
+     *  With Ubuntu 22.04, ubsan on clang++15 and libc++ seem to require this safety check.
+     */
     template <typename CLOCK_T, typename DURATION_T = typename CLOCK_T::duration>
-    auto Pin2SafeSeconds (const chrono::time_point<CLOCK_T, DURATION_T>& tp) -> chrono::time_point<CLOCK_T, DURATION_T>
-    {
-        #if 1
-        static constexpr auto kMin_ = chrono::time_point_cast<chrono::seconds>(chrono::time_point<CLOCK_T, DURATION_T>{chrono::seconds{chrono::seconds::min ().count()+1000}});;
-        static constexpr auto kMax_ = chrono::time_point_cast<chrono::seconds>(chrono::time_point<CLOCK_T, DURATION_T>{chrono::seconds{chrono::seconds::max ().count()-1000}});;
-        #else
-        static constexpr auto kMin = chrono::time_point<CLOCK_T, DURATION_T>{chrono::seconds::min ()};
-        static constexpr auto kMax_ = chrono::time_point<CLOCK_T, DURATION_T>{chrono::seconds::max ()};
-        #endif
-        typename DURATION_T::rep tpSeconds = tp.time_since_epoch ().count () *  DURATION_T::period::den /  DURATION_T::period::num;
-        if (tpSeconds > static_cast<typename DURATION_T::rep> (chrono::seconds::max ().count ())) {
-#if qDebug
-                [[maybe_unused]]auto test  = chrono::time_point_cast<chrono::seconds>(kMax_);
-#endif
-            return kMax_;
-        }
-        if (tpSeconds < static_cast<typename DURATION_T::rep> (chrono::seconds::min ().count ())) [[unlikely]] {
-#if qDebug
-                [[maybe_unused]]auto test  = chrono::time_point_cast<chrono::seconds>(kMin_);
-#endif
-            return kMin_;
-        }
-        return tp;
-    }
+    auto Pin2SafeSeconds (const chrono::time_point<CLOCK_T, DURATION_T>& tp) -> chrono::time_point<CLOCK_T, DURATION_T>;
+
 }
 
 /*

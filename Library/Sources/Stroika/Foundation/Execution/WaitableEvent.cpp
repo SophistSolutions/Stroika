@@ -61,7 +61,7 @@ auto WaitableEvent::WE_::WaitUntilQuietly (Time::TimePointSeconds timeoutAt) -> 
 #endif
     Thread::CheckForInterruption ();
     unique_lock<mutex> lock{fConditionVariable.fMutex};
-    if (fConditionVariable.wait_until (lock, timeoutAt, [this] () { return fTriggered; })) [[likely]] {
+    if (fConditionVariable.wait_until (lock, Time::Pin2SafeSeconds (timeoutAt), [this] () { return fTriggered; })) [[likely]] {
         return WaitStatus::eTriggered;
     }
     else {

@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Execution {
     template <typename TIMED_MUTEX, typename EXCEPTION>
     inline void TryLockUntil (TIMED_MUTEX& m, Time::TimePointSeconds afterTickCount, EXCEPTION&& exception2Throw)
     {
-        if (not m.try_lock_until (afterTickCount)) {
+        if (not m.try_lock_until (Time::Pin2SafeSeconds (afterTickCount))) {
             Throw (forward<EXCEPTION> (exception2Throw));
         }
     }

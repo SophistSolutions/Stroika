@@ -68,7 +68,9 @@ namespace Stroika::Foundation::Time {
     /**
      *  \brief TimePointSeconds is a simpler approach to chrono::time_point, which doesn't require using templates everywhere.
      * 
-     *  But - TimePointSeconds - since it uses chrono::time_point - is fully interoperable with the other time_point etc objects.
+     *  But - TimePointSeconds - since it uses chrono::time_point - is mostly (see Pin2SafeSeconds()) interoperable with the other time_point etc objects.
+     * 
+     *  \note - CARE is required passing this value to STD C++ APIs!; see and consider using Pin2SafeSeconds() in calling those APIs.
      * 
      *  \see RealtimeClock for details of how time is measured.
      */

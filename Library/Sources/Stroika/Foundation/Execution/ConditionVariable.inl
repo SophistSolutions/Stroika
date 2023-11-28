@@ -69,7 +69,8 @@ namespace Stroika::Foundation::Execution {
             // If no predicate function is provided (to say when we are done) - use stop_requested() as the predicate
 #if __cpp_lib_jthread >= 201911
             if (optional<stop_token> ost = Thread::GetCurrentThreadStopToken ()) {
-                if (fConditionVariable.wait_until (lock, *ost, timeoutAt, [&] () { return ost->stop_requested (); })) [[unlikely]] {
+                if (fConditionVariable.wait_until (lock, *ost, Time::Pin2SafeSeconds (timeoutAt), [&] () { return ost->stop_requested (); }))
+                    [[unlikely]] {
                     Thread::CheckForInterruption ();
                 }
                 return (Time::GetTickCount () < timeoutAt) ? cv_status::no_timeout : cv_status::timeout;
@@ -126,8 +127,9 @@ namespace Stroika::Foundation::Execution {
                         return ready; // don't throw here - this API doesn't throw timeout...
                     }
                     // must recheck / re-wait ONLY on the condition var itself - no stop token (cuz then this instantly returns and doesn't unlock argument lock so the signaler can progress)
-                    ready = fConditionVariable.wait_until (lock, Time::Pin2SafeSeconds (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime)),
-                                                           forward<PREDICATE> (readyToWake));
+                    ready = fConditionVariable.wait_until (
+                        lock, Time::Pin2SafeSeconds (min (timeoutAt, Time::GetTickCount () + sConditionVariableWaitChunkTime)),
+                        forward<PREDICATE> (readyToWake));
                 }
                 return ready;
             }

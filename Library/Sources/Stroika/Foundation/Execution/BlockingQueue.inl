@@ -69,7 +69,8 @@ namespace Stroika::Foundation::Execution {
                 Execution::Throw (Streams::EOFException::kThe); // Since we always must return, and know we never will, throw timeout now
             }
             ThrowTimeoutExceptionAfter (waitTil);
-            (void)fCondtionVariable_.wait_until (waitableLock, waitTil, [this] () { return fEndOfInput_ or not fQueue_.empty (); });
+            (void)fCondtionVariable_.wait_until (waitableLock, Time::Pin2SafeSeconds (waitTil),
+                                                 [this] () { return fEndOfInput_ or not fQueue_.empty (); });
         }
     }
     template <typename T>
@@ -87,7 +88,8 @@ namespace Stroika::Foundation::Execution {
             if (Time::GetTickCount () > waitTil) {
                 return nullopt; // on timeout, return 'missing'
             }
-            (void)fCondtionVariable_.wait_until (waitableLock, waitTil, [this] () { return fEndOfInput_ or not fQueue_.empty (); });
+            (void)fCondtionVariable_.wait_until (waitableLock, Time::Pin2SafeSeconds (waitTil),
+                                                 [this] () { return fEndOfInput_ or not fQueue_.empty (); });
         }
     }
     template <typename T>
