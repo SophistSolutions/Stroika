@@ -510,8 +510,9 @@ basic-unix-test-configurations_valgrind_configs_:
 	# Builds with a few special flags to make valgrind work better
 	# nb: using default installed C++ compiler cuz of matching installed libraries on host computer
 	# Since Stroika v3.0d5 - disabling valgrind-debug-SSLPurify because it runs EXTREMELY SLOWLY, and has nearly no value (does work - eventually)
+	# And Stroika v3.0d5 disables valgrind-debug-SSLPurify-NoBlockAlloc for the same speed reasons. Given sanitizers, very little value in memcheck and its so slow not worth it.
 	#./configure valgrind-debug-SSLPurify --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none
-	./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none
+	#./configure valgrind-debug-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none
 	./configure valgrind-release-SSLPurify-NoBlockAlloc --only-if-has-compiler --config-tag Unix --config-tag valgrind --valgrind enable --openssl use --openssl-extraargs purify --apply-default-release-flags --trace2file disable --block-allocation disable
 
 raspberrypi-cross-compile-test-configurations:
