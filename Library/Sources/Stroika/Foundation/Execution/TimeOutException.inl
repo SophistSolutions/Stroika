@@ -11,6 +11,8 @@
  */
 #include <condition_variable>
 
+#include "../Time/Common.h"
+
 namespace Stroika::Foundation::Execution {
 
     //redeclare to avoid having to #include Thread.h

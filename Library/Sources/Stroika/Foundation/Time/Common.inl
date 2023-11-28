@@ -11,7 +11,7 @@
  */
 namespace Stroika::Foundation::Time {
 
-    template <typename CLOCK_T, typename DURATION_T = typename CLOCK_T::duration>
+    template <typename CLOCK_T, typename DURATION_T>
     auto Pin2SafeSeconds (const chrono::time_point<CLOCK_T, DURATION_T>& tp) -> chrono::time_point<CLOCK_T, DURATION_T>
     {
         /*

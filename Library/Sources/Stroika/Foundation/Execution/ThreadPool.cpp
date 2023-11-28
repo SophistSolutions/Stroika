@@ -71,7 +71,7 @@ public:
                     fCurTask                        = nullptr;
                     taskStartedAt                   = fCurTaskStartedAt;
                 }
-                if (fThreadPool.fCollectingStatistics_) {
+                if (fThreadPool.fCollectStatistics_) {
                     [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool.fCriticalSection_};
                     ++fThreadPool.fCollectedTaskStats_.fNumberOfTasksCompleted;
                     ++fThreadPool.fCollectedTaskStats_.fNumberOfTasksReporting;
@@ -110,12 +110,29 @@ public:
 
 /*
  ********************************************************************************
+ ************************ Execution::ThreadPool::Statistics *********************
+ ********************************************************************************
+ */
+Characters::String ThreadPool::Statistics::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "fNumberOfTasksAdded: " << Characters::ToString (fNumberOfTasksAdded) << ", "sv;
+    sb << "fNumberOfTasksCompleted: " << Characters::ToString (fNumberOfTasksCompleted) << ", "sv;
+    sb << "fTotalTimeConsumed: " << Characters::ToString (fTotalTimeConsumed) << ", "sv;
+    sb << "}"sv;
+    return sb.str ();
+}
+
+/*
+ ********************************************************************************
  ****************************** Execution::ThreadPool ***************************
  ********************************************************************************
  */
 ThreadPool::ThreadPool (const Options& options)
     : fDefaultQMax_{options.fQMax}
     , fThreadPoolName_{options.fThreadPoolName}
+    , fCollectStatistics_{options.fCollectStatistics}
 {
     Require (Debug::AppearsDuringMainLifetime ());
     SetPoolSize (options.fThreadCount);
@@ -181,7 +198,7 @@ auto ThreadPool::AddTask (const TaskType& task, QMax qmax, const optional<Charac
             }
 #endif
             Execution::ThrowTimeoutExceptionAfter (timeoutAt);
-            Execution::Sleep (500ms); // @todo fix and use condition variable
+            Execution::Sleep (500ms); // @todo fix and use condition variable - but good news is can only happen if fAddBlockTimeout != 0s
         }
         else {
             return AddTask_ (task, name);
@@ -418,26 +435,17 @@ void ThreadPool::WaitForTasksDoneUntil (Time::TimePointSeconds timeoutAt) const
     }
 }
 
-void ThreadPool::SetCollectingStatistics (bool collectStatistics)
-{
-    bool changed           = fCollectingStatistics_ != collectStatistics;
-    fCollectingStatistics_ = collectStatistics;
-    if (changed) {
-        if (collectStatistics) {
-            ResetStatistics ();
-        }
-    }
-}
-
 void ThreadPool::ResetStatistics ()
 {
     [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-    fCollectedTaskStats_            = {};
+    Require (fCollectStatistics_);
+    fCollectedTaskStats_ = {};
 }
 
-auto ThreadPool::CollectStatistics () const -> Statistics
+auto ThreadPool::GetCurrentStatistics () const -> Statistics
 {
     [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    Require (fCollectStatistics_);
     return fCollectedTaskStats_;
 }
 

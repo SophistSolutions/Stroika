@@ -181,6 +181,11 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pActiveConnections);
         return thisObj->fActiveConnections_.load ();
     }}
+    , pThreadPoolStatistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Execution::ThreadPool::Statistics {
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pThreadPoolStatistics);
+        Require (thisObj->fEffectiveOptions_.fCollectThreadPoolStatistics);
+        return thisObj->fActiveConnectionThreads_.GetCurrentStatistics ();
+    }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_)}
@@ -193,7 +198,8 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     // --LGP 2023-11-27
     , fActiveConnectionThreads_{ThreadPool::Options{.fThreadCount    = *fEffectiveOptions_.fMaxConcurrentlyHandledConnections,
                                                     .fThreadPoolName = fEffectiveOptions_.fThreadPoolName,
-                                                    .fQMax = ThreadPool::QMax{*fEffectiveOptions_.fMaxConcurrentlyHandledConnections}}}
+                                                    .fQMax = ThreadPool::QMax{*fEffectiveOptions_.fMaxConcurrentlyHandledConnections},
+                                                    .fCollectStatistics = fEffectiveOptions_.fCollectThreadPoolStatistics}}
     , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting,
                                      Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, "WebServer-ConnectionMgr-Wait4IOReady"_k)}
     , fListener_{bindAddresses, *fEffectiveOptions_.fBindFlags, [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },

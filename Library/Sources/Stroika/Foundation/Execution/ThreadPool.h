@@ -21,6 +21,8 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
+ *      @todo   AddTask () implmentation is HORRIBLE (for case where fAddBlockTimeout != 0) and needs to be rewritten with condition variables.
+ * 
  *      @todo   ThreadPool::WaitForTask () is a very sloppy inefficient implementation.
  *
  *      @todo   CONSIDER USE OF blcoking q - I htink it will help. Or firgure out
@@ -79,7 +81,11 @@ namespace Stroika::Foundation::Execution {
          *  \note - often only provide QMax::fLength, since the default to not blocking - just throwing cuz Q full - is quite reasonable.
          */
         struct QMax {
-            size_t                fLength;
+            size_t fLength;
+
+            /**
+             *  Zero timeout means never wait (AddTask either adds or throws but doesn't wait for Q to empty enuf).
+             */
             Time::DurationSeconds fAddBlockTimeout{0s};
         };
 
@@ -96,7 +102,15 @@ namespace Stroika::Foundation::Execution {
              */
             optional<Characters::String> fThreadPoolName;
 
+            /**
+             *  Default to no max Q - infinite queue size. Note, a value of fLength=fThreadCount, or some small mutiple, would often be reasonable.
+             */
             optional<QMax> fQMax;
+
+            /**
+             *  defaults false;
+             */
+            bool fCollectStatistics{false};
         };
 
     public:
@@ -141,6 +155,13 @@ namespace Stroika::Foundation::Execution {
          *          not a good idea, except for ThreadAbort handling.
          */
         using TaskType = Function<void ()>;
+
+    public:
+        /**
+         *  These options have have been modified by various APIs, and reflect the current state of options, not neceessarily those that the
+         *  ThreadPool  was created with.
+         */
+        nonvirtual Options GetOptions () const;
 
     public:
         /**
@@ -329,27 +350,24 @@ namespace Stroika::Foundation::Execution {
             Time::DurationSeconds fTotalTimeConsumed{0.0};
 
             Time::DurationSeconds GetMeanTimeConsumed () const;
+
+            /**
+             *  See Characters::ToString ()
+             */
+            nonvirtual Characters::String ToString () const;
         };
 
     public:
         /**
-         */
-        nonvirtual bool GetCollectingStatistics () const;
-
-    public:
-        /**
-         */
-        nonvirtual void SetCollectingStatistics (bool collectStatistics);
-
-    public:
-        /**
+         *  \require (GetOptions ().fCollectStatistics);
          */
         nonvirtual void ResetStatistics ();
 
     public:
         /**
+         *  \require (GetOptions ().fCollectStatistics);
          */
-        nonvirtual Statistics CollectStatistics () const;
+        nonvirtual Statistics GetCurrentStatistics () const;
 
     public:
         /**
@@ -364,7 +382,7 @@ namespace Stroika::Foundation::Execution {
         }
 
     private:
-        bool       fCollectingStatistics_{false};
+        bool       fCollectStatistics_{false};
         Statistics fCollectedTaskStats_;
 
     private:

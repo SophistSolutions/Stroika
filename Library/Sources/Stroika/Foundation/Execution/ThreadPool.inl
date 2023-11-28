@@ -22,6 +22,13 @@ namespace Stroika::Foundation::Execution {
         : ThreadPool{ThreadPool::Options{}}
     {
     }
+    inline auto ThreadPool::GetOptions () const -> Options
+    {
+        return Options{.fThreadCount       = static_cast<unsigned int> (fThreads_.size ()),
+                       .fThreadPoolName    = fThreadPoolName_,
+                       .fQMax              = fDefaultQMax_,
+                       .fCollectStatistics = this->fCollectStatistics_};
+    }
     inline ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task, const optional<Characters::String>& name)
     {
         if (fDefaultQMax_) {
@@ -38,10 +45,6 @@ namespace Stroika::Foundation::Execution {
     inline void ThreadPool::WaitForTasksDone (Time::DurationSeconds timeout) const
     {
         WaitForTasksDoneUntil (Time::GetTickCount () + timeout);
-    }
-    inline bool ThreadPool::GetCollectingStatistics () const
-    {
-        return fCollectingStatistics_;
     }
 
     /*
