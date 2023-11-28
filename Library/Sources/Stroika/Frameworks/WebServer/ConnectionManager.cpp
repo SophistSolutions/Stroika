@@ -59,6 +59,20 @@ namespace {
 
 /*
  ********************************************************************************
+ **************** WebServer::ConnectionManager::Statistics **********************
+ ********************************************************************************
+ */
+Characters::String WebServer::ConnectionManager::Statistics::ToString () const
+{
+    StringBuilder sb;
+    sb << "{"sv;
+    sb << "ThreadPool-Statistics"sv << Characters::ToString (fThreadPoolStatistics) << ", "sv;
+    sb << "}"sv;
+    return sb.str ();
+}
+
+/*
+ ********************************************************************************
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
@@ -181,10 +195,10 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pActiveConnections);
         return thisObj->fActiveConnections_.load ();
     }}
-    , pThreadPoolStatistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Execution::ThreadPool::Statistics {
-        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pThreadPoolStatistics);
-        Require (thisObj->fEffectiveOptions_.fCollectThreadPoolStatistics);
-        return thisObj->fActiveConnectionThreads_.GetCurrentStatistics ();
+    , pStatistics{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Statistics {
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pStatistics);
+        Require (thisObj->fEffectiveOptions_.fCollectStatistics);
+        return Statistics{.pfThreadPoolStatistics = thisObj->fActiveConnectionThreads_.GetCurrentStatistics ()};
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
     , fDefaultErrorHandler_{DefaultFaultInterceptor{}}
@@ -199,7 +213,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fActiveConnectionThreads_{ThreadPool::Options{.fThreadCount    = *fEffectiveOptions_.fMaxConcurrentlyHandledConnections,
                                                     .fThreadPoolName = fEffectiveOptions_.fThreadPoolName,
                                                     .fQMax = ThreadPool::QMax{*fEffectiveOptions_.fMaxConcurrentlyHandledConnections},
-                                                    .fCollectStatistics = fEffectiveOptions_.fCollectThreadPoolStatistics}}
+                                                    .fCollectStatistics = fEffectiveOptions_.fCollectStatistics}}
     , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting,
                                      Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, "WebServer-ConnectionMgr-Wait4IOReady"_k)}
     , fListener_{bindAddresses, *fEffectiveOptions_.fBindFlags, [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },

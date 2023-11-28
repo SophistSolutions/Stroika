@@ -146,7 +146,7 @@ namespace Stroika::Frameworks::WebServer {
 
             /**
              */
-            bool fCollectThreadPoolStatistics{false};
+            bool fCollectStatistics{false};
 
             /**
              *  The number of new TCP connections the kernel will buffer before the application has a chance to accept.
@@ -276,11 +276,24 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /**
-         *  \req options.fCollectThreadPoolStatistics set on construction.
+         *  For now minimal, but perhaps expand....
+         */
+        struct Statistics {
+            Execution::ThreadPool::Statistics fThreadPoolStatistics;
+
+            /**
+             *  See Characters::ToString ()
+             */
+            nonvirtual Characters::String ToString () const;
+        };
+
+    public:
+        /**
+         *  \req options.fCollectStatistics set on construction.
          * 
          *  Then this can be used to fetch the current thread pool statistics.
          */
-        Common::ReadOnlyProperty<Execution::ThreadPool::Statistics> pThreadPoolStatistics;
+        Common::ReadOnlyProperty<Statistics> pStatistics;
 
     private:
         nonvirtual void onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s);
