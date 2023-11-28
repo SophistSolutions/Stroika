@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Time {
             return As<T> ();
         }
         else if constexpr (same_as<T, timeval>) {
-            if (this->count () > numeric_limits<long>::max ()) [[unlikely]] {
+            if (this->count () > static_cast<rep> (numeric_limits<long>::max ())) [[unlikely]] {
                 return timeval{numeric_limits<long>::max (), 0}; // close enuf for now - if that big, do the nanoseconds matter?
             }
             return As<T> ();
