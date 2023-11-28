@@ -891,7 +891,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest15_ThreadPoolStarvationBug_"};
         Debug::TimingTrace        tt;
         static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-        if (kRunningValgrind_ and qDebug) {
+        if (kRunningValgrind_) {
             // Test passes, but takes hour with valgrind/memcheck. Not without valgrind however
             DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
             return;
@@ -1084,7 +1084,7 @@ namespace {
             Debug::TraceContextBumper ctx{"RegressionTest19_ThreadPoolAndBlockingQueue_"};
             Debug::TimingTrace        tt;
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-            if (kRunningValgrind_ and qDebug) {
+            if (kRunningValgrind_) {
                 // Test passes, but takes 8 HRs on ubuntu 20.04 ; and quite a while (hours) on other ubuntu releases. Not without valgrind however
                 DbgTrace ("This test takes too long under valgrind (not clear why) - so skip it.");
                 return;
