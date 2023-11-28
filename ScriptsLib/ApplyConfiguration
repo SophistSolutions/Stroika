@@ -778,7 +778,16 @@ sub WriteVSCodeCPPExtensionConfigFile
 	}
 
 	$newCfgObj .= "}";
-	local $r = ` jq ".configurations[$indexOfNewConfig]=$newCfgObj" < $vsCodeCppExtensionCng`;
+	local $r = `jq ".configurations[$indexOfNewConfig]=$newCfgObj" < $vsCodeCppExtensionCng`;
+
+	# print ("r: $r\n");
+	open(FH, '>', $vsCodeCppExtensionCng) or die $!;
+	print FH $r;
+	close(FH);
+
+	# Now Sort
+	 $r = `jq ".configurations = ([.configurations[]] | sort_by (.name|ascii_downcase))" < $vsCodeCppExtensionCng`;
+
 	# print ("r: $r\n");
 	open(FH, '>', $vsCodeCppExtensionCng) or die $!;
 	print FH $r;
