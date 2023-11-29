@@ -130,8 +130,8 @@ Characters::String ThreadPool::Statistics::ToString () const
  ********************************************************************************
  */
 ThreadPool::ThreadPool (const Options& options)
-    : fDefaultQMax_{options.fQMax}
-    , fCollectStatistics_{options.fCollectStatistics}
+    : fCollectStatistics_{options.fCollectStatistics}
+    , fDefaultQMax_{options.fQMax}
     , fThreadPoolName_{options.fThreadPoolName}
 {
     Require (Debug::AppearsDuringMainLifetime ());
