@@ -131,8 +131,8 @@ Characters::String ThreadPool::Statistics::ToString () const
  */
 ThreadPool::ThreadPool (const Options& options)
     : fDefaultQMax_{options.fQMax}
-    , fThreadPoolName_{options.fThreadPoolName}
     , fCollectStatistics_{options.fCollectStatistics}
+    , fThreadPoolName_{options.fThreadPoolName}
 {
     Require (Debug::AppearsDuringMainLifetime ());
     SetPoolSize (options.fThreadCount);
