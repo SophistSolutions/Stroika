@@ -169,7 +169,6 @@ else
 			AR='$(LIBTOOL)' \
 			ProjectPlatformSubdir='$(ProjectPlatformSubdir)' \
 			INCLUDE='$(INCLUDES_PATH)' \
-			LIB='$(LinkerArgs_LibPath)' \
 			LIBS='oleaut32.lib ole32.lib user32.lib' \
 			ARCRATEFLAGS='-nologo' \
 			ARTARGETPREFIX=-out: \
@@ -177,7 +176,7 @@ else
 			OBJ_SUFFIX=${OBJ_SUFFIX} LIB_SUFFIX=${LIB_SUFFIX} EXE_SUFFIX=${EXE_SUFFIX} \
 			CFLAGS='$(CFLAGS)' \
 			CXXFLAGS='$(CXXFLAGS)' \
-			LDFLAGS='-nologo -debug -incremental:no -opt:ref' \
+			LDFLAGS='-nologo -debug -incremental:no -opt:ref $(LinkerArgs_LibPath) ' \
 			all
 	# Now copy the output to the BUILD directory
 	mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/lzma.lib  $(PER_CONFIGURATION_BUILDS_DIR)lib/
