@@ -212,13 +212,13 @@ $(ZIPPEDFILE):
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq ($(ARCH), x86)
-ifeq (0,$(ENABLE_ASSERTIONS))
+ifeq (0,$(AssertionsEnabled))
 USE_CONFIGURE_TARGET_NAME_=VC-WIN32
 else
 USE_CONFIGURE_TARGET_NAME_=debug-VC-WIN32
 endif
 else ifeq ($(ARCH), x86_64)
-ifeq (0,$(ENABLE_ASSERTIONS))
+ifeq (0,$(AssertionsEnabled))
 USE_CONFIGURE_TARGET_NAME_=VC-WIN64A
 else
 USE_CONFIGURE_TARGET_NAME_=debug-VC-WIN64A
@@ -228,10 +228,10 @@ endif
 
 
 #
-# Just for test apps that get built. DONT include LIB_DEPENDENCIES because that includes other third party components
+# Just for test apps that get built. DONT include LinkerArgs_LibDependencies because that includes other third party components
 # Unsure about most of this... --LGP 2022-01-22
-#LDFLAGS:=$(EXTRA_PREFIX_LINKER_ARGS) $(LIBS_PATH_DIRECTIVES) $(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
-LDFLAGS:=$(EXTRA_PREFIX_LINKER_ARGS) $(LIBS_PATH_DIRECTIVES) $(EXTRA_SUFFIX_LINKER_ARGS)
+#LDFLAGS:=$(LinkerArgs_ExtraPrefix) $(LinkerArgs_LibPath) $(LinkerArgs_LibDependencies) $(LinkerArgs_ExtraSuffix)
+LDFLAGS:=$(LinkerArgs_ExtraPrefix) $(LinkerArgs_LibPath) $(LinkerArgs_ExtraSuffix)
 
 
 #

@@ -72,9 +72,9 @@ sub	ReadConfigFile_ {
 	my @data = <FILE>;
 	close(FILE);
 	foreach $line (@data) {
-		my $pps = ReadValue_($line, "<Configure-Command-Line>");
+		my $pps = ReadValue_($line, "<ConfigureCommandLine>");
 		if (defined $pps) {
-			$configuration {'Configure-Command-Line'} = $pps;
+			$configuration {'ConfigureCommandLine'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<ProjectPlatformSubdir>");
 		if (defined $pps) {
@@ -112,9 +112,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'SanitizerFlags'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<Linker>");
+		my $pps = ReadValue_($line, "<LINKER>");
 		if (defined $pps) {
-			$configuration {'Linker'} = $pps;
+			$configuration {'LINKER'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<AS>");
 		if (defined $pps) {
@@ -192,9 +192,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'IncludeDebugSymbolsInExecutables'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<ENABLE_ASSERTIONS>");
+		my $pps = ReadValue_($line, "<AssertionsEnabled>");
 		if (defined $pps) {
-			$configuration {'ENABLE_ASSERTIONS'} = $pps;
+			$configuration {'AssertionsEnabled'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<CWARNING_FLAGS>");
 		if (defined $pps) {
@@ -244,25 +244,25 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'INCLUDES_PATH'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<LIBS_PATH>");
+		my $pps = ReadValue_($line, "<LinkerArgs_LibPath>");
 		if (defined $pps) {
-			$configuration {'LIBS_PATH'} = $pps;
+			$configuration {'LinkerArgs_LibPath'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<LIB_DEPENDENCIES>");
+		my $pps = ReadValue_($line, "<LinkerArgs_LibDependencies>");
 		if (defined $pps) {
-			$configuration {'LIB_DEPENDENCIES'} = $pps;
+			$configuration {'LinkerArgs_LibDependencies'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<CrossCompiling>");
 		if (defined $pps) {
 			$configuration {'CrossCompiling'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<EXTRA_PREFIX_LINKER_ARGS>");
+		my $pps = ReadValue_($line, "<LinkerArgs_ExtraPrefix>");
 		if (defined $pps) {
-			$configuration {'EXTRA_PREFIX_LINKER_ARGS'} = $pps;
+			$configuration {'LinkerArgs_ExtraPrefix'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<EXTRA_SUFFIX_LINKER_ARGS>");
+		my $pps = ReadValue_($line, "<LinkerArgs_ExtraSuffix>");
 		if (defined $pps) {
-			$configuration {'EXTRA_SUFFIX_LINKER_ARGS'} = $pps;
+			$configuration {'LinkerArgs_ExtraSuffix'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<RUN_PREFIX>");
 		if (defined $pps) {

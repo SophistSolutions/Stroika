@@ -109,7 +109,7 @@ my $LIBFEATUREFLAG_No = "no";
 
 
 my $ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
-my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
+my $gAssertionsEnabled = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $MACOSX_DEPLOYMENT_TARGET = undef;
 my $CPPSTD_VERSION_FLAG = '';
@@ -190,23 +190,23 @@ my $AR = undef;
 my $CMAKE = undef;
 my $LIBTOOL = undef; # Windows format LIB tool
 my $RANLIB = undef;
-my $Linker = undef;
+my $LINKER = undef;
 my $MIDL = undef;
 my $RC = undef;
 my $STRIP = undef;
-my $EXTRA_PREFIX_LINKER_ARGS = "";
-my $EXTRA_SUFFIX_LINKER_ARGS = "";
+my $LinkerArgs_ExtraPrefix = "";
+my $LinkerArgs_ExtraSuffix = "";
 my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;		## Looks for BOTH compiler and assocaited stdlib if std=libc++
 my @INCLUDES_PATH = qw();
 my $INCLUDES_PATH_SET = false;
 my @INCLUDES_PATH_ADD  = qw();
-my @LIBS_PATH = qw();
-my $LIBS_PATH_SET = false;
-my @LIBS_PATH_ADD  = qw();
-my $LIB_DEPENDENCIES  = undef;	# space separated list
-my @LIB_DEPENDENCIES_ADD  = qw();
+my @LinkerArgs_LibPath = qw();
+my $LinkerArgs_LibPath_SET = false;
+my @LinkerArgs_LibPath_ADD  = qw();
+my $LinkerArgs_LibDependencies  = undef;	# space separated list
+my @LinkerArgs_LibDependencies_ADD  = qw();
 my $STDCXXLIB = undef;
 my $TOOLS_PATH_ADDITIONS = undef;
 my $lsb_release = trim (`lsb_release -rs 2>/dev/null`);
@@ -281,10 +281,10 @@ sub	DoHelp_
 		print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
 		print("	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (: separated, since unix standard and allows spaces, ; separated on windows hosts) */\n");
 		print("	    --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */\n");
-		print("	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (':' separated, since unix standard and allows spaces; separated on windows hosts) */\n");
-		print("	    --append-libs-path {ARG}                        /* Appends ARG to 'LIBS_PATH */\n");
-		print("	    --lib-dependencies {ARG}                        /* Sets LIB_DEPENDENCIES variable (space separated) */\n");
-		print("	    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LIB_DEPENDENCIES */\n");
+		print("	    --libs-path {ARG}                               /* Sets LinkerArgs_LibPath variable (':' separated, since unix standard and allows spaces; separated on windows hosts) */\n");
+		print("	    --append-libs-path {ARG}                        /* Appends ARG to 'LinkerArgs_LibPath */\n");
+		print("	    --lib-dependencies {ARG}                        /* Sets LinkerArgs_LibDependencies variable (space separated) */\n");
+		print("	    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LinkerArgs_LibDependencies */\n");
 		print("	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,\n");
 		print("	                                                       such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
 		print("	    --append-run-prefix {ARG}                       /* Appends ARG RUN_PREFIX: with stuff injected before run for built executables */\n");
@@ -457,7 +457,7 @@ sub     FillDefaultIncludesPathIfNeeded_
 }
 sub     FillDefaultLibsPathIfNeeded_
 {
-	my $includeAutomaticDependencies = not $LIBS_PATH_SET;
+	my $includeAutomaticDependencies = not $LinkerArgs_LibPath_SET;
 	if ($includeAutomaticDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -468,54 +468,54 @@ sub     FillDefaultLibsPathIfNeeded_
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
-			push @LIBS_PATH_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/lib/`) . "/";
+			push @LinkerArgs_LibPath_ADD, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/lib/`) . "/";
 		}
-		@LIBS_PATH = qw ();
+		@LinkerArgs_LibPath = qw ();
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			my $x = GetMSVCVarName_ ("LIB");
 			for my $i (split /;/, $x) {
-				push @LIBS_PATH, $i;
+				push @LinkerArgs_LibPath, $i;
 			}
 		}
 	}
 	my $var;
-	foreach $var (@LIBS_PATH_ADD) {
-		push @LIBS_PATH, $var;
+	foreach $var (@LinkerArgs_LibPath_ADD) {
+		push @LinkerArgs_LibPath, $var;
 	}
 }
 sub		PortablyAddLibToLibDependencies_
 {
 	my $libBaseName = trim(shift(@_));
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-		$LIB_DEPENDENCIES .= "$libBaseName.lib ";
+		$LinkerArgs_LibDependencies .= "$libBaseName.lib ";
 	}
 	else {
-		$LIB_DEPENDENCIES .= "-l$libBaseName ";
+		$LinkerArgs_LibDependencies .= "-l$libBaseName ";
 	}
 }
 sub     FillDefaultLibDependencies_
 {
 	#IF we set lib dependencies explicitly, then suppress adding libs automatically (based on features etc) - just explicitly added ones from the commandline
-	my $includeAutomaticLibDependencies = !defined ($LIB_DEPENDENCIES);
-	if (!defined ($LIB_DEPENDENCIES)) {
-		$LIB_DEPENDENCIES = "";
+	my $includeAutomaticLibDependencies = !defined ($LinkerArgs_LibDependencies);
+	if (!defined ($LinkerArgs_LibDependencies)) {
+		$LinkerArgs_LibDependencies = "";
 	}
 
 	my $mustAppendDefaults = false;
 
-	if ($LIB_DEPENDENCIES eq "") {
+	if ($LinkerArgs_LibDependencies eq "") {
 		$mustAppendDefaults = true;
 	}
 
 	my $var;
-	foreach $var (@LIB_DEPENDENCIES_ADD) {
-		$LIB_DEPENDENCIES .= $var . " ";
+	foreach $var (@LinkerArgs_LibDependencies_ADD) {
+		$LinkerArgs_LibDependencies .= $var . " ";
 	}
 
 	if ($includeAutomaticLibDependencies) {
 		if ($FEATUREFLAG_Xerces ne $LIBFEATUREFLAG_No) {
 			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-				if ($ENABLE_ASSERTIONS) {
+				if ($gAssertionsEnabled) {
 					PortablyAddLibToLibDependencies_("xerces-c_3D");
 				}
 				else {
@@ -561,7 +561,7 @@ sub     FillDefaultLibDependencies_
 		}
 		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
 			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-				if ($ENABLE_ASSERTIONS) {
+				if ($gAssertionsEnabled) {
 					PortablyAddLibToLibDependencies_("zlibstaticd");
 				}
 				else {
@@ -577,26 +577,26 @@ sub     FillDefaultLibDependencies_
 
 	if ($mustAppendDefaults == true) {
 		if (index ($TARGET_PLATFORMS, "Windows") != -1) {
-			$LIB_DEPENDENCIES .= "urlmon.lib ";
-			$LIB_DEPENDENCIES .= "rpcrt4.lib ";
-			$LIB_DEPENDENCIES .= "kernel32.lib ";
-			$LIB_DEPENDENCIES .= "user32.lib ";
-			$LIB_DEPENDENCIES .= "gdi32.lib ";
-			$LIB_DEPENDENCIES .= "winspool.lib ";
-			$LIB_DEPENDENCIES .= "comdlg32.lib ";
-			$LIB_DEPENDENCIES .= "advapi32.lib ";
-			$LIB_DEPENDENCIES .= "shell32.lib ";
-			$LIB_DEPENDENCIES .= "ole32.lib ";
-			$LIB_DEPENDENCIES .= "oleaut32.lib ";
-			$LIB_DEPENDENCIES .= "uuid.lib ";
-			$LIB_DEPENDENCIES .= "odbc32.lib ";
-			$LIB_DEPENDENCIES .= "odbccp32.lib ";
+			$LinkerArgs_LibDependencies .= "urlmon.lib ";
+			$LinkerArgs_LibDependencies .= "rpcrt4.lib ";
+			$LinkerArgs_LibDependencies .= "kernel32.lib ";
+			$LinkerArgs_LibDependencies .= "user32.lib ";
+			$LinkerArgs_LibDependencies .= "gdi32.lib ";
+			$LinkerArgs_LibDependencies .= "winspool.lib ";
+			$LinkerArgs_LibDependencies .= "comdlg32.lib ";
+			$LinkerArgs_LibDependencies .= "advapi32.lib ";
+			$LinkerArgs_LibDependencies .= "shell32.lib ";
+			$LinkerArgs_LibDependencies .= "ole32.lib ";
+			$LinkerArgs_LibDependencies .= "oleaut32.lib ";
+			$LinkerArgs_LibDependencies .= "uuid.lib ";
+			$LinkerArgs_LibDependencies .= "odbc32.lib ";
+			$LinkerArgs_LibDependencies .= "odbccp32.lib ";
 		}
 		if (index ($TARGET_PLATFORMS, "POSIX") != -1) {
-			$LIB_DEPENDENCIES .= "-lpthread ";
-			$LIB_DEPENDENCIES .= "-lm ";
+			$LinkerArgs_LibDependencies .= "-lpthread ";
+			$LinkerArgs_LibDependencies .= "-lm ";
 			if ($FEATUREFLAG_librt eq $LIBFEATUREFLAG_UseSystem) {
-				$LIB_DEPENDENCIES .= "-lrt ";
+				$LinkerArgs_LibDependencies .= "-lrt ";
 			}
 		}
 	}
@@ -615,9 +615,6 @@ sub     FillInToolsPathAdditionsIfNeeded_
 				$VSVARS_WindowsSDKVersion = substr ($VSVARS_WindowsSDKVersion,0, length($VSVARS_WindowsSDKVersion)-1);
 			}
 			$VSVARS_VCToolsInstallDir = GetMSVCVarName_('VCToolsInstallDir');
-		}
-		else {
-			$TOOLS_PATH_ADDITIONS = "";
 		}
 	}
 }
@@ -888,8 +885,8 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 	if ($ApplyDebugFlags == true) {
-		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
-			$ENABLE_ASSERTIONS = 1;
+		if ($gAssertionsEnabled == DEFAULT_BOOL_OPTIONS) {
+			$gAssertionsEnabled = 1;
 		}
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
@@ -937,13 +934,13 @@ sub	SetDefaultForCompilerDriver_
 		#helpful to print stack traces in log (not critical, and has performance overhead)
 		#see Debug::BackTrace ()
 		if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
-			$EXTRA_PREFIX_LINKER_ARGS .= " -rdynamic";
+			$LinkerArgs_ExtraPrefix .= " -rdynamic";
 		}
 
 	}
 	elsif ($ApplyReleaseFlags == true) {
-		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
-			$ENABLE_ASSERTIONS = 0;
+		if ($gAssertionsEnabled == DEFAULT_BOOL_OPTIONS) {
+			$gAssertionsEnabled = 0;
 		}
 		# https://stroika.atlassian.net/browse/STK-763
 		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS and $lsb_release == "20.04" and $TargettingValgrind == true) {
@@ -992,8 +989,8 @@ sub	SetDefaultForCompilerDriver_
 		if ($isVisualStudio) {
 			#	/OPT:REF eliminates functions and or data that are never referenced
 			#	/OPT:ICF[=iterations] to perform identical COMDAT folding
-			$EXTRA_PREFIX_LINKER_ARGS .= " -OPT:REF";
-			$EXTRA_PREFIX_LINKER_ARGS .= " -OPT:ICF";
+			$LinkerArgs_ExtraPrefix .= " -OPT:REF";
+			$LinkerArgs_ExtraPrefix .= " -OPT:ICF";
 		}
 	}
 
@@ -1006,14 +1003,14 @@ sub	SetDefaultForCompilerDriver_
 				$CXXWARNING_FLAGS		= $CXXWARNING_FLAGS . '-Wno-subobject-linkage ';
 
 				# when these messages appear in LTO, we really have no choice but to suppress with command-line settings, since pragma disable ignored there
-				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-odr ';
-				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-lto-type-mismatch ';
-				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-tsan ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-odr ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-lto-type-mismatch ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-tsan ';
 			}
 
 			# MOSTLY UNRELATED ISSUE
 			if ($itsVersion < 13.0) {
-				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . '-Wno-stringop-overflow ';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . '-Wno-stringop-overflow ';
 			}
 		}
 	}
@@ -1146,13 +1143,13 @@ sub	SetDefaultForCompilerDriver_
 	if (!(defined $RANLIB)) {
 		$RANLIB = "";
 	}
-	if (!(defined $Linker)) {
+	if (!(defined $LINKER)) {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			my $x = GetMSVCVarName_ ("LD");
-			$Linker = trim ($x);
+			$LINKER = trim ($x);
 		}
 		else {
-			$Linker = $COMPILER_DRIVER_CPlusPlus;
+			$LINKER = $COMPILER_DRIVER_CPlusPlus;
 		}
 	}
 
@@ -1167,7 +1164,7 @@ sub	SetDefaultForCompilerDriver_
 	}
 
 	if ($MACOSX_DEPLOYMENT_TARGET ne "") {
-		$EXTRA_PREFIX_LINKER_ARGS .= " -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET";
+		$LinkerArgs_ExtraPrefix .= " -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET";
 	}
 
 	if (("$^O" eq "darwin") && not ($ARCH eq "")) {
@@ -1322,13 +1319,13 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			if ($var eq "enable") {
-				$ENABLE_ASSERTIONS = 1;
+				$gAssertionsEnabled = 1;
 			}
 			elsif ($var eq "disable") {
-				$ENABLE_ASSERTIONS = 0;
+				$gAssertionsEnabled = 0;
 			}
 			elsif ($var eq "default") {
-				$ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
+				$gAssertionsEnabled = DEFAULT_BOOL_OPTIONS;
 			}
 			else  {
 				print ("UNRECOGNIZED assertions ARG: $var\n");
@@ -1570,28 +1567,28 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-extra-prefix-linker-args") or (lc ($var) eq "--extra-prefix-linker-args")) {
 			$i++;
 			$var = $args[$i];
-			$EXTRA_PREFIX_LINKER_ARGS = $var;
+			$LinkerArgs_ExtraPrefix = $var;
 		}
 		elsif ((lc ($var) eq "-append-extra-prefix-linker-args") or (lc ($var) eq "--append-extra-prefix-linker-args")) {
 			$i++;
 			$var = $args[$i];
-			if (not ($EXTRA_PREFIX_LINKER_ARGS eq "")) {
-				$EXTRA_PREFIX_LINKER_ARGS .= " ";
+			if (not ($LinkerArgs_ExtraPrefix eq "")) {
+				$LinkerArgs_ExtraPrefix .= " ";
 			}
-			$EXTRA_PREFIX_LINKER_ARGS .= $var;
+			$LinkerArgs_ExtraPrefix .= $var;
 		}
 		elsif ((lc ($var) eq "-extra-suffix-linker-args") or (lc ($var) eq "--extra-suffix-linker-args")) {
 			$i++;
 			$var = $args[$i];
-			$EXTRA_SUFFIX_LINKER_ARGS = $var;
+			$LinkerArgs_ExtraSuffix = $var;
 		}
 		elsif ((lc ($var) eq "-append-extra-suffix-linker-args") or (lc ($var) eq "--append-extra-suffix-linker-args")) {
 			$i++;
 			$var = $args[$i];
-			if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
-				$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+			if (not ($LinkerArgs_ExtraSuffix eq "")) {
+				$LinkerArgs_ExtraSuffix .= " ";
 			}
-			$EXTRA_SUFFIX_LINKER_ARGS .= $var;
+			$LinkerArgs_ExtraSuffix .= $var;
 		}
 		elsif ((lc ($var) eq "-append-CPPFLAGS") or (lc ($var) eq "--append-CPPFLAGS")) {
 			$i++;
@@ -1669,26 +1666,26 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-libs-path") or (lc ($var) eq "--libs-path")) {
 			$i++;
 			$var = $args[$i];
-			@LIBS_PATH = qw ();
+			@LinkerArgs_LibPath = qw ();
 			for my $i (split /$PATH_SEPERATOR/, $var) {
-				push @LIBS_PATH, $i;
+				push @LinkerArgs_LibPath, $i;
 			}
-			$LIBS_PATH_SET = true;
+			$LinkerArgs_LibPath_SET = true;
 		}
 		elsif ((lc ($var) eq "-append-libs-path") or (lc ($var) eq "--append-libs-path")) {
 			$i++;
 			$var = $args[$i];
-			push @LIBS_PATH_ADD, $var;
+			push @LinkerArgs_LibPath_ADD, $var;
 		}
 		elsif ((lc ($var) eq "-lib-dependencies") or (lc ($var) eq "--lib-dependencies")) {
 			$i++;
 			$var = $args[$i];
-			$LIB_DEPENDENCIES = $var;
+			$LinkerArgs_LibDependencies = $var;
 		}
 		elsif ((lc ($var) eq "-append-lib-dependencies") or (lc ($var) eq "--append-lib-dependencies")) {
 			$i++;
 			$var = $args[$i];
-			push @LIB_DEPENDENCIES_ADD, $var;
+			push @LinkerArgs_LibDependencies_ADD, $var;
 		}
 		elsif ((lc ($var) eq "-run-prefix") or (lc ($var) eq "--run-prefix")) {
 			$i++;
@@ -1718,14 +1715,14 @@ sub	ParseCommandLine_Remaining_
 			push @CFLAGS, $var;
 			push @CXXFLAGS, $var;
 
-			if (not ($EXTRA_PREFIX_LINKER_ARGS eq "")) {
-				$EXTRA_PREFIX_LINKER_ARGS .= " ";
+			if (not ($LinkerArgs_ExtraPrefix eq "")) {
+				$LinkerArgs_ExtraPrefix .= " ";
 			}
-			$EXTRA_PREFIX_LINKER_ARGS .= $var;
-			if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
-				$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+			$LinkerArgs_ExtraPrefix .= $var;
+			if (not ($LinkerArgs_ExtraSuffix eq "")) {
+				$LinkerArgs_ExtraSuffix .= " ";
 			}
-			$EXTRA_SUFFIX_LINKER_ARGS .= $var;
+			$LinkerArgs_ExtraSuffix .= $var;
 		}
 		elsif ((lc ($var) eq "-lto") or (lc ($var) eq "--lto")) {
 			$i++;
@@ -1836,7 +1833,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
 			push @CFLAGS, "-pg";
 			push @CXXFLAGS, "-pg";
-			$EXTRA_PREFIX_LINKER_ARGS .= " -pg";
+			$LinkerArgs_ExtraPrefix .= " -pg";
 		}
 		elsif ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
 			#HANDLED EARLIER
@@ -2097,7 +2094,7 @@ sub GetDefaultCZZFLAGS_flags_
 			# to get them to also know about these defines (TBD)
 			#		--LGP 2019-02-10
 			my $dashFlag="-D";
-			push @flags, $dashFlag . "qDebug=" . ZERO_OR_1_ ($ENABLE_ASSERTIONS);
+			push @flags, $dashFlag . "qDebug=" . ZERO_OR_1_ ($gAssertionsEnabled);
 			push @flags, $dashFlag . "qHasFeature_LibCurl=" . ZERO_OR_1_ (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_OpenSSL=" . ZERO_OR_1_ (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_WinHTTP=" . ZERO_OR_1_ ($FEATUREFLAG_WinHTTP eq $LIBFEATUREFLAG_UseSystem);
@@ -2172,17 +2169,17 @@ sub PostProcessOptions_ ()
 			push @CXXFLAGS, "-flto";
 			# As of 2023-10-26:
 			# 	-flto=auto tends to spin up too many processes, and -flto=0 or 1 or missing produces warnings (lto-wrapper: warning: using serial compilation of 13 LTRANS jobs)
-			$EXTRA_PREFIX_LINKER_ARGS .= " -flto=2";
+			$LinkerArgs_ExtraPrefix .= " -flto=2";
 		}
 		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-flto";
 			push @CXXFLAGS, "-flto";
-			$EXTRA_PREFIX_LINKER_ARGS .= " -flto";
+			$LinkerArgs_ExtraPrefix .= " -flto";
 		}
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
 			push @CFLAGS, "-GL";			#	Whole Program Optimization
 			push @CXXFLAGS, "-GL";			#	Whole Program Optimization
-			$EXTRA_PREFIX_LINKER_ARGS .= " -LTCG";
+			$LinkerArgs_ExtraPrefix .= " -LTCG";
 		}
 
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
@@ -2190,7 +2187,7 @@ sub PostProcessOptions_ ()
 			#/home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2004_x86_64/IntermediateFiles/g++-12-release++2b/ThirdPartyComponents/Xerces/src/xercesc/dom/impl/DOMCharacterDataImpl.cpp:319:12: warning: function may return address of local variable [-Wreturn-local-addr]
 			my $ubuntuVersion = getUbuntuVersion();
 			if ( 20.04 <= $ubuntuVersion and $ubuntuVersion <= 23.10) {
-				$EXTRA_PREFIX_LINKER_ARGS = $EXTRA_PREFIX_LINKER_ARGS  . " -Wno-return-local-addr";
+				$LinkerArgs_ExtraPrefix = $LinkerArgs_ExtraPrefix  . " -Wno-return-local-addr";
 			}
 			# Lots of apparently spurrious warnings, which we cannot (easily) suppress locally with #pragma warn...
 			#	EG
@@ -2198,7 +2195,7 @@ sub PostProcessOptions_ ()
     		#		inlined from 'SEED_cfb128_encrypt' at ../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/seed/seed_cfb.c:24:5,
 			#		../../IntermediateFiles/raspberrypi-g++-11-release/ThirdPartyComponents/openssl/crypto/modes/cfb128.c:122:33: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
 			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0) {
-				$EXTRA_PREFIX_LINKER_ARGS		= $EXTRA_PREFIX_LINKER_ARGS . ' -Wno-stringop-overflow';
+				$LinkerArgs_ExtraPrefix		= $LinkerArgs_ExtraPrefix . ' -Wno-stringop-overflow';
 			}
 		}
 	}
@@ -2257,7 +2254,7 @@ sub PostProcessOptions_ ()
 				}
 			}
 			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) or IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
-				$EXTRA_PREFIX_LINKER_ARGS .= " " . $crap2Add2CZZFlags;
+				$LinkerArgs_ExtraPrefix .= " " . $crap2Add2CZZFlags;
 			}
 			if ($isVisualStudio) {
 				# https://stroika.atlassian.net/browse/STK-984
@@ -2283,22 +2280,22 @@ sub PostProcessOptions_ ()
 			if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 				foreach my $i (0 .. $#sanitizerFlags) {
 					if ($sanitizerFlags[$i] eq "address") {
-						$EXTRA_PREFIX_LINKER_ARGS .= " -static-libasan";
+						$LinkerArgs_ExtraPrefix .= " -static-libasan";
 					}
 					elsif ($sanitizerFlags[$i] eq "undefined") {
-						$EXTRA_PREFIX_LINKER_ARGS .= " -static-libubsan";
+						$LinkerArgs_ExtraPrefix .= " -static-libubsan";
 					}
 					elsif ($sanitizerFlags[$i] eq "thread") {
-						$EXTRA_PREFIX_LINKER_ARGS .= " -static-libtsan";
+						$LinkerArgs_ExtraPrefix .= " -static-libtsan";
 					}
 					elsif ($sanitizerFlags[$i] eq "leak") {
-						$EXTRA_PREFIX_LINKER_ARGS .= " -static-liblsan";
+						$LinkerArgs_ExtraPrefix .= " -static-liblsan";
 					}
 				}
 			}
 			elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
 				if ($#sanitizerFlags != 0) {
-					$EXTRA_PREFIX_LINKER_ARGS .= " -static-libsan";
+					$LinkerArgs_ExtraPrefix .= " -static-libsan";
 				}
 			}
 		}
@@ -2338,10 +2335,10 @@ sub PostProcessOptions_ ()
 
 		# Deal with static inline constexpr definitions - which dont really work right with vs2k17
 		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-			if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
-				$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+			if (not ($LinkerArgs_ExtraSuffix eq "")) {
+				$LinkerArgs_ExtraSuffix .= " ";
 			}
-			$EXTRA_SUFFIX_LINKER_ARGS .= "-FORCE:MULTIPLE";
+			$LinkerArgs_ExtraSuffix .= "-FORCE:MULTIPLE";
 		}
 	}
 
@@ -2382,7 +2379,7 @@ sub PostProcessOptions_ ()
 
 	if (defined $STDCXXLIB) {
 		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-			$EXTRA_PREFIX_LINKER_ARGS .= " -stdlib=" . $STDCXXLIB;
+			$LinkerArgs_ExtraPrefix .= " -stdlib=" . $STDCXXLIB;
 			push @CXXFLAGS, " -stdlib=" . $STDCXXLIB;
 		}
 	}
@@ -2396,49 +2393,49 @@ sub PostProcessOptions_ ()
 				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=$lib2FindStatic 2>/dev/null`);
 				if (defined $lib) {
 					if ($lib ne $lib2FindStatic) {
-						push @LIB_DEPENDENCIES_ADD, "$lib";
+						push @LinkerArgs_LibDependencies_ADD, "$lib";
 					}
 					else {
 						# consider using apt-get install glibc-static libstdc++-static
 						my $dashLName = trim (`echo $STDCXXLIB | sed s/lib//`);
-						push @LIB_DEPENDENCIES_ADD, "-l$dashLName";
+						push @LinkerArgs_LibDependencies_ADD, "-l$dashLName";
 					}
 				}
 			}
 			else {
-				push @LIB_DEPENDENCIES_ADD, "-lstdc++";
-				$EXTRA_PREFIX_LINKER_ARGS .= " -static-libstdc++";
+				push @LinkerArgs_LibDependencies_ADD, "-lstdc++";
+				$LinkerArgs_ExtraPrefix .= " -static-libstdc++";
 			}
 		}
 
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if (!$STATIC_LINK_GCCRUNTIME ) {
-				push @LIB_DEPENDENCIES_ADD, "-lstdc++";
+				push @LinkerArgs_LibDependencies_ADD, "-lstdc++";
 			}
 			if ($STATIC_LINK_GCCRUNTIME == 1) {
 				# https://stroika.atlassian.net/browse/STK-676 (-static causes some apps crash; and there is no option to JUST staticly link libc - eg no -static-libc)
 				# https://stackoverflow.com/questions/26304531/compiling-with-static-libgcc-static-libstdc-still-results-in-dynamic-depende
-				$EXTRA_PREFIX_LINKER_ARGS .= " -static-libstdc++";
-				$EXTRA_PREFIX_LINKER_ARGS .= " -static-libgcc";
-				#$EXTRA_PREFIX_LINKER_ARGS .= " -static-libc";		# Wish this existed as option!
+				$LinkerArgs_ExtraPrefix .= " -static-libstdc++";
+				$LinkerArgs_ExtraPrefix .= " -static-libgcc";
+				#$LinkerArgs_ExtraPrefix .= " -static-libc";		# Wish this existed as option!
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if ($STDCXXLIB eq "libc++") {
-				push @LIB_DEPENDENCIES_ADD, "-lc++";
+				push @LinkerArgs_LibDependencies_ADD, "-lc++";
 			}
 			else {
-				push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
+				push @LinkerArgs_LibDependencies_ADD, "-lstdc++fs";
 			}
 		}
 
 		# if boost is available, Stroika adds utilities that depend on parts of it
 		if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
-			push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";
-			push @LIB_DEPENDENCIES_ADD, "-lboost_system";
-			push @LIB_DEPENDENCIES_ADD, "-lboost_thread";
-			push @LIB_DEPENDENCIES_ADD, "-lboost_chrono";
-			push @LIB_DEPENDENCIES_ADD, "-lboost_json";
+			push @LinkerArgs_LibDependencies_ADD, "-lboost_filesystem";
+			push @LinkerArgs_LibDependencies_ADD, "-lboost_system";
+			push @LinkerArgs_LibDependencies_ADD, "-lboost_thread";
+			push @LinkerArgs_LibDependencies_ADD, "-lboost_chrono";
+			push @LinkerArgs_LibDependencies_ADD, "-lboost_json";
 		}
 	}
 
@@ -2449,12 +2446,12 @@ sub PostProcessOptions_ ()
 
 
 	if ($isVisualStudio) {
-		$EXTRA_PREFIX_LINKER_ARGS .= " -nologo";
+		$LinkerArgs_ExtraPrefix .= " -nologo";
 		my $WIN_LIBCOMPATIBLE_ARCH = $ARCH;
 		if ($WIN_LIBCOMPATIBLE_ARCH eq "x86_64") {
 			$WIN_LIBCOMPATIBLE_ARCH = "x64";
 		}
-		$EXTRA_PREFIX_LINKER_ARGS .= " -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
+		$LinkerArgs_ExtraPrefix .= " -MACHINE:${WIN_LIBCOMPATIBLE_ARCH}";
 	}
 
 	if ($CPPFLAGS_Overridden eq false) {
@@ -2474,23 +2471,23 @@ sub PostProcessOptions_ ()
 	}
 
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && not ($CPPSTD_VERSION_FLAG eq '')) {
-		$EXTRA_PREFIX_LINKER_ARGS .= " $CPPSTD_VERSION_FLAG";
+		$LinkerArgs_ExtraPrefix .= " $CPPSTD_VERSION_FLAG";
 	}
 
 	if ($INCLUDE_SYMBOLS_EXE) {
 		if ($isVisualStudio) {
 			# PREPEND this option, because it effects the default for other options like -OPT and resets them
-			$EXTRA_PREFIX_LINKER_ARGS = "-DEBUG:FULL " . $EXTRA_PREFIX_LINKER_ARGS;
+			$LinkerArgs_ExtraPrefix = "-DEBUG:FULL " . $LinkerArgs_ExtraPrefix;
 		}
 		elsif ($PROJECTPLATFORMSUBDIR eq 'Unix') {
-			$EXTRA_PREFIX_LINKER_ARGS .= " -g";
+			$LinkerArgs_ExtraPrefix .= " -g";
 		}
 	}
 
 	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and not ($ARCH eq "")) {
 		push @CFLAGS, " -arch $ARCH";
 		push @CXXFLAGS, " -arch $ARCH";
-		$EXTRA_PREFIX_LINKER_ARGS .= " -arch $ARCH";
+		$LinkerArgs_ExtraPrefix .= " -arch $ARCH";
 		# Since XCode 15, we've been getting these warnings, and no simple way to avoid them.
 		#https://stackoverflow.com/questions/77164140/ld-warning-ignoring-duplicate-libraries-lgcc-after-the-recent-update-of-xc
 		#Tried combingin the pkg-config lines into one call (would have been easy to fix configure todo this) - but that didnt help.
@@ -2501,7 +2498,7 @@ sub PostProcessOptions_ ()
 		# libraries: '-lbrotlidec', '-lcrypto', '-lidn2', '-lssl', '-lz'
 		# Seens of a bad bunch of options
 		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 15.0) {
-			$EXTRA_SUFFIX_LINKER_ARGS .= " -Wl,-no_warn_duplicate_libraries";
+			$LinkerArgs_ExtraSuffix .= " -Wl,-no_warn_duplicate_libraries";
 		}
 	}
 
@@ -2551,6 +2548,19 @@ sub GetMSVCVarName_
 # build C++/dirs etc from this!
 sub	WriteConfigFile_
 {
+	# probably belongs elsewhere
+	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+		for my $i (0 .. $#INCLUDES_PATH)
+		{
+			$INCLUDES_PATH[$i] = trim (`cygpath --mixed "$INCLUDES_PATH[$i]"`);
+		}
+		for my $i (0 .. $#LinkerArgs_LibPath)
+		{
+			$LinkerArgs_LibPath[$i] = trim (`cygpath --mixed "$LinkerArgs_LibPath[$i]"`);
+		}
+	}
+
+
 	my @appArgs = GetAppArgs_ ();
 
 	my $configFileName = shift(@_);
@@ -2559,11 +2569,12 @@ sub	WriteConfigFile_
 		print("\n");  # flush
 		die("\nFAILED: Cannot open $configFileName\n")
 	}
-	print (OUT "<!--This file autogenerated by the configure command: see Configure-Command-Line, modify it, and re-run-->\n\n");
+	print (OUT "<!--This file autogenerated by the configure command: see ConfigureCommandLine, modify it, and re-run-->\n\n");
 	print (OUT "<Configuration>\n");
 
 
-	print (OUT "    <Configure-Command-Line>");
+	print (OUT "    <!--Overall-->\n");
+	print (OUT "    <ConfigureCommandLine>");
 	print (OUT "configure ");
 	foreach my $argnum (0 .. $#appArgs) {
 		if ($argnum != 0) {
@@ -2571,7 +2582,7 @@ sub	WriteConfigFile_
 		}
 	   print (OUT "$appArgs[$argnum]");
 	}
-	print (OUT "</Configure-Command-Line>\n");
+	print (OUT "</ConfigureCommandLine>\n");
 
 
 
@@ -2588,6 +2599,8 @@ sub	WriteConfigFile_
 		print (OUT "    <ConfigTags></ConfigTags>\n");
 	}
 	print (OUT "    <BuildByDefault>$BuildByDefault</BuildByDefault>\n");
+
+	print (OUT "\n    <!--Tools-->\n");
 	print (OUT "    <AS>$AS</AS>\n");
 
 	if (defined $CMAKE) {
@@ -2606,27 +2619,21 @@ sub	WriteConfigFile_
 	if (defined $RC) {
 		print (OUT "    <RC>$RC</RC>\n");
 	}
-
-	print (OUT "    <ExtraMakeDefines>\n");
-		foreach my $var (@useExtraMakeDefines)
-		{
-			print (OUT "       <MakeDefine>$var</MakeDefine>\n");
-		}
-	print (OUT "    </ExtraMakeDefines>\n");
-
-	print (OUT "    <PkgConfigLinkLineAppendages>\n");
-		foreach my $var (@packageConfigLinkLines)
-		{
-			print (OUT "       <PkgConfigLinkLineAppendage>$var</PkgConfigLinkLineAppendage>\n");
-		}
-	print (OUT "    </PkgConfigLinkLineAppendages>\n");
+	print (OUT "    <AR>$AR</AR>\n");
+	print (OUT "    <LIBTOOL>$LIBTOOL</LIBTOOL>\n");
+	print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
+	print (OUT "    <LINKER>$LINKER</LINKER>\n");
+	print (OUT "    <STRIP>$STRIP</STRIP>\n");
 
 
-	if ($ENABLE_ASSERTIONS != DEFAULT_BOOL_OPTIONS) {
-		print (OUT "    <ENABLE_ASSERTIONS>$ENABLE_ASSERTIONS</ENABLE_ASSERTIONS>\n");
+	print (OUT "\n    <!--Paths-->\n");
+	my $includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
+	print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
+	if (defined $TOOLS_PATH_ADDITIONS) {
+		print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
 	}
 
-	
+	print (OUT "\n    <!--Features Enabled-->\n");
 	print (OUT "    <qFeatureFlag_StrawberryPerl>$FEATUREFLAG_StrawberryPerl</qFeatureFlag_StrawberryPerl>\n");
 	print (OUT "    <qFeatureFlag_boost>$FEATUREFLAG_boost</qFeatureFlag_boost>\n");
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
@@ -2648,7 +2655,49 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");
+	if ($gAssertionsEnabled != DEFAULT_BOOL_OPTIONS) {
+		print (OUT "    <AssertionsEnabled>$gAssertionsEnabled</AssertionsEnabled>\n");
+	}
+	print (OUT "    <SanitizerFlags>");
+		foreach my $var (@sanitizerFlags)
+		{
+			print (OUT "$var ");
+		}
+	print (OUT "</SanitizerFlags>\n");
 
+
+
+	print (OUT "\n    <!--MISC-->\n");
+	print (OUT "    <CrossCompiling>$CrossCompiling</CrossCompiling>\n");
+	print (OUT "    <ExtraMakeDefines>\n");
+		foreach my $var (@useExtraMakeDefines)
+		{
+			print (OUT "       <MakeDefine>$var</MakeDefine>\n");
+		}
+	print (OUT "    </ExtraMakeDefines>\n");
+
+	print (OUT "    <PkgConfigLinkLineAppendages>\n");
+		foreach my $var (@packageConfigLinkLines)
+		{
+			print (OUT "       <PkgConfigLinkLineAppendage>$var</PkgConfigLinkLineAppendage>\n");
+		}
+	print (OUT "    </PkgConfigLinkLineAppendages>\n");
+
+
+	
+	print (OUT "\n    <!--SDK Settings-->\n");
+	if (defined $VSVARS_WindowsSdkDir) {
+		print (OUT "    <VSVARS_WindowsSdkDir>$VSVARS_WindowsSdkDir</VSVARS_WindowsSdkDir>\n");
+	}
+	if (defined $VSVARS_WindowsSDKVersion) {
+		print (OUT "    <VSVARS_WindowsSDKVersion>$VSVARS_WindowsSDKVersion</VSVARS_WindowsSDKVersion>\n");
+	}
+	if (defined $VSVARS_VSINSTALLDIR) {
+		print (OUT "    <VSVARS_VSINSTALLDIR>$VSVARS_VSINSTALLDIR</VSVARS_VSINSTALLDIR>\n");
+	}
+	if (defined $VSVARS_VCToolsInstallDir) {
+		print (OUT "    <VSVARS_VCToolsInstallDir>$VSVARS_VCToolsInstallDir</VSVARS_VCToolsInstallDir>\n");
+	}
 	if (defined $MACOSX_DEPLOYMENT_TARGET && $MACOSX_DEPLOYMENT_TARGET ne "") {
 		print (OUT "    <MACOSX_DEPLOYMENT_TARGET>$MACOSX_DEPLOYMENT_TARGET</MACOSX_DEPLOYMENT_TARGET>\n");
 	}
@@ -2656,7 +2705,7 @@ sub	WriteConfigFile_
 		print (OUT "    <HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>true</HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>\n");
 	}
 
-	
+	print (OUT "\n    <!--Compiling-->\n");
 	my $firstTime = true;
 	print (OUT "    <CPPFLAGS>");
 		foreach my $var (@CPPFLAGS)
@@ -2699,71 +2748,26 @@ sub	WriteConfigFile_
 		}
 	print (OUT "</CXXFLAGS>\n");
 
-	print (OUT "    <SanitizerFlags>");
-		foreach my $var (@sanitizerFlags)
-		{
-			print (OUT "$var ");
-		}
-	print (OUT "</SanitizerFlags>\n");
 
 	if ($runtimeStackProtectorFlag == true) {
 		unshift(@CFLAGS, '-fstack-protector-all');
 		unshift(@CXXFLAGS, '-fstack-protector-all');
 	}
 
-	# Since Stroika 2.1r2, this is written out in cygpath mixed format on windows (and obvously stanard unix format on unix)
-	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-		for my $i (0 .. $#INCLUDES_PATH)
-		{
-			$INCLUDES_PATH[$i] = trim (`cygpath --mixed "$INCLUDES_PATH[$i]"`);
-		}
-	}
-	my $includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
-	print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
-
-	print (OUT "    <CrossCompiling>$CrossCompiling</CrossCompiling>\n");
-
+	print (OUT "\n    <!--Linking-->\n");
 	print (OUT "    <IncludeDebugSymbolsInLibraries>$INCLUDE_SYMBOLS_LIB</IncludeDebugSymbolsInLibraries>\n");
 	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
+	my $libsPathStr = join ($PATH_SEPERATOR, @LinkerArgs_LibPath);
+	print (OUT "    <LinkerArgs_LibPath>$libsPathStr</LinkerArgs_LibPath>\n");
+	print (OUT "    <LinkerArgs_LibDependencies>$LinkerArgs_LibDependencies</LinkerArgs_LibDependencies>\n");
+	print (OUT "    <LinkerArgs_ExtraPrefix>$LinkerArgs_ExtraPrefix</LinkerArgs_ExtraPrefix>\n");
+	print (OUT "    <LinkerArgs_ExtraSuffix>$LinkerArgs_ExtraSuffix</LinkerArgs_ExtraSuffix>\n");
 
-	# Since Stroika 2.1r2, this is written out in cygpath mixed format on windows (and obvously stanard unix format on unix)
-	print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
-	
-	if (defined $VSVARS_WindowsSdkDir) {
-		print (OUT "    <VSVARS_WindowsSdkDir>$VSVARS_WindowsSdkDir</VSVARS_WindowsSdkDir>\n");
-	}
-	if (defined $VSVARS_WindowsSDKVersion) {
-		print (OUT "    <VSVARS_WindowsSDKVersion>$VSVARS_WindowsSDKVersion</VSVARS_WindowsSDKVersion>\n");
-	}
-	if (defined $VSVARS_VSINSTALLDIR) {
-		print (OUT "    <VSVARS_VSINSTALLDIR>$VSVARS_VSINSTALLDIR</VSVARS_VSINSTALLDIR>\n");
-	}
-	if (defined $VSVARS_VCToolsInstallDir) {
-		print (OUT "    <VSVARS_VCToolsInstallDir>$VSVARS_VCToolsInstallDir</VSVARS_VCToolsInstallDir>\n");
-	}
 
-	# Since Stroika 2.1r2, this is written out in cygpath mixed format on windows (and obvously stanard unix format on unix)
-	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-		for my $i (0 .. $#LIBS_PATH)
-		{
-			$LIBS_PATH[$i] = trim (`cygpath --mixed "$LIBS_PATH[$i]"`);
-		}
-	}
-	my $libsPathStr = join ($PATH_SEPERATOR, @LIBS_PATH);
-	print (OUT "    <LIBS_PATH>$libsPathStr</LIBS_PATH>\n");
-	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
-	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
-	print (OUT "    <EXTRA_SUFFIX_LINKER_ARGS>$EXTRA_SUFFIX_LINKER_ARGS</EXTRA_SUFFIX_LINKER_ARGS>\n");
-
-	print (OUT "    <AR>$AR</AR>\n");
-	print (OUT "    <LIBTOOL>$LIBTOOL</LIBTOOL>\n");
-	print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
-	print (OUT "    <Linker>$Linker</Linker>\n");
-	
-	print (OUT "    <STRIP>$STRIP</STRIP>\n");
-
+	print (OUT "\n    <!--Runtime/Testing-->\n");
 	print (OUT "    <RUN_PREFIX>$RUN_PREFIX</RUN_PREFIX>\n");
 
+	print (OUT "\n    <!--Compiler/Tool Bug Workarounds/Defines-->\n");
 	if (defined ($qCompiler_ValgrindDirectSignalHandler_Buggy)) {
 		print (OUT "    <qCompiler_ValgrindDirectSignalHandler_Buggy>$qCompiler_ValgrindDirectSignalHandler_Buggy</qCompiler_ValgrindDirectSignalHandler_Buggy>\n");
 	}

@@ -66,7 +66,7 @@ $(ObjDir)Test.res:
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-EXTRA_SUFFIX_LINKER_ARGS+= -SUBSYSTEM:Windows
+LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
 endif
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs)

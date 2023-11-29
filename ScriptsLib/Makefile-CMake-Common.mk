@@ -42,7 +42,7 @@ undefine tmp
 endif
 
 
-ifeq (0,$(ENABLE_ASSERTIONS))
+ifeq (0,$(AssertionsEnabled))
 CMAKE_CONFIGURATION:=Release
 else
 CMAKE_CONFIGURATION:=Debug

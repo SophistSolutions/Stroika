@@ -65,12 +65,12 @@ check:
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-EXTRA_SUFFIX_LINKER_ARGS+= -SUBSYSTEM:Windows
+LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
 # OCX is a DLL, doesnt seem needed but examples pass this arg
-EXTRA_SUFFIX_LINKER_ARGS+= -DLL
+LinkerArgs_ExtraSuffix+= -DLL
 #flags from sample MSBUILD ActiveLedIt build link line I dont think are needed
-#EXTRA_SUFFIX_LINKER_ARGS+= -DYNAMICBASE
-#EXTRA_SUFFIX_LINKER_ARGS+= -MACHINE:X86 /SAFESEH:NO 
+#LinkerArgs_ExtraSuffix+= -DYNAMICBASE
+#LinkerArgs_ExtraSuffix+= -MACHINE:X86 /SAFESEH:NO 
 endif
 
 MIDL_OUTPUT_=$(ObjDir)ActiveLedIt.tlb $(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
@@ -83,7 +83,7 @@ $(Objs):	$(ObjDir)ActiveLedIt_i.c $(ObjDir)ActiveLedIt_h.h
 MIDL_FLAGS +=	-env win32
 RC_FLAGS+=	-I"$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(ObjDir))"
 # not sure if TLBID matters, but old msbuild script set it
-EXTRA_SUFFIX_LINKER_ARGS+=-TLBID:1
+LinkerArgs_ExtraSuffix+=-TLBID:1
 
 $(ObjDir)ActiveLedIt.tlb:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL)  "Running MIDL compiler on "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(SrcDir)Sources/ActiveLedIt.odl` "; see "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables $(ObjDir)MIDL-Build.out`" ..."
@@ -107,11 +107,11 @@ $(ObjDir)ActiveLedIt.res:
 # WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
 # https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675
 ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
-EXTRA_SUFFIX_LINKER_ARGS+= -FORCE:MULTIPLE
+LinkerArgs_ExtraSuffix+= -FORCE:MULTIPLE
 endif
 
 # without this the regsvr32 will fail; tried adding explict dllexport() in c++ code but couldnt find the right syntax to make it work
-EXTRA_SUFFIX_LINKER_ARGS += -DEF:Sources/ActiveLedIt.def
+LinkerArgs_ExtraSuffix += -DEF:Sources/ActiveLedIt.def
 
 $(TARGETEXE):	$(ObjDir) $(Objs) $(StroikaLibs) $(ObjDir)ActiveLedIt.tlb
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables $@`" "... "

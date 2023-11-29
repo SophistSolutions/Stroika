@@ -151,8 +151,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 		CXX='$(CXX)' \
 		CFLAGS='$(CFLAGS)' \
 		CXXFLAGS='$(CXXFLAGS)' \
-		LD='$(Linker)' \
-		LDFLAGS='$(EXTRA_PREFIX_LINKER_ARGS) $(EXTRA_SUFFIX_LINKER_ARGS)' \
+		LD='$(LINKER)' \
+		LDFLAGS='$(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)' \
 		ProjectPlatformSubdir='$(ProjectPlatformSubdir)' \
 		LIBS='$(LIBS)' \
 		all
@@ -165,11 +165,11 @@ else
 		$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) \
 			CC='$(CC)' \
 			CXX='$(CXX)' \
-			LD='$(Linker)' \
+			LD='$(LINKER)' \
 			AR='$(LIBTOOL)' \
 			ProjectPlatformSubdir='$(ProjectPlatformSubdir)' \
 			INCLUDE='$(INCLUDES_PATH)' \
-			LIB='$(LIBS_PATH)' \
+			LIB='$(LinkerArgs_LibPath)' \
 			LIBS='oleaut32.lib ole32.lib user32.lib' \
 			ARCRATEFLAGS='-nologo' \
 			ARTARGETPREFIX=-out: \

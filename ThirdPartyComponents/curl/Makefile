@@ -163,7 +163,7 @@ LIBCURL_CONFIGURE += --disable-pop3
 LIBCURL_CONFIGURE += --disable-imap
 ## really want ares but hindrance for static linking for now
 LIBCURL_CONFIGURE += --disable-ares
-ifeq ($(ENABLE_ASSERTIONS), 1)
+ifeq ($(AssertionsEnabled), 1)
 LIBCURL_CONFIGURE += --enable-debug
 LIBCURL_CONFIGURE += --disable-optimize
 LIBCURL_CONFIGURE += --enable-curldebug
@@ -198,8 +198,8 @@ ifeq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 #		ld: symbol(s) not found for architecture x86_64
 #
 # BUT THEN got cross-compiling for raspberry pi on Ubuntu 22.04, so try a more sophisticated check
-ifneq ($(Linker),)
-ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(Linker) $(EXTRA_PREFIX_LINKER_ARGS) $(EXTRA_SUFFIX_LINKER_ARGS)" brotlicommon),false)
+ifneq ($(LINKER),)
+ifeq ($(shell $(StroikaRoot)ScriptsLib/CheckForLibrary "$(LINKER) $(LinkerArgs_ExtraPrefix) $(LinkerArgs_ExtraSuffix)" brotlicommon),false)
 LIBCURL_CONFIGURE += --without-brotli
 endif
 endif

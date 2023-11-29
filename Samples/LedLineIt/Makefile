@@ -94,14 +94,14 @@ $(ObjDir)LedLineIt.res:
 # WORKAROUND https://developercommunity.visualstudio.com/t/mfc-application-fails-to-link-with-address-sanitiz/1144525
 # https://developercommunity.visualstudio.com/t/please-re-open-httpsdevelopercommunityvisualstudio/1440675
 ifneq ($(filter-out -fanitize=address, $(CXXFLAGS)), $(CXXFLAGS))
-EXTRA_SUFFIX_LINKER_ARGS+= -FORCE:MULTIPLE
+LinkerArgs_ExtraSuffix+= -FORCE:MULTIPLE
 endif
 
 
 # Cannot be done generically through configuration cuz a given build of Stroika might contain EXEs targetting multiple subsystems
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-EXTRA_SUFFIX_LINKER_ARGS+= -SUBSYSTEM:Windows
-EXTRA_SUFFIX_LINKER_ARGS+= -ENTRY:wWinMainCRTStartup
+LinkerArgs_ExtraSuffix+= -SUBSYSTEM:Windows
+LinkerArgs_ExtraSuffix+= -ENTRY:wWinMainCRTStartup
 endif
 
 

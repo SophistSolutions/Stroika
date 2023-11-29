@@ -79,10 +79,10 @@ Objs=\
 
 # Use the stroika link macro (DEFAULT_LINK_LINE), but omit the stroika lib itself, and other injected depepdencies
 # for sqlite executable
-LIB_DEPENDENCIES=
+LinkerArgs_LibDependencies=
 StroikaLibs=
 ifeq (Unix,$(ProjectPlatformSubdir))
-LIB_DEPENDENCIES=-lpthread
+LinkerArgs_LibDependencies=-lpthread
 endif
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
@@ -153,7 +153,7 @@ CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
 CFLAGS	+= -DSQLITE_ENABLE_JSON1
 
 # See https://stroika.atlassian.net/browse/STK-753 and https://sqlite.org/forum/forumpost/cc6668e7b3 - avoid TSAN/Valgrind issues 
-ifeq (1,$(ENABLE_ASSERTIONS))
+ifeq (1,$(AssertionsEnabled))
 ifeq (,$(findstring qStroika_FeatureSupported_Valgrind,$(CPPFLAGS)))
 ifeq (,$(findstring thread,$(SanitizerFlags)))
 CFLAGS	+= -DSQLITE_ENABLE_API_ARMOR

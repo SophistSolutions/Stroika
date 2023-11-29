@@ -378,7 +378,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Reconfiguring $(CONFIGURATION):"
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && PATH=.:$$PATH && `./ScriptsLib/GetConfigurationParameter $(CONFIGURATION) Configure-Command-Line`
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) && PATH=.:$$PATH && `./ScriptsLib/GetConfigurationParameter $(CONFIGURATION) ConfigureCommandLine`
 endif
 
 #
