@@ -1124,24 +1124,11 @@ sub	SetDefaultForCompilerDriver_
 		$STRIP = "strip";
 	}
 
-
-	if (!(defined $STRIP)) {
-		$STRIP = "";
-	}
-	if (!(defined $AR)) {
-		$AR = "";
-	}
 	if (!(defined $LIBTOOL)) {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 			my $x = GetMSVCVarName_ ("AR");
 			$LIBTOOL = trim ($x);
 		}
-		else {
-			$LIBTOOL = "";
-		}
-	}
-	if (!(defined $RANLIB)) {
-		$RANLIB = "";
 	}
 	if (!(defined $LINKER)) {
 		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
@@ -2601,42 +2588,42 @@ sub	WriteConfigFile_
 	print (OUT "    <BuildByDefault>$BuildByDefault</BuildByDefault>\n");
 
 	print (OUT "\n    <!--Tools-->\n");
+	if (defined $AR) {
+		print (OUT "    <AR>$AR</AR>\n");
+	}
 	print (OUT "    <AS>$AS</AS>\n");
-
+	print (OUT "    <CC>$COMPILER_DRIVER_C</CC>\n");
+	print (OUT "    <CXX>$COMPILER_DRIVER_CPlusPlus</CXX>\n");
 	if (defined $CMAKE) {
 		print (OUT "    <CMAKE>$CMAKE</CMAKE>\n");
 	}
 	else {
 		print (OUT "    <CMAKE>cmake</CMAKE>\n");
 	}
-
-	print (OUT "    <CC>$COMPILER_DRIVER_C</CC>\n");
-	print (OUT "    <CXX>$COMPILER_DRIVER_CPlusPlus</CXX>\n");
-
+	if (defined $LIBTOOL) {
+		print (OUT "    <LIBTOOL>$LIBTOOL</LIBTOOL>\n");
+	}
+	print (OUT "    <LINKER>$LINKER</LINKER>\n");
 	if (defined $MIDL) {
 		print (OUT "    <MIDL>$MIDL</MIDL>\n");
+	}
+	if (defined $RANLIB) {
+		print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
 	}
 	if (defined $RC) {
 		print (OUT "    <RC>$RC</RC>\n");
 	}
-	print (OUT "    <AR>$AR</AR>\n");
-	print (OUT "    <LIBTOOL>$LIBTOOL</LIBTOOL>\n");
-	print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
-	print (OUT "    <LINKER>$LINKER</LINKER>\n");
-	print (OUT "    <STRIP>$STRIP</STRIP>\n");
-
-
-	print (OUT "\n    <!--Paths-->\n");
-	my $includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
-	print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
-	if (defined $TOOLS_PATH_ADDITIONS) {
-		print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
+	if (defined $STRIP) {
+		print (OUT "    <STRIP>$STRIP</STRIP>\n");
 	}
 
 	print (OUT "\n    <!--Features Enabled-->\n");
-	print (OUT "    <qFeatureFlag_StrawberryPerl>$FEATUREFLAG_StrawberryPerl</qFeatureFlag_StrawberryPerl>\n");
+	if (defined $FEATUREFLAG_ATLMFC) {
+		print (OUT "    <qFeatureFlag_ATLMFC>$FEATUREFLAG_ATLMFC</qFeatureFlag_ATLMFC>\n");
+	}
 	print (OUT "    <qFeatureFlag_boost>$FEATUREFLAG_boost</qFeatureFlag_boost>\n");
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
+	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
 	if (not ($FEATUREFLAG_OpenSSLExtraArgs eq "")) {
 		if ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) {
@@ -2646,15 +2633,12 @@ sub	WriteConfigFile_
 			die ("Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use");
 		}
 	}
+	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
+	print (OUT "    <qFeatureFlag_StrawberryPerl>$FEATUREFLAG_StrawberryPerl</qFeatureFlag_StrawberryPerl>\n");
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
-	if (defined $FEATUREFLAG_ATLMFC) {
-		print (OUT "    <qFeatureFlag_ATLMFC>$FEATUREFLAG_ATLMFC</qFeatureFlag_ATLMFC>\n");
-	}
+	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_Xerces</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
-	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
-	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
-	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");
 	if ($gAssertionsEnabled != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <AssertionsEnabled>$gAssertionsEnabled</AssertionsEnabled>\n");
 	}
@@ -2704,8 +2688,13 @@ sub	WriteConfigFile_
 	if ($HasMakefileBugWorkaround_lto_skipping_undefined_incompatible == true) {
 		print (OUT "    <HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>true</HasMakefileBugWorkaround_lto_skipping_undefined_incompatible>\n");
 	}
+	if (defined $TOOLS_PATH_ADDITIONS) {
+		print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
+	}
 
 	print (OUT "\n    <!--Compiling-->\n");
+	my $includesPathStr = join ($PATH_SEPERATOR, @INCLUDES_PATH);
+	print (OUT "    <INCLUDES_PATH>$includesPathStr</INCLUDES_PATH>\n");
 	my $firstTime = true;
 	print (OUT "    <CPPFLAGS>");
 		foreach my $var (@CPPFLAGS)
