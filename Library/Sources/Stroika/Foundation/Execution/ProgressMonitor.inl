@@ -77,16 +77,7 @@ namespace Stroika::Foundation::Execution {
      *************************** ProgressMonitor::Updater ***************************
      ********************************************************************************
      */
-    inline ProgressMonitor::Updater::Updater ()
-        : fRep_{}
-        , fFromProg_{0.0}
-        , fToProg_{1.0}
-    {
-    }
     inline ProgressMonitor::Updater::Updater (nullptr_t)
-        : fRep_{}
-        , fFromProg_{0.0}
-        , fToProg_{1.0}
     {
     }
     inline ProgressMonitor::Updater::Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg)
@@ -103,6 +94,10 @@ namespace Stroika::Foundation::Execution {
         : Updater{parentTask, fromProg, toProg}
     {
         SetCurrentTaskInfo (taskInfo);
+    }
+    inline ProgressMonitor::Updater::Updater (const shared_ptr<Rep_>& r)
+        : fRep_{r}
+    {
     }
     inline void ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
     {
@@ -124,7 +119,7 @@ namespace Stroika::Foundation::Execution {
     {
         if (fRep_.get () != nullptr and fRep_->fCanceled_) {
             if (fRep_->fWorkThread_ != nullptr) {
-                Throw (Thread::AbortException::kThe);
+                fRep_->fWorkThread_.Abort ();
             }
             Throw (UserCanceledException::kThe);
         }

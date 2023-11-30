@@ -67,6 +67,34 @@ namespace Stroika::Foundation::Execution {
      *  If ProgressMontitor is constructed with an argument Thread (optional) - then attempts to Cancel the ProgressMonitor
      *  will also send an Abort() command to the associated thread. This can accelerate - depending less on co-operative
      *  checking - to cancel the long-lived progress-monitored process.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          void CompileData (const filesystem::path& sourceFile, ProgressMonitor::Updater progress) 
+     *          {
+     *              ...
+     *              progress.SetCurrentTaskInfo ("Compiling Strings"_k);
+     *              progress.SetCurrentProgressAndThrowIfCanceled (0.3f);
+     *              SubTask_ (ProgressMonitor::Updater{progress, 0.50f, 0.60f});    // also may do progress calls (0..1 in subtask mapped into .5 to .6 range here)
+     *              ...
+     *          }
+     *          ProgressMonitor  progMon;
+     *          prog.AddOnProgressCallback ([lastProg = 0u,  lastDesc = String{}] (const ProgressMonitor& progressMonitor) mutable {
+     *                  unsigned int curProgPct = static_cast<unsigned int> (progressMonitor.GetProgress () * 100);
+     *                  Assert (0 <= curProgPct and curProgPct <= 100);
+     *                  if (lastDesc != progressMonitor.GetCurrentTaskInfo ().fName) {
+     *                      cout << "\r\n";
+     *                      lastDesc = progressMonitor.GetCurrentTaskInfo ().fName;
+     *                      cout << "\t" << lastDesc.AsNarrowSDKString () << "\r\n";
+     *                  }
+     *                  if (lastProg != curProgPct) {
+     *                      cout << "\r";
+     *                      cout << Characters::CString::Format ("\t\t%d%% complete            ", curProgPct); /// spaces to wipe-out rest of line
+     *                      lastProg = curProgPct;
+     *                  }
+     *              }); 
+     *          CompileData (file, progMon);    // CompileData() takes updater, but ProgressMonitor has conversion op to create Updater...
+     *      \endcode
      */
     class ProgressMonitor final {
     public:
@@ -89,6 +117,8 @@ namespace Stroika::Foundation::Execution {
         /**
          *  If work thread is specified (optional) - then thread cancelation will work more efficiently.
          *  But this is not required.
+         * 
+         *  \todo Consider if we should take ChangedCallbackType CTOR arg; not sure of the workerThread usecase. CONSIDER!
          */
         ProgressMonitor ();
         ProgressMonitor (const ProgressMonitor&) = delete;
@@ -113,7 +143,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  Return the progress value (between 0..1). This values starts at zero, and increases
-         *  monotonicly to 1.0
+         *  monotonically to 1.0
          */
         nonvirtual ProgressRangeType GetProgress () const;
 
@@ -195,11 +225,17 @@ namespace Stroika::Foundation::Execution {
          *
          *  Helper used to continue reporting progress, but breaking the progress into subtasks,
          *  and doing the artithmatic of integrating the total into an overall progress total.
+         * 
+         *  \note - initial updater generated via ProgressMontior::operator Updater (); null-updater
+         *        maybe used if there are no progress updates to display;
          */
-        Updater ();
+        Updater () = delete;
         Updater (nullptr_t);
         Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg);
         Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, const CurrentTaskInfo& taskInfo);
+
+    private:
+        Updater (const shared_ptr<Rep_>& r);
 
     public:
         /**
@@ -232,12 +268,15 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo);
 
     private:
+        friend class ProgressMonitor;
+
+    private:
         nonvirtual void CallNotifyProgress_ () const;
 
     private:
         shared_ptr<Rep_>  fRep_;
-        ProgressRangeType fFromProg_;
-        ProgressRangeType fToProg_;
+        ProgressRangeType fFromProg_{0.0};
+        ProgressRangeType fToProg_{1.0};
     };
 
 }

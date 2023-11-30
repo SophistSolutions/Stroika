@@ -37,6 +37,12 @@ void ProgressMonitor::Cancel ()
     fRep_->fWorkThread_.Abort ();
 }
 
+ProgressMonitor::operator Updater ()
+{
+
+    return Updater{fRep_};
+}
+
 /*
  ********************************************************************************
  *************************** ProgressMonitor::Updater ***************************
