@@ -419,6 +419,7 @@ auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CH
 #endif
 #endif
         }
+        Assert (::strlen (buf) < Memory::NEltsOf (buf) / 2);    // really just needs to be <, but since this buffer unchecked, break if we get CLOSE
         DoEmit_ (buf);
     }
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
@@ -541,7 +542,10 @@ void Debug::Private_::Emitter::DoEmit_ (const char* p, const char* e) noexcept
     }
 }
 
-void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
+void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept 
+#if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+    #endif
 {
     try {
         size_t               len = e - p;

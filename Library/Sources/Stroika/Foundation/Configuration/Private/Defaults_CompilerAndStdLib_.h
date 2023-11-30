@@ -643,6 +643,45 @@ raspberrypi-g++-11-debug-sanitize_undefined - running on raspi
 #endif
 
 /*
+
+raspberrypi-g++-11-debug-sanitize_undefined - running on raspi
+
+==16331==ERROR: AddressSanitizer: stack-use-after-scope on address 0xbeb33b80 at pc 0x0049c10f bp 0xbeb33688 sp 0xbeb33694
+WRITE of size 100 at 0xbeb33b80 thread T0
+    #0 0x49c10c in __interceptor_memcpy (/tmp/Test43+0x6c10c)
+    #1 0x6289ee in memcpy /usr/arm-linux-gnueabihf/include/bits/string_fortified.h:29
+    #2 0x6289ee in Stroika::Foundation::Debug::Private_::Emitter::DoEmit_(wchar_t const*, wchar_t const*) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:549
+    #3 0x6336c8 in int Stroika::Foundation::Debug::Private_::Emitter::DoEmitMessage_<wchar_t>(unsigned int, wchar_t const*, wchar_t const*) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:431
+    #4 0x62928e in Stroika::Foundation::Debug::Private_::Emitter::EmitTraceMessage(wchar_t const*, ...) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:299
+    #5 0x6298ba in Stroika::Foundation::Debug::TraceContextBumper::~TraceContextBumper() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:641
+    #6 0x6298ba in Stroika::Foundation::Debug::TraceContextBumper::~TraceContextBumper() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:630
+    #7 0x5523cc in DoTests_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Tests/43/Test.cpp:376
+    #8 0x55cb52 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Tests/43/Test.cpp:568
+    #9 0x57ac3c in Stroika::TestHarness::PrintPassOrFail(void (*)()) ../TestHarness/TestHarness.cpp:89
+    #10 0xb6d5a3bc in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #11 0xb6d5a4c4 in __libc_start_main_impl csu/libc-start.c:360
+
+Address 0xbeb33b80 is located in stack of thread T0 at offset 128 in frame
+    #0 0x6288e8 in Stroika::Foundation::Debug::Private_::Emitter::DoEmit_(wchar_t const*, wchar_t const*) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:545
+
+  This frame has 1 object(s):
+    [48, 4152) 'buf' (line 548) <== Memory access at offset 128 is inside this variable
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+*/
+
+#ifndef qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
+// FIRST SEEN BROKEN IN GCC 11
+// appears broken in GCC 12 (ubuntu 22.04 cross-compile)
+#define qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+#else
+#define qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy 0
+#endif
+
+#endif
+
+/*
     Compiling Tests/11/Test.cpp ...
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
 Stack dump:
