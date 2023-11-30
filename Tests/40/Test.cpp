@@ -681,9 +681,9 @@ namespace {
             while (true) {
                 static int  sInnerThreadNum{};
                 Thread::Ptr t = Thread::New ([] () { Execution::Sleep (.01); }, Characters::Format (L"innerthread%d", ++sInnerThreadNum));
-                innerThreads.Add (t);
                 Execution::Sleep (.02);
                 t.Start ();
+                innerThreads.Add (t);   // only add thread after its started. Illegal since Stroika v3.0d5 to Abort non-started threads
             }
         });
         thread.Start ();
@@ -1415,6 +1415,8 @@ namespace {
 }
 
 namespace {
+    #if 0
+    // No longer legal since Stroika v3.0d5
     namespace RegressionTest25_AbortNotYetStartedThread_ {
         void Test ()
         {
@@ -1423,6 +1425,7 @@ namespace {
             t1.AbortAndWaitForDone ();
         }
     }
+    #endif
 }
 
 namespace {
@@ -1463,7 +1466,7 @@ namespace {
         RegressionTest22_SycnhonizedUpgradeLock_ ();
         RegressionTest23_SycnhonizedWithTimeout_ ();
         RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ();
-        RegressionTest25_AbortNotYetStartedThread_::Test ();
+       // RegressionTest25_AbortNotYetStartedThread_::Test ();
     }
 }
 

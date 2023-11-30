@@ -396,6 +396,9 @@ namespace Stroika::Foundation::Execution {
         public:
             /**
              * \req    GetStatus () == Status::eNotYetRunning
+             * 
+             *  ensures when it returns the state is running, or completed, but cannot (yet) be aborted?? or null or not yet running
+             * Ensure (s == Status::eRunning or s == Status::eCompleted);
              */
             nonvirtual void Start () const;
 
@@ -436,6 +439,9 @@ namespace Stroika::Foundation::Execution {
              *  \note   This counts on Stroika's semi-cooperative multitasking (to be safe). This means if you call libraries that don't
              *          check for thread interruption, those threads may not BE interruptible during that region of code.
              *          @see Thread::GetThrowInterruptExceptionInsideUserAPC()
+             * 
+             *  \note It IS possible to have two DIFFERNT Ptr objects being called in different threads, one doing a Start ()
+             *        and the other doing an Abort ()???
              *
              *  \req *this != nullptr
              */
