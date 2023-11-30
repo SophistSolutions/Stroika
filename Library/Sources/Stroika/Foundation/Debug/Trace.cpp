@@ -542,10 +542,35 @@ void Debug::Private_::Emitter::DoEmit_ (const char* p, const char* e) noexcept
     }
 }
 
-void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
+/*
+    [Succeeded]  (1  seconds)  [42]  Foundation::Execution::Other (scp ../Builds/raspberrypi-g++-12-release-sanitize_address/Tests/Test42...; ssh lewis@192.168.244.20   /tmp/Test42)
+=================================================================
+==24967==ERROR: AddressSanitizer: stack-use-after-scope on address 0xbefb9b80 at pc 0x0048c10f bp 0xbefb9688 sp 0xbefb9694
+WRITE of size 100 at 0xbefb9b80 thread T0
+    #0 0x48c10c in __interceptor_memcpy (/tmp/Test43+0x6c10c)
+    #1 0x6189ee in memcpy /usr/arm-linux-gnueabihf/include/bits/string_fortified.h:29
+    #2 0x6189ee in Stroika::Foundation::Debug::Private_::Emitter::DoEmit_(wchar_t const*, wchar_t const*) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:553
+    #3 0x6236c8 in int Stroika::Foundation::Debug::Private_::Emitter::DoEmitMessage_<wchar_t>(unsigned int, wchar_t const*, wchar_t const*) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:432
+    #4 0x61928e in Stroika::Foundation::Debug::Private_::Emitter::EmitTraceMessage(wchar_t const*, ...) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:299
+    #5 0x6198ba in Stroika::Foundation::Debug::TraceContextBumper::~TraceContextBumper() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:645
+    #6 0x6198ba in Stroika::Foundation::Debug::TraceContextBumper::~TraceContextBumper() /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:634
+    #7 0x5423cc in DoTests_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Tests/43/Test.cpp:376
+    #8 0x54cb52 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Tests/43/Test.cpp:568
+    #9 0x56ac3c in Stroika::TestHarness::PrintPassOrFail(void (*)()) ../TestHarness/TestHarness.cpp:89
+    #10 0xb6d1a3bc in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #11 0xb6d1a4c4 in __libc_start_main_impl csu/libc-start.c:360
+
+Address 0xbefb9b80 is located in stack of thread T0 at offset 128 in frame
+    #0 0x6188e8 in Stroika::Foundation::Debug::Private_::Emitter::DoEmit_(wchar_t const*, wchar_t const*) /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204-Cross-Compile2RaspberryPi/Library/Sources/Stroika/Foundation/Debug/Trace.cpp:549
+
+  This frame has 1 object(s):
+    [48, 4152) 'buf' (line 552) <== Memory access at offset 128 is inside this variable
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+*/
 #if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
     Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
+void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
 {
     try {
         size_t               len = e - p;

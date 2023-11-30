@@ -72,6 +72,15 @@ namespace Stroika::Foundation::Debug {
      *
      *  \par Example Usage
      *      \code
+     *          #if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
+     *              Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+     *          #endif
+     *          void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
+     *      \endcode
+     * 
+     *  \par Example Usage
+     *      \code
+     *          // OLD EXAMPLE - NOT SURE THIS SYNTAX WORKS - MAYBE HAS TO GO BEFORE [] not after function()??
      *          ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject] (const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) 
      *              Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS 
      *              -> void {...}
