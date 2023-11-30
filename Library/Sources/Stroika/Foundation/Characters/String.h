@@ -1672,10 +1672,21 @@ namespace Stroika::Foundation::Characters {
     }
 
     /**
+     * 
+     *  \par Example Usage
+     *      \code
+     *          constexpr String::EqualsComparer kStringCIComparer_ {Characters::CompareOptions::eCaseInsensitive};
+     *          if (kStringCIComparer_ (IO::FileSystem::FromPath (filename.extension ()), ".HFCC"sv)) {
+     *              compiledName = filename;
+     *          }
+     *      \endcode
+     * 
+     *  \note There is no String::Equals() method, because it would look queer if it took one string argument, and if it was static
+     *        it would essentially look like the above comparer, so little point.
      */
     struct String::EqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         /**
-         *  optional CompareOptions to CTOR allows for case insensative compares
+         *  optional CompareOptions to CTOR allows for case insensitive compares
          */
         constexpr EqualsComparer (CompareOptions co = CompareOptions::eWithCase);
 
