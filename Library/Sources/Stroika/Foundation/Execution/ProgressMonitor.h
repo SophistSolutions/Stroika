@@ -228,6 +228,9 @@ namespace Stroika::Foundation::Execution {
          * 
          *  \note - initial updater generated via ProgressMontior::operator Updater (); null-updater
          *        maybe used if there are no progress updates to display;
+         * 
+         *  \note - all 'Updater' methods (besides the constructor and destructor) - are expected to be called from the context
+         *        of the worker task (especially ThrowIfCanceled).
          */
         Updater () = delete;
         Updater (nullptr_t);
@@ -241,6 +244,9 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Progress is a number 0..1. However, if outside that range, it will be silently pinned to be in that range (so
          *  caller need not check/be careful).
+         * 
+         *  However, we do 'weak assert' that its close to that range, since being more than a float-point round-off away, probably
+         *  indicates a bug.
          */
         nonvirtual void SetProgress (ProgressRangeType p);
 

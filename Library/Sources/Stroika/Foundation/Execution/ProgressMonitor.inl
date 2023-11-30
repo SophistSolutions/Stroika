@@ -100,11 +100,12 @@ namespace Stroika::Foundation::Execution {
     }
     inline void ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
     {
+        WeakAssert (-0.001 < p and p < 1.001); // 'Weak Require' - outside this range, and its probably a caller bug
         p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f);
-        Require (0.0 <= p and p <= 1.0);
+        Assert (0.0 <= p and p <= 1.0);
         p = fFromProg_ + p * (fToProg_ - fFromProg_);
         p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f);
-        Require (0.0 <= p and p <= 1.0);
+        Assert (0.0 <= p and p <= 1.0);
         // pin-to-special-point to avoid floating point rounding errors triggering bogus assertions/progress changes
         p = Math::PinToSpecialPoint (p, fRep_->fCurrentProgress_.load ());
         // disallow moving progress backwards because it is nearly always a bug, and not terribly useful

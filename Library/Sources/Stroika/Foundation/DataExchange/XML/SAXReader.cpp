@@ -59,6 +59,8 @@ CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeatu
 #define Assert(c)
 #endif
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
@@ -67,7 +69,7 @@ using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
-using std::byte;
+
 
 namespace {
     String xercesString2String_ (const XMLCh* s, const XMLCh* e)
@@ -172,7 +174,7 @@ namespace {
 #if qHasFeature_Xerces
 namespace {
     // These SHOULD be part of xerces! Perhaps someday post them?
-    class StdIStream_InputSource : public InputSource {
+    class StdIStream_InputSource_ : public InputSource {
     protected:
         class StdIStream_InputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
         public:
@@ -201,7 +203,7 @@ namespace {
         };
 
     public:
-        StdIStream_InputSource (InputStream<byte>::Ptr in, const XMLCh* const bufId = nullptr)
+        StdIStream_InputSource_ (InputStream<byte>::Ptr in, const XMLCh* const bufId = nullptr)
             : InputSource{bufId}
             , fSource{in}
         {
@@ -216,14 +218,14 @@ namespace {
     };
 
     // my variations of StdIInputSrc with progresstracker callback
-    class StdIStream_InputSourceWithProgress : public StdIStream_InputSource {
+    class StdIStream_InputSourceWithProgress_ : public StdIStream_InputSource_ {
     protected:
-        class ISWithProg : public StdIStream_InputSource::StdIStream_InputStream {
+        class ISWithProg : public StdIStream_InputSource_::StdIStream_InputStream {
         public:
             ISWithProg (const InputStream<byte>::Ptr& in, ProgressMonitor::Updater progressCallback)
                 : StdIStream_InputStream{in}
-                , fProgress{progressCallback, 0.0f, 1.0f}
-                , fTotalSize{0.0f}
+                , fProgress_{progressCallback, 0.0f, 1.0f}
+                , fTotalSize_{0.0f}
             {
                 // @todo - redo for if non-seekable streams - just set flag saying not seeakble and do right thing with progress. ....
                 /// for now we raise exceptions
@@ -232,7 +234,7 @@ namespace {
                 SeekOffsetType totalSize = in.GetOffset ();
                 Assert (start <= totalSize);
                 in.Seek (start);
-                fTotalSize = static_cast<float> (totalSize);
+                fTotalSize_ = static_cast<float> (totalSize);
             }
 
         public:
@@ -241,41 +243,36 @@ namespace {
                 using ProgressRangeType            = ProgressMonitor::ProgressRangeType;
                 ProgressRangeType curOffset        = 0.0;
                 bool              doProgressBefore = (maxToRead > 10 * 1024); // only bother calling both before & after if large read
-                if (fTotalSize > 0.0f and doProgressBefore) {
-                    //curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;
+                if (fTotalSize_ > 0.0f and doProgressBefore) {
                     curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
-                    fProgress.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize);
+                    fProgress_.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize_);
                 }
-
-                //fSource.read (reinterpret_cast<char*> (toFill), maxToRead);
-                //XMLSize_t   result  =   static_cast<XMLSize_t> (fSource.gcount ()); // safe cast cuz read maxToRead bytes
                 XMLSize_t result = fSource.Read (reinterpret_cast<byte*> (toFill), reinterpret_cast<byte*> (toFill) + maxToRead);
-                if (fTotalSize > 0) {
+                if (fTotalSize_ > 0) {
                     curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
-                    //curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;
-                    fProgress.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize);
+                    fProgress_.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize_);
                 }
                 return result;
             }
 
         private:
-            ProgressMonitor::Updater fProgress;
-            float                    fTotalSize;
+            ProgressMonitor::Updater fProgress_;
+            float                    fTotalSize_;
         };
 
     public:
-        StdIStream_InputSourceWithProgress (InputStream<byte>::Ptr in, ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr)
-            : StdIStream_InputSource{in, bufId}
-            , fProgressCallback{progressCallback}
+        StdIStream_InputSourceWithProgress_ (InputStream<byte>::Ptr in, ProgressMonitor::Updater progressUpdater, const XMLCh* const bufId = nullptr)
+            : StdIStream_InputSource_{in, bufId}
+            , fProgressCallback_{progressUpdater}
         {
         }
         virtual BinInputStream* makeStream () const override
         {
-            return new (getMemoryManager ()) ISWithProg{fSource, fProgressCallback};
+            return new (getMemoryManager ()) ISWithProg{fSource, fProgressCallback_};
         }
 
     private:
-        ProgressMonitor::Updater fProgressCallback;
+        ProgressMonitor::Updater fProgressCallback_;
     };
 }
 #endif
@@ -336,7 +333,7 @@ namespace {
 }
 
 void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, [[maybe_unused]] StructuredStreamEvents::IConsumer& callback,
-                    const optional<Schema>& schema, [[maybe_unused]] Execution::ProgressMonitor::Updater progress)
+                    const optional<Schema>& schema, [[maybe_unused]] ProgressMonitor::Updater progress)
 {
     SAX2PrintHandlers_                    handler{callback};
     shared_ptr<SAX2XMLReader>             parser;
@@ -352,11 +349,10 @@ void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, 
     parser->setContentHandler (&handler);
     parser->setErrorHandler (&sMyErrorReproter_);
     constexpr XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
-    parser->parse (StdIStream_InputSourceWithProgress{in, ProgressMonitor::Updater{progress, 0.1f, 0.9f}, kBufID});
+    parser->parse (StdIStream_InputSourceWithProgress_{in, ProgressMonitor::Updater{progress, 0.1f, 0.9f}, kBufID});
 }
 
-void XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const optional<Schema>& schema,
-                    Execution::ProgressMonitor::Updater progress)
+void XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const optional<Schema>& schema, ProgressMonitor::Updater progress)
 {
     SAXParse (in.As<Streams::InputStream<byte>::Ptr> (), callback, schema, progress);
 }
