@@ -69,8 +69,6 @@ using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
-
-
 namespace {
     String xercesString2String_ (const XMLCh* s, const XMLCh* e)
     {
