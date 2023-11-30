@@ -568,9 +568,10 @@ Address 0xbefb9b80 is located in stack of thread T0 at offset 128 in frame
 HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
 */
 #if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
-void Debug::Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
+    void
+    Debug::Private_::Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
 {
     try {
         size_t               len = e - p;

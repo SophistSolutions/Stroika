@@ -533,11 +533,11 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 #endif
 
         try {
-            #if qDebug
+#if qDebug
             if (auto s = thisThreadRep->fStatus_.load (); s != Status::eNotYetRunning) {
                 DbgTrace ("Debugging issue where next assert fails sometimes - not clear why - state was %d", s);
             }
-            #endif
+#endif
             // Cannot get here unless Start () was called. And cannot call Abort() until that finishes, so we must still be running
             Assert (thisThreadRep->fStatus_ == Status::eNotYetRunning);
 
@@ -834,11 +834,11 @@ again:
     if (s == Status::eNotYetRunning) {
         // @todo fix this logic - set expliclt when we do the SET EVENT above (before). But then need to change the threadmain logic to accomodate
         // --LGP 2023-11-30
-            this_thread::yield ();
-            goto again;
+        this_thread::yield ();
+        goto again;
     }
     Ensure (s == Status::eRunning or s == Status::eCompleted);
-  //  #endif
+    //  #endif
 }
 
 void Thread::Ptr::Abort () const
@@ -846,7 +846,6 @@ void Thread::Ptr::Abort () const
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"*this=%s", ToString ().c_str ())};
     Require (*this != nullptr);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
-
 
     // new rule since Stroika v3.0d5
     // DONT allow this to be called with status == null (was already a rule) or not yet started --LGP 2023-11-30
@@ -863,8 +862,8 @@ void Thread::Ptr::Abort () const
             }
             else if (prevState == Status::eNotYetRunning) {
                 if (fRep_->fStatus_.compare_exchange_strong (prevState, Status::eAborting)) {
-                    DbgTrace ("thread never started, so marked as aborting");   // not completed, because could have never called Start, or could be in middle of a Start
-                    #if 0
+                    DbgTrace ("thread never started, so marked as aborting"); // not completed, because could have never called Start, or could be in middle of a Start
+#if 0
                     /*
                      *  This is COMPLEX, as there are several possible cases. It COULD be we never got 'Start' called. It could be we are in the middle
                      *  of a Start () - at some indeterminate stage.
@@ -873,13 +872,13 @@ void Thread::Ptr::Abort () const
                     fRep_->fRefCountBumpedInsideThreadMainEvent_.Set ();
                     fRep_->fStartReadyToTransitionToRunningEvent_.Set ();
                     fRep_->fThreadDoneAndCanJoin_.Set ();
-                    #endif
+#endif
                     break; // leave state alone
                 }
                 else {
                     DbgTrace (L"very rare, but can happen, transitioned to aborting or completed by some other thread (cur state = %s)",
                               Characters::ToString (prevState).c_str ());
-                    WeakAsserteNotReached ();   // ACTUALLY dont think this can happen --LGP 2023-11-30
+                    WeakAsserteNotReached (); // ACTUALLY dont think this can happen --LGP 2023-11-30
                     prevState = Status::eRunning;
                     continue; // try again to transition to aborting
                 }
