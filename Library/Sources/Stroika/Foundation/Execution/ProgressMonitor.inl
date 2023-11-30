@@ -62,7 +62,6 @@ namespace Stroika::Foundation::Execution {
     {
         RequireNotNull (fRep_);
         Ensure (0.0 <= fRep_->fCurrentProgress_ and fRep_->fCurrentProgress_ <= 1.0);
-        fRep_->fCanceled_ = true;
         return fRep_->fCurrentProgress_;
     }
     inline ProgressMonitor::CurrentTaskInfo ProgressMonitor::GetCurrentTaskInfo () const
