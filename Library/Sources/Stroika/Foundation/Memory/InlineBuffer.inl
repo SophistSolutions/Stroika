@@ -339,7 +339,7 @@ namespace Stroika::Foundation::Memory {
 
                 // Initialize new memory from old
                 Assert (this->begin () != reinterpret_cast<T*> (newPtr));
-                Assert (this->end () - this->begin () <= useNewCapacity); // so no possible overflow
+                Assert (static_cast<size_t> (this->end () - this->begin ()) <= useNewCapacity); // so no possible overflow
                 uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
 
                 // destroy objects in old memory
