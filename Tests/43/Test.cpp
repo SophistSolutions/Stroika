@@ -338,8 +338,7 @@ namespace {
                     }
                 }
                 try {
-                    auto uri = URI::Parse (
-                        "http://[fe80::354f:9016:fed2:8b9b]:2869/upnphost/udhisapi.dll?content=uuid:4becec11-428e-46e0-801b-9b293cf1d2c7"sv);
+                    auto uri = URI::Parse ("http://[fe80::354f:9016:fed2:8b9b]:2869/upnphost/udhisapi.dll?content=uuid:4becec11-428e-46e0-801b-9b293cf1d2c7"sv);
                     VerifyTestResult (uri.GetAuthority ()->GetPort () == 2869);
                     VerifyTestResult (uri.GetAuthority ()->GetHost () == InternetAddress{"fe80::354f:9016:fed2:8b9b"sv});
                     VerifyTestResult (uri.GetAbsPath () == "/upnphost/udhisapi.dll"sv);
