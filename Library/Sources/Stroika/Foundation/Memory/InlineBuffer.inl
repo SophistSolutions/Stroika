@@ -329,16 +329,17 @@ namespace Stroika::Foundation::Memory {
         }
         Invariant ();
         // NOTE - could be upsizing or downsizing, and could be moving to for from allocated or inline buffers
+        Assert (useNewCapacity >= newCapacity);
         if (useNewCapacity != oldCapacity) {
             bool oldInPlaceBuffer = oldCapacity <= BUF_SIZE;
             bool newInPlaceBuffer = useNewCapacity <= BUF_SIZE;
             // Only if we changed if using inplace buffer, or if was and is using ramBuffer, and eltCount changed do we need to do anything
             if (oldInPlaceBuffer != newInPlaceBuffer or (not newInPlaceBuffer)) {
-                bool  memoryAllocationNeeded = not newInPlaceBuffer;
-                byte* newPtr = memoryAllocationNeeded ? Allocate_ (SizeInBytes_ (useNewCapacity)) : std::begin (fInlinePreallocatedBuffer_);
+                byte* newPtr = newInPlaceBuffer ? std::begin (fInlinePreallocatedBuffer_) : Allocate_ (SizeInBytes_ (useNewCapacity));
 
                 // Initialize new memory from old
                 Assert (this->begin () != reinterpret_cast<T*> (newPtr));
+                Assert (this->end () - this->begin () <= useNewCapacity);   // so no possible overflow
                 uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
 
                 // destroy objects in old memory
