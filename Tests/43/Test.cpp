@@ -329,9 +329,9 @@ namespace {
                     using namespace IO::Network::UniformResourceIdentification;
                     // Sub-problem where original bug lies
                     try {
-                        optional<Authority> authority = Authority::Parse (L"[fe80::354f:9016:fed2:8b9b]:2869");
+                        optional<Authority> authority = Authority::Parse ("[fe80::354f:9016:fed2:8b9b]:2869"sv);
                         VerifyTestResult (authority->GetPort () == 2869);
-                        VerifyTestResult (authority->GetHost () == InternetAddress{L"fe80::354f:9016:fed2:8b9b"});
+                        VerifyTestResult (authority->GetHost () == InternetAddress{"fe80::354f:9016:fed2:8b9b"sv});
                     }
                     catch (...) {
                         VerifyTestResult (false); // not reached - valid parse
@@ -339,16 +339,16 @@ namespace {
                 }
                 try {
                     auto uri = URI::Parse (
-                        L"http://[fe80::354f:9016:fed2:8b9b]:2869/upnphost/udhisapi.dll?content=uuid:4becec11-428e-46e0-801b-9b293cf1d2c7");
+                        "http://[fe80::354f:9016:fed2:8b9b]:2869/upnphost/udhisapi.dll?content=uuid:4becec11-428e-46e0-801b-9b293cf1d2c7"sv);
                     VerifyTestResult (uri.GetAuthority ()->GetPort () == 2869);
-                    VerifyTestResult (uri.GetAuthority ()->GetHost () == InternetAddress{L"fe80::354f:9016:fed2:8b9b"});
-                    VerifyTestResult (uri.GetAbsPath () == L"/upnphost/udhisapi.dll");
+                    VerifyTestResult (uri.GetAuthority ()->GetHost () == InternetAddress{"fe80::354f:9016:fed2:8b9b"sv});
+                    VerifyTestResult (uri.GetAbsPath () == "/upnphost/udhisapi.dll"sv);
                 }
                 catch (...) {
                     VerifyTestResult (false); // not reached - valid parse
                 }
                 try {
-                    auto uri = URI::Parse (L"http://[fe80::354f:9016:fed2:8b9b");
+                    auto uri = URI::Parse ("http://[fe80::354f:9016:fed2:8b9b"sv);
                     VerifyTestResult (false); // not reached - invalid URL
                 }
                 catch (...) {
