@@ -38,7 +38,7 @@ ProgressMonitor::ProgressMonitor (Traversal::Iterable<ChangedCallbackType> callb
     }
 }
 
-   void ProgressMonitor::AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback)
+void ProgressMonitor::AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback)
 {
     RequireNotNull (fRep_);
     fRep_->fCallbacks_.rwget ().rwref ().Append (make_shared<ChangedCallbackType> (progressChangedCallback));
@@ -66,11 +66,6 @@ void ProgressMonitor::Updater::CallNotifyProgress_ () const
 {
     RequireNotNull (fRep_);
     for (shared_ptr<ChangedCallbackType> f : fRep_->fCallbacks_.load ()) {
-//#if qFoundation_Execution_Function_OperatorForwardNeedsRefBug
-//        ProgressMonitor p{fRep_};
- //       (*f) (ref (p));
-//#else
         (*f) (ProgressMonitor{fRep_});
-//#endif
     }
 }

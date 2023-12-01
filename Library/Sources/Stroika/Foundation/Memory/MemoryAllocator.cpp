@@ -210,7 +210,7 @@ void* LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
     AssertNotNull (memptr);
     [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
     try {
-        fAllocations_.insert (PTRMAP::value_type (memptr, size));
+        fAllocations_.insert ({memptr, size});
         return memptr;
     }
     catch (...) {
@@ -248,7 +248,7 @@ size_t LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
 LeakTrackingGeneralPurposeAllocator::Snapshot LeakTrackingGeneralPurposeAllocator::GetSnapshot () const
 {
     [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
-    return Snapshot (fAllocations_);
+    return Snapshot{fAllocations_};
 }
 
 namespace {

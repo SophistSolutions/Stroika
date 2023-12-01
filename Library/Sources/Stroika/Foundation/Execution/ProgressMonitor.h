@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  Often in displaying progress, its useful to have a notion of what the system is doing,
-         *  and thats usually displayed far away from where the notion of progress stage resides.
+         *  and that is usually displayed far away from where the notion of progress stage resides.
          *  This API is usually called by the bit of code performing actions (to set the current task)
          *  and by the calling GUI to Get the current task description.
          *

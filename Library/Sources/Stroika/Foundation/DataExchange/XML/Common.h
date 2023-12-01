@@ -54,6 +54,13 @@ namespace Stroika::Foundation::DataExchange::XML {
 #define qStroika_Foundation_DataExchange_XML_SupportXPath 0
 #endif
 
+/**
+ *  Track memory allocations internally, and assure no memory leaks within XML code
+ */
+#ifndef qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+#define qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations qDebug
+#endif
+
     /*
      * Automatically manage initialization of dependent libraries by any code which includes this module
      */

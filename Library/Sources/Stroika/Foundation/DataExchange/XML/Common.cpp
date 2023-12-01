@@ -27,18 +27,6 @@ using namespace Stroika::Foundation::Debug;
 #endif
 
 #if qHasFeature_Xerces
-#ifndef qUseMyXMLDBMemManager_
-#define qUseMyXMLDBMemManager_ qDebug
-//#define   qUseMyXMLDBMemManager_       1
-#endif
-//#define   qXMLDBTrackAllocs_   0
-//#define   qXMLDBTrackAllocs_   1
-#ifndef qXMLDBTrackAllocs_
-#define qXMLDBTrackAllocs_ qDebug
-#endif
-#endif
-
-#if qHasFeature_Xerces
 
 // Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
 #define XML_LIBRARY 1
@@ -87,13 +75,17 @@ namespace {
     class MyXercesMemMgr_ : public MemoryManager {
     public:
         MyXercesMemMgr_ ()
-#if qXMLDBTrackAllocs_
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             : fAllocator{fBaseAllocator}
 #endif
         {
         }
+        ~MyXercesMemMgr_ ()
+        {
+            Assert (fAllocator.GetSnapshot ().fAllocations.empty ()); // else we have a memory leak
+        }
 
-#if qXMLDBTrackAllocs_
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
     public:
         Memory::SimpleAllocator_CallLIBCNewDelete             fBaseAllocator;
         Memory::LeakTrackingGeneralPurposeAllocator           fAllocator;
@@ -102,7 +94,7 @@ namespace {
 #endif
 
     public:
-#if qXMLDBTrackAllocs_
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         void DUMPCurMemStats ()
         {
             TraceContextBumper      ctx{"MyXercesMemMgr_::DUMPCurMemStats"};
@@ -121,7 +113,7 @@ namespace {
         virtual void* allocate (XMLSize_t size) override
         {
             try {
-#if qXMLDBTrackAllocs_
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
                 return fAllocator.Allocate (size);
 #else
                 return ::operator new (size);
@@ -129,13 +121,13 @@ namespace {
             }
             catch (...) {
                 // NB: use throw not Exception::Throw () since that requires its a subclass of exception (or SilentException)
-                throw (OutOfMemoryException ()); // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
+                throw (OutOfMemoryException{}); // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
             }
         }
         virtual void deallocate (void* p) override
         {
             if (p != nullptr) {
-#if qXMLDBTrackAllocs_
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
                 return fAllocator.Deallocate (p);
 #else
                 ::operator delete (p);
@@ -155,8 +147,8 @@ struct DependencyLibraryInitializer::LibXerces {
     LibXerces ()
         : fUseXercesMemoryManager{nullptr}
     {
-#if qUseMyXMLDBMemManager_
-        fUseXercesMemoryManager = new MyXercesMemMgr_ ();
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+        fUseXercesMemoryManager = new MyXercesMemMgr_{};
 #endif
         XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, fUseXercesMemoryManager);
     }
@@ -164,8 +156,8 @@ struct DependencyLibraryInitializer::LibXerces {
     {
         TraceContextBumper ctx{"~LibXerces"};
         XMLPlatformUtils::Terminate ();
-#if qUseMyXMLDBMemManager_
-        delete fUseXercesMemoryManager;
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+        delete fUseXercesMemoryManager; // checks for leaks
 #endif
     }
 };
