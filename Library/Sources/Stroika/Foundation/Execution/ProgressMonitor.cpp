@@ -27,7 +27,7 @@ ProgressMonitor::ProgressMonitor (Thread::Ptr workThread)
 void ProgressMonitor::AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback)
 {
     RequireNotNull (fRep_);
-    fRep_->fCallbacks_.Append (progressChangedCallback);
+    fRep_->fCallbacks_.Append (make_shared<ChangedCallbackType> (progressChangedCallback));
 }
 
 void ProgressMonitor::Cancel ()
@@ -51,12 +51,12 @@ ProgressMonitor::operator Updater ()
 void ProgressMonitor::Updater::CallNotifyProgress_ () const
 {
     RequireNotNull (fRep_);
-    for (ChangedCallbackType f : fRep_->fCallbacks_) {
+    for (shared_ptr < ChangedCallbackType> f : fRep_->fCallbacks_) {
 #if qFoundation_Execution_Function_OperatorForwardNeedsRefBug
         ProgressMonitor p (fRep_);
-        f (ref (p));
+        (*f) (ref (p));
 #else
-        f (ProgressMonitor (fRep_));
+        (*f) (ProgressMonitor (fRep_));
 #endif
     }
 }

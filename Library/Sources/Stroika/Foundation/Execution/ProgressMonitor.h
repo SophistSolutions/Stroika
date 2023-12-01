@@ -137,6 +137,9 @@ namespace Stroika::Foundation::Execution {
         /**
          *  This doesn't need to be used. You can use ProgressMonitor progress monitor just peridocially calling
          *  GetProgress(). But you may use AddCallback () to recieve notifications of progress changes.
+         * 
+         *  Also note, these callbacks may be mutable, and the same instance will be re-used on each progress callback
+         *  (but it maybe a copy of what is originally passed in ).
          */
         nonvirtual void AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback);
 
@@ -232,14 +235,18 @@ namespace Stroika::Foundation::Execution {
          *  \note - all 'Updater' methods (besides the constructor and destructor) - are expected to be called from the context
          *        of the worker task (especially ThrowIfCanceled).
          */
-        Updater () = delete;
+        Updater ()               = delete;
         Updater (const Updater&) = default;
         Updater (nullptr_t);
-        Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg);
-        Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, const CurrentTaskInfo& taskInfo);
+        Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, bool restoreTaskInfoOnDTOR = true);
+        Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, const CurrentTaskInfo& taskInfo,
+                 bool restoreTaskInfoOnDTOR = true);
 
     private:
         Updater (const shared_ptr<Rep_>& r);
+
+    public:
+        ~Updater ();
 
     public:
         /**
@@ -284,6 +291,7 @@ namespace Stroika::Foundation::Execution {
         shared_ptr<Rep_>  fRep_;
         ProgressRangeType fFromProg_{0.0};
         ProgressRangeType fToProg_{1.0};
+        optional<CurrentTaskInfo> fRestoreTaskInfo_;
     };
 
 }

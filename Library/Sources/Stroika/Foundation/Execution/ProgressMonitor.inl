@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Execution {
         Rep_ () = default;
 
         mutable mutex                             fCurTaskInfo_CritSect_; // needed because VariantValue is not threadsafe
-        Containers::Sequence<ChangedCallbackType> fCallbacks_;
+        Containers::Sequence < shared_ptr<ChangedCallbackType>> fCallbacks_;    // store shared_ptr in case mutable function - saving state - re-used across runs and not copied
         atomic<bool>                              fCanceled_{false};
         atomic<ProgressRangeType>                 fCurrentProgress_{0.0};
         CurrentTaskInfo                           fCurrentTaskInfo_;
@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Execution {
     inline ProgressMonitor::Updater::Updater (nullptr_t)
     {
     }
-    inline ProgressMonitor::Updater::Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg)
+    inline ProgressMonitor::Updater::Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, bool restoreTaskInfoOnDTOR)
         : fRep_{parentTask.fRep_}
         , fFromProg_{parentTask.fFromProg_ + fromProg * (parentTask.fToProg_ - parentTask.fFromProg_)}
         , fToProg_{parentTask.fFromProg_ + toProg * (parentTask.fToProg_ - parentTask.fFromProg_)}
@@ -88,15 +88,28 @@ namespace Stroika::Foundation::Execution {
         fToProg_   = Math::PinToSpecialPoint (fToProg_, parentTask.fToProg_);
         Require ((0.0f <= parentTask.fFromProg_) and (parentTask.fFromProg_ <= fFromProg_) and (fFromProg_ < fToProg_) and
                  (fToProg_ <= parentTask.fToProg_) and (parentTask.fToProg_ <= 1.0f));
+        if (restoreTaskInfoOnDTOR and fRep_ != nullptr) {
+            [[maybe_unused]] auto&& critSec = lock_guard{fRep_->fCurTaskInfo_CritSect_};
+            fRestoreTaskInfo_               = fRep_->fCurrentTaskInfo_;
+        }
     }
-    inline ProgressMonitor::Updater::Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, const CurrentTaskInfo& taskInfo)
-        : Updater{parentTask, fromProg, toProg}
+    inline ProgressMonitor::Updater::Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg,
+                                              const CurrentTaskInfo& taskInfo, bool restoreTaskInfoOnDTOR)
+        : Updater{parentTask, fromProg, toProg, restoreTaskInfoOnDTOR}
     {
         SetCurrentTaskInfo (taskInfo);
     }
     inline ProgressMonitor::Updater::Updater (const shared_ptr<Rep_>& r)
         : fRep_{r}
     {
+    }
+    inline ProgressMonitor::Updater::~Updater ()
+    {
+        if (fRestoreTaskInfo_) {
+            [[maybe_unused]] auto&& critSec = lock_guard{fRep_->fCurTaskInfo_CritSect_};
+            fRestoreTaskInfo_               = fRep_->fCurrentTaskInfo_;
+            CallNotifyProgress_ ();
+        }
     }
     inline void ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
     {
@@ -129,6 +142,7 @@ namespace Stroika::Foundation::Execution {
         if (fRep_.get () != nullptr) {
             [[maybe_unused]] auto&& critSec = lock_guard{fRep_->fCurTaskInfo_CritSect_};
             fRep_->fCurrentTaskInfo_        = taskInfo;
+            CallNotifyProgress_ ();
         }
     }
     inline void ProgressMonitor::Updater::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
