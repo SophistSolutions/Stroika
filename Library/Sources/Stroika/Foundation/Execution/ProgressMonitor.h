@@ -224,7 +224,7 @@ namespace Stroika::Foundation::Execution {
          *  progress values.
          *
          *  Helper used to continue reporting progress, but breaking the progress into subtasks,
-         *  and doing the artithmatic of integrating the total into an overall progress total.
+         *  and doing the arithmetic of integrating the total into an overall progress total.
          * 
          *  \note - initial updater generated via ProgressMontior::operator Updater (); null-updater
          *        maybe used if there are no progress updates to display;
@@ -233,6 +233,7 @@ namespace Stroika::Foundation::Execution {
          *        of the worker task (especially ThrowIfCanceled).
          */
         Updater () = delete;
+        Updater (const Updater&) = default;
         Updater (nullptr_t);
         Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg);
         Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg, const CurrentTaskInfo& taskInfo);
