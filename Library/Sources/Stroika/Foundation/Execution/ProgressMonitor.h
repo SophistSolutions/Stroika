@@ -78,13 +78,12 @@ namespace Stroika::Foundation::Execution {
      *              SubTask_ (ProgressMonitor::Updater{progress, 0.50f, 0.60f});    // also may do progress calls (0..1 in subtask mapped into .5 to .6 range here)
      *              ...
      *          }
-     *          ProgressMonitor  progMon;
-     *          prog.AddOnProgressCallback ([lastProg = 0u,  lastDesc = String{}] (const ProgressMonitor& progressMonitor) mutable {
-     *                  unsigned int curProgPct = static_cast<unsigned int> (progressMonitor.GetProgress () * 100);
+     *          ProgressMonitor  progMon{[lastProg = 0u,  lastDesc = String{}] (const ProgressMonitor& pm) mutable {
+     *                  unsigned int curProgPct = static_cast<unsigned int> (pm.GetProgress () * 100);
      *                  Assert (0 <= curProgPct and curProgPct <= 100);
-     *                  if (lastDesc != progressMonitor.GetCurrentTaskInfo ().fName) {
+     *                  if (lastDesc != pm.GetCurrentTaskInfo ().fName) {
      *                      cout << "\r\n";
-     *                      lastDesc = progressMonitor.GetCurrentTaskInfo ().fName;
+     *                      lastDesc = pm.GetCurrentTaskInfo ().fName;
      *                      cout << "\t" << lastDesc.AsNarrowSDKString () << "\r\n";
      *                  }
      *                  if (lastProg != curProgPct) {
@@ -92,7 +91,7 @@ namespace Stroika::Foundation::Execution {
      *                      cout << Characters::CString::Format ("\t\t%d%% complete            ", curProgPct); /// spaces to wipe-out rest of line
      *                      lastProg = curProgPct;
      *                  }
-     *              }); 
+     *              }}; 
      *          CompileData (file, progMon);    // CompileData() takes updater, but ProgressMonitor has conversion op to create Updater...
      *      \endcode
      */
@@ -123,6 +122,8 @@ namespace Stroika::Foundation::Execution {
         ProgressMonitor ();
         ProgressMonitor (const ProgressMonitor&) = delete;
         ProgressMonitor (Thread::Ptr workThread);
+        ProgressMonitor (ChangedCallbackType callback, Thread::Ptr workThread = nullptr);
+        ProgressMonitor (Traversal::Iterable<ChangedCallbackType> callbacks, Thread::Ptr workThread = nullptr);
 
     private:
         ProgressMonitor (const shared_ptr<Rep_>& rep);
@@ -288,9 +289,9 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void CallNotifyProgress_ () const;
 
     private:
-        shared_ptr<Rep_>  fRep_;
-        ProgressRangeType fFromProg_{0.0};
-        ProgressRangeType fToProg_{1.0};
+        shared_ptr<Rep_>          fRep_;
+        ProgressRangeType         fFromProg_{0.0};
+        ProgressRangeType         fToProg_{1.0};
         optional<CurrentTaskInfo> fRestoreTaskInfo_;
     };
 

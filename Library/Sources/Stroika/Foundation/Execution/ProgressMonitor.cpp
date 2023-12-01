@@ -19,15 +19,29 @@ ProgressMonitor::ProgressMonitor ()
 }
 
 ProgressMonitor::ProgressMonitor (Thread::Ptr workThread)
-    : fRep_{make_shared<Rep_> ()}
+    : ProgressMonitor{}
 {
     fRep_->fWorkThread_ = workThread;
 }
 
-void ProgressMonitor::AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback)
+ProgressMonitor::ProgressMonitor (ChangedCallbackType callback, Thread::Ptr workThread)
+    : ProgressMonitor{workThread}
+{
+    AddOnProgressCallback (callback);
+}
+
+ProgressMonitor::ProgressMonitor (Traversal::Iterable<ChangedCallbackType> callbacks, Thread::Ptr workThread)
+    : ProgressMonitor{workThread}
+{
+    for (auto i : callbacks) {
+        AddOnProgressCallback (i);
+    }
+}
+
+   void ProgressMonitor::AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback)
 {
     RequireNotNull (fRep_);
-    fRep_->fCallbacks_.Append (make_shared<ChangedCallbackType> (progressChangedCallback));
+    fRep_->fCallbacks_.rwget ().rwref ().Append (make_shared<ChangedCallbackType> (progressChangedCallback));
 }
 
 void ProgressMonitor::Cancel ()
@@ -51,12 +65,12 @@ ProgressMonitor::operator Updater ()
 void ProgressMonitor::Updater::CallNotifyProgress_ () const
 {
     RequireNotNull (fRep_);
-    for (shared_ptr < ChangedCallbackType> f : fRep_->fCallbacks_) {
-#if qFoundation_Execution_Function_OperatorForwardNeedsRefBug
-        ProgressMonitor p (fRep_);
-        (*f) (ref (p));
-#else
-        (*f) (ProgressMonitor (fRep_));
-#endif
+    for (shared_ptr<ChangedCallbackType> f : fRep_->fCallbacks_.load ()) {
+//#if qFoundation_Execution_Function_OperatorForwardNeedsRefBug
+//        ProgressMonitor p{fRep_};
+ //       (*f) (ref (p));
+//#else
+        (*f) (ProgressMonitor{fRep_});
+//#endif
     }
 }
