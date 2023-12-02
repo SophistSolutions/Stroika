@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Characters {
          *  \brief Convert between UTF-N encoded strings/spans (including the special case of ASCII, and Latin1) (e.g. UTF8 to UTF32), throw on failure
          * 
          *  \note Failures
-         *      Failures can be because of illegal input code-point or source exhuasted. If you want to deal with partial characters,
+         *      Failures can be because of illegal input code-point or source exhausted. If you want to deal with partial characters,
          *      you must use the ConvertQuietly API.
          * 
          *  For overloads taking a target span:

@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Characters {
      *          Must call ComputeTargetCharacterBufferSize/ComputeTargetByteBufferSize and provide
      *          an output buffer large enuf. This way, can NEVER get get partial conversion due to lack of output buffer space (which simplfies alot
      *          within this API). NOTE - large enuf doesn't necessarily mean as large as ComputeTargetCharacterBufferSize/ComputeTargetByteBufferSize would say, as those
-     *          provide safe estimate. If you know for special reasons, you can use a smaller size, but the call must always FIT - no 'targetExhuasted' exceptions thrown.
+     *          provide safe estimate. If you know for special reasons, you can use a smaller size, but the call must always FIT - no 'targetExhausted' exceptions thrown.
      *      o   no 'noconv' error code (better in that simpler, but worse in that forces throw on bad characters)
      * 
      *  Enhancements over UTFConvert:

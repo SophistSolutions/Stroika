@@ -671,7 +671,7 @@ namespace {
                 case codecvt_base::error:
                     return UTFConvert::ConversionStatusFlag::sourceIllegal;
                 case codecvt_base::partial:
-                    return UTFConvert::ConversionStatusFlag::sourceExhausted; // not quite - couldbe target exhuasted?
+                    return UTFConvert::ConversionStatusFlag::sourceExhausted; // not quite - could be target exhausted?
                 case codecvt_base::noconv:
                     return UTFConvert::ConversionStatusFlag::sourceIllegal; // not quite
                 default:

@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Characters {
         {
             Require (to.size () >= ComputeTargetByteBufferSize (from));
             span<SERIALIZED_CHAR_T> serializedTo = ReinterpretBytes_ (to);
-            ConversionResult r = fCodeConverter_.Convert (from, serializedTo); // cannot have sourceExhuasted here so no need to call ConvertQuietly
+            ConversionResult r = fCodeConverter_.Convert (from, serializedTo); // cannot have sourceExhausted here so no need to call ConvertQuietly
             Require (r.fSourceConsumed == from.size ());                       // always use all input characters
             return to.subspan (0, r.fTargetProduced * sizeof (SERIALIZED_CHAR_T)); // point ACTUAL copied data
         }
@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Characters {
                  *  in extreme cases - go all the way back to zero.
                  */
                 while (true) {
-                    // Because we KNOW everything will fit (disallow target exhuasted), we can allocate a temporary buffer for the intermediate state, and be done with
+                    // Because we KNOW everything will fit (disallow target exhausted), we can allocate a temporary buffer for the intermediate state, and be done with
                     // it by the end of this routine (stay stateless)
                     Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*from)};
                     span<const INTERMEDIATE_CHAR_T> intermediateSpan = fBytesVSIntermediateCvt_.Bytes2Characters (from, intermediateBuf); // shortens 'from' if needed
