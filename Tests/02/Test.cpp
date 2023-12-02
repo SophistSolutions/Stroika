@@ -1474,6 +1474,26 @@ namespace {
             test45mus (String{u"45 \u00b5s"});
             test45mus (String{U"45 \u00b5s"});
             test45mus (String{u8"45 \u00b5s"}); // sadly u8"µ" doesn't work everywhere cuz using file BOM apparently not standardized, and using u8 apparantly has no impact on charset interpretation of successive source bytes
+
+            {
+                // Bug in UTF conversion discovered in RFL UMLS data conversion -- LGP 2023-12-02
+                {
+                    u16string l = u"Fluorouracil\u00c2\u00ae"; // ORIG TEST
+                    String    t1{l};
+                    String    t2{t1.AsUTF8 ()};
+                    VerifyTestResult (t1 == t2);
+                }
+                {
+                    // narrowed/simplified test
+                    u16string test     = u"\u00c2";
+                    u8string  testAsU8 = String{test}.AsUTF8 ();
+                    VerifyTestResult (testAsU8 == u8"\u00c2"); //u8"\xc382"); // according to https://www.utf8-chartable.de/
+                    String readingThatUTF8{testAsU8};
+                    u16string ttt = readingThatUTF8.AsUTF16 ();
+                    VerifyTestResult (readingThatUTF8.length () == 1);
+                    VerifyTestResult (readingThatUTF8 == test);
+                }
+            }
         }
     }
 }

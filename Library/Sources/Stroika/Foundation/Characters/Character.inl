@@ -255,7 +255,7 @@ namespace Stroika::Foundation::Characters {
                 for (auto i = fromS.begin (); i < fromS.end (); ++i) {
                     char8_t c1 = *i++;
                     char8_t c2 = *i;
-                    // Check letgit high order bits for first and second byte
+                    // Check legit high order bits for first and second byte
                     // and to check RANGE of values being latin1, means bit pattern only
                     // 8 bits. Low order bits in second byte, so dont need to examine those.
                     // Just make sure at most two bits set in upper (first) byte
@@ -335,7 +335,7 @@ namespace Stroika::Foundation::Characters {
 #endif
             span remainingInputSpan = s.subspan (leadingAsciiCharCnt);
             if constexpr (same_as<CHAR_T, char8_t>) {
-                // special case - we need different algorithm looking at pairs of entries, to see if IsLatin1 with utf8
+                // special case - we need different algorithm looking at pairs of entries, to see if IsLatin1 within utf8
                 return IsLatin1 (remainingInputSpan) ? eLatin1 : eNone;
             }
             constexpr auto isLatin1 = [] () noexcept {

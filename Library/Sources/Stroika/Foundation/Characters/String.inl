@@ -158,7 +158,40 @@ namespace Stroika::Foundation::Characters {
             }
             case Character::ASCIIOrLatin1Result::eLatin1: {
                 if constexpr (sizeof (CHAR_T) == 1) {
-                    return mk_nocheck_ (span<const Latin1>{reinterpret_cast<const Latin1*> (s.data ()), s.size ()});
+                    if constexpr (same_as<remove_cv_t<CHAR_T>, ASCII>) {
+                        RequireNotReached (); // if marked as ASCII, better not contain non-ascii characters!
+                    }
+                    else if constexpr (same_as<remove_cv_t<CHAR_T>, Latin1>) {
+                        return mk_nocheck_ (s);
+                    }
+                    else if constexpr (same_as<remove_cv_t<CHAR_T>, char8_t>) {
+                        // Lat1in1 CAN fit in a single byte, but when encoded as UTF-8, it generally does NOT. So we must map to its one byte
+                        // representation, by doing UTF decoding.
+                        //
+                        // EXAMPLE:
+                        //      https://www.utf8-chartable.de/
+                        //              U+00C2  Â   c3 82   LATIN CAPITAL LETTER A WITH CIRCUMFLEX
+                        //
+                        // However, a quirk (reasonable) of UTFConvert::kThe.ConvertSpan is that it CANNOT convert to Latin1 becuase
+                        // the concept IUNICODECanUnambiguouslyConvertTo<Latin1> evaluated to false.
+                        //
+                        // COULD lift that restriction, (@todo consider), and just check/assert/require input is indeeded all Latin1. Or could
+                        // do what I do here, and do a two step copy.
+                        //
+                        // OR could fix CopyAsLatin1Characters_ () to handle input of char8_t differently/correctly;
+                        //
+                        //  Suspect this case is rare enuf to be good enuf for now ]--LGP 2023-12-02
+                        Memory::StackBuffer<char16_t, Memory::kStackBuffer_SizeIfLargerStackGuardCalled / 16 - 20> c16buf{Memory::eUninitialized,
+                                                                                                                          s.size ()};
+                        span<const char16_t> s16 = UTFConvert::kThe.ConvertSpan (s, span{c16buf});
+                        Memory::StackBuffer<Latin1, Memory::kStackBuffer_SizeIfLargerStackGuardCalled / 16 - 20> buf{Memory::eUninitialized,
+                                                                                                                     s16.size ()};
+                        Private_::CopyAsLatin1Characters_ (s16, span{buf});
+                        return mk_nocheck_ (span<const Latin1>{buf});
+                    }
+                    else {
+                        AssertNotReached (); // no other 1-byte case
+                    }
                 }
                 else {
                     // Copy to smaller buffer (e.g. utf32_t to Latin1)
