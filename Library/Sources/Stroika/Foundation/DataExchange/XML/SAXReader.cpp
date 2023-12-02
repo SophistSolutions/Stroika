@@ -8,7 +8,6 @@
 #include "../../Debug/Trace.h"
 #include "../../Execution/Common.h"
 #include "../../Execution/ProgressMonitor.h"
-#include "../../Execution/RequiredComponentMissingException.h"
 #include "../../Memory/Common.h"
 #include "../../Memory/MemoryAllocator.h"
 
@@ -70,8 +69,11 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
 namespace {
-    String xercesString2String_ (const XMLCh* s, const XMLCh* e)
+    inline String xercesString2String_ (const XMLCh* s, const XMLCh* e)
     {
+        if constexpr (same_as<XMLCh, char16_t>) {
+            return String{span{s, e}};
+        }
         // nb: casts required cuz Xerces doesn't (currently) use wchar_t/char16_t/char32_t but something the sizeof char16_t
         // --LGP 2016-07-29
         if constexpr (sizeof (XMLCh) == sizeof (char16_t)) {
@@ -85,8 +87,11 @@ namespace {
             return String{};
         }
     }
-    String xercesString2String_ (const XMLCh* t)
+    inline String xercesString2String_ (const XMLCh* t)
     {
+        if constexpr (same_as<XMLCh, char16_t>) {
+            return String{t};
+        }
         // nb: casts required cuz Xerces doesn't (currently) use wchar_t/char16_t/char32_t but something the sizeof char16_t
         // --LGP 2016-07-29
         if constexpr (sizeof (XMLCh) == sizeof (char16_t)) {
@@ -308,7 +313,8 @@ namespace {
             Require (localName != nullptr);
             using Name = StructuredStreamEvents::Name;
             Mapping<Name, String> useAttrs;
-            for (XMLSize_t i = 0; i < attributes.getLength (); ++i) {
+            size_t                attributesLen = attributes.getLength ();
+            for (XMLSize_t i = 0; i < attributesLen; ++i) {
                 Name attrName{xercesString2String_ (attributes.getURI (i)), xercesString2String_ (attributes.getLocalName (i)), Name::eAttribute};
                 useAttrs.Add (attrName, xercesString2String_ (attributes.getValue (i)));
             }
