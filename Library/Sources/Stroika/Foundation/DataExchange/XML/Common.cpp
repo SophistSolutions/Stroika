@@ -89,7 +89,7 @@ namespace {
     public:
         Memory::SimpleAllocator_CallLIBCNewDelete             fBaseAllocator;
         Memory::LeakTrackingGeneralPurposeAllocator           fAllocator;
-        recursive_mutex                                       fLastSnapshot_CritSection;
+        mutex                                                 fLastSnapshot_CritSection;
         Memory::LeakTrackingGeneralPurposeAllocator::Snapshot fLastSnapshot;
 #endif
 
