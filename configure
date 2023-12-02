@@ -114,7 +114,7 @@ my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $MACOSX_DEPLOYMENT_TARGET = undef;
 my $CPPSTD_VERSION_FLAG = '';
 my $CXXWARNING_FLAGS = undef;
-my $SharedSymbolVisibility = undef;	# gcc visibility flag - -fvisible=hidden
+my $SharedSymbolVisibility = undef;	# gcc visibility flag - -fvisible=hidden  (see https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html for explanation)
 
 my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
 my $sanitizerFlagsIsDefined = false;		#sadly perl arrays cannot be 'undefined'
@@ -877,12 +877,12 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 	if (! defined $SharedSymbolVisibility) {
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) or IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			# harmless either way on Linux but on MacOSX sileneces a warning when linking with boost;
-			# probably a good idea in general anyhow as a default
-			# -- LGP 2019-02-09
-			$SharedSymbolVisibility = "hidden";
-		}
+		# if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) or IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+		# 	# harmless either way on Linux but on MacOSX sileneces a warning when linking with boost;
+		# 	# probably a good idea in general anyhow as a default
+		# 	# -- LGP 2019-02-09
+		# 	$SharedSymbolVisibility = "hidden";
+		# }
 	}
 	if ($ApplyDebugFlags == true) {
 		if ($gAssertionsEnabled == DEFAULT_BOOL_OPTIONS) {
