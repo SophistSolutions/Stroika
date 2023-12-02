@@ -1488,7 +1488,7 @@ namespace {
                     u16string test     = u"\u00c2";
                     u8string  testAsU8 = String{test}.AsUTF8 ();
                     VerifyTestResult (testAsU8 == u8"\u00c2"); //u8"\xc382"); // according to https://www.utf8-chartable.de/
-                    String readingThatUTF8{testAsU8};
+                    String    readingThatUTF8{testAsU8};
                     u16string ttt = readingThatUTF8.AsUTF16 ();
                     VerifyTestResult (readingThatUTF8.length () == 1);
                     VerifyTestResult (readingThatUTF8 == test);
