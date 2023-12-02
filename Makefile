@@ -493,18 +493,19 @@ basic-unix-test-configurations_clang++_versions_:
 basic-unix-test-configurations_sanitizer_configs_:
 	# A few sanitize/configs (list explicit versions first as backup in case g++ doesn't work - enuf c++20 support - on this platform)
 	# https://stackoverflow.com/questions/62109255/what-is-a-good-way-to-apply-multiple-sanitizers-in-cmake-with-gcc
+	#
+	# Note as of 2023-12-02, it appears memory sanitizer only works with clang++ (not gcc), and even that major
+	# PITA to use - see https://github.com/google/sanitizers/wiki/MemorySanitizerLibcxxHowTo - must rebuild own libc++ specailly.
+	# Note they do provide a dockerfile with all this setup, but still ... Not worth the trouble... --LGP 2023-12-02
 	./configure g++-debug-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined,leak --trace2file enable --compiler-driver g++
 	./configure g++-debug-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --sanitize none,address,undefined,leak --trace2file enable
 	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread --compiler-driver g++
 	./configure g++-debug-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread
-	./configure g++-debug-sanitize_memory --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,memory --compiler-driver g++
-	./configure g++-debug-sanitize_memory --config-tag Unix --only-if-has-compiler --apply-default-debug-flags --trace2file enable --cppstd-version c++20 --sanitize none,memory
 	./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined,leak
 	./configure g++-release-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread
 	#https://stroika.atlassian.net/browse/STK-761
 	if [[ `lsb_release -rs 2>/dev/null` == '20.04' || `lsb_release -rs 2>/dev/null` == '21.10' || `lsb_release -rs 2>/dev/null` == '22.04' ]] ; then ./configure g++-release-sanitize_address_undefined_leak --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,address,undefined,leak --lto disable; fi;
 	./configure g++-release-sanitize_thread --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,thread
-	./configure g++-release-sanitize_memory --config-tag Unix --only-if-has-compiler --apply-default-release-flags --trace2file enable --cppstd-version c++20 --sanitize none,memory
 
 basic-unix-test-configurations_valgrind_configs_:
 	# Builds with a few special flags to make valgrind work better
