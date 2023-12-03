@@ -11,6 +11,7 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/TimingTrace.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/BlockingQueue.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"

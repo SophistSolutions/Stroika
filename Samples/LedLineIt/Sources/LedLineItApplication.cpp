@@ -7,6 +7,7 @@
 #include <afx.h>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 
 #include "Stroika/Frameworks/Led/Platform/Windows_FileRegistration.h"
 #include "Stroika/Frameworks/Led/StdDialogs.h"

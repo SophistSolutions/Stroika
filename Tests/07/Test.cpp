@@ -13,6 +13,7 @@
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Valgrind.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 
 #include "Stroika/Foundation/Containers/LockFreeDataStructures/forward_list.h"

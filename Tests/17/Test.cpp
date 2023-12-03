@@ -16,6 +16,7 @@
 #include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 
 #include "../TestCommon/CommonTests_Mapping.h"
 #include "../TestHarness/SimpleClass.h"

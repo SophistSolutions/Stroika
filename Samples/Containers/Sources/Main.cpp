@@ -5,6 +5,8 @@
 
 #include <cstdlib>
 
+#include "Stroika/Foundation/Debug/Visualizations.h"
+
 #include "Collection.h"
 #include "Mapping.h"
 #include "Sequence.h"

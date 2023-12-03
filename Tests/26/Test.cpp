@@ -12,7 +12,8 @@
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
+//#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "../TestCommon/CommonTests_Mapping.h"
 #include "../TestHarness/SimpleClass.h"

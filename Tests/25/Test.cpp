@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 
 #include "../TestCommon/CommonTests_KeyedCollection.h"
 #include "../TestHarness/SimpleClass.h"

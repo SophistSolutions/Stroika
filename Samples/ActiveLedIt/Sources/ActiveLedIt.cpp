@@ -12,6 +12,7 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 
 #include "Stroika/Frameworks/Led/StyledTextEmbeddedObjects.h"
 

@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 
 #include "Stroika/Foundation/IO/Network/HTTP/CacheControl.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Cookie.h"

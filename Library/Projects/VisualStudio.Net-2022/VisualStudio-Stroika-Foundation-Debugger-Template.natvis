@@ -1,80 +1,99 @@
-<?xml version="1.0" encoding="utf-8"?> 
+<?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-  <!--
-  <Type Name="Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage&lt;*&gt;::StorageType_&lt;*,0&gt;">
-    <DisplayString Condition="fEngaged_">
-      {fEngagedValue_}
-    </DisplayString>
-    <DisplayString Condition="!fEngaged_">Missing</DisplayString>
-  </Type>
-  -->
-  <Type Name="Stroika::Foundation::Characters::String">
-    <DisplayString>
-      {((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_._Ptr)->_fStart}</DisplayString>
-    <Expand>
-      <Item Name="length">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_._Ptr)->_fEnd - ((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_._Ptr)->_fStart</Item>
-      <Item Name="c_str">((Stroika::Foundation::Characters::String::_IRep*)_fRep.fSharedImpl_._Ptr)->_fStart</Item>
-    </Expand>
-  </Type>
-  <Type Name="Stroika::Foundation::Characters::StringBuilder">
-    <DisplayString>
-      {str ()}
-    </DisplayString>
-  </Type>
-  <Type Name="Stroika::Foundation::Containers::Sequence&lt;*&gt;">
-    <DisplayString>
-      Sequence&lt;&gt; size: {size ()}
-    </DisplayString>
-    <Expand>
-      <Item Name="length">size ()</Item>
-    </Expand>
-  </Type>
-  <Type Name="Stroika::Foundation::Containers::Set&lt;*&gt;">
-    <DisplayString>
-      Set&lt;&gt; size: {size ()}
-    </DisplayString>
-    <Expand>
-      <Item Name="length">size ()</Item>
-    </Expand>
-  </Type>
-  <Type Name="Stroika::Foundation::Common::GUID">
-    <DisplayString>
-      {ToString ()}
-    </DisplayString>
-  </Type>
-  <Type Name="Stroika::Foundation::IO::Network::CIDR">
-    <DisplayString>
-      {ToString ()}
-    </DisplayString>
-  </Type>
-  <Type Name="Stroika::Foundation::IO::Network::InternetAddress">
-    <DisplayString>
-      {ToString ()}
-    </DisplayString>
-  </Type>
-  <Type Name="Stroika::Foundation::IO::Network::SocketAddress">
-    <DisplayString>
-      {ToString ()}
-    </DisplayString>
-  </Type>
-  <Type Name="Stroika::Foundation::IO::Network::URI">
-    <DisplayString>
-      {ToString ()}
-    </DisplayString>
-  </Type>
-  <Type Name="Stroika::Foundation::Time::Date">
-    <DisplayString>
-      {ToString ()}
-    </DisplayString>
-  </Type>
-  <Type Name="Stroika::Foundation::Time::DateTime">
-    <DisplayString>
-      {ToString ()}
-    </DisplayString>
-  </Type>
-  <Type Name="Stroika::Foundation::Time::TimeOfDay">
-    <DisplayString>
-      {ToString ()}
-    </DisplayString>
-  </Type>
+	<!-- 
+	    Read about this file format at https://learn.microsoft.com/en-us/visualstudio/debugger/create-custom-views-of-native-objects?view=vs-2022 
+		
+		Key limitations:
+		    - cannot do function calls, without incurring the penalty of a little refresh icon in the debugger (not a big deal)
+			- Many complex reps for string, so PITA to directly support all and tell them aport (not easy to tell - must look at vtable/dynamic type)
+		
+		- so just use c_str() etc - and Stroika::Foundation::Debug::Visualizations::ToStdString for other types
+		
+		\note In order for these to work, at least ONE file definitely pulled into your application (suggest Main) must 
+		      #include "Stroika/Foundation/Debug/Visualizations.h"
+			 
+			  For qDebug builds - thats it. If you want them included in release builds call Debug::Visualizations::ForceInclude();
+
+		\todo very primitive display - could use array blocks for most of these thigns.
+		\todo for Set<> etc - could map to stdc++ set/vector so can visualize by looking at each elt... Not sure how todo for templates? Maybe cannot
+    -->
+	<Type Name="Stroika::Foundation::Characters::String">
+		<DisplayString>
+			{c_str()}
+		</DisplayString>
+		<Expand>
+			<Item Name="c_str">c_str()</Item>
+		</Expand>
+	</Type>
+	<Type Name="Stroika::Foundation::Characters::StringBuilder">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
+	<Type Name="Stroika::Foundation::Containers::Sequence&lt;*&gt;">
+		<DisplayString>
+			Sequence&lt;&gt; size: {size ()}
+		</DisplayString>
+		<Expand>
+			<Item Name="length">size ()</Item>
+		</Expand>
+	</Type>
+	<Type Name="Stroika::Foundation::Containers::Set&lt;*&gt;">
+		<DisplayString>
+			Set&lt;&gt; size: {size ()}
+		</DisplayString>
+		<Expand>
+			<Item Name="length">size ()</Item>
+		</Expand>
+	</Type>
+	<Type Name="Stroika::Foundation::Common::GUID">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
+	<Type Name="Stroika::Foundation::IO::Network::CIDR">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
+	<Type Name="Stroika::Foundation::IO::Network::InternetAddress">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
+	<Type Name="Stroika::Foundation::IO::Network::SocketAddress">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
+	<Type Name="Stroika::Foundation::IO::Network::URI">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
+	<Type Name="Stroika::Foundation::Time::Date">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
+	<Type Name="Stroika::Foundation::Time::DateTime">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
+	<Type Name="Stroika::Foundation::Time::TimeOfDay">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
+	<Type Name="Stroika::Foundation::Database::SQL::Connection::Ptr">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
+	<Type Name="Stroika::Foundation::Database::SQL::Statement">
+		<DisplayString>
+			{Stroika::Foundation::Debug::Visualizations::ToStdString (*this)}
+		</DisplayString>
+	</Type>
 </AutoVisualizer>

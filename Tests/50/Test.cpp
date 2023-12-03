@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Time/Date.h"

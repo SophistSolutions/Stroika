@@ -28,6 +28,7 @@
 #include "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
 #include "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"

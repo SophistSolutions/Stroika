@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Containers/Concrete/SortedAssociation_stdmultimap.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 
 #include "../TestCommon/CommonTests_Association.h"
 #include "../TestHarness/SimpleClass.h"

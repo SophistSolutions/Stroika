@@ -5,6 +5,8 @@
 
 #include <cstdlib>
 
+#include "Stroika/Foundation/Debug/Visualizations.h"
+
 #include "ObjectVariantMapper.h"
 
 using namespace std;

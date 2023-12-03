@@ -7,6 +7,7 @@
 
 #include "Stroika/Foundation/Database/SQL/ODBC.h"
 #include "Stroika/Foundation/Database/SQL/SQLite.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 
 #include "ComputerNetwork.h"

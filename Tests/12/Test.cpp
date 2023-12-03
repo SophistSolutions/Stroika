@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Containers/Concrete/Bijection_LinkedList.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 
 #include "../TestCommon/CommonTests_Bijection.h"
 #include "../TestHarness/SimpleClass.h"

@@ -17,6 +17,8 @@
 #include <afxwin.h>
 #endif
 
+#include "Stroika/Foundation/Debug/Visualizations.h"
+
 #include "LedItApplication.h"
 
 /*

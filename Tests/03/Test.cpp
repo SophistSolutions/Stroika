@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/Common/TemplateUtilities.h"
 #include "Stroika/Foundation/Configuration/Endian.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
 

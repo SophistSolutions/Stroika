@@ -49,17 +49,6 @@ STROIKA_CONFIG_PARAMS_COMMON=
 
 STROIKA_CONFIG_PARAMS_DEBUG=--apply-default-debug-flags
 STROIKA_CONFIG_PARAMS_RELEASE=--apply-default-release-flags
-# ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-# ### address sanitizer on Windows produces lots of non-obvious errors (probably false positive).
-# ### anyhow, disable for a little bit until we have time to look into it
-# ### 	- Opened MSFT issue - https://developercommunity.visualstudio.com/t/https:developercommunityvisualstudio/1470855?entry=myfeedback
-# ###		ASAN works, so you can re-enable it occasionally, but it really slows things down alot and pollutes the debug log
-# ###		with TONS of spurrious nonsense, so best to leave disabled.
-# ### 		-- LGP 2021-07-08
-# STROIKA_CONFIG_PARAMS_DEBUG += --sanitize none
-# endif
-
-
 
 .PHONY: default-configurations
 default-configurations:

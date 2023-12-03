@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/DataExchange/Archive/Reader.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #if qHasFeature_LZMA
 #include "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"

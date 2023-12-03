@@ -29,6 +29,7 @@ Objs	=	\
 	$(ObjDir)MallocGuard${OBJ_SUFFIX}\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 	$(ObjDir)Trace${OBJ_SUFFIX}\
+	$(ObjDir)Visualizations${OBJ_SUFFIX}\
 
 
 all:	$(Objs)

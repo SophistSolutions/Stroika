@@ -8,6 +8,8 @@
 
 #include "Resource.h"
 
+#include "Stroika/Foundation/Debug/Visualizations.h"
+
 #include "Stroika/Frameworks/Led/Command.h"
 #include "Stroika/Frameworks/Led/Platform/Windows.h"
 #include "Stroika/Frameworks/Led/SimpleLed.h"

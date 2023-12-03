@@ -816,6 +816,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Schema.cpp">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Visualizations.cpp">
+      <Filter>Sources\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2138,6 +2141,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Clock.h">
       <Filter>Sources\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Visualizations.h">
+      <Filter>Sources\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
