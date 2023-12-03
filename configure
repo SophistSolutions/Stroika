@@ -236,7 +236,7 @@ sub	DoHelp_
 		print("	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
 		print("	    [--config-tag {TAG-NAME}]*                      /* Add TAG-NAME to the list of tags associated with this configuration (for now limit one). Maybe repeated */\n");
 		print("	    --build-by-default never|always|{uname}         /* Mark configuration to be built by default always (DEFAULT), never, or only if host uname/uname -o equals ARGUMENT */\n");
-		print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017, VisualStudio.Net-2019, VisualStudio.Net-2022) - usually auto-detected */\n");
+		print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2022) - usually auto-detected */\n");
 		print("	    --target-platforms {TARGET_PLATFORMS}           /* Specifies the target-platforms- system compiling Stroika for - (set of ENUM where ENUM=(Windows, POSIX, Linux, MacOS)) - usually auto-detected */\n");
 		print("	    --build-tools-root {BUILD_TOOLS_ROOT}           /* Specifies the BUILD_TOOLS_ROOT - initially just for visual studio - usually auto-detected */\n");
 		print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
@@ -655,28 +655,6 @@ sub	SetInitialDefaults_
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2022';
 			}
 		}
-		# try vs 2k19
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2019/*/VC'");
-			if (scalar(@files) != 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
-			}
-			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2019/*/VC'");
-			if (scalar(@files) != 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2019';
-			}
-		}
-		# try vs 2k17
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC'");
-			if (scalar(@files) != 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
-			}
-			@files = glob("'$PROGRAMFILESDIR2/Microsoft Visual Studio/2017/*/VC'");
-			if (scalar(@files) != 0) {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
-			}
-		}
 	}
 
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
@@ -762,28 +740,6 @@ sub	SetDefaultForCompilerDriver_
 
 		#autodetect ATLMFC (Express verison missing it)
 		if (!defined $FEATUREFLAG_ATLMFC) {
-			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-				my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-				my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
-				my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2017/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
-				if (scalar(@files) != 0) {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
-				}
-				else  {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
-				}
-			}
-			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2019") {
-				my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-				my $PROGRAMFILESDIR2= trim (`cygpath \"$ENV{'ProgramFiles(x86)'}\"`);
-				my @files = glob("'$PROGRAMFILESDIR/Microsoft Visual Studio/2019/*/VC/Tools/MSVC/*/atlmfc/include/afxext.h'");
-				if (scalar(@files) != 0) {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
-				}
-				else  {
-					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
-				}
-			}
 			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
 				if (!defined $VSVARS_VCToolsInstallDir) {
 					$VSVARS_VCToolsInstallDir = GetMSVCVarName_('VCToolsInstallDir');
@@ -2335,14 +2291,6 @@ sub PostProcessOptions_ ()
 		# Default to true for visual studio, because debug symbols go in separate file, and don't balloon the exe size (.pdb)
 		if ($INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS) {
 			$INCLUDE_SYMBOLS_EXE = true;
-		}
-
-		# Deal with static inline constexpr definitions - which dont really work right with vs2k17
-		if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-			if (not ($LinkerArgs_ExtraSuffix eq "")) {
-				$LinkerArgs_ExtraSuffix .= " ";
-			}
-			$LinkerArgs_ExtraSuffix .= "-FORCE:MULTIPLE";
 		}
 	}
 

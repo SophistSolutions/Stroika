@@ -69,20 +69,14 @@ sub toExternallyUsedPath_
 ### e.g. $PROGRAMFILESDIR\\Microsoft Visual Studio\\2019
 ###
 ### Example calls 
-###     GetDefaultToolsBuildDir ("VisualStudio.Net-2017")
+###     GetDefaultToolsBuildDir ("VisualStudio.Net-2022")
 ###     GetDefaultToolsBuildDir ("VisualStudio.Net")
 sub GetDefaultToolsBuildDir ()
 {
 	local $PLATFORM = shift;
 
-	local @names = ("2017", "2019", "2022");
-	if ($PLATFORM eq "VisualStudio.Net-2017") {
-		@names = ("2017");
-	}
-	elsif ($PLATFORM eq "VisualStudio.Net-2019") {
-		@names = ("2019");
-	}
-	elsif ($PLATFORM eq "VisualStudio.Net-2022") {
+	local @names = ("2022");
+	if ($PLATFORM eq "VisualStudio.Net-2022") {
 		@names = ("2022");
 	}
 	elsif ($PLATFORM eq "VisualStudio.Net") {
