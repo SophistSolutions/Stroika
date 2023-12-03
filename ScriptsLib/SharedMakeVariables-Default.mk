@@ -214,6 +214,10 @@ DEFAULT_LINK_LINE=\
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaLibs)) \
 		$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
 
+# copy LinkTime_CopyFilesToEXEDir files to EXEDIR
+ifneq ($(LinkTime_CopyFilesToEXEDir),)
+	DEFAULT_LINK_LINE += ; cp $(LinkTime_CopyFilesToEXEDir) $(shell dirname $1)
+endif
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))

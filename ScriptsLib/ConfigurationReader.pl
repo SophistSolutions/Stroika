@@ -252,6 +252,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'LIB_DEPENDENCIES'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<LinkTime_CopyFilesToEXEDir>");
+		if (defined $pps) {
+			$configuration {'LinkTime_CopyFilesToEXEDir'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<CrossCompiling>");
 		if (defined $pps) {
 			$configuration {'CrossCompiling'} = $pps;

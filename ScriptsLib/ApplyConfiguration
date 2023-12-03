@@ -273,6 +273,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("MIDL");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("EXTRA_COMPILER_ARGS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ENABLE_ASSERTIONS", $ENABLE_ASSERTIONS);
+	WriteStroikaConfigMakeHeader_CachedLineItem_("LinkTime_CopyFilesToEXEDir");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LIBS_PATH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("INCLUDES_PATH");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CFLAGS");

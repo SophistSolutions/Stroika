@@ -204,6 +204,7 @@ my $LIBS_PATH_SET = false;
 my @LIBS_PATH_ADD  = qw();
 my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
+my @LinkTime_CopyFilesToEXEDir = qw();
 my $STDCXXLIB = undef;
 my $TOOLS_PATH_ADDITIONS = undef;
 my $lsb_release = trim (`lsb_release -rs 2>/dev/null`);
@@ -415,6 +416,14 @@ sub     Get_MSVC_CL_Version_
 
 
 
+sub     IsTargettingASAN_
+{
+	my %already = map { $_ => 1 } @sanitizerFlags;
+	if(exists($already{'address'})) {
+		return true;
+	}
+	return false;
+}
 
 
 sub     FillDefaultIncludesPathIfNeeded_
@@ -2148,6 +2157,19 @@ sub PostProcessOptions_ ()
 			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER) or IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
 				$EXTRA_PREFIX_LINKER_ARGS .= $crap2Add2CZZFlags;
 			}
+			if ($isVisualStudio) {
+				# https://stroika.atlassian.net/browse/STK-984
+				# avoid buggy 17.7 ASAN issue - https://developercommunity.visualstudio.com/t/ASAN-177-clang_rtasan_dynamic-x86_64d/10436682?
+				#
+				# Since 17.7.x, we need /c/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.37.32822/bin/Hostx64/x64/ - full toolspath is overkill
+				# but simple enuf and only when building for asan
+				my $clVer = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
+				if(IsTargettingASAN_() and 193732822 <= $clVer) {	## and $clVer <= 193732822(so far not fixed)
+					FillInToolsPathAdditionsIfNeeded_();
+					my $dir2Add  = GetMSVCVarName_ ("ASAN_DLL_DIR");;
+					push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-x86_64.dll"`);
+				}
+			}
 			push @CFLAGS, $crap2Add2CZZFlags;
 			push @CXXFLAGS, $crap2Add2CZZFlags;
 		}
@@ -2460,9 +2482,14 @@ sub GetMSVCVarName_
 		if (! defined $BUILD_TOOLS_ROOT) {
 			$BUILD_TOOLS_ROOT = GetDefaultToolsBuildDir($PROJECTPLATFORMSUBDIR);
 		}
+		# print ("got ARCH=$ARCH\n");
+		# print ("got BUILD_TOOLS_ROOT=$BUILD_TOOLS_ROOT\n");
 		%GetMSVCVarName_e_ = GetAugmentedEnvironmentVariablesForConfiguration ($ARCH, $BUILD_TOOLS_ROOT);
+		# print ("got GetMSVCVarName_e_=%GetMSVCVarName_e_\n");
 		$GetMSVCVarName_filled_ = true;
 	}
+		# print ("got envVarName=$envVarName\n");
+		# print ("got msg(evnerarname)=$GetMSVCVarName_e_{$envVarName}\n");
 	return "$GetMSVCVarName_e_{$envVarName}"
 }
 
@@ -2649,6 +2676,21 @@ sub	WriteConfigFile_
 	# Since Stroika 2.1r2, this is written out in cygpath mixed format on windows (and obvously stanard unix format on unix)
 	print (OUT "    <TOOLS_PATH_ADDITIONS>$TOOLS_PATH_ADDITIONS</TOOLS_PATH_ADDITIONS>\n");
 	
+	### todo fix/wrong - only works for case of zero or one file
+	# ';' separated list of files to be copied into same directory as we link to, as part of linking operations.
+	# ORIGINAL inspiration was ASAN&&&& WPRLARPIMD - but this basic mechnaism could also be used on unix for example, for dlls with linker flags to use bin relative DLLS/so file etc
+	print (OUT "    <LinkTime_CopyFilesToEXEDir>");
+		$firstTime = true;
+		foreach my $var (@LinkTime_CopyFilesToEXEDir)
+		{
+			if (!$firstTime) {
+				print (OUT " ");
+				$firstTime = false;
+			}
+			print (OUT "\"$var\"");
+		}
+	print (OUT "</LinkTime_CopyFilesToEXEDir>\n");
+
 	if (defined $VSVARS_WindowsSdkDir) {
 		print (OUT "    <VSVARS_WindowsSdkDir>$VSVARS_WindowsSdkDir</VSVARS_WindowsSdkDir>\n");
 	}
