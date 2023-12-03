@@ -205,6 +205,7 @@ my @INCLUDES_PATH_ADD  = qw();
 my @LinkerArgs_LibPath = qw();
 my $LinkerArgs_LibPath_SET = false;
 my @LinkerArgs_LibPath_ADD  = qw();
+my @LinkTime_CopyFilesToEXEDir = qw();
 my $LinkerArgs_LibDependencies  = undef;	# space separated list
 my @LinkerArgs_LibDependencies_ADD  = qw();
 my $STDCXXLIB = undef;
@@ -2251,12 +2252,17 @@ sub PostProcessOptions_ ()
 				# but simple enuf and only when building for asan
 				my $clVer = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
 				if(IsTargettingASAN_() and 193732822 <= $clVer) {	## and $clVer <= 193732822(so far not fixed)
-					if (not ($RUN_PREFIX eq "")) {
-						$RUN_PREFIX = " " . $RUN_PREFIX;
-					}
+					# if (not ($RUN_PREFIX eq "")) {
+					# 	$RUN_PREFIX = " " . $RUN_PREFIX;
+					# }
 					FillInToolsPathAdditionsIfNeeded_();
 					my $dir2Add  = GetMSVCVarName_ ("ASAN_DLL_DIR");;
-					$RUN_PREFIX = "ASAN_DLL_DIR_=\$(cygpath --unix \"$dir2Add\"); PATH=\"\$PATH:\$ASAN_DLL_DIR_\"" . $RUN_PREFIX;
+					# $RUN_PREFIX = "ASAN_DLL_DIR_=\$(cygpath --unix \"$dir2Add\"); PATH=\"\$PATH:\$ASAN_DLL_DIR_\"" . $RUN_PREFIX;
+
+					# ls -l /c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx64/x64/
+
+					## @todo fix which one copied for x86 vs x64 based on ARCH flag
+					push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-x86_64.dll"`);
 				}
 			}
 			push @CFLAGS, $crap2Add2CZZFlags;
@@ -2751,6 +2757,21 @@ sub	WriteConfigFile_
 	print (OUT "    <LinkerArgs_LibDependencies>$LinkerArgs_LibDependencies</LinkerArgs_LibDependencies>\n");
 	print (OUT "    <LinkerArgs_ExtraPrefix>$LinkerArgs_ExtraPrefix</LinkerArgs_ExtraPrefix>\n");
 	print (OUT "    <LinkerArgs_ExtraSuffix>$LinkerArgs_ExtraSuffix</LinkerArgs_ExtraSuffix>\n");
+
+	### todo fix/wrong - only works for case of zero or one file
+	# ';' separated list of files to be copied into same directory as we link to, as part of linking operations.
+	# ORIGINAL inspiration was ASAN&&&& WPRLARPIMD - but this basic mechnaism could also be used on unix for example, for dlls with linker flags to use bin relative DLLS/so file etc
+	print (OUT "    <LinkTime_CopyFilesToEXEDir>");
+		$firstTime = true;
+		foreach my $var (@LinkTime_CopyFilesToEXEDir)
+		{
+			if (!$firstTime) {
+				print (OUT " ");
+				$firstTime = false;
+			}
+			print (OUT "\"$var\"");
+		}
+	print (OUT "</LinkTime_CopyFilesToEXEDir>\n");
 
 
 	print (OUT "\n    <!--Runtime/Testing-->\n");

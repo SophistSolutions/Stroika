@@ -248,6 +248,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'LinkerArgs_LibPath'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<LinkTime_CopyFilesToEXEDir>");
+		if (defined $pps) {
+			$configuration {'LinkTime_CopyFilesToEXEDir'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<LinkerArgs_LibDependencies>");
 		if (defined $pps) {
 			$configuration {'LinkerArgs_LibDependencies'} = $pps;
