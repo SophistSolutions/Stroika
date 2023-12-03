@@ -286,6 +286,8 @@ sub	DoHelp_
 		print("	    --append-libs-path {ARG}                        /* Appends ARG to 'LinkerArgs_LibPath */\n");
 		print("	    --lib-dependencies {ARG}                        /* Sets LinkerArgs_LibDependencies variable (space separated) */\n");
 		print("	    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LinkerArgs_LibDependencies */\n");
+		print("	    --linktime-copy-files-2-EXEDir {ARG}            /* Sets LinkTime_CopyFilesToEXEDir variable (' ' separated) */\n");
+		print("	    --append-linktime-copy-files-2-EXEDir {ARG}     /* Appends ARG to 'LinkTime_CopyFilesToEXEDir */\n");
 		print("	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,\n");
 		print("	                                                       such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
 		print("	    --append-run-prefix {ARG}                       /* Appends ARG RUN_PREFIX: with stuff injected before run for built executables */\n");
@@ -1664,6 +1666,19 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			push @LinkerArgs_LibPath_ADD, $var;
+		}
+		elsif ((lc ($var) eq "-linktime-copy-files-2-EXEDir") or (lc ($var) eq "--linktime-copy-files-2-EXEDir")) {
+			$i++;
+			$var = $args[$i];
+			@LinkTime_CopyFilesToEXEDir = qw ();
+			for my $i (split / /, $var) {
+				push @LinkTime_CopyFilesToEXEDir, $i;
+			}
+		}
+		elsif ((lc ($var) eq "-append-linktime-copy-files-2-EXEDir") or (lc ($var) eq "--append-linktime-copy-files-2-EXEDir")) {
+			$i++;
+			$var = $args[$i];
+			push @LinkTime_CopyFilesToEXEDir, $i;
 		}
 		elsif ((lc ($var) eq "-lib-dependencies") or (lc ($var) eq "--lib-dependencies")) {
 			$i++;
