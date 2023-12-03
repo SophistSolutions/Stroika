@@ -2159,15 +2159,19 @@ sub PostProcessOptions_ ()
 			}
 			if ($isVisualStudio) {
 				# https://stroika.atlassian.net/browse/STK-984
-				# avoid buggy 17.7 ASAN issue - https://developercommunity.visualstudio.com/t/ASAN-177-clang_rtasan_dynamic-x86_64d/10436682?
-				#
-				# Since 17.7.x, we need /c/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.37.32822/bin/Hostx64/x64/ - full toolspath is overkill
-				# but simple enuf and only when building for asan
 				my $clVer = Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus);
 				if(IsTargettingASAN_() and 193732822 <= $clVer) {	## and $clVer <= 193732822(so far not fixed)
 					FillInToolsPathAdditionsIfNeeded_();
-					my $dir2Add  = GetMSVCVarName_ ("ASAN_DLL_DIR");;
-					push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-x86_64.dll"`);
+					my $dir2Add  = GetMSVCVarName_ ("ASAN_DLL_DIR");
+					# ls -l /c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx64/x64/
+					if ($ARCH eq "x86") {
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-i386.dll"`);
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-i386.pdb"`);
+					}
+					elsif ($ARCH eq "x86_64") {
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-x86_64.dll"`);
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-x86_64.pdb"`);
+					}
 				}
 			}
 			push @CFLAGS, $crap2Add2CZZFlags;
@@ -2685,8 +2689,8 @@ sub	WriteConfigFile_
 		{
 			if (!$firstTime) {
 				print (OUT " ");
-				$firstTime = false;
 			}
+			$firstTime = false;
 			print (OUT "\"$var\"");
 		}
 	print (OUT "</LinkTime_CopyFilesToEXEDir>\n");
