@@ -33,7 +33,8 @@ namespace Stroika::Foundation::Execution {
 
     private:
         // same as GetStatus but using Peek so avoids some locks, and can be used in ToString() without causing that to lock stuff...
-        nonvirtual Status PeekStatus_ () const noexcept;
+        // BEWARE calling PeekStatusForToString_ - as its values returned CAN BE STALE
+        nonvirtual Status PeekStatusForToString_ () const noexcept;
         nonvirtual bool   IsDone_ () const noexcept;
 
     public:
@@ -119,8 +120,7 @@ namespace Stroika::Foundation::Execution {
     {
         return fThread_.native_handle ();
     }
-
-    inline Thread::Status Thread::Ptr::Rep_::PeekStatus_ () const noexcept
+    inline Thread::Status Thread::Ptr::Rep_::PeekStatusForToString_ () const noexcept
     {
         if (fThreadDoneAndCanJoin_.PeekIsSet ()) {
             return Status::eCompleted;

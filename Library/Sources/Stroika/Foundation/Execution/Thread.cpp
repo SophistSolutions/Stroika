@@ -260,8 +260,6 @@ Thread::Ptr::Rep_::Rep_ (const function<void ()>& runnable, [[maybe_unused]] con
 
 Thread::Ptr::Rep_::~Rep_ ()
 {
-    Assert (PeekStatus_ () != Status::eRunning);
-
     /*
      *  Use thread::detach() - since this could be called from another thread, or from the
      *  thread which fThread_ refers to. Calling from the later case thread would deadlock
@@ -315,7 +313,7 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     if (not fThreadName_.empty ()) {
         sb << "name: "sv << Characters::ToString (fThreadName_) << ", "sv;
     }
-    sb << "status: "sv << Characters::ToString (PeekStatus_ ()) << ", "sv;
+    sb << "status: "sv << Characters::ToString (PeekStatusForToString_ ()) << ", "sv;
     //sb << "runnable: "sv << Characters::ToString (fRunnable_) << ", "sv;     // doesn't yet print anything useful
     sb << "abortRequested: "sv << Characters::ToString (fAbortRequested_.load ()) << ", "sv;
     sb << "refCountBumpedEvent: "sv << Characters::ToString (fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ()) << ", "sv;
@@ -493,8 +491,6 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 
         // So inside 'Run' - we will have access to this thread_local variable
         sCurrentThreadRep_ = thisThreadRep;
-
-        Assert (thisThreadRep->PeekStatus_ () == Status::eNotYetRunning); // status change not allowed til fStartReadyToTransitionToRunningEvent_
 
         [[maybe_unused]] IDType thisThreadID = GetCurrentThreadID (); // NOTE - CANNOT call thisThreadRep->GetID () or in any way touch thisThreadRep->fThread_
 
@@ -805,9 +801,9 @@ void Thread::Ptr::Start () const
 void Thread::Ptr::Start (WaitUntilStarted) const
 {
     Start ();
-
     for (auto s = GetStatus (); s != Status::eNotYetRunning; s = GetStatus ()) {
-        // @todo fix this logic - set expliclt when we do the SET EVENT above (before). But then need to change the threadmain logic to accomodate
+        // @todo fix this logic - set expliclt when we do the SET EVENT above (before). But then need to change the threadmain logic to accomodate;
+        // low priority since this overload probably not used...
         // --LGP 2023-11-30
         this_thread::yield ();
     }
@@ -821,7 +817,9 @@ void Thread::Ptr::Abort () const
     Require (*this != nullptr);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 
+#if __cpp_lib_jthread >= 201911
     bool wasAborted = fRep_->fAbortRequested_;
+#endif
     // Abort can be called with status in ANY state, except nullptr (which would mean ever assigned Thread::New());
     fRep_->fAbortRequested_ = true;
     if (fRep_->fStartEverInitiated_) {
@@ -829,8 +827,7 @@ void Thread::Ptr::Abort () const
         // If transitioning to aborted state, notify any existing stop_callbacks
         // not needed to check prevState - since https://en.cppreference.com/w/cpp/thread/jthread/request_stop says requst_stop checks if already requested.
         if (not wasAborted) [[likely]] {
-            DbgTrace (L"Transitioned state from %s to aborting, so calling fThread_.get_stop_source ().request_stop ();",
-                      Characters::ToString (wasAborted).c_str ());
+            DbgTrace ("Transitioned state to aborting, so calling fThread_.get_stop_source ().request_stop ();");
             fRep_->fStopSource_.request_stop ();
         }
 #endif
