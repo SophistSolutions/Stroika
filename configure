@@ -2423,12 +2423,12 @@ sub PostProcessOptions_ ()
 		# Since XCode 15, we've been getting these warnings, and no simple way to avoid them.
 		#https://stackoverflow.com/questions/77164140/ld-warning-ignoring-duplicate-libraries-lgcc-after-the-recent-update-of-xc
 		#Tried combingin the pkg-config lines into one call (would have been easy to fix configure todo this) - but that didnt help.
-		#Try wring awk script:
+		#Tried awk script:
 		#lewis@lewis-mac2 StroikaDev % (PKG_CONFIG_PATH=/Users/lewis/Sandbox/StroikaDev/Builds/Debug/ThirdPartyComponents/lib/pkgconfig pkg-config --static --libs zlib libcurl openssl ) | awk '{for (i=1;i<=NF;i++) if ($i =="-framework"||!a[$i]++) printf("%s%s",$i,FS)}{printf("\n")}'
 		# comes close, but no cigar ) the -framework stuff pITA. Looked at docs, and no alternative syntax for -framework ARG.
 		# COULD combine them all, and harwire runing the awk scrit to remove dups a -lz and each of these
 		# libraries: '-lbrotlidec', '-lcrypto', '-lidn2', '-lssl', '-lz'
-		# Seens of a bad bunch of options
+		# Seems least bad of a bad bunch of options:
 		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 15.0) {
 			$LinkerArgs_ExtraSuffix .= " -Wl,-no_warn_duplicate_libraries";
 		}
@@ -2729,13 +2729,13 @@ if ($onlyGenerateIfCompilerExists) {
 	if ($generate && IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && getUbuntuVersion() == 20.04) {
 		# https://bugs.launchpad.net/ubuntu/+source/gcc-9/+bug/2029910
 		my %already = map { $_ => 1 } @sanitizerFlags;
-		if(exists($already{'thread'})) {
+		if (exists($already{'thread'})) {
 			$generate = false;
-			$generateBecause = "tsan not working in Ubuntu 20.04 (now - recent regression)";
+			$generateBecause = "tsan not working in Ubuntu 20.04";
 		}
-		elsif(exists($already{'leak'})) {
+		elsif (exists($already{'leak'})) {
 			$generate = false;
-			$generateBecause = "leak sanitizer not working in Ubuntu 20.04 (now - recent regression)";
+			$generateBecause = "leak sanitizer not working in Ubuntu 20.04)";
 		}
 	}
 
@@ -2757,7 +2757,7 @@ if ($onlyGenerateIfCompilerExists) {
 			$generate = false;
 			$generateBecause = "clang++-13 with libc++ doesn't support modern enough c++, and with libstdc++, some versions (ubuntu 22.04) work, and others (libg++ 13 and later) dont compile";
 		}
-		if ($itsVersion <  16.0 && $STDCXXLIB eq "libstdc++") {
+		if ($itsVersion < 16.0 && $STDCXXLIB eq "libstdc++") {
 			# use g++ version and a proxy for what version of stdlib (hard to find otehrwise)
 			if (GetGCCVersion_ ("g++") >= 13.0) {
 				$generate = false;
@@ -2767,7 +2767,7 @@ if ($onlyGenerateIfCompilerExists) {
 		if (16.0 <= $itsVersion && $itsVersion < 17.0 && $STDCXXLIB eq "libstdc++" && $CPPSTD_VERSION_FLAG eq "--std=c++2b") {
 			# PERHAPS should fine tune this check to make sure we are looking at g++ lib 13
 			$generate = false;
-			$generateBecause = "clang++-16 with libcstd++ (g++13 lib)doesn't support c++23 mode";
+			$generateBecause = "clang++-16 with libcstd++ (g++13 lib) doesn't support c++23 mode";
 		}
 	}
 	if (defined ($qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) and $qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy) {
