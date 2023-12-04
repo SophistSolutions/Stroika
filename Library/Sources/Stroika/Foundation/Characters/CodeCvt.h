@@ -255,7 +255,7 @@ namespace Stroika::Foundation::Characters {
          *  Convert bytes 'from' to characters 'to'. 
          *
          *  Arguments:
-         *      o   span<byte> from - initially all of which will be converted or an exeception thrown (only if data corrupt/unconvertable) (updated to point to bytes which form part of a single additional character)
+         *      o   span<byte> from - initially all of which will be converted or an exception thrown (only if data corrupt/unconvertable) (updated to point to bytes which form part of a single additional character)
          *      o   span<CHAR_T> to - buffer to have data converted 'into'
          *          NOTE - all we require is that the result fit into 'to'. BUt we offer a quick way to compute a buffer 'large enough' -  (call ComputeTargetCharacterBufferSize).
          *          But (a more expnsive) way is to call Bytes2Characters/1 and that will tell you exactly how many needed.
@@ -297,11 +297,11 @@ namespace Stroika::Foundation::Characters {
          *  Convert characters 'from' to bytes 'to'. 
          * 
          *  Arguments:
-         *      o   span<character> from - all of which will be converted or an exeception thrown (only if data corrupt/unconvertable).
+         *      o   span<character> from - all of which will be converted or an exception thrown (only if data corrupt/unconvertable).
          *      o   OPTIONAL span<byte> to - buffer to have data converted 'into', which MUST be large enuf (call ComputeTargetByteBufferSize)
          *      o   span<span> to - buffer to have data converted 'into'
          *          NOTE - all we require is that the result fit into 'to'. BUt we offer a quick way to compute a buffer 'large enough' -  (call ComputeTargetByteBufferSize).
-         *          But (a more expnsive) way is to call Characters2Bytes/1 and that will tell you exactly how many needed.
+         *          But (a more expensive) way is to call Characters2Bytes/1 and that will tell you exactly how many needed.
          *
          *  Returns:
          *      (sub)subspan of 'to', (if provided)with characters converted to appropriate span of bytes.
