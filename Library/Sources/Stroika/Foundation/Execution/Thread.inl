@@ -81,6 +81,7 @@ namespace Stroika::Foundation::Execution {
         thread               fThread_;
 #endif
         atomic<Status> fStatus_{Status::eNotYetRunning};
+        atomic<bool>   fStartEverInitiated_{false};
         WaitableEvent  fRefCountBumpedInsideThreadMainEvent_; // see "Stroika thread-start choreography" for description of these events
         WaitableEvent  fStartReadyToTransitionToRunningEvent_;
         WaitableEvent  fThreadDoneAndCanJoin_;

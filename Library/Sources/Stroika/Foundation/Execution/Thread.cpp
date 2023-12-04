@@ -658,6 +658,12 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
         Assert (fInterruptionState_); // once we enter abort state, cannot exit, except by transitioning to completed, but cannot get these calls when completed.
     }
 
+    // if This has been set, we have a valid thread id, and can try to cancel it.
+    // if this has NOT been set yet, but the thread is ever started, it should get a chance to cancel it
+    if (not fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ()) {
+        return;
+    }
+
     /*
      *  Do some platform-specific magic to terminate ongoing system calls
      * 
@@ -781,7 +787,13 @@ void Thread::Ptr::Start () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Start", L"*this=%s", ToString ().c_str ())};
     RequireNotNull (fRep_);
-    Require (GetStatus () == Status::eNotYetRunning);
+    Require (not fRep_->fStartEverInitiated_);
+#if qDebug
+    {
+        auto s = GetStatus ();
+        Require (s == Status::eNotYetRunning or s == Status::eAborting); // if works - document
+    }
+#endif
 
     /*
      *  Stroika thread-start choreography:
@@ -808,6 +820,11 @@ void Thread::Ptr::Start () const
          */
         SuppressInterruptionInContext suppressInterruptionsOfThisThreadWhileConstructingRepOtherElseLoseSharedPtrEtc;
 
+        fRep_->fStartEverInitiated_ = true; //atomic/publish
+        if (fRep_->fStatus_ == Status::eAborting) [[unlikely]] {
+            Execution::Throw (Execution::RuntimeErrorException{"Thread aborted during start"}); // check and if aborting now, don't go further
+        }
+
 #if __cpp_lib_jthread >= 201911
         fRep_->fStopToken_ = fRep_->fStopSource_.get_token ();
         fRep_->fThread_    = jthread{[this] () -> void { Rep_::ThreadMain_ (fRep_); }};
@@ -828,7 +845,10 @@ void Thread::Ptr::Start () const
     }
     DbgTrace (L"Requesting transition to running for %s", ToString ().c_str ());
     fRep_->fStartReadyToTransitionToRunningEvent_.Set ();
-//    #if qDebug
+}
+void Thread::Ptr::Start (WaitUntilStarted) const
+{
+    Start ();
 again:
     auto s = GetStatus ();
     if (s == Status::eNotYetRunning) {
@@ -838,7 +858,6 @@ again:
         goto again;
     }
     Ensure (s == Status::eRunning or s == Status::eCompleted);
-    //  #endif
 }
 
 void Thread::Ptr::Abort () const
@@ -847,10 +866,7 @@ void Thread::Ptr::Abort () const
     Require (*this != nullptr);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 
-    // new rule since Stroika v3.0d5
-    // DONT allow this to be called with status == null (was already a rule) or not yet started --LGP 2023-11-30
-    Require (this->GetStatus () != Status::eNotYetRunning);
-    Require (this->GetStatus () == Status::eRunning or this->GetStatus () == Status::eCompleted or this->GetStatus () == Status::eAborting);
+    // Abort can be called with status in ANY state, except nullptr (which would mean ever assigned Thread::New());
 
     {
         // set to aborting, unless completed
@@ -863,14 +879,28 @@ void Thread::Ptr::Abort () const
             else if (prevState == Status::eNotYetRunning) {
                 if (fRep_->fStatus_.compare_exchange_strong (prevState, Status::eAborting)) {
                     DbgTrace ("thread never started, so marked as aborting"); // not completed, because could have never called Start, or could be in middle of a Start
+
+                    Assert (fRep_->fStatus_ == Status::eAborting and prevState == Status::eNotYetRunning);
+                    if (fRep_->fStartEverInitiated_) {
+                        /*
+                         *  If we've called start and gotten past the very early parts, then just let this play out. We are done.
+                         */
+                    }
+                    else {
+                        /*
+                         *  If we have not yet called start (or gotten to the point where fStartEverInitiated_ gets set), then set tje CanJoin event.
+                         *  sb safe.
+                         */
+                        fRep_->fThreadDoneAndCanJoin_.Set ();
+                    }
 #if 0
                     /*
                      *  This is COMPLEX, as there are several possible cases. It COULD be we never got 'Start' called. It could be we are in the middle
                      *  of a Start () - at some indeterminate stage.
                      */
                     // not 100% sure what todo for all these cases - but I think this is best--LGP 2023-10-17
-                    fRep_->fRefCountBumpedInsideThreadMainEvent_.Set ();
-                    fRep_->fStartReadyToTransitionToRunningEvent_.Set ();
+                    fRep_->fRefCountBumpedInsideThreadMainEvent_.Set ();    // dont set this cuz messes up Start safety logic
+                    fRep_->fStartReadyToTransitionToRunningEvent_.Set ();   // no need to set cuz only waited on during 'Start' sequence
                     fRep_->fThreadDoneAndCanJoin_.Set ();
 #endif
                     break; // leave state alone

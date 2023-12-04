@@ -1416,7 +1416,7 @@ namespace {
 }
 
 namespace {
-#if 0
+#if 1
     // No longer legal since Stroika v3.0d5
     namespace RegressionTest25_AbortNotYetStartedThread_ {
         void Test ()
@@ -1442,7 +1442,6 @@ namespace {
             VerifyTestResult (runningThreads.size () == 0);
         });
 #endif
-
         RegressionTest1_ ();
         RegressionTest2_ ();
         RegressionTest3_WaitableEvents_ ();
@@ -1459,7 +1458,6 @@ namespace {
         RegressionTest14_SpinLock_ ();
         RegressionTest15_ThreadPoolStarvationBug_ ();
         RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests ();
-        //RegressionTest17_ThreadInterruption_::RunTests ();    LOSE IN STROIKA v3.0d4
         RegressionTest18_RWSynchronized_::DoIt ();
         RegressionTest19_ThreadPoolAndBlockingQueue_::DoIt ();
         RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ();
@@ -1467,7 +1465,7 @@ namespace {
         RegressionTest22_SycnhonizedUpgradeLock_ ();
         RegressionTest23_SycnhonizedWithTimeout_ ();
         RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ();
-        // RegressionTest25_AbortNotYetStartedThread_::Test ();
+        RegressionTest25_AbortNotYetStartedThread_::Test ();
     }
 }
 

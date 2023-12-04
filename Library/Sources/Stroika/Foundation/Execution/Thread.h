@@ -395,12 +395,32 @@ namespace Stroika::Foundation::Execution {
 
         public:
             /**
-             * \req    GetStatus () == Status::eNotYetRunning
+             *  For start method
+             */
+            enum WaitUntilStarted {
+                eWaitUntilStarted
+            };
+
+        public:
+            /**
+             * \req    GetStatus () == Status::eNotYetRunning or Status::eAborting
+             * \req    never called before on this thread object
+             *
+             *  Typically you won't call this directly, but instead pass the eStart parameter to the Thread constructor.
+             *  But you can explicitly call if you prefer.
              * 
+             *  A thread can only be started once. When it is constructed (without eStart) - it starts in the NotYetRunning state. And can
+             *  only be started when its in that state.
+             * 
+             *  By default (bool waitUntilStarted = false) - this function returns quickly, with the thread in any possible state.
+             * 
+             *  To wait for the thread to have started (or throws if it cannot start thread) - pass 
+             *  This function returns quickly, and the state of the thread may not have changed by the time it ru
              *  ensures when it returns the state is running, or completed, but cannot (yet) be aborted?? or null or not yet running
              * Ensure (s == Status::eRunning or s == Status::eCompleted);
              */
             nonvirtual void Start () const;
+            nonvirtual void Start (WaitUntilStarted) const;
 
 #if qPlatform_Windows
         public:
@@ -422,7 +442,7 @@ namespace Stroika::Foundation::Execution {
             /**
              *  \brief Abort gracefully shuts down and terminates the given thread.
              *
-             *  Abort gracefully shuts down and terminates the given thread.
+             *  Abort gracefully shuts down and terminates the given thread (using cooperative multitasking).
              *
              *  This works by setting a flag in that thread, which is checked at each 'cancelation point', and
              *  can interrupt certain cancelation waiting cancelation points.
@@ -430,18 +450,18 @@ namespace Stroika::Foundation::Execution {
              *  This causes the given thread to throw an AbortException whenever it reaches one of these cancelation points
              *  (or if already at one such waitable cancelation point).
              *
-             *  This call is (generally) non-blocking (may block for critical section to update status,
-             *  but does NOT block until Stop successful).
+             *  This call is (generally) non-blocking (may block briefly for critical section to update status,
+             *  but does NOT block until Stop successful). See AbortAndWaitUntilDone() to abort and wait for completion.
              *
-             *  Note that its legal to call Abort on a thread in any state - including if done (except == nullptr).
-             *  Some may just have no effect.
+             *  This can be called on a thread object at any time, and in any state (except nullptr, which can only happen in the thread
+             *  was created with nullptr/default CTOR and never assigned from Thread::New).
              *
              *  \note   This counts on Stroika's semi-cooperative multitasking (to be safe). This means if you call libraries that don't
              *          check for thread interruption, those threads may not BE interruptible during that region of code.
              *          @see Thread::GetThrowInterruptExceptionInsideUserAPC()
              * 
              *  \note It IS possible to have two DIFFERNT Ptr objects being called in different threads, one doing a Start ()
-             *        and the other doing an Abort ()???
+             *        and the other doing an Abort (); because of this, its allowed to call Start() in the 'aborted' state.
              *
              *  \req *this != nullptr
              */
@@ -510,7 +530,7 @@ namespace Stroika::Foundation::Execution {
              *  Note that its legal to call WaitForDone on a thread in any state.
              *  Some may just have no effect
              *
-             *  @see WaitForDoneUntil ()
+             *  @see WaitForDoneUntil (), @see Join
              *
              *  \note ***Cancelation Point***
              *
@@ -523,6 +543,8 @@ namespace Stroika::Foundation::Execution {
              *  Wait until thread is done (use Abort to request termination) - throws if timeout
              *  Note that its legal to call WaitForDoneUntil on a thread in any state.
              *  Some may just have no effect.
+             *
+             *  @see WaitForDone (), @see Join
              *
              *  \note   This does a tiny bit more than waiting for the done state to be set - it also
              *          'joins' (frees memory for) underlying thread if still allocated. This should not be visible/noticed
