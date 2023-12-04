@@ -260,7 +260,7 @@ Thread::Ptr::Rep_::Rep_ (const function<void ()>& runnable, [[maybe_unused]] con
 
 Thread::Ptr::Rep_::~Rep_ ()
 {
-    Assert (fStatus_ != Status::eRunning);
+    Assert (PeekStatus_ () != Status::eRunning);
 
     /*
      *  Use thread::detach() - since this could be called from another thread, or from the
@@ -276,7 +276,7 @@ Thread::Ptr::Rep_::~Rep_ ()
      *
      * no need for lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ }; because if destroying, only one thread can reference this smart-ptr
      */
-    if (fThread_.joinable ()) {
+    if (fThreadValid_ and fThread_.joinable ()) {
         fThread_.detach ();
     }
 }
@@ -315,9 +315,9 @@ Characters::String Thread::Ptr::Rep_::ToString () const
     if (not fThreadName_.empty ()) {
         sb << "name: "sv << Characters::ToString (fThreadName_) << ", "sv;
     }
-    sb << "status: "sv << Characters::ToString (fStatus_.load ()) << ", "sv;
+    sb << "status: "sv << Characters::ToString (PeekStatus_ ()) << ", "sv;
     //sb << "runnable: "sv << Characters::ToString (fRunnable_) << ", "sv;     // doesn't yet print anything useful
-    sb << "interruptionState: "sv << Characters::ToString (fInterruptionState_.load ()) << ", "sv;
+    sb << "abortRequested: "sv << Characters::ToString (fAbortRequested_.load ()) << ", "sv;
     sb << "refCountBumpedEvent: "sv << Characters::ToString (fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ()) << ", "sv;
     sb << "startReadyToTransitionToRunningEvent_: "sv << Characters::ToString (fStartReadyToTransitionToRunningEvent_.PeekIsSet ()) << ", "sv;
     sb << "threadDoneAndCanJoin: "sv << Characters::ToString (fThreadDoneAndCanJoin_.PeekIsSet ()) << ", "sv;
@@ -494,7 +494,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
         // So inside 'Run' - we will have access to this thread_local variable
         sCurrentThreadRep_ = thisThreadRep;
 
-        Assert (thisThreadRep->fStatus_ == Status::eNotYetRunning); // status change not allowed til fStartReadyToTransitionToRunningEvent_
+        Assert (thisThreadRep->PeekStatus_ () == Status::eNotYetRunning); // status change not allowed til fStartReadyToTransitionToRunningEvent_
 
         [[maybe_unused]] IDType thisThreadID = GetCurrentThreadID (); // NOTE - CANNOT call thisThreadRep->GetID () or in any way touch thisThreadRep->fThread_
 
@@ -533,14 +533,6 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 #endif
 
         try {
-#if qDebug
-            if (auto s = thisThreadRep->fStatus_.load (); s != Status::eNotYetRunning) {
-                DbgTrace ("Debugging issue where next assert fails sometimes - not clear why - state was %d", s);
-            }
-#endif
-            // Cannot get here unless Start () was called. And cannot call Abort() until that finishes, so we must still be running
-            Assert (thisThreadRep->fStatus_ == Status::eNotYetRunning);
-
 #if qPlatform_POSIX
             {
                 // we inherit blocked abort signal given how we are created in DoCreate() - so unblock it -
@@ -559,25 +551,11 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             [[maybe_unused]] auto&& cleanupThreadDoneEventSetter = Finally ([thisThreadRep] () noexcept {
                 // whether aborted before we transition state to running, or after, be sure to set this so we can 'join' the thread (also done in catch handlers)
                 thisThreadRep->fThreadDoneAndCanJoin_.Set ();
-                Assert (thisThreadRep->fStatus_ != Status::eCompleted); // cannot be completed if this hasn't run yet
-                thisThreadRep->fStatus_ = Status::eCompleted;
             });
 
             Assert (thisThreadID == thisThreadRep->GetID ()); // By now we know thisThreadRep->fThread_ has been assigned so it can be accessed
 
-            bool doRun = false;
-            {
-                Status prevValue = Status::eNotYetRunning;
-                if (thisThreadRep->fStatus_.compare_exchange_strong (prevValue, Status::eRunning)) {
-                    doRun = true;
-                }
-                else {
-                    // could be aborted, or completed already
-                    DbgTrace (
-                        L"Attempt to run thread - and transition from not yet running to running failed because status was already %s",
-                        Characters::ToString (prevValue).c_str ());
-                }
-            }
+            bool doRun = not thisThreadRep->fAbortRequested_ and not thisThreadRep->IsDone_ ();
 
 #if __cpp_lib_jthread >= 201911
             // If a caller uses the std stop_token mechanism, assure the thread is marked as stopped/aborted
@@ -589,22 +567,12 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
                         DbgTrace (
                             "Something triggered stop_token request stop, so doing abort to make sure we are in an aborting (flag) state.");
                         // Abort () call is is slightly overkill, since frequently already in the aborting state, so check first
-                        if (thisThreadRep->fStatus_ != Status::eAborting) [[unlikely]] {
-                            DbgTrace ("DEBUGGING MEMCHECK SLOW ISSUE - SEE IF THIS HAPPENS TOO...--LGP 2023-11-23");
+                        if (not thisThreadRep->fAbortRequested_) [[unlikely]] {
                             IgnoreExceptionsForCall (Ptr{thisThreadRep}.Abort ());
                         }
                     }
                 }};
 #endif
-
-            /*
-             *  Note - be careful NOT to directly or indirectly refrence fThread - because we may deadlock 
-             *  trying to shutdown (join) the thread -
-             *  until we get inside the if (doRun)
-             *
-             *  The reason is - we normally check fThreadDoneAndCanJoin_ before joining, but in the special case of 
-             *  abort when eNotYetRunning - we set fStatus_ = Status::eCompleted directly and fThreadDoneAndCanJoin_
-             */
             if (doRun) {
                 DbgTrace (L"In Thread::Rep_::ThreadMain_ - set state to RUNNING for thread: %s", thisThreadRep->ToString ().c_str ());
                 thisThreadRep->Run_ ();
@@ -615,19 +583,12 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
             SuppressInterruptionInContext suppressCtx;
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: %s",
                       thisThreadRep->ToString ().c_str ());
-            thisThreadRep->fStatus_ = Status::eCompleted;
             thisThreadRep->fThreadDoneAndCanJoin_.Set ();
         }
         catch (...) {
             SuppressInterruptionInContext suppressCtx;
-            // used todo this til 3.0d4 but dont think needed here and if it is, needed above on interruoptexption too
-#if qPlatform_POSIX && 0
-            Platform::POSIX::ScopedBlockCurrentThreadSignal blockThreadAbortSignal{SignalUsedForThreadInterrupt ()};
-            thisThreadRep->fInterruptionState_ = false; //  else .Set() below will THROW EXCPETION and not set done flag!
-#endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (due to EXCEPTION) for thread: %s",
                       thisThreadRep->ToString ().c_str ());
-            thisThreadRep->fStatus_ = Status::eCompleted;
             thisThreadRep->fThreadDoneAndCanJoin_.Set ();
         }
     }
@@ -644,44 +605,38 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 
 void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
 {
-    Require (fStatus_ != Status::eCompleted);
+    Require (not IsDone_ ());
+    Require (fAbortRequested_);
     //TraceContextBumper ctx{"Thread::Rep_::NotifyOfAbortFromAnyThread_"};
 
-    fInterruptionState_ = true;
-    if (GetCurrentThreadID () == GetID ()) {
+    // typically abort from another thread, but in principle this could happen!
+    if (GetCurrentThreadID () == GetID ()) [[unlikely]] {
         CheckForInterruption (); // unless suppressed, this will throw
     }
+
     // Note we fall through here either if we have throws suppressed, or if sending to another thread
 
-    // @todo note - this used to check fStatus flag and I just changed to checking *fInterruptionState_ -- LGP 2015-02-26
-    if (fStatus_ == Status::eAborting) {
-        Assert (fInterruptionState_); // once we enter abort state, cannot exit, except by transitioning to completed, but cannot get these calls when completed.
-    }
-
-    // if This has been set, we have a valid thread id, and can try to cancel it.
-    // if this has NOT been set yet, but the thread is ever started, it should get a chance to cancel it
-    if (not fRefCountBumpedInsideThreadMainEvent_.PeekIsSet ()) {
-        return;
-    }
-
-    /*
-     *  Do some platform-specific magic to terminate ongoing system calls
-     * 
-     *      On POSIX - this is sending a signal which generates EINTR error.
-     *      On Windoze - this is QueueUserAPC to enter an alertable state.
-     */
+    // if fThreadValid_, and can try to cancel it; else start () process early enuf it will cancel
+    if (fThreadValid_) {
+        /*
+         *  Do some platform-specific magic to terminate ongoing system calls
+         * 
+         *      On POSIX - this is sending a signal which generates EINTR error.
+         *      On Windoze - this is QueueUserAPC to enter an alertable state.
+         */
 #if qPlatform_POSIX
-    {
-        [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
-        if (not sHandlerInstalled_) {
-            SignalHandlerRegistry::Get ().AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
-            sHandlerInstalled_ = true;
+        {
+            [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
+            if (not sHandlerInstalled_) {
+                SignalHandlerRegistry::Get ().AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+                sHandlerInstalled_ = true;
+            }
         }
-    }
-    (void)Execution::SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
+        (void)Execution::SendSignal (GetNativeHandle (), SignalUsedForThreadInterrupt ());
 #elif qPlatform_Windows
-    Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
+        Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
 #endif
+    }
 }
 
 #if qPlatform_POSIX
@@ -790,7 +745,7 @@ void Thread::Ptr::Start () const
     Require (not fRep_->fStartEverInitiated_);
 #if qDebug
     {
-        auto s = GetStatus ();
+        auto s = GetStatus ();                                           // @todo - consider - not sure about this
         Require (s == Status::eNotYetRunning or s == Status::eAborting); // if works - document
     }
 #endif
@@ -810,7 +765,7 @@ void Thread::Ptr::Start () const
      *          END SuppressInterruptionInContext                    |       
      *          Setup a few thread properties, name, priority       <|>                   Setup thread-local properties, inside ThreadMain/new thread 
      *          fRep_->fStartReadyToTransitionToRunningEvent_.Set ()<|>                   thisThreadRep->fStartReadyToTransitionToRunningEvent_.Wait ();   -- NOTE CANNOT ACCESS thisThreadRep->fThread_ until this point
-     *          return/done                                         <|> eRunning|?         STATE TRANSITION TO RUNNING (MAYBE - COULD HAVE BEEN ALREADY ABORTED)
+     *          return/done                                         <|> eRunning|(etc)    STATE TRANSITION TO RUNNING (MAYBE - COULD HAVE BEEN ALREADY ABORTED)
      */
 
     {
@@ -821,7 +776,7 @@ void Thread::Ptr::Start () const
         SuppressInterruptionInContext suppressInterruptionsOfThisThreadWhileConstructingRepOtherElseLoseSharedPtrEtc;
 
         fRep_->fStartEverInitiated_ = true; //atomic/publish
-        if (fRep_->fStatus_ == Status::eAborting) [[unlikely]] {
+        if (fRep_->fAbortRequested_) [[unlikely]] {
             Execution::Throw (Execution::RuntimeErrorException{"Thread aborted during start"}); // check and if aborting now, don't go further
         }
 
@@ -831,8 +786,9 @@ void Thread::Ptr::Start () const
 #else
         fRep_->fThread_ = thread{[this] () -> void { Rep_::ThreadMain_ (fRep_); }};
 #endif
+        fRep_->fThreadValid_ = true;
 
-        // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
+        // assure we wait for this, so we don't ever let refcount go to zero before the thread has started.
         fRep_->fRefCountBumpedInsideThreadMainEvent_.Wait ();
 
         // Once we've gotten here, the ThreadMain is executing, but 'paused' waiting for us to setup more stuff
@@ -849,15 +805,14 @@ void Thread::Ptr::Start () const
 void Thread::Ptr::Start (WaitUntilStarted) const
 {
     Start ();
-again:
-    auto s = GetStatus ();
-    if (s == Status::eNotYetRunning) {
+
+    for (auto s = GetStatus (); s != Status::eNotYetRunning; s = GetStatus ()) {
         // @todo fix this logic - set expliclt when we do the SET EVENT above (before). But then need to change the threadmain logic to accomodate
         // --LGP 2023-11-30
         this_thread::yield ();
-        goto again;
     }
-    Ensure (s == Status::eRunning or s == Status::eCompleted);
+    auto s = GetStatus ();
+    Ensure (s == Status::eRunning or s == Status::eAborting or s == Status::eCompleted);
 }
 
 void Thread::Ptr::Abort () const
@@ -866,75 +821,31 @@ void Thread::Ptr::Abort () const
     Require (*this != nullptr);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_}; // smart ptr - its the ptr thats const, not the rep
 
+    bool wasAborted = fRep_->fAbortRequested_;
     // Abort can be called with status in ANY state, except nullptr (which would mean ever assigned Thread::New());
-
-    {
-        // set to aborting, unless completed
-        Status prevState = Status::eRunning;
-        while (not fRep_->fStatus_.compare_exchange_strong (prevState, Status::eAborting)) {
-            if (prevState == Status::eAborting or prevState == Status::eCompleted) {
-                // Status::eAborting cannot happen first time through loop, but can on subsequent passes
-                break; // leave state alone
-            }
-            else if (prevState == Status::eNotYetRunning) {
-                if (fRep_->fStatus_.compare_exchange_strong (prevState, Status::eAborting)) {
-                    DbgTrace ("thread never started, so marked as aborting"); // not completed, because could have never called Start, or could be in middle of a Start
-
-                    Assert (fRep_->fStatus_ == Status::eAborting and prevState == Status::eNotYetRunning);
-                    if (fRep_->fStartEverInitiated_) {
-                        /*
-                         *  If we've called start and gotten past the very early parts, then just let this play out. We are done.
-                         */
-                    }
-                    else {
-                        /*
-                         *  If we have not yet called start (or gotten to the point where fStartEverInitiated_ gets set), then set tje CanJoin event.
-                         *  sb safe.
-                         */
-                        fRep_->fThreadDoneAndCanJoin_.Set ();
-                    }
-#if 0
-                    /*
-                     *  This is COMPLEX, as there are several possible cases. It COULD be we never got 'Start' called. It could be we are in the middle
-                     *  of a Start () - at some indeterminate stage.
-                     */
-                    // not 100% sure what todo for all these cases - but I think this is best--LGP 2023-10-17
-                    fRep_->fRefCountBumpedInsideThreadMainEvent_.Set ();    // dont set this cuz messes up Start safety logic
-                    fRep_->fStartReadyToTransitionToRunningEvent_.Set ();   // no need to set cuz only waited on during 'Start' sequence
-                    fRep_->fThreadDoneAndCanJoin_.Set ();
-#endif
-                    break; // leave state alone
-                }
-                else {
-                    DbgTrace (L"very rare, but can happen, transitioned to aborting or completed by some other thread (cur state = %s)",
-                              Characters::ToString (prevState).c_str ());
-                    WeakAsserteNotReached (); // ACTUALLY dont think this can happen --LGP 2023-11-30
-                    prevState = Status::eRunning;
-                    continue; // try again to transition to aborting
-                }
-            }
-            else if (prevState == Status::eRunning) {
-                continue; // try again - this should transition to aborting
-            }
-            else {
-                // other cases - null - shouldn't get this far
-                AssertNotReached ();
-            }
-        }
-        Assert (fRep_->fStatus_ == Status::eAborting or fRep_->fStatus_ == Status::eCompleted); // even IF we succeeded in going to aborted, could be completed by the time we get here
+    fRep_->fAbortRequested_ = true;
+    if (fRep_->fStartEverInitiated_) {
 #if __cpp_lib_jthread >= 201911
         // If transitioning to aborted state, notify any existing stop_callbacks
         // not needed to check prevState - since https://en.cppreference.com/w/cpp/thread/jthread/request_stop says requst_stop checks if already requested.
-        if (prevState != Status::eAborting) [[likely]] {
+        if (not wasAborted) [[likely]] {
             DbgTrace (L"Transitioned state from %s to aborting, so calling fThread_.get_stop_source ().request_stop ();",
-                      Characters::ToString (prevState).c_str ());
+                      Characters::ToString (wasAborted).c_str ());
             fRep_->fStopSource_.request_stop ();
-            DbgTrace ("Extra trace message to debug slowness under valgrind memcheck doing this...--LGP 2023-11-23");
         }
 #endif
     }
-    if (fRep_->fStatus_ == Status::eAborting) [[likely]] {
-        // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
+    else {
+        /*
+         *  Then mark the thread as completed.
+         * 
+         *  If we have not yet called start (or gotten to the point where fStartEverInitiated_ gets set), then set tje CanJoin event.
+         *  sb safe.
+         */
+        fRep_->fThreadDoneAndCanJoin_.Set ();
+    }
+    if (not IsDone ()) [[likely]] {
+        // by default - tries to trigger a throw-abort-exception in the right thread using UNIX signals or QueueUserAPC ()
         fRep_->NotifyOfInterruptionFromAnyThread_ ();
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -960,7 +871,7 @@ void Thread::Ptr::ThrowIfDoneWithException () const
                                                                                  Characters::ToString (*this).c_str ())};
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    if (fRep_ and fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_.load () != nullptr) {
+    if (fRep_ and fRep_->IsDone_ () and fRep_->fSavedException_.load () != nullptr) {
         // safe not holding lock cuz code simpler, and cannot transition from savedExcept to none - never cleared
         ReThrow (fRep_->fSavedException_.load (), "Rethrowing exception across threads");
     }
@@ -995,7 +906,7 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::TimePointSeconds timeoutAt) con
          *  NOTE: because we call this join () inside fAccessSTDThreadMutex_, its critical the running thread has terminated to the point where it will no
          *  longer access fThread_ (and therfore not lock fAccessSTDThreadMutex_)
          */
-        if (fRep_->fThread_.joinable ()) {
+        if (fRep_->fThreadValid_ and fRep_->fThread_.joinable ()) {
             // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDoneAndCanJoin_ - it shouldn't really take long
             fRep_->fThread_.join ();
         }
@@ -1027,26 +938,6 @@ void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSeconds timeout
     WaitForDone (); // just to get the qStroika_Foundation_Execution_Thread_SupportThreadStatistics / join ()
 }
 #endif
-
-Thread::Status Thread::Ptr::GetStatus_ () const noexcept
-{
-    Require (*this != nullptr);
-    Assert (fRep_ != nullptr);
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return fRep_->fStatus_;
-}
-
-bool Thread::Ptr::IsDone () const
-{
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    switch (GetStatus ()) {
-        case Status::eNull:
-            return true;
-        case Status::eCompleted:
-            return true;
-    }
-    return false;
-}
 
 /*
  ********************************************************************************
@@ -1265,24 +1156,16 @@ void Execution::Thread::CheckForInterruption ()
      */
     if (shared_ptr<Ptr::Rep_> thisRunningThreadRep = Ptr::sCurrentThreadRep_.lock ()) {
         if (t_InterruptionSuppressDepth_ == 0) [[likely]] {
-            if (thisRunningThreadRep->fInterruptionState_) [[unlikely]] {
-                switch (thisRunningThreadRep->fStatus_) {
-                    case Status::eAborting: {
-                        Throw (Thread::AbortException::kThe);
-                    } break;
-                    default: {
-                        DbgTrace ("CheckForInterruption in state %d", thisRunningThreadRep->fStatus_.load ());
-                        Assert (false); // very bad - we should not get this called in other states, like completed, or not yet running
-                    } break;
-                }
+            if (thisRunningThreadRep->fAbortRequested_) [[unlikely]] {
+                Throw (Thread::AbortException::kThe);
             }
         }
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
-        else if (thisRunningThreadRep->fInterruptionState_) {
+        else if (thisRunningThreadRep->fAbortRequested_) {
             static atomic<unsigned int> sSuperSuppress_{};
             if (++sSuperSuppress_ <= 1) {
                 IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: t_InterruptionSuppressDepth_=%d, t_Interrupting_=%d",
-                                                   t_InterruptionSuppressDepth_, thisRunningThreadRep->fInterruptionState_.load ()));
+                                                   t_InterruptionSuppressDepth_, thisRunningThreadRep->fAbortRequested_.load ()));
                 sSuperSuppress_--;
             }
         }

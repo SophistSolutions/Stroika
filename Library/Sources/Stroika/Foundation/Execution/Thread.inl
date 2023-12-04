@@ -31,6 +31,11 @@ namespace Stroika::Foundation::Execution {
     public:
         nonvirtual IDType GetID () const;
 
+    private:
+        // same as GetStatus but using Peek so avoids some locks, and can be used in ToString() without causing that to lock stuff...
+        nonvirtual Status PeekStatus_ () const noexcept;
+        nonvirtual bool   IsDone_ () const noexcept;
+
     public:
         nonvirtual NativeHandleType GetNativeHandle ();
 
@@ -69,10 +74,8 @@ namespace Stroika::Foundation::Execution {
 
     private:
         function<void ()> fRunnable_;
-        atomic<bool>      fInterruptionState_{false}; // regular interrupt, abort interrupt, or none
-        // @todo lose this mutex. We read fID from thread object, but sometimes call join. want to allow access to some attributes to read while doing a join..
-        /// MAYBE reviseit - not sure thats safe...
-        //     mutable mutex fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
+        atomic<bool>      fAbortRequested_{false}; // regular interrupt, abort interrupt, or none
+        // Before Stroika v3.0d5 - we hada  mutext to protect fThread_ object, but it caused more trouble than it solved, so remoed
 #if __cpp_lib_jthread >= 201911
         stop_source fStopSource_;
         stop_token  fStopToken_; // initialized in Ptr::Start() before ThreadMain_ called
@@ -80,12 +83,12 @@ namespace Stroika::Foundation::Execution {
 #else
         thread               fThread_;
 #endif
-        atomic<Status> fStatus_{Status::eNotYetRunning};
-        atomic<bool>   fStartEverInitiated_{false};
-        WaitableEvent  fRefCountBumpedInsideThreadMainEvent_; // see "Stroika thread-start choreography" for description of these events
-        WaitableEvent  fStartReadyToTransitionToRunningEvent_;
-        WaitableEvent  fThreadDoneAndCanJoin_;
-        wstring        fThreadName_;
+        atomic<bool>  fStartEverInitiated_{false};
+        atomic<bool>  fThreadValid_{false}; // protect a few accesses to fThread so we dont check if until assignment definitely completed
+        WaitableEvent fRefCountBumpedInsideThreadMainEvent_; // see "Stroika thread-start choreography" for description of these events
+        WaitableEvent fStartReadyToTransitionToRunningEvent_;
+        WaitableEvent fThreadDoneAndCanJoin_;
+        wstring       fThreadName_;
         Synchronized<exception_ptr> fSavedException_; // really no logical need for Syncrhonized<>, except when used from ToString() for debugging
         Synchronized<optional<Priority>> fInitialPriority_; // where we store priority before start
 #if qPlatform_Windows
@@ -115,6 +118,24 @@ namespace Stroika::Foundation::Execution {
     inline Thread::NativeHandleType Thread::Ptr::Rep_::GetNativeHandle ()
     {
         return fThread_.native_handle ();
+    }
+
+    inline Thread::Status Thread::Ptr::Rep_::PeekStatus_ () const noexcept
+    {
+        if (fThreadDoneAndCanJoin_.PeekIsSet ()) {
+            return Status::eCompleted;
+        }
+        if (fAbortRequested_) {
+            return Status::eAborting;
+        }
+        if (fStartReadyToTransitionToRunningEvent_.PeekIsSet ()) {
+            return Status::eRunning;
+        }
+        return Status::eNotYetRunning;
+    }
+    inline bool Thread::Ptr::Rep_::IsDone_ () const noexcept
+    {
+        return fThreadDoneAndCanJoin_.GetIsSet ();
     }
 
     /*
@@ -246,7 +267,22 @@ namespace Stroika::Foundation::Execution {
         if (fRep_ == nullptr) [[unlikely]] {
             return Status::eNull;
         }
-        return GetStatus_ ();
+        if (fRep_->fThreadDoneAndCanJoin_.GetIsSet ()) {
+            return Status::eCompleted;
+        }
+        if (fRep_->fAbortRequested_) {
+            return Status::eAborting;
+        }
+        if (fRep_->fStartReadyToTransitionToRunningEvent_.GetIsSet ()) {
+            return Status::eRunning;
+        }
+        return Status::eNotYetRunning;
+    }
+    inline bool Thread::Ptr::IsDone () const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
+        RequireNotNull (fRep_);
+        return fRep_->fThreadDoneAndCanJoin_.GetIsSet ();
     }
     inline void Thread::Ptr::Join (Time::DurationSeconds timeout) const
     {

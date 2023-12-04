@@ -412,12 +412,13 @@ namespace Stroika::Foundation::Execution {
              *  A thread can only be started once. When it is constructed (without eStart) - it starts in the NotYetRunning state. And can
              *  only be started when its in that state.
              * 
-             *  By default (bool waitUntilStarted = false) - this function returns quickly, with the thread in any possible state.
-             * 
-             *  To wait for the thread to have started (or throws if it cannot start thread) - pass 
+             *  The zero argument Start overload returns, with the thread in any possible state.
              *  This function returns quickly, and the state of the thread may not have changed by the time it ru
              *  ensures when it returns the state is running, or completed, but cannot (yet) be aborted?? or null or not yet running
-             * Ensure (s == Status::eRunning or s == Status::eCompleted);
+             * 
+             *  The Start (WaitUntilStarted) overload waits for the thread to have started (or throws if it cannot start thread). Note the thread
+             *  can still run to completion, or be aborted somewhere along the lines. So in this case:
+             *      Ensure (s == Status::eRunning or s == Status::eAborting or s == Status::eCompleted );
              */
             nonvirtual void Start () const;
             nonvirtual void Start (WaitUntilStarted) const;
@@ -470,7 +471,7 @@ namespace Stroika::Foundation::Execution {
         public:
             /**
              *  \brief  Wait for the pointed-to thread to be done. If the thread completed with an exception (other than thread abort exception)
-             *          that exeception will be re-thrown in the calling thread.
+             *          that exception will be re-thrown in the calling thread.
              *
              *  This API is frequently preferred over WaitForDone () - because you frequently will do work in a thread which when failing - you want
              *  reported somehow. But this is not ALWAYS desirable - like when you have worker threads are just trying to clean up, and don't care that
@@ -490,26 +491,26 @@ namespace Stroika::Foundation::Execution {
         public:
             /**
              *  \brief  Wait for the pointed-to thread to be done. If the thread completed with an exception (other than thread abort exception)
-             *          that exeception will be re-thrown in the calling thread.
+             *          that exception will be re-thrown in the calling thread.
              *
              *  This API is frequently preferred over WaitForDone () - because you frequently will do work in a thread which when failing - you want
              *  reported somehow. But this is not ALWAYS desirable - like when you have worker threads are just trying to clean up, and don't care that
              *  parts of it may have failed.
              *
-             *  WaitForDoneUnitl () followed up ThrowIfDoneWithException ()
+             *  WaitForDoneUntil () followed up ThrowIfDoneWithException ()
              *
              *  \note   Considered using ThrowIfDoneWithException () always in WaitForDone() 
-             *          or make optional if existing WAIT API throws child excpetions. Maybe paraemter in construction
+             *          or make optional if existing WAIT API throws child exceptions. Maybe parameter in construction
              *          of the thread?
              *
              *          Decided against always re-throwing because sometimes you just don't care for a given thread what sort of errors
              *          it had (maybe cuz you've given up on the larger task).
              *
-             *          Decided against encoding that choice in the Thread::New () function (making it a property) and then always doing in WaitForDone () - becaues
+             *          Decided against encoding that choice in the Thread::New () function (making it a property) and then always doing in WaitForDone () - because
              *          then the the choice would be far away from where the waiting is done - and that Waiting - really needs to be setup to KNOW its likely
              *          to get an exception. So that seemed the wrong place.
              *
-             *          Considered making this just an overload of WaitForDone () - with an extra param - reThrow - and thats really close to what I ended up 
+             *          Considered making this just an overload of WaitForDone () - with an extra param - reThrow - and that's really close to what I ended up 
              *          with. But overloading would force me to pick a default, which would cause a struggle between backward compatabilitiy and what
              *          I think is the more common case. Or maybe there is no clearly more common case. This name seems fine.
              *
@@ -673,7 +674,8 @@ namespace Stroika::Foundation::Execution {
              *  Nothing transitions back to the Status:eNull state. From there when you specify a std::function<> to run,
              *  then you transition to Status::eNotYetRunning.
              *
-             *  From eNotYetRunning, you can transition to eRunning with Start ().
+             *  From eNotYetRunning, you can transition to eRunning with Start () (or the starting thread CTOR). Or you can transition from
+             *  eNotYetRunning to eAborting, if you call Abort() before Start().
              *
              *  From eRunning (or eNotYetRunning) you can transition to eAborting or eCompleted (or from eAborting to eCompleted).
              *
@@ -686,13 +688,15 @@ namespace Stroika::Foundation::Execution {
              */
             nonvirtual Status GetStatus () const noexcept;
 
-        private:
-            nonvirtual Status GetStatus_ () const noexcept;
-
         public:
             /**
-             *  Return true iff WaitForDone () would return immediately
-             *  @todo DOCUMENT RELATIONSHIP WITH GETSTATUS
+             *  Return true iff WaitForDone () would return immediately;
+             * 
+             *  \req not == nullptr
+             *  
+             *  This will return true iff GetStatus() would return eCompleted.
+             * 
+             *  Note - some internal traces of the thread object may still be running at this point, but its safe to call join at this point without significant blockage.
              */
             nonvirtual bool IsDone () const;
 
