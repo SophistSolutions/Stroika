@@ -52,7 +52,7 @@ sub indexOf
 {
 	my @arr = shift;
 	my $v = shift;
-	for (my $ii = 0; $ii <= $#arr; $ii++) {
+	for (my $ii = 0; $ii < $#arr; $ii++) {
 	   if ($arr[$ii] eq $v) {
 			return $ii;
 	   }
@@ -1901,7 +1901,7 @@ sub GetDefaultCZZFLAGS_flags_
 	my @flags  = ();
 	my @flagValues2Remove  = @GetDefaultCZZFLAGS_flags_flagValues2Remove;
 	my $doCFLAGS = shift(@_);
-	#print "entering GetDefaultCZZFLAGS_flags_: with flags=", join("\n", @flags), ", flagValues2Remove=", join("\n", @flagValues2Remove), " and doCFLags=$doCFLAGS\n";
+	# print "entering GetDefaultCZZFLAGS_flags_: with flags=", join("\n", @flags), ", flagValues2Remove=", join("\n", @flagValues2Remove), " and doCFLags=$doCFLAGS\n";
 
 	my $isVisualStudio = 		($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/);
 	if ($isVisualStudio eq 1) {
