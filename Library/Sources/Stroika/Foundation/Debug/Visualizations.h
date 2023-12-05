@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Debug::Visualizations {
 #endif
     }
 
-    /*
+    /**
      *  ONLY for use in .navtis.
      *  BEWARE - keep this representation in sync with the code in StringRepHelperAllFitInSize_::Rep
      * 
