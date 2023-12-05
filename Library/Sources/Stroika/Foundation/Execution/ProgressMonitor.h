@@ -187,6 +187,12 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual CurrentTaskInfo GetCurrentTaskInfo () const;
 
+    public:
+        /**
+         *  Usually this is done through an Updater, but can be done directly.
+         */
+        nonvirtual void SetCurrentTaskInfo (const CurrentTaskInfo& ti);
+
     private:
         shared_ptr<Rep_> fRep_;
 
