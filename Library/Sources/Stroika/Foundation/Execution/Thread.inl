@@ -263,10 +263,8 @@ namespace Stroika::Foundation::Execution {
 #endif
     inline Thread::Status Thread::Ptr::GetStatus () const noexcept
     {
+        RequireNotNull (fRep_);
         Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
-        if (fRep_ == nullptr) [[unlikely]] {
-            return Status::eNull;
-        }
         if (fRep_->fThreadDoneAndCanJoin_.GetIsSet ()) {
             return Status::eCompleted;
         }
@@ -420,7 +418,6 @@ namespace Stroika::Foundation::Execution {
 namespace Stroika::Foundation::Configuration {
     template <>
     constexpr EnumNames<Execution::Thread::Status> DefaultNames<Execution::Thread::Status>::k{EnumNames<Execution::Thread::Status>::BasicArrayInitializer{{
-        {Execution::Thread::Status::eNull, L"Null"},
         {Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running"},
         {Execution::Thread::Status::eRunning, L"Running"},
         {Execution::Thread::Status::eAborting, L"Aborting"},

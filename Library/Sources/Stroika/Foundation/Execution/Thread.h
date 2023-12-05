@@ -266,13 +266,12 @@ namespace Stroika::Foundation::Execution {
          *  Configuration::DefaultNames<> is defined for this enumeration.
          */
         enum class Status : uint8_t {
-            eNull,          // null thread object
             eNotYetRunning, // created, but start not yet called
             eRunning,       // in the context of the 'Run' method
             eAborting,      // Abort () called, but the thread still hasn't yet unwound
             eCompleted,     // run has terminated (possibly by exception, possibly normally, possibly because of Abort call)
 
-            Stroika_Define_Enum_Bounds (eNull, eCompleted)
+            Stroika_Define_Enum_Bounds (eNotYetRunning, eCompleted)
         };
 
         /**
@@ -441,12 +440,12 @@ namespace Stroika::Foundation::Execution {
 
         public:
             /**
-             *  \brief Abort gracefully shuts down and terminates the given thread.
+             *  \brief Abort gracefully shuts down and terminates the given thread (using cooperative multitasking).
              *
-             *  Abort gracefully shuts down and terminates the given thread (using cooperative multitasking).
+             *  \note Since Stroika v3.0 (and C++20), this is accompished internally via std::stop_token. 
              *
-             *  This works by setting a flag in that thread, which is checked at each 'cancelation point', and
-             *  can interrupt certain cancelation waiting cancelation points.
+             *  Cancelation works by setting a flag in that thread, which is checked at each 'cancelation point' (plus a little
+             *  extra magic).
              *
              *  This causes the given thread to throw an AbortException whenever it reaches one of these cancelation points
              *  (or if already at one such waitable cancelation point).
@@ -454,7 +453,7 @@ namespace Stroika::Foundation::Execution {
              *  This call is (generally) non-blocking (may block briefly for critical section to update status,
              *  but does NOT block until Stop successful). See AbortAndWaitUntilDone() to abort and wait for completion.
              *
-             *  This can be called on a thread object at any time, and in any state (except nullptr, which can only happen in the thread
+             *  This can be called on a thread object at any time (reps are internally syncrhonized), and in any state (except nullptr, which can only happen in the thread
              *  was created with nullptr/default CTOR and never assigned from Thread::New).
              *
              *  \note   This counts on Stroika's semi-cooperative multitasking (to be safe). This means if you call libraries that don't
@@ -681,6 +680,8 @@ namespace Stroika::Foundation::Execution {
              *
              *  A thread object can never transition back (by this I mean the underlying pointed to rep - the container of
              *  course can transition back by being assigned another ThreadRep).
+             *
+             *  \req *this != nullptr
              *
              *  \note - Calling GetStatus () is generally not a good idea, except for debugging purposes. Generally, you will
              *          want to call WaitForDone (), and perhaps Abort, or AbortAndWaitForDone (). GetStatus () gives you a clue
