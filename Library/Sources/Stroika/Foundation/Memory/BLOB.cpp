@@ -5,6 +5,7 @@
 
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
+#include "../Cryptography/Encoding/Algorithm/Base64.h"
 #include "../Execution/Exceptions.h"
 #include "../Execution/Throw.h"
 #include "../Streams/InputStream.h"
@@ -136,9 +137,9 @@ span<const byte> BLOB::AdoptAndDeleteRep_::GetBounds () const
  ********************************* Memory::BLOB *********************************
  ********************************************************************************
  */
-namespace {
-    inline byte HexChar2Num_ (char c)
-    {
+BLOB BLOB::FromHex (span<const char> s)
+{
+    auto HexChar2Num_ = [] (char c) -> byte {
         if ('0' <= c and c <= '9') [[likely]] {
             return byte (c - '0');
         }
@@ -150,10 +151,7 @@ namespace {
         }
         static const Execution::RuntimeErrorException kException_{"Invalid HEX character in BLOB::Hex"sv};
         Execution::Throw (kException_);
-    }
-}
-BLOB BLOB::FromHex (span<const char> s)
-{
+    };
     StackBuffer<byte> buf;
     const char*       e = s.data () + s.size ();
     for (const char* i = s.data (); i < e; ++i) {
@@ -178,6 +176,19 @@ BLOB BLOB::FromHex (const Characters::String& s)
         return BLOB::FromHex (*ps);
     }
     return BLOB::FromHex (span<const char>{s.AsASCII ()}); // will throw in this case cuz if not ascii... oops...
+}
+
+BLOB BLOB::FromBase64 (span<const char> s)
+{
+    return Cryptography::Encoding::Algorithm::DecodeBase64 (s);
+}
+
+BLOB BLOB::FromBase64 (const Characters::String& s)
+{
+    if (optional<span<const Characters::ASCII>> ps = s.PeekData<Characters::ASCII> ()) [[likely]] {
+        return BLOB::FromBase64 (*ps);
+    }
+    return BLOB::FromBase64 (span<const char>{s.AsASCII ()}); // will throw in this case cuz if not ascii... oops...
 }
 
 namespace {
@@ -290,7 +301,8 @@ Streams::InputStream<byte>::Ptr BLOB::As () const
     return BLOBBINSTREAM_{*this};
 }
 
-Characters::String BLOB::AsHex (size_t maxBytesToShow) const
+template <>
+Characters::String Stroika::Foundation::Memory::BLOB::AsHex (size_t maxBytesToShow) const
 {
     // @todo Could be more efficient
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -303,6 +315,12 @@ Characters::String BLOB::AsHex (size_t maxBytesToShow) const
         sb << Characters::Format (L"%02x", b);
     }
     return sb.str ();
+}
+
+template <>
+Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 () const
+{
+    return Cryptography::Encoding::Algorithm::EncodeBase64 (*this);
 }
 
 BLOB BLOB::Repeat (unsigned int count) const

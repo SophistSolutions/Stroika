@@ -34,6 +34,7 @@
 
 namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
 
+    Memory::BLOB DecodeBase64 (span<const char> s);
     Memory::BLOB DecodeBase64 (const string& s);
     Memory::BLOB DecodeBase64 (const u8string& s);
     Memory::BLOB DecodeBase64 (const Characters::String& s);

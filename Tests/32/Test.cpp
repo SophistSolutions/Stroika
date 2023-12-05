@@ -1167,6 +1167,7 @@ namespace {
         {
             using PRIVATE_::RoundTripCompressTest_;
             RoundTripCompressTest_ (Memory::BLOB::FromHex ("aa1234abcd01010102030405"));
+            RoundTripCompressTest_ (Memory::BLOB::FromHex ("aa1234abcd01010102030405"sv));
             {
                 Memory::BLOB bigBlob = Memory::BLOB::FromHex ("00112233445566778899aabbccddeeff");
                 Assert (bigBlob.size () == 16);

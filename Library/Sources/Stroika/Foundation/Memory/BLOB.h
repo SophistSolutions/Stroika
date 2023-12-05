@@ -28,8 +28,8 @@
  *
  *      @todo   Closely consider Streams::TODO.md item about a new Streams::BLOB class. This may replace
  *              several of the BELOW TODO items more elegantly (wthout th eSeekOffsetType change would
- *              might cause some difficultties. So you have Memory::BLOB when you Know i tmust be in ram
- *              nad oyu have  ptr api. And you have Streams::BLOB when it may not fit in RAM!
+ *              might cause some difficulties. So you have Memory::BLOB when you Know it must be in ram
+ *              and you have ptr api. And you have Streams::BLOB when it may not fit in RAM!
  *
  *      @todo   Redo API - so its all based on SeekOffsetType - not size_t. Document that if you exceed
  *              available in-RAM storage, no biggie - you just throw bad_alloc. But at least you can
@@ -40,8 +40,8 @@
  *              BLOB (object slicing) � and have different CTOR, and different virtual Rep
  *              (decide semantics � not clear � readonly)
  *          
- *              MAYBE better static method MemoryMappedFileAsBLOB () instead of separete class since
- *              then no object slicing, and we can document its just like the 'applicationlifetime' constructor - unsafe
+ *              MAYBE better static method MemoryMappedFileAsBLOB () instead of separate class since
+ *              then no object slicing, and we can document its just like the 'application lifetime' constructor - unsafe
  *              if the underlying mapped file data ever changes.
  *
  *      @todo   Do CTOR that uses iterator start/end not just const byte* start, const byte* end.
@@ -140,10 +140,31 @@ namespace Stroika::Foundation::Memory {
          *  \todo probably allow optionally leading 0x....
          */
         static BLOB FromHex (const char* b);
-        static BLOB FromHex (const char* s, const char* e);
         static BLOB FromHex (span<const char> s);
         static BLOB FromHex (string_view s);
         static BLOB FromHex (const Characters::String& s);
+
+    public:
+        /**
+         *  \brief  Convert string of base64 bytes to BLOB.
+         *
+         *  Like a constructor, but where you clearly name the intention of how to interpret the bytes.
+         *
+         *  Spaces allowed, but treat as array of (possibly space delimited) base64 bytes to BLOB.
+         * 
+         *  Upper/LowerCase OK, but invalid characters generate throw.
+         *
+         *  \par Example Usage
+         *      \code
+         *          Assert  ((BLOB::FromBase64 ("aGVsbG8=") == BLOB { 'h', 'e', 'l', 'l', 'o' }));
+         *      \endcode
+         * 
+         *  \todo probably allow optionally leading 0x....
+         */
+        static BLOB FromBase64 (const char* b);
+        static BLOB FromBase64 (span<const char> s);
+        static BLOB FromBase64 (string_view s);
+        static BLOB FromBase64 (const Characters::String& s);
 
     public:
         /**
@@ -260,7 +281,30 @@ namespace Stroika::Foundation::Memory {
          * 
          *  \see also FromHex ()
          */
-        nonvirtual Characters::String AsHex (size_t maxBytesToShow = numeric_limits<size_t>::max ()) const;
+        template <typename STRING_TYPE = Characters::String>
+        nonvirtual STRING_TYPE AsHex (size_t maxBytesToShow = numeric_limits<size_t>::max ()) const
+#if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+            requires (same_as<Characters::String, STRING_TYPE>)
+#endif
+        ;
+
+    public:
+        /**
+         *  Return a string of base64 encoded bytes.
+         *
+         *  \par Example Usage
+         *      \code
+         *          BLOB{'h', 'e', 'l', 'l', 'o'}.AsBase64 () == "aGVsbG8=")
+         *      \endcode
+         * 
+         *  \see also AsHex (), FromBase64
+         */
+        template <typename STRING_TYPE = Characters::String>
+        nonvirtual STRING_TYPE AsBase64 () const
+#if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+            requires (same_as<Characters::String, STRING_TYPE>)
+#endif
+        ;
 
     public:
         /**
@@ -346,6 +390,7 @@ namespace Stroika::Foundation::Memory {
         nonvirtual BLOB operator+ (const BLOB& rhs) const;
 
     public:
+        [[deprecated ("Since Stroika v3.0d5 use span overload")]] static BLOB FromHex (const char* s, const char* e);
         template <typename T>
         [[deprecated ("Since Stroika v3.0d5 - use As/0")]] void As (T* into) const
         {

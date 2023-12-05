@@ -256,6 +256,11 @@ namespace {
                                BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
             VerifyTestResult ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6"));
         }
+        {
+            using Memory::BLOB;
+            VerifyTestResult ((BLOB::FromBase64 ("aGVsbG8=") == BLOB{'h', 'e', 'l', 'l', 'o'}));
+            VerifyTestResult ((BLOB{'h', 'e', 'l', 'l', 'o'}.AsBase64 () == "aGVsbG8="));
+        }
     }
 }
 

@@ -135,6 +135,15 @@ namespace Stroika::Foundation::Memory {
     {
         return FromHex (span<const char>{s});
     }
+    inline BLOB BLOB::FromBase64 (const char* b)
+    {
+        RequireNotNull (b);
+        return FromBase64 (span<const char>{b, ::strlen (b)});
+    }
+    inline BLOB BLOB::FromBase64 (string_view s)
+    {
+        return FromBase64 (span<const char>{s});
+    }
     template <typename T>
     inline BLOB BLOB::FromRaw (const T* s, const T* e)
         requires (is_trivially_copyable_v<T>)
