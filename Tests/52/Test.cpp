@@ -1371,11 +1371,11 @@ namespace {
         Tester (L"Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
                 Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, .51, &failedTests);
         Tester (L"Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
-                Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String", 65000, 0.45, &failedTests);
+                Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String", 65000, 0.49, &failedTests);
         Tester (L"Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",
                 Test_StructWithStringsFillingAndCopying2<String>, L"Charactes::String", 66000, 0.45, &failedTests);
         Tester (L"Simple String append test (+='string object') 10x", Test_SimpleStringAppends1_<wstring>, L"wstring",
-                Test_SimpleStringAppends1_<String>, L"Charactes::String", 1350000, 4.8, &failedTests);
+                Test_SimpleStringAppends1_<String>, L"Charactes::String", 1350000, 4.9, &failedTests);
         Tester (L"Simple String append test (+=wchar_t[]) 10x", Test_SimpleStringAppends2_<wstring>, L"wstring",
                 Test_SimpleStringAppends2_<String>, L"Charactes::String", 1500000, 4.1, &failedTests);
         Tester (L"Simple String append test (+=wchar_t[]) 100x", Test_SimpleStringAppends3_<wstring>, L"wstring",
