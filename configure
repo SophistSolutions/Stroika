@@ -2491,6 +2491,21 @@ sub	WriteConfigFile_
 			$LinkerArgs_LibPath[$i] = trim (`cygpath --mixed "$LinkerArgs_LibPath[$i]"`);
 		}
 	}
+	# FIXUP LinkerArgs_LibPath
+	my $LinkerArgs_LibPathString="";
+	for my $i (0 .. $#LinkerArgs_LibPath) {
+		my $l = $LinkerArgs_LibPath[$i];
+		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+			my $len = length ($l);
+			if (length ($l) > 0 && substr ($l, -1) eq "\\") {
+				$l .= "\"";
+			}
+			$LinkerArgs_LibPathString .= "-LIBPATH:\"$l\" ";
+		}
+		else {
+			$LinkerArgs_LibPathString .= "-L$l ";
+		}
+	}
 
 	my @appArgs = GetAppArgs_ ();
 	my $configFileName = shift(@_);
@@ -2676,8 +2691,7 @@ sub	WriteConfigFile_
 	print (OUT "\n    <!--Linking-->\n");
 	print (OUT "    <IncludeDebugSymbolsInLibraries>$INCLUDE_SYMBOLS_LIB</IncludeDebugSymbolsInLibraries>\n");
 	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
-	my $libsPathStr = join ($PATH_SEPERATOR, @LinkerArgs_LibPath);
-	print (OUT "    <LinkerArgs_LibPath>$libsPathStr</LinkerArgs_LibPath>\n");
+	print (OUT "    <LinkerArgs_LibPath>$LinkerArgs_LibPathString</LinkerArgs_LibPath>\n");
 	print (OUT "    <LinkerArgs_LibDependencies>$LinkerArgs_LibDependencies</LinkerArgs_LibDependencies>\n");
 	print (OUT "    <LinkerArgs_ExtraPrefix>$LinkerArgs_ExtraPrefix</LinkerArgs_ExtraPrefix>\n");
 	print (OUT "    <LinkerArgs_ExtraSuffix>$LinkerArgs_ExtraSuffix</LinkerArgs_ExtraSuffix>\n");

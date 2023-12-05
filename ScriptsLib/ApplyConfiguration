@@ -325,28 +325,8 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "$var\n");
 	}
 
-
-
-	print (OUT "\n\n");
-	print (OUT "LinkerArgs_LibPath=");
-	for my $l (split /$PATH_SEPERATOR/, $LinkerArgs_LibPath) {
-		if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-			my $tmp		=	trim (`cygpath --ignore --mixed "$l"`);
-			my $len = length ($tmp);
-			my $c = $tmp[length ($tmp)-1];
-			if (length ($tmp) > 0 && substr ($tmp, -1) eq "\\") {
-				$tmp .= "\"";
-			}
-			print (OUT "-LIBPATH:\"$tmp\" ");
-		}
-		else {
-			print (OUT "-L$l ");
-		}
-	}
-
-	print (OUT "\n");
-	print (OUT "LinkerArgs_LibDependencies=$LinkerArgs_LibDependencies");
-	print (OUT "\n");
+	print (OUT "\n\nLinkerArgs_LibPath=$LinkerArgs_LibPath\n");
+	print (OUT "LinkerArgs_LibDependencies=$LinkerArgs_LibDependencies\n");
 
 	print (OUT "\n\n");
 	print (OUT "# Extra dynamically computed link lines\n");
