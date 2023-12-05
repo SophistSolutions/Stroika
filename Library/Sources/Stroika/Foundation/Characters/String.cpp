@@ -520,9 +520,7 @@ namespace {
             : FACET{forward<Args> (args)...}
         {
         }
-        ~deletable_facet_ ()
-        {
-        }
+        ~deletable_facet_ () = default;
     };
 }
 

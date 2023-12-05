@@ -33,6 +33,14 @@ namespace Stroika::Foundation::Debug::Visualizations {
 #endif
     }
 
+
+    template<typename REP_CHAR>
+    struct StringRep /* : StringRepHelperAllFitInSize_::Rep<char> */ {
+        virtual ~StringRep (){};
+        span<const REP_CHAR> fData;
+    };
+
+
     void ForceInclude ();
 
 }

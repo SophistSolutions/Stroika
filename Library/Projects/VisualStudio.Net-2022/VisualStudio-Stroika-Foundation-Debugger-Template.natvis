@@ -19,10 +19,15 @@
     -->
 	<Type Name="Stroika::Foundation::Characters::String">
 		<DisplayString>
-			{c_str()}
+			{((Stroika::Foundation::Debug::Visualizations::StringRep&lt;char8_t&gt;*)(_fRep.fSharedImpl_._Ptr))->fData._Mydata
 		</DisplayString>
 		<Expand>
 			<Item Name="c_str">c_str()</Item>
+			<Item Name="size">((Stroika::Foundation::Debug::Visualizations::StringRep&lt;char8_t&gt;*)(_fRep.fSharedImpl_._Ptr))->fData._Mysize</Item>
+			<Item Name="size-computed">length()</Item>
+			<Item Name="u8string">((Stroika::Foundation::Debug::Visualizations::StringRep&lt;char8_t&gt;*)(_fRep.fSharedImpl_._Ptr))->fData._Mydata</Item>
+			<Item Name="u16string">((Stroika::Foundation::Debug::Visualizations::StringRep&lt;char16_t&gt;*)(_fRep.fSharedImpl_._Ptr))->fData._Mydata</Item>
+			<Item Name="u32string">((Stroika::Foundation::Debug::Visualizations::StringRep&lt;char32_t&gt;*)(_fRep.fSharedImpl_._Ptr))->fData._Mydata</Item>
 		</Expand>
 	</Type>
 	<Type Name="Stroika::Foundation::Characters::StringBuilder">
