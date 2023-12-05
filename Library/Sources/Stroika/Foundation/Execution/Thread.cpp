@@ -807,8 +807,10 @@ void Thread::Ptr::Start (WaitUntilStarted) const
         // --LGP 2023-11-30
         this_thread::yield ();
     }
+#if qDebug
     auto s = GetStatus ();
     Ensure (s == Status::eRunning or s == Status::eAborting or s == Status::eCompleted);
+#endif
 }
 
 void Thread::Ptr::Abort () const
