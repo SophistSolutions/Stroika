@@ -33,13 +33,18 @@ namespace Stroika::Foundation::Debug::Visualizations {
 #endif
     }
 
-
-    template<typename REP_CHAR>
-    struct StringRep /* : StringRepHelperAllFitInSize_::Rep<char> */ {
+    /*
+     *  ONLY for use in .navtis.
+     *  BEWARE - keep this representation in sync with the code in StringRepHelperAllFitInSize_::Rep
+     * 
+     *  Also note - this doesn't work for ALL reps - just a few of the more common ones. But only for debugger visiaulization shortcut, so sb mostly harmless.
+     *      --LGP 2023-12-05
+     */
+    template <typename REP_CHAR>
+    struct StringRep {
         virtual ~StringRep (){};
         span<const REP_CHAR> fData;
     };
-
 
     void ForceInclude ();
 

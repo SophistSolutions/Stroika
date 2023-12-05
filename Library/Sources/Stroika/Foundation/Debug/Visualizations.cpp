@@ -25,8 +25,7 @@ using namespace Stroika::Foundation::Debug;
 
 namespace {
 
-
-    Visualizations::StringRep<char8_t> kFake_8_;
+    Visualizations::StringRep<char8_t>  kFake_8_;
     Visualizations::StringRep<char16_t> kFake_16_;
     Visualizations::StringRep<char32_t> kFake_32_;
 
@@ -37,8 +36,6 @@ namespace {
 
 namespace Stroika::Foundation::Debug::Visualizations {
     bool Private_::gMagicSoIncluded = true;
-
-
 
     void ForceInclude ()
     {
