@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  @see LRUCache constructor for examples
+         *  @see LRUCache constructor for examples, or SynchronizedLRUCache_NoHash, SynchronizedLRUCache_WithHash
          */
         template <typename... ARGS>
         SynchronizedLRUCache (ARGS... args);
