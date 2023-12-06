@@ -11,6 +11,7 @@
 
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
 #include "../Configuration/TypeHints.h"
 #include "../Containers/Mapping.h"
 #include "../Debug/AssertExternallySynchronizedMutex.h"
@@ -103,24 +104,54 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  \note the overloads taking pair<KEY,VALUE> as the first argument are just tricks to allow deduction guides to work (because
-         *        you cannot specify some template parameters and then have deduction guides take effect).
+         *  There are two basic kinds of LRUCache - with hashing, and without.
+         * 
+         *  If there is no KEY_HASH_FUNCTION (==nullptr) - then the GetHashTableSize () always returns 1;
+         * 
+         *  Note the hash function can be hash<KEY_TYPE>{}, and this is one of the constructor defaults.
          * 
          *  Note cannot move easily because this contains internal pointers (fCachedElts_First_): still declare move CTOR, but its not
          *  noexcept because its really copying...
+         * 
+         * 
+         *  Because of a couple key limitions/constraints in C++ (as of C++20) - you cannot both do template argument deduction, and default paramters).
+         *  This greatly constrains how the class works (at least constructors).
+         * 
+         *  So this is somewhat subject to change as the language evolves (or my understnading of tricks evolves). But for now, deduction is limited.
+         * 
+         * ....THROW IN EXAMPLES!!!!
          */
-        LRUCache (size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1,
-                  KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
-        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {},
-                  size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
-        LRUCache (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
-        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
+        LRUCache (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {})
+            requires (same_as<KEY_HASH_FUNCTION, nullptr_t>);
+        LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer = {}, size_t hashTableSize = 1,
+                  const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
+            requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>);
+        LRUCache (size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
+            requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>);
+
+        //         *  \note the overloads taking pair<KEY, VALUE> as the first argument are just tricks to allow deduction guides to
+        //                                    work (because* you cannot specify some template parameters and then have deduction guides take effect)
+        //           .
+        // find better way todo deduction guides so I can deprecate this
+        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {},
+                  size_t hashTableSize = 1, const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
+            : LRUCache{maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction}
+        {
+        }
+        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = hash<KEY>{})
+            : LRUCache{maxCacheSize, hashTableSize, hashFunction}
+        {
+        }
+
 #if qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
         LRUCache (LRUCache&& from) noexcept;
 #else
         LRUCache (LRUCache&& from);
 #endif
-        LRUCache (const LRUCache& from);
+        LRUCache (const LRUCache& from)
+            requires (same_as<KEY_HASH_FUNCTION, nullptr_t>);
+        LRUCache (const LRUCache& from)
+            requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>);
 
     public:
         /**
@@ -282,11 +313,33 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
 
-        static constexpr size_t kPreallocatedHashtableSize_ = 5; // size where no memory allocation overhead for lrucache
+        static constexpr size_t kPreallocatedHashtableSize_ = same_as<KEY_HASH_FUNCTION, nullptr_t> ? 1 : 5; // size where no memory allocation overhead for lrucache
         Memory::InlineBuffer<vector<CacheElement_>, kPreallocatedHashtableSize_> fCachedElts_BUF_{};
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
     };
+
+    //  template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+    // LRUCache (Iter b, Iter e) -> LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>;
+    template <typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+    struct LRUCacheOptions {
+        using value_type = VALUE;
+        using stats_type = STATS_TYPE;
+    };
+
+#if 0
+    // NOT READY...CUZ NO WAY TO DEDUCE VALUE OR SPECIFY DEFAULTS - maybe use extra type
+    template <typename KEY, typename KEY_EQUALS_COMPARER, typename EXTRA>
+    LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer, EXTRA)
+        -> LRUCache<KEY, typename EXTRA::value_type, KEY_EQUALS_COMPARER, nullptr_t, typename EXTRA::stats_type>;
+
+    //    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+    //  LRUCache (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyEqualsComparer, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction, STATS_TYPE ignoredStatsInstance)
+    //    -> LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, nullptr_t, STATS_TYPE>;
+    template <typename KEY, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename EXTRA>
+    LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction, EXTRA)
+        -> LRUCache<KEY, typename EXTRA::value_type, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, typename EXTRA::stats_type>;
+#endif
 
 }
 

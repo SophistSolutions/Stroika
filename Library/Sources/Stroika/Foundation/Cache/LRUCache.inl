@@ -81,9 +81,23 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (size_t maxCacheSize,
-                                                                                        const KeyEqualsCompareFunctionType& keyEqualsComparer,
-                                                                                        size_t hashTableSize, KEY_HASH_FUNCTION hashFunction)
+    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer)
+        requires (same_as<KEY_HASH_FUNCTION, nullptr_t>)
+        : fHashtableSize_{1}
+        , fKeyEqualsComparer_{keyEqualsComparer}
+        , fHashFunction_{nullptr}
+        , fCachedElts_BUF_{1}
+        , fCachedElts_First_{Memory::eUninitialized, 1}
+        , fCachedElts_Last_{Memory::eUninitialized, 1}
+    {
+        Require (maxCacheSize >= 1);
+        SetMaxCacheSize (maxCacheSize);
+    }
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (size_t                     maxCacheSize,
+                                                                                               const KEY_EQUALS_COMPARER& keyEqualsComparer,
+                                                                                               size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction)
+        requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>)
         : fHashtableSize_{hashTableSize}
         , fKeyEqualsComparer_{keyEqualsComparer}
         , fHashFunction_{hashFunction}
@@ -96,22 +110,10 @@ namespace Stroika::Foundation::Cache {
         SetMaxCacheSize (maxCacheSize);
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize,
-                                                                                               const KeyEqualsCompareFunctionType& keyEqualsComparer,
-                                                                                               size_t hashTableSize, KEY_HASH_FUNCTION hashFunction)
-        : LRUCache{maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction}
-    {
-    }
-    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (size_t maxCacheSize, size_t hashTableSize,
-                                                                                               KEY_HASH_FUNCTION hashFunction)
+                                                                                               const KEY_HASH_FUNCTION& hashFunction)
+        requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>)
         : LRUCache{maxCacheSize, KEY_EQUALS_COMPARER{}, hashTableSize, hashFunction}
-    {
-    }
-    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize,
-                                                                                               size_t hashTableSize, KEY_HASH_FUNCTION hashFunction)
-        : LRUCache{maxCacheSize, hashTableSize, hashFunction}
     {
     }
 #if qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
@@ -135,6 +137,19 @@ namespace Stroika::Foundation::Cache {
 #endif
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (const LRUCache& from)
+        requires (same_as<KEY_HASH_FUNCTION, nullptr_t>)
+        : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction ()}
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareFromReadContext{fAssertExternallySyncrhonized_};
+        for (CacheIterator_ i = from.begin_ (); i != from.end_ (); ++i) {
+            if (*i) {
+                Add ((*i)->fKey, (*i)->fValue);
+            }
+        }
+    }
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+    LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (const LRUCache& from)
+        requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>)
         : LRUCache{from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction (), from.GetHashTableSize (), from.GetKeyHashFunction ()}
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareFromReadContext{fAssertExternallySyncrhonized_};
@@ -208,7 +223,12 @@ namespace Stroika::Foundation::Cache {
     inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::GetHashTableSize () const -> size_t
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        return fHashtableSize_;
+        if constexpr (same_as<KEY_HASH_FUNCTION, nullptr_t>) {
+            return 1;
+        }
+        else {
+            return fHashtableSize_;
+        }
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::GetKeyHashFunction () const -> KEY_HASH_FUNCTION
