@@ -154,9 +154,9 @@ namespace Stroika::Foundation::Cache {
          * 
          *  \par Example Usage
          *      \code
-         *          auto t0{Factory::LRUCache_NoHash<string, string>{}()};
-         *          auto t1{Factory::LRUCache_NoHash<string, string>{}(3)};
-         *          LRUCache t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
+         *          auto                 t0{Factory::SynchronizedLRUCache_NoHash<string, string>{}()};
+         *          auto                 t1{Factory::SynchronizedLRUCache_NoHash<string, string>{}(3)};
+         *          SynchronizedLRUCache t2{Factory::SynchronizedLRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
          *      \endcode
          */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
@@ -171,11 +171,11 @@ namespace Stroika::Foundation::Cache {
         /**
          *  \par Example Usage
          *      \code
-         *          auto     t0{Factory::LRUCache_WithHash<string, string>{}(3, 3)};
-         *          auto     t1{Factory::LRUCache_WithHash<String, string>{}(3, 3, hashFunction)};
-         *          LRUCache t2{Factory::LRUCache_WithHash<String, string>{}(3, equal_to<String>{}, 3)};
-         *          LRUCache t3{Factory::LRUCache_WithHash<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
-         *          LRUCache t4{Factory::LRUCache_WithHash<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
+         *          auto                 t0{Factory::SynchronizedLRUCache_WithHash<string, string>{}(3, 3)};
+         *          auto                 t1{Factory::SynchronizedLRUCache_WithHash<String, string>{}(3, 3, hashFunction)};
+         *          SynchronizedLRUCache t2{Factory::SynchronizedLRUCache_WithHash<String, string>{}(3, equal_to<String>{}, 3)};
+         *          SynchronizedLRUCache t3{Factory::SynchronizedLRUCache_WithHash<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
+         *          SynchronizedLRUCache t4{Factory::SynchronizedLRUCache_WithHash<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
          *      \endcode
          */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
