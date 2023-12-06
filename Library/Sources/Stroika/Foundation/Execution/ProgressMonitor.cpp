@@ -48,7 +48,9 @@ void ProgressMonitor::Cancel ()
 {
     RequireNotNull (fRep_);
     fRep_->fCanceled_ = true;
-    fRep_->fWorkThread_.Abort ();
+    if (fRep_->fWorkThread_ != nullptr) {
+        fRep_->fWorkThread_.Abort ();
+    }
 }
 
 ProgressMonitor::operator Updater ()

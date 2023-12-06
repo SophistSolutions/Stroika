@@ -115,6 +115,7 @@ namespace Stroika::Foundation::Execution {
     }
     inline void ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
     {
+        ThrowIfCanceled ();
         WeakAssert (-0.001 < p and p < 1.001); // 'Weak Require' - outside this range, and its probably a caller bug
         p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f);
         Assert (0.0 <= p and p <= 1.0);

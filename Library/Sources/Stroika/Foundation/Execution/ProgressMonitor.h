@@ -136,8 +136,8 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  This doesn't need to be used. You can use ProgressMonitor progress monitor just peridocially calling
-         *  GetProgress(). But you may use AddCallback () to recieve notifications of progress changes.
+         *  This doesn't need to be used. You can use ProgressMonitor progress monitor just periodically calling
+         *  GetProgress(). But you may use AddCallback () to receive notifications of progress changes.
          * 
          *  Also note, these callbacks may be mutable, and the same instance will be re-used on each progress callback
          *  (but it maybe a copy of what is originally passed in ).
@@ -262,6 +262,8 @@ namespace Stroika::Foundation::Execution {
          * 
          *  However, we do 'weak assert' that its close to that range, since being more than a float-point round-off away, probably
          *  indicates a bug.
+         * 
+         *  \note   ***Cancelation Point*** (and checks internal canceled flag and maps that to a cancelation point)
          */
         nonvirtual void SetProgress (ProgressRangeType p);
 
@@ -276,12 +278,7 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void ThrowIfCanceled ();
 
     public:
-        /**
-         *  SetCurrentProgressAndThrowIfCanceled () overloads are handy helpers for code performing
-         *  long-lived tasks to deal with being passed a null progress object (often) and do that check,
-         *  and if non-null, then update the progress and check for cancelations.
-         */
-        nonvirtual void SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress);
+        [[deprecated ("Since Stroika v3.0d5 - SetProgress is cancelation point")]] void SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress);
 
     public:
         /**
