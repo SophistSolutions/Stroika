@@ -117,8 +117,14 @@ namespace Stroika::Foundation::Execution {
          * 
          *  Also don't throw exceptions in these callbacks. Just record the info needed, and schedule further work
          *  in a GUI or whtever (queue it maybe).
+         * 
+         *      \todo revisit 'noexcept' in C++23 - see https://stackoverflow.com/questions/41293025/stdfunction-with-noexcept-in-c17
+         *            but for now, cannot declare teh function as noexcept
+         *            Execution::Function<void (const ProgressMonitor& progressMonitor) noexcept>;
+         * 
+         *      \note - though un-enforced by the language, callers should still treat these callbacks as noexcept
          */
-        using ChangedCallbackType = Execution::Function<void (const ProgressMonitor& progressMonitor) noexcept>;
+        using ChangedCallbackType = Execution::Function<void (const ProgressMonitor& progressMonitor)>;
 
     private:
         class Rep_;
