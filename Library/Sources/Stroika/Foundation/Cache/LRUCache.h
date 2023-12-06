@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  \par Example Usage
      *      \code
-     *          LRUCache<string, string> tmp{3};
+     *          LRUCache<string, string> tmp{3};    // no hashing used in cache
      *          tmp.Add ("a", "1");
      *          tmp.Add ("b", "2");
      *          tmp.Add ("c", "3");
@@ -120,9 +120,14 @@ namespace Stroika::Foundation::Cache {
          *  So this is somewhat subject to change as the language evolves (or my understnading of tricks evolves). But for now, deduction is limited.
          * 
          * ....THROW IN EXAMPLES!!!!
+         * 
+         *  \todo default CTOR requires no hashing, but we could make hashing work in this case with default params - just not worth it yet --LGP 2023-12-06
          */
-        LRUCache (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {})
+        LRUCache ()
+            requires (same_as<KEY_HASH_FUNCTION, nullptr_t> and same_as<KEY_EQUALS_COMPARER, equal_to<KEY>>);
+        LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer = {})
             requires (same_as<KEY_HASH_FUNCTION, nullptr_t>);
+
         LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer = {}, size_t hashTableSize = 1,
                   const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
             requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>);
@@ -319,27 +324,27 @@ namespace Stroika::Foundation::Cache {
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
     };
 
-    //  template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-    // LRUCache (Iter b, Iter e) -> LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>;
-    template <typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-    struct LRUCacheOptions {
-        using value_type = VALUE;
-        using stats_type = STATS_TYPE;
-    };
+    namespace Factory {
 
-#if 0
-    // NOT READY...CUZ NO WAY TO DEDUCE VALUE OR SPECIFY DEFAULTS - maybe use extra type
-    template <typename KEY, typename KEY_EQUALS_COMPARER, typename EXTRA>
-    LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer, EXTRA)
-        -> LRUCache<KEY, typename EXTRA::value_type, KEY_EQUALS_COMPARER, nullptr_t, typename EXTRA::stats_type>;
+        template <typename VALUE, typename KEY, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+        struct LRUCache_NoHash {
+            template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
+            auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
+            {
+                return LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, nullptr_t, STATS_TYPE>{maxCacheSize, keyComparer};
+            }
+        };
 
-    //    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    //  LRUCache (size_t maxCacheSize, KEY_EQUALS_COMPARER&& keyEqualsComparer, size_t hashTableSize, KEY_HASH_FUNCTION&& hashFunction, STATS_TYPE ignoredStatsInstance)
-    //    -> LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, nullptr_t, STATS_TYPE>;
-    template <typename KEY, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename EXTRA>
-    LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction, EXTRA)
-        -> LRUCache<KEY, typename EXTRA::value_type, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, typename EXTRA::stats_type>;
-#endif
+        template <typename VALUE, typename KEY, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+        struct LRUCache_Hash {
+            template <typename KEY_HASH_FUNCTION = hash<KEY>>
+            auto operator() (size_t maxCacheSize, size_t hastTableSize, const KEY_HASH_FUNCTION& hashFunction = {}) const
+            {
+                return LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>{maxCacheSize, hastTableSize, hashFunction};
+            }
+        };
+
+    }
 
 }
 

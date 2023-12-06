@@ -81,6 +81,12 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache ()
+        requires (same_as<KEY_HASH_FUNCTION, nullptr_t> and same_as<KEY_EQUALS_COMPARER, equal_to<KEY>>)
+        : LRUCache{1, equal_to<KEY>{}}
+    {
+    }
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer)
         requires (same_as<KEY_HASH_FUNCTION, nullptr_t>)
         : fHashtableSize_{1}
