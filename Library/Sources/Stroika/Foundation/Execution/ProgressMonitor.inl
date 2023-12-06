@@ -139,6 +139,7 @@ namespace Stroika::Foundation::Execution {
             }
             Throw (UserCanceledException::kThe);
         }
+        Thread::CheckForInterruption ();
     }
     inline void ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
     {
