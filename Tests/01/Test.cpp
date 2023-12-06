@@ -601,6 +601,42 @@ namespace {
     }
 }
 
+
+namespace {
+    namespace Test8_NewLRUCacheConstructors_ {
+        namespace Private_ {
+            void T_NoHashTableCTORs1_ ()
+            {
+                using namespace Characters;
+                {
+                    // explicit or defaulted params
+                    constexpr auto           kStringCIComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+                    LRUCache<string, string> t1{3};
+                    LRUCache<String, string, String::EqualsComparer> t2{kStringCIComparer_};
+                }
+                {
+                    // DEDUCTION
+                    // explicit or defaulted params
+                    constexpr auto           kStringCIComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+                    tuple < string, Statistics::StatsType_DEFAULT> hint = Cache::Support::mkLRUCacheTypeHints (string{});
+                    LRUCache       t1{hint, 3};
+                  //  LRUCache<String, string, String::EqualsComparer> t2{kStringCIComparer_};
+                }
+
+
+               
+            }
+          
+        }
+        void DoIt ()
+        {
+            Private_::T_NoHashTableCTORs1_ ();
+         
+        }
+    }
+}
+
+
 namespace {
     void DoRegressionTests_ ()
     {
@@ -611,6 +647,7 @@ namespace {
         Test5_Memoizer_::DoIt ();
         Test6_CallerStalenessCache_::DoIt ();
         Test7_BloomFilter_::DoIt ();
+        Test8_NewLRUCacheConstructors_::DoIt ();
     }
 }
 
