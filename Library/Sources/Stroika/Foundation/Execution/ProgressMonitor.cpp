@@ -53,12 +53,6 @@ void ProgressMonitor::Cancel ()
     }
 }
 
-ProgressMonitor::operator Updater ()
-{
-
-    return Updater{fRep_};
-}
-
 /*
  ********************************************************************************
  *************************** ProgressMonitor::Updater ***************************

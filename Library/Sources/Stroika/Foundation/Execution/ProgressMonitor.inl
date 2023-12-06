@@ -69,6 +69,10 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (fRep_);
         return fRep_->fCurrentTaskInfo_;
     }
+    inline ProgressMonitor::operator Updater ()
+    {
+        return Updater{fRep_};
+    }
 
     /*
      ********************************************************************************
@@ -111,24 +115,26 @@ namespace Stroika::Foundation::Execution {
     inline void ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
     {
         ThrowIfCanceled ();
-        WeakAssert (-0.001 < p and p < 1.001); // 'Weak Require' - outside this range, and its probably a caller bug
-        p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f);
-        Assert (0.0 <= p and p <= 1.0);
-        p = fFromProg_ + p * (fToProg_ - fFromProg_);
-        p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f);
-        Assert (0.0 <= p and p <= 1.0);
-        // pin-to-special-point to avoid floating point rounding errors triggering bogus assertions/progress changes
-        p = Math::PinToSpecialPoint (p, fRep_->fCurrentProgress_.load ());
-        // disallow moving progress backwards because it is nearly always a bug, and not terribly useful
-        Require (p >= fRep_->fCurrentProgress_);
-        if (fRep_->fCurrentProgress_.exchange (p) != p) {
-            // only call if value changed - but always write so atomic update
-            CallNotifyProgress_ ();
+        if (fRep_ != nullptr) {
+            WeakAssert (-0.001 < p and p < 1.001); // 'Weak Require' - outside this range, and its probably a caller bug
+            p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f);
+            Assert (0.0 <= p and p <= 1.0);
+            p = fFromProg_ + p * (fToProg_ - fFromProg_);
+            p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f);
+            Assert (0.0 <= p and p <= 1.0);
+            // pin-to-special-point to avoid floating point rounding errors triggering bogus assertions/progress changes
+            p = Math::PinToSpecialPoint (p, fRep_->fCurrentProgress_.load ());
+            // disallow moving progress backwards because it is nearly always a bug, and not terribly useful
+            Require (p >= fRep_->fCurrentProgress_);
+            if (fRep_->fCurrentProgress_.exchange (p) != p) {
+                // only call if value changed - but always write so atomic update
+                CallNotifyProgress_ ();
+            }
         }
     }
     inline void ProgressMonitor::Updater::ThrowIfCanceled ()
     {
-        if (fRep_.get () != nullptr and fRep_->fCanceled_) {
+        if (fRep_ != nullptr and fRep_->fCanceled_) {
             if (fRep_->fWorkThread_ != nullptr) {
                 fRep_->fWorkThread_.Abort ();
             }
@@ -138,14 +144,14 @@ namespace Stroika::Foundation::Execution {
     }
     inline void ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
     {
-        if (fRep_.get () != nullptr) {
+        if (fRep_ != nullptr) {
             fRep_->fCurrentTaskInfo_ = taskInfo;
             CallNotifyProgress_ ();
         }
     }
     inline void ProgressMonitor::Updater::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
     {
-        if (fRep_.get () != nullptr) {
+        if (fRep_ != nullptr) {
             SetProgress (currentProgress);
             ThrowIfCanceled ();
         }

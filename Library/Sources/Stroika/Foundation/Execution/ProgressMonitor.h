@@ -19,6 +19,8 @@
  * TODO:
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
+ *      @todo   DECIDE if ChangedCallbackType can throw, and handle appropriatly.
+ * 
  *      @todo   BETTER INTEGRATE STROIKA THREAD/CANCELATION WITH THIS FORM OF CANCELATION (OK now - but could be better
  *              espeicaily if we could Abort on the main thread / any thread; then could lose the fcancedl flag in our
  *              rep and just use the thread local rep for anclation - same notaiton as thread cancel) ; and always have
@@ -285,6 +287,8 @@ namespace Stroika::Foundation::Execution {
          *
          *  Note - this function does NOT check if the itself thread has been aborted (as that is usually
          *  taken care of automatically or via CheckForInterruption)
+         * 
+         *  \note   ***Cancelation Point*** (and checks internal canceled flag and maps that to a cancelation point)
          */
         nonvirtual void ThrowIfCanceled ();
 
