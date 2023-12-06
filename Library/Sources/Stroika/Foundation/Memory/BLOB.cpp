@@ -343,8 +343,9 @@ BLOB BLOB::Repeat (unsigned int count) const
     else {
         // speed tweak
         span<const byte>   b2c = As<span<const byte>> ();
-        InlineBuffer<byte> target{eUninitialized, count * b2c.size ()};
-        for (unsigned int i = 1; i < count; ++i) {
+        InlineBuffer<byte> target{};
+        target.reserve (count * b2c.size ());
+        for (unsigned int i = 0; i < count; ++i) {
             target.push_back (b2c);
         }
         return BLOB{span{target}};
