@@ -20,6 +20,10 @@ namespace xercesc_3_2 {
 }
 #endif
 
+/*
+ *  @todo needs alot of cleanups - use shared_ptr not bare pointers!!!! 
+ */
+
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
 namespace Stroika::Foundation::DataExchange::XML {
 

@@ -248,12 +248,12 @@ namespace {
                 bool              doProgressBefore = (maxToRead > 10 * 1024); // only bother calling both before & after if large read
                 if (fTotalSize_ > 0.0f and doProgressBefore) {
                     curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
-                    fProgress_.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize_);
+                    fProgress_.SetProgress (curOffset / fTotalSize_);
                 }
                 XMLSize_t result = fSource.Read (reinterpret_cast<byte*> (toFill), reinterpret_cast<byte*> (toFill) + maxToRead);
                 if (fTotalSize_ > 0) {
                     curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
-                    fProgress_.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize_);
+                    fProgress_.SetProgress (curOffset / fTotalSize_);
                 }
                 return result;
             }

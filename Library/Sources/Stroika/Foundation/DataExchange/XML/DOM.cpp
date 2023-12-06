@@ -540,12 +540,12 @@ namespace {
                 bool  doProgressBefore = (maxToRead > 10 * 1024); // only bother calling both before & after if large read
                 if (fTotalSize > 0.0f and doProgressBefore) {
                     curOffset = static_cast<float> (_fSource.GetOffset ());
-                    fProgress.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize);
+                    fProgress.SetProgress (curOffset / fTotalSize);
                 }
                 XMLSize_t result = _MyInputStrm::readBytes (toFill, maxToRead);
                 if (fTotalSize > 0) {
                     curOffset = static_cast<float> (_fSource.GetOffset ());
-                    fProgress.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize);
+                    fProgress.SetProgress (curOffset / fTotalSize);
                 }
                 return result;
             }
@@ -558,13 +558,13 @@ namespace {
     public:
         BinaryInputStream_InputSource_WithProgress (Streams::InputStream<byte>::Ptr in,
                                                     Execution::ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr)
-            : BinaryInputStream_InputSource (in, bufId)
-            , fProgressCallback (progressCallback)
+            : BinaryInputStream_InputSource{in, bufId}
+            , fProgressCallback{progressCallback}
         {
         }
         virtual BinInputStream* makeStream () const override
         {
-            return new (getMemoryManager ()) _InStrWithProg (fSource, fProgressCallback);
+            return new (getMemoryManager ()) _InStrWithProg{fSource, fProgressCallback};
         }
 
     private:
@@ -581,7 +581,7 @@ public:
     {
         if (schema != nullptr) {
             // REALLY need READLOCK - cuz this just prevents UPDATE of Schema (never happens anyhow) -- LGP 2009-05-19
-            fSchemaAccessor = shared_ptr<Schema::AccessCompiledXSD> (new Schema::AccessCompiledXSD (*schema));
+            fSchemaAccessor = make_shared<Schema::AccessCompiledXSD> (*schema);
             fParser         = make_shared<XercesDOMParser> (nullptr, XMLPlatformUtils::fgMemoryManager, fSchemaAccessor->GetCachedTRep ());
             fParser->cacheGrammarFromParse (false);
             fParser->useCachedGrammarInParse (true);
@@ -618,8 +618,7 @@ public:
 class DataExchange::XML::DOM::Document::Rep {
 public:
     Rep (const Schema* schema)
-        : fXMLDoc ()
-        , fSchema (schema)
+        : fSchema{schema}
     {
         [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
         START_LIB_EXCEPTION_MAPPER
@@ -722,7 +721,7 @@ public:
     nonvirtual void SetRootElement (const Node& newRoot)
     {
         TraceContextBumper          ctx{"XMLDB::Document::Rep::SetRootElement"};
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+        lock_guard<recursive_mutex> enterCriticalSection{fCriticalSection};
         AssertNotNull (fXMLDoc);
         Node replacementRoot = CreateDocumentElement (newRoot.GetName ());
         // next copy all children
@@ -755,7 +754,7 @@ public:
 #if qDebug
         Require (ValidNewNodeName_ (name));
 #endif
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+        lock_guard<recursive_mutex> enterCriticalSection{fCriticalSection};
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
@@ -803,7 +802,7 @@ public:
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
-            MyMaybeSchemaDOMParser myDOMParser (fSchema);
+            MyMaybeSchemaDOMParser myDOMParser{fSchema};
             MemBufInputSource memBufIS (reinterpret_cast<const XMLByte*> (xml.As<u16string> ().c_str ()), xml.length () * sizeof (XMLCh), u"XMLDB");
             memBufIS.setEncoding (XMLUni::fgUTF16LEncodingString2);
             myDOMParser.fParser->parse (memBufIS);
