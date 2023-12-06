@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Cache {
         , fCachedElts_Last_{Memory::eUninitialized, hashTableSize}
     {
         Require (hashTableSize >= 1);
-        Require (maxCacheSize >= 1);
+        Require (maxCacheSize >= hashTableSize);
         SetMaxCacheSize (maxCacheSize);
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>

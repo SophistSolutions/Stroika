@@ -24,7 +24,7 @@
 namespace Stroika::Foundation::Configuration {
 
     /**
-     *  \brief Extract the number of arguments, return type, and each individual argument type from a lambda or function object.
+     *  \brief Extract the number of arguments, return type, and each individual argument type from a lambda or simple function object.
      *
      *  \par Example Usage
      *      \code
@@ -42,6 +42,8 @@ namespace Stroika::Foundation::Configuration {
      * 
      * For generic types, directly use the result of the signature of its 'operator()'
      * Specialize for pointers to member function
+     * 
+     *  \note this doesn't work for function objects that have templated operator() - such as String::EqualsComparer, since there is no type to extract.
      */
     template <typename T>
     struct FunctionTraits : public FunctionTraits<decltype (&T::operator())> {};

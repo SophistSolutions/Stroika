@@ -326,7 +326,11 @@ namespace Stroika::Foundation::Cache {
 
     namespace Factory {
 
-        template <typename VALUE, typename KEY, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+        /**
+         *  \note - no way to extract the KEY from the KEY_EQUALS_COMPARER, because this comparer might have templated operator(), such
+         *          as String::EqualsComparer.
+         */
+        template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
         struct LRUCache_NoHash {
             template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
             auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
@@ -335,12 +339,21 @@ namespace Stroika::Foundation::Cache {
             }
         };
 
-        template <typename VALUE, typename KEY, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-        struct LRUCache_Hash {
+        template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
+        struct LRUCache_WithHash {
             template <typename KEY_HASH_FUNCTION = hash<KEY>>
             auto operator() (size_t maxCacheSize, size_t hastTableSize, const KEY_HASH_FUNCTION& hashFunction = {}) const
             {
-                return LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>{maxCacheSize, hastTableSize, hashFunction};
+                Require (maxCacheSize >= hastTableSize);
+                return LRUCache<KEY, VALUE, DEFAULT_KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>{
+                    maxCacheSize, DEFAULT_KEY_EQUALS_COMPARER{}, hastTableSize, hashFunction};
+            }
+            template <typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION = hash<KEY>>
+            auto operator() (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyComparer, size_t hastTableSize,
+                             const KEY_HASH_FUNCTION& hashFunction = {}) const
+            {
+                Require (maxCacheSize >= hastTableSize);
+                return LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>{maxCacheSize, keyComparer, hastTableSize, hashFunction};
             }
         };
 

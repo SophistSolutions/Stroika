@@ -610,23 +610,31 @@ namespace {
                 constexpr auto kStringCIComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
                 {
                     // explicit or defaulted params
+                    LRUCache<string, string>                         t0{};
                     LRUCache<string, string>                         t1{3};
                     LRUCache<String, string, String::EqualsComparer> t2{3, kStringCIComparer_};
                 }
                 {
-                    // CONFUSINGLY - KEY/VALUE ARGS REVERSED in Factory
-                    // DEDUCTION
+                    // DEDUCTION using Factory approach
+                    auto t0{Factory::LRUCache_NoHash<string, string>{}()};
                     auto t1{Factory::LRUCache_NoHash<string, string>{}(3)};
-                    auto t2{Factory::LRUCache_NoHash<string, String>{}(3, kStringCIComparer_)};
+                    auto t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
                 }
+                {
+                    // DEDUCTION2 same as above, but different syntax
+                    LRUCache t0 = Factory::LRUCache_NoHash<string, string>{}();
+                    LRUCache t1 = Factory::LRUCache_NoHash<string, string>{}(3)
+                };
+                LRUCache t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
             }
+        }
 
-        }
-        void DoIt ()
-        {
-            Private_::T_NoHashTableCTORs1_ ();
-        }
     }
+    void DoIt ()
+    {
+        Private_::T_NoHashTableCTORs1_ ();
+    }
+}
 }
 
 namespace {
