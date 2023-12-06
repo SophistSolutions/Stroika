@@ -131,7 +131,6 @@ namespace Stroika::Foundation::Cache {
             requires (same_as<KEY_HASH_FUNCTION, nullptr_t> and same_as<KEY_EQUALS_COMPARER, equal_to<KEY>>);
         LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer = {})
             requires (same_as<KEY_HASH_FUNCTION, nullptr_t>);
-
         LRUCache (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyEqualsComparer = {}, size_t hashTableSize = 1,
                   const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
             requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>);

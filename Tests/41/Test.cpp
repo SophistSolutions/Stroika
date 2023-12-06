@@ -661,7 +661,7 @@ namespace {
             {
                 Debug::TraceContextBumper traceCtx{"{}SyncLRUCacheT1_..."};
                 using namespace Cache;
-                SynchronizedLRUCache cache{pair<string, string>{}, 10u, 10u, hash<string>{}};
+                SynchronizedLRUCache cache = Cache::Factory::SynchrnoizedLRUCache_WithHash<string, string>{}(10u, 10u);
                 Thread::Ptr          writerThread = Thread::New (
                     [&cache] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
@@ -677,7 +677,7 @@ namespace {
                             VerifyTestResult (od == "4");
                         }
                     },
-                    L"writerThread"_k);
+                    "writerThread"_k);
                 Thread::Ptr copierThread = Thread::New (
                     [&cache] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
@@ -698,7 +698,7 @@ namespace {
                             VerifyTestResult (not od.has_value () or od == "4"); // ""
                         }
                     },
-                    L"copierThread"_k);
+                    "copierThread"_k);
                 Thread::Start ({writerThread, copierThread});
                 Thread::WaitForDone ({writerThread, copierThread});
             }

@@ -64,7 +64,7 @@ namespace {
 
         DefaultCacheRep_ (const DefaultOptions& options)
             : fOptions_{options}
-            , fCache_{options.fCacheSize.value_or (101)}
+            , fCache_{options.fCacheSize.value_or (101), 11u}
         {
         }
 
@@ -181,9 +181,7 @@ namespace {
 
         DefaultOptions fOptions_;
 
-        // we want to use hash stuff but then need hash<URI>
-        ///pair<string, string>{}, 3, 10, hash<string>{}
-        SynchronizedLRUCache<URI, MyElement_> fCache_;
+        SynchronizedLRUCache<URI, MyElement_, equal_to<URI>,hash<URI>> fCache_;
     };
 
 }

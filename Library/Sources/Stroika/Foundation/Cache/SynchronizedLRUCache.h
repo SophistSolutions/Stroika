@@ -53,18 +53,6 @@ namespace Stroika::Foundation::Cache {
         SynchronizedLRUCache (ARGS... args);
         SynchronizedLRUCache (const SynchronizedLRUCache& src);
 
-        //tmphack - really just for deduction guide - but cannot get working below
-        SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {},
-                              size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{})
-            : inherited{maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction}
-        {
-        }
-        //tmphack - really just for deduction guide - but cannot get working below
-        SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{})
-            : inherited{maxCacheSize, hashTableSize, hashFunction}
-        {
-        }
-
     public:
         // @todo support - sb easy
         nonvirtual SynchronizedLRUCache& operator= (const SynchronizedLRUCache&) = delete;
@@ -158,13 +146,57 @@ namespace Stroika::Foundation::Cache {
         mutable shared_timed_mutex fMutex_;
     };
 
-#if 0
-    // didn't work
-     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION , typename STATS_TYPE >
-     SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{}) -> SynchronizedLRUCache<KEY,VALUE,KEY_EQUALS_COMPARER,KEY_HASH_FUNCTION,Statistics::StatsType_DEFAULT>;
-     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION , typename STATS_TYPE >
-    SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{})->  SynchronizedLRUCache<KEY,VALUE,KEY_EQUALS_COMPARER,KEY_HASH_FUNCTION,Statistics::StatsType_DEFAULT>;
-#endif
+
+ namespace Factory {
+        /**
+         *  \note - no way to extract the KEY from the KEY_EQUALS_COMPARER, because this comparer might have templated operator(), such
+         *          as String::EqualsComparer.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          auto t0{Factory::LRUCache_NoHash<string, string>{}()};
+         *          auto t1{Factory::LRUCache_NoHash<string, string>{}(3)};
+         *          LRUCache t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
+         *      \endcode
+         */
+        template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+        struct SynchronizedLRUCache_NoHash {
+            template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
+            auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
+            {
+                return  SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, nullptr_t, STATS_TYPE>{maxCacheSize, keyComparer};
+            }
+        };
+
+        /**
+         *  \par Example Usage
+         *      \code
+         *          auto     t0{Factory::LRUCache_WithHash<string, string>{}(3, 3)};
+         *          auto     t1{Factory::LRUCache_WithHash<String, string>{}(3, 3, hashFunction)};
+         *          LRUCache t2{Factory::LRUCache_WithHash<String, string>{}(3, equal_to<String>{}, 3)};
+         *          LRUCache t3{Factory::LRUCache_WithHash<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
+         *          LRUCache t4{Factory::LRUCache_WithHash<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
+         *      \endcode
+         */
+        template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
+        struct  SynchronizedLRUCache_WithHash {
+            template <typename KEY_HASH_FUNCTION = hash<KEY>>
+            auto operator() (size_t maxCacheSize, size_t hastTableSize, const KEY_HASH_FUNCTION& hashFunction = {}) const
+            {
+                Require (maxCacheSize >= hastTableSize);
+                return  SynchronizedLRUCache<KEY, VALUE, DEFAULT_KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>{
+                    maxCacheSize, DEFAULT_KEY_EQUALS_COMPARER{}, hastTableSize, hashFunction};
+            }
+            template <typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION = hash<KEY>>
+            auto operator() (size_t maxCacheSize, const KEY_EQUALS_COMPARER& keyComparer, size_t hastTableSize,
+                             const KEY_HASH_FUNCTION& hashFunction = {}) const
+            {
+                Require (maxCacheSize >= hastTableSize);
+                return  SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>{maxCacheSize, keyComparer, hastTableSize, hashFunction};
+            }
+        };
+
+    }
 
 }
 
