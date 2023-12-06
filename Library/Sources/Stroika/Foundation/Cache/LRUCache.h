@@ -51,8 +51,8 @@ namespace Stroika::Foundation::Cache {
      *  \brief LRUCache implements a simple least-recently-used caching strategy, with optional hashing (of keys) to make it faster.
      *
      *  \note Comparison with TimedCache
-     *        The main difference beweeen an LRUCache and TimedCache has to do with when an element is evicted from the Cache.
-     *        With a TimedCache, its evicted only when its overly aged. With an LRUCache, its more random, and depends a
+     *        The main difference between an LRUCache and TimedCache has to do with when an element is evicted from the Cache.
+     *        With a TimedCache, its evicted only when its overly aged (now - when added to cache). With an LRUCache, its more random, and depends a
      *        bit on luck (when using hashing) and how recently an item was last accessed.
      *
      *  \par Example Usage
@@ -113,13 +113,17 @@ namespace Stroika::Foundation::Cache {
          *  Note cannot move easily because this contains internal pointers (fCachedElts_First_): still declare move CTOR, but its not
          *  noexcept because its really copying...
          * 
-         * 
-         *  Because of a couple key limitions/constraints in C++ (as of C++20) - you cannot both do template argument deduction, and default paramters).
+         *  Because of a couple key limitations/constraints in C++ (as of C++20) - you cannot both do template argument deduction, and default parameters).
          *  This greatly constrains how the class works (at least constructors).
          * 
-         *  So this is somewhat subject to change as the language evolves (or my understnading of tricks evolves). But for now, deduction is limited.
+         *  So this is somewhat subject to change as the language evolves (or my understanding of tricks evolves). But for now, deduction is limited.
          * 
-         * ....THROW IN EXAMPLES!!!!
+         *  \par Example Usage
+         *      \code
+         *          LRUCache<string, string> tmp{3};    // no hashing, size 3, no deduced types (just defaulted ones)
+         *          LRUCache                 t0{Factory::LRUCache_WithHash<string, string>{}(3, 3)};
+         *          LRUCache                 t1{Factory::LRUCache_WithHash<String, string>{}(3, 3, hashFunction)};  // types (except key/value) deducted from arguments
+         *      \endcode
          * 
          *  \todo default CTOR requires no hashing, but we could make hashing work in this case with default params - just not worth it yet --LGP 2023-12-06
          */
@@ -203,7 +207,7 @@ namespace Stroika::Foundation::Cache {
         /**
          *  LookupValue () finds the value in the cache, and returns it, or if not present, uses the argument valueFetcher to retrieve it.
          *
-         *  So LookupValue (v) is equivilent to:
+         *  So LookupValue (v) is equivalent to:
          *      \code
          *          if (auto o = Lookup (k)) {
          *              return o;
@@ -244,7 +248,7 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          *  Add the given value to the cache. This is rarely directly used. 
-         *  Typically you Lookup with something like LookupValue() which implcitly does the adds.
+         *  Typically you Lookup with something like LookupValue() which implicitly does the adds.
          */
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value);
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key)
@@ -261,12 +265,14 @@ namespace Stroika::Foundation::Cache {
         //                                    work (because* you cannot specify some template parameters and then have deduction guides take effect)
         //           .
         // find better way todo deduction guides so I can deprecate this
-        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {},
-                  size_t hashTableSize = 1, const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
+        [[deprecated ("Since Stroika v3.0d5 use Cache::Factory::LRUCache_WithHash or NoHash")]] LRUCache (
+            pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {}, size_t hashTableSize = 1,
+            const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
             : LRUCache{maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction}
         {
         }
-        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = hash<KEY>{})
+        [[deprecated ("Since Stroika v3.0d5 use Cache::Factory::LRUCache_WithHash or NoHash")]] LRUCache (
+            pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = hash<KEY>{})
             : LRUCache{maxCacheSize, hashTableSize, hashFunction}
         {
         }
@@ -327,10 +333,16 @@ namespace Stroika::Foundation::Cache {
     };
 
     namespace Factory {
-
         /**
          *  \note - no way to extract the KEY from the KEY_EQUALS_COMPARER, because this comparer might have templated operator(), such
          *          as String::EqualsComparer.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          auto t0{Factory::LRUCache_NoHash<string, string>{}()};
+         *          auto t1{Factory::LRUCache_NoHash<string, string>{}(3)};
+         *          LRUCache t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
+         *      \endcode
          */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
         struct LRUCache_NoHash {
@@ -341,6 +353,16 @@ namespace Stroika::Foundation::Cache {
             }
         };
 
+        /**
+         *  \par Example Usage
+         *      \code
+         *          auto     t0{Factory::LRUCache_WithHash<string, string>{}(3, 3)};
+         *          auto     t1{Factory::LRUCache_WithHash<String, string>{}(3, 3, hashFunction)};
+         *          LRUCache t2{Factory::LRUCache_WithHash<String, string>{}(3, equal_to<String>{}, 3)};
+         *          LRUCache t3{Factory::LRUCache_WithHash<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
+         *          LRUCache t4{Factory::LRUCache_WithHash<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
+         *      \endcode
+         */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
         struct LRUCache_WithHash {
             template <typename KEY_HASH_FUNCTION = hash<KEY>>

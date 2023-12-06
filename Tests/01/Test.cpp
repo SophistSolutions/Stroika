@@ -70,7 +70,12 @@ namespace {
             void T3_ ()
             {
                 // using C++17 deduction guides
-                LRUCache tmp{pair<string, string>{}, 10, 10, hash<string>{}};
+                //LRUCache tmp{pair<string, string>{}, 10, 10, hash<string>{}};
+#if qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
+                auto tmp = Cache::Factory::LRUCache_WithHash<string, string>{}(10, 10, hash<string>{});
+#else
+                LRUCache                          tmp = Cache::Factory::LRUCache_WithHash<string, string>{}(10, 10, hash<string>{});
+#endif
                 tmp.Add ("a", "1");
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
@@ -622,15 +627,41 @@ namespace {
                 }
                 {
                     // DEDUCTION alt syntax
+#if !qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
                     LRUCache t0{Factory::LRUCache_NoHash<string, string>{}()};
                     LRUCache t1{Factory::LRUCache_NoHash<string, string>{}(3)};
+#endif
                     auto t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
+                }
+            }
+            void T_WithHashTableCTORs1_ ()
+            {
+                using namespace Characters;
+                constexpr auto kStringCIComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+                auto           hashFunction       = [] (const String& a) -> size_t { return hash<string>{}(a.AsUTF8<string> ()); };
+
+                {
+                    // explicit or defaulted params
+                    LRUCache<string, string, equal_to<string>, hash<string>>            t0{3, 3};
+                    LRUCache<string, string, equal_to<string>, decltype (hashFunction)> t1{3, 3, hashFunction};
+                    LRUCache<string, string, equal_to<string>, hash<string>>            t2{3, equal_to<string>{}, 3};
+                }
+                {
+                    // DEDUCTION using Factory approach
+                    auto t0{Factory::LRUCache_WithHash<string, string>{}(3, 3)};
+                    auto t1{Factory::LRUCache_WithHash<String, string>{}(3, 3, hashFunction)};
+#if !qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
+                    LRUCache t2{Factory::LRUCache_WithHash<String, string>{}(3, equal_to<String>{}, 3)};
+                    LRUCache t3{Factory::LRUCache_WithHash<String, string, Statistics::Stats_Basic>{}(3, equal_to<String>{}, 3)}; // throw in stats object
+#endif
+                    auto t4{Factory::LRUCache_WithHash<String, string>{}(3, kStringCIComparer_, 3)}; // alt equality comparer
                 }
             }
         }
         void DoIt ()
         {
             Private_::T_NoHashTableCTORs1_ ();
+            Private_::T_WithHashTableCTORs1_ ();
         }
     }
 }
