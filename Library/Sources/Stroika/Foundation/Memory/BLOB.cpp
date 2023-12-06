@@ -310,7 +310,11 @@ Characters::String Stroika::Foundation::Memory::BLOB::AsHex (size_t maxBytesToSh
     size_t                                         cnt{};
     for (byte b : *this) {
         if (cnt++ > maxBytesToShow) {
+#if qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy
+            return sb.str ();
+#else
             break;
+#endif
         }
         sb << Characters::Format (L"%02x", b);
     }
@@ -325,13 +329,26 @@ Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 () const
 
 BLOB BLOB::Repeat (unsigned int count) const
 {
-    // @todo - re-implement using powers of 2 - so fewer concats (maybe - prealloc / reserve so only one - using vector)
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    BLOB                                           tmp = *this;
-    for (unsigned int i = 1; i < count; ++i) {
-        tmp = tmp + *this;
+    if (count == 0) {
+        return BLOB{};
     }
-    return tmp;
+    else if (count <= 2) {
+        BLOB tmp = *this;
+        for (unsigned int i = 1; i < count; ++i) {
+            tmp = tmp + *this;
+        }
+        return tmp;
+    }
+    else {
+        // speed tweak
+        span<const byte>   b2c = As<span<const byte>> ();
+        InlineBuffer<byte> target{eUninitialized, count * b2c.size ()};
+        for (unsigned int i = 1; i < count; ++i) {
+            target.push_back (b2c);
+        }
+        return BLOB{span{target}};
+    }
 }
 
 BLOB BLOB::Slice (size_t startAt, size_t endAt) const

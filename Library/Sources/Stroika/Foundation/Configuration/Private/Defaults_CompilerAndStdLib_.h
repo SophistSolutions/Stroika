@@ -621,6 +621,20 @@ SIMILAR BUT SLIGHTYL DIFF ISSUE ON GCC
 
 #endif
 
+/***
+ GCC compiler gcrash on Ubuntu gcc11 on WSL
+ */
+#ifndef qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// FIRST SEEN BROKEN IN GCC 11
+#define qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+#else
+#define qCompilerAndStdLib_crash_compiling_break_in_forLoop_Buggy 0
+#endif
+
+#endif
+
 /*
 
 raspberrypi-g++-11-debug-sanitize_undefined - running on raspi
