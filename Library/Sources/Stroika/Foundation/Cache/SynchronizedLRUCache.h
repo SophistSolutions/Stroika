@@ -146,8 +146,7 @@ namespace Stroika::Foundation::Cache {
         mutable shared_timed_mutex fMutex_;
     };
 
-
- namespace Factory {
+    namespace Factory {
         /**
          *  \note - no way to extract the KEY from the KEY_EQUALS_COMPARER, because this comparer might have templated operator(), such
          *          as String::EqualsComparer.
@@ -164,7 +163,7 @@ namespace Stroika::Foundation::Cache {
             template <Common::IEqualsComparer<KEY> KEY_EQUALS_COMPARER = equal_to<KEY>>
             auto operator() (size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyComparer = {}) const
             {
-                return  SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, nullptr_t, STATS_TYPE>{maxCacheSize, keyComparer};
+                return SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, nullptr_t, STATS_TYPE>{maxCacheSize, keyComparer};
             }
         };
 
@@ -179,12 +178,12 @@ namespace Stroika::Foundation::Cache {
          *      \endcode
          */
         template <typename KEY, typename VALUE, typename STATS_TYPE = Statistics::StatsType_DEFAULT, typename DEFAULT_KEY_EQUALS_COMPARER = equal_to<KEY>>
-        struct  SynchronizedLRUCache_WithHash {
+        struct SynchronizedLRUCache_WithHash {
             template <typename KEY_HASH_FUNCTION = hash<KEY>>
             auto operator() (size_t maxCacheSize, size_t hastTableSize, const KEY_HASH_FUNCTION& hashFunction = {}) const
             {
                 Require (maxCacheSize >= hastTableSize);
-                return  SynchronizedLRUCache<KEY, VALUE, DEFAULT_KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>{
+                return SynchronizedLRUCache<KEY, VALUE, DEFAULT_KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>{
                     maxCacheSize, DEFAULT_KEY_EQUALS_COMPARER{}, hastTableSize, hashFunction};
             }
             template <typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION = hash<KEY>>
@@ -192,7 +191,8 @@ namespace Stroika::Foundation::Cache {
                              const KEY_HASH_FUNCTION& hashFunction = {}) const
             {
                 Require (maxCacheSize >= hastTableSize);
-                return  SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>{maxCacheSize, keyComparer, hastTableSize, hashFunction};
+                return SynchronizedLRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>{maxCacheSize, keyComparer,
+                                                                                                            hastTableSize, hashFunction};
             }
         };
 

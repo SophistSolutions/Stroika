@@ -181,7 +181,7 @@ namespace {
 
         DefaultOptions fOptions_;
 
-        SynchronizedLRUCache<URI, MyElement_, equal_to<URI>,hash<URI>> fCache_;
+        SynchronizedLRUCache<URI, MyElement_, equal_to<URI>, hash<URI>> fCache_;
     };
 
 }

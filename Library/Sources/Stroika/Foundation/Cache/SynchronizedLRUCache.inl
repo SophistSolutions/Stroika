@@ -25,6 +25,7 @@ namespace Stroika::Foundation::Cache {
         : inherited{src.GetMaxCacheSize (), src.GetKeyEqualsCompareFunction (), src.GetHashTableSize (), src.GetKeyHashFunction ()}
         , fHoldWriteLockDuringCacheFill{src.fHoldWriteLockDuringCacheFill}
     {
+        // @todo I think I can redo this using inheirted CTOR, while holding lock?? then stats copied and all this simpler
         for (auto i : src.Elements ()) {
             Add (i.fKey, i.fValue);
         }
