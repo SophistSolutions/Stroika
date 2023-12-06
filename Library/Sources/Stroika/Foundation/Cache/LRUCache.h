@@ -134,20 +134,6 @@ namespace Stroika::Foundation::Cache {
         LRUCache (size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
             requires (not same_as<KEY_HASH_FUNCTION, nullptr_t>);
 
-        //         *  \note the overloads taking pair<KEY, VALUE> as the first argument are just tricks to allow deduction guides to
-        //                                    work (because* you cannot specify some template parameters and then have deduction guides take effect)
-        //           .
-        // find better way todo deduction guides so I can deprecate this
-        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {},
-                  size_t hashTableSize = 1, const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
-            : LRUCache{maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction}
-        {
-        }
-        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = hash<KEY>{})
-            : LRUCache{maxCacheSize, hashTableSize, hashFunction}
-        {
-        }
-
 #if qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
         LRUCache (LRUCache&& from) noexcept;
 #else
@@ -171,6 +157,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  Size given maybe automatically adjusted upward to be a multiple of GetHashTableSize ()
          */
         nonvirtual void SetMaxCacheSize (size_t maxCacheSize);
 
@@ -268,6 +255,21 @@ namespace Stroika::Foundation::Cache {
          *  Collect all the elements of the cache, where mapping KEY and VALUE correspond to cache KEY and VALUE.
          */
         nonvirtual Containers::Mapping<KEY, VALUE> Elements () const;
+
+    public:
+        //         *  \note the overloads taking pair<KEY, VALUE> as the first argument are just tricks to allow deduction guides to
+        //                                    work (because* you cannot specify some template parameters and then have deduction guides take effect)
+        //           .
+        // find better way todo deduction guides so I can deprecate this
+        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {},
+                  size_t hashTableSize = 1, const KEY_HASH_FUNCTION& hashFunction = KEY_HASH_FUNCTION{})
+            : LRUCache{maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction}
+        {
+        }
+        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, const KEY_HASH_FUNCTION& hashFunction = hash<KEY>{})
+            : LRUCache{maxCacheSize, hashTableSize, hashFunction}
+        {
+        }
 
     private:
         const size_t fHashtableSize_{1};

@@ -52,7 +52,7 @@ namespace {
             void T2_ ()
             {
                 using CACHE = LRUCache<string, string, equal_to<string>, hash<string>>;
-                CACHE tmp{3, equal_to<string>{}, 10};
+                CACHE tmp{10, equal_to<string>{}, 10};
                 tmp.Add ("a", "1");
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
@@ -70,7 +70,7 @@ namespace {
             void T3_ ()
             {
                 // using C++17 deduction guides
-                LRUCache tmp{pair<string, string>{}, 3, 10, hash<string>{}};
+                LRUCache tmp{pair<string, string>{}, 10, 10, hash<string>{}};
                 tmp.Add ("a", "1");
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
@@ -112,9 +112,9 @@ namespace {
         void DoIt ()
         {
             using Private_::TNoCTOR_;
-            LRUCache<TNoCTOR_, TNoCTOR_> test (10);
-            test.Add (TNoCTOR_ (1), TNoCTOR_ (1));
-            (void)test.Lookup (TNoCTOR_ (1));
+            LRUCache<TNoCTOR_, TNoCTOR_> test{10};
+            test.Add (TNoCTOR_{1}, TNoCTOR_{1});
+            (void)test.Lookup (TNoCTOR_{1});
         }
     }
 }
@@ -621,20 +621,18 @@ namespace {
                     auto t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
                 }
                 {
-                    // DEDUCTION2 same as above, but different syntax
-                    LRUCache t0 = Factory::LRUCache_NoHash<string, string>{}();
-                    LRUCache t1 = Factory::LRUCache_NoHash<string, string>{}(3)
-                };
-                LRUCache t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
+                    // DEDUCTION alt syntax
+                    LRUCache t0{Factory::LRUCache_NoHash<string, string>{}()};
+                    LRUCache t1{Factory::LRUCache_NoHash<string, string>{}(3)};
+                    auto t2{Factory::LRUCache_NoHash<String, string>{}(3, kStringCIComparer_)};
+                }
             }
         }
-
+        void DoIt ()
+        {
+            Private_::T_NoHashTableCTORs1_ ();
+        }
     }
-    void DoIt ()
-    {
-        Private_::T_NoHashTableCTORs1_ ();
-    }
-}
 }
 
 namespace {
