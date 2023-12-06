@@ -19,6 +19,12 @@
  * TODO:
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
+ *      @todo   BETTER INTEGRATE STROIKA THREAD/CANCELATION WITH THIS FORM OF CANCELATION (OK now - but could be better
+ *              espeicaily if we could Abort on the main thread / any thread; then could lose the fcancedl flag in our
+ *              rep and just use the thread local rep for anclation - same notaiton as thread cancel) ; and always have
+ *              a worker thread object.
+ *                  --LGP 2023-12-06
+ * 
  *      @todo   MAYBE allow copy - but just document its a smart pointer and copy just increments refcount.
  *              NOT copy by value semantics.
  *
@@ -58,7 +64,7 @@ namespace Stroika::Foundation::Execution {
      *  employs Math::PinToSpecialPoint ().
      *
      *  Users of ProgressMonitor can call "Cancel" on the ProgressMonitor at any point. This records a cancelation
-     *  in the Updater object, so that when it calls Updater::SetCurrentProgressAndThrowIfCanceled () - and
+     *  in the Updater object, so that when it calls Updater::SetProgress () - and
      *  perhaps in other situations (see thread support below) - the progress will terminate immediately.
      *
      *  ProgressMontitor supports having the underlying long-lived-task happen EITHER in the current thread, or in
@@ -74,7 +80,7 @@ namespace Stroika::Foundation::Execution {
      *          {
      *              ...
      *              progress.SetCurrentTaskInfo ("Compiling Strings"_k);
-     *              progress.SetCurrentProgressAndThrowIfCanceled (0.3f);
+     *              progress.SetProgress (0.3f);
      *              SubTask_ (ProgressMonitor::Updater{progress, 0.50f, 0.60f});    // also may do progress calls (0..1 in subtask mapped into .5 to .6 range here)
      *              ...
      *          }
@@ -168,6 +174,17 @@ namespace Stroika::Foundation::Execution {
         class Updater;
 
     public:
+        /**
+         *  Progress isn't updated directly through the ProgressMonitor object. Instead, get an Updater, and call methdods
+         *  on it to update the progress.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          ProgressMonitor  prog    = ...; 
+         *          static_cast<Updater> (prog).SetProgress (0.3);
+         *          static_cast<Updater> (prog).SetCurrentTaskInfo ("doing stuff"_k);
+         *      \endcode
+         */
         nonvirtual operator Updater ();
 
     public:
@@ -186,12 +203,6 @@ namespace Stroika::Foundation::Execution {
          *  Use the 'fExtraData' field of the CurrentTaskInfo.
          */
         nonvirtual CurrentTaskInfo GetCurrentTaskInfo () const;
-
-    public:
-        /**
-         *  Usually this is done through an Updater, but can be done directly.
-         */
-        nonvirtual void SetCurrentTaskInfo (const CurrentTaskInfo& ti);
 
     private:
         shared_ptr<Rep_> fRep_;

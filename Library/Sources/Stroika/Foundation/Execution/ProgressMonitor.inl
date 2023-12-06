@@ -69,11 +69,6 @@ namespace Stroika::Foundation::Execution {
         RequireNotNull (fRep_);
         return fRep_->fCurrentTaskInfo_;
     }
-    inline void ProgressMonitor::SetCurrentTaskInfo (const CurrentTaskInfo& ti)
-    {
-        RequireNotNull (fRep_);
-        fRep_->fCurrentTaskInfo_ = ti;
-    }
 
     /*
      ********************************************************************************
