@@ -126,7 +126,7 @@ namespace {
             static const initializer_list<pair<int, int>> kUPairpdateValueInit_ = {
                 pair<int, int> (4, 5), pair<int, int> (6, 33),  pair<int, int> (12, 34), pair<int, int> (596, 13),
                 pair<int, int> (1, 3), pair<int, int> (99, 35), pair<int, int> (4, 5)};
-            DoItOnce_<String> (L"123456789"_k, L"abcdedfghijkqlmopqrstuvwxyz", kRepeatCount_);
+            DoItOnce_<String> ("123456789"_k, "abcdedfghijkqlmopqrstuvwxyz", kRepeatCount_);
             DoItOnce_<Bijection<int, int>> (Bijection<int, int> (kOrigPairValueInit_), Bijection<int, int>{kUPairpdateValueInit_}, kRepeatCount_);
             DoItOnce_<Collection<int>> (Collection<int>{kOrigValueInit_}, Collection<int>{kUpdateValueInit_}, kRepeatCount_);
             // Queue/Deque NYI here cuz of assign from initializer
@@ -323,21 +323,10 @@ namespace {
             if (xx != yy) {
             }
             optional<String> xxo;
-#if 0
-            //////@todo FIX various operator overloads so this works more seemlessly. See
-            //      template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
-            //      bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
-            // and related failed attempts
-            if (xxo != yy.load ()) {
-            }
-            if (xxo == yy.load ()) {
-            }
-#else
             if (xxo != yy) {
             }
             if (xxo == yy) {
             }
-#endif
         }
     }
 }
@@ -360,9 +349,9 @@ namespace {
                     VerifyTestResult (a == 4);
                 }
                 {
-                    Synchronized<String> tmp{L"x"};
+                    Synchronized<String> tmp{"x"};
                     String               a{tmp};
-                    VerifyTestResult (a == L"x");
+                    VerifyTestResult (a == "x");
                     VerifyTestResult (tmp.cget ()->find ('z') == string::npos);
                     VerifyTestResult (tmp.cget ()->find ('x') == 0);
                 }
@@ -542,7 +531,7 @@ namespace {
                             }
                         }
                     },
-                    L"adderThread"_k);
+                    "adderThread"_k);
                 Thread::Ptr removerThread = Thread::New (
                     [&syncObj, &remF] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
@@ -551,7 +540,7 @@ namespace {
                             }
                         }
                     },
-                    L"removerThread"_k);
+                    "removerThread"_k);
                 Thread::Ptr examineThread = Thread::New (
                     [&syncObj, &examineF] () {
                         constexpr size_t kMultiplierCuzThisTooFast_{10};
@@ -559,13 +548,14 @@ namespace {
                             examineF (&syncObj.cget ().cref ());
                         }
                     },
-                    L"examineThread"_k);
+                    "examineThread"_k);
                 Thread::Ptr walkerThread = Thread::New (
                     [&syncObj, &iterF] () {
                         constexpr size_t kMultiplierCuzThisTooFast_{7};
                         for (size_t i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
+                        // turn workaround off 2023-12-06 to test
 
-#if 1
+#if 0
                             /*
                              *  SADLY, even after major cleanups to container code, I still have this bug:
                              *      https://stroika.atlassian.net/browse/STK-700
@@ -661,7 +651,7 @@ namespace {
             {
                 Debug::TraceContextBumper traceCtx{"{}SyncLRUCacheT1_..."};
                 using namespace Cache;
-                SynchronizedLRUCache cache        = Cache::Factory::SynchrnoizedLRUCache_WithHash<string, string>{}(10u, 10u);
+                SynchronizedLRUCache cache        = Cache::Factory::SynchronizedLRUCache_WithHash<string, string>{}(10u, 10u);
                 Thread::Ptr          writerThread = Thread::New (
                     [&cache] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
