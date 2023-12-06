@@ -58,10 +58,10 @@ void ProgressMonitor::Cancel ()
  *************************** ProgressMonitor::Updater ***************************
  ********************************************************************************
  */
-void ProgressMonitor::Updater::CallNotifyProgress_ () const
+void ProgressMonitor::Updater::CallNotifyProgress_ () const noexcept
 {
     RequireNotNull (fRep_);
     for (shared_ptr<ChangedCallbackType> f : fRep_->fCallbacks_.load ()) {
-        (*f) (ProgressMonitor{fRep_});
+        (*f) (ProgressMonitor{fRep_}); // callbacks are noexcept, and should never hold a lock (or at least always guaraneed very short lived)
     }
 }

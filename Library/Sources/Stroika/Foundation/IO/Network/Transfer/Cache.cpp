@@ -228,7 +228,7 @@ Transfer::Cache::Element::Element (const Response& response)
                 fLastModified = DateTime::Parse (hi->fValue, DateTime::kRFC1123Format);
             }
             catch (...) {
-                DbgTrace (L"Malformed last-modfied (%s) treated as ignored", Characters::ToString (hi->fValue).c_str ());
+                DbgTrace (L"Malformed last-modified (%s) treated as ignored", Characters::ToString (hi->fValue).c_str ());
             }
             hi = headers.erase (hi);
         }

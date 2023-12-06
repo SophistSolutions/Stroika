@@ -19,8 +19,6 @@
  * TODO:
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
- *      @todo   DECIDE if ChangedCallbackType can throw, and handle appropriatly.
- * 
  *      @todo   BETTER INTEGRATE STROIKA THREAD/CANCELATION WITH THIS FORM OF CANCELATION (OK now - but could be better
  *              espeicaily if we could Abort on the main thread / any thread; then could lose the fcancedl flag in our
  *              rep and just use the thread local rep for anclation - same notaiton as thread cancel) ; and always have
@@ -114,8 +112,13 @@ namespace Stroika::Foundation::Execution {
         /**
          *  This is for consumers of progress information. Consumers MAY either poll the ProgressMonitor,
          *  or may register a callback to be notified of progress.
+         * 
+         *  Callback should be short lived, not hold any locks (because that could make it long lived and create a deadlock).
+         * 
+         *  Also don't throw exceptions in these callbacks. Just record the info needed, and schedule further work
+         *  in a GUI or whtever (queue it maybe).
          */
-        using ChangedCallbackType = Execution::Function<void (const ProgressMonitor& progressMonitor)>;
+        using ChangedCallbackType = Execution::Function<void (const ProgressMonitor& progressMonitor) noexcept>;
 
     private:
         class Rep_;
@@ -304,7 +307,7 @@ namespace Stroika::Foundation::Execution {
         friend class ProgressMonitor;
 
     private:
-        nonvirtual void CallNotifyProgress_ () const;
+        nonvirtual void CallNotifyProgress_ () const noexcept;
 
     private:
         shared_ptr<Rep_>          fRep_;
