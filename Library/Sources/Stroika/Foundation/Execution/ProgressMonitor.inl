@@ -145,9 +145,13 @@ namespace Stroika::Foundation::Execution {
     inline void ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
     {
         if (fRep_ != nullptr) {
+            bool changed             = fRep_->fCurrentTaskInfo_ != taskInfo;
             fRep_->fCurrentTaskInfo_ = taskInfo;
-            CallNotifyProgress_ ();
+            if (changed) {
+                CallNotifyProgress_ ();
+            }
         }
+        ThrowIfCanceled ();
     }
     inline void ProgressMonitor::Updater::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
     {

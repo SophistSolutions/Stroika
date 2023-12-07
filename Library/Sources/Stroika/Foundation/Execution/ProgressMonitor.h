@@ -239,6 +239,8 @@ namespace Stroika::Foundation::Execution {
 
         CurrentTaskInfo (const Characters::String& taskName = {}, const DataExchange::VariantValue& details = {});
         CurrentTaskInfo (const CurrentTaskInfo&) = default;
+
+        bool operator== (const CurrentTaskInfo& rhs) = default;
     };
 
     /**
