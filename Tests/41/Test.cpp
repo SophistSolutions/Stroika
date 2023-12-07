@@ -602,11 +602,12 @@ namespace {
             //
             Debug::TraceContextBumper traceCtx{"{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()"};
             if (Debug::kBuiltWithThreadSanitizer) {
-                DbgTrace ("PROBABLY STILL BUGGY - BUT SKIP FOR NOW AND DEBUG LATER... - NOT RECENT REGRESSION - BUT IMPORTANT TO UNDERATNAD");
+                DbgTrace (
+                    "PROBABLY STILL BUGGY - BUT SKIP FOR NOW AND DEBUG LATER... - NOT RECENT REGRESSION - BUT IMPORTANT TO UNDERATNAD");
                 // marked high priority in JIRA - LGP 2023-12-06
                 return;
             }
-            int64_t                   cnt{};
+            int64_t cnt{};
             {
                 Debug::TraceContextBumper ctx1{"TestBasics_<vector<int>>"};
                 Private_::TestBasics_<vector<int>> ([] (vector<int>* c, int i) { c->push_back (i); },

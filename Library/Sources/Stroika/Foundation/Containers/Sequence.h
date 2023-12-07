@@ -604,6 +604,9 @@ namespace Stroika::Foundation::Containers {
         nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
 
     public:
+        /**
+         * \brief Alias for Append/AppendAll ().
+         */
         nonvirtual Sequence& operator+= (ArgByValueType<value_type> item);
         nonvirtual Sequence& operator+= (const Sequence& items);
 

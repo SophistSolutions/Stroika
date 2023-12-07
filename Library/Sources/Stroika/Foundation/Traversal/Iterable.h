@@ -754,14 +754,14 @@ namespace Stroika::Foundation::Traversal {
          *          possibleFileSuffixes.Map<InternetMediaType,Set<InternetMediaType>> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); })
          *      \endcode
          */
-        template <typename RESULT>
-        nonvirtual Iterable<RESULT> Map (const function<RESULT (const T&)>& extract) const;
-        template <typename RESULT>
-        nonvirtual Iterable<RESULT> Map (const function<optional<RESULT> (const T&)>& extract) const;
-        template <typename RESULT, typename RESULT_CONTAINER>
-        nonvirtual RESULT_CONTAINER Map (const function<RESULT (const T&)>& extract) const;
-        template <typename RESULT, typename RESULT_CONTAINER>
-        nonvirtual RESULT_CONTAINER Map (const function<optional<RESULT> (const T&)>& extract) const;
+        template <typename RESULT_ELEMENT>
+        nonvirtual Iterable<RESULT_ELEMENT> Map (const function<RESULT_ELEMENT (const T&)>& extract) const;
+        template <typename RESULT_ELEMENT>
+        nonvirtual Iterable<RESULT_ELEMENT> Map (const function<optional<RESULT_ELEMENT> (const T&)>& extract) const;
+        template <typename RESULT_ELEMENT, typename RESULT_CONTAINER>
+        nonvirtual RESULT_CONTAINER Map (const function<RESULT_ELEMENT (const T&)>& extract) const;
+        template <typename RESULT_ELEMENT, typename RESULT_CONTAINER>
+        nonvirtual RESULT_CONTAINER Map (const function<optional<RESULT_ELEMENT> (const T&)>& extract) const;
 
     public:
         /**
@@ -801,16 +801,16 @@ namespace Stroika::Foundation::Traversal {
          *      @see Sum
          *      @see SumValue
          */
-        template <typename RESULT_TYPE = T>
-        nonvirtual optional<RESULT_TYPE> Reduce (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const;
+        template <typename REDUCED_TYPE = T>
+        nonvirtual optional<REDUCED_TYPE> Reduce (const function<REDUCED_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const;
 
     public:
         /**
          *  @see @Reduce, but if value is missing, returns defaultValue arg or {}
          */
-        template <typename RESULT_TYPE = T>
-        nonvirtual RESULT_TYPE ReduceValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op,
-                                            ArgByValueType<RESULT_TYPE>                                         defaultValue = {}) const;
+        template <typename REDUCED_TYPE = T>
+        nonvirtual REDUCED_TYPE ReduceValue (const function<REDUCED_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op,
+                                             ArgByValueType<REDUCED_TYPE>                                         defaultValue = {}) const;
 
     public:
         /**
