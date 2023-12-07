@@ -25,8 +25,8 @@ namespace Stroika::Foundation::Cache::Statistics {
         Stats_Basic () = default;
         Stats_Basic (const Stats_Basic& src);
 
-        void                 IncrementHits ();
-        void                 IncrementMisses ();
+        void IncrementHits ();
+        void IncrementMisses ();
 
         /**
          *  @see Characters::ToString ();
@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Cache::Statistics {
         nonvirtual Characters::String ToString () const;
 
         atomic<unsigned int> fCachedCollected_Hits{};
-        atomic<unsigned int>          fCachedCollected_Misses{};
+        atomic<unsigned int> fCachedCollected_Misses{};
     };
 
     /**
