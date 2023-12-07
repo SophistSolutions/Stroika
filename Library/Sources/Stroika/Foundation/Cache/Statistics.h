@@ -22,8 +22,9 @@ namespace Stroika::Foundation::Cache::Statistics {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     struct Stats_Basic {
-        atomic<unsigned int> fCachedCollected_Hits{};
-        atomic<unsigned int> fCachedCollected_Misses{};
+        Stats_Basic () = default;
+        Stats_Basic (const Stats_Basic& src);
+
         void                 IncrementHits ();
         void                 IncrementMisses ();
 
@@ -31,6 +32,9 @@ namespace Stroika::Foundation::Cache::Statistics {
          *  @see Characters::ToString ();
          */
         nonvirtual Characters::String ToString () const;
+
+        atomic<unsigned int> fCachedCollected_Hits{};
+        atomic<unsigned int>          fCachedCollected_Misses{};
     };
 
     /**
