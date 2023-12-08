@@ -763,6 +763,46 @@ namespace Stroika::Foundation::Traversal {
         template <typename RESULT_ELEMENT, typename RESULT_CONTAINER>
         nonvirtual RESULT_CONTAINER Map (const function<optional<RESULT_ELEMENT> (const T&)>& extract) const;
 
+        /// ***************** EXPERIEMNTAL MAP REPLACEMENTS
+        template <typename RESULT_CONTAINER = Iterable<T>>
+        nonvirtual RESULT_CONTAINER Map1 (const function<typename RESULT_CONTAINER::value_type (const T&)>& extract) const;
+        template <typename RESULT_CONTAINER = Iterable<T>>
+        nonvirtual RESULT_CONTAINER Map2 (const function<optional<typename RESULT_CONTAINER::value_type> (const T&)>& extract) const;
+
+        /// when  I get this working, do overload where convertible_to optioanal also - and filter
+        template <typename RESULT_CONTAINER, invocable<T> EXTRACT_FUNCTION>
+        nonvirtual RESULT_CONTAINER Map3 (EXTRACT_FUNCTION&& extract) const
+            requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION>, typename RESULT_CONTAINER::value_type>);
+
+        template <typename RESULT_CONTAINER>
+        struct MapResult_ {
+            MapResult_ (Iterable<T> it)
+                : fIt_{it}
+            {
+            }
+            Iterable<T> fIt_;
+            template <invocable<T> EXTRACT_FUNCTION>
+            RESULT_CONTAINER operator() (EXTRACT_FUNCTION&& extract) const
+                requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type>)
+            {
+                using RESULT_ELEMENT = typename RESULT_CONTAINER::value_type;
+                using TMP_RESULT_CONTAINER =
+                    conditional_t<same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>, vector<RESULT_ELEMENT>, RESULT_CONTAINER>;
+                // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
+                Iterable<RESULT_ELEMENT> baseIterable = fIt_.Map<RESULT_ELEMENT> (extract);
+                Iterator<RESULT_ELEMENT> b            = baseIterable.begin ();
+                Iterator<RESULT_ELEMENT> e            = baseIterable.end ();
+                return RESULT_CONTAINER{TMP_RESULT_CONTAINER{b, e}};
+            }
+        };
+        template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> EXTRACT_FUNCTION>
+        nonvirtual RESULT_CONTAINER Map4 (EXTRACT_FUNCTION&& args) const
+            requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type>)
+        {
+            MapResult_<RESULT_CONTAINER> mr{*this};
+            return mr (args);
+        }
+
     public:
         /**
          *  \brief Walk the entire list of items, and use the argument 'op' to combine (reduce) items to a resulting single item.
