@@ -753,6 +753,12 @@ namespace Stroika::Foundation::Traversal {
          *          // OR
          *          possibleFileSuffixes.Map<InternetMediaType,Set<InternetMediaType>> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); })
          *      \endcode
+         * 
+         *  \note LAZY EVALUATION
+         *        Before Stroika v3, Map() did lazy evaluation, using CreateGenerator.
+         *        Since v3.0d5, it does (I hope about to) direct generation.
+         *        But lazy can be useful. Maybe add MapLazily version todo generator?
+         * --- NO - LAZILY ONLY MAKES SENSSE IF RESULT TYPE IS ITERABLE - SO JUST DO LAZY IN THAT CASE
          */
         template <typename RESULT_ELEMENT>
         nonvirtual Iterable<RESULT_ELEMENT> Map (const function<RESULT_ELEMENT (const T&)>& extract) const;
@@ -764,16 +770,6 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual RESULT_CONTAINER Map (const function<optional<RESULT_ELEMENT> (const T&)>& extract) const;
 
         /// ***************** EXPERIEMNTAL MAP REPLACEMENTS
-        template <typename RESULT_CONTAINER = Iterable<T>>
-        nonvirtual RESULT_CONTAINER Map1 (const function<typename RESULT_CONTAINER::value_type (const T&)>& extract) const;
-        template <typename RESULT_CONTAINER = Iterable<T>>
-        nonvirtual RESULT_CONTAINER Map2 (const function<optional<typename RESULT_CONTAINER::value_type> (const T&)>& extract) const;
-
-        /// when  I get this working, do overload where convertible_to optioanal also - and filter
-        template <typename RESULT_CONTAINER, invocable<T> EXTRACT_FUNCTION>
-        nonvirtual RESULT_CONTAINER Map3 (EXTRACT_FUNCTION&& extract) const
-            requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION>, typename RESULT_CONTAINER::value_type>);
-
         template <typename RESULT_CONTAINER>
         struct MapResult_ {
             MapResult_ (Iterable<T> it)
@@ -801,6 +797,70 @@ namespace Stroika::Foundation::Traversal {
         {
             MapResult_<RESULT_CONTAINER> mr{*this};
             return mr (args);
+        }
+
+        template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> EXTRACT_FUNCTION>
+        nonvirtual RESULT_CONTAINER Map5 (EXTRACT_FUNCTION&& extract) const
+            requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type>)
+        {
+            using RESULT_ELEMENT = typename RESULT_CONTAINER::value_type;
+            using TMP_RESULT_CONTAINER = conditional_t<same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>, vector<RESULT_ELEMENT>, RESULT_CONTAINER>;
+            TMP_RESULT_CONTAINER c;
+            if constexpr (requires (RESULT_CONTAINER p) { p.reserve (3u); }) {
+                c.reserve (this->size ());
+            }
+            this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
+                if constexpr (requires (TMP_RESULT_CONTAINER p) { p.push_back (declval<RESULT_ELEMENT> ()); }) {
+                    c.push_back (arg);
+                }
+                else if constexpr (requires (RESULT_CONTAINER p) { p.Add (declval<RESULT_ELEMENT> ()); }) {
+                    c.Add (arg);
+                }
+                else if constexpr (requires (RESULT_CONTAINER p) { p.insert (declval<RESULT_ELEMENT> ()); }) {
+                    c.insert (arg);
+                }
+                else {
+                    AssertNotImplemented ();
+                }
+            });
+            if constexpr (same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>) {
+                return RESULT_CONTAINER{c};
+            }
+            else {
+                return c;
+            }
+        }
+        template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> EXTRACT_FUNCTION>
+        nonvirtual RESULT_CONTAINER Map5 (EXTRACT_FUNCTION&& extract) const
+            requires (not convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> and
+                      convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
+        {
+            using RESULT_ELEMENT = typename RESULT_CONTAINER::value_type;
+            using TMP_RESULT_CONTAINER = conditional_t<same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>, vector<RESULT_ELEMENT>, RESULT_CONTAINER>;
+            TMP_RESULT_CONTAINER c;
+            // note  - don't reserve in this case cuz don't know how much to reserve
+            this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> oarg) {
+                if (oarg) {
+                    if constexpr (requires (TMP_RESULT_CONTAINER p) { p.push_back (declval<RESULT_ELEMENT> ()); }) {
+                        c.push_back (*oarg);
+                    }
+                    else if constexpr (requires (RESULT_CONTAINER p) { p.Add (declval<RESULT_ELEMENT> ()); }) {
+                        c.Add (*oarg);
+                    }
+                    else if constexpr (requires (RESULT_CONTAINER p) { p.insert (declval<RESULT_ELEMENT> ()); }) {
+                        c.insert (*oarg);
+                    }
+                    else {
+                        AssertNotImplemented ();
+                    }
+                }
+            });
+            if constexpr (same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>) {
+                return RESULT_CONTAINER{c};
+            }
+            else {
+                return c;
+            }
         }
 
     public:

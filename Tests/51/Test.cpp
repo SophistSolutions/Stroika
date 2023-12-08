@@ -250,9 +250,9 @@ namespace {
 }
 
 namespace {
-    void Test4_MapTest_ ()
+    void Test4_FunctionalApplicationContext_MapTest_ ()
     {
-        Debug::TraceContextBumper ctx{"{}::Test4_MapTest_"};
+        Debug::TraceContextBumper ctx{"{}::Test4_FunctionalApplicationContext_MapTest_"};
         {
             Containers::Sequence<int> n;
             n.Append (1);
@@ -1070,34 +1070,35 @@ namespace {
         }
     }
 }
+
+namespace {
+    void Test23_Iterable_Map_ ()
+    {
+        Debug::TraceContextBumper ctx{"{}::Test23_Iterable_Map_"};
+        {
+            using Traversal::Iterable;
+
+            Iterable<int> t{1, 2, 3};
+            vector<int>   r1 = t.Map5<vector<int>> ([] (int i) { return i; });
+            VerifyTestResult (t.SequentialEquals (r1));
+            auto r2 = t.Map5<Iterable<int>> ([] (int i) { return i; });
+            VerifyTestResult (t.SequentialEquals (r2));
+            auto r4 = t.Map5 ([] (int i) { return i; });
+            VerifyTestResult (t.SequentialEquals (r4));
+            auto r5 = t.Map5 ([] (int i) -> optional<int> { return i == 1 ? optional<int>{} : i; });
+            VerifyTestResult (r5.SequentialEquals ({2, 3}));
+        }
+    }
+}
+
 namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{"{}::DoRegressionTests_"};
-
-        {
-            // experiment with new Map code
-
-            using Traversal::Iterable;
-
-            Iterable<int> t{1, 2, 3};
-            // auto          r = t.Map3<vector<int>> ([] (int i) { return i; });
-
-            //Iterable<int>::MapResult_<vector<int>> mr{t};
-            // auto                                   b = mr ([] (int i) { return i; });
-
-            auto f = [] (int i) { return i; };
-
-            using t2       = invoke_result_t<decltype (f), int>;
-            vector<int> r1 = t.Map4<vector<int>> ([] (int i) { return i; });
-            auto        r2 = t.Map4<Iterable<int>> ([] (int i) { return i; });
-            auto        r3 = t.Map4<> ([] (int i) { return i; });
-            auto        r4 = t.Map4 ([] (int i) { return i; });
-        }
         Test_1_BasicRange_ ();
         Test_2_BasicDiscreteRangeIteration_ ();
         Test_3_SimpleDiscreteRangeWithEnumsTest_ ();
-        Test4_MapTest_ ();
+        Test4_FunctionalApplicationContext_MapTest_ ();
         Test5_ReduceTest_ ();
         Test6_FunctionApplicationContext_ ();
         Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ();
@@ -1116,6 +1117,7 @@ namespace {
         Test20_Join_ ();
         Test21_Repeat_ ();
         Test22_Top_ ();
+        Test23_Iterable_Map_ ();
     }
 }
 

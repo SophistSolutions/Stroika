@@ -607,36 +607,6 @@ namespace Stroika::Foundation::Traversal {
     /// ***************** EXPERIEMNTAL MAP REPLACEMENTS
 
     template <typename T>
-    template <typename RESULT_CONTAINER>
-    RESULT_CONTAINER Iterable<T>::Map1 (const function<typename RESULT_CONTAINER::value_type (const T&)>& extract) const
-    {
-        // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
-        auto baseIterable = Map (extract);
-        return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
-    }
-    template <typename T>
-    template <typename RESULT_CONTAINER>
-    RESULT_CONTAINER Iterable<T>::Map2 (const function<optional<typename RESULT_CONTAINER::value_type> (const T&)>& extract) const
-    {
-        // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
-        auto baseIterable = Map (extract);
-        return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
-    }
-    template <typename T>
-    template <typename RESULT_CONTAINER, invocable<T> EXTRACT_FUNCTION>
-    RESULT_CONTAINER Iterable<T>::Map3 (EXTRACT_FUNCTION&& extract) const
-        requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION>, typename RESULT_CONTAINER::value_type>)
-    {
-        using RESULT_ELEMENT = typename RESULT_CONTAINER::value_type;
-        using TMP_RESULT_CONTAINER = conditional_t<same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>, vector<RESULT_ELEMENT>, RESULT_CONTAINER>;
-        // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
-        Iterable<RESULT_ELEMENT> baseIterable = Map<RESULT_ELEMENT> (extract);
-        Iterator<RESULT_ELEMENT> b            = baseIterable.begin ();
-        Iterator<RESULT_ELEMENT> e            = baseIterable.end ();
-        return TMP_RESULT_CONTAINER{b, e};
-    }
-
-    template <typename T>
     template <typename RESULT>
     nonvirtual RESULT Iterable<T>::Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const
     {
