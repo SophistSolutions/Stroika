@@ -811,13 +811,13 @@ namespace Stroika::Foundation::Traversal {
             }
             this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
                 if constexpr (requires (TMP_RESULT_CONTAINER p) { p.push_back (declval<RESULT_ELEMENT> ()); }) {
-                    c.push_back (arg);
+                    c.push_back (extract (arg));
                 }
                 else if constexpr (requires (RESULT_CONTAINER p) { p.Add (declval<RESULT_ELEMENT> ()); }) {
-                    c.Add (arg);
+                    c.Add (extract (arg));
                 }
                 else if constexpr (requires (RESULT_CONTAINER p) { p.insert (declval<RESULT_ELEMENT> ()); }) {
-                    c.insert (arg);
+                    c.insert (extract (arg));
                 }
                 else {
                     AssertNotImplemented ();
@@ -839,8 +839,8 @@ namespace Stroika::Foundation::Traversal {
             using TMP_RESULT_CONTAINER = conditional_t<same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>, vector<RESULT_ELEMENT>, RESULT_CONTAINER>;
             TMP_RESULT_CONTAINER c;
             // note  - don't reserve in this case cuz don't know how much to reserve
-            this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> oarg) {
-                if (oarg) {
+            this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
+                if (auto oarg = extract (arg)) {
                     if constexpr (requires (TMP_RESULT_CONTAINER p) { p.push_back (declval<RESULT_ELEMENT> ()); }) {
                         c.push_back (*oarg);
                     }
