@@ -811,23 +811,25 @@ namespace {
         }
         {
             Iterable<pair<int, char>> c{{1, 'a'}, {2, 'b'}, {3, 'c'}};
-            VerifyTestResult (c.Map<int> ([] (pair<int, char> p) { return p.first; }).SequentialEquals (Iterable<int>{1, 2, 3}));
+            VerifyTestResult (c.Map5<Iterable<int>> ([] (pair<int, char> p) { return p.first; }).SequentialEquals (Iterable<int>{1, 2, 3}));
         }
         {
             Iterable<pair<int, char>> c{{1, 'a'}, {2, 'b'}, {3, 'c'}};
-            VerifyTestResult (c.Map<int> ([] (pair<int, char> p) {
+            VerifyTestResult (c.Map5<Iterable<int>> ([] (pair<int, char> p) {
                                    return (p.first & 1) ? optional<int>{p.first} : nullopt;
                                }).SequentialEquals (Iterable<int>{1, 3}));
         }
         {
             using Characters::String;
             Iterable<int> c{3, 4, 7};
-            VerifyTestResult (c.Map<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String>{L"3", L"4", L"7"}));
+            VerifyTestResult (c.Map5<Iterable<String>> ([] (int i) {
+                                   return Characters::Format (L"%d", i);
+                               }).SequentialEquals (Iterable<String>{"3", "4", "7"}));
         }
         {
             using Characters::String;
             Iterable<int> c{3, 4, 7};
-            VerifyTestResult ((c.Map<String, vector<String>> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
+            VerifyTestResult ((c.Map5<vector<String>> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{"3", "4", "7"}));
         }
         {
             Iterable<int> c = {1, 2, 3, 4, 5, 6};
@@ -1007,7 +1009,7 @@ namespace {
             VerifyTestResult (seeIfReady.size () == 3);
 
             const bool               kFails2_ = true;
-            Traversal::Iterable<int> o1       = kFails2_ ? fds.Map<int> ([&] (const int& t) { return t; }) : fds;
+            Traversal::Iterable<int> o1       = kFails2_ ? fds.Map5 ([&] (const int& t) { return t; }) : fds;
 
             VerifyTestResult (seeIfReady.size () == 3);
             VerifyTestResult (o1.size () == 3);

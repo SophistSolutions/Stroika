@@ -716,21 +716,21 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
-         *          VerifyTestResult (c.Map<int> ([] (pair<int,char> p) { return p.first; }).SequentialEquals (Iterable<int> { 1, 2, 3 }));
+         *          VerifyTestResult (c.Map<Iterable<int>> ([] (pair<int,char> p) { return p.first; }).SequentialEquals (Iterable<int> { 1, 2, 3 }));
          *      \endcode
          *
          *  This can also easily be used to TRANSFORM an iterable.
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          VerifyTestResult (c.Map<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { "3", "4", "7" }));
+         *          VerifyTestResult (c.Map<Iterable<String>> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { "3", "4", "7" }));
          *      \endcode
          *
          *  \par Example Usage
          *      or transform into another container type
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          VerifyTestResult ((c.Map<String,vector<String>> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
+         *          VerifyTestResult ((c.Map<vector<String>> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
          *      \endcode
          *
          *  \par Example Usage
@@ -738,7 +738,7 @@ namespace Stroika::Foundation::Traversal {
          *          void ExpectedMethod (const Request* request, const Set<String>& methods, const optional<String>& fromInMessage)
          *          {
          *              String method{request->GetHTTPMethod ()};
-         *              Set<String> lcMethods = methods.Map<String> ([](const String& s) { return s.ToLowerCase ();  });
+         *              Set<String> lcMethods = methods.Map<Iterable<String>> ([](const String& s) { return s.ToLowerCase ();  });
          *              if (not methods.Contains (method.ToLowerCase ())) {
          *                  ...
          *      \endcode
@@ -749,9 +749,9 @@ namespace Stroika::Foundation::Traversal {
          *      Filtering a list example:
          *      \code
          *          // GetAssociatedContentType -> optional<String> - skip items that are 'missing'
-         *          possibleFileSuffixes.Map<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ())
+         *          possibleFileSuffixes.Map ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ())
          *          // OR
-         *          possibleFileSuffixes.Map<InternetMediaType,Set<InternetMediaType>> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); })
+         *          possibleFileSuffixes.Map<Set<InternetMediaType>> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); })
          *      \endcode
          * 
          *  \note LAZY EVALUATION

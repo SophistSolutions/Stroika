@@ -94,8 +94,8 @@ namespace Stroika::Foundation::Database::SQL::ORM {
                 fGetAll_Statement_.Reset ();
             }
         });
-        return Sequence<T>{rows.template Map<T> (
-            [this] (const Statement::Row& r) { return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)}); })};
+        return rows.template Map5<Sequence<T>> (
+            [this] (const Statement::Row& r) { return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)}); });
     }
     template <typename T, typename TRAITS>
     Sequence<T> TableConnection<T, TRAITS>::GetAll (const function<optional<T> (const Statement::Row&, const exception_ptr&)>& onItemException)
@@ -111,14 +111,16 @@ namespace Stroika::Foundation::Database::SQL::ORM {
                 fGetAll_Statement_.Reset ();
             }
         });
-        return Sequence<T>{rows.template Map<T> ([this, &onItemException] (const Statement::Row& r) -> optional<T> {
+        // Map VariantValue objects from DB (Row) to ORM-based (object variant mapper) objects, and pass any failures
+        // through onItemException, which returns optional<T>, so if missing returned the values skipped
+        return rows.template Map5<Sequence<T>> ([this, &onItemException] (const Statement::Row& r) -> optional<T> {
             try {
                 return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
             }
             catch (...) {
                 return onItemException (r, current_exception ());
             }
-        })};
+        });
     }
     template <typename T, typename TRAITS>
     void TableConnection<T, TRAITS>::AddNew (const T& v)

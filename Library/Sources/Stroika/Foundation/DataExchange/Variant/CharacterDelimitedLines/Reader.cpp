@@ -55,8 +55,8 @@ public:
     {
         // @todo consider if this functional style is more clear than a nested for-loop. Was harder for me to
         // write this way, but that could be my inexpereince... --LGP 2022-12-04
-        return VariantValue{ReadMatrix (in).Map<VariantValue, Sequence<VariantValue>> ([] (const Sequence<String>& line) -> VariantValue {
-            return VariantValue{line.Map<VariantValue> ([] (const String& i) { return VariantValue{i}; })};
+        return VariantValue{ReadMatrix (in).Map5<Sequence<VariantValue>> ([] (const Sequence<String>& line) -> VariantValue {
+            return VariantValue{line.Map5<Iterable<VariantValue>> ([] (const String& i) { return VariantValue{i}; })};
         })};
     }
     nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const

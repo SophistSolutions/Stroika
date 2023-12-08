@@ -464,13 +464,13 @@ namespace {
 #if qHasFeature_OpenSSL
             Debug::TraceContextBumper ctx{"EnumerateOpenSSLAlgorithmsInContexts_::DoRegressionTests_"};
             Set<String>               defaultContextAvailableCipherAlgorithms =
-                Set<String>{OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+                OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map5<Set<String>> ([] (auto i) { return i.pName (); });
             Set<String> defaultContextStandardCipherAlgorithms =
-                Set<String>{OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+                OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map5<Set<String>> ([] (auto i) { return i.pName (); });
             Set<String> defaultContextAvailableDigestAlgorithms =
-                Set<String>{OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+                OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().Map5<Set<String>> ([] (auto i) { return i.pName (); });
             Set<String> defaultContextStandardDigestAlgorithms =
-                Set<String>{OpenSSL::LibraryContext::sDefault.pStandardDigestAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+                OpenSSL::LibraryContext::sDefault.pStandardDigestAlgorithms ().Map5<Set<String>> ([] (auto i) { return i.pName (); });
 
             DbgTrace (L"defaultContextAvailableCipherAlgorithms = #%d %s", defaultContextAvailableCipherAlgorithms.size (),
                       Characters::ToString (defaultContextAvailableCipherAlgorithms).c_str ());
@@ -631,39 +631,39 @@ namespace {
                 }
                 if (nFailures != 0) {
                     Set<String> allCiphers{
-                        OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+                        OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map5<Set<String>> ([] (auto i) { return i.pName (); })};
                     Set<String>              passingCiphers              = allCiphers - failingCiphers.Elements ();
                     static const Set<String> kLastSeenAllFailingCiphers_ = {
-                        L"AES-128-OCB",
-                        L"AES-128-XTS",
-                        L"AES-192-OCB",
-                        L"AES-256-OCB",
-                        L"AES-256-XTS",
-                        L"ARIA-128-CCM",
-                        L"ARIA-128-GCM",
-                        L"ARIA-192-CCM",
-                        L"ARIA-192-GCM",
-                        L"ARIA-256-CCM",
-                        L"ARIA-256-GCM",
+                        "AES-128-OCB"sv,
+                        "AES-128-XTS"sv,
+                        "AES-192-OCB"sv,
+                        "AES-256-OCB"sv,
+                        "AES-256-XTS"sv,
+                        "ARIA-128-CCM"sv,
+                        "ARIA-128-GCM"sv,
+                        "ARIA-192-CCM"sv,
+                        "ARIA-192-GCM"sv,
+                        "ARIA-256-CCM"sv,
+                        "ARIA-256-GCM"sv,
 // It appears these failures ONLY happen on X86 and x64 systems --LGP 2021-12-10
 // no idea why these work on windows, but fail on Unix... --LGP 2021-09-14
 #if qPlatform_POSIX && (defined(__x86__) || defined(__x86_64__))
-                        L"AES-256-CBC-HMAC-SHA256",
-                        L"AES-256-CBC-HMAC-SHA1",
-                        L"AES-128-CBC-HMAC-SHA256",
-                        L"AES-128-CBC-HMAC-SHA1",
+                        "AES-256-CBC-HMAC-SHA256"sv,
+                        "AES-256-CBC-HMAC-SHA1"sv,
+                        "AES-128-CBC-HMAC-SHA256"sv,
+                        "AES-128-CBC-HMAC-SHA1"sv,
 #endif
 
-                        L"id-aes128-CCM",
-                        L"id-aes128-GCM",
-                        L"id-aes128-wrap",
-                        L"id-aes192-CCM",
-                        L"id-aes192-GCM",
-                        L"id-aes192-wrap",
-                        L"id-aes256-CCM",
-                        L"id-aes256-GCM",
-                        L"id-aes256-wrap",
-                        L"id-smime-alg-CMS3DESwrap"
+                        "id-aes128-CCM"sv,
+                        "id-aes128-GCM"sv,
+                        "id-aes128-wrap"sv,
+                        "id-aes192-CCM",
+                        "id-aes192-GCM"sv,
+                        "id-aes192-wrap"sv,
+                        "id-aes256-CCM"sv,
+                        "id-aes256-GCM"sv,
+                        "id-aes256-wrap"sv,
+                        "id-smime-alg-CMS3DESwrap"sv
                     };
                     if (kLastSeenAllFailingCiphers_ != Set<String>{failingCiphers.Elements ()}) {
                         Stroika::TestHarness::WarnTestIssue (
@@ -676,7 +676,8 @@ namespace {
                                 .c_str ());
                     }
                     static const Set<String> kStandardCipherAlgorithmNames{
-                        OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+                        OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map5<Iterable<String>> (
+                            [] (auto i) { return i.pName (); })};
                     if (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames) {
                         Stroika::TestHarness::WarnTestIssue (
                             Characters::Format (L"For provider=%s, some standard ciphers failed: %s", provider.c_str (),

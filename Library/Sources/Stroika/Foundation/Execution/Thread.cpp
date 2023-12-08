@@ -501,7 +501,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
             DbgTrace (L"Adding thread index %s to sRunningThreads_ (%s)",
                       Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))).c_str (),
-                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map<int> ([] (IDType i) {
+                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map5<vector<int>> ([] (IDType i) {
                           return IndexRegistrar::sThe.GetIndex (i);
                       })).c_str ());
 #else
@@ -517,7 +517,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
             DbgTrace (L"removing thread index %s from sRunningThreads_ (%s)",
                       Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))).c_str (),
-                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map<int> ([] (IDType i) {
+                      Characters::ToString (Traversal::Iterable<IDType>{sRunningThreads_}.Map5<vector<int>> ([] (IDType i) {
                           return IndexRegistrar::sThe.GetIndex (i);
                       })).c_str ());
 #else

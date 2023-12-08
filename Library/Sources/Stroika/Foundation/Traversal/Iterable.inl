@@ -624,7 +624,7 @@ namespace Stroika::Foundation::Traversal {
             }
         }
         this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
-            auto adder = [&c] (auto item2Add) {
+            auto adder = [&c] (Configuration::ArgByValueType<RESULT_ELEMENT> item2Add) {
                 if constexpr (requires (TMP_RESULT_CONTAINER p) { p.push_back (declval<RESULT_ELEMENT> ()); }) {
                     c.push_back (item2Add);
                 }
@@ -644,7 +644,7 @@ namespace Stroika::Foundation::Traversal {
                 }
             }
             else {
-                adder (arg);
+                adder (extract (arg));
             }
         });
         if constexpr (kIsLazy_) {

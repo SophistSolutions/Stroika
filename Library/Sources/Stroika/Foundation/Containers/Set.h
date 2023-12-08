@@ -347,6 +347,7 @@ namespace Stroika::Foundation::Containers {
             requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
                       convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
         {
+            // @todo reconsider/document limitation here - cuz if 'this' object is one kind of container, we cannot CloneEmpty into another kind. Maybe this only works for same_as not derived_from...
             if constexpr (derived_from<RESULT_CONTAINER, Set<T>>) {
                 RESULT_CONTAINER c{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()}; // maintain any comparer, but no data
                 constexpr bool   kOptionalExtractor_ =
@@ -365,7 +366,7 @@ namespace Stroika::Foundation::Containers {
                 return c;
             }
             else {
-                return inherited::Map5 (forward<EXTRACT_FUNCTION> (extract));
+                return inherited::template Map5<RESULT_CONTAINER> (forward<EXTRACT_FUNCTION> (extract));
             }
         }
 

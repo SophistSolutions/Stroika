@@ -24,6 +24,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
 using Execution::ModuleGetterSetter;
+using Traversal::Iterable;
 
 namespace {
     void Test1_Atom_ ()
@@ -203,7 +204,7 @@ namespace {
                         Stroika::TestHarness::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
                                                                      ToString (possibleFileSuffixes).c_str (), ToString (i).c_str (),
                                                                      ToString (possibleFileSuffixes
-                                                                                   .Map<InternetMediaType> ([&] (String suffix) {
+                                                                                   .Map5<Iterable<InternetMediaType>> ([&] (String suffix) {
                                                                                        return r.GetAssociatedContentType (suffix);
                                                                                    })
                                                                                    .As<Set<InternetMediaType>> ())
