@@ -605,6 +605,55 @@ namespace Stroika::Foundation::Traversal {
     }
 
     /// ***************** EXPERIEMNTAL MAP REPLACEMENTS
+    template <typename T>
+    template <typename RESULT_CONTAINER, invocable<T> EXTRACT_FUNCTION>
+    RESULT_CONTAINER Iterable<T>::Map5 (EXTRACT_FUNCTION&& extract) const
+        requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
+    {
+        using RESULT_ELEMENT    = typename RESULT_CONTAINER::value_type;
+        constexpr bool kIsLazy_ = same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>; // For now use vector and lazy not truly implemented
+        using TMP_RESULT_CONTAINER = conditional_t<kIsLazy_, vector<RESULT_ELEMENT>, RESULT_CONTAINER>;
+        TMP_RESULT_CONTAINER c;
+        constexpr bool kOptionalExtractor_ = not convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> and
+                                             convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>;
+        // note  - don't reserve if kOptionalExtractor_ cuz don't know how much to reserve
+        if constexpr (not kOptionalExtractor_) {
+            if constexpr (requires (RESULT_CONTAINER p) { p.reserve (3u); }) {
+                c.reserve (this->size ());
+            }
+        }
+        this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
+            auto adder = [&c] (auto item2Add) {
+                if constexpr (requires (TMP_RESULT_CONTAINER p) { p.push_back (declval<RESULT_ELEMENT> ()); }) {
+                    c.push_back (item2Add);
+                }
+                else if constexpr (requires (RESULT_CONTAINER p) { p.Add (declval<RESULT_ELEMENT> ()); }) {
+                    c.Add (item2Add);
+                }
+                else if constexpr (requires (RESULT_CONTAINER p) { p.insert (declval<RESULT_ELEMENT> ()); }) {
+                    c.insert (item2Add);
+                }
+                else {
+                    AssertNotImplemented ();
+                }
+            };
+            if constexpr (kOptionalExtractor_) {
+                if (auto oarg = extract (arg)) {
+                    adder (*oarg);
+                }
+            }
+            else {
+                adder (arg);
+            }
+        });
+        if constexpr (kIsLazy_) {
+            return RESULT_CONTAINER{c};
+        }
+        else {
+            return c;
+        }
+    }
 
     template <typename T>
     template <typename RESULT>

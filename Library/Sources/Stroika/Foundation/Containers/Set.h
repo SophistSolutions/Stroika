@@ -344,27 +344,22 @@ namespace Stroika::Foundation::Containers {
 
         template <typename RESULT_CONTAINER = Set<T>, invocable<T> EXTRACT_FUNCTION>
         nonvirtual RESULT_CONTAINER Map5 (EXTRACT_FUNCTION&& extract) const
-            requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type>)
-        {
-            if constexpr (derived_from<RESULT_CONTAINER, Set<T>>) {
-                RESULT_CONTAINER c{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()}; // maintain any comparer, but no data
-                this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) { c.Add (extract (arg)); });
-                return c;
-            }
-            else {
-                return inherited::Map5 (forward<EXTRACT_FUNCTION> (extract));
-            }
-        }
-        template <typename RESULT_CONTAINER = Set<T>, invocable<T> EXTRACT_FUNCTION>
-        nonvirtual RESULT_CONTAINER Map5 (EXTRACT_FUNCTION&& extract) const
-            requires (not convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> and
+            requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
                       convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
         {
             if constexpr (derived_from<RESULT_CONTAINER, Set<T>>) {
                 RESULT_CONTAINER c{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()}; // maintain any comparer, but no data
+                constexpr bool   kOptionalExtractor_ =
+                    not convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> and
+                    convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>;
                 this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
-                    if (auto oarg = extract (arg)) {
-                        c.Add (*oarg);
+                    if constexpr (kOptionalExtractor_) {
+                        if (auto oarg = extract (arg)) {
+                            c.Add (*oarg);
+                        }
+                    }
+                    else {
+                        c.Add (extract (arg));
                     }
                 });
                 return c;

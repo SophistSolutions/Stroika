@@ -7,6 +7,25 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+-- pre d5 relnotes hints
+
+ - new section "Upgrade Notes" and there empahizze what you need todo to upgrade to this version from previous
+
+ - here - include Iterable::Map() - generally if you have templated arguments, probbaly just try deleting them and the defaults will do fine.
+   If not, then specify container as sole template argument, rather than mapped_type followed by container type).
+
+- major changes:
+   Big change top Iterable::Map
+      - now uses concepts well and better deduction to automatically do the right thing in most cases,
+        and where you want/need to specify a resulting container type, do so (But Set for example overrides so it does right thing there - keeping compaerer etc).
+        And more efficent.
+        Only lazy if default Iterable<T> used.
+
+- Big improvements to XML support - schemas and Xquilla (hope soon) and xpath in xml support.
+- big imrpvoemetns to PRogressMonitor code
+
+
 ---
 
 ### 3.0d4 {2023-11-14} {[diff](../../compare/v3.0d3...v3.0d4)}

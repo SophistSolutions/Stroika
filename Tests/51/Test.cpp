@@ -1077,7 +1077,6 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::Test23_Iterable_Map_"};
         {
             using Traversal::Iterable;
-
             Iterable<int> t{1, 2, 3};
             vector<int>   r1 = t.Map5<vector<int>> ([] (int i) { return i; });
             VerifyTestResult (t.SequentialEquals (r1));
