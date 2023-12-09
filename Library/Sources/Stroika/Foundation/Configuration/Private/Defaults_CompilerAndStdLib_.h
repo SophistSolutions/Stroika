@@ -703,9 +703,8 @@ HINT: this may be a false positive if your program uses some custom stack unwind
       */
 #ifndef qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
 
-#if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
+#if defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEN BROKEN IN GCC 11
-// appears broken in GCC 12 (ubuntu 22.04 cross-compile)
 #define qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
 #else
 #define qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy 0
