@@ -695,6 +695,24 @@ HINT: this may be a false positive if your program uses some custom stack unwind
 
 #endif
 
+/**
+/usr/bin/ld: /mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug-unix/Tests/48/Test.o: in function `(anonymous namespace)::Test_7_BLOB_()':
+/mnt/c/Sandbox/Stroika/DevRoot/Tests/48/Test.cpp:262: undefined reference to `Stroika::Foundation::Characters::String Stroika::Foundation::Memory::BLOB::AsBase64<Stroika::Foundation::Characters::String>() const'
+   Test 51: Foundation::Traversal:
+      Compiling Tests/51/Test.cpp ...
+      */
+#ifndef qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
+// FIRST SEEN BROKEN IN GCC 11
+// appears broken in GCC 12 (ubuntu 22.04 cross-compile)
+#define qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
+#else
+#define qCompilerAndStdLib_specializeDeclarationRequiredSometimesToGenCode_Buggy 0
+#endif
+
+#endif
+
 /*
     Compiling Tests/11/Test.cpp ...
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
