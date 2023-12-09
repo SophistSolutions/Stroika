@@ -409,6 +409,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  See Iterable<T>::Where - except defaults to MultiSet, and handles cloning rep properties for that special case
+         */
+        template <derived_from<Iterable<typename TRAITS::CountedValueType>> RESULT_CONTAINER = MultiSet<T, TRAITS>, predicate<typename TRAITS::CountedValueType> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
+
+    public:
+        /**
          *  Return the function used to compare if two elements are equal (not to be confused with MultiSet<>::EqualsComparer)
          *
          *  @todo consider RENAMING this to GetElementEqualsComparer() - similarly for TYPE

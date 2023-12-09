@@ -647,11 +647,9 @@ namespace Stroika::Foundation::Traversal {
          *
          *  BASED ON Microsoft .net Linq.
          *
-         *  This returns an Iterable<T> with a subset of data - including only the items that pass the argument filter funtion.
-         *
-         *  The variants that take a template argument allow constructing a specific container type instead of an iterable.
-         *  And the variant that takes an optional empty result container allows constructing a specific subtype of container (backend).
-         *  Mostly ignore these overloads.
+         *  This returns either an Iterable<T>, or a concrete container (provided template argument). If returning
+         *  just an Iterable<T>, then the result is lazy evaluated. If a concrete container is provided, its fully constructed
+         *  when Where returns.
          *
          *  \par Example Usage
          *      \code
@@ -661,14 +659,16 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note   Could have been called EachWith, EachWhere, EachThat (), AllThat, AllWhere, Filter, or SubsetWhere.
          * 
-         *  \note   This is NEARLY IDENTICAL to the Map<RESULT,RESULT_CONTAINER> function - where it uses its optional returning filter function.
-         *          But for this use case, its perhaps a bit terser, so maybe still useful --LGP 2022-11-15
+         *  \note   This is NEARLY IDENTICAL to the Map<RESULT_CONTAINER> function - where it uses its optional returning filter function.
+         *          Please where cannot be used to transform the shape of the data (e.g. projections) whereas Map() can.
+         *          But for the filter use case, this is a bit terser, so maybe still useful --LGP 2022-11-15
+         *     
+         *  \see See also Map<RESULT_CONTAINER,EXTRACT_FUNCTION> ()
          */
-        nonvirtual Iterable<T> Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
-        template <typename RESULT_CONTAINER>
-        nonvirtual RESULT_CONTAINER Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const;
-        template <typename RESULT_CONTAINER>
-        nonvirtual RESULT_CONTAINER Where (const function<bool (ArgByValueType<T>)>& includeIfTrue, RESULT_CONTAINER&& emptyResult) const;
+        template <derived_from<Iterable<T>> RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
+        template <derived_from<Iterable<T>> RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue, RESULT_CONTAINER&& emptyResult) const;
 
     public:
         /**
@@ -716,9 +716,8 @@ namespace Stroika::Foundation::Traversal {
          *          The overloads returning RESULT_CONTAINER DO however immediately construct RESULT_CONTAINER, and fill it in the the result
          *          of traversal before Select() returns.
          * 
-         *  \note   Alias Filter ()
-         *          If the argument function returns optional<THE RETURN TYPE> - then only accumulate those that are returned 
-         *          with has_value () (so also can be used to filter).
+         *  \note   This can be used to filter data, but if that is the only goal, 'Where' is a better choice. If the argument function
+         *          returns optional<THE RETURN TYPE> - then only accumulate those that are returned with has_value () (so also can be used to filter).
          *
          *  \par Example Usage
          *      \code
@@ -756,9 +755,7 @@ namespace Stroika::Foundation::Traversal {
          *      Filtering a list example:
          *      \code
          *          // GetAssociatedContentType -> optional<String> - skip items that are 'missing'
-         *          possibleFileSuffixes.Map ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ())
-         *          // OR
-         *          possibleFileSuffixes.Map<Set<InternetMediaType>> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); })
+         *          possibleFileSuffixes.Map<Set<InternetMediaType>> ([&] (String suffix) -> InternetMediaType { return r.GetAssociatedContentType (suffix); })
          *      \endcode
          */
         template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> EXTRACT_FUNCTION>

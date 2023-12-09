@@ -111,6 +111,13 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderKeyComparer ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <derived_from<Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> RESULT_CONTAINER, typename INCLUDE_PREDICATE>
+    inline RESULT_CONTAINER SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
+        requires (predicate<INCLUDE_PREDICATE, KEY_TYPE> or predicate<INCLUDE_PREDICATE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>)
+    {
+        return inherited::Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue));
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline strong_ordering SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=> (const SortedAssociation& rhs) const
     {
         // nb: no need to take into account comparison on values, because total ordering on keys sequences these elements

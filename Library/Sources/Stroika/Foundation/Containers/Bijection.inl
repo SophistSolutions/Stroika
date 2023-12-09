@@ -246,10 +246,17 @@ namespace Stroika::Foundation::Containers {
         return Iterable<DOMAIN_TYPE>{move (tmp)};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where (const function<bool (pair<DomainType, RangeType>)>& includeIfTrue) const -> Bijection
+    template <derived_from<Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>> RESULT_CONTAINER, predicate<pair<DOMAIN_TYPE, RANGE_TYPE>> INCLUDE_PREDICATE>
+    inline auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where (INCLUDE_PREDICATE&& includeIfTrue) const -> RESULT_CONTAINER
     {
-        // @todo possibly optimize - for case where includeIfTrue always true, better to return *this instead of new Bijection
-        return inherited::template Where<Bijection> (includeIfTrue);
+        if constexpr (derived_from<RESULT_CONTAINER, Bijection>) {
+            // clone the rep so we retain any ordering function/etc, rep type
+            return inherited::template Where<RESULT_CONTAINER> (
+                forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue)); // default Iterable<> implementation then...
+        }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::WhereDomainIntersects (const Iterable<DomainType>& domainValues) const -> Bijection

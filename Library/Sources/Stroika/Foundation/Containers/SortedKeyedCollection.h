@@ -150,6 +150,15 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const;
 
+    public:
+        /**
+         *  \brief subset of this SortedKeyedCollection matching filter-function
+         * 
+         *  Identical to base class code, but for differnt RESULT_CONTAINER default.
+         */
+        template <derived_from<Iterable<T>> RESULT_CONTAINER = SortedKeyedCollection<T, KEY_TYPE, TRAITS>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
+
     protected:
         /**
          */

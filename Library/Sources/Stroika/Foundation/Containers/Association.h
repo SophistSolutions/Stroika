@@ -453,8 +453,9 @@ namespace Stroika::Foundation::Containers {
          *           VerifyTestResult ((m.Where ([](int key) { return Math::IsPrime (key); }) == Association<int, int>{{2, 4}, {3, 5}, {5, 7}}));
          *      \endcode
          */
-        nonvirtual ArchetypeContainerType Where (const function<bool (ArgByValueType<key_type>)>& includeIfTrue) const;
-        nonvirtual ArchetypeContainerType Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const;
+        template <derived_from<Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> RESULT_CONTAINER = Association<KEY_TYPE, MAPPED_VALUE_TYPE>, typename INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const
+            requires (predicate<INCLUDE_PREDICATE, KEY_TYPE> or predicate<INCLUDE_PREDICATE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>);
 
     public:
         /**

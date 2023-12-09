@@ -346,24 +346,34 @@ namespace Stroika::Foundation::Containers {
 #endif
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (const function<bool (ArgByValueType<key_type>)>& includeIfTrue) const -> ArchetypeContainerType
+    template <derived_from<Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> RESULT_CONTAINER, typename INCLUDE_PREDICATE>
+    inline auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (INCLUDE_PREDICATE&& includeIfTrue) const -> RESULT_CONTAINER
+        requires (predicate<INCLUDE_PREDICATE, KEY_TYPE> or predicate<INCLUDE_PREDICATE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>)
     {
-        return inherited::Where ([=] (const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return includeIfTrue (kvp.fKey); },
-                                 ArchetypeContainerType{});
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const -> ArchetypeContainerType
-    {
-        return inherited::Where (includeIfTrue, ArchetypeContainerType{});
+        if constexpr (predicate<INCLUDE_PREDICATE, KEY_TYPE>) {
+            // recurse once with a KVP predicate
+            return Where<RESULT_CONTAINER> (
+                [=] (const ArgByValueType<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& kvp) { return includeIfTrue (kvp.fKey); });
+        }
+        else {
+            if constexpr (derived_from<RESULT_CONTAINER, Mapping>) {
+                // clone the rep so we retain any ordering function/etc, rep type
+                return inherited::template Where<RESULT_CONTAINER> (
+                    forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+            }
+            else {
+                return inherited::template Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue)); // default Iterable<> implementation then...
+            }
+        }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_KEYS>
-    auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::WithKeys (const CONTAINER_OF_KEYS& includeKeys) const -> ArchetypeContainerType
+    inline auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::WithKeys (const CONTAINER_OF_KEYS& includeKeys) const -> ArchetypeContainerType
     {
         return Where ([=] (const key_type& key) -> bool { return includeKeys.Contains (key); });
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::WithKeys (const initializer_list<key_type>& includeKeys) const -> ArchetypeContainerType
+    inline auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::WithKeys (const initializer_list<key_type>& includeKeys) const -> ArchetypeContainerType
     {
         Iterable<key_type> ik{includeKeys};
         return inherited::Where ([=] (const ArgByValueType<value_type>& kvp) { return ik.Contains (kvp.fKey); }, ArchetypeContainerType{});

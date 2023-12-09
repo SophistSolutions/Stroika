@@ -127,6 +127,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  See Iterable<T>::Where - except defaults to MultiSet, and handles cloning rep properties for that special case
+         */
+        template <derived_from<Iterable<typename TRAITS::CountedValueType>> RESULT_CONTAINER = SortedMultiSet<T, TRAITS>, predicate<typename TRAITS::CountedValueType> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
+
+    public:
+        /**
          *  Compare sequentially using the associated GetElementInOrderComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedMultiSet& rhs) const;

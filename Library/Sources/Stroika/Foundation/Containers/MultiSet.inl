@@ -335,6 +335,19 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().OccurrencesOf (item);
     }
     template <typename T, typename TRAITS>
+    template <derived_from<Iterable<typename TRAITS::CountedValueType>> RESULT_CONTAINER, predicate<typename TRAITS::CountedValueType> INCLUDE_PREDICATE>
+    inline RESULT_CONTAINER MultiSet<T, TRAITS>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
+    {
+        if constexpr (derived_from<RESULT_CONTAINER, MultiSet>) {
+            // clone the rep so we retain the ordering function
+            return inherited::template Where<RESULT_CONTAINER> (
+                forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue)); // default Iterable<> interpretation
+        }
+    }
+    template <typename T, typename TRAITS>
     inline MultiSet<T, TRAITS>& MultiSet<T, TRAITS>::operator+= (ArgByValueType<T> item)
     {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item, 1);

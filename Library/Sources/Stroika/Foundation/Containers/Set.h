@@ -354,6 +354,8 @@ namespace Stroika::Foundation::Containers {
          *  Apply the function function to each element, and return all the ones for which it was true.
          *
          *  \note   Alias - this could have been called 'Subset' - as it constructs a subset.
+         * 
+         *  \note if the RESULT_CONTAINER (as is default) inherits from Set<T>, the ordering relation is maintained in the resulting container
          *
          *  @see Iterable<T>::Where
          *
@@ -363,7 +365,8 @@ namespace Stroika::Foundation::Containers {
          *          VerifyTestResult ((s.Where ([](int i) {return Math::IsPrime (i); }) == Set<int>{ 2, 3, 5 }));
          *      \endcode
          */
-        nonvirtual Set Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const;
+        template <derived_from<Iterable<T>> RESULT_CONTAINER = Set<T>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
 
     public:
         struct EqualsComparer;

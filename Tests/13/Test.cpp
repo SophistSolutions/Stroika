@@ -113,6 +113,20 @@ namespace {
 }
 
 namespace {
+    namespace ExampleUsingWhere {
+        void DoTest ()
+        {
+            Debug::TraceContextBumper ctx{"{}::ExampleUsingWhere"};
+            {
+                Collection<int> c{1, 2, 3, 4, 5, 6};
+                VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SetEquals (Iterable<int>{2, 4, 6}));
+                VerifyTestResult (c.Where<Iterable<int>> ([] (int i) { return i % 2 == 0; }).SetEquals (Iterable<int>{2, 4, 6})); // to get lazy evaluation
+            }
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -158,6 +172,7 @@ namespace {
 
         ExampleCTORS_Test_2_::DoTest ();
         RemoveAndUpdateIteratorUpdate_Test3::DoTest ();
+        ExampleUsingWhere::DoTest ();
 
         VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }

@@ -139,6 +139,16 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief subset of this SortedMapping matching filter-function
+         * 
+         *  Identical to base class code, but for differnt RESULT_CONTAINER default.
+         */
+        template <derived_from<Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> RESULT_CONTAINER = SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>, typename INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const
+            requires (predicate<INCLUDE_PREDICATE, KEY_TYPE> or predicate<INCLUDE_PREDICATE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>);
+
+    public:
+        /**
          *  Compare sequentially using the associated GetInOrderKeyComparer ()  
          */
         nonvirtual strong_ordering operator<=> (const SortedMapping& rhs) const;

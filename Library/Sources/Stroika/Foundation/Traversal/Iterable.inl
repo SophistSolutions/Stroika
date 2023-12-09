@@ -451,43 +451,52 @@ namespace Stroika::Foundation::Traversal {
         return SequentialEquals (*this, rhs, forward<EQUALS_COMPARER> (equalsComparer), useIterableSize);
     }
     template <typename T>
-    Iterable<T> Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
+    template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+    inline RESULT_CONTAINER Iterable<T>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
     {
-        RequireNotNull (includeIfTrue);
-        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-        auto sharedContext = make_shared<Iterable<T>> (*this);
-        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
-                                            includeIfTrue] () mutable -> optional<T> {
-            while (perIteratorContextBaseIterator and not includeIfTrue (*perIteratorContextBaseIterator)) {
-                ++perIteratorContextBaseIterator;
-            }
-            if (perIteratorContextBaseIterator) {
-                auto tmp = *perIteratorContextBaseIterator;
-                ++perIteratorContextBaseIterator;
-                return move (tmp);
-            }
-            return nullopt;
-        };
-        return CreateGenerator (getNext);
-    }
-    template <typename T>
-    template <typename RESULT_CONTAINER>
-    inline RESULT_CONTAINER Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
-    {
-        return Where<RESULT_CONTAINER> (includeIfTrue, RESULT_CONTAINER{});
-    }
-    template <typename T>
-    template <typename RESULT_CONTAINER>
-    RESULT_CONTAINER Iterable<T>::Where (const function<bool (ArgByValueType<T>)>& includeIfTrue, RESULT_CONTAINER&& emptyResult) const
-    {
-        Require (emptyResult.empty ());
-        RESULT_CONTAINER result = forward<RESULT_CONTAINER> (emptyResult);
-        for (const auto& i : Where (includeIfTrue)) {
-            result.Add (i);
+        //
+        // LAZY evaluate Iterable<> and for concrete container types, explicitly create the object.
+        //
+        if constexpr (same_as<RESULT_CONTAINER, Iterable<T>>) {
+            // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
+            auto sharedContext = make_shared<Iterable<T>> (*this);
+            // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
+            // Both the 'sharedContext' and the i' get stored into the lambda closure so they get appropriately copied as you copy iterators
+            function<optional<T> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (), includeIfTrue] () mutable -> optional<T> {
+                while (i and not includeIfTrue (*i)) {
+                    ++i;
+                }
+                if (i) {
+                    auto tmp = *i;
+                    ++i;
+                    return move (tmp);
+                }
+                return nullopt;
+            };
+            return CreateGenerator (getNext);
         }
-        return result;
+        else {
+            return Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{});
+        }
+    }
+    template <typename T>
+    template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+    RESULT_CONTAINER Iterable<T>::Where (INCLUDE_PREDICATE&& includeIfTrue, [[maybe_unused]] RESULT_CONTAINER&& emptyResult) const
+    {
+        if constexpr (same_as<RESULT_CONTAINER, Iterable<T>>) {
+            // no point in emptyResult overload; vector to one spot for Iterable<> lazy implementation
+            return Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue));
+        }
+        else {
+            Require (emptyResult.empty ());
+            RESULT_CONTAINER result = forward<RESULT_CONTAINER> (emptyResult);
+            this->Apply ([&result, &includeIfTrue] (Configuration::ArgByValueType<T> arg) {
+                if (includeIfTrue (arg)) {
+                    Containers::Adapters::Adder<RESULT_CONTAINER>::Add (&result, arg);
+                }
+            });
+            return result;
+        }
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>

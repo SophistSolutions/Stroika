@@ -267,11 +267,20 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Apply the function function to each element, and return all the ones for which it was true.
+         *  \brief return a subset of the Collection for which includeIfTrue returns true.
+         * 
+         *  Defaults to returning a Collection<>, but pass in Iterable<T> type argument to get a lazy-evaluated iterable result.
          *
-         *  @see Iterable<T>::Where
+         *  \par Example Usage
+         *      \code
+         *          Collection<int> c { 1, 2, 3, 4, 5, 6 };
+         *          VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SetEquals (Iterable<int> { 2, 4, 6 }));
+         *          VerifyTestResult (c.Where<Iterable<int>> ([] (int i) { return i % 2 == 0; }).SetEquals (Iterable<int> { 2, 4, 6 })); // to get lazy evaluation
+         *      \endcode
+         *
          */
-        nonvirtual Collection<T> Where (const function<bool (ArgByValueType<value_type>)>& doToElement) const;
+        template <derived_from<Iterable<T>> RESULT_CONTAINER = Collection<T>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
 
     public:
         /**

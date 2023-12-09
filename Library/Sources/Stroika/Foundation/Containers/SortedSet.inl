@@ -117,6 +117,12 @@ namespace Stroika::Foundation::Containers {
     {
         return inherited ::template Map<RESULT_CONTAINER> (forward<EXTRACT_FUNCTION> (extract));
     }
+    template <typename T>
+    template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+    inline RESULT_CONTAINER SortedSet<T>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
+    {
+        return inherited::template Where<RESULT_CONTAINER> (includeIfTrue); // inherited Set<> implementation does the right thing
+    }
 
 }
 

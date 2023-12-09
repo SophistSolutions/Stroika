@@ -143,6 +143,12 @@ namespace Stroika::Foundation::Containers {
             requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
                       convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>);
 
+    public:
+        /**
+         */
+        template <derived_from<Iterable<T>> RESULT_CONTAINER = SortedSet<T>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
+
     protected:
         /**
          */

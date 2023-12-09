@@ -139,6 +139,16 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual strong_ordering operator<=> (const SortedAssociation& rhs) const;
 
+    public:
+        /**
+         *  \brief subset of this SortedAssocation matching filter-function
+         * 
+         *  Identical to base class code, but for differnt RESULT_CONTAINER default.
+         */
+        template <derived_from<Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> RESULT_CONTAINER = SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>, typename INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const
+            requires (predicate<INCLUDE_PREDICATE, KEY_TYPE> or predicate<INCLUDE_PREDICATE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>);
+
     protected:
         /**
          */

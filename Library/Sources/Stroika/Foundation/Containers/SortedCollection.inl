@@ -116,6 +116,12 @@ namespace Stroika::Foundation::Containers {
         _SafeReadRepAccessor<_IRep>{this}._GetRep ().Remove (item);
     }
     template <typename T>
+    template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+    inline RESULT_CONTAINER SortedCollection<T>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
+    {
+        return inherited::template Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue)); // base class impl file - just changing default RESULT_CONTAINER
+    }
+    template <typename T>
     inline bool SortedCollection<T>::operator== (const SortedCollection& rhs) const
     {
         auto elementEqualsComparer = Common::EqualsComparerAdapter{this->GetInOrderComparer ()};

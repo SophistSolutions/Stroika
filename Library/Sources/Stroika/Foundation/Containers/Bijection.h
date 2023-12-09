@@ -24,8 +24,6 @@
  *
  *  TODO:
  *
- *      @todo   Support Where (hide iterable one)
- *
  *      @todo   Best backend I can think of would be two opposing maps (or hash tables). Discuss with
  *              Sterl to see if he can think of any way todo this that doesn't double the storage
  *              of a regular Mapping (without exhaustive search on lookup from range).
@@ -340,7 +338,8 @@ namespace Stroika::Foundation::Containers {
         /**
          * \brief Like Iterable<T>::Where, but returning a bijection - subset of this bijection where includeIfTrue is true
          */
-        nonvirtual Bijection Where (const function<bool (pair<DomainType, RangeType>)>& includeIfTrue) const;
+        template <derived_from<Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>> RESULT_CONTAINER = Bijection<DOMAIN_TYPE, RANGE_TYPE>, predicate<pair<DOMAIN_TYPE, RANGE_TYPE>> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
 
     public:
         /**

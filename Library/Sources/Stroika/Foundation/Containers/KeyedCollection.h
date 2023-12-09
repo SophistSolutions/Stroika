@@ -449,14 +449,15 @@ namespace Stroika::Foundation::Containers {
          *
          *  @see Iterable<T>::Where
          */
-        nonvirtual KeyedCollection Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const;
+        template <derived_from<Iterable<T>> RESULT_CONTAINER = KeyedCollection<T, KEY_TYPE, TRAITS>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
 
     public:
         struct EqualsComparer;
 
     public:
         /**
-         * Simply intdirect to KeyedCollection<>::EqualsComparer
+         * Simply indirect to KeyedCollection<>::EqualsComparer
          */
         nonvirtual bool operator== (const KeyedCollection& rhs) const;
         nonvirtual bool operator== (const Iterable<value_type>& rhs) const;

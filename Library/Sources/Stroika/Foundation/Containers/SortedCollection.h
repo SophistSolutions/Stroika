@@ -18,8 +18,6 @@
  *
  *
  *  TODO:
- *      @todo   Support Iterable<>::Where overload?
- *
  *      @todo   Add Equals(), Contains, Remove(T) methods (we have the virtuals in rep already)
  *
  *      @todo   Improve test cases, and notice that sorting doesn't actually work for sorted-linked-list.
@@ -155,6 +153,15 @@ namespace Stroika::Foundation::Containers {
          */
         using inherited::Remove;
         nonvirtual void Remove (ArgByValueType<T> item);
+
+    public:
+        /**
+         *  \brief subset of this SortedCollection matching filter-function
+         * 
+         *  Identical to base class code, but for differnt RESULT_CONTAINER default.
+         */
+        template <derived_from<Iterable<T>> RESULT_CONTAINER = SortedCollection<T>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
 
     public:
         /**

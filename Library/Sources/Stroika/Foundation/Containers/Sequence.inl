@@ -147,18 +147,17 @@ namespace Stroika::Foundation::Containers {
         return inherited ::template Map<RESULT_CONTAINER> (forward<EXTRACT_FUNCTION> (extract));
     }
     template <typename T>
-    inline auto Sequence<T>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const -> Sequence
+    template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+    inline RESULT_CONTAINER Sequence<T>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
     {
-#if 1
-        Sequence<T> result;
-        for (const auto& i : Iterable<T>::Where (includeIfTrue)) {
-            //result.Add (i);
-            result.push_back (i);
+        if constexpr (derived_from<RESULT_CONTAINER, Sequence<T>>) {
+            // clone the rep so we retain the rep type
+            return inherited::template Where<RESULT_CONTAINER> (
+                includeIfTrue, RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
         }
-        return result;
-#else
-        return Iterable<T>::Where (doToElement, Sequence<T>{});
-#endif
+        else {
+            return inherited::template Where<RESULT_CONTAINER> (includeIfTrue);
+        }
     }
     template <typename T>
     template <IPotentiallyComparer<T> INORDER_COMPARER_TYPE>

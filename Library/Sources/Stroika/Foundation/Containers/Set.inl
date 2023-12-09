@@ -272,9 +272,17 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    inline Set<T> Set<T>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const
+    template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+    inline RESULT_CONTAINER Set<T>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
     {
-        return Iterable<T>::Where (includeIfTrue, Set<T>{});
+        if constexpr (derived_from<RESULT_CONTAINER, Set<T>>) {
+            // clone the rep so we retain the ordering function
+            return inherited::template Where<RESULT_CONTAINER> (
+                forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue)); // default Iterable<> interpretation
+        }
     }
     template <typename T>
     bool Set<T>::Intersects (const Iterable<value_type>& rhs) const

@@ -121,6 +121,12 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementInOrderComparer ();
     }
     template <typename T, typename TRAITS>
+    template <derived_from<Iterable<typename TRAITS::CountedValueType>> RESULT_CONTAINER, predicate<typename TRAITS::CountedValueType> INCLUDE_PREDICATE>
+    inline RESULT_CONTAINER SortedMultiSet<T, TRAITS>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
+    {
+        return inherited::template Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue)); // default inherited interpretation
+    }
+    template <typename T, typename TRAITS>
     inline strong_ordering SortedMultiSet<T, TRAITS>::operator<=> (const SortedMultiSet& rhs) const
     {
         return typename Iterable<typename TRAITS::CountedValueType>::SequentialThreeWayComparer{

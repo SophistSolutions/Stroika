@@ -288,7 +288,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  @see Iterable<T>::Where
          */
-        nonvirtual Sequence Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const;
+        template <derived_from<Iterable<T>> RESULT_CONTAINER = Sequence<T>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
 
     public:
         /**
