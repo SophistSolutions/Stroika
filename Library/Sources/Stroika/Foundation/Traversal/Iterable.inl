@@ -611,46 +611,69 @@ namespace Stroika::Foundation::Traversal {
         requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
                   convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
     {
-        using RESULT_ELEMENT    = typename RESULT_CONTAINER::value_type;
-        constexpr bool kIsLazy_ = same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>; // For now use vector and lazy not truly implemented
-        using TMP_RESULT_CONTAINER = conditional_t<kIsLazy_, vector<RESULT_ELEMENT>, RESULT_CONTAINER>;
-        TMP_RESULT_CONTAINER c;
+        using RESULT_ELEMENT = typename RESULT_CONTAINER::value_type;
+        constexpr bool kLazyEvaluateIteration_ = same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>; // For now use vector and lazy not truly implemented
         constexpr bool kOptionalExtractor_ = not convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> and
                                              convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>;
-        // note  - don't reserve if kOptionalExtractor_ cuz don't know how much to reserve
-        if constexpr (not kOptionalExtractor_) {
-            if constexpr (requires (RESULT_CONTAINER p) { p.reserve (3u); }) {
-                c.reserve (this->size ());
-            }
-        }
-        this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
-            auto adder = [&c] (Configuration::ArgByValueType<RESULT_ELEMENT> item2Add) {
-                if constexpr (requires (TMP_RESULT_CONTAINER p) { p.push_back (declval<RESULT_ELEMENT> ()); }) {
-                    c.push_back (item2Add);
-                }
-                else if constexpr (requires (RESULT_CONTAINER p) { p.Add (declval<RESULT_ELEMENT> ()); }) {
-                    c.Add (item2Add);
-                }
-                else if constexpr (requires (RESULT_CONTAINER p) { p.insert (declval<RESULT_ELEMENT> ()); }) {
-                    c.insert (item2Add);
+        if constexpr (kLazyEvaluateIteration_) {
+            // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
+            auto sharedContext = make_shared<Iterable<T>> (*this);
+            // Both the 'sharedContext' and the 'i' get stored into the lambda closure so they get appropriately copied as you copy iterators
+            function<optional<RESULT_ELEMENT> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (),
+                                                             extract] () mutable -> optional<RESULT_ELEMENT> {
+                // tricky. The function we are defining returns nullopt as a sentinel to signal end of iteration. The function we are GIVEN returns nullopt
+                // to signal skip this item. So adjust accordingly
+                if constexpr (kOptionalExtractor_) {
+                    while (i) {
+                        optional<RESULT_ELEMENT> t = extract (*i);
+                        ++i;
+                        if (t) {
+                            return *t;
+                        }
+                    }
+                    return nullopt;
                 }
                 else {
-                    AssertNotImplemented ();
+                    if (i) {
+                        RESULT_ELEMENT result = extract (*i);
+                        ++i;
+                        return move (result);
+                    }
+                    return nullopt;
                 }
             };
-            if constexpr (kOptionalExtractor_) {
-                if (auto oarg = extract (arg)) {
-                    adder (*oarg);
-                }
-            }
-            else {
-                adder (extract (arg));
-            }
-        });
-        if constexpr (kIsLazy_) {
-            return RESULT_CONTAINER{c};
+            return CreateGenerator (getNext);
         }
         else {
+            RESULT_CONTAINER c;
+            // reserve iff we know the right size
+            if constexpr (not kOptionalExtractor_ and requires (RESULT_CONTAINER p) { p.reserve (3u); }) {
+                c.reserve (this->size ());
+            }
+            this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
+                auto adder = [&c] (Configuration::ArgByValueType<RESULT_ELEMENT> item2Add) {
+                    if constexpr (requires (RESULT_CONTAINER p) { p.push_back (declval<RESULT_ELEMENT> ()); }) {
+                        c.push_back (item2Add);
+                    }
+                    else if constexpr (requires (RESULT_CONTAINER p) { p.Add (declval<RESULT_ELEMENT> ()); }) {
+                        c.Add (item2Add);
+                    }
+                    else if constexpr (requires (RESULT_CONTAINER p) { p.insert (declval<RESULT_ELEMENT> ()); }) {
+                        c.insert (item2Add);
+                    }
+                    else {
+                        AssertNotImplemented ();
+                    }
+                };
+                if constexpr (kOptionalExtractor_) {
+                    if (auto oarg = extract (arg)) {
+                        adder (*oarg);
+                    }
+                }
+                else {
+                    adder (extract (arg));
+                }
+            });
             return c;
         }
     }
