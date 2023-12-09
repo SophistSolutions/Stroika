@@ -451,7 +451,11 @@ namespace Stroika::Foundation::Traversal {
         return SequentialEquals (*this, rhs, forward<EQUALS_COMPARER> (equalsComparer), useIterableSize);
     }
     template <typename T>
+            #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    template <typename RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+#else
     template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+#endif
     inline RESULT_CONTAINER Iterable<T>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
     {
         //
@@ -480,7 +484,11 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
+            #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    template <typename RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+#else
     template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+#endif
     RESULT_CONTAINER Iterable<T>::Where (INCLUDE_PREDICATE&& includeIfTrue, [[maybe_unused]] RESULT_CONTAINER&& emptyResult) const
     {
         if constexpr (same_as<RESULT_CONTAINER, Iterable<T>>) {

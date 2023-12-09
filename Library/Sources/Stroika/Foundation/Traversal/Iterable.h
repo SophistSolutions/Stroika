@@ -666,10 +666,17 @@ namespace Stroika::Foundation::Traversal {
          *     
          *  \see See also Map<RESULT_CONTAINER,ELEMENT_MAPPER> ()
          */
+        #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        template <typename RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
+        template <typename RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
+        nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue, RESULT_CONTAINER&& emptyResult) const;
+        #else
         template <derived_from<Iterable<T>> RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
         nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
         template <derived_from<Iterable<T>> RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
         nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue, RESULT_CONTAINER&& emptyResult) const;
+        #endif
 
     public:
         /**
