@@ -32,7 +32,8 @@
  *              consider a TEMPLATED PARAMETER for the resulting Container type, so you can create a "Set" or whatever by doing
  *              Where... But tricky to unformly add to different container types. Maybe only ones you can say add, or the adder is
  *              a template paraM?
- *              (AND even there for Where - use AddableAdapter!!!)
+ *              Eg. Distinct, Take, Skip (maybe those sense logically to be transform operations - so maybe OK now doing others but review
+ *              each to see where it makes sense).
  *
  *      @todo   SUBCLASSES of Iterable<> need to overload/replace several of these functions taking
  *              into account (by default) their comparers... Eg. Set<> should overload Distinct to do nothing by
