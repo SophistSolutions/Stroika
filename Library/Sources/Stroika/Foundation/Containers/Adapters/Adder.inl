@@ -22,66 +22,22 @@ namespace Stroika::Foundation::Containers::Adapters {
     inline void Adder<CONTAINER_TYPE>::Add (CONTAINER_TYPE* container, Configuration::ArgByValueType<value_type> value)
     {
         RequireNotNull (container);
-        Add_ (container, value); // if this fails to compile, it probably means your CONTAINER_TYPE doesn't
-                                 // work with Adder (need to add a case or partialy specialize)
-    }
-    template <IAddableTo CONTAINER_TYPE>
-    inline void Adder<CONTAINER_TYPE>::Add_ (Set<value_type>* container, Configuration::ArgByValueType<value_type> value)
-    {
-        RequireNotNull (container);
-        container->Add (value);
-    }
-    template <IAddableTo CONTAINER_TYPE>
-    template <typename T>
-    inline void Adder<CONTAINER_TYPE>::Add_ (MultiSet<T>* container, Configuration::ArgByValueType<value_type> value)
-    {
-        RequireNotNull (container);
-        container->Add (value);
-    }
-    template <IAddableTo CONTAINER_TYPE>
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline void Adder<CONTAINER_TYPE>::Add_ (KeyedCollection<T, KEY_TYPE, TRAITS>* container, Configuration::ArgByValueType<T> value)
-    {
-        RequireNotNull (container);
-        container->Add (value);
-    }
-    template <IAddableTo CONTAINER_TYPE>
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline void Adder<CONTAINER_TYPE>::Add_ (Mapping<KEY_TYPE, VALUE_TYPE>* container, Configuration::ArgByValueType<value_type> value)
-    {
-        RequireNotNull (container);
-        container->Add (value);
-    }
-    template <IAddableTo CONTAINER_TYPE>
-    template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline void Adder<CONTAINER_TYPE>::Add_ (Mapping<KEY_TYPE, VALUE_TYPE>* container, Configuration::ArgByValueType<pair<KEY_TYPE, VALUE_TYPE>> value)
-    {
-        RequireNotNull (container);
-        container->Add (value); // SB OK because Common::KeyValuePair has non-explicit CTOR taking pair<>
-    }
-    template <IAddableTo CONTAINER_TYPE>
-    inline void Adder<CONTAINER_TYPE>::Add_ (set<value_type>* container, Configuration::ArgByValueType<value_type> value)
-    {
-        RequireNotNull (container);
-        container->insert (value);
-    }
-    template <IAddableTo CONTAINER_TYPE>
-    inline void Adder<CONTAINER_TYPE>::Add_ (vector<value_type>* container, Configuration::ArgByValueType<value_type> value)
-    {
-        RequireNotNull (container);
-        container->push_back (value);
-    }
-    template <IAddableTo CONTAINER_TYPE>
-    inline void Adder<CONTAINER_TYPE>::Add_ (Sequence<value_type>* container, Configuration::ArgByValueType<value_type> value)
-    {
-        RequireNotNull (container);
-        container->push_back (value);
-    }
-    template <IAddableTo CONTAINER_TYPE>
-    inline void Adder<CONTAINER_TYPE>::Add_ (Collection<value_type>* container, Configuration::ArgByValueType<value_type> value)
-    {
-        RequireNotNull (container);
-        container->Add (value);
+        using CONTAINER_ELT_TYPE = typename CONTAINER_TYPE::value_type;
+        if constexpr (requires (CONTAINER_TYPE p) { p.push_back (declval<CONTAINER_ELT_TYPE> ()); }) {
+            container->push_back (value);
+        }
+        else if constexpr (requires (CONTAINER_TYPE p) { p.push_front (declval<CONTAINER_ELT_TYPE> ()); }) {
+            container->push_front (value);
+        }
+        else if constexpr (requires (CONTAINER_TYPE p) { p.Add (declval<CONTAINER_ELT_TYPE> ()); }) {
+            container->Add (value);
+        }
+        else if constexpr (requires (CONTAINER_TYPE p) { p.insert (declval<CONTAINER_ELT_TYPE> ()); }) {
+            container->insert (value);
+        }
+        else {
+            AssertNotImplemented ();
+        }
     }
 
 }

@@ -10,6 +10,7 @@
 #include "../../../Characters/ToString.h"
 #include "../../../Common/KeyValuePair.h"
 #include "../../../Common/Property.h"
+#include "../../../Containers/Collection.h"
 #include "../../../Containers/Mapping.h"
 #include "../../../Streams/InputStream.h"
 #include "../../../Time/DateTime.h"

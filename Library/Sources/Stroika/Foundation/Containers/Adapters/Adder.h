@@ -6,16 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
-#include <map>
-#include <set>
-#include <vector>
+#include "../../Configuration/Common.h"
 
-#include "../Collection.h"
-#include "../KeyedCollection.h"
-#include "../Mapping.h"
-#include "../MultiSet.h"
-#include "../Sequence.h"
-#include "../Set.h"
 /*
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
@@ -24,62 +16,30 @@ namespace Stroika::Foundation::Containers::Adapters {
 
     using Configuration::ArgByValueType;
 
-    namespace Private_ {
-        struct IAddableTo_ {
-            template <typename T>
-            static constexpr bool IsSupported (...)
-            {
-                return false;
-            }
-            template <typename T>
-            static constexpr bool IsSupported (const Collection<T>*)
-            {
-                return true;
-            }
-            template <typename T, typename KEY_TYPE, typename TRAITS>
-            static constexpr bool IsSupported (const KeyedCollection<T, KEY_TYPE, TRAITS>*)
-            {
-                return true;
-            };
-            template <typename KEY_TYPE, typename VALUE_TYPE>
-            static constexpr bool IsSupported (const Mapping<KEY_TYPE, VALUE_TYPE>*)
-            {
-                return true;
-            };
-            template <typename T>
-            static constexpr bool IsSupported (const set<T>*)
-            {
-                return true;
-            };
-            template <typename T>
-            static constexpr bool IsSupported (const Sequence<T>*)
-            {
-                return true;
-            };
-            template <typename T>
-            static constexpr bool IsSupported (const Set<T>*)
-            {
-                return true;
-            };
-            template <typename T>
-            static constexpr bool IsSupported (const MultiSet<T>*)
-            {
-                return true;
-            };
-            template <typename T>
-            static constexpr bool IsSupported (const vector<T>*)
-            {
-                return true;
-            };
-        };
-
-    }
-
     /**
      *  Concept to say if Adder is supported.
+     * 
+     *  Really just any container that supports (with a single argument of the value_type):
+     *      o   push_back
+     *      o   push_front
+     *      o   Add ()
+     *      o   insert
+     * 
+     *  \note Compatable with (not exhaustive list)
+     *      o   std::set
+     *      o   std::vector
+     *      o   std::map
+     *      o   Containers::Sequence
+     *      o   Containers::Collection
+     *      o   Containers::KeyedCollection
+     *      o   Containers::Mapping
+     *      o   Containers::Multiset
      */
     template <typename CONTAINER>
-    concept IAddableTo = Private_::IAddableTo_::IsSupported (static_cast<const CONTAINER*> (nullptr));
+    concept IAddableTo = requires (CONTAINER p) { p.push_back (declval<typename CONTAINER::value_type> ()); } or
+                         requires (CONTAINER p) { p.push_front (declval<typename CONTAINER::value_type> ()); } or
+                         requires (CONTAINER p) { p.Add (declval<typename CONTAINER::value_type> ()); } or
+                         requires (CONTAINER p) { p.insert (declval<typename CONTAINER::value_type> ()); };
 
     /**
      *  Concept that returns true if the given type of element ELT2ADD can be added to the argument container.
@@ -90,6 +50,8 @@ namespace Stroika::Foundation::Containers::Adapters {
     concept IAddableCompatible = IAddableTo<CONTAINER> and convertible_to<ELT2ADD, typename CONTAINER::value_type>;
 
     /**
+     *  \brief utility for generic code that wishes to add something to a somewhat arbitrary container, where the ordering
+     *         of the addition is undefined/doesn't matter (whatever makes sense by default for that container).
      */
     template <IAddableTo CONTAINER_TYPE>
     struct Adder {
@@ -102,23 +64,6 @@ namespace Stroika::Foundation::Containers::Adapters {
         /**
          */
         static void Add (CONTAINER_TYPE* container, Configuration::ArgByValueType<value_type> value);
-
-    private:
-        // Cannot do this with if constexpr locally inside Add, cuz hard todo the template matching/overloading
-        // MAYBE possible, but not easy/obvious like this
-        static void Add_ (Collection<value_type>* container, Configuration::ArgByValueType<value_type> value);
-        template <typename T, typename KEY_TYPE, typename TRAITS>
-        static void Add_ (KeyedCollection<T, KEY_TYPE, TRAITS>* container, Configuration::ArgByValueType<T> value);
-        template <typename KEY_TYPE, typename VALUE_TYPE>
-        static void Add_ (Mapping<KEY_TYPE, VALUE_TYPE>* container, Configuration::ArgByValueType<value_type> value);
-        template <typename KEY_TYPE, typename VALUE_TYPE>
-        static void Add_ (Mapping<KEY_TYPE, VALUE_TYPE>* container, Configuration::ArgByValueType<pair<KEY_TYPE, VALUE_TYPE>> value);
-        static void Add_ (set<value_type>* container, Configuration::ArgByValueType<value_type> value);
-        static void Add_ (Sequence<value_type>* container, Configuration::ArgByValueType<value_type> value);
-        static void Add_ (Set<value_type>* container, Configuration::ArgByValueType<value_type> value);
-        template <typename T>
-        static void Add_ (MultiSet<T>* container, Configuration::ArgByValueType<value_type> value);
-        static void Add_ (vector<value_type>* container, Configuration::ArgByValueType<value_type> value);
     };
 
 }

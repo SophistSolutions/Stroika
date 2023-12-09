@@ -12,6 +12,7 @@
 #include <execution>
 #include <set>
 
+#include "../Containers/Adapters/Adder.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Cast.h"
 #include "../Math/Statistics.h"
@@ -586,32 +587,18 @@ namespace Stroika::Foundation::Traversal {
         }
         else {
             RESULT_CONTAINER c;
-            // reserve iff we know the right size
+            // reserve iff we know the right size and container supports reserve
             if constexpr (not kOptionalExtractor_ and requires (RESULT_CONTAINER p) { p.reserve (3u); }) {
                 c.reserve (this->size ());
             }
             this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
-                auto adder = [&c] (Configuration::ArgByValueType<RESULT_ELEMENT> item2Add) {
-                    if constexpr (requires (RESULT_CONTAINER p) { p.push_back (declval<RESULT_ELEMENT> ()); }) {
-                        c.push_back (item2Add);
-                    }
-                    else if constexpr (requires (RESULT_CONTAINER p) { p.Add (declval<RESULT_ELEMENT> ()); }) {
-                        c.Add (item2Add);
-                    }
-                    else if constexpr (requires (RESULT_CONTAINER p) { p.insert (declval<RESULT_ELEMENT> ()); }) {
-                        c.insert (item2Add);
-                    }
-                    else {
-                        AssertNotImplemented ();
-                    }
-                };
                 if constexpr (kOptionalExtractor_) {
                     if (auto oarg = extract (arg)) {
-                        adder (*oarg);
+                        Containers::Adapters::Adder<RESULT_CONTAINER>::Add (&c, *oarg);
                     }
                 }
                 else {
-                    adder (extract (arg));
+                    Containers::Adapters::Adder<RESULT_CONTAINER>::Add (&c, extract (arg));
                 }
             });
             return c;
