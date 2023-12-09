@@ -275,6 +275,15 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief same as Iterable<>::Map () - except defaults to returning a Sequence<>.
+         */
+        template <typename RESULT_CONTAINER = Sequence<T>, invocable<T> EXTRACT_FUNCTION>
+        nonvirtual RESULT_CONTAINER Map (EXTRACT_FUNCTION&& extract) const
+            requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>);
+
+    public:
+        /**
          *  Apply the function function to each element, and return all the ones for which it was true.
          *
          *  @see Iterable<T>::Where

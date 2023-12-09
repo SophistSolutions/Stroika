@@ -134,6 +134,15 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual strong_ordering operator<=> (const SortedSet& rhs) const;
 
+    public:
+        /**
+         *  \brief same as Iterable<>::Map () -or Set<>::Map () except defaults to returning a SortedSet<>.
+         */
+        template <typename RESULT_CONTAINER = SortedSet<T>, invocable<T> EXTRACT_FUNCTION>
+        nonvirtual RESULT_CONTAINER Map (EXTRACT_FUNCTION&& extract) const
+            requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>);
+
     protected:
         /**
          */
