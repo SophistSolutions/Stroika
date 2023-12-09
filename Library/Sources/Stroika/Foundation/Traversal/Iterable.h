@@ -332,7 +332,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note Design Note: noexcept
          *      We chose to allow the empty () method to allow exceptions, since an Iterable<T>
-         *      is general enough (say externally network data sourced) - it could be temporily or otherwise unavailable.
+         *      is general enough (say externally network data sourced) - it could be temporarily or otherwise unavailable.
          * 
          *  \em Performance:
          *      The performance of size() may vary wildly. It could be anywhere from O(1) to O(N)
@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note Design Note: noexcept
          *      We chose to allow the empty () method to allow exceptions, since an Iterable<T>
-         *      is general enough (say externally network data sourced) - it could be temporily or otherwise unavailable.
+         *      is general enough (say externally network data sourced) - it could be temporarily or otherwise unavailable.
          * 
          *  \em Performance:
          *      The performance of empty() may vary wildly (@see size) but will nearly always be O(1).
@@ -383,7 +383,7 @@ namespace Stroika::Foundation::Traversal {
          *      This algorithm is O(N) * O(M) where N and M are the length of the two respective iterables.
          *
          *  \note \todo - consider alternative implementation where we accumulate into std::set<>. 
-         *                Assume without loss of generality that N is the smaller side (can be determinted in O(M)).
+         *                Assume without loss of generality that N is the smaller side (can be determined in O(M)).
          *                Accumulate into set would take N*log (N).
          *                Then we would iterate over M (O(M)), and each time check log(N)). So time would be sum of
          *                N*log (N) + M*(log(N)) or (N + M)*log(N).
