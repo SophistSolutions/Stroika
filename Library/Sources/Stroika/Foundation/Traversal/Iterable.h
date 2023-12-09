@@ -664,7 +664,7 @@ namespace Stroika::Foundation::Traversal {
          *          Please where cannot be used to transform the shape of the data (e.g. projections) whereas Map() can.
          *          But for the filter use case, this is a bit terser, so maybe still useful --LGP 2022-11-15
          *     
-         *  \see See also Map<RESULT_CONTAINER,EXTRACT_FUNCTION> ()
+         *  \see See also Map<RESULT_CONTAINER,ELEMENT_MAPPER> ()
          */
         template <derived_from<Iterable<T>> RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
         nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
@@ -759,10 +759,10 @@ namespace Stroika::Foundation::Traversal {
          *          possibleFileSuffixes.Map<Set<InternetMediaType>> ([&] (String suffix) -> InternetMediaType { return r.GetAssociatedContentType (suffix); })
          *      \endcode
          */
-        template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> EXTRACT_FUNCTION>
-        nonvirtual RESULT_CONTAINER Map (EXTRACT_FUNCTION&& extract) const
-            requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
-                      convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>);
+        template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> ELEMENT_MAPPER>
+        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& extract) const
+            requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>);
 
     public:
         /**

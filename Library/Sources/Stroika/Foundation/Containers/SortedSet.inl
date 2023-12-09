@@ -110,12 +110,12 @@ namespace Stroika::Foundation::Containers {
         return typename Iterable<T>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter{GetInOrderComparer ()}}(*this, rhs);
     }
     template <typename T>
-    template <typename RESULT_CONTAINER, invocable<T> EXTRACT_FUNCTION>
-    inline RESULT_CONTAINER SortedSet<T>::Map (EXTRACT_FUNCTION&& extract) const
-        requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
-                  convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
+    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    inline RESULT_CONTAINER SortedSet<T>::Map (ELEMENT_MAPPER&& elementMapper) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
     {
-        return inherited ::template Map<RESULT_CONTAINER> (forward<EXTRACT_FUNCTION> (extract));
+        return inherited ::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper));
     }
     template <typename T>
     template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>

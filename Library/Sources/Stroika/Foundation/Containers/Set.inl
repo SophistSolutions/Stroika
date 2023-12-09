@@ -244,31 +244,31 @@ namespace Stroika::Foundation::Containers {
         return nRemoved;
     }
     template <typename T>
-    template <typename RESULT_CONTAINER, invocable<T> EXTRACT_FUNCTION>
-    RESULT_CONTAINER Set<T>::Map (EXTRACT_FUNCTION&& extract) const
-        requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
-                  convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
+    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    RESULT_CONTAINER Set<T>::Map (ELEMENT_MAPPER&& elementMapper) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
     {
         // @todo reconsider/document limitation here - cuz if 'this' object is one kind of container, we cannot CloneEmpty into another kind. Maybe this only works for same_as not derived_from...
         if constexpr (derived_from<RESULT_CONTAINER, Set<T>>) {
             RESULT_CONTAINER c{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()}; // maintain any comparer, but no data
             constexpr bool   kOptionalExtractor_ =
-                not convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> and
-                convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>;
-            this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
+                not convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> and
+                convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>;
+            this->Apply ([&c, &elementMapper] (Configuration::ArgByValueType<T> arg) {
                 if constexpr (kOptionalExtractor_) {
-                    if (auto oarg = extract (arg)) {
+                    if (auto oarg = elementMapper (arg)) {
                         c.Add (*oarg);
                     }
                 }
                 else {
-                    c.Add (extract (arg));
+                    c.Add (elementMapper (arg));
                 }
             });
             return c;
         }
         else {
-            return inherited::template Map<RESULT_CONTAINER> (forward<EXTRACT_FUNCTION> (extract));
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper));
         }
     }
     template <typename T>

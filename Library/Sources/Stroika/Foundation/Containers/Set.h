@@ -344,10 +344,10 @@ namespace Stroika::Foundation::Containers {
          *  \brief same as Iterable<>::Map () - except defaults to returning a Set<>, and handles cloning
          *         the comparer from 'this' when mapping to a result value_type=T.
          */
-        template <typename RESULT_CONTAINER = Set<T>, invocable<T> EXTRACT_FUNCTION>
-        nonvirtual RESULT_CONTAINER Map (EXTRACT_FUNCTION&& extract) const
-            requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
-                      convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>);
+        template <typename RESULT_CONTAINER = Set<T>, invocable<T> ELEMENT_MAPPER>
+        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const
+            requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>);
 
     public:
         /**

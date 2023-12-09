@@ -139,12 +139,12 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename RESULT_CONTAINER, invocable<T> EXTRACT_FUNCTION>
-    nonvirtual RESULT_CONTAINER Sequence<T>::Map (EXTRACT_FUNCTION&& extract) const
-        requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
-                  convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
+    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    nonvirtual RESULT_CONTAINER Sequence<T>::Map (ELEMENT_MAPPER&& elementMapper) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
     {
-        return inherited ::template Map<RESULT_CONTAINER> (forward<EXTRACT_FUNCTION> (extract));
+        return inherited ::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper));
     }
     template <typename T>
     template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>

@@ -556,26 +556,26 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    template <typename RESULT_CONTAINER, invocable<T> EXTRACT_FUNCTION>
-    RESULT_CONTAINER Iterable<T>::Map (EXTRACT_FUNCTION&& extract) const
-        requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
-                  convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
+    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    RESULT_CONTAINER Iterable<T>::Map (ELEMENT_MAPPER&& elementMapper) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
     {
         using RESULT_ELEMENT = typename RESULT_CONTAINER::value_type;
         constexpr bool kLazyEvaluateIteration_ = same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>; // For now use vector and lazy not truly implemented
-        constexpr bool kOptionalExtractor_ = not convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> and
-                                             convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>;
+        constexpr bool kOptionalExtractor_ = not convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> and
+                                             convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>;
         if constexpr (kLazyEvaluateIteration_) {
             // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
             auto sharedContext = make_shared<Iterable<T>> (*this);
             // Both the 'sharedContext' and the 'i' get stored into the lambda closure so they get appropriately copied as you copy iterators
             function<optional<RESULT_ELEMENT> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (),
-                                                             extract] () mutable -> optional<RESULT_ELEMENT> {
+                                                             elementMapper] () mutable -> optional<RESULT_ELEMENT> {
                 // tricky. The function we are defining returns nullopt as a sentinel to signal end of iteration. The function we are GIVEN returns nullopt
                 // to signal skip this item. So adjust accordingly
                 if constexpr (kOptionalExtractor_) {
                     while (i) {
-                        optional<RESULT_ELEMENT> t = extract (*i);
+                        optional<RESULT_ELEMENT> t = elementMapper (*i);
                         ++i;
                         if (t) {
                             return *t;
@@ -585,7 +585,7 @@ namespace Stroika::Foundation::Traversal {
                 }
                 else {
                     if (i) {
-                        RESULT_ELEMENT result = extract (*i);
+                        RESULT_ELEMENT result = elementMapper (*i);
                         ++i;
                         return move (result);
                     }
@@ -600,14 +600,14 @@ namespace Stroika::Foundation::Traversal {
             if constexpr (not kOptionalExtractor_ and requires (RESULT_CONTAINER p) { p.reserve (3u); }) {
                 c.reserve (this->size ());
             }
-            this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
+            this->Apply ([&c, &elementMapper] (Configuration::ArgByValueType<T> arg) {
                 if constexpr (kOptionalExtractor_) {
-                    if (auto oarg = extract (arg)) {
+                    if (auto oarg = elementMapper (arg)) {
                         Containers::Adapters::Adder<RESULT_CONTAINER>::Add (&c, *oarg);
                     }
                 }
                 else {
-                    Containers::Adapters::Adder<RESULT_CONTAINER>::Add (&c, extract (arg));
+                    Containers::Adapters::Adder<RESULT_CONTAINER>::Add (&c, elementMapper (arg));
                 }
             });
             return c;
