@@ -46,7 +46,7 @@ public:
         Debug::TraceContextBumper ctx{"DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::Write"};
 #endif
         for (VariantValue line : v.As<Sequence<VariantValue>> ()) {
-            Write (line.As<Sequence<VariantValue>> ().Map5<Iterable<String>> ([] (const VariantValue& i) { return i.As<String> (); }), out);
+            Write (line.As<Sequence<VariantValue>> ().Map<Iterable<String>> ([] (const VariantValue& i) { return i.As<String> (); }), out);
         }
     }
     nonvirtual void Write (const Iterable<Sequence<String>>& m, const OutputStream<Characters::Character>::Ptr& out) const

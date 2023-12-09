@@ -204,7 +204,7 @@ namespace {
                         Stroika::TestHarness::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
                                                                      ToString (possibleFileSuffixes).c_str (), ToString (i).c_str (),
                                                                      ToString (possibleFileSuffixes
-                                                                                   .Map5<Iterable<InternetMediaType>> ([&] (String suffix) {
+                                                                                   .Map<Iterable<InternetMediaType>> ([&] (String suffix) {
                                                                                        return r.GetAssociatedContentType (suffix);
                                                                                    })
                                                                                    .As<Set<InternetMediaType>> ())

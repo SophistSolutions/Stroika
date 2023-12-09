@@ -199,7 +199,7 @@ CookieList::CookieList ()
               },
               [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Mapping<String, String>& basicCookies) {
                   CookieList* thisObj      = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookies);
-                  thisObj->fCookieDetails_ = basicCookies.Map5<Iterable<Cookie>> ([] (const auto& i) { return Cookie{i.fKey, i.fValue}; });
+                  thisObj->fCookieDetails_ = basicCookies.Map<Iterable<Cookie>> ([] (const auto& i) { return Cookie{i.fKey, i.fValue}; });
               }}
     , cookieDetails{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<Cookie> {
                         const CookieList* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookieDetails);
@@ -214,7 +214,7 @@ CookieList::CookieList ()
 
 String CookieList::EncodeForCookieHeader () const
 {
-    return String::Join (fCookieDetails_.Map5<Iterable<String>> ([] (const auto& i) { return i.fKey + "="sv + i.fValue; }), "; "sv);
+    return String::Join (fCookieDetails_.Map<Iterable<String>> ([] (const auto& i) { return i.fKey + "="sv + i.fValue; }), "; "sv);
 }
 
 CookieList CookieList::Parse (const String& cookieValueArg)

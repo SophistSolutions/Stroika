@@ -464,13 +464,13 @@ namespace {
 #if qHasFeature_OpenSSL
             Debug::TraceContextBumper ctx{"EnumerateOpenSSLAlgorithmsInContexts_::DoRegressionTests_"};
             Set<String>               defaultContextAvailableCipherAlgorithms =
-                OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map5<Set<String>> ([] (auto i) { return i.pName (); });
+                OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
             Set<String> defaultContextStandardCipherAlgorithms =
-                OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map5<Set<String>> ([] (auto i) { return i.pName (); });
+                OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
             Set<String> defaultContextAvailableDigestAlgorithms =
-                OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().Map5<Set<String>> ([] (auto i) { return i.pName (); });
+                OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
             Set<String> defaultContextStandardDigestAlgorithms =
-                OpenSSL::LibraryContext::sDefault.pStandardDigestAlgorithms ().Map5<Set<String>> ([] (auto i) { return i.pName (); });
+                OpenSSL::LibraryContext::sDefault.pStandardDigestAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); });
 
             DbgTrace (L"defaultContextAvailableCipherAlgorithms = #%d %s", defaultContextAvailableCipherAlgorithms.size (),
                       Characters::ToString (defaultContextAvailableCipherAlgorithms).c_str ());
@@ -631,7 +631,7 @@ namespace {
                 }
                 if (nFailures != 0) {
                     Set<String> allCiphers{
-                        OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map5<Set<String>> ([] (auto i) { return i.pName (); })};
+                        OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); })};
                     Set<String>              passingCiphers              = allCiphers - failingCiphers.Elements ();
                     static const Set<String> kLastSeenAllFailingCiphers_ = {
                         "AES-128-OCB"sv,
@@ -676,8 +676,7 @@ namespace {
                                 .c_str ());
                     }
                     static const Set<String> kStandardCipherAlgorithmNames{
-                        OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map5<Iterable<String>> (
-                            [] (auto i) { return i.pName (); })};
+                        OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); })};
                     if (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames) {
                         Stroika::TestHarness::WarnTestIssue (
                             Characters::Format (L"For provider=%s, some standard ciphers failed: %s", provider.c_str (),

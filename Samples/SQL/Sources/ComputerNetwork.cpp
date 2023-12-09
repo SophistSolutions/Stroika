@@ -111,10 +111,8 @@ void Stroika::Samples::SQL::ComputerNetworksModel (const std::function<Connectio
     };
     auto getAllDevices = [&] () -> Sequence<Device> {
         Statement getAllDevicesStatement = conn.mkStatement (StandardSQLStatements{kDeviceTableSchema_}.GetAllElements ());
-        return getAllDevicesStatement.GetAllRows ()
-            .Map<Device> (
-                [] (const Statement::Row& r) { return Device::kMapper.ToObject<Device> (VariantValue{kDeviceTableSchema_.MapFromDB (r)}); })
-            .As<Sequence<Device>> ();
+        return getAllDevicesStatement.GetAllRows ().Map<Sequence<Device>> (
+            [] (const Statement::Row& r) { return Device::kMapper.ToObject<Device> (VariantValue{kDeviceTableSchema_.MapFromDB (r)}); });
     };
     auto removeDevice = [&] (const GUID& id) {
         Statement deleteDeviceStatement = conn.mkStatement (StandardSQLStatements{kDeviceTableSchema_}.DeleteByID ());

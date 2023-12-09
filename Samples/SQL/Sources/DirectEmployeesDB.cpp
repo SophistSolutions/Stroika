@@ -164,7 +164,7 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
      ***** SIMPLE QUERIES ****
      */
     Statement   getAllNames = conn.mkStatement ("Select NAME from EMPLOYEES;"sv);
-    Set<String> allNames    = getAllNames.GetAllRows (0).Map<String> ([] (VariantValue v) { return v.As<String> (); }).As<Set<String>> ();
+    Set<String> allNames    = getAllNames.GetAllRows (0).Map<Set<String>> ([] (const VariantValue& v) { return v.As<String> (); });
     Assert ((allNames == Set<String>{"Paul", "Allen", "Kim", "David", "Mark", "James", "Teddy"}));
 
     // Either rollup using SQL, or using C++ functional (Iterable) wrappers.
@@ -172,6 +172,6 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
     [[maybe_unused]] double sumSalaryUsingSQL = sumAllSalarys.GetAllRows (0)[0].As<double> ();
     Statement               getAllSalarys     = conn.mkStatement ("select SALARY from EMPLOYEES;"sv);
     [[maybe_unused]] double sumSalaryUsingIterableApply =
-        getAllSalarys.GetAllRows (0).Map<double> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
+        getAllSalarys.GetAllRows (0).Map<Iterable<double>> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
     Assert (Math::NearlyEquals (sumSalaryUsingSQL, sumSalaryUsingIterableApply));
 }

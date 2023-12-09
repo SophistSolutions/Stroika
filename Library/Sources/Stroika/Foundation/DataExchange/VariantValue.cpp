@@ -435,10 +435,10 @@ VariantValue VariantValue::Normalize () const
         case Type::eArray:
             // must recursively normalize all sub-elements
             return VariantValue{
-                As<Sequence<VariantValue>> ().Map5<Sequence<VariantValue>> ([] (const VariantValue& v) { return v.Normalize (); })};
+                As<Sequence<VariantValue>> ().Map<Sequence<VariantValue>> ([] (const VariantValue& v) { return v.Normalize (); })};
         case Type::eMap:
             // must recursively normalize all sub-elements, but also produce a sorted-map
-            return VariantValue{As<Mapping<String, VariantValue>> ().Map5<Containers::SortedMapping<String, VariantValue>> ([] (const KVPT& kvp) {
+            return VariantValue{As<Mapping<String, VariantValue>> ().Map<Containers::SortedMapping<String, VariantValue>> ([] (const KVPT& kvp) {
                 return KVPT{kvp.fKey, kvp.fValue.Normalize ()};
             })};
         default:

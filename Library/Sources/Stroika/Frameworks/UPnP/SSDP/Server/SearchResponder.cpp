@@ -179,7 +179,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
             }
 
             // only stopped by thread abort
-            auto inUseSockets = sockets.Map<ConnectionlessSocket::Ptr> ([] (auto i) { return i.first; });
+            auto inUseSockets = sockets.Map<Iterable<ConnectionlessSocket::Ptr>> ([] (auto i) { return i.first; });
             while (true) {
                 try {
                     for (ConnectionlessSocket::Ptr s : Execution::WaitForIOReady{inUseSockets}.WaitQuietly ()) {

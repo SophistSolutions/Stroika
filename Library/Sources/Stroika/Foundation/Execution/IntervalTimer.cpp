@@ -85,7 +85,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     TimePointSeconds GetNextWakeupTime_ ()
     {
         TimePointSeconds funResult =
-            fData_.cget ()->Map5<Iterable<TimePointSeconds>> ([] (const RegisteredTask& i) { return i.fCallNextAt; }).MinValue (TimePointSeconds{kInfinity});
+            fData_.cget ()->Map<Iterable<TimePointSeconds>> ([] (const RegisteredTask& i) { return i.fCallNextAt; }).MinValue (TimePointSeconds{kInfinity});
 #if qDebug
         auto dataLock = fData_.cget ();
         // note: usually (not dataLock->empty ()), but it can be empty temporarily as we are shutting down this process

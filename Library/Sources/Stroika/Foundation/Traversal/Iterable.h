@@ -693,13 +693,20 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief  Take transformation (e.g. projection) of the given type T to some derived value, and apply that element transformation
-         *          to the entire iterable, producing a new iterable (or a new container).
+         *  \brief functional API which iterates over all members of an Interable, applies a map function to each element, and collects the results in a new Iterable
+         * 
+         *  This is like the map() function in so many other languages, like lisp, javascript, etc.
+         * 
+         *  The transormation may be a projection, or complete transformation. If the 'extract' function returns optional<RESULT_COLLECTION::value_type>, then a missing
+         *  value is treated as removeal from the source list (in the resulting generated list).
          * 
          *  \note - @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
          *          as it does essentially the same thing. It can be used to completely transform a container of one thing
          *          into a (possibly smaller) container of something else by iterating over all the members, applying a function, and
          *          (optionally) appending the result of that function to the new container.
+         * 
+         *  \note   Prior to Stroika v3.0d5, this template look 2 template parameters, the first an element type and the second the collection to be produced.
+         *          But since that release, we just take the second paramter (as first) - and infer the RESULT_ELELMENT_TYPE.
          * 
          *  \note   Prior to Stroika v2.1.10, this was called Select()
          * 
@@ -710,7 +717,7 @@ namespace Stroika::Foundation::Traversal {
          *          of traversal before Select() returns.
          * 
          *  \note   Alias Filter ()
-         *          If the argument function returns optional<THE RETURN TYPE> - then only accomulate those that are returned 
+         *          If the argument function returns optional<THE RETURN TYPE> - then only accumulate those that are returned 
          *          with has_value () (so also can be used to filter).
          *
          *  \par Example Usage
@@ -753,25 +760,9 @@ namespace Stroika::Foundation::Traversal {
          *          // OR
          *          possibleFileSuffixes.Map<Set<InternetMediaType>> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); })
          *      \endcode
-         * 
-         *  \note LAZY EVALUATION
-         *        Before Stroika v3, Map() did lazy evaluation, using CreateGenerator.
-         *        Since v3.0d5, it does (I hope about to) direct generation.
-         *        But lazy can be useful. Maybe add MapLazily version todo generator?
-         * --- NO - LAZILY ONLY MAKES SENSSE IF RESULT TYPE IS ITERABLE - SO JUST DO LAZY IN THAT CASE
          */
-        template <typename RESULT_ELEMENT>
-        nonvirtual Iterable<RESULT_ELEMENT> Map (const function<RESULT_ELEMENT (const T&)>& extract) const;
-        template <typename RESULT_ELEMENT>
-        nonvirtual Iterable<RESULT_ELEMENT> Map (const function<optional<RESULT_ELEMENT> (const T&)>& extract) const;
-        template <typename RESULT_ELEMENT, typename RESULT_CONTAINER>
-        nonvirtual RESULT_CONTAINER Map (const function<RESULT_ELEMENT (const T&)>& extract) const;
-        template <typename RESULT_ELEMENT, typename RESULT_CONTAINER>
-        nonvirtual RESULT_CONTAINER Map (const function<optional<RESULT_ELEMENT> (const T&)>& extract) const;
-
-        /// ***************** EXPERIEMNTAL MAP REPLACEMENTS
         template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> EXTRACT_FUNCTION>
-        nonvirtual RESULT_CONTAINER Map5 (EXTRACT_FUNCTION&& extract) const
+        nonvirtual RESULT_CONTAINER Map (EXTRACT_FUNCTION&& extract) const
             requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
                       convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>);
 

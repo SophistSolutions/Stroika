@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline Iterable<T> MultiSet<T, TRAITS>::UniqueElements () const
     {
-        return this->template Map5<Iterable<T>> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
+        return this->template Map<Iterable<T>> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
     Iterable<typename TRAITS::CountedValueType> MultiSet<T, TRAITS>::Top () const
@@ -222,12 +222,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     Iterable<T> MultiSet<T, TRAITS>::TopElements () const
     {
-        return Top ().template Map5<Iterable<T>> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
+        return Top ().template Map<Iterable<T>> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
     Iterable<T> MultiSet<T, TRAITS>::TopElements (size_t n) const
     {
-        return Top (n).template Map5<Iterable<T>> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
+        return Top (n).template Map<Iterable<T>> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
     inline auto MultiSet<T, TRAITS>::GetElementEqualsComparer () const -> ElementEqualityComparerType

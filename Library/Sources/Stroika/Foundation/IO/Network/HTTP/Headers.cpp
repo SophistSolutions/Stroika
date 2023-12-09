@@ -428,7 +428,7 @@ Collection<String> Headers::LookupAll (const String& name) const
     else if (kHeaderNameEqualsComparer (name, HeaderName::kSetCookie)) {
         // return each 'set' cookie as a separate header value
         if (fSetCookieList_.has_value ()) {
-            return fSetCookieList_->cookieDetails ().Map5<Iterable<String>> ([] (const Cookie& i) { return i.As<String> (); });
+            return fSetCookieList_->cookieDetails ().Map<Iterable<String>> ([] (const Cookie& i) { return i.As<String> (); });
         }
         return Collection<String>{};
     }

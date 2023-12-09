@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     UpdatableWaitForIOReady<T, TRAITS>::UpdatableWaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags)
         : UpdatableWaitForIOReady{
-              fds.template Map5<Traversal::Iterable<pair<T, TypeOfMonitorSet>>> ([&] (const T& t) { return make_pair (t, flags); })}
+              fds.template Map<Traversal::Iterable<pair<T, TypeOfMonitorSet>>> ([&] (const T& t) { return make_pair (t, flags); })}
     {
     }
     template <typename T, typename TRAITS>
@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T, typename TRAITS>
     void UpdatableWaitForIOReady<T, TRAITS>::SetDescriptors (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags)
     {
-        SetDescriptors (fds.template Map5<Traversal::Iterable<pair<T, TypeOfMonitorSet>>> ([&] (const T& t) { return make_pair (t, flags); }));
+        SetDescriptors (fds.template Map<Traversal::Iterable<pair<T, TypeOfMonitorSet>>> ([&] (const T& t) { return make_pair (t, flags); }));
     }
     template <typename T, typename TRAITS>
     auto UpdatableWaitForIOReady<T, TRAITS>::WaitUntil (Time::TimePointSeconds timeoutAt) -> Containers::Set<T>

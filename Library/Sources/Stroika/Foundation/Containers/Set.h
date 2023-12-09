@@ -340,35 +340,14 @@ namespace Stroika::Foundation::Containers {
         nonvirtual size_t RemoveAll (PREDICATE&& p);
 
     public:
-        // @todo replace name and not in docs more general API, could be used to replace where functionality.
-
+        /**
+         *  \brief same as Iterable<>::Map () - except defaults to returning a Set<>, and handles cloning
+         *         the comparer from 'this' when mapping to a result value_type=T.
+         */
         template <typename RESULT_CONTAINER = Set<T>, invocable<T> EXTRACT_FUNCTION>
-        nonvirtual RESULT_CONTAINER Map5 (EXTRACT_FUNCTION&& extract) const
+        nonvirtual RESULT_CONTAINER Map (EXTRACT_FUNCTION&& extract) const
             requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
-                      convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
-        {
-            // @todo reconsider/document limitation here - cuz if 'this' object is one kind of container, we cannot CloneEmpty into another kind. Maybe this only works for same_as not derived_from...
-            if constexpr (derived_from<RESULT_CONTAINER, Set<T>>) {
-                RESULT_CONTAINER c{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()}; // maintain any comparer, but no data
-                constexpr bool   kOptionalExtractor_ =
-                    not convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> and
-                    convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>;
-                this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
-                    if constexpr (kOptionalExtractor_) {
-                        if (auto oarg = extract (arg)) {
-                            c.Add (*oarg);
-                        }
-                    }
-                    else {
-                        c.Add (extract (arg));
-                    }
-                });
-                return c;
-            }
-            else {
-                return inherited::template Map5<RESULT_CONTAINER> (forward<EXTRACT_FUNCTION> (extract));
-            }
-        }
+                      convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>);
 
     public:
         /**

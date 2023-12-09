@@ -244,6 +244,34 @@ namespace Stroika::Foundation::Containers {
         return nRemoved;
     }
     template <typename T>
+    template <typename RESULT_CONTAINER, invocable<T> EXTRACT_FUNCTION>
+    RESULT_CONTAINER Set<T>::Map (EXTRACT_FUNCTION&& extract) const
+        requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
+    {
+        // @todo reconsider/document limitation here - cuz if 'this' object is one kind of container, we cannot CloneEmpty into another kind. Maybe this only works for same_as not derived_from...
+        if constexpr (derived_from<RESULT_CONTAINER, Set<T>>) {
+            RESULT_CONTAINER c{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()}; // maintain any comparer, but no data
+            constexpr bool   kOptionalExtractor_ =
+                not convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> and
+                convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>;
+            this->Apply ([&c, &extract] (Configuration::ArgByValueType<T> arg) {
+                if constexpr (kOptionalExtractor_) {
+                    if (auto oarg = extract (arg)) {
+                        c.Add (*oarg);
+                    }
+                }
+                else {
+                    c.Add (extract (arg));
+                }
+            });
+            return c;
+        }
+        else {
+            return inherited::template Map<RESULT_CONTAINER> (forward<EXTRACT_FUNCTION> (extract));
+        }
+    }
+    template <typename T>
     inline Set<T> Set<T>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const
     {
         return Iterable<T>::Where (includeIfTrue, Set<T>{});

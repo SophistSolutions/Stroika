@@ -546,68 +546,8 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    template <typename RESULT_ELEMENT>
-    Iterable<RESULT_ELEMENT> Iterable<T>::Map (const function<RESULT_ELEMENT (const T&)>& extract) const
-    {
-        RequireNotNull (extract);
-        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-        auto sharedContext = make_shared<Iterable<T>> (*this);
-        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT_ELEMENT> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (), extract] () mutable -> optional<RESULT_ELEMENT> {
-            if (i) {
-                RESULT_ELEMENT result = extract (*i);
-                ++i;
-                return move (result);
-            }
-            return nullopt;
-        };
-        return CreateGenerator (getNext);
-    }
-    template <typename T>
-    template <typename RESULT_ELEMENT>
-    Iterable<RESULT_ELEMENT> Iterable<T>::Map (const function<optional<RESULT_ELEMENT> (const T&)>& extract) const
-    {
-        RequireNotNull (extract);
-        // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
-        auto sharedContext = make_shared<Iterable<T>> (*this);
-        // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT_ELEMENT> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (), extract] () mutable -> optional<RESULT_ELEMENT> {
-            // tricky. The funtion we are defining returns nullopt as a sentinal to signal end of iteration. The function we are GIVEN returns nullopt
-            // to signal skip this item. So adjust accordingly
-            while (i) {
-                optional<RESULT_ELEMENT> t = extract (*i);
-                ++i;
-                if (t) {
-                    return *t;
-                }
-            }
-            return nullopt;
-        };
-        return CreateGenerator (getNext);
-    }
-    template <typename T>
-    template <typename RESULT_ELEMENT, typename RESULT_CONTAINER>
-    RESULT_CONTAINER Iterable<T>::Map (const function<RESULT_ELEMENT (const T&)>& extract) const
-    {
-        // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
-        auto baseIterable = Map (extract);
-        return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
-    }
-    template <typename T>
-    template <typename RESULT_ELEMENT, typename RESULT_CONTAINER>
-    RESULT_CONTAINER Iterable<T>::Map (const function<optional<RESULT_ELEMENT> (const T&)>& extract) const
-    {
-        // @todo if RESULT_CONTAINER supports Addable, then use that to avoid CreateGenerator - just directly iterate and fill
-        auto baseIterable = Map (extract);
-        return RESULT_CONTAINER{baseIterable.begin (), baseIterable.end ()};
-    }
-
-    /// ***************** EXPERIEMNTAL MAP REPLACEMENTS
-    template <typename T>
     template <typename RESULT_CONTAINER, invocable<T> EXTRACT_FUNCTION>
-    RESULT_CONTAINER Iterable<T>::Map5 (EXTRACT_FUNCTION&& extract) const
+    RESULT_CONTAINER Iterable<T>::Map (EXTRACT_FUNCTION&& extract) const
         requires (convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, typename RESULT_CONTAINER::value_type> or
                   convertible_to<invoke_result_t<EXTRACT_FUNCTION, T>, optional<typename RESULT_CONTAINER::value_type>>)
     {
@@ -677,7 +617,6 @@ namespace Stroika::Foundation::Traversal {
             return c;
         }
     }
-
     template <typename T>
     template <typename RESULT>
     nonvirtual RESULT Iterable<T>::Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const
