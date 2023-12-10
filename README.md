@@ -23,9 +23,9 @@ The Frameworks depend on the Foundation; Foundation modules frequently depend on
 ## Stroika [Foundation](Library/Sources/Stroika/Foundation/) provides
 
 - [Cache classes](Library/Sources/Stroika/Foundation/Cache/) (a variety of different caching/memoizing strategies directly supported).
-- [Characters classes](Library/Sources/Stroika/Foundation/Characters/) (simpler to use - especially with UNICODE - Strings class, with functional style mappings - to ToString\<template\>() for most Stroika objects).
+- [Characters classes](Library/Sources/Stroika/Foundation/Characters/) (simpler to use - especially with UNICODE - Strings class, with functional style mappings, and ToString() utility for most Stroika objects).
 - [Container classes](Library/Sources/Stroika/Foundation/Containers/) (Collection, Queue, Mapping, Sequence, Set, and much more, each with rich variety of backend implementations).
-- [DataExchange](Library/Sources/Stroika/Foundation/DataExchange/) (VariantValue, rich collection of data format serializer/deserializers - like JSON, object to/from serialization mappings, and much more).
+- [DataExchange](Library/Sources/Stroika/Foundation/DataExchange/) (VariantValue, rich collection of data format serializer/deserializers - like JSON, XML, object to/from serialization mappings, and much more).
 - [Execution](Library/Sources/Stroika/Foundation/Execution/) pattern classes (external process runner, synchronization patterns, blocking queue, thread pools, and much more).
 - [Networking](Library/Sources/Stroika/Foundation/IO/Network/) support (high level socket wrappers, Web client fetching).
 - Simple, elegant [streams library](Library/Sources/Stroika/Foundation/Streams/), with adapters for cryptography, compression, text transforms, etc.
