@@ -17,7 +17,7 @@
 namespace Stroika::Foundation::IO::FileSystem {
 
     /**
-     *  Generally not used directly - use ScopedTmpDir or ScopedTmpFile.
+     *  Generally not used directly - prefer using ScopedTmpDir or ScopedTmpFile.
      *
      *  If used directly, you can make your own, or use AppTempFileManager::sThe.
      * 
@@ -78,7 +78,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     /**
      *  Create the 'basenamed' temporary directory (no worries about name conflicts) from the argument filenameBase.
      * 
-     *  Directory and its contents destroyed on desctruction (exceptions caught internally and DbgTraced, but otherwise ignored).
+     *  Directory and its contents destroyed on destruction (exceptions caught internally and DbgTraced, but otherwise ignored).
      * 
      *  note references AppTempFileManager::sThe
      */
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     /**
      *  Create the 'basenamed' temporary file (no worries about name conflicts) from the argument filenameBase (including file suffix).
      * 
-     *  The file is removed on desctruction (exceptions caught internally and DbgTraced, but otherwise ignored).
+     *  The file is removed on destruction (exceptions caught internally and DbgTraced, but otherwise ignored).
      * 
      *  note references AppTempFileManager::sThe
      */
