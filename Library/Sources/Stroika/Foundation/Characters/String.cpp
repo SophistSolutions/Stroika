@@ -1539,17 +1539,19 @@ String String::LimitLength (size_t maxLen, StringShorteningPreference keepPref, 
     if (operateOn.length () <= maxLen) {
         return operateOn;
     }
-    size_t useLen          = maxLen;
-    size_t elipsisTotalLen = ellipsis.length ();
-    if (keepPref == StringShorteningPreference::ePreferKeepMid) {
-        elipsisTotalLen *= 2;
-    }
-    if (useLen > elipsisTotalLen) {
-        useLen -= elipsisTotalLen;
-    }
-    else {
-        useLen = 0;
-    }
+    size_t useLen = [&] () {
+        size_t useLen           = maxLen;
+        size_t ellipsisTotalLen = ellipsis.length ();
+        if (keepPref == StringShorteningPreference::ePreferKeepMid) {
+            ellipsisTotalLen *= 2;
+        }
+        if (useLen > ellipsisTotalLen) {
+            useLen -= ellipsisTotalLen;
+        }
+        else {
+            useLen = 0;
+        }
+    }();
     switch (keepPref) {
         case StringShorteningPreference::ePreferKeepLeft:
             return operateOn.substr (0, useLen) + ellipsis;
@@ -1558,8 +1560,10 @@ String String::LimitLength (size_t maxLen, StringShorteningPreference keepPref, 
         case StringShorteningPreference::ePreferKeepMid:
             size_t midPoint = operateOn.length () / 2;
             return ellipsis + operateOn.substr (midPoint - useLen / 2, useLen) + ellipsis;
+        default:
+            RequireNotReached ();
+            return *this;
     }
-    RequireNotReached ();
 }
 
 string String::AsNarrowString (const locale& l) const

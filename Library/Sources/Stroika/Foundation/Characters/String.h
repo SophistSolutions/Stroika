@@ -1244,7 +1244,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief return the constant character data inside the string (rep) in the form of a span, possibly quickly and direclty, and possibly copied into possiblyUsedBuffer
+         *  \brief return the constant character data inside the string (rep) in the form of a span, possibly quickly and directly, and possibly copied into possiblyUsedBuffer
          * 
          *  This API will typically return a span of data which is internal pointers into the data of the rep (and so its invalidated on the
          *  next change to the string).
