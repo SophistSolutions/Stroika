@@ -13,6 +13,7 @@
 #include <unistd.h>
 #endif
 
+#include "../../Execution/Activity.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
 #if qPlatform_Windows
@@ -31,6 +32,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
+using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 
 #if qPlatform_Windows
@@ -44,6 +46,9 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
  */
 MemoryMappedFileReader::MemoryMappedFileReader (const filesystem::path& fileName)
 {
+    auto activity = LazyEvalActivity (
+        [&] () -> String { return Characters::Format (L"memory mapping %s for read access", Characters::ToString (fileName).c_str ()); });
+    DeclareActivity currentActivity{&activity};
 #if qPlatform_POSIX
     int fd = -1;
     Execution::ThrowPOSIXErrNoIfNegative (fd = open (fileName.c_str (), O_RDONLY));
