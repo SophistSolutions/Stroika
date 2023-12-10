@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Characters {
      *
      *          SOMEWHAT ironically, the only of these methods hard to replace is the non-const c_str () - and maybe there
      *          not bad cuz I deprecated? COULD just deprecate ALL of these, and then the class is fully immutable. Probably
-     *          easier to udnerstand/reason about.
+     *          easier to understand/reason about.
      * 
      *          @todo CONSIDER LOSIING THESE METHODS ABOVE (or deprecating at leats)
      *
@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Characters {
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          * 
          *  \note 'char' (using ASCII = char) constructors:
-         *        Becuase the characterset of strings of type 'char' is ambiguous, if you construct a String
+         *        Because the character-set of strings of type 'char' is ambiguous, if you construct a String
          *        with char (char* etc) - it runtime checked that the characters are ASCII (except for the basic_string_view
          *        constructors where we check but with assertions).
          * 
@@ -996,19 +996,8 @@ namespace Stroika::Foundation::Characters {
          *
          *  Note in the 3-arg overload, the ellipsis string MAY be the empty string.
          */
-
         nonvirtual String LimitLength (size_t maxLen, StringShorteningPreference keepPref = StringShorteningPreference::ePreferKeepLeft) const;
         nonvirtual String LimitLength (size_t maxLen, StringShorteningPreference keepLeft, const String& ellipsis) const;
-
-        [[deprecated ("Since Stroika v3.0d5 use StringShorteningPreference argument")]] String LimitLength (size_t maxLen, bool keepLeft) const
-        {
-            return LimitLength (maxLen, keepLeft ? StringShorteningPreference::ePreferKeepLeft : StringShorteningPreference::ePreferKeepRight);
-        }
-        [[deprecated ("Since Stroika v3.0d5 use StringShorteningPreference argument")]] String LimitLength (size_t maxLen, bool keepLeft,
-                                                                                                            const String& ellipsis) const
-        {
-            return LimitLength (maxLen, keepLeft ? StringShorteningPreference::ePreferKeepLeft : StringShorteningPreference::ePreferKeepRight, ellipsis);
-        }
 
     public:
         /**
@@ -1053,12 +1042,6 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         nonvirtual T As () const
             requires (IBasicUNICODEStdString<T> or is_same_v<T, String>);
-        template <typename T>
-        [[deprecated ("Since Stroika v3.0d2, just use 0 arg version)")]] void As (T* into) const
-            requires (IBasicUNICODEStdString<T> or is_same_v<T, String>)
-        {
-            *into = this->As<T> ();
-        }
 
     public:
         /**
@@ -1068,10 +1051,6 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual string AsNarrowString (const locale& l) const;
         nonvirtual string AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag) const;
-        [[deprecated ("Since Stroika v3.0d2, just use 1 arg version)")]] void AsNarrowString (const locale& l, string* into) const
-        {
-            *into = this->AsNarrowString (l);
-        }
 
     public:
         /**
@@ -1085,12 +1064,6 @@ namespace Stroika::Foundation::Characters {
         template <typename T = u8string>
         nonvirtual T AsUTF8 () const
             requires (is_same_v<T, string> or is_same_v<T, u8string>);
-        template <typename T = u8string>
-        [[deprecated ("Since Stroika v3.0d2 - use AsUTF8/0")]] void AsUTF8 (T* into) const
-            requires (is_same_v<T, string> or is_same_v<T, u8string>)
-        {
-            *into = this->AsUTF8 ();
-        }
 
     public:
         /**
@@ -1109,12 +1082,6 @@ namespace Stroika::Foundation::Characters {
         template <typename T = u16string>
         nonvirtual T AsUTF16 () const
             requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>));
-        template <typename T = u16string>
-        [[deprecated ("Since Stroika v3.0d2 - use AsUTF16/0")]] void AsUTF16 (T* into) const
-            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>))
-        {
-            *into = AsUTF16 ();
-        }
 
     public:
         /**
@@ -1133,12 +1100,6 @@ namespace Stroika::Foundation::Characters {
         template <typename T = u32string>
         nonvirtual T AsUTF32 () const
             requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>));
-        template <typename T = u32string>
-        [[deprecated ("Since Stroika v3.0d2 - use AsUTF32/0")]] void AsUTF32 (T* into) const
-            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>))
-        {
-            *into = AsUTF32 ();
-        }
 
     public:
         /**
@@ -1147,12 +1108,8 @@ namespace Stroika::Foundation::Characters {
          *  Note - many UNICODE Strings cannot be represented in the SDKString character set (especially if narrow - depends alot).
          *  But in that case, AsNarrowSDKString () will throw, unless AllowMissingCharacterErrorsFlag is specified.
          */
-        nonvirtual SDKString                                       AsSDKString () const;
-        nonvirtual SDKString                                       AsSDKString (AllowMissingCharacterErrorsFlag) const;
-        [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsSDKString (SDKString* into) const
-        {
-            *into = AsSDKString ();
-        }
+        nonvirtual SDKString AsSDKString () const;
+        nonvirtual SDKString AsSDKString (AllowMissingCharacterErrorsFlag) const;
 
     public:
         /**
@@ -1162,12 +1119,8 @@ namespace Stroika::Foundation::Characters {
          *  Note - many UNICODE Strings cannot be represented in the SDKString character set (especially if narrow - depends alot).
          *  But in that case, AsNarrowSDKString () will throw, unless AllowMissingCharacterErrorsFlag is specified.
          */
-        nonvirtual string                                          AsNarrowSDKString () const;
-        nonvirtual string                                          AsNarrowSDKString (AllowMissingCharacterErrorsFlag) const;
-        [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsNarrowSDKString (string* into) const
-        {
-            *into = SDK2Narrow (AsSDKString ());
-        }
+        nonvirtual string AsNarrowSDKString () const;
+        nonvirtual string AsNarrowSDKString (AllowMissingCharacterErrorsFlag) const;
 
     public:
         /**
@@ -1198,15 +1151,6 @@ namespace Stroika::Foundation::Characters {
                     into->push_back (ASCII{0})
                 };
             };
-        ;
-        template <typename T = string>
-        [[deprecated ("Since v3.0d2 use /0")]] void AsASCII (T* into) const
-            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
-        {
-            if (not AsASCIIQuietly (into)) {
-                ThrowInvalidAsciiException_ ();
-            }
-        }
 
     public:
         /**
@@ -1229,20 +1173,6 @@ namespace Stroika::Foundation::Characters {
                     into->push_back (ASCII{0})
                 };
             };
-        ;
-        template <typename T = string>
-        [[deprecated ("Since v3.0d2 use /0 overload")]] bool AsASCIIQuietly (T* into) const
-            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
-        {
-            auto r = this->AsASCIIQuietly ();
-            if (r) {
-                *into = *r;
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
 
     public:
         /**
@@ -1474,6 +1404,72 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
     public:
+        template <typename T>
+        [[deprecated ("Since Stroika v3.0d2, just use 0 arg version)")]] void As (T* into) const
+            requires (IBasicUNICODEStdString<T> or is_same_v<T, String>)
+        {
+            *into = this->As<T> ();
+        }
+        [[deprecated ("Since Stroika v3.0d2, just use 1 arg version)")]] void AsNarrowString (const locale& l, string* into) const
+        {
+            *into = this->AsNarrowString (l);
+        }
+        template <typename T = u8string>
+        [[deprecated ("Since Stroika v3.0d2 - use AsUTF8/0")]] void AsUTF8 (T* into) const
+            requires (is_same_v<T, string> or is_same_v<T, u8string>)
+        {
+            *into = this->AsUTF8 ();
+        }
+        template <typename T = u16string>
+        [[deprecated ("Since Stroika v3.0d2 - use AsUTF16/0")]] void AsUTF16 (T* into) const
+            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>))
+        {
+            *into = AsUTF16 ();
+        }
+        template <typename T = u32string>
+        [[deprecated ("Since Stroika v3.0d2 - use AsUTF32/0")]] void AsUTF32 (T* into) const
+            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>))
+        {
+            *into = AsUTF32 ();
+        }
+        [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsSDKString (SDKString* into) const
+        {
+            *into = AsSDKString ();
+        }
+        [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsNarrowSDKString (string* into) const
+        {
+            *into = SDK2Narrow (AsSDKString ());
+        }
+        template <typename T = string>
+        [[deprecated ("Since v3.0d2 use /0")]] void AsASCII (T* into) const
+            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+        {
+            if (not AsASCIIQuietly (into)) {
+                ThrowInvalidAsciiException_ ();
+            }
+        }
+        template <typename T = string>
+        [[deprecated ("Since v3.0d2 use /0 overload")]] bool AsASCIIQuietly (T* into) const
+            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+        {
+            auto r = this->AsASCIIQuietly ();
+            if (r) {
+                *into = *r;
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        [[deprecated ("Since Stroika v3.0d5 use StringShorteningPreference argument")]] String LimitLength (size_t maxLen, bool keepLeft) const
+        {
+            return LimitLength (maxLen, keepLeft ? StringShorteningPreference::ePreferKeepLeft : StringShorteningPreference::ePreferKeepRight);
+        }
+        [[deprecated ("Since Stroika v3.0d5 use StringShorteningPreference argument")]] String LimitLength (size_t maxLen, bool keepLeft,
+                                                                                                            const String& ellipsis) const
+        {
+            return LimitLength (maxLen, keepLeft ? StringShorteningPreference::ePreferKeepLeft : StringShorteningPreference::ePreferKeepRight, ellipsis);
+        }
         template <typename CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (span<const CHAR_T> s)
         {

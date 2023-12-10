@@ -1438,7 +1438,6 @@ String String::Join (const Iterable<String>& list, const String& separator)
 
 String String::ToLowerCase () const
 {
-    // @todo easy to optimize - get ascii case and use that as peek...
     StringBuilder        result;
     _SafeReadRepAccessor accessor{this};
     size_t               n         = accessor._ConstGetRep ().size ();
