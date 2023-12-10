@@ -50,10 +50,8 @@ AppTempFileManager::AppTempFileManager (const Options& options)
 {
     Debug::TraceContextBumper ctx{"AppTempFileManager::CTOR"};
     filesystem::path          tmpDir = WellKnownLocations::GetTemporary ();
-
-    filesystem::path cleanedExePath = Execution::GetEXEPath ();
-
-    filesystem::path exeFileName = cleanedExePath.stem ();
+    filesystem::path          cleanedExePath = Execution::GetEXEPath ();
+    filesystem::path          exeFileName = cleanedExePath.stem ();
     // no biggie, but avoid spaces in tmpfile path name (but don't try too hard, should be
     // harmless)
     //  -- LGP 2009-08-16    // replace any spaces in name with -
@@ -107,7 +105,7 @@ AppTempFileManager::~AppTempFileManager ()
             remove_all (fTmpDir_);
         }
         catch (...) {
-            DbgTrace ("Ingoring exception clearly AppTempFileManager files: %s", Characters::ToString (current_exception ()).c_str ());
+            DbgTrace ("Ignoring exception clearly AppTempFileManager files: %s", Characters::ToString (current_exception ()).c_str ());
         }
     }
 }
@@ -135,25 +133,15 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
         (void)snprintf (buf, NEltsOf (buf), "-%d", ::rand ());
         filesystem::path trialName = fn / ToPath (basename + buf + ext);
         if (not exists (trialName)) {
-#if qPlatform_POSIX
-            constexpr mode_t kCreateMode_ = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-            int              fd           = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT, kCreateMode_);
-#elif qPlatform_Windows
-            int                      fd;
-            [[maybe_unused]] errno_t e = ::_sopen_s (&fd, trialName.generic_string ().c_str (), (O_RDWR | O_CREAT), _SH_DENYNO, 0);
-#endif
+            int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT, filesystem::perms::all);
             if (fd >= 0) {
-#if qPlatform_POSIX
                 close (fd);
-#elif qPlatform_Windows
-                _close (fd);
-#endif
                 DbgTrace (L"AppTempFileManager::GetTempFile (): returning '%s'", Characters::ToString (trialName).c_str ());
                 WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
         }
-        DbgTrace (L"Attempt to create file collided, so retrying (%d)", Characters::ToString (trialName).c_str (), attempts);
+        DbgTrace (L"Attempt to create file (%s) collided, so retrying (%d attempts)", Characters::ToString (trialName).c_str (), attempts);
     }
     Execution::Throw (Exception{"Unknown error creating file"sv}, "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
