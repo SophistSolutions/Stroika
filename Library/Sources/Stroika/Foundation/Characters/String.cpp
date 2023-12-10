@@ -1439,40 +1439,77 @@ String String::Join (const Iterable<String>& list, const String& separator)
 String String::ToLowerCase () const
 {
     StringBuilder        result;
+    bool                 changed{false}; // if no change, no need to allocate new object
     _SafeReadRepAccessor accessor{this};
-    size_t               n         = accessor._ConstGetRep ().size ();
-    bool                 anyChange = false;
-    for (size_t i = 0; i < n; ++i) {
-        Character c = accessor._ConstGetRep ().GetAt (i);
-        if (c.IsUpperCase ()) {
-            anyChange = true;
-            result.Append (c.ToLowerCase ());
-        }
-        else {
-            result.Append (c);
+    PeekSpanData         psd = accessor._ConstGetRep ().PeekData (nullopt);
+    if (psd.fInCP == PeekSpanData::eAscii) [[likely]] {
+        // optimization but other case would work no matter what
+        for (auto c : psd.fAscii) {
+            if (isupper (c)) {
+                changed = true;
+                result.push_back (tolower (c));
+            }
+            else {
+                result.push_back (c);
+            }
         }
     }
-    return anyChange ? result.str () : *this;
+    else {
+        Memory::StackBuffer<Character> maybeIgnoreBuf1;
+        for (Character c : GetData (psd, &maybeIgnoreBuf1)) {
+            if (c.IsUpperCase ()) {
+                changed = true;
+                result.push_back (c.ToLowerCase ());
+            }
+            else {
+                result.push_back (c);
+            }
+        }
+    }
+    if (changed) {
+        return result.str ();
+    }
+    else {
+        return *this;
+    }
 }
 
 String String::ToUpperCase () const
 {
-    // @todo easy to optimize - get ascii case and use that as peek...
     StringBuilder        result;
+    bool                 changed{false}; // if no change, no need to allocate new object
     _SafeReadRepAccessor accessor{this};
-    size_t               n         = accessor._ConstGetRep ().size ();
-    bool                 anyChange = false;
-    for (size_t i = 0; i < n; ++i) {
-        Character c = accessor._ConstGetRep ().GetAt (i);
-        if (c.IsLowerCase ()) {
-            anyChange = true;
-            result.Append (c.ToUpperCase ());
-        }
-        else {
-            result.Append (c);
+    PeekSpanData         psd = accessor._ConstGetRep ().PeekData (nullopt);
+    if (psd.fInCP == PeekSpanData::eAscii) [[likely]] {
+        // optimization but other case would work no matter what
+        for (auto c : psd.fAscii) {
+            if (islower (c)) {
+                changed = true;
+                result.push_back (toupper (c));
+            }
+            else {
+                result.push_back (c);
+            }
         }
     }
-    return anyChange ? result.str () : *this;
+    else {
+        Memory::StackBuffer<Character> maybeIgnoreBuf1;
+        for (Character c : GetData (psd, &maybeIgnoreBuf1)) {
+            if (c.IsLowerCase ()) {
+                changed = true;
+                result.push_back (c.ToUpperCase ());
+            }
+            else {
+                result.push_back (c);
+            }
+        }
+    }
+    if (changed) {
+        return result.str ();
+    }
+    else {
+        return *this;
+    }
 }
 
 bool String::IsWhitespace () const
