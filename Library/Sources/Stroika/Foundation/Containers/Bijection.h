@@ -336,6 +336,15 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to Bijection, and improve that case to clone properties from this rep (such is rep type, etc).
+         */
+        template <typename RESULT_CONTAINER = Bijection<DOMAIN_TYPE, RANGE_TYPE>, invocable<pair<DOMAIN_TYPE, RANGE_TYPE>> ELEMENT_MAPPER>
+        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const
+            requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, pair<DOMAIN_TYPE, RANGE_TYPE>>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<ELEMENT_MAPPER, pair<DOMAIN_TYPE, RANGE_TYPE>>, optional<typename RESULT_CONTAINER::value_type>>);
+
+    public:
+        /**
          * \brief Like Iterable<T>::Where, but returning a bijection - subset of this bijection where includeIfTrue is true
          */
         template <derived_from<Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>> RESULT_CONTAINER = Bijection<DOMAIN_TYPE, RANGE_TYPE>, predicate<pair<DOMAIN_TYPE, RANGE_TYPE>> INCLUDE_PREDICATE>

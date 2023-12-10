@@ -451,7 +451,7 @@ namespace Stroika::Foundation::Traversal {
         return SequentialEquals (*this, rhs, forward<EQUALS_COMPARER> (equalsComparer), useIterableSize);
     }
     template <typename T>
-            #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
 #else
     template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
@@ -484,7 +484,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-            #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
 #else
     template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
@@ -603,7 +603,25 @@ namespace Stroika::Foundation::Traversal {
             return CreateGenerator (getNext);
         }
         else {
-            RESULT_CONTAINER c;
+            // subclasseers can replace this 'else' branch if RESULT_CONTAINER cannot or should not be default constructed
+            return this->Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper), RESULT_CONTAINER{});
+        }
+    }
+    template <typename T>
+    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    RESULT_CONTAINER Iterable<T>::Map (ELEMENT_MAPPER&& elementMapper, RESULT_CONTAINER&& emptyResult) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
+    {
+        using RESULT_ELEMENT = typename RESULT_CONTAINER::value_type;
+        constexpr bool kLazyEvaluateIteration_ = same_as<RESULT_CONTAINER, Iterable<RESULT_ELEMENT>>; // For now use vector and lazy not truly implemented
+        constexpr bool kOptionalExtractor_ = not convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> and
+                                             convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>;
+        if constexpr (kLazyEvaluateIteration_) {
+            return this->Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper)); // ignore useless emptyResult if provided, and invoke other overload to share code
+        }
+        else {
+            RESULT_CONTAINER c = forward<RESULT_CONTAINER> (emptyResult);
             // reserve iff we know the right size and container supports reserve
             if constexpr (not kOptionalExtractor_ and requires (RESULT_CONTAINER p) { p.reserve (3u); }) {
                 c.reserve (this->size ());

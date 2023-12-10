@@ -113,6 +113,34 @@ namespace Stroika::Foundation::Containers {
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderKeyComparer ();
     }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    inline RESULT_CONTAINER SortedKeyedCollection<T, KEY_TYPE, TRAITS>::Map (ELEMENT_MAPPER&& elementMapper) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
+    {
+        if constexpr (same_as<RESULT_CONTAINER, SortedKeyedCollection>) {
+            // clone the rep so we retain the ordering function etc
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper),
+                                                              RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper)); // default inherited interpretation
+        }
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
+    inline RESULT_CONTAINER SortedKeyedCollection<T, KEY_TYPE, TRAITS>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
+    {
+        if constexpr (same_as<RESULT_CONTAINER, SortedKeyedCollection>) {
+            // clone the rep so we retain the ordering function etc
+            return inherited::template Where<RESULT_CONTAINER> (
+                forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue)); // default inherited interpretation
+        }
+    }
 
 }
 

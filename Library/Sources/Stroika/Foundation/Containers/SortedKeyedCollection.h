@@ -152,6 +152,15 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to SortedKeyedCollection, and improve that case to clone properties from this rep (such is rep type, ordering, etc).
+         */
+        template <typename RESULT_CONTAINER = SortedKeyedCollection<T, KEY_TYPE, TRAITS>, invocable<T> ELEMENT_MAPPER>
+        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const
+            requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>);
+
+    public:
+        /**
          *  \brief subset of this SortedKeyedCollection matching filter-function
          * 
          *  Identical to base class code, but for differnt RESULT_CONTAINER default.

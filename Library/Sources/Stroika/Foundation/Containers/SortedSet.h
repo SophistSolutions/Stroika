@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief same as Iterable<>::Map () -or Set<>::Map () except defaults to returning a SortedSet<>.
+         * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to SortedSet, and improve that case to clone properties from this rep (such is rep type, ordering, etc).
          */
         template <typename RESULT_CONTAINER = SortedSet<T>, invocable<T> ELEMENT_MAPPER>
         nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const

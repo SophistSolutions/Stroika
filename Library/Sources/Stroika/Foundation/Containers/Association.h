@@ -440,6 +440,16 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to Association, and improve that case to clone properties from this rep (such is rep type, comparisons etc).
+         */
+        template <typename RESULT_CONTAINER = Association<KEY_TYPE, MAPPED_VALUE_TYPE>, invocable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ELEMENT_MAPPER>
+        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const
+            requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<ELEMENT_MAPPER, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>, optional<typename RESULT_CONTAINER::value_type>>)
+        ;
+
+    public:
+        /**
          *  Apply the function function to each element, and return a subset Association including just the ones for which it was true.
          *
          *  \note   Alias - this could have been called 'Subset' - as it constructs a subset association (filtering on key or key-value pairs)

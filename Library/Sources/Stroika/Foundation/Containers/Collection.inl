@@ -211,10 +211,25 @@ namespace Stroika::Foundation::Containers {
         return nextI;
     }
     template <typename T>
+    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    inline RESULT_CONTAINER Collection<T>::Map (ELEMENT_MAPPER&& elementMapper) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
+    {
+        if constexpr (same_as<RESULT_CONTAINER, Collection>) {
+            // clone the rep so we retain any ordering function/etc, rep type
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper),
+                                                              RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper)); // default Iterable<> implementation then...
+        }
+    }
+    template <typename T>
     template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
     inline RESULT_CONTAINER Collection<T>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
     {
-        if constexpr (derived_from<RESULT_CONTAINER, Collection<T>>) {
+        if constexpr (same_as<RESULT_CONTAINER, Collection>) {
             // clone the rep so we retain any ordering function/etc, rep type
             return inherited::template Where<RESULT_CONTAINER> (
                 forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});

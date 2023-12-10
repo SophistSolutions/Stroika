@@ -443,6 +443,15 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to KeyedCollection, and improve that case to clone properties from this rep (such is rep type, extractor etc).
+         */
+        template <typename RESULT_CONTAINER = KeyedCollection<T, KEY_TYPE, TRAITS>, invocable<T> ELEMENT_MAPPER>
+        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const
+            requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>);
+
+    public:
+        /**
          *  Apply the function function to each element, and return all the ones for which it was true.
          *
          *  \note   Alias - this could have been called 'Subset' - as it constructs a subset.

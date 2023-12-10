@@ -335,10 +335,25 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().OccurrencesOf (item);
     }
     template <typename T, typename TRAITS>
+    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    inline RESULT_CONTAINER MultiSet<T, TRAITS>::Map (ELEMENT_MAPPER&& elementMapper) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, typename TRAITS::CountedValueType>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, typename TRAITS::CountedValueType>, optional<typename RESULT_CONTAINER::value_type>>)
+    {
+        if constexpr (same_as<RESULT_CONTAINER, MultiSet>) {
+            // clone the rep so we retain the ordering function
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper),
+                                                              RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper)); // default Iterable<> interpretation
+        }
+    }
+    template <typename T, typename TRAITS>
     template <derived_from<Iterable<typename TRAITS::CountedValueType>> RESULT_CONTAINER, predicate<typename TRAITS::CountedValueType> INCLUDE_PREDICATE>
     inline RESULT_CONTAINER MultiSet<T, TRAITS>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
     {
-        if constexpr (derived_from<RESULT_CONTAINER, MultiSet>) {
+        if constexpr (same_as<RESULT_CONTAINER, MultiSet>) {
             // clone the rep so we retain the ordering function
             return inherited::template Where<RESULT_CONTAINER> (
                 forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});

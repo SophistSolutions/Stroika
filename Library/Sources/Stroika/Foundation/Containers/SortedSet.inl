@@ -115,13 +115,27 @@ namespace Stroika::Foundation::Containers {
         requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
                   convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
     {
-        return inherited ::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper));
+        if constexpr (same_as<RESULT_CONTAINER, SortedSet>) {
+            // clone the rep so we retain the ordering function
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper),
+                                                              RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper)); // default Iterable<> interpretation
+        }
     }
     template <typename T>
     template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
     inline RESULT_CONTAINER SortedSet<T>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
     {
-        return inherited::template Where<RESULT_CONTAINER> (includeIfTrue); // inherited Set<> implementation does the right thing
+        if constexpr (same_as<RESULT_CONTAINER, SortedSet>) {
+            // clone the rep so we retain the ordering function
+            return inherited::template Where<RESULT_CONTAINER> (
+                forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Where<RESULT_CONTAINER> (forward<INCLUDE_PREDICATE> (includeIfTrue)); // default Iterable<> interpretation
+        }
     }
 
 }

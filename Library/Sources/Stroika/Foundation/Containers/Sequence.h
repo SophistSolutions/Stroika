@@ -275,7 +275,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief same as Iterable<>::Map () - except defaults to returning a Sequence<>.
+         * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to Sequence, and improve that case to clone properties from this rep (such is rep type, etc).
          */
         template <typename RESULT_CONTAINER = Sequence<T>, invocable<T> ELEMENT_MAPPER>
         nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const

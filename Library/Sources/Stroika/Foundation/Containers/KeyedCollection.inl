@@ -301,10 +301,25 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
+    inline RESULT_CONTAINER KeyedCollection<T, KEY_TYPE, TRAITS>::Map (ELEMENT_MAPPER&& elementMapper) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
+    {
+        if constexpr (same_as<RESULT_CONTAINER, KeyedCollection>) {
+            // clone the rep so we retain the this' intrinsic properties (besides data, eg extractor, ordering, reptype)
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper),
+                                                              RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper)); // default Iterable<> interpretation
+        }
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
     template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
     inline auto KeyedCollection<T, KEY_TYPE, TRAITS>::Where (INCLUDE_PREDICATE&& includeIfTrue) const -> RESULT_CONTAINER
     {
-        if constexpr (derived_from<RESULT_CONTAINER, KeyedCollection>) {
+        if constexpr (same_as<RESULT_CONTAINER, KeyedCollection>) {
             // clone the rep so we retain the this' intrindic properties (besides data, eg extractor, ordering, reptype)
             return inherited::template Where<RESULT_CONTAINER> (
                 forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});

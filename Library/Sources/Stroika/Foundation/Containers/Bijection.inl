@@ -246,10 +246,25 @@ namespace Stroika::Foundation::Containers {
         return Iterable<DOMAIN_TYPE>{move (tmp)};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+    template <typename RESULT_CONTAINER, invocable<pair<DOMAIN_TYPE, RANGE_TYPE>> ELEMENT_MAPPER>
+    inline RESULT_CONTAINER Bijection<DOMAIN_TYPE, RANGE_TYPE>::Map (ELEMENT_MAPPER&& elementMapper) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, pair<DOMAIN_TYPE, RANGE_TYPE>>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, pair<DOMAIN_TYPE, RANGE_TYPE>>, optional<typename RESULT_CONTAINER::value_type>>)
+    {
+        if constexpr (same_as<RESULT_CONTAINER, Bijection>) {
+            // clone the rep so we retain any ordering function/etc, rep type
+            return inherited::template Where<RESULT_CONTAINER> (
+                forward<ELEMENT_MAPPER> (elementMapper), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Where<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper)); // default Iterable<> implementation then...
+        }
+    }
+    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <derived_from<Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>> RESULT_CONTAINER, predicate<pair<DOMAIN_TYPE, RANGE_TYPE>> INCLUDE_PREDICATE>
     inline auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where (INCLUDE_PREDICATE&& includeIfTrue) const -> RESULT_CONTAINER
     {
-        if constexpr (derived_from<RESULT_CONTAINER, Bijection>) {
+        if constexpr (same_as<RESULT_CONTAINER, Bijection>) {
             // clone the rep so we retain any ordering function/etc, rep type
             return inherited::template Where<RESULT_CONTAINER> (
                 forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});

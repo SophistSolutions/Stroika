@@ -127,6 +127,15 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to SortedMultiSet, and improve that case to clone properties from this rep (such is rep type, ordering, etc).
+         */
+        template <typename RESULT_CONTAINER = SortedMultiSet<T, TRAITS>, invocable<T> ELEMENT_MAPPER>
+        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const
+            requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, typename TRAITS::CountedValueType>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<ELEMENT_MAPPER, typename TRAITS::CountedValueType>, optional<typename RESULT_CONTAINER::value_type>>);
+
+    public:
+        /**
          *  See Iterable<T>::Where - except defaults to MultiSet, and handles cloning rep properties for that special case
          */
         template <derived_from<Iterable<typename TRAITS::CountedValueType>> RESULT_CONTAINER = SortedMultiSet<T, TRAITS>, predicate<typename TRAITS::CountedValueType> INCLUDE_PREDICATE>

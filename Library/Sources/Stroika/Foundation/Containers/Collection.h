@@ -16,9 +16,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *      @todo   Where(hide iterable one) and probably other things should use new EmptyClone() strategy - so cheaper and
- *              returns something of same underlying data structure  type.
- *
  *      @todo   Have Difference/Union/Interesection??? methods/?? Do research....
  *
  *      @todo   Consider adding RetainAll (Set<T>) API - like in Collection.h, and Java. Key diff is was force
@@ -264,6 +261,15 @@ namespace Stroika::Foundation::Containers {
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer = {});
         template <predicate<T> PREDICATE>
         nonvirtual size_t RemoveAll (PREDICATE&& p);
+
+    public:
+        /**
+         * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to Collection, and improve that case to clone properties from this rep (such is rep type, comparisons etc).
+         */
+        template <typename RESULT_CONTAINER = Collection<T>, invocable<T> ELEMENT_MAPPER>
+        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const
+            requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>);
 
     public:
         /**

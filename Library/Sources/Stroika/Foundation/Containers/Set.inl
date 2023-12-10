@@ -245,37 +245,24 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T>
     template <typename RESULT_CONTAINER, invocable<T> ELEMENT_MAPPER>
-    RESULT_CONTAINER Set<T>::Map (ELEMENT_MAPPER&& elementMapper) const
+    inline RESULT_CONTAINER Set<T>::Map (ELEMENT_MAPPER&& elementMapper) const
         requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
                   convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>)
     {
-        // @todo reconsider/document limitation here - cuz if 'this' object is one kind of container, we cannot CloneEmpty into another kind. Maybe this only works for same_as not derived_from...
-        if constexpr (derived_from<RESULT_CONTAINER, Set<T>>) {
-            RESULT_CONTAINER c{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()}; // maintain any comparer, but no data
-            constexpr bool   kOptionalExtractor_ =
-                not convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> and
-                convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>;
-            this->Apply ([&c, &elementMapper] (Configuration::ArgByValueType<T> arg) {
-                if constexpr (kOptionalExtractor_) {
-                    if (auto oarg = elementMapper (arg)) {
-                        c.Add (*oarg);
-                    }
-                }
-                else {
-                    c.Add (elementMapper (arg));
-                }
-            });
-            return c;
+        if constexpr (same_as<RESULT_CONTAINER, Set>) {
+            // clone the rep so we retain the ordering function, etc
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper),
+                                                              RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
         }
         else {
-            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper));
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper)); // inherited impl fine for this case
         }
     }
     template <typename T>
     template <derived_from<Iterable<T>> RESULT_CONTAINER, predicate<T> INCLUDE_PREDICATE>
     inline RESULT_CONTAINER Set<T>::Where (INCLUDE_PREDICATE&& includeIfTrue) const
     {
-        if constexpr (derived_from<RESULT_CONTAINER, Set<T>>) {
+        if constexpr (same_as<RESULT_CONTAINER, Set>) {
             // clone the rep so we retain the ordering function
             return inherited::template Where<RESULT_CONTAINER> (
                 forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});

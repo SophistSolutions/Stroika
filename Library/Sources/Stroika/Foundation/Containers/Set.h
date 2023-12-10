@@ -341,8 +341,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief same as Iterable<>::Map () - except defaults to returning a Set<>, and handles cloning
-         *         the comparer from 'this' when mapping to a result value_type=T.
+         * \brief 'override' Iterable<>::Map () function so RESULT_CONTAINER defaults to Set, and improve that case to clone properties from this rep (such is rep type, ordering, etc).
          */
         template <typename RESULT_CONTAINER = Set<T>, invocable<T> ELEMENT_MAPPER>
         nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const

@@ -643,7 +643,7 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual T NthValue (size_t n, ArgByValueType<T> defaultValue = {}) const;
 
     public:
-        /**
+/**
          *  \brief Alias 'Filter' - produce a subset of this iterable where argument function returns true
          *
          *  BASED ON Microsoft .net Linq.
@@ -666,17 +666,17 @@ namespace Stroika::Foundation::Traversal {
          *     
          *  \see See also Map<RESULT_CONTAINER,ELEMENT_MAPPER> ()
          */
-        #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <typename RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
         nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
         template <typename RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
         nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue, RESULT_CONTAINER&& emptyResult) const;
-        #else
+#else
         template <derived_from<Iterable<T>> RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
         nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue) const;
         template <derived_from<Iterable<T>> RESULT_CONTAINER = Iterable<T>, predicate<T> INCLUDE_PREDICATE>
         nonvirtual RESULT_CONTAINER Where (INCLUDE_PREDICATE&& includeIfTrue, RESULT_CONTAINER&& emptyResult) const;
-        #endif
+#endif
 
     public:
         /**
@@ -765,9 +765,16 @@ namespace Stroika::Foundation::Traversal {
          *          // GetAssociatedContentType -> optional<String> - skip items that are 'missing'
          *          possibleFileSuffixes.Map<Set<InternetMediaType>> ([&] (String suffix) -> InternetMediaType { return r.GetAssociatedContentType (suffix); })
          *      \endcode
+         * 
+         *  \note This could have been written as one function/overload, but then for the RESULT_CONTAINER=Iterbale<T> case
+         *        we would be forced to uselessly create a bogus Iterable, and then throw it away.
          */
         template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> ELEMENT_MAPPER>
-        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& extract) const
+        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper) const
+            requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
+                      convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>);
+        template <typename RESULT_CONTAINER = Iterable<T>, invocable<T> ELEMENT_MAPPER>
+        nonvirtual RESULT_CONTAINER Map (ELEMENT_MAPPER&& elementMapper, RESULT_CONTAINER&& emptyResult) const
             requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, typename RESULT_CONTAINER::value_type> or
                       convertible_to<invoke_result_t<ELEMENT_MAPPER, T>, optional<typename RESULT_CONTAINER::value_type>>);
 

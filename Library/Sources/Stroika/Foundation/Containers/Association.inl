@@ -325,6 +325,21 @@ namespace Stroika::Foundation::Containers {
 #endif
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <typename RESULT_CONTAINER, invocable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ELEMENT_MAPPER>
+    nonvirtual RESULT_CONTAINER Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Map (ELEMENT_MAPPER&& elementMapper) const
+        requires (convertible_to<invoke_result_t<ELEMENT_MAPPER, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>, typename RESULT_CONTAINER::value_type> or
+                  convertible_to<invoke_result_t<ELEMENT_MAPPER, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>, optional<typename RESULT_CONTAINER::value_type>>)
+    {
+        if constexpr (same_as<RESULT_CONTAINER, Association>) {
+            // clone the rep so we retain any ordering function/etc, rep type
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper),
+                                                              RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
+        }
+        else {
+            return inherited::template Map<RESULT_CONTAINER> (forward<ELEMENT_MAPPER> (elementMapper)); // default Iterable<> implementation then...
+        }
+    }
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <derived_from<Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> RESULT_CONTAINER, typename INCLUDE_PREDICATE>
     inline auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (INCLUDE_PREDICATE&& includeIfTrue) const -> RESULT_CONTAINER
         requires (predicate<INCLUDE_PREDICATE, KEY_TYPE> or predicate<INCLUDE_PREDICATE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>)
@@ -335,7 +350,7 @@ namespace Stroika::Foundation::Containers {
                 [=] (const ArgByValueType<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& kvp) { return includeIfTrue (kvp.fKey); });
         }
         else {
-            if constexpr (derived_from<RESULT_CONTAINER, Association>) {
+            if constexpr (same_as<RESULT_CONTAINER, Association>) {
                 // clone the rep so we retain any ordering function/etc, rep type
                 return inherited::template Where<RESULT_CONTAINER> (
                     forward<INCLUDE_PREDICATE> (includeIfTrue), RESULT_CONTAINER{_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().CloneEmpty ()});
