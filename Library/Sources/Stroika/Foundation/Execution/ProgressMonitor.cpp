@@ -62,6 +62,7 @@ void ProgressMonitor::Updater::CallNotifyProgress_ () const noexcept
 {
     RequireNotNull (fRep_);
     for (shared_ptr<ChangedCallbackType> f : fRep_->fCallbacks_.load ()) {
+        // NB: a throw from ChangedCallbackType is DOCUMENTED to be illegal and will result in 'unexpected' - cuz of noexcept on this function (even threadabort) 
         (*f) (ProgressMonitor{fRep_}); // callbacks are noexcept, and should never hold a lock (or at least always guaraneed very short lived)
     }
 }

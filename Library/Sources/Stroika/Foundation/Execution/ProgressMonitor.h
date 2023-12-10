@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Execution {
          *  Callback should be short lived, not hold any locks (because that could make it long lived and create a deadlock).
          * 
          *  Also don't throw exceptions in these callbacks. Just record the info needed, and schedule further work
-         *  in a GUI or whtever (queue it maybe).
+         *  in a GUI or whatever (queue it maybe).
          * 
          *      \todo revisit 'noexcept' in C++23 - see https://stackoverflow.com/questions/41293025/stdfunction-with-noexcept-in-c17
          *            but for now, cannot declare teh function as noexcept
