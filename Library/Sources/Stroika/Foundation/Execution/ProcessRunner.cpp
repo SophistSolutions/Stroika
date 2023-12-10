@@ -926,7 +926,8 @@ namespace {
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
             L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.As<wstring> ().c_str (),
-            currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
+            currentDir == nullptr ? L"nullptr"
+                                  : String::FromSDKString (currentDir).LimitLength (50, StringShorteningPreference::ePreferKeepRight).c_str ())};
 
         /*
          *  o   Build directory into which we can copy the JAR file plugin,

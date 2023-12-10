@@ -103,8 +103,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
             return cmp;
         }
 #endif
-        return Common::OptionalThreeWayComparer<String, String::ThreeWayComparer>{
-            String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}}(lhs.AsRegisteredName (), rhs.AsRegisteredName ());
+        return Common::OptionalThreeWayComparer<String, String::ThreeWayComparer>{String::ThreeWayComparer{Characters::eCaseInsensitive}}(
+            lhs.AsRegisteredName (), rhs.AsRegisteredName ());
     }
 
     /*

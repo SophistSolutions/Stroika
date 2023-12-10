@@ -16,7 +16,7 @@ namespace {
     regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st, CompareOptions co)
     {
         regex_constants::syntax_option_type f = static_cast<regex_constants::syntax_option_type> (st);
-        if (co == CompareOptions::eCaseInsensitive) {
+        if (co == eCaseInsensitive) {
             f |= regex_constants::icase;
         }
         f |= regex_constants::optimize;

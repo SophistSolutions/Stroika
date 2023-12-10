@@ -612,7 +612,7 @@ namespace {
             void T_NoHashTableCTORs1_ ()
             {
                 using namespace Characters;
-                constexpr auto kStringCIComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+                constexpr auto kStringCIComparer_ = String::EqualsComparer{eCaseInsensitive};
                 {
                     // explicit or defaulted params
                     LRUCache<string, string>                         t0{};
@@ -637,7 +637,7 @@ namespace {
             void T_WithHashTableCTORs1_ ()
             {
                 using namespace Characters;
-                constexpr auto kStringCIComparer_ = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+                constexpr auto kStringCIComparer_ = String::EqualsComparer{eCaseInsensitive};
                 auto           hashFunction       = [] (const String& a) -> size_t { return hash<string>{}(a.AsUTF8<string> ()); };
 
                 {

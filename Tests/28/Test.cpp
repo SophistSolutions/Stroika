@@ -98,7 +98,7 @@ namespace {
             }
             {
                 using Characters::String;
-                SortedSet<String> tmp{String::LessComparer{Characters::CompareOptions::eCaseInsensitive}, {L"a", L"b", L"A"}};
+                SortedSet<String> tmp{String::LessComparer{Characters::eCaseInsensitive}, {"a", L"b", "A"sv}};
                 VerifyTestResult (tmp.size () == 2);
                 VerifyTestResult (tmp.Contains (L"A"));
                 VerifyTestResult (tmp.Contains (L"B"));

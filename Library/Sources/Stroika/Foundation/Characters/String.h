@@ -102,6 +102,19 @@ namespace Stroika::Foundation::Characters {
     class RegularExpressionMatch;
 
     /**
+     *  Flag principally for LimitLength, but used elsewhere as well (e.g. ToString ()).
+     */
+    enum class StringShorteningPreference {
+        ePreferKeepLeft,
+        ePreferKeepRight,
+        ePreferKeepMid,
+
+        eDefault = ePreferKeepLeft,
+
+        Stroika_Define_Enum_Bounds (ePreferKeepLeft, ePreferKeepMid)
+    };
+
+    /**
      *  \brief returns true iff T == u8string, u16string, u32string, or wstring
      */
     template <typename T>
@@ -981,10 +994,21 @@ namespace Stroika::Foundation::Characters {
          *  to at most maxLen characters, and removes whitespace (on 'to trim' side - given by keepLeft flag -
          *  if needed to get under maxLen).
          *
-         *  Note in the 3-arg overload, the elipsis string MAY be the empty string.
+         *  Note in the 3-arg overload, the ellipsis string MAY be the empty string.
          */
-        nonvirtual String LimitLength (size_t maxLen, bool keepLeft = true) const;
-        nonvirtual String LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis) const;
+
+        nonvirtual String LimitLength (size_t maxLen, StringShorteningPreference keepPref = StringShorteningPreference::ePreferKeepLeft) const;
+        nonvirtual String LimitLength (size_t maxLen, StringShorteningPreference keepLeft, const String& ellipsis) const;
+
+        [[deprecated ("Since Stroika v3.0d5 use StringShorteningPreference argument")]] String LimitLength (size_t maxLen, bool keepLeft) const
+        {
+            return LimitLength (maxLen, keepLeft ? StringShorteningPreference::ePreferKeepLeft : StringShorteningPreference::ePreferKeepRight);
+        }
+        [[deprecated ("Since Stroika v3.0d5 use StringShorteningPreference argument")]] String LimitLength (size_t maxLen, bool keepLeft,
+                                                                                                            const String& ellipsis) const
+        {
+            return LimitLength (maxLen, keepLeft ? StringShorteningPreference::ePreferKeepLeft : StringShorteningPreference::ePreferKeepRight, ellipsis);
+        }
 
     public:
         /**

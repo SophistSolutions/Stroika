@@ -726,6 +726,15 @@ namespace Stroika::Foundation::Characters {
         Require (i < size ());
         return GetCharAt (i);
     }
+    inline String String::LimitLength (size_t maxLen, StringShorteningPreference keepPref) const
+    {
+#if qCompiler_vswprintf_on_elispisStr_Buggy
+        static const String kELIPSIS_{"..."_k};
+#else
+        static const String          kELIPSIS_{u"\u2026"sv}; // OR "..."
+#endif
+        return LimitLength (maxLen, keepPref, kELIPSIS_);
+    }
     template <typename T>
     inline T String::As () const
         requires (IBasicUNICODEStdString<T> or is_same_v<T, String>)

@@ -84,8 +84,8 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *      request-header fields defined by this specification. Field names are
      *      case-insensitive.
      */
-    constexpr auto kHeaderNameEqualsComparer  = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
-    constexpr auto kHeaderNameInOrderComparer = String::LessComparer{Characters::CompareOptions::eCaseInsensitive};
+    constexpr auto kHeaderNameEqualsComparer  = String::EqualsComparer{Characters::eCaseInsensitive};
+    constexpr auto kHeaderNameInOrderComparer = String::LessComparer{Characters::eCaseInsensitive};
 
     /**
      * \brief roughly equivilent to Association<String,String>, except that the class is smart about certain

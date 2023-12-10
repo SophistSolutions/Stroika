@@ -67,7 +67,7 @@ namespace {
                 catch (const std::system_error& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
                     VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-                    VerifyTestResult (Characters::ToString (e).Contains (kErr2TestForExpectedMsg_, Characters::CompareOptions::eCaseInsensitive));
+                    VerifyTestResult (Characters::ToString (e).Contains (kErr2TestForExpectedMsg_, Characters::eCaseInsensitive));
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
@@ -82,7 +82,7 @@ namespace {
                 catch (const std::system_error& e) {
                     VerifyTestResult (e.code ().value () == kErr2TestFor_);
                     VerifyTestResult (e.code ().category () == generic_category ());
-                    VerifyTestResult (Characters::ToString (e).Contains (kMsgWithUnicode_, Characters::CompareOptions::eCaseInsensitive));
+                    VerifyTestResult (Characters::ToString (e).Contains (kMsgWithUnicode_, Characters::eCaseInsensitive));
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());

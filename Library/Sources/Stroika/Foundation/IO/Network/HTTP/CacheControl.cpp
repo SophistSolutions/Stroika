@@ -38,37 +38,37 @@ CacheControl CacheControl::Parse (const String& headerValue)
         Assert (not vv.empty ()); // cuz the first tokenize will never return an empty item
         String token = vv[0];
         for (const Cacheability& sr : DiscreteRange<Cacheability>::FullRange ()) {
-            if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, DefaultNames<Cacheability>{}.GetName (sr))) {
+            if (String::EqualsComparer{eCaseInsensitive}(token, DefaultNames<Cacheability>{}.GetName (sr))) {
                 r.fCacheability = sr;
                 goto DoneWithV;
             }
         }
-        if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "must-revalidate"sv)) {
+        if (String::EqualsComparer{eCaseInsensitive}(token, "must-revalidate"sv)) {
             r.fMustRevalidate = true;
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "no-transform"sv)) {
+        else if (String::EqualsComparer{eCaseInsensitive}(token, "no-transform"sv)) {
             r.fNoTransform = true;
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "only-if-cached"sv)) {
+        else if (String::EqualsComparer{eCaseInsensitive}(token, "only-if-cached"sv)) {
             r.fOnlyIfCached = true;
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "age"sv) && vv.length () >= 2) {
+        else if (String::EqualsComparer{eCaseInsensitive}(token, "age"sv) && vv.length () >= 2) {
             r.fAge = parseInt (vv[1]);
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "max-age"sv) && vv.length () >= 2) {
+        else if (String::EqualsComparer{eCaseInsensitive}(token, "max-age"sv) && vv.length () >= 2) {
             r.fMaxAge = parseInt (vv[1]);
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "s-max-age"sv) && vv.length () >= 2) {
+        else if (String::EqualsComparer{eCaseInsensitive}(token, "s-max-age"sv) && vv.length () >= 2) {
             r.fSharedMaxAge = parseInt (vv[1]);
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "max-stale"sv)) {
+        else if (String::EqualsComparer{eCaseInsensitive}(token, "max-stale"sv)) {
             MaxStale m;
             if (vv.length () >= 2) {
                 m.fAmount = parseInt (vv[1]);
             }
             r.fMaxStale = m;
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "min-fresh"sv) && vv.length () >= 2) {
+        else if (String::EqualsComparer{eCaseInsensitive}(token, "min-fresh"sv) && vv.length () >= 2) {
             r.fMinFresh = parseInt (vv[1]);
         }
     DoneWithV:;

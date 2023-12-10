@@ -419,7 +419,7 @@ namespace {
                     static const Execution::RuntimeErrorException kException_{"Cannot validate TLS without a host name"sv};
                     Execution::Throw (kException_);
                 }
-                auto equalsComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
+                auto equalsComparer = String::EqualsComparer{eCaseInsensitive};
                 if (not equalsComparer (*fURL_.GetAuthority ()->GetHost ()->AsRegisteredName (), resultSSLInfo.fSubjectCommonName) and
                     not equalsComparer (*fURL_.GetAuthority ()->GetHost ()->AsRegisteredName (), "www."sv + resultSSLInfo.fSubjectCommonName)) {
                     resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eHostnameMismatch;

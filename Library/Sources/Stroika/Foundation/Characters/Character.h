@@ -34,6 +34,8 @@ namespace Stroika::Foundation::Characters {
 
         Stroika_Define_Enum_Bounds (eWithCase, eCaseInsensitive)
     };
+    constexpr CompareOptions eWithCase        = CompareOptions::eWithCase;
+    constexpr CompareOptions eCaseInsensitive = CompareOptions::eCaseInsensitive;
 
     /**
      *  \brief Stroika's string/character classes treat 'char' as being an ASCII character

@@ -203,9 +203,9 @@ namespace {
         {
             using namespace Characters;
             {
-                Mapping<String, String> parameters{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}};
+                Mapping<String, String> parameters{String::EqualsComparer{Characters::eCaseInsensitive}};
                 // https://stroika.atlassian.net/browse/STK-738 (and see other workarounds in other files)
-                Mapping<String, String> parameters2{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}, parameters};
+                Mapping<String, String> parameters2{String::EqualsComparer{Characters::eCaseInsensitive}, parameters};
             }
         }
     }

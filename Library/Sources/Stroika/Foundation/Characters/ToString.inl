@@ -171,12 +171,10 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        inline String ToString (const T& t, StringShorteningPreference shortenPref = StringShorteningPreference::eDefault)
+        inline String ToString (const T& t, StringShorteningPreference shortenPref = StringShorteningPreference::eDefault, size_t maxLen2Display = 100)
             requires (is_convertible_v<T, String>)
         {
-            constexpr size_t kMaxLen2Display_{100}; // no idea what a good value here will be or if we should provide ability to override. I suppose
-                                                    // users can template-specialize ToString(const String&)???
-            return "'"sv + static_cast<String> (t).LimitLength (kMaxLen2Display_, shortenPref == StringShorteningPreference::ePreferLeft) + "'"sv;
+            return "'"sv + static_cast<String> (t).LimitLength (maxLen2Display, shortenPref) + "'"sv;
         }
         template <typename T>
         inline String ToString ([[maybe_unused]] const T& t)
@@ -328,9 +326,10 @@ namespace Stroika::Foundation::Characters {
         {
             return Characters::ToString (static_cast<unsigned char> (t), ios_base::hex);
         }
-        inline String ToString (const filesystem::path& t, StringShorteningPreference shortenPref = StringShorteningPreference::ePreferRight)
+        inline String ToString (const filesystem::path& t, StringShorteningPreference shortenPref = StringShorteningPreference::ePreferKeepRight,
+                                size_t maxLen2Display = 100)
         {
-            return Characters::ToString (t.wstring (), shortenPref); // wrap in 'ToString' for surrounding quotes
+            return Characters::ToString (t.wstring (), shortenPref, maxLen2Display); // wrap in 'ToString' for surrounding quotes
         }
 
     }

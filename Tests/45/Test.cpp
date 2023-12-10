@@ -384,7 +384,7 @@ namespace {
                 String            responseText = r.GetDataTextInputStream ().ReadAll ();
                 DbgTrace (L"responseText = %s", responseText.c_str ());
                 // rarely, but sometimes, this returns text that doesn't contain the word google --LGP 2019-04-19
-                VerifyTestResultWarning (responseText.Contains ("google", Characters::CompareOptions::eCaseInsensitive));
+                VerifyTestResultWarning (responseText.Contains ("google", Characters::eCaseInsensitive));
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {

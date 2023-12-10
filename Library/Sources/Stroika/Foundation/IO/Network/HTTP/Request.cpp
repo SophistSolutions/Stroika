@@ -56,7 +56,7 @@ Request::Request ()
                       AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
                       static const String                             kLabeled_10_{"HTTP/1.0"sv};
                       static const String                             kLabeled_11_{"HTTP/1.1"sv};
-                      auto versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
+                      auto versionStringComparer = String::EqualsComparer{Characters::eCaseInsensitive};
                       if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or
                           versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
                           thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointOne;
@@ -65,7 +65,7 @@ Request::Request ()
                                versionStringComparer (versionOrVersionLabel, kLabeled_10_)) {
                           thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointZero;
                       }
-                      else if (versionOrVersionLabel.StartsWith ("HTTP/"sv, Characters::CompareOptions::eCaseInsensitive)) {
+                      else if (versionOrVersionLabel.StartsWith ("HTTP/"sv, Characters::eCaseInsensitive)) {
                           thisObj->fHTTPVersion_ = versionOrVersionLabel.SubString (5);
                       }
                       else {

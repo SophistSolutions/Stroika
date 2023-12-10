@@ -22,7 +22,7 @@ namespace Stroika::Foundation::DataExchange {
         : fType_{type}
         , fSubType_{subType}
         , fSuffix_{suffix}
-        , fParameters_{String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive}, parameters}
+        , fParameters_{String::EqualsComparer{Characters::eCaseInsensitive}, parameters}
     {
         Require (type.empty () == subType.empty ());
         Require (not type.empty () or parameters.empty ()); // dont specify params without type

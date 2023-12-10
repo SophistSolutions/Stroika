@@ -1482,38 +1482,48 @@ bool String::IsWhitespace () const
     return not Find ([] (Character c) -> bool { return not c.IsWhitespace (); });
 }
 
-String String::LimitLength (size_t maxLen, bool keepLeft) const
-{
-#if qCompiler_vswprintf_on_elispisStr_Buggy
-    static const String kELIPSIS_{"..."_k};
-#else
-    static const String kELIPSIS_{u"\u2026"sv}; // OR "..."
-#endif
-    return LimitLength (maxLen, keepLeft, kELIPSIS_);
-}
-
-String String::LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis) const
+String String::LimitLength (size_t maxLen, StringShorteningPreference keepPref, const String& ellipsis) const
 {
     if (length () < maxLen) {
         return *this; // frequent optimization
     }
-    String tmp = keepLeft ? RTrim () : LTrim ();
-    if (tmp.length () <= maxLen) {
-        return tmp;
+    String operateOn = [&] () {
+        switch (keepPref) {
+            case StringShorteningPreference::ePreferKeepLeft:
+                return LTrim ();
+            case StringShorteningPreference::ePreferKeepRight:
+                return RTrim ();
+            case StringShorteningPreference::ePreferKeepMid:
+                return Trim (); // not sure we need to trim - but probably best
+            default:
+                RequireNotReached ();
+                return *this;
+        }
+    }();
+    if (operateOn.length () <= maxLen) {
+        return operateOn;
     }
-    size_t useLen = maxLen;
-    if (useLen > ellipsis.length ()) {
-        useLen -= ellipsis.length ();
+    size_t useLen          = maxLen;
+    size_t elipsisTotalLen = ellipsis.length ();
+    if (keepPref == StringShorteningPreference::ePreferKeepMid) {
+        elipsisTotalLen *= 2;
+    }
+    if (useLen > elipsisTotalLen) {
+        useLen -= elipsisTotalLen;
     }
     else {
         useLen = 0;
     }
-    if (keepLeft) {
-        return tmp.substr (0, useLen) + ellipsis;
+    switch (keepPref) {
+        case StringShorteningPreference::ePreferKeepLeft:
+            return operateOn.substr (0, useLen) + ellipsis;
+        case StringShorteningPreference::ePreferKeepRight:
+            return ellipsis + operateOn.substr (operateOn.length () - useLen);
+        case StringShorteningPreference::ePreferKeepMid:
+            size_t midPoint = operateOn.length () / 2;
+            return ellipsis + operateOn.substr (midPoint - useLen / 2, useLen) + ellipsis;
     }
-    else {
-        return ellipsis + tmp.substr (tmp.length () - useLen);
-    }
+    RequireNotReached ();
 }
 
 string String::AsNarrowString (const locale& l) const

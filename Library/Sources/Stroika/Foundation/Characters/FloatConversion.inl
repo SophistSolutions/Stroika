@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             RequireNotNull (strResult);
             // strip trailing zeros - except for the last first one after the decimal point.
             // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
-            bool hasE = strResult->Find ('e', CompareOptions::eCaseInsensitive).has_value ();
+            bool hasE = strResult->Find ('e', eCaseInsensitive).has_value ();
             //Assert (hasE == (strResult->find ('e') != String::npos or strResult->find ('E') != String::npos));
             if (not hasE) {
                 size_t pastDot = strResult->find ('.');
@@ -391,7 +391,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (options.GetTrimTrailingZeros ().value_or (ToStringOptions::kDefaultTrimTrailingZeros)) {
                 TrimTrailingZeros_ (&result);
             }
-            Ensure (String::EqualsComparer{CompareOptions::eCaseInsensitive}(result, Legacy_Float2String_ (f, options)));
+            Ensure (String::EqualsComparer{eCaseInsensitive}(result, Legacy_Float2String_ (f, options)));
             return result;
         }
     }

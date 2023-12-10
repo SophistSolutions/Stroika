@@ -368,8 +368,8 @@ namespace {
         VerifyTestResult (t5 == "Flintstone");
         VerifyTestResult (not t5.Find ("STONE").has_value ());
         VerifyTestResult (not t5.Contains ("SToNE"));
-        VerifyTestResult (t5.Find ("STONE", CompareOptions::eCaseInsensitive) == 5u);
-        VerifyTestResult (t5.Contains ("SToNE", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (t5.Find ("STONE", eCaseInsensitive) == 5u);
+        VerifyTestResult (t5.Contains ("SToNE", eCaseInsensitive));
 
         t1.erase (4);
         VerifyTestResult (t1.length () == 4);
@@ -849,16 +849,16 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test18_Compare_"};
         const String              kHELLOWorld = String{"Hello world"};
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, kHELLOWorld) == 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, String{"Hello world"}) == 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) <= 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) == 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}("fred", "fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}("fred", "Fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eCaseInsensitive}("Fred", "fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}("fred", "fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}("fred", "Fredy") > 0));
-        VerifyTestResult ((String::ThreeWayComparer{CompareOptions::eWithCase}("Fred", "fredy") < 0));
+        VerifyTestResult ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, kHELLOWorld) == 0));
+        VerifyTestResult ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, String{"Hello world"}) == 0));
+        VerifyTestResult ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) <= 0));
+        VerifyTestResult ((String::ThreeWayComparer{eCaseInsensitive}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) == 0));
+        VerifyTestResult ((String::ThreeWayComparer{eCaseInsensitive}("fred", "fredy") < 0));
+        VerifyTestResult ((String::ThreeWayComparer{eCaseInsensitive}("fred", "Fredy") < 0));
+        VerifyTestResult ((String::ThreeWayComparer{eCaseInsensitive}("Fred", "fredy") < 0));
+        VerifyTestResult ((String::ThreeWayComparer{eWithCase}("fred", "fredy") < 0));
+        VerifyTestResult ((String::ThreeWayComparer{eWithCase}("fred", "Fredy") > 0));
+        VerifyTestResult ((String::ThreeWayComparer{eWithCase}("Fred", "fredy") < 0));
     }
 }
 
@@ -1126,12 +1126,12 @@ namespace {
         VerifyTestResult (String{"abc"}.Matches (RegularExpression{".*bc"}));
         VerifyTestResult (not String{"abc"}.Matches (RegularExpression{"b.*c"}));
         VerifyTestResult (not String{"Hello world"}.Matches (RegularExpression{"ello"}));
-        VerifyTestResult (String{"abc"}.StartsWith ("AB", CompareOptions::eCaseInsensitive));
-        VerifyTestResult (not String{"abc"}.StartsWith ("AB", CompareOptions::eWithCase));
-        VerifyTestResult (String{"abc"}.EndsWith ("bc", CompareOptions::eCaseInsensitive));
-        VerifyTestResult (String{"abc"}.EndsWith ("bc", CompareOptions::eWithCase));
-        VerifyTestResult (String{"abc"}.EndsWith ("BC", CompareOptions::eCaseInsensitive));
-        VerifyTestResult (not String{"abc"}.EndsWith ("BC", CompareOptions::eWithCase));
+        VerifyTestResult (String{"abc"}.StartsWith ("AB", eCaseInsensitive));
+        VerifyTestResult (not String{"abc"}.StartsWith ("AB", eWithCase));
+        VerifyTestResult (String{"abc"}.EndsWith ("bc", eCaseInsensitive));
+        VerifyTestResult (String{"abc"}.EndsWith ("bc", eWithCase));
+        VerifyTestResult (String{"abc"}.EndsWith ("BC", eCaseInsensitive));
+        VerifyTestResult (not String{"abc"}.EndsWith ("BC", eWithCase));
     }
 }
 

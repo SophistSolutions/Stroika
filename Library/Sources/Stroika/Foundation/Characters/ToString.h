@@ -19,16 +19,6 @@
 
 namespace Stroika::Foundation::Characters {
 
-    /*
-     *  ROUGHT DRAFT AS OF 2023-12-06
-     */
-    enum StringShorteningPreference {
-        ePreferLeft,
-        ePreferRight,
-        ePReferMid,
-        eDefault = ePreferLeft,
-    };
-
     /**
      *  \brief  Return a debug-friendly, display version of the argument: not guaranteed parseable or usable except for debugging
      *
