@@ -133,22 +133,23 @@ filesystem::path AppTempFileManager::GetTempFile (const filesystem::path& fileBa
         (void)snprintf (buf, NEltsOf (buf), "-%d", ::rand ());
         filesystem::path trialName = fn / ToPath (basename + buf + ext);
         if (not exists (trialName)) {
-            #if qPlatform_Windows
+#if qPlatform_Windows
             if (HANDLE fd = ::CreateFile (trialName.native ().c_str (), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                                           nullptr, CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY, nullptr);  fd != INVALID_HANDLE_VALUE) {
+                                          nullptr, CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY, nullptr);
+                fd != INVALID_HANDLE_VALUE) {
                 ::CloseHandle (fd);
-                DbgTrace (L"AppTempFileManager::GetTempFile (): returning '%s'", Characters::ToString (trialName).c_str ());
+                DbgTrace (L"AppTempFileManager::GetTempFile (): returning %s", Characters::ToString (trialName).c_str ());
                 WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
-            #else
+#else
             if (int fd = ::open (trialName.generic_string ().c_str (), O_RDWR | O_CREAT, filesystem::perms::all); fd >= 0) {
                 close (fd);
-                DbgTrace (L"AppTempFileManager::GetTempFile (): returning '%s'", Characters::ToString (trialName).c_str ());
+                DbgTrace (L"AppTempFileManager::GetTempFile (): returning %s", Characters::ToString (trialName).c_str ());
                 WeakAssert (is_regular_file (trialName)); // possible for someone to have manually deleted, but unlikely
                 return trialName;
             }
-            #endif
+#endif
         }
         DbgTrace (L"Attempt to create file (%s) collided, so retrying (%d attempts)", Characters::ToString (trialName).c_str (), attempts);
     }
