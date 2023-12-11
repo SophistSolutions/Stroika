@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     Iterable<T> DiscreteRange<T, TRAITS>::Elements () const
     {
-        return this->empty () ? MyIterable_ () : MyIterable_ (this->GetLowerBound (), this->GetUpperBound ());
+        return this->empty () ? MyIterable_{} : MyIterable_{this->GetLowerBound (), this->GetUpperBound ()};
     }
     template <typename T, typename TRAITS>
     inline DiscreteRange<T, TRAITS>::operator Iterable<T> () const

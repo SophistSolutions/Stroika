@@ -151,6 +151,9 @@ namespace Stroika::Foundation::Traversal {
          *
          *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
          *  appear in the Elements() Iterable<T>.
+         * 
+         *  \note Elements produces a generator, not an actual list of each item (internally). This should not be visible externally,
+         *        except in how much memory or time is required to create an Elements() iterable for a large range (should be cheap).
          */
         nonvirtual Iterable<T> Elements () const;
 
@@ -162,6 +165,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         * \see Elements () - this produces a generator iterator, so should be quite cheap even for a large range.
          */
         nonvirtual Iterator<T> begin () const;
 
