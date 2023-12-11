@@ -241,6 +241,18 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ToDo.md">
       <Filter>System-Performance</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Test\Main.inl">
+      <Filter>Test</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Test\Makefile">
+      <Filter>Test</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Test\ReadMe.md">
+      <Filter>Test</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h">
@@ -432,6 +444,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\InstrumentHelpers.h">
       <Filter>System-Performance\Support</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\Main.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\StroikaPreComp.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Led">
@@ -484,6 +500,9 @@
     </Filter>
     <Filter Include="WebService\Server">
       <UniqueIdentifier>{1b4c9996-eedc-4b2b-bd58-4b2a822e85a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{9d3d7bab-6549-4b1d-8903-d0df2afa8815}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -684,6 +703,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\CORS.cpp">
       <Filter>WebServer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\Main.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -896,5 +918,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.h">
       <Filter>WebService\Server</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="VisualStudio-Stroika-Frameworks-Debugger-Template.natvis" />
   </ItemGroup>
 </Project>

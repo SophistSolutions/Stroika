@@ -31,6 +31,7 @@ SubDirs=	\
 		NetworkMonitor\
 		Service\
 		SystemPerformance\
+		Test\
 		WebServer\
 		WebService\
 		UPnP\

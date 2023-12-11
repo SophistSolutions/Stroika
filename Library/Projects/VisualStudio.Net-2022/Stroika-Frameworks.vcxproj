@@ -176,6 +176,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Led\WordProcessor.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextImager.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\WordWrappedTextInteractor.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Modbus\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\Modbus\ReadMe.md" />
@@ -225,6 +226,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Service\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\Service\Main.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Service\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\Service\ReadMe.md" />
@@ -257,6 +259,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.h" />
@@ -272,6 +275,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\Test\Main.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Test\Makefile" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Test\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Makefile" />
@@ -289,6 +296,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\Main.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.cpp" />
@@ -301,6 +309,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\Main.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.h" />
@@ -377,6 +386,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Basic.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\Basic.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebService\Server\VariantValue.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="VisualStudio-Stroika-Frameworks-Debugger-Template.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
