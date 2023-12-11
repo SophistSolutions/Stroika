@@ -92,6 +92,7 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
+    SignalHandlerRegistry::SafeSignalsManager safeSignals;
     Test::Setup (argc, argv);
     return Test::PrintPassOrFail (DoRegressionTests_);
 }
