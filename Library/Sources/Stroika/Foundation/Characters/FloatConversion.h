@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     };
 
     /**
-     *  ToString converts a floating point number to a string, controlled by paramtererized options. 
+     *  ToString converts a floating point number to a string, controlled by parameterized options. 
      *
      *  @see ToStringOptions
      *
@@ -196,7 +196,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *      o   wstring
      *      o           ... but this could sensibly be extended in the future
      */
-    template <typename STRING_TYPE = String, typename FLOAT_TYPE = float>
+    template <typename STRING_TYPE = String, floating_point FLOAT_TYPE = float>
     STRING_TYPE ToString (FLOAT_TYPE f, const ToStringOptions& options = {});
 
     template <>

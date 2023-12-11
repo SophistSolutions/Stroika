@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Characters {
         unsigned long long int String2UInt_ (const String& s);
         long long int          String2Int_ (const String& s);
         DISABLE_COMPILER_MSC_WARNING_START (4018)
-        template <typename T>
+        template <integral T>
         T String2IntOrUInt_ (const String& s)
         {
             if constexpr (numeric_limits<T>::is_signed) {
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Characters {
      *********************************** String2Int *********************************
      ********************************************************************************
      */
-    template <typename T, IUNICODECodePoint CHAR_T>
+    template <integral T, IUNICODECodePoint CHAR_T>
     inline T String2Int (span<const CHAR_T> s)
     {
         Require ((String{s} == String{s}.Trim ()));
@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Characters {
             return String2Int<T> (String{s});
         }
     }
-    template <typename T, IConvertibleToString STRINGISH_ARG>
+    template <integral T, IConvertibleToString STRINGISH_ARG>
     inline T String2Int (STRINGISH_ARG&& s)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
