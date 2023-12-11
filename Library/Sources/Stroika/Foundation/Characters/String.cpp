@@ -1514,13 +1514,15 @@ String String::ToUpperCase () const
 
 bool String::IsWhitespace () const
 {
-    // It is all whitespace if the first non-whatspace character is 'EOF'
+    // It is all whitespace if the first non-whitespace character is 'EOF'
     return not Find ([] (Character c) -> bool { return not c.IsWhitespace (); });
 }
 
 String String::LimitLength (size_t maxLen, StringShorteningPreference keepPref, const String& ellipsis) const
 {
-    if (length () < maxLen) {
+    // @todo Consider making this the 'REFERENCE' impl, and doing a specific one with a specific StringBuilder, and doing
+    // the trim/split directly, if I see this show up in a profile, for performance sake --LGP 2023-12-11
+    if (length () < maxLen) [[likely]] {
         return *this; // frequent optimization
     }
     String operateOn = [&] () {
@@ -1551,6 +1553,7 @@ String String::LimitLength (size_t maxLen, StringShorteningPreference keepPref, 
         else {
             useLen = 0;
         }
+        return useLen;
     }();
     switch (keepPref) {
         case StringShorteningPreference::ePreferKeepLeft:
@@ -1558,8 +1561,7 @@ String String::LimitLength (size_t maxLen, StringShorteningPreference keepPref, 
         case StringShorteningPreference::ePreferKeepRight:
             return ellipsis + operateOn.substr (operateOn.length () - useLen);
         case StringShorteningPreference::ePreferKeepMid:
-            size_t midPoint = operateOn.length () / 2;
-            return ellipsis + operateOn.substr (midPoint - useLen / 2, useLen) + ellipsis;
+            return ellipsis + operateOn.substr (operateOn.length () / 2 - useLen / 2, useLen) + ellipsis;
         default:
             RequireNotReached ();
             return *this;
