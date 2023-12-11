@@ -10,16 +10,19 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
-//#include "Stroika/Foundation/Memory/Optional.h"
+
+#include "Stroika/Frameworks/Test/ArchtypeClasses.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 #include "../TestCommon/CommonTests_MultiSet.h"
-#include "../TestHarness/SimpleClass.h"
-#include "../TestHarness/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
-using namespace Stroika::TestHarness;
+using namespace Stroika::Frameworks;
+
+using Test::ArchtypeClasses::SimpleClass;
+using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using Concrete::SortedMultiSet_stdmap;
 
@@ -34,7 +37,7 @@ namespace {
             using COMPARER_TYPE = less<MultiSetOfElementType>;
             for (CountedValue<MultiSetOfElementType> i : t) {
                 if (last.has_value ()) {
-                    VerifyTestResult (COMPARER_TYPE () (*last, i.fValue));
+                    VerifyTestResult (COMPARER_TYPE{}(*last, i.fValue));
                 }
                 last = i.fValue;
             }
@@ -87,9 +90,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
-    return EXIT_SUCCESS;
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

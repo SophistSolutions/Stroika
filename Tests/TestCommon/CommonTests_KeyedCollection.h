@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
 #include "Stroika/Foundation/Containers/Set.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 /**
  */

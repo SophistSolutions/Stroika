@@ -22,10 +22,12 @@
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include "Stroika/Foundation/Traversal/Range.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Time;
+
+using namespace Stroika::Frameworks;
 
 using Stroika::Foundation::Debug::TraceContextBumper;
 
@@ -48,7 +50,7 @@ namespace {
             catch (...) {
                 // suppress macos warn here - just not such locale installed
 #if !qPlatform_MacOS
-                Stroika::TestHarness::WarnTestIssue (
+                Stroika::Frameworks::Test::WarnTestIssue (
                     Characters::Format (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale %s",
                                         localeName.As<wstring> ().c_str ())
                         .c_str ());
@@ -81,7 +83,7 @@ namespace {
                 localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
             }
             catch (...) {
-                Stroika::TestHarness::WarnTestIssue (
+                Stroika::Frameworks::Test::WarnTestIssue (
                     L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US missing locale");
             }
             try {
@@ -90,7 +92,7 @@ namespace {
             catch (...) {
                 // suppress macos warn here - just not such locale installed
 #if !qPlatform_MacOS
-                Stroika::TestHarness::WarnTestIssue (
+                Stroika::Frameworks::Test::WarnTestIssue (
                     L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US.utf8 missing locale");
 #endif
             }
@@ -197,7 +199,7 @@ namespace {
                 if ((state & ios::badbit) or (state & ios::failbit)) {
 #if !_LIBCPP_VERSION
                     // Known that _LIBCPP_VERSION (clang libc++) treats this as an error and quite reasonable - so only warn for other cases so I can add exclusions here
-                    Stroika::TestHarness::WarnTestIssue ("Skipping tmget_dot_get_locale_date_order_buggy_test_ cuz parse failure");
+                    Stroika::Frameworks::Test::WarnTestIssue ("Skipping tmget_dot_get_locale_date_order_buggy_test_ cuz parse failure");
 #endif
                 }
                 else {
@@ -223,7 +225,7 @@ namespace {
             }
             catch (...) {
 #if !qPlatform_MacOS
-                Stroika::TestHarness::WarnTestIssue (
+                Stroika::Frameworks::Test::WarnTestIssue (
                     L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
 #endif
             }
@@ -1136,8 +1138,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Stroika::Frameworks::Test::Setup (argc, argv);
+    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
 }

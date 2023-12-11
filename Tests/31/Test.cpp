@@ -38,7 +38,7 @@
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using std::byte;
 
@@ -47,6 +47,8 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Streams;
+
+using namespace Stroika::Frameworks;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -483,14 +485,14 @@ namespace {
 
             // worth noting if these fail
             if (not defaultContextAvailableCipherAlgorithms.ContainsAny (defaultContextStandardCipherAlgorithms)) {
-                Stroika::TestHarness::WarnTestIssue (
+                Stroika::Frameworks::Test::WarnTestIssue (
                     Characters::Format (
                         L"defaultContextAvailableCipherAlgorithms missing standard algoritmhs: %s",
                         Characters::ToString (defaultContextStandardCipherAlgorithms - defaultContextAvailableCipherAlgorithms).c_str ())
                         .c_str ());
             }
             if (not defaultContextAvailableDigestAlgorithms.ContainsAny (defaultContextStandardDigestAlgorithms)) {
-                Stroika::TestHarness::WarnTestIssue (
+                Stroika::Frameworks::Test::WarnTestIssue (
                     Characters::Format (
                         L"defaultContextAvailableDigestAlgorithms missing standard algoritmhs: %s",
                         Characters::ToString (defaultContextStandardDigestAlgorithms - defaultContextAvailableDigestAlgorithms).c_str ())
@@ -563,9 +565,10 @@ namespace {
                                   Characters::ToString (current_exception ()).c_str ());
                     }
                     else {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Skipping provider=%s, due to exception: %s", provider.c_str (),
-                                                                                 Characters::ToString (current_exception ()).c_str ())
-                                                                 .c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Skipping provider=%s, due to exception: %s",
+                                                                                      provider.c_str (),
+                                                                                      Characters::ToString (current_exception ()).c_str ())
+                                                                      .c_str ());
                     }
                     continue;
                 }
@@ -621,7 +624,7 @@ namespace {
                         }
                         if (nFailsForThisCipherDigestCombo != 0 and nFailsForThisCipherDigestCombo != NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)) {
                             // maybe this cipher/digest combo fails only on some inputs
-                            Stroika::TestHarness::WarnTestIssue (
+                            Stroika::Frameworks::Test::WarnTestIssue (
                                 Characters::Format (L"Cipher %s, Digest %s failed %d times (not %d)", Characters::ToString (ci).c_str (),
                                                     Characters::ToString (di).c_str (), nFailsForThisCipherDigestCombo,
                                                     NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_))
@@ -666,7 +669,7 @@ namespace {
                         "id-smime-alg-CMS3DESwrap"sv
                     };
                     if (kLastSeenAllFailingCiphers_ != Set<String>{failingCiphers.Elements ()}) {
-                        Stroika::TestHarness::WarnTestIssue (
+                        Stroika::Frameworks::Test::WarnTestIssue (
                             Characters::Format (L"For provider=%s, nCipherTests=%d, nFailures=%d, new-failures=%s, remove-failures=%s, "
                                                 L"failingCiphers=%s, passing-ciphrs=%s",
                                                 provider.c_str (), nCipherTests, nFailures,
@@ -678,7 +681,7 @@ namespace {
                     static const Set<String> kStandardCipherAlgorithmNames{
                         OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<Set<String>> ([] (auto i) { return i.pName (); })};
                     if (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames) {
-                        Stroika::TestHarness::WarnTestIssue (
+                        Stroika::Frameworks::Test::WarnTestIssue (
                             Characters::Format (L"For provider=%s, some standard ciphers failed: %s", provider.c_str (),
                                                 Characters::ToString (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames).c_str ())
                                 .c_str ());
@@ -878,8 +881,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

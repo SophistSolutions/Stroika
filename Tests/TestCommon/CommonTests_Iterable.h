@@ -8,7 +8,7 @@
 
 #include "Stroika/Foundation/Traversal/Iterable.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 namespace CommonTests {
     namespace IterableTests {

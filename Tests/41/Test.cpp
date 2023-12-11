@@ -30,15 +30,17 @@
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
-#include "../TestHarness/NotCopyable.h"
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/ArchtypeClasses.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Characters;
 using namespace Containers;
 using namespace Execution;
 
-using namespace Stroika::TestHarness;
+using namespace Stroika::Frameworks;
+
+using Test::ArchtypeClasses::NotCopyable;
 
 namespace {
     bool kVerySlow_  = qDebug and (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer);
@@ -762,8 +764,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

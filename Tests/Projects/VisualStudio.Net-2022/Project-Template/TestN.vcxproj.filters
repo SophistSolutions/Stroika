@@ -26,26 +26,6 @@
     <ClCompile Include="..\..\..\NNN\Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\TestHarness\NotCopyable.cpp">
-      <Filter>TestHarness</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\TestHarness\SimpleClass.cpp">
-      <Filter>TestHarness</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\TestHarness\TestHarness.cpp">
-      <Filter>TestHarness</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\TestHarness\NotCopyable.h">
-      <Filter>TestHarness</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\TestHarness\SimpleClass.h">
-      <Filter>TestHarness</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\TestHarness\TestHarness.h">
-      <Filter>TestHarness</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Collection.h">

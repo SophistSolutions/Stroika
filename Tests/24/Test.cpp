@@ -10,9 +10,10 @@
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 
+#include "Stroika/Frameworks/Test/ArchtypeClasses.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
+
 #include "../TestCommon/CommonTests_Collection.h"
-#include "../TestHarness/SimpleClass.h"
-#include "../TestHarness/TestHarness.h"
 
 #include "Stroika/Foundation/Containers/Concrete/SortedCollection_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedCollection_stdmultiset.h"
@@ -20,7 +21,10 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
-using namespace Stroika::TestHarness;
+using namespace Stroika::Frameworks;
+
+using Test::ArchtypeClasses::SimpleClass;
+using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using Concrete::SortedCollection_LinkedList;
 using Concrete::SortedCollection_stdmultiset;
@@ -179,8 +183,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

@@ -20,7 +20,8 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)Main${OBJ_SUFFIX}\
+	$(ObjDir)ArchtypeClasses${OBJ_SUFFIX}\
+	$(ObjDir)TestHarness${OBJ_SUFFIX}\
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

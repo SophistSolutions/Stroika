@@ -15,11 +15,13 @@
 #include "Stroika/Foundation/Streams/TextReader.h"
 #include "Stroika/Foundation/Streams/iostream/OutputStreamFromStdOStream.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::iostream;
+
+using namespace Stroika::Frameworks;
 
 using std::byte;
 
@@ -307,8 +309,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

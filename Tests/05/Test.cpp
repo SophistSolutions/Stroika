@@ -9,13 +9,16 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 
-#include "../TestHarness/SimpleClass.h"
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/ArchtypeClasses.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
-using namespace Stroika::TestHarness;
+using namespace Stroika::Frameworks;
+
+using Test::ArchtypeClasses::SimpleClass;
+using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using DataStructures::Array;
 
@@ -110,8 +113,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

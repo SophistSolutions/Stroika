@@ -35,12 +35,14 @@
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
+
+using namespace Stroika::Frameworks;
 
 using Characters::String;
 using DataExchange::VariantValue;
@@ -574,8 +576,8 @@ namespace {
                     // vary. If diff, reverse the parse, and see if OK.
                     VariantValue vvv = DataExchange::Variant::JSON::Reader{}.Read (x);
                     if (vvv != v) {
-                        Stroika::TestHarness::WarnTestIssue (string{"x: " + x}.c_str ());
-                        Stroika::TestHarness::WarnTestIssue (string{"expected: " + expected}.c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (string{"x: " + x}.c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (string{"expected: " + expected}.c_str ());
                         VerifyTestResult (false);
                     }
                 }
@@ -1238,8 +1240,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

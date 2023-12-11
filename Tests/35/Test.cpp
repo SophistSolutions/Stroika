@@ -17,11 +17,12 @@
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 
-#include "../TestHarness/SimpleClass.h"
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
+
+using namespace Stroika::Frameworks;
 
 using Execution::ModuleGetterSetter;
 using Traversal::Iterable;
@@ -195,21 +196,21 @@ namespace {
                     [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
                     using namespace Characters;
                     if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
-                        Stroika::TestHarness::WarnTestIssue (Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (),
-                                                                     ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (),
-                                                                     ToString (possibleFileSuffixes).c_str ())
-                                                                 .c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (
+                            Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (),
+                                    ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), ToString (possibleFileSuffixes).c_str ())
+                                .c_str ());
                     }
                     if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
-                        Stroika::TestHarness::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
-                                                                     ToString (possibleFileSuffixes).c_str (), ToString (i).c_str (),
-                                                                     ToString (possibleFileSuffixes
-                                                                                   .Map<Iterable<InternetMediaType>> ([&] (String suffix) {
-                                                                                       return r.GetAssociatedContentType (suffix);
-                                                                                   })
-                                                                                   .As<Set<InternetMediaType>> ())
-                                                                         .c_str ())
-                                                                 .c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (
+                            Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
+                                    ToString (possibleFileSuffixes).c_str (), ToString (i).c_str (),
+                                    ToString (possibleFileSuffixes
+                                                  .Map<Iterable<InternetMediaType>> (
+                                                      [&] (String suffix) { return r.GetAssociatedContentType (suffix); })
+                                                  .As<Set<InternetMediaType>> ())
+                                        .c_str ())
+                                .c_str ());
                     }
                 };
                 dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
@@ -269,9 +270,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Execution::Logger::Activator logMgrActivator; // for OptionsFile test
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

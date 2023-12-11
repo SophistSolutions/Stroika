@@ -10,7 +10,8 @@
 
 #include "Stroika/Foundation/Containers/Association.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
+
 #include "CommonTests_Iterable.h"
 
 namespace CommonTests {

@@ -8,10 +8,11 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Debugger.h"
 
-#include "SimpleClass.h"
 #include "TestHarness.h"
 
-using namespace Stroika::TestHarness;
+#include "ArchtypeClasses.h"
+
+using namespace Stroika::Frameworks::Test::ArchtypeClasses;
 
 /*
  ********************************************************************************

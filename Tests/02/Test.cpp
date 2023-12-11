@@ -29,11 +29,13 @@
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Characters::Concrete;
+
+using namespace Stroika::Frameworks;
 
 using Containers::Sequence;
 
@@ -1940,8 +1942,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

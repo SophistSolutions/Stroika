@@ -33,7 +33,7 @@
 #include "Stroika/Foundation/IO/Network/Transfer/ConnectionPool.h"
 #include "Stroika/Foundation/Time/Duration.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using std::byte;
 
@@ -42,6 +42,8 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
+
+using namespace Stroika::Frameworks;
 
 namespace {
     const Connection::Options kDefaultTestOptions_ = [] () {
@@ -71,14 +73,14 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
                     }
                 }
                 catch (const Execution::TimeOutException& e) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
@@ -118,14 +120,14 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
                     }
                 }
                 catch (const Execution::TimeOutException& e) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
             }
         }
@@ -306,14 +308,14 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
                     }
                 }
                 catch (const Execution::TimeOutException& e) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
 #if qHasFeature_LibCurl
                 // NOTE - even though this uses non-ssl URL, it gets redirected to SSL-based url, so we must support that to test this
@@ -324,7 +326,7 @@ namespace {
                         return;
                     }
 #endif
-                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()).c_str ());
                 }
 #endif
                 catch (const Execution::RequiredComponentMissingException&) {
@@ -333,11 +335,11 @@ namespace {
                     // This is more like the absence of a feature beacuse of the missing component.
                     DbgTrace ("ignore RequiredComponentMissingException cuz no curl/winhttp");
 #else
-                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()).c_str ());
 #endif
                 }
                 catch (...) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::ToString (current_exception ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::ToString (current_exception ()).c_str ());
                 }
             }
         }
@@ -393,14 +395,14 @@ namespace {
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
                         Execution::ReThrow ();
                     }
                 }
                 catch (const Execution::TimeOutException& e) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
             }
         }
@@ -454,14 +456,14 @@ namespace {
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
                     Execution::ReThrow ();
                 }
             }
             catch (const Execution::TimeOutException& e) {
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -532,7 +534,7 @@ namespace {
             }
             catch (...) {
                 // if transient issue, ignore
-                Stroika::TestHarness::WarnTestIssue (
+                Stroika::Frameworks::Test::WarnTestIssue (
                     Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s",
                                         Characters::ToString (current_exception ()).c_str ())
                         .c_str ());
@@ -550,7 +552,7 @@ namespace {
             }
             catch (...) {
                 // if transient issue, ignore
-                Stroika::TestHarness::WarnTestIssue (
+                Stroika::Frameworks::Test::WarnTestIssue (
                     Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s",
                                         Characters::ToString (current_exception ()).c_str ())
                         .c_str ());
@@ -581,7 +583,7 @@ namespace {
 #endif
                 }
                 catch (...) {
-                    Stroika::TestHarness::WarnTestIssue (
+                    Stroika::Frameworks::Test::WarnTestIssue (
                         Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s",
                                             Characters::ToString (current_exception ()).c_str ())
                             .c_str ());
@@ -621,14 +623,15 @@ namespace {
                     }
                     catch (const IO::Network::HTTP::Exception& e) {
                         if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                            Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                            Stroika::Frameworks::Test::WarnTestIssue (
+                                Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                         }
                         else {
                             Execution::ReThrow ();
                         }
                     }
                     catch (const Execution::TimeOutException& e) {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                        Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                 }
             }
@@ -728,14 +731,14 @@ namespace {
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
                     Execution::ReThrow ();
                 }
             }
             catch (const Execution::TimeOutException& e) {
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                Stroika::Frameworks::Test::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -763,11 +766,11 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
+    Test::Setup (argc, argv);
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

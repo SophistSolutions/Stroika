@@ -21,7 +21,7 @@
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using std::byte;
 
@@ -30,6 +30,8 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
 using namespace Stroika::Foundation::DataExchange::XML;
+
+using namespace Stroika::Frameworks;
 
 using Common::KeyValuePair;
 using Containers::Sequence;
@@ -1383,8 +1385,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

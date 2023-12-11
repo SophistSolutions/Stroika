@@ -275,7 +275,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\WMICollector.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Sources\Stroika\Frameworks\Test\Main.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Test\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\Test\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
@@ -296,7 +295,8 @@
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.inl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\Main.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\ArchtypeClasses.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\TestHarness.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.cpp" />
@@ -309,7 +309,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\Main.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\ArchtypeClasses.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\TestHarness.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.h" />

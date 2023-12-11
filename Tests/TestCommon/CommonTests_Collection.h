@@ -9,7 +9,8 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Traversal/DiscreteRange.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
+
 #include "CommonTests_Iterable.h"
 
 /**

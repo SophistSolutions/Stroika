@@ -62,7 +62,7 @@
 #include "Stroika/Foundation/Traversal/Generator.h"
 #include "Stroika/Foundation/Traversal/Range.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -72,6 +72,8 @@ using namespace Stroika::Foundation::Math;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Time;
+
+using namespace Stroika::Frameworks;
 
 using std::byte;
 
@@ -1360,8 +1362,8 @@ namespace {
 
 #if qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
         if (Debug::kBuiltWithUndefinedBehaviorSanitizer) {
-            Stroika::TestHarness::WarnTestIssue (L"qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy and "
-                                                 L"Debug::kBuiltWithUndefinedBehaviorSanitizer so skipping test");
+            Stroika::Frameworks::Test::WarnTestIssue (L"qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy and "
+                                                      L"Debug::kBuiltWithUndefinedBehaviorSanitizer so skipping test");
             return;
         }
 #endif
@@ -1518,12 +1520,13 @@ namespace {
                 listAsMsg += i;
             });
             if (sShowOutput_) {
-                Stroika::TestHarness::WarnTestIssue ((L"At least one test did not meet expected time constaint (see above): " + listAsMsg).c_str ());
+                Stroika::Frameworks::Test::WarnTestIssue (
+                    (L"At least one test did not meet expected time constaint (see above): " + listAsMsg).c_str ());
             }
             else {
-                Stroika::TestHarness::WarnTestIssue ((Format (L"At least one test (%s) did not meet expected time constraint (see %s)",
-                                                              listAsMsg.c_str (), String{kDefaultPerfOutFile_}.c_str ()))
-                                                         .c_str ());
+                Stroika::Frameworks::Test::WarnTestIssue ((Format (L"At least one test (%s) did not meet expected time constraint (see %s)",
+                                                                   listAsMsg.c_str (), String{kDefaultPerfOutFile_}.c_str ()))
+                                                              .c_str ());
             }
         }
     }
@@ -1560,6 +1563,6 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     TemporaryTest_::DoTest_ ();
 
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (RunPerformanceTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (RunPerformanceTests_);
 }

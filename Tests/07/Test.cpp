@@ -18,12 +18,13 @@
 
 #include "Stroika/Foundation/Containers/LockFreeDataStructures/forward_list.h"
 
-#include "../TestHarness/SimpleClass.h"
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Containers::LockFreeDataStructures;
+
+using namespace Stroika::Frameworks;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
@@ -417,8 +418,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

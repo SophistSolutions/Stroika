@@ -1,17 +1,30 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2023.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Tests_SimpleClass_h_
-#define _Stroika_Foundation_Tests_SimpleClass_h_ 1
+#ifndef _Stroika_Frameworks_Test_ArchtypeClasses_h_
+#define _Stroika_Frameworks_Test_ArchtypeClasses_h_ 1
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-// included for qIteratorsRequireNoArgConstructorForT, which should be moved or eliminated
-#include "Stroika/Foundation/Traversal/Iterator.h"
-
 #include "Stroika/Foundation/Configuration/Common.h"
 
-namespace Stroika::TestHarness {
+/**
+ *  This module needs alot of work. Need a set of basic archtype classes for things that are not copyable, copyable, default constuctible etc
+ *  to use in regtest (especially container) test cases...
+ */
+namespace Stroika::Frameworks::Test::ArchtypeClasses {
+
+    struct NotCopyable {
+        NotCopyable ()                   = default;
+        NotCopyable (const NotCopyable&) = delete;
+        NotCopyable (NotCopyable&&)      = default;
+
+        nonvirtual NotCopyable& operator= (const NotCopyable&) = delete;
+        nonvirtual NotCopyable& operator= (NotCopyable&&)      = default;
+
+        void method (){};
+        void const_method () const {};
+    };
 
     /**
      *  Object NOT default constructible, is copyable, assignable; supports operator+ and operator==, and operator<
@@ -67,6 +80,6 @@ namespace Stroika::TestHarness {
         static size_t sTotalLiveObjects_;
     };
 
-};
+}
 
-#endif /* _Stroika_Foundation_Tests_SimpleClass_h_ */
+#endif /* _Stroika_Frameworks_Test_ArchtypeClasses_h_ */

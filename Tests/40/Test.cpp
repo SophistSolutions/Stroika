@@ -22,10 +22,12 @@
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
+
+using namespace Stroika::Frameworks;
 
 using Characters::String;
 using Containers::Sequence;
@@ -214,7 +216,7 @@ namespace {
             }
             VerifyTestResult (passed);
             if (Time::GetTickCount () - startAt > 1.0s) {
-                Stroika::TestHarness::WarnTestIssue ("TEST_TIMEOUT_EXECPETIONS_ took too long");
+                Stroika::Frameworks::Test::WarnTestIssue ("TEST_TIMEOUT_EXECPETIONS_ took too long");
             }
         }
         void TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_ ()
@@ -1469,8 +1471,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

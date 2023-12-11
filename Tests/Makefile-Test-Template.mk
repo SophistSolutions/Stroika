@@ -23,16 +23,9 @@ vpath %.cpp $(SrcDir) ../TestHarness/
 
 Objs	=	\
 	$(ObjDir)Test${OBJ_SUFFIX}\
-	$(ObjDir)NotCopyable${OBJ_SUFFIX}\
-	$(ObjDir)SimpleClass${OBJ_SUFFIX}\
-	$(ObjDir)TestHarness${OBJ_SUFFIX}\
 
 
 include $(StroikaRoot)/ScriptsLib/SharedBuildRules-Default.mk
-
-# ONLY depend on foundation library, not frameworks library
-StroikaLibs					=	$(StroikaFoundationLib)
-
 
 all:	$(ObjDir) $(TARGETEXE)
 

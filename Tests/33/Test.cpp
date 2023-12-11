@@ -27,13 +27,15 @@
 #include "Stroika/Foundation/Time/Duration.h"
 #include "Stroika/Foundation/Traversal/Range.h"
 
-#include "../TestHarness/TestHarness.h"
+#include "Stroika/Frameworks/Test/TestHarness.h"
 
 using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
+
+using namespace Stroika::Frameworks;
 
 using Time::Date;
 using Time::DateTime;
@@ -929,8 +931,8 @@ namespace {
     }
 }
 
-int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+int main (int argc, const char* argv[])
 {
-    Stroika::TestHarness::Setup ();
-    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
+    Test::Setup (argc, argv);
+    return Test::PrintPassOrFail (DoRegressionTests_);
 }

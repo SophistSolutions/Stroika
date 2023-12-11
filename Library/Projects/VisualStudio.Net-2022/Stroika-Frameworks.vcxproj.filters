@@ -241,9 +241,6 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\ToDo.md">
       <Filter>System-Performance</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\Test\Main.inl">
-      <Filter>Test</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Frameworks\Test\Makefile">
       <Filter>Test</Filter>
     </None>
@@ -444,10 +441,13 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Support\InstrumentHelpers.h">
       <Filter>System-Performance\Support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\Main.h">
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\StroikaPreComp.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\TestHarness.h">
       <Filter>Test</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\StroikaPreComp.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Test\ArchtypeClasses.h">
+      <Filter>Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Led">
@@ -704,7 +704,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\CORS.cpp">
       <Filter>WebServer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\Main.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\TestHarness.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Test\ArchtypeClasses.cpp">
       <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
