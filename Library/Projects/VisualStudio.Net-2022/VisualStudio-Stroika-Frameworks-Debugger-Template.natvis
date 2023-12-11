@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+	This depends on the visualizations from the Stroika-Foundation-Debugger... - so be sure to include that as well.
+-->
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+</AutoVisualizer>
