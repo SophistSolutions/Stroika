@@ -41,6 +41,9 @@
 namespace Stroika::Foundation::Traversal {
 
     /**
+     *  \brief A DiscreteRange is a Range where the underlying endpoints are integral (discrete, not continuous); 
+     *         this implies you can iterate over the members of the range, and its endpoints are closed.
+     *
      *  \par Example Usage
      *      \code
      *          vector<int> v = DiscreteRange<int>{1,10}.Elements ().As<vector<int>> ();
@@ -62,7 +65,7 @@ namespace Stroika::Foundation::Traversal {
      *          }
      *      \endcode
      *
-     *  \note   Since the default traits for an enum with Stroika type anotation (Stroika_Define_Enum_Bounds)
+     *  \note   Since the default traits for an enum with Stroika type annotation (Stroika_Define_Enum_Bounds)
      *          provides  the start/end, DiscreteRange<SOME_ENUM>::FullRange ().Elements () returns an
      *          iterable with all possible legal values of the enum.
      */
@@ -128,7 +131,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  This returns the number of points from lower bound to upperbound inclusive.
-         *  This equals GetDistancespanned () + 1 (roughly).
+         *  This equals GetDistanceSpanned () + 1 (roughly).
          *  If (empty ()) .... this returns 0;
          */
         constexpr UnsignedDifferenceType GetNumberOfContainedPoints () const;
