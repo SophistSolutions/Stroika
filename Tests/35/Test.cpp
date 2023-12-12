@@ -272,6 +272,7 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
+    Execution::Logger::Activator logMgrActivator; // for OptionsFile test
     Test::Setup (argc, argv);
     return Test::PrintPassOrFail (DoRegressionTests_);
 }
