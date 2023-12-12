@@ -68,18 +68,18 @@ namespace {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
                     VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "localhost");
                     VerifyTestResult (uri.GetAuthority ()->GetPort () == 1234);
-                    VerifyTestResult (uri.As<String> () == L"http://localhost:1234");
+                    VerifyTestResult (uri.As<String> () == "http://localhost:1234");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("localhost:1234");
                     VerifyTestResult (not uri.GetAuthority ().has_value ()); // treated as a scheme
-                    VerifyTestResult (uri.As<String> () == L"localhost:1234");
+                    VerifyTestResult (uri.As<String> () == "localhost:1234");
                 }
                 {
-                    IO::Network::URI uri = IO::Network::URI::Parse (L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
-                    VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == L"www.ics.uci.edu");
+                    IO::Network::URI uri = IO::Network::URI::Parse ("http://www.ics.uci.edu/pub/ietf/uri/#Related");
+                    VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "www.ics.uci.edu");
                     DbgTrace (L"X=%s", uri.As<String> ().c_str ());
-                    VerifyTestResult (uri.As<String> () == L"http://www.ics.uci.edu/pub/ietf/uri/#Related");
+                    VerifyTestResult (uri.As<String> () == "http://www.ics.uci.edu/pub/ietf/uri/#Related");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("/uri/#Related");
@@ -97,8 +97,8 @@ namespace {
                     VerifyTestResult (uri.GetQuery ()->operator() (L"ThemeName") == "Cupertino");
                 }
                 {
-                    IO::Network::URI uri = IO::Network::URI::Parse (L"HTTPS://www.MICROSOFT.com/Path");
-                    VerifyTestResult (uri.Normalize ().As<String> () == L"https://www.microsoft.com/Path");
+                    IO::Network::URI uri = IO::Network::URI::Parse ("HTTPS://www.MICROSOFT.com/Path");
+                    VerifyTestResult (uri.Normalize ().As<String> () == "https://www.microsoft.com/Path");
                 }
                 {
                     URI base{"http://www.sophists.com"};
@@ -164,16 +164,16 @@ namespace {
                 Debug::TraceContextBumper ctx{"TestEmptyURI_"};
                 {
                     URI u{};
-                    VerifyTestResult (u.As<String> () == L"");
+                    VerifyTestResult (u.As<String> () == "");
                 }
                 {
-                    URI u{L""};
-                    VerifyTestResult (u.As<String> () == L"");
+                    URI u{""};
+                    VerifyTestResult (u.As<String> () == "");
                 }
                 {
-                    URI u{L" "};
-                    VerifyTestResult (u.As<String> () == L"%20"); // @todo REVIEW SPEC- urlparse(' ').geturl () produces space, but I think this makes more sense
-                    VerifyTestResult (u.GetPath () == L" ");
+                    URI u{" "};
+                    VerifyTestResult (u.As<String> () == "%20"); // @todo REVIEW SPEC- urlparse(' ').geturl () produces space, but I think this makes more sense
+                    VerifyTestResult (u.GetPath () == " ");
                 }
             }
             void TestSamplesFromPythonURLParseDocs_ ()
@@ -452,9 +452,9 @@ namespace {
                               ntohl (0x01020304) == 0x01020304); // if big-endian machine, net byte order equals host byte order
         }
         {
-            VerifyTestResult (InternetAddress{L"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) ==
-                              InternetAddress{L"2002:C0A8:6301::"});
-            VerifyTestResult (InternetAddress{L"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) == InternetAddress{L"192.168.99.1"});
+            VerifyTestResult (InternetAddress{"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) ==
+                              InternetAddress{"2002:C0A8:6301::"});
+            VerifyTestResult (InternetAddress{"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) == InternetAddress{"192.168.99.1"});
         }
     }
 }
@@ -475,20 +475,20 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Test4_DNS_::DoTests_"};
             {
-                DNS::HostEntry e = DNS::kThe.GetHostEntry (L"www.sophists.com");
-                VerifyTestResult (e.fCanonicalName.Contains (L".sophists.com"));
+                DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.sophists.com");
+                VerifyTestResult (e.fCanonicalName.Contains (".sophists.com"));
                 VerifyTestResult (e.fAddressList.size () >= 1);
             }
             {
-                DNS::HostEntry e = DNS::kThe.GetHostEntry (L"www.google.com");
+                DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.google.com");
                 VerifyTestResult (e.fAddressList.size () >= 1);
             }
             {
-                DNS::HostEntry e = DNS::kThe.GetHostEntry (L"www.cnn.com");
+                DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.cnn.com");
                 VerifyTestResult (e.fAddressList.size () >= 1);
             }
             {
-                optional<String> aaa = DNS::kThe.ReverseLookup (InternetAddress (23, 56, 90, 167));
+                optional<String> aaa = DNS::kThe.ReverseLookup (InternetAddress {23, 56, 90, 167});
                 DbgTrace (L"reverselookup %s", Memory::NullCoalesce (aaa).c_str ());
             }
         }
@@ -501,30 +501,30 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"Test5_CIDR_::DoTests_"};
             {
-                CIDR cidr{L"10.70.0.0/15"};
-                auto cidr2 = CIDR{InternetAddress{L"10.70.0.0"}, 15};
+                CIDR cidr{"10.70.0.0/15"};
+                auto cidr2 = CIDR{InternetAddress{"10.70.0.0"}, 15};
                 VerifyTestResult (cidr == cidr2);
-                VerifyTestResult (Characters::ToString (cidr) == L"10.70.0.0/15");
+                VerifyTestResult (Characters::ToString (cidr) == "10.70.0.0/15");
                 VerifyTestResult (cidr.GetNumberOfSignificantBits () == 15);
                 VerifyTestResult ((cidr.GetRange () == Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0},
                                                                                                  InternetAddress{10, 71, 255, 255}}));
             }
             {
                 auto cidr = CIDR{InternetAddress{"192.168.56.1"}, 24};
-                VerifyTestResult (Characters::ToString (cidr) == L"192.168.56.0/24");
+                VerifyTestResult (Characters::ToString (cidr) == "192.168.56.0/24");
             }
             {
                 auto cidr = CIDR{InternetAddress{"172.28.240.1"}, 20};
-                VerifyTestResult (Characters::ToString (cidr) == L"172.28.240.0/20");
+                VerifyTestResult (Characters::ToString (cidr) == "172.28.240.0/20");
             }
             {
                 auto cidr = CIDR{InternetAddress{"172.17.185.1"}, 28};
-                VerifyTestResult (Characters::ToString (cidr) == L"172.17.185.0/28");
+                VerifyTestResult (Characters::ToString (cidr) == "172.17.185.0/28");
             }
             {
                 // fix for https://stroika.atlassian.net/browse/STK-909
                 auto cidr = CIDR{V6::kAddrAny, 64};
-                VerifyTestResult (Characters::ToString (cidr) == L"in6addr_any/64");
+                VerifyTestResult (Characters::ToString (cidr) == "in6addr_any/64");
                 VerifyTestResult (CIDR{cidr.As<String> ()} == cidr); // can roundtrip numeric form
             }
         }
