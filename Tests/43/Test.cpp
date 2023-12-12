@@ -488,7 +488,7 @@ namespace {
                 VerifyTestResult (e.fAddressList.size () >= 1);
             }
             {
-                optional<String> aaa = DNS::kThe.ReverseLookup (InternetAddress {23, 56, 90, 167});
+                optional<String> aaa = DNS::kThe.ReverseLookup (InternetAddress{23, 56, 90, 167});
                 DbgTrace (L"reverselookup %s", Memory::NullCoalesce (aaa).c_str ());
             }
         }
@@ -549,9 +549,9 @@ namespace {
                     catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
 #if qPlatform_Linux
                         if (e.code () == errc::no_such_file_or_directory) {
-                            Test::WarnTestIssue (
-                                (L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " + Characters::ToString (current_exception ()))
-                                    .c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
+                            Test::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " +
+                                                  Characters::ToString (current_exception ()))
+                                                     .c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
                             return;
                         }
 #endif
