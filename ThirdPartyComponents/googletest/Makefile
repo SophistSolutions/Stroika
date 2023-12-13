@@ -52,7 +52,11 @@ CMAKE_BUILD_TYPE_=Release
 MAYBED_=
 endif
 
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 OUTPUT_LIB_=gtest${LIB_SUFFIX}
+else
+OUTPUT_LIB_=libgtest.${LIB_SUFFIX}
+endif
 
 PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/${OUTPUT_LIB_}		\
