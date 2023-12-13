@@ -42,9 +42,9 @@ namespace {
                 std::locale              l{localeName.AsNarrowSDKString ()};
                 const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
 #if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-                EXPECT_TRUEWarning (tmget.date_order () == time_base::no_order);
+                VerifyTestResultWarning (tmget.date_order () == time_base::no_order);
 #else
-                EXPECT_TRUEWarning (tmget.date_order () == time_base::mdy);
+                VerifyTestResultWarning (tmget.date_order () == time_base::mdy);
 #endif
             }
             catch (...) {
@@ -129,9 +129,9 @@ namespace {
                 tmget.get (itbegin, itend, iss, state, &resultTM, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
             }
             //DbgTrace (L"resultTM.tm_year=%d", resultTM.tm_year);
-            EXPECT_TRUEWarning (origDateTM.tm_year == resultTM.tm_year);
-            EXPECT_TRUEWarning (origDateTM.tm_mon == resultTM.tm_mon);
-            EXPECT_TRUEWarning (origDateTM.tm_mday == resultTM.tm_mday);
+            VerifyTestResultWarning (origDateTM.tm_year == resultTM.tm_year);
+            VerifyTestResultWarning (origDateTM.tm_mon == resultTM.tm_mon);
+            VerifyTestResultWarning (origDateTM.tm_mday == resultTM.tm_mday);
         };
         // this test doesnt make much sense - revisit!!! --LGP 2021-03-05
         testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (12, 5, 1, locale::classic ());
@@ -193,7 +193,7 @@ namespace {
                 istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
                 istreambuf_iterator<wchar_t> itend;        // end-of-stream
                 tm                           resultTM{};
-                EXPECT_TRUEWarning (tmget.date_order () == time_base::mdy or qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy);
+                VerifyTestResultWarning (tmget.date_order () == time_base::mdy or qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy);
                 static const wstring  kFmt_ = String{DateTime::kShortLocaleFormatPattern}.As<wstring> ();
                 [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, kFmt_.data (), kFmt_.data () + kFmt_.length ());
                 if ((state & ios::badbit) or (state & ios::failbit)) {
@@ -359,7 +359,8 @@ namespace {
 #else
             EXPECT_TRUE (TimeOfDay{101}.Format (locale{}) == "12:01:41 AM");
             EXPECT_TRUE (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "12:01 AM");
-            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "1:01:41 AM" or TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41 AM");
+            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "1:01:41 AM" or
+                         TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41 AM");
             EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41 AM");
             EXPECT_TRUE (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01 AM");
 #endif
@@ -467,8 +468,7 @@ namespace {
         {
             Date d = Date (1903y, April, 5d);
             EXPECT_TRUE (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903" or d.Format (locale{}) == "04/05/03");
-            EXPECT_TRUE (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903" or
-                              d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/03");
+            EXPECT_TRUE (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903" or d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/03");
         }
         {
             Date d = Date{Date::JulianDayNumber{2455213}};
@@ -523,7 +523,7 @@ namespace {
                 if (Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()) == -4 * 60 * 60) {
                     DbgTrace ("Eastern US timezone");
                     EXPECT_TRUE ((regTest.AsLocalTime () ==
-                                       DateTime{Date{Year{2020}, September, DayOfMonth{1}}, TimeOfDay{20 - 4, 42, 41}, Timezone::kLocalTime}));
+                                  DateTime{Date{Year{2020}, September, DayOfMonth{1}}, TimeOfDay{20 - 4, 42, 41}, Timezone::kLocalTime}));
                 }
                 else {
                     DbgTrace ("other timezone: offset=%d", Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()));
@@ -632,11 +632,11 @@ namespace {
                 // (note - failed once with clang++ on vm - could be something else slowed vm down - LGP 2018-04-17 - ignore for now)
                 // But even the 1.1 failed once (--LGP 2019-05-03) - so change to warning and use bigger number (2.1) for error check
                 // Failed again on (slowish) vm under VS2k17 - but rarely --LGP 2021-05-20
-                EXPECT_TRUEWarning (Math::NearlyEquals (dt.AsLocalTime ().As<Time::TimePointSeconds> ().time_since_epoch ().count (),
+                VerifyTestResultWarning (Math::NearlyEquals (dt.AsLocalTime ().As<Time::TimePointSeconds> ().time_since_epoch ().count (),
                                                              ds.time_since_epoch ().count (), 1.1));
                 EXPECT_TRUE (Math::NearlyEquals (dt.AsLocalTime ().As<Time::TimePointSeconds> ().time_since_epoch ().count (),
-                                                      ds.time_since_epoch ().count (),
-                                                      7.5)); // failed once - with value 2.1 - 2023-11-10, so up this to 5 (sometimes run on slow machines)
+                                                 ds.time_since_epoch ().count (),
+                                                 7.5)); // failed once - with value 2.1 - 2023-11-10, so up this to 5 (sometimes run on slow machines)
                 // Failed once (after change to more jittery tickcount logic) on macos, so upped to 7.5 seconds --LGP 2023-11-23
             }
         }
@@ -653,17 +653,17 @@ namespace {
 
             // Parse eRFC1123
             EXPECT_TRUE (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::kRFC1123Format) ==
-                              (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
+                         (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
             // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
             EXPECT_TRUE (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::kRFC1123Format) ==
-                              (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+                         (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
             EXPECT_TRUE (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::kRFC1123Format) ==
-                              (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+                         (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
             EXPECT_TRUE (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::kRFC1123Format) ==
-                              (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+                         (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
 
             EXPECT_TRUE (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::kRFC1123Format) ==
-                              (DateTime{Date{Time::Year{2018}, November, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
+                         (DateTime{Date{Time::Year{2018}, November, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
 
             roundTripD (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC});
 

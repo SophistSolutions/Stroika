@@ -127,7 +127,6 @@ void Test::Test_ (bool failIfFalse, bool isFailureElseWarning, const char* regre
     }
 }
 
-
 void Test::VerifyTestResultWarning_ (bool failIfFalse, bool isFailureElseWarning, const char* regressionTestText, const char* fileName, int lineNum)
 {
     if (not failIfFalse) {

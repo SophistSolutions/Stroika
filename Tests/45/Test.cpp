@@ -378,7 +378,7 @@ namespace {
             void Test_1_SimpleFetch_Google_C_ (Connection::Ptr c)
             {
                 Response r = c.GET (URI{"http://www.google.com"});
-                EXPECT_TRUEWarning (r.GetSucceeded ());
+                VerifyTestResultWarning (r.GetSucceeded ());
                 for (auto i : r.GetHeaders ()) {
                     DbgTrace (L"%s=%s", i.fKey.c_str (), i.fValue.c_str ());
                 }
@@ -386,7 +386,7 @@ namespace {
                 String            responseText = r.GetDataTextInputStream ().ReadAll ();
                 DbgTrace (L"responseText = %s", responseText.c_str ());
                 // rarely, but sometimes, this returns text that doesn't contain the word google --LGP 2019-04-19
-                EXPECT_TRUEWarning (responseText.Contains ("google", Characters::eCaseInsensitive));
+                VerifyTestResultWarning (responseText.Contains ("google", Characters::eCaseInsensitive));
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
@@ -442,8 +442,8 @@ namespace {
             {
                 Connection::Ptr c = IO::Network::Transfer::Connection::New (kDefaultTestOptions_);
                 Response        r = c.GET (URI{"http://www.google.com"});
-                EXPECT_TRUEWarning (r.GetSucceeded ());
-                EXPECT_TRUEWarning (r.GetData ().size () > 1);
+                VerifyTestResultWarning (r.GetSucceeded ());
+                VerifyTestResultWarning (r.GetData ().size () > 1);
             }
         }
         void DoTests_ ()
@@ -490,7 +490,7 @@ namespace {
                 Connection::Ptr c = IO::Network::Transfer::Connection::New (o);
                 try {
                     Response r = c.GET (uri);
-                    EXPECT_TRUEWarning (r.GetData ().size () > 1);
+                    VerifyTestResultWarning (r.GetData ().size () > 1);
                 }
                 catch ([[maybe_unused]] const system_error& lce) {
 #if qHasFeature_LibCurl && !qHasFeature_OpenSSL

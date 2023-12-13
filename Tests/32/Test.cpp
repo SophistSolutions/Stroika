@@ -173,9 +173,8 @@ namespace {
                 Assert (sizeof (ksample_zip_7z_) == 2157);
 #if qHasFeature_LZMA
                 Archive::_7z::Reader reader (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
-                EXPECT_TRUE ((reader.GetContainedFiles () ==
-                                   Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp",
-                                                           L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
+                EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp",
+                                                                                     L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 
                 {
                     using Memory::byte;
@@ -185,11 +184,7 @@ namespace {
                     EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
                     EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
                     EXPECT_TRUE (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
-                    EXPECT_TRUE (
-                        TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ())
-                            .ReadAll ()
-                            .Contains (
-                                "Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+                    EXPECT_TRUE (TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
                     EXPECT_TRUE (
                         TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
                     try {
@@ -371,9 +366,8 @@ namespace {
 #if qHasFeature_ZLib
                 Archive::Zip::Reader reader{Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (ksample_zip_), end (ksample_zip_))};
 
-                EXPECT_TRUE ((reader.GetContainedFiles () ==
-                                   Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
-                                                           "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
+                EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
+                                                                                     "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
                 {
                     using Streams::InputStream;
                     using Streams::TextReader;
@@ -381,11 +375,7 @@ namespace {
                     EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
                     EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
                     EXPECT_TRUE (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
-                    EXPECT_TRUE (
-                        TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ())
-                            .ReadAll ()
-                            .Contains (
-                                "Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+                    EXPECT_TRUE (TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
                     EXPECT_TRUE (
                         TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
                     try {
@@ -535,16 +525,14 @@ namespace {
                 String aaa = String{kCase1_spaceSep_.dataAsFile};
                 EXPECT_TRUE (serialized.AsASCII () == kCase1_spaceSep_.dataAsFile);
                 stringstream tmp{kCase1_spaceSep_.dataAsFile};
-                EXPECT_TRUE (
-                    (kCase1_spaceSep_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
+                EXPECT_TRUE ((kCase1_spaceSep_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
             }
             {
                 auto serialized =
                     Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate = false}}.WriteAsString (kCase2_noSpace_.data);
                 EXPECT_TRUE (serialized.AsASCII () == kCase2_noSpace_.dataAsFile);
                 stringstream tmp{kCase2_noSpace_.dataAsFile};
-                EXPECT_TRUE (
-                    (kCase2_noSpace_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
+                EXPECT_TRUE ((kCase2_noSpace_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
             }
         }
 

@@ -405,11 +405,11 @@ namespace {
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (kTotalEntries_));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (kTotalEntries_));
-                EXPECT_TRUEWarning (falsePositives < 100); // last measured was 75 (was 60 with old hash function) no matter how things change
+                VerifyTestResultWarning (falsePositives < 100); // last measured was 75 (was 60 with old hash function) no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (kTotalEntries_);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
-                EXPECT_TRUEWarning (expectedFalsePositiveRange.Contains (falsePositives));
+                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleInternetAddressTest ()
             {
@@ -444,11 +444,11 @@ namespace {
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
-                EXPECT_TRUEWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
+                VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
-                EXPECT_TRUEWarning (expectedFalsePositiveRange.Contains (falsePositives));
+                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleInternetAddressTestWithExplicitHash ()
             {
@@ -484,11 +484,11 @@ namespace {
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
-                EXPECT_TRUEWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
+                VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
-                EXPECT_TRUEWarning (expectedFalsePositiveRange.Contains (falsePositives));
+                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleBloomTestWithStroikaDigester ()
             {
@@ -527,11 +527,11 @@ namespace {
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
-                EXPECT_TRUEWarning (falsePositives < 75); // typically around 14 (now 20)
+                VerifyTestResultWarning (falsePositives < 75); // typically around 14 (now 20)
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
-                EXPECT_TRUEWarning (expectedFalsePositiveRange.Contains (falsePositives));
+                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void TestSuggestionsForFilterSize ()
             {

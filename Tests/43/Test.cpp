@@ -449,12 +449,13 @@ namespace {
         {
             EXPECT_TRUE (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
             EXPECT_TRUE (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or
-                              ntohl (0x01020304) == 0x01020304); // if big-endian machine, net byte order equals host byte order
+                         ntohl (0x01020304) == 0x01020304); // if big-endian machine, net byte order equals host byte order
         }
         {
             EXPECT_TRUE (InternetAddress{"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) ==
-                              InternetAddress{"2002:C0A8:6301::"});
-            EXPECT_TRUE (InternetAddress{"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) == InternetAddress{"192.168.99.1"});
+                         InternetAddress{"2002:C0A8:6301::"});
+            EXPECT_TRUE (InternetAddress{"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) ==
+                         InternetAddress{"192.168.99.1"});
         }
     }
 }
@@ -506,8 +507,8 @@ namespace {
                 EXPECT_TRUE (cidr == cidr2);
                 EXPECT_TRUE (Characters::ToString (cidr) == "10.70.0.0/15");
                 EXPECT_TRUE (cidr.GetNumberOfSignificantBits () == 15);
-                EXPECT_TRUE ((cidr.GetRange () == Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0},
-                                                                                                 InternetAddress{10, 71, 255, 255}}));
+                EXPECT_TRUE ((cidr.GetRange () ==
+                              Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0}, InternetAddress{10, 71, 255, 255}}));
             }
             {
                 auto cidr = CIDR{InternetAddress{"192.168.56.1"}, 24};

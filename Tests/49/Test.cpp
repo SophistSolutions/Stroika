@@ -121,7 +121,7 @@ namespace {
                 EXPECT_TRUE (s.GetReadOffset () == sizeof (kData_));
                 EXPECT_TRUE (s.GetWriteOffset () == sizeof (kData_));
                 EXPECT_TRUE (Memory::BLOB (std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()) ==
-                                  Memory::BLOB (std::begin (kData_), std::end (kData_)));
+                             Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
         }
 

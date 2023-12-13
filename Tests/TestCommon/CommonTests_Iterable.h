@@ -39,8 +39,7 @@ namespace CommonTests {
         void Test3_SetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER&& equalsComparer)
         {
             auto iterableCopy = container;
-            EXPECT_TRUE (
-                (iterableCopy.template SetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward<EQUALS_COMPARER> (equalsComparer))));
+            EXPECT_TRUE ((iterableCopy.template SetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward<EQUALS_COMPARER> (equalsComparer))));
         }
 
         template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>

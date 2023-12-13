@@ -39,7 +39,7 @@ namespace {
             ::raise (SIGINT);
             DISABLE_COMPILER_MSC_WARNING_START (4127) // conditional expression is constant - WRONG - CAN be constant - but if qCompiler_ValgrindDirectSignalHandler_Buggy, depends on non constexpr function
             if (qCompiler_ValgrindDirectSignalHandler_Buggy and Debug::IsRunningUnderValgrind ()) {
-                EXPECT_TRUEWarning (called);
+                VerifyTestResultWarning (called);
             }
             else {
                 EXPECT_TRUE (called);

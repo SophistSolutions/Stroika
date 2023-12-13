@@ -55,7 +55,7 @@ namespace {
         }
 
         EXPECT_TRUE (someLL.size () == kBigSize);
-        someLL.SetAt (55, 55);                      //  someLL [55] = 55;
+        someLL.SetAt (55, 55);                 //  someLL [55] = 55;
         EXPECT_TRUE (someLL.GetAt (55) == 55); //  EXPECT_TRUE(someArray [55] == 55);
         EXPECT_TRUE (someLL.GetAt (55) != 56); //  EXPECT_TRUE(someArray [55] != 56);
         {

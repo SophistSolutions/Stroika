@@ -207,8 +207,7 @@ namespace {
                 EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
                 EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
                 EXPECT_TRUE (*calendar[0].withWhom.middleName == "Up");
-                EXPECT_TRUE (
-                    (calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
+                EXPECT_TRUE ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
                 EXPECT_TRUE (calendar[1].withWhom.firstName == "Fred");
                 EXPECT_TRUE (calendar[1].withWhom.lastName == "Down");
             }
@@ -222,8 +221,7 @@ namespace {
                 EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
                 EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
                 EXPECT_TRUE (*calendar[0].withWhom.middleName == "Up");
-                EXPECT_TRUE (
-                    (calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
+                EXPECT_TRUE ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
                 EXPECT_TRUE (calendar[1].withWhom.firstName == "Fred");
                 EXPECT_TRUE (calendar[1].withWhom.lastName == "Down");
             }
@@ -687,7 +685,7 @@ namespace {
                 EXPECT_TRUE ((data.MirrorTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT2}));
                 EXPECT_TRUE (Math::NearlyEquals (*data.MirrorTemperatures.Lookup (TunerNumberType_::eT2), 0.86115019791435543));
                 EXPECT_TRUE ((data.TECPowerConsumptionStats->TunerTECCurrent.Keys () ==
-                                   Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2, TunerNumberType_::eT3, TunerNumberType_::eT4}));
+                              Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2, TunerNumberType_::eT3, TunerNumberType_::eT4}));
                 EXPECT_TRUE (Math::NearlyEquals (*data.ExternalTemperature1, 0.0));
             }
         }
@@ -942,10 +940,10 @@ namespace {
                 EXPECT_TRUE (data.ScanEnd == DateTime::Parse ("2016-07-28T20:14:44Z", DateTime::kISO8601Format));
                 EXPECT_TRUE (not data.ScanLabel.has_value ());
                 EXPECT_TRUE ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_>{pair<WaveNumberType_, IntensityType_>{901.5, 0},
-                                                                                                pair<WaveNumberType_, IntensityType_>{902.5, 1}}));
-                EXPECT_TRUE (
-                    (data.AuxData == Mapping<String, String>{pair<String, String>{"Cell-Pressure", "1000"}, pair<String, String>{"Cell-Temperature", "0"},
-                                                             pair<String, String>{"EngineId", "B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
+                                                                                           pair<WaveNumberType_, IntensityType_>{902.5, 1}}));
+                EXPECT_TRUE ((data.AuxData ==
+                              Mapping<String, String>{pair<String, String>{"Cell-Pressure", "1000"}, pair<String, String>{"Cell-Temperature", "0"},
+                                                      pair<String, String>{"EngineId", "B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
             }
         }
     }

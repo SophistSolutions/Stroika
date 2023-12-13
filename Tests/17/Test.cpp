@@ -152,7 +152,7 @@ namespace {
         {
             Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
             EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
-                               Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+                          Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
             EXPECT_TRUE ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
         }
     }

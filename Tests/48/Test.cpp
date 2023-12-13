@@ -227,34 +227,34 @@ namespace {
             const char kSrc4_[] = "0123456789";
 
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
-                              Memory::BLOB::FromRaw (kSrc1_, kSrc1_ + strlen (kSrc1_)));
+                         Memory::BLOB::FromRaw (kSrc1_, kSrc1_ + strlen (kSrc1_)));
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
-                              Memory::BLOB::FromRaw (kSrc2_, kSrc2_ + strlen (kSrc2_)));
+                         Memory::BLOB::FromRaw (kSrc2_, kSrc2_ + strlen (kSrc2_)));
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
-                              Memory::BLOB::FromRaw (kSrc3_, kSrc3_ + strlen (kSrc3_)));
+                         Memory::BLOB::FromRaw (kSrc3_, kSrc3_ + strlen (kSrc3_)));
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
-                              Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
+                         Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
 
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
-                              Memory::BLOB::FromRaw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
+                         Memory::BLOB::FromRaw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
-                              Memory::BLOB::FromRaw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
+                         Memory::BLOB::FromRaw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
-                              Memory::BLOB::FromRaw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
+                         Memory::BLOB::FromRaw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
             EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
-                              Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
+                         Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
         }
         {
             using Memory::BLOB;
             EXPECT_TRUE ((BLOB::FromHex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a") ==
-                               BLOB{0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a}));
+                          BLOB{0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a}));
             EXPECT_TRUE ((BLOB::FromHex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d") ==
-                               BLOB{0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d}));
+                          BLOB{0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d}));
             EXPECT_TRUE ((BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a") == BLOB{0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a}));
             EXPECT_TRUE ((BLOB::FromHex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6") ==
-                               BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
+                          BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
             EXPECT_TRUE ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6") ==
-                               BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
+                          BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
             EXPECT_TRUE ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6"));
         }
         {
@@ -392,8 +392,8 @@ namespace {
                 static_assert (not is_standard_layout_v<Private_::X2>);
                 void* aAddr = &t.a;
                 void* bAddr = &t.b;
-                EXPECT_TRUEWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
-                EXPECT_TRUEWarning (GetObjectOwningField (bAddr, &Private_::X2::b) == &t);
+                VerifyTestResultWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
+                VerifyTestResultWarning (GetObjectOwningField (bAddr, &Private_::X2::b) == &t);
             }
         }
     }
@@ -455,7 +455,7 @@ namespace {
                 }
             }
             DbgTrace (L"For %d (%f its log) resizes, we got %d reallocs", kCountOfResizes_, log (kCountOfResizes_), countOfReallocCopies);
-            EXPECT_TRUEWarning (5 <= countOfReallocCopies and countOfReallocCopies <= 50);
+            VerifyTestResultWarning (5 <= countOfReallocCopies and countOfReallocCopies <= 50);
         }
     }
 }

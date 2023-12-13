@@ -271,12 +271,12 @@ namespace {
                 //      so set kMarginOfErrorHi_ to 7.0 -- LGP 2019-02-27
                 //
                 // Got another failure 2019-04-17 on raspberrypi - so change limit of kMarginOfErrorHi_==7, to kMarginOfErrorHi_Warn_ = 5.0, kMarginOfErrorHi_Error_ = 10.0
-                // and use EXPECT_TRUEWarning -- LGP 2019-04-17
+                // and use VerifyTestResultWarning -- LGP 2019-04-17
                 //
                 // Got another warning 2019-08-12 on raspberrypi - but no change cuz about to upgrade to faster raspberrypi
                 //
                 EXPECT_TRUE (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Error_);
-                EXPECT_TRUEWarning (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_);
+                VerifyTestResultWarning (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_);
             }
 
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
@@ -809,7 +809,7 @@ namespace {
          *      2021-05-29 - saw happen on Ubuntu 2004(docker), but still very rare
          *      2022-04-10 - saw happen on Ununtu 2004(docker), but still very rare
          */
-        EXPECT_TRUEWarning (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) ==
+        VerifyTestResultWarning (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) ==
                                  set<WaitableEvent*> ({&we2})); // may not indicate a real problem if triggered rarely - just threads ran in queer order, but can happen
         Time::DurationSeconds timeTaken = Time::GetTickCount () - startAt;
         EXPECT_TRUE (timeTaken <= kMaxWaitTime_); // make sure we didnt wait for the full kMaxWaitTime_ on first thread

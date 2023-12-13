@@ -85,8 +85,8 @@ namespace {
                         Memory::StackBuffer<char> relBuf{0};
                         int                       relEncodedSize = ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
                         relBuf.GrowToSize (relEncodedSize);
-                        EXPECT_TRUE (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)),
-                                                             static_cast<int> (totalSize), relBuf.data (), &relEncodedSize));
+                        EXPECT_TRUE (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)), static_cast<int> (totalSize),
+                                                        relBuf.data (), &relEncodedSize));
                         relBuf[relEncodedSize] = '\0';
                         if (lb == LineBreak::eCRLF_LB) {
                             return (static_cast<const char*> (relBuf));
@@ -118,9 +118,9 @@ namespace {
                 {
 #if qPlatform_Windows && qHasFeature_ATLMFC
                     EXPECT_TRUE (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)),
-                                                                         LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
+                                                                    LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
                     EXPECT_TRUE (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)),
-                                                                         LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
+                                                                    LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
 #endif
                 }
                 inline void VERIFY_ATL_DECODE_ ()
@@ -135,7 +135,7 @@ namespace {
                 void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<byte>& bytes)
                 {
                     EXPECT_TRUE (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (
-                                          ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)))) == bytes);
+                                     ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)))) == bytes);
                 }
             }
 
@@ -143,7 +143,7 @@ namespace {
                 void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<byte>& originalUnEncodedBytes)
                 {
                     EXPECT_TRUE (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (
-                                          begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
+                                     begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
                     EXPECT_TRUE (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
@@ -209,8 +209,8 @@ namespace {
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                EXPECT_TRUE (Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (
-                                      (const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
+                EXPECT_TRUE (Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) ==
+                             kEncodedVal);
             }
             {
                 int tmp = 3;
@@ -247,23 +247,22 @@ namespace {
                     };
                 };
                 //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
-                EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") !=
-                                   Hash<String>{}("xxx")));
+                EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") != Hash<String>{}("xxx")));
                 EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x1") ==
-                                   Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x2")));
+                              Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x2")));
             }
             {
                 auto ec1{make_error_code (std::errc::already_connected)};
                 auto ec2{make_error_code (std::errc::directory_not_empty)};
                 auto hasher = Hash<error_code, SystemHashDigester<error_code>>{};
-                EXPECT_TRUEWarning (hasher (ec1) != hasher (ec2));
+                VerifyTestResultWarning (hasher (ec1) != hasher (ec2));
                 EXPECT_TRUE ((hasher (ec1) == hash<error_code>{}(ec1)));
                 EXPECT_TRUE ((hasher (ec2) == hash<error_code>{}(ec2)));
             }
             {
                 using namespace IO::Network;
                 auto hasher = Hash<InternetAddress>{};
-                EXPECT_TRUEWarning ((hasher (InternetAddress{L"192.168.243.3"}) != hasher (InternetAddress{L"192.168.243.4"})));
+                VerifyTestResultWarning ((hasher (InternetAddress{"192.168.243.3"}) != hasher (InternetAddress{"192.168.243.4"})));
             }
         }
     }
@@ -420,10 +419,8 @@ namespace {
                 using namespace Characters; // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
                 EXPECT_TRUE (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
                 EXPECT_TRUE (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
-                EXPECT_TRUE (
-                    (Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
-                EXPECT_TRUE (
-                    (Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
+                EXPECT_TRUE ((Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
+                EXPECT_TRUE ((Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
             }
         }
     }

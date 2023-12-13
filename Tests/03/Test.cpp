@@ -175,8 +175,8 @@ namespace {
             {
                 GUID g1 = GUID::GenerateNew ();
                 GUID g2 = GUID::GenerateNew ();
-                EXPECT_TRUEWarning (g1 != g2);
-                EXPECT_TRUEWarning (g1 < g2 or g2 < g1);
+                VerifyTestResultWarning (g1 != g2);
+                VerifyTestResultWarning (g1 < g2 or g2 < g1);
             }
             {
                 GUID g1 = GUID::GenerateNew ();

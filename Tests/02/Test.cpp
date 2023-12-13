@@ -870,9 +870,9 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test19_ConstCharStar_"};
         EXPECT_TRUE (wcscmp (String{"fred"}.c_str (), L"fred") == 0);
-        EXPECT_TRUE (wcscmp (String{"0123456789abcde"}.c_str (), L"0123456789abcde") == 0);                                 // 15 chars
-        EXPECT_TRUE (wcscmp (String{"0123456789abcdef"}.c_str (), L"0123456789abcdef") == 0);                               // 16 chars
-        EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcde"}.c_str (), L"0123456789abcdef0123456789abcde") == 0); // 31 chars
+        EXPECT_TRUE (wcscmp (String{"0123456789abcde"}.c_str (), L"0123456789abcde") == 0);                                   // 15 chars
+        EXPECT_TRUE (wcscmp (String{"0123456789abcdef"}.c_str (), L"0123456789abcdef") == 0);                                 // 16 chars
+        EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcde"}.c_str (), L"0123456789abcdef0123456789abcde") == 0);   // 31 chars
         EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcdef"}.c_str (), L"0123456789abcdef0123456789abcdef") == 0); // 32 chars
         {
             String tmp = "333";
@@ -930,11 +930,11 @@ namespace {
         {
             if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
                 EXPECT_TRUE (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
-                                                             l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
+                                                        l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
             }
             else {
                 EXPECT_TRUE (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
-                                                             l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
+                                                        l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
             }
         }
     }
@@ -1324,7 +1324,7 @@ namespace {
 #if qCompilerAndStdLib_locale_utf8_string_convert_Buggy
 // sigh - fails to convert unicode characters
 #else
-                EXPECT_TRUE (not initializedLocale);                                        // else means throw from conversion which would be bad
+                EXPECT_TRUE (not initializedLocale);                                             // else means throw from conversion which would be bad
 #endif
             }
             catch (...) {
@@ -1655,26 +1655,22 @@ namespace {
             // https://www.informit.com/articles/article.aspx?p=2274038&seqNum=10 SURROGATE SAMPLES
             {
                 constexpr auto ch = Character{0x10000};
-                EXPECT_TRUE ((ch.IsSurrogatePair () and
-                                   ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD800), static_cast<char16_t> (0xDC00)}));
+                EXPECT_TRUE ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD800), static_cast<char16_t> (0xDC00)}));
                 EXPECT_TRUE ((ch == Character{0xD800, 0xDC00}));
             }
             {
                 constexpr auto ch = Character{0x10E6D};
-                EXPECT_TRUE ((ch.IsSurrogatePair () and
-                                   ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD803), static_cast<char16_t> (0xDE6D)}));
+                EXPECT_TRUE ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD803), static_cast<char16_t> (0xDE6D)}));
                 EXPECT_TRUE ((ch == Character{0xD803, 0xDE6D}));
             }
             {
                 constexpr auto ch = Character{0x1D11E};
-                EXPECT_TRUE ((ch.IsSurrogatePair () and
-                                   ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD834), static_cast<char16_t> (0xDD1E)}));
+                EXPECT_TRUE ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD834), static_cast<char16_t> (0xDD1E)}));
                 EXPECT_TRUE ((ch == Character{0xD834, 0xDD1E}));
             }
             {
                 constexpr auto ch = Character{0x10FFFF};
-                EXPECT_TRUE ((ch.IsSurrogatePair () and
-                                   ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xDBFF), static_cast<char16_t> (0xDFFF)}));
+                EXPECT_TRUE ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xDBFF), static_cast<char16_t> (0xDFFF)}));
                 EXPECT_TRUE ((ch == Character{0xDBFF, 0xDFFF}));
             }
         }
@@ -1703,7 +1699,7 @@ namespace {
             EXPECT_TRUE (String{Heb1_::k32_}.size () == 4);
             EXPECT_TRUE (String{Heb1_::kWide_}.size () == 4);
             EXPECT_TRUE (String{Heb1_::k8_} == String{Heb1_::k16_} and String{Heb1_::k16_} == String{Heb1_::k32_} and
-                              String{Heb1_::k32_} == String{Heb1_::kWide_});
+                         String{Heb1_::k32_} == String{Heb1_::kWide_});
             StringBuilder tmp;
             tmp += Heb1_::k8_;
             EXPECT_TRUE (tmp.length () == 4);
@@ -1749,7 +1745,7 @@ namespace {
         {
             try {
                 string a2 = String{u"שלום"}.AsASCII (); // throws
-                EXPECT_TRUE (false);               // not reached
+                EXPECT_TRUE (false);                    // not reached
             }
             catch (...) {
                 // good
