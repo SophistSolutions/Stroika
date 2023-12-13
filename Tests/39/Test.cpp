@@ -83,7 +83,11 @@ namespace {
 }
 
 namespace {
+#if qHasFeature_GoogleTest
+    GTEST_TEST (Foundation_Caching, all)
+#else
     void DoRegressionTests_ ()
+#endif
     {
         Test1_Direct_ ();
         Test2_Safe_ ();
@@ -94,5 +98,9 @@ int main (int argc, const char* argv[])
 {
     SignalHandlerRegistry::SafeSignalsManager safeSignals;
     Test::Setup (argc, argv);
-    return Test::PrintPassOrFail (DoRegressionTests_);
+#if qHasFeature_GoogleTest
+    return RUN_ALL_TESTS ();
+#else
+    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+#endif
 }

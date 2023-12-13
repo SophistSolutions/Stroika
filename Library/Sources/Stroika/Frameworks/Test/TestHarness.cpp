@@ -100,7 +100,9 @@ namespace {
     function<void ()> sLegacyTest2Run_;
     GTEST_TEST (legacyTest_, testname)
     {
-        sLegacyTest2Run_ ();
+        if (sLegacyTest2Run_) {
+            sLegacyTest2Run_ ();
+        }
     }
 }
 #endif

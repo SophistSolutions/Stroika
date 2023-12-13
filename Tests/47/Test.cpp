@@ -260,7 +260,11 @@ namespace {
 }
 
 namespace {
+#if qHasFeature_GoogleTest
+    GTEST_TEST (Foundation_Caching, all)
+#else
     void DoRegressionTests_ ()
+#endif
     {
         Test2_Round_ ();
         Test3_Angle_ ();
@@ -276,5 +280,9 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-    return Test::PrintPassOrFail (DoRegressionTests_);
+#if qHasFeature_GoogleTest
+    return RUN_ALL_TESTS ();
+#else
+    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+#endif
 }

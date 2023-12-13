@@ -18,8 +18,11 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 
 namespace {
-
+#if qHasFeature_GoogleTest
+    GTEST_TEST (Foundation_Containers_DataStructures_SkipList, all)
+#else
     void DoRegressionTests_ ()
+#endif
     {
     }
 }
@@ -27,5 +30,9 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-    return Test::PrintPassOrFail (DoRegressionTests_);
+#if qHasFeature_GoogleTest
+    return RUN_ALL_TESTS ();
+#else
+    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+#endif
 }

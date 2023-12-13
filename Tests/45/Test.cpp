@@ -754,7 +754,11 @@ namespace {
 }
 
 namespace {
+#if qHasFeature_GoogleTest
+    GTEST_TEST (Foundation_Caching, all)
+#else
     void DoRegressionTests_ ()
+#endif
     {
         Test_1_SimpleConnnectionTests_::DoTests_ ();
         Test_2_SimpleFetch_httpbin_::DoTests_ ();
@@ -772,5 +776,9 @@ int main (int argc, const char* argv[])
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-    return Test::PrintPassOrFail (DoRegressionTests_);
+#if qHasFeature_GoogleTest
+    return RUN_ALL_TESTS ();
+#else
+    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+#endif
 }

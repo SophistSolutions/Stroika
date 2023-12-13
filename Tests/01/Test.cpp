@@ -668,7 +668,11 @@ namespace {
 }
 
 namespace {
+#if qHasFeature_GoogleTest
+    GTEST_TEST (Foundation_Caching, all)
+#else
     void DoRegressionTests_ ()
+#endif
     {
         Test1_Simple_::DoIt ();
         Test2_LRUCache_ObjWithNoArgCTORs_::DoIt ();
@@ -684,5 +688,9 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
+#if qHasFeature_GoogleTest
+    return RUN_ALL_TESTS ();
+#else
     return Test::PrintPassOrFail (DoRegressionTests_);
+#endif
 }

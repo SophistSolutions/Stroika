@@ -1323,7 +1323,7 @@ namespace {
 #if qCompilerAndStdLib_locale_utf8_string_convert_Buggy
 // sigh - fails to convert unicode characters
 #else
-                VerifyTestResult (not initializedLocale);                                        // else means throw from conversion which would be bad
+                VerifyTestResult (not initializedLocale); // else means throw from conversion which would be bad
 #endif
             }
             catch (...) {
@@ -1886,8 +1886,11 @@ namespace {
     }
 }
 namespace {
-
+#if qHasFeature_GoogleTest
+    GTEST_TEST (Foundation_Caching, all)
+#else
     void DoRegressionTests_ ()
+#endif
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
         Test1_ ();
@@ -1945,5 +1948,9 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Test::Setup (argc, argv);
-    return Test::PrintPassOrFail (DoRegressionTests_);
+#if qHasFeature_GoogleTest
+    return RUN_ALL_TESTS ();
+#else
+    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+#endif
 }
