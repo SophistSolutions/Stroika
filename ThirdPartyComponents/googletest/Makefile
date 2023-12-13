@@ -25,7 +25,7 @@ GOOGLETEST_VERSION_=1.14.0
 ZIPPED_SOURCES_FILE_=../Origs-Cache/googletest-${GOOGLETEST_VERSION_}.tar.gz
 
 FETCHURLS_=
-FETCHURLS_+= https://github.com/google/googletest/archive/refs/tags/v${GOOGLETEST_VERSION_}.zip
+FETCHURLS_+= https://github.com/google/googletest/archive/refs/tags/v${GOOGLETEST_VERSION_}.tar.gz
 
 
 
