@@ -168,6 +168,7 @@ my $FEATUREFLAG_OpenSSLExtraArgs = "";
 my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_ATLMFC = undef;
 my $FEATUREFLAG_Xerces = undef;
+my $FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
@@ -441,6 +442,7 @@ sub     FillDefaultIncludesPathIfNeeded_
 			$FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
@@ -471,6 +473,7 @@ sub     FillDefaultLibsPathIfNeeded_
 			$FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
@@ -578,6 +581,16 @@ sub     FillDefaultLibDependencies_
 				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs zlib");
 				#PortablyAddLibToLibDependencies_("z");
 			}
+		}
+		if ($FEATUREFLAG_GoogleTest ne $LIBFEATUREFLAG_No) {
+			# if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+			# 	PortablyAddLibToLibDependencies_("zlibstatic");
+			# }
+			# else {
+				### @todo lets see if thsi works on windows
+				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs gtest");
+				#PortablyAddLibToLibDependencies_("z");
+			# }
 		}
 	}
 
@@ -1419,6 +1432,11 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			$FEATUREFLAG_ZLib = $var;
 		}
+		elsif ((lc ($var) eq "-googletest") or (lc ($var) eq "--googletest")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_GoogleTest = $var;
+		}
 		elsif ((lc ($var) eq "-sqlite") or (lc ($var) eq "--sqlite")) {
 			$i++;
 			$var = $args[$i];
@@ -1438,6 +1456,7 @@ sub	ParseCommandLine_Remaining_
 			$FEATUREFLAG_sqlite = "no";
 			$FEATUREFLAG_WinHTTP = "no";
 			$FEATUREFLAG_ZLib = "no";
+			$FEATUREFLAG_GoogleTest = "no";
 		}
 		elsif ((lc ($var) eq "-trace2file") or (lc ($var) eq "--trace2file")) {
 			$i++;
@@ -2042,6 +2061,7 @@ sub GetDefaultCZZFLAGS_flags_
 			}
 			push @flags, $dashFlag . "qHasFeature_Xerces=" . ZERO_OR_1_ (($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_ZLib=" . ZERO_OR_1_ (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qHasFeature_GoogleTest=" . ZERO_OR_1_ (($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_sqlite=" . ZERO_OR_1_ (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_LZMA=" . ZERO_OR_1_ (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_boost=" . ZERO_OR_1_ (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem));
@@ -2576,6 +2596,7 @@ sub	WriteConfigFile_
 		print (OUT "    <qFeatureFlag_ATLMFC>$FEATUREFLAG_ATLMFC</qFeatureFlag_ATLMFC>\n");
 	}
 	print (OUT "    <qFeatureFlag_boost>$FEATUREFLAG_boost</qFeatureFlag_boost>\n");
+	print (OUT "    <qFeatureFlag_GoogleTest>$FEATUREFLAG_GoogleTest</qFeatureFlag_GoogleTest>\n");
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
