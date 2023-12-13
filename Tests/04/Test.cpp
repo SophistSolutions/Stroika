@@ -246,7 +246,7 @@ namespace {
 
 namespace {
 #if qHasFeature_GoogleTest
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Configuration, all)
 #else
     void DoRegressionTests_ ()
 #endif

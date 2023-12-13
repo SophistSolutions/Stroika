@@ -95,26 +95,10 @@ vector<string> Test::Setup ([[maybe_unused]] int argc, [[maybe_unused]] const ch
     return v;
 }
 
-#if qHasFeature_GoogleTest
-namespace {
-    function<void ()> sLegacyTest2Run_;
-    GTEST_TEST (legacyTest_, testname)
-    {
-        if (sLegacyTest2Run_) {
-            sLegacyTest2Run_ ();
-        }
-    }
-}
-#endif
 int Test::PrintPassOrFail (void (*regressionTest) ())
 {
     try {
-#if qHasFeature_GoogleTest
-        sLegacyTest2Run_ = regressionTest;
-        return RUN_ALL_TESTS ();
-#else
         (*regressionTest) ();
-#endif
         cout << "Succeeded" << endl;
         DbgTrace (L"Succeeded");
     }

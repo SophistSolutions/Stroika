@@ -35,7 +35,7 @@ namespace Stroika::Frameworks::Test {
      * print succeeded if it completes, and failed if exception caught
      *     \see example usage in Setup()
      */
-    int PrintPassOrFail (void (*regressionTest) ());
+    [[deprecated("Since Strokka v3.0d5 - just use gtest")]]int PrintPassOrFail (void (*regressionTest) ());
 
     /**
      * LIKE calling Assert but it will ALSO trigger a failure in NODEBUG builds
