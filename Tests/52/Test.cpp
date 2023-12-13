@@ -1532,6 +1532,15 @@ namespace {
     }
 }
 
+#if qHasFeature_GoogleTest
+namespace {
+    GTEST_TEST (Stroika_Performance_Tests, all)
+    {
+        RunPerformanceTests_ ();
+    }
+}
+#endif
+
 namespace {
     // just temp hack to test one thing or another - which is performance related
     namespace TemporaryTest_ {
@@ -1564,5 +1573,9 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
     TemporaryTest_::DoTest_ ();
 
     Test::Setup (argc, argv);
-    return Test::PrintPassOrFail (RunPerformanceTests_);
+#if qHasFeature_GoogleTest
+    return RUN_ALL_TESTS ();
+#else
+    RunPerformanceTests_ ();
+#endif
 }
