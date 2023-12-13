@@ -62,6 +62,7 @@ my $gAssertionsEnabled = 0;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
@@ -168,6 +169,7 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_WinHTTP = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_WinHTTP");
 	$FEATUREFLAG_ATLMFC = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ATLMFC");
 	$FEATUREFLAG_XERCES = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_Xerces");
+	$FEATUREFLAG_GoogleTest = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_GoogleTest");
 	$FEATUREFLAG_ZLib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ZLib");
 	$FEATUREFLAG_sqlite = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_sqlite");
 	$FEATUREFLAG_boost = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_boost");
@@ -305,6 +307,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_StrawberryPerl");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ATLMFC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_boost");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_GoogleTest");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_LibCurl");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_LZMA");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_OpenSSL");
