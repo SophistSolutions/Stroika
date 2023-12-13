@@ -39,7 +39,7 @@ namespace {
             optional<T> last;
             for (T i : s) {
                 if (last.has_value ()) {
-                    VerifyTestResult (inorderComparer (*last, i));
+                    EXPECT_TRUE (inorderComparer (*last, i));
                 }
                 last = i;
             }
@@ -182,7 +182,7 @@ namespace {
         TestOverwriteContainerWhileIteratorRunning_ ();
         Test6_SortedCollection_NoDefaultSortFunctionExplicitOne_::DoIt ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -192,6 +192,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

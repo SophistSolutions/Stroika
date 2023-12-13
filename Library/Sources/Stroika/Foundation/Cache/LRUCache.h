@@ -62,9 +62,9 @@ namespace Stroika::Foundation::Cache {
      *          tmp.Add ("b", "2");
      *          tmp.Add ("c", "3");
      *          tmp.Add ("d", "4");
-     *          VerifyTestResult (not tmp.Lookup ("a").has_value ());
-     *          VerifyTestResult (tmp.Lookup ("b") == "2");
-     *          VerifyTestResult (tmp.Lookup ("d") == "4");
+     *          EXPECT_TRUE (not tmp.Lookup ("a").has_value ());
+     *          EXPECT_TRUE (tmp.Lookup ("b") == "2");
+     *          EXPECT_TRUE (tmp.Lookup ("d") == "4");
      *      \endcode
      *
      *  \par Example Usage
@@ -75,9 +75,9 @@ namespace Stroika::Foundation::Cache {
      *          tmp.Add ("b", "2");
      *          tmp.Add ("c", "3");
      *          tmp.Add ("d", "4");
-     *          VerifyTestResult (not tmp.Lookup ("a").has_value () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
-     *          VerifyTestResult (tmp.Lookup ("b") == "2");
-     *          VerifyTestResult (tmp.Lookup ("d") == "4");
+     *          EXPECT_TRUE (not tmp.Lookup ("a").has_value () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
+     *          EXPECT_TRUE (tmp.Lookup ("b") == "2");
+     *          EXPECT_TRUE (tmp.Lookup ("d") == "4");
      *      \endcode
      *
      *  \note   LRUCache destroys objects when they are cleared from the cache. This guarantee is

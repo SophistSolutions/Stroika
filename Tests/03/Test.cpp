@@ -39,10 +39,10 @@ namespace {
             Common::GUID guidFromStr{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"};
             Common::GUID guidFromArray{array<uint8_t, 16>{0x9d, 0xd4, 0xe4, 0x61, 0x26, 0x8c, 0x80, 0x34, 0xf5, 0xc8, 0x56, 0x4e, 0x15, 0x5c, 0x67, 0xa6}};
             if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
-                VerifyTestResult (::memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0);
+                EXPECT_TRUE (::memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0);
             }
             if (::memcmp (&guidFromStr, &guidFromArray, sizeof (Common::GUID)) == 0) {
-                VerifyTestResult (guidFromStr == guidFromArray); // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
+                EXPECT_TRUE (guidFromStr == guidFromArray); // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
             }
         }
     }
@@ -128,22 +128,22 @@ namespace {
         void Run ()
         {
             Private_::Headers h;
-            VerifyTestResult (h.contentLength1 == 0);
+            EXPECT_TRUE (h.contentLength1 == 0);
             h.contentLength1 = 2;
-            VerifyTestResult (h.contentLength2 == 2);
+            EXPECT_TRUE (h.contentLength2 == 2);
             h.contentLength2 = 4;
-            VerifyTestResult (h.contentLength1 == 4);
+            EXPECT_TRUE (h.contentLength1 == 4);
             Private_::Headers h2 = h;
-            VerifyTestResult (h2.contentLength1 == 4);
+            EXPECT_TRUE (h2.contentLength1 == 4);
             h.contentLength2 = 5;
-            VerifyTestResult (h.contentLength1 == 5);
-            VerifyTestResult (h2.contentLength1 == 4);
+            EXPECT_TRUE (h.contentLength1 == 5);
+            EXPECT_TRUE (h2.contentLength1 == 4);
 
             {
                 // event handlers
-                VerifyTestResult (h2.contentLength4 == 4);
+                EXPECT_TRUE (h2.contentLength4 == 4);
                 h2.contentLength4 = 5;
-                VerifyTestResult (h2.contentLength4 == 5);
+                EXPECT_TRUE (h2.contentLength4 == 5);
                 bool firstEventHanlderCalled{false};
                 h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                     DbgTrace ("first event handler called");
@@ -151,17 +151,17 @@ namespace {
                     return PropertyCommon::PropertyChangedEventResultType::eContinueProcessing;
                 });
                 h2.contentLength4 = 6;
-                VerifyTestResult (h2.contentLength4 == 6);
+                EXPECT_TRUE (h2.contentLength4 == 6);
                 bool secondEventHanlderCalled{false};
-                VerifyTestResult (firstEventHanlderCalled);
+                EXPECT_TRUE (firstEventHanlderCalled);
                 h2.contentLength4.rwPropertyChangedHandlers ().push_front ([&] ([[maybe_unused]] const auto& changes) {
                     DbgTrace ("second event handler called");
                     secondEventHanlderCalled = true;
                     return PropertyCommon::PropertyChangedEventResultType::eSilentlyCutOffProcessing;
                 });
                 h2.contentLength4 = 7;
-                VerifyTestResult (secondEventHanlderCalled);
-                VerifyTestResult (h2.contentLength4 == 6); // because event handler returned PropertyChangedEventResultType::eSilentlyCutOffProcessing, this time NO
+                EXPECT_TRUE (secondEventHanlderCalled);
+                EXPECT_TRUE (h2.contentLength4 == 6); // because event handler returned PropertyChangedEventResultType::eSilentlyCutOffProcessing, this time NO
             }
         }
     }
@@ -175,14 +175,14 @@ namespace {
             {
                 GUID g1 = GUID::GenerateNew ();
                 GUID g2 = GUID::GenerateNew ();
-                VerifyTestResultWarning (g1 != g2);
-                VerifyTestResultWarning (g1 < g2 or g2 < g1);
+                EXPECT_TRUEWarning (g1 != g2);
+                EXPECT_TRUEWarning (g1 < g2 or g2 < g1);
             }
             {
                 GUID g1 = GUID::GenerateNew ();
-                VerifyTestResult (GUID{g1.As<Characters::String> ()} == g1);
-                VerifyTestResult (GUID{g1.As<string> ()} == g1);
-                VerifyTestResult (GUID{g1.As<Memory::BLOB> ()} == g1);
+                EXPECT_TRUE (GUID{g1.As<Characters::String> ()} == g1);
+                EXPECT_TRUE (GUID{g1.As<string> ()} == g1);
+                EXPECT_TRUE (GUID{g1.As<Memory::BLOB> ()} == g1);
             }
         }
     }
@@ -219,6 +219,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

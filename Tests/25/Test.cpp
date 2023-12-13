@@ -40,7 +40,7 @@ namespace {
             [] () { return SortedKeyedCollection<T1, int, T1_Traits>{T1_Key_Extractor{}}; }, [] (auto) {});
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
             [] () { return SortedKeyedCollection<T1, int, T1_Traits>{}; }, [] (auto) {});
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -50,6 +50,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

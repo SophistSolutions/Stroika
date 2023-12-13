@@ -32,17 +32,17 @@ namespace {
         {
             {
                 SparseDataHyperRectangleN<int, 2> x;
-                VerifyTestResult (x.empty ());
-                VerifyTestResult (x.GetAt (2, 2) == 0);
+                EXPECT_TRUE (x.empty ());
+                EXPECT_TRUE (x.GetAt (2, 2) == 0);
                 x.SetAt (2, 2, 4);
-                VerifyTestResult (x.GetAt (2, 2) == 4);
+                EXPECT_TRUE (x.GetAt (2, 2) == 4);
             }
             {
                 SparseDataHyperRectangleN<int, 3> x;
-                VerifyTestResult (x.empty ());
-                VerifyTestResult (x.GetAt (1, 2, 3) == 0);
+                EXPECT_TRUE (x.empty ());
+                EXPECT_TRUE (x.GetAt (1, 2, 3) == 0);
                 x.SetAt (1, 2, 3, 99);
-                VerifyTestResult (x.GetAt (1, 2, 3) == 99);
+                EXPECT_TRUE (x.GetAt (1, 2, 3) == 99);
             }
             {
                 DataHyperRectangleN<int, 2> x = Concrete::SparseDataHyperRectangle_stdmapN<int, 2>{};
@@ -86,10 +86,10 @@ namespace {
         void RunTests ()
         {
             CONCRETE_CONTAINER2 tmp{};
-            VerifyTestResult (tmp.empty ());
-            VerifyTestResult (tmp.GetAt (2, 2) == 0);
+            EXPECT_TRUE (tmp.empty ());
+            EXPECT_TRUE (tmp.GetAt (2, 2) == 0);
             tmp.SetAt (2, 2, 4);
-            VerifyTestResult (tmp.GetAt (2, 2) == 4);
+            EXPECT_TRUE (tmp.GetAt (2, 2) == 4);
             Verify (tmp.size () == 1);
             for ([[maybe_unused]] auto t : tmp) {
             }
@@ -123,7 +123,7 @@ namespace {
         Test3_BasicSparseHCTest_::RunTests<Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>> ();
         Test4_BasicDenseHCTest_::RunTests<Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>> ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -133,6 +133,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

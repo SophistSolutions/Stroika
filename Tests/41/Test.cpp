@@ -238,7 +238,7 @@ namespace {
                     optional<int> prevValue;
                     unsigned int  repeatCount{};
                     while ((prevValue = sharedValue.load ()) < kMaxVal_) {
-                        VerifyTestResult (sharedValue.load () <= kMaxVal_);
+                        EXPECT_TRUE (sharedValue.load () <= kMaxVal_);
                         if (kRunningValgrind_) {
                             if (prevValue == sharedValue.load ()) {
                                 repeatCount++;
@@ -252,13 +252,13 @@ namespace {
                             }
                         }
                     }
-                    VerifyTestResult (sharedValue.load () == kMaxVal_);
+                    EXPECT_TRUE (sharedValue.load () == kMaxVal_);
                 });
                 Thread::Ptr                 adder             = Thread::New ([&sharedValue] () {
                     while (sharedValue.load () < kMaxVal_) {
                         sharedValue.store (*sharedValue.load () + 1);
                     }
-                    VerifyTestResult (sharedValue.load () == kMaxVal_);
+                    EXPECT_TRUE (sharedValue.load () == kMaxVal_);
                 });
                 Thread::Start ({reader, adder});
                 [[maybe_unused]] auto&& cleanup = Execution::Finally ([&reader, &adder] () noexcept {
@@ -266,10 +266,10 @@ namespace {
                 });
                 // wait long time cuz of debuggers (esp valgrind) etc
                 Thread::WaitForDone ({reader, adder}, 15 * 60s);
-                VerifyTestResult (sharedValue.load () == kMaxVal_);
+                EXPECT_TRUE (sharedValue.load () == kMaxVal_);
             }
             catch (...) {
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
         }
     }
@@ -294,7 +294,7 @@ namespace {
             Base bb = dd;
             // sadly this doesnt work
             // --LGP 2014-09-27
-            VerifyTestResult (bb.fCalledOp_);
+            EXPECT_TRUE (bb.fCalledOp_);
 #endif
         }
     }
@@ -309,8 +309,8 @@ namespace {
             static const Synchronized<Set<int>> kACUSensors_{Set<int>{1, 2}};
             Set<int>                            acufpgaSensors1 = kACUSensors_ ^ sensorsToActuallyRead;
             Set<int>                            acufpgaSensors2 = sensorsToActuallyRead ^ kACUSensors_;
-            VerifyTestResult ((acufpgaSensors1 == Set<int>{2}));
-            VerifyTestResult ((acufpgaSensors2 == Set<int>{2}));
+            EXPECT_TRUE ((acufpgaSensors1 == Set<int>{2}));
+            EXPECT_TRUE ((acufpgaSensors2 == Set<int>{2}));
         }
     }
 }
@@ -343,27 +343,27 @@ namespace {
                     Synchronized<int> tmp;
                     tmp = 4;
                     int a{tmp};
-                    VerifyTestResult (a == 4);
+                    EXPECT_TRUE (a == 4);
                 }
                 {
                     Synchronized<int> tmp{4};
                     int               a{tmp};
-                    VerifyTestResult (a == 4);
+                    EXPECT_TRUE (a == 4);
                 }
                 {
                     Synchronized<String> tmp{"x"};
                     String               a{tmp};
-                    VerifyTestResult (a == "x");
-                    VerifyTestResult (tmp.cget ()->find ('z') == string::npos);
-                    VerifyTestResult (tmp.cget ()->find ('x') == 0);
+                    EXPECT_TRUE (a == "x");
+                    EXPECT_TRUE (tmp.cget ()->find ('z') == string::npos);
+                    EXPECT_TRUE (tmp.cget ()->find ('x') == 0);
                 }
                 {
                     static Synchronized<String> tmp{L"x"};
                     [[maybe_unused]] auto&&     critSec = lock_guard{tmp}; // make sure explicit locks work too
                     String                      a{tmp};
-                    VerifyTestResult (a == L"x");
-                    VerifyTestResult (tmp.cget ()->find ('z') == string::npos);
-                    VerifyTestResult (tmp.cget ()->find ('x') == 0);
+                    EXPECT_TRUE (a == L"x");
+                    EXPECT_TRUE (tmp.cget ()->find ('z') == string::npos);
+                    EXPECT_TRUE (tmp.cget ()->find ('x') == 0);
                 }
             }
             template <typename INTISH_TYPE>
@@ -386,7 +386,7 @@ namespace {
                 decrementer.Start ();
                 incrementer.WaitForDone ();
                 decrementer.WaitForDone ();
-                VerifyTestResult (s == INTISH_TYPE (0));
+                EXPECT_TRUE (s == INTISH_TYPE (0));
             }
             void DoThreadTest_ ()
             {
@@ -462,7 +462,7 @@ namespace {
                     int x;
                 };
 #if !qDebug
-                VerifyTestResult (sizeof (A) == sizeof (APrime));
+                EXPECT_TRUE (sizeof (A) == sizeof (APrime));
 #endif
             }
         }
@@ -484,23 +484,23 @@ namespace {
                 Thread::Ptr   t1 = Thread::New ([&tmp] () {
                     for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                         for (int j : tmp) {
-                            VerifyTestResult (1 <= j and j <= 1000);
+                            EXPECT_TRUE (1 <= j and j <= 1000);
                         }
                     }
                 });
                 Thread::Ptr   t2 = Thread::New ([&tmp] () {
                     for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                         for (int j : tmp) {
-                            VerifyTestResult (1 <= j and j <= 1000);
+                            EXPECT_TRUE (1 <= j and j <= 1000);
                         }
                     }
                 });
                 Thread::Ptr   t3 = Thread::New ([&tmp] () {
                     for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                         if (tmp.size () == 1000) {
-                            VerifyTestResult (tmp.IndexOf (6) == 5u);
-                            VerifyTestResult (*tmp.First () == 1);
-                            VerifyTestResult (*tmp.Last () == 1000);
+                            EXPECT_TRUE (tmp.IndexOf (6) == 5u);
+                            EXPECT_TRUE (*tmp.First () == 1);
+                            EXPECT_TRUE (*tmp.Last () == 1000);
                         }
                     }
                 });
@@ -668,11 +668,11 @@ namespace {
                             cache.Add ("c", "3");
                             cache.Add ("d", "4");
                             auto oa = cache.Lookup ("a");
-                            VerifyTestResult (not oa.has_value () or oa == "1"); // could be missing or found but if found same value
+                            EXPECT_TRUE (not oa.has_value () or oa == "1"); // could be missing or found but if found same value
                             auto ob = cache.Lookup ("b");
-                            VerifyTestResult (not ob.has_value () or ob == "2"); // ""
+                            EXPECT_TRUE (not ob.has_value () or ob == "2"); // ""
                             auto od = cache.Lookup ("d");
-                            VerifyTestResult (od == "4");
+                            EXPECT_TRUE (od == "4");
                         }
                     },
                     "writerThread"_k);
@@ -681,19 +681,19 @@ namespace {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             {
                                 auto oa = cache.Lookup ("a");
-                                VerifyTestResult (not oa.has_value () or oa == "1"); // could be missing or found but if found same value
+                                EXPECT_TRUE (not oa.has_value () or oa == "1"); // could be missing or found but if found same value
                                 auto ob = cache.Lookup ("b");
-                                VerifyTestResult (not ob.has_value () or ob == "2"); // ""
+                                EXPECT_TRUE (not ob.has_value () or ob == "2"); // ""
                                 auto od = cache.Lookup ("d");
-                                VerifyTestResult (not od.has_value () or od == "4"); // ""
+                                EXPECT_TRUE (not od.has_value () or od == "4"); // ""
                             }
                             SynchronizedLRUCache tmp2 = cache;
                             auto                 oa   = tmp2.Lookup ("a");
-                            VerifyTestResult (not oa.has_value () or oa == "1"); // could be missing or found but if found same value
+                            EXPECT_TRUE (not oa.has_value () or oa == "1"); // could be missing or found but if found same value
                             auto ob = tmp2.Lookup ("b");
-                            VerifyTestResult (not ob.has_value () or ob == "2"); // ""
+                            EXPECT_TRUE (not ob.has_value () or ob == "2"); // ""
                             auto od = tmp2.Lookup ("d");
-                            VerifyTestResult (not od.has_value () or od == "4"); // ""
+                            EXPECT_TRUE (not od.has_value () or od == "4"); // ""
                         }
                     },
                     "copierThread"_k);
@@ -713,14 +713,14 @@ namespace {
                 Thread::Ptr writerThread = Thread::New (
                     [&mapValue] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
-                            VerifyTestResult (mapValue (static_cast<int> (i)) == static_cast<int> (i));
+                            EXPECT_TRUE (mapValue (static_cast<int> (i)) == static_cast<int> (i));
                         }
                     },
                     L"writerThread"_k);
                 Thread::Ptr copierThread = Thread::New (
                     [&mapValue] () {
                         for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
-                            VerifyTestResult (mapValue (static_cast<int> (i)) == static_cast<int> (i));
+                            EXPECT_TRUE (mapValue (static_cast<int> (i)) == static_cast<int> (i));
                         }
                     },
                     L"copierThread"_k);
@@ -751,7 +751,7 @@ namespace {
             for (Execution::Thread::IDType threadID : runningThreads) {
                 DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
             }
-            VerifyTestResult (runningThreads.size () == 0);
+            EXPECT_TRUE (runningThreads.size () == 0);
         });
 #endif
         AssignAndIterateAtSameTimeTest_1_::DoIt ();
@@ -774,6 +774,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

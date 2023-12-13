@@ -297,13 +297,13 @@ namespace Stroika::Foundation::Containers {
          *  \par Example Usage
          *      \code
          *          Sequence<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy () == Sequence<int> { 3, 3, 5, 5, 9, 38 });
+         *          EXPECT_TRUE (c.OrderBy () == Sequence<int> { 3, 3, 5, 5, 9, 38 });
          *      \endcode
          *
          *  \par Example Usage
          *      \code
          *          Sequence<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }) == Sequence<int> { 3, 3, 5, 5, 9, 38 });
+         *          EXPECT_TRUE (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }) == Sequence<int> { 3, 3, 5, 5, 9, 38 });
          *      \endcode
          *
          *  \note hides Iterable<T>::OrderBy since provides more specific types

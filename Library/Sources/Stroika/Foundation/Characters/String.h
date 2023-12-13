@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          VerifyTestResult (string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8 ());
+         *          EXPECT_TRUE (string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8 ());
          *      \endcode
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
@@ -673,7 +673,7 @@ namespace Stroika::Foundation::Characters {
          *          static const String            kTestStr_{"192.168.244.104 - Sonos Play:5"};
          *          optional<String> match1;
          *          optional<String> match2;
-         *          VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == "192.168.244.104" and match2 == " - Sonos Play:5");
+         *          EXPECT_TRUE (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == "192.168.244.104" and match2 == " - Sonos Play:5");
          *      \endcode
          *
          *  \par Example Usage

@@ -28,35 +28,35 @@ namespace {
     void Test2_Round_ ()
     {
         // really could use more cases!!!
-        VerifyTestResult (RoundUpTo (2, 10) == 10);
-        VerifyTestResult (RoundDownTo (2, 10) == 0);
-        VerifyTestResult (RoundUpTo (2, 2) == 2);
-        VerifyTestResult (RoundDownTo (2, 2) == 2);
-        VerifyTestResult (Round<int> (2.2) == 2);
-        VerifyTestResult (Round<int> (numeric_limits<double>::max () * 1000) == numeric_limits<int>::max ());
-        VerifyTestResult (Round<unsigned int> (numeric_limits<double>::max () * 1000) == numeric_limits<unsigned int>::max ());
+        EXPECT_TRUE (RoundUpTo (2, 10) == 10);
+        EXPECT_TRUE (RoundDownTo (2, 10) == 0);
+        EXPECT_TRUE (RoundUpTo (2, 2) == 2);
+        EXPECT_TRUE (RoundDownTo (2, 2) == 2);
+        EXPECT_TRUE (Round<int> (2.2) == 2);
+        EXPECT_TRUE (Round<int> (numeric_limits<double>::max () * 1000) == numeric_limits<int>::max ());
+        EXPECT_TRUE (Round<unsigned int> (numeric_limits<double>::max () * 1000) == numeric_limits<unsigned int>::max ());
     }
     void Test3_Angle_ ()
     {
         // really could use more cases!!!
-        VerifyTestResult (1.1_rad + 1.1_rad < 2.3_rad);
-        VerifyTestResult (1.1_rad + 1.1_rad < 360_deg);
-        VerifyTestResult (1.1_rad + 1.1_rad < 180_deg);
-        VerifyTestResult (1.1_rad + 1.1_rad > 120_deg);
+        EXPECT_TRUE (1.1_rad + 1.1_rad < 2.3_rad);
+        EXPECT_TRUE (1.1_rad + 1.1_rad < 360_deg);
+        EXPECT_TRUE (1.1_rad + 1.1_rad < 180_deg);
+        EXPECT_TRUE (1.1_rad + 1.1_rad > 120_deg);
     }
     void Test4_OddEvenPrime_ ()
     {
-        VerifyTestResult (IsPrime (2));
-        VerifyTestResult (IsOdd (3));
-        VerifyTestResult (IsEven (4));
-        VerifyTestResult (IsPrime (5));
+        EXPECT_TRUE (IsPrime (2));
+        EXPECT_TRUE (IsOdd (3));
+        EXPECT_TRUE (IsEven (4));
+        EXPECT_TRUE (IsPrime (5));
         for (int i = 1; i < 1000; ++i) {
-            VerifyTestResult (IsOdd (i) != IsEven (i));
+            EXPECT_TRUE (IsOdd (i) != IsEven (i));
             if (IsPrime (i)) {
-                VerifyTestResult (i == 2 or IsOdd (i));
+                EXPECT_TRUE (i == 2 or IsOdd (i));
             }
             if (IsEven (i)) {
-                VerifyTestResult (i == 2 or not IsPrime (i));
+                EXPECT_TRUE (i == 2 or not IsPrime (i));
             }
         }
     }
@@ -71,31 +71,31 @@ namespace {
             double   resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
             for (size_t i = 0; i < Memory::NEltsOf (srcBinData); ++i) {
-                VerifyTestResult (srcBinData[i] == resultData[i]);
+                EXPECT_TRUE (srcBinData[i] == resultData[i]);
             }
         }
         {
             uint32_t srcBinData[] = {3, 5, 19, 2};
             double   resultData[2];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
-            VerifyTestResult (8 == resultData[0]);
-            VerifyTestResult (21 == resultData[1]);
+            EXPECT_TRUE (8 == resultData[0]);
+            EXPECT_TRUE (21 == resultData[1]);
         }
         {
             uint32_t srcBinData[] = {3, 5, 19, 2, 0, 0, 0};
             double   resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
-            VerifyTestResult (NearlyEquals ((3 + (5 * ((7.0 / 4.0) - 1))), resultData[0]));
-            VerifyTestResult (0 == resultData[3]);
+            EXPECT_TRUE (NearlyEquals ((3 + (5 * ((7.0 / 4.0) - 1))), resultData[0]));
+            EXPECT_TRUE (0 == resultData[3]);
         }
         {
             uint32_t srcBinData[] = {3, 5, 19, 2};
             double   resultData[8];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
-            VerifyTestResult (NearlyEquals (1.5, resultData[0]));
-            VerifyTestResult (NearlyEquals (1.5, resultData[1]));
-            VerifyTestResult (NearlyEquals (2.5, resultData[2]));
-            VerifyTestResult (NearlyEquals (2.5, resultData[3]));
+            EXPECT_TRUE (NearlyEquals (1.5, resultData[0]));
+            EXPECT_TRUE (NearlyEquals (1.5, resultData[1]));
+            EXPECT_TRUE (NearlyEquals (2.5, resultData[2]));
+            EXPECT_TRUE (NearlyEquals (2.5, resultData[3]));
         }
         {
             uint32_t srcBinData[] = {3, 5, 19, 2};
@@ -106,7 +106,7 @@ namespace {
             TRG_DATA_DESCRIPTOR trgData (begin (resultData), end (resultData), 1, 11);
             trgData.clear ();
             ReBin (srcData, &trgData);
-            VerifyTestResult (NearlyEquals (3.8, resultData[0]));
+            EXPECT_TRUE (NearlyEquals (3.8, resultData[0]));
         }
     }
 }
@@ -114,26 +114,26 @@ namespace {
 namespace {
     void Test6_Statistics_ ()
     {
-        VerifyTestResult (Math::Mean (vector<int> ({1, 3, 5})) == 3);
-        VerifyTestResult (Math::Mean (vector<int> ({5, 3, 1})) == 3);
-        VerifyTestResult (Math::Median (vector<int> ({1, 3, 5})) == 3);
-        VerifyTestResult (Math::Median (vector<int> ({5, 3, 1})) == 3);
-        VerifyTestResult (Math::Median (vector<int> ({5, 3, 19, 1})) == 4);
-        VerifyTestResult (Math::Mean (vector<double> ({5, 3, 19, 1})) == 7);
-        VerifyTestResult (Math::NearlyEquals (Math::StandardDeviation (vector<double> ({5, 3, 19, 1})), 8.164966, .0001));
+        EXPECT_TRUE (Math::Mean (vector<int> ({1, 3, 5})) == 3);
+        EXPECT_TRUE (Math::Mean (vector<int> ({5, 3, 1})) == 3);
+        EXPECT_TRUE (Math::Median (vector<int> ({1, 3, 5})) == 3);
+        EXPECT_TRUE (Math::Median (vector<int> ({5, 3, 1})) == 3);
+        EXPECT_TRUE (Math::Median (vector<int> ({5, 3, 19, 1})) == 4);
+        EXPECT_TRUE (Math::Mean (vector<double> ({5, 3, 19, 1})) == 7);
+        EXPECT_TRUE (Math::NearlyEquals (Math::StandardDeviation (vector<double> ({5, 3, 19, 1})), 8.164966, .0001));
     }
 }
 
 namespace {
     void Test7_NearlyEquals_ ()
     {
-        VerifyTestResult (Math::NearlyEquals (1.0, 1.0 + numeric_limits<double>::epsilon ()));
-        VerifyTestResult (Math::NearlyEquals (Math::nan<double> (), Math::nan<double> ()));
-        VerifyTestResult (not Math::NearlyEquals (1.0, 1.1));
+        EXPECT_TRUE (Math::NearlyEquals (1.0, 1.0 + numeric_limits<double>::epsilon ()));
+        EXPECT_TRUE (Math::NearlyEquals (Math::nan<double> (), Math::nan<double> ()));
+        EXPECT_TRUE (not Math::NearlyEquals (1.0, 1.1));
         if constexpr (numeric_limits<double>::digits10 > 14) {
-            VerifyTestResult (Math::NearlyEquals (1.0e22, 1.000000000000001e22));
+            EXPECT_TRUE (Math::NearlyEquals (1.0e22, 1.000000000000001e22));
         }
-        VerifyTestResult (not Math::NearlyEquals (1.0e22, 1.1e22));
+        EXPECT_TRUE (not Math::NearlyEquals (1.0e22, 1.1e22));
     }
 }
 
@@ -143,9 +143,9 @@ namespace {
         using namespace LinearAlgebra;
         {
             Matrix<int> m{10, 10};
-            VerifyTestResult (m[3][3] == 0);
+            EXPECT_TRUE (m[3][3] == 0);
             m.SetAt (3, 3, 5);
-            VerifyTestResult (m[3][3] == 5);
+            EXPECT_TRUE (m[3][3] == 5);
             // @todo support that sort of assign!!!
             //m[3][3] = 5;
         }
@@ -166,10 +166,10 @@ namespace {
                 return sin (x.Nth (0)) * cos (x.Nth (1)) * 1 / (abs (x.Nth (2)) + 1);
             };
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {0, 0, 0});
-            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -1.58089710e+00, 1e-5));
-            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), -2.39020317e-03, 1e-5));
-            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (2), 1.39669799e-06, 1e-5));
-            VerifyTestResult (Math::NearlyEquals (result.fScore, -0.99994473460027922, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -1.58089710e+00, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), -2.39020317e-03, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (2), 1.39669799e-06, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fScore, -0.99994473460027922, 1e-5));
         }
         {
             DownhillSimplexMinimization::TargetFunction<double> f = [] (const Sequence<double>& x) {
@@ -180,7 +180,7 @@ namespace {
                 return -cos (d);
             };
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {.1});
-            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[0], 0.0, 1e-10));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters[0], 0.0, 1e-10));
         }
         {
             // Sample from Block tuner calibration code
@@ -250,11 +250,11 @@ namespace {
             DownhillSimplexMinimization::Options<double> options;
             options.fNoImprovementThreshold                     = 1e-12;
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, initialGuess, options);
-            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[0], -0.52946138144, 1e-5));
-            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[1], 0.54376305163, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters[0], -0.52946138144, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters[1], 0.54376305163, 1e-5));
             // Silly to use Nth here, but I used to, and it used to trigger an address sanitizer issue (probably a bug with asan). But still - leave test in -- LGP 2018-09-28
-            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -0.52946138144, 1e-5));
-            VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), 0.54376305163, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (0), -0.52946138144, 1e-5));
+            EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters.Nth (1), 0.54376305163, 1e-5));
         }
     }
 }
@@ -283,6 +283,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

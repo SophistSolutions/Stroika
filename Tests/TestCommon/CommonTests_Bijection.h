@@ -54,13 +54,13 @@ namespace CommonTests {
                     using RangeType                 = typename USING_BIJECTION_CONTAINER::RangeType;
                     USING_BIJECTION_CONTAINER s     = testingSchema.Factory ();
                     s.Add (3, 5);
-                    VerifyTestResult (s.length () == 1);
-                    VerifyTestResult (s.ContainsDomainElement (3));
-                    VerifyTestResult (not s.ContainsDomainElement (5));
-                    VerifyTestResult (s.ContainsRangeElement (5));
-                    VerifyTestResult (not s.ContainsRangeElement (3));
-                    VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (3), RangeType{5}));
-                    VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (5), DomainType{3}));
+                    EXPECT_TRUE (s.length () == 1);
+                    EXPECT_TRUE (s.ContainsDomainElement (3));
+                    EXPECT_TRUE (not s.ContainsDomainElement (5));
+                    EXPECT_TRUE (s.ContainsRangeElement (5));
+                    EXPECT_TRUE (not s.ContainsRangeElement (3));
+                    EXPECT_TRUE (s.GetRangeEqualsComparer () (*s.Lookup (3), RangeType{5}));
+                    EXPECT_TRUE (s.GetDomainEqualsComparer () (*s.InverseLookup (5), DomainType{3}));
                 }
             }
 
@@ -76,11 +76,11 @@ namespace CommonTests {
                     for (int i = 0; i < 100; ++i) {
                         s.Add (3 + i, 5 + i);
                     }
-                    VerifyTestResult (s.length () == 100);
-                    VerifyTestResult (s.ContainsDomainElement (3));
-                    VerifyTestResult (s.ContainsRangeElement (5));
-                    VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (3), RangeType{5}));
-                    VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (5), DomainType{3}));
+                    EXPECT_TRUE (s.length () == 100);
+                    EXPECT_TRUE (s.ContainsDomainElement (3));
+                    EXPECT_TRUE (s.ContainsRangeElement (5));
+                    EXPECT_TRUE (s.GetRangeEqualsComparer () (*s.Lookup (3), RangeType{5}));
+                    EXPECT_TRUE (s.GetDomainEqualsComparer () (*s.InverseLookup (5), DomainType{3}));
                 }
             }
 
@@ -96,30 +96,30 @@ namespace CommonTests {
                         map<int, int> t;
                         t.insert (map<int, int>::value_type (2, 4));
                         typename USING_BIJECTION_CONTAINER::ArchetypeContainerType s = USING_BIJECTION_CONTAINER (t);
-                        VerifyTestResult (s.length () == 1);
-                        VerifyTestResult (s.ContainsDomainElement (2));
-                        VerifyTestResult (s.ContainsRangeElement (4));
-                        VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (2), RangeType{4}));
-                        VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (4), DomainType{2}));
+                        EXPECT_TRUE (s.length () == 1);
+                        EXPECT_TRUE (s.ContainsDomainElement (2));
+                        EXPECT_TRUE (s.ContainsRangeElement (4));
+                        EXPECT_TRUE (s.GetRangeEqualsComparer () (*s.Lookup (2), RangeType{4}));
+                        EXPECT_TRUE (s.GetDomainEqualsComparer () (*s.InverseLookup (4), DomainType{2}));
                     }
                     {
                         pair<int, int>                                             t[] = {{2, 4}};
                         typename USING_BIJECTION_CONTAINER::ArchetypeContainerType s   = USING_BIJECTION_CONTAINER (t);
-                        VerifyTestResult (s.length () == 1);
-                        VerifyTestResult (s.ContainsDomainElement (2));
-                        VerifyTestResult (s.ContainsRangeElement (4));
-                        VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (2), RangeType{4}));
-                        VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (4), DomainType{2}));
+                        EXPECT_TRUE (s.length () == 1);
+                        EXPECT_TRUE (s.ContainsDomainElement (2));
+                        EXPECT_TRUE (s.ContainsRangeElement (4));
+                        EXPECT_TRUE (s.GetRangeEqualsComparer () (*s.Lookup (2), RangeType{4}));
+                        EXPECT_TRUE (s.GetDomainEqualsComparer () (*s.InverseLookup (4), DomainType{2}));
                     }
                     {
                         Mapping<int, int> t;
                         t.Add (2, 4);
                         typename USING_BIJECTION_CONTAINER::ArchetypeContainerType s = USING_BIJECTION_CONTAINER (t);
-                        VerifyTestResult (s.length () == 1);
-                        VerifyTestResult (s.ContainsDomainElement (2));
-                        VerifyTestResult (s.ContainsRangeElement (4));
-                        VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (2), RangeType{4}));
-                        VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (4), DomainType{2}));
+                        EXPECT_TRUE (s.length () == 1);
+                        EXPECT_TRUE (s.ContainsDomainElement (2));
+                        EXPECT_TRUE (s.ContainsRangeElement (4));
+                        EXPECT_TRUE (s.GetRangeEqualsComparer () (*s.Lookup (2), RangeType{4}));
+                        EXPECT_TRUE (s.GetDomainEqualsComparer () (*s.InverseLookup (4), DomainType{2}));
                     }
                 }
             }
@@ -138,11 +138,11 @@ namespace CommonTests {
                         b.Add (4, 19);
                         {
                             vector<pair<DomainType, RangeType>> m = b.template As<vector<pair<DomainType, RangeType>>> ();
-                            VerifyTestResult (m.size () == 2);
+                            EXPECT_TRUE (m.size () == 2);
                         }
                         {
                             Sequence<pair<DomainType, RangeType>> m = b.template As<Sequence<pair<DomainType, RangeType>>> ();
-                            VerifyTestResult (m.size () == 2);
+                            EXPECT_TRUE (m.size () == 2);
                         }
                     }
                 }
@@ -162,15 +162,15 @@ namespace CommonTests {
                         b.Add (4, 19);
                         {
                             map<DomainType, RangeType> m = b.template As<map<DomainType, RangeType>> ();
-                            VerifyTestResult (m.size () == 2);
-                            VerifyTestResult (m.find (3) != m.end ());
-                            VerifyTestResult (m.find (9) == m.end ());
+                            EXPECT_TRUE (m.size () == 2);
+                            EXPECT_TRUE (m.find (3) != m.end ());
+                            EXPECT_TRUE (m.find (9) == m.end ());
                         }
                         {
                             Mapping<DomainType, RangeType> m = b.template As<Mapping<DomainType, RangeType>> ();
-                            VerifyTestResult (m.size () == 2);
-                            VerifyTestResult (m.ContainsKey (3));
-                            VerifyTestResult (not m.ContainsKey (9));
+                            EXPECT_TRUE (m.size () == 2);
+                            EXPECT_TRUE (m.ContainsKey (3));
+                            EXPECT_TRUE (not m.ContainsKey (9));
                         }
                     }
                 }

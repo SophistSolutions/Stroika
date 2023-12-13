@@ -32,7 +32,7 @@ namespace CommonTests {
 
                 const size_t kTestSize = 100;
 
-                VerifyTestResult (s.size () == 0);
+                EXPECT_TRUE (s.size () == 0);
                 /*
                 * Try removes while iterating forward.
                 */
@@ -40,13 +40,13 @@ namespace CommonTests {
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (i);
                     }
-                    VerifyTestResult (s.size () == kTestSize);
+                    EXPECT_TRUE (s.size () == kTestSize);
 
                     IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
 
-                    VerifyTestResult (s.size () == kTestSize);
+                    EXPECT_TRUE (s.size () == kTestSize);
                     s.RemoveAll ();
-                    VerifyTestResult (s.size () == 0);
+                    EXPECT_TRUE (s.size () == 0);
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T (i));
                     }
@@ -56,28 +56,28 @@ namespace CommonTests {
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T (i));
                     }
-                    VerifyTestResult (s.size () == kTestSize);
+                    EXPECT_TRUE (s.size () == kTestSize);
 
                     s.clear ();
 
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T (i));
                     }
-                    VerifyTestResult (s.size () == kTestSize);
+                    EXPECT_TRUE (s.size () == kTestSize);
 
                     s.clear ();
-                    VerifyTestResult (s.size () == 0);
+                    EXPECT_TRUE (s.size () == 0);
                 }
                 /*
                 * Try removes multiple iterators present.
                 */
                 {
                     s.RemoveAll ();
-                    VerifyTestResult (s.size () == 0);
+                    EXPECT_TRUE (s.size () == 0);
                     for (size_t i = 1; i <= kTestSize; i++) {
                         s.Add (i);
                     }
-                    VerifyTestResult (s.size () == kTestSize);
+                    EXPECT_TRUE (s.size () == kTestSize);
                 }
 
                 s.RemoveAll ();
@@ -100,12 +100,12 @@ namespace CommonTests {
                     }
                 }
                 s.RemoveAll ();
-                VerifyTestResult (s.empty ());
-                VerifyTestResult (s.size () == 0);
+                EXPECT_TRUE (s.empty ());
+                EXPECT_TRUE (s.size () == 0);
 
                 for ([[maybe_unused]] auto&& it1 : s) {
                     for ([[maybe_unused]] auto&& it2 : s) {
-                        VerifyTestResult (false);
+                        EXPECT_TRUE (false);
                     }
                 }
 
@@ -132,19 +132,19 @@ namespace CommonTests {
 
                 size_t i;
 
-                VerifyTestResult (s.empty ());
+                EXPECT_TRUE (s.empty ());
                 s.Add (three);
-                VerifyTestResult (s.size () == 1);
+                EXPECT_TRUE (s.size () == 1);
                 s += three;
-                VerifyTestResult (s.size () == 2);
+                EXPECT_TRUE (s.size () == 2);
                 s.RemoveAll ();
-                VerifyTestResult (s.empty ());
+                EXPECT_TRUE (s.empty ());
 
                 for (i = 1; i <= K; ++i) {
                     s.Add (i);
                 }
                 CollectionTimings_ (s);
-                VerifyTestResult (s.empty ());
+                EXPECT_TRUE (s.empty ());
 
 #if qPrintTimings
                 Time t = GetCurrentTime ();
@@ -153,7 +153,7 @@ namespace CommonTests {
 
                 for (i = 1; i <= K; ++i) {
                     s.Add (i);
-                    VerifyTestResult (s.size () == i);
+                    EXPECT_TRUE (s.size () == i);
                 }
 #if qPrintTimings
                 t = GetCurrentTime () - t;
@@ -189,27 +189,27 @@ namespace CommonTests {
 #endif
                 size_t i;
 
-                VerifyTestResult (s.empty ());
+                EXPECT_TRUE (s.empty ());
                 s.Add (three);
-                VerifyTestResult (s.size () == 1);
+                EXPECT_TRUE (s.size () == 1);
                 s += three;
-                VerifyTestResult (s.size () == 2);
-                VerifyTestResult (s.Contains (three));
+                EXPECT_TRUE (s.size () == 2);
+                EXPECT_TRUE (s.Contains (three));
                 s.Remove (three);
-                VerifyTestResult (s.size () == 1);
+                EXPECT_TRUE (s.size () == 1);
                 s.RemoveAll ();
-                VerifyTestResult (s.empty ());
+                EXPECT_TRUE (s.empty ());
 
                 for (i = 1; i <= K; i++) {
                     s.Add (i);
                 }
-                VerifyTestResult (not s.empty ());
+                EXPECT_TRUE (not s.empty ());
 
-                VerifyTestResult (s.size () == K);
+                EXPECT_TRUE (s.size () == K);
                 for (i = 1; i <= K; i++) {
                     s.Add (i);
-                    VerifyTestResult (s.Contains (i));
-                    VerifyTestResult (s.size () == i + K);
+                    EXPECT_TRUE (s.Contains (i));
+                    EXPECT_TRUE (s.size () == i + K);
                 }
             }
 
@@ -255,11 +255,11 @@ namespace CommonTests {
                         Assert (s.size () != 0);
                         size_t idx        = rand () % s.size ();
                         T      elt2Remove = s.Nth (idx);
-                        VerifyTestResult (shouldBePresent.find (elt2Remove) != shouldBePresent.end ());
+                        EXPECT_TRUE (shouldBePresent.find (elt2Remove) != shouldBePresent.end ());
                         shouldBePresent.erase (shouldBePresent.find (elt2Remove)); // shouldBePresent.erase (elt2Remove);   confusingly, multiset erase removes all
                         s.Remove (elt2Remove);
                     }
-                    VerifyTestResult (s.size () == shouldBePresent.size ());
+                    EXPECT_TRUE (s.size () == shouldBePresent.size ());
                 }
             }
 
@@ -282,36 +282,36 @@ namespace CommonTests {
                 [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t1         = 1;
                 [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t2         = 2;
                 [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t3         = 3;
-                VerifyTestResult (collection.empty ());
+                EXPECT_TRUE (collection.empty ());
                 collection.Add (t1);
                 collection.Add (t1);
 #if 0
                 {
                     CONCRETE_CONTAINER   bb = collection;
-                    VerifyTestResult (bb.MakeIterator () != collection.MakeIterator ());
-                    VerifyTestResult (bb.MakeIterator () != bb.MakeIterator ());        // WE may want to change the definition so this is allowed (-- LGP 2012-07-30)
+                    EXPECT_TRUE (bb.MakeIterator () != collection.MakeIterator ());
+                    EXPECT_TRUE (bb.MakeIterator () != bb.MakeIterator ());        // WE may want to change the definition so this is allowed (-- LGP 2012-07-30)
                 }
 #endif
                 {
                     Iterator<typename CONCRETE_CONTAINER::value_type> i  = collection.begin ();
                     Iterator<typename CONCRETE_CONTAINER::value_type> ii = i;
-                    VerifyTestResult (i == ii);
-                    VerifyTestResult (i != collection.end ()); // because bag wasn't empty
+                    EXPECT_TRUE (i == ii);
+                    EXPECT_TRUE (i != collection.end ()); // because bag wasn't empty
                     ++i;
                     ++ii;
-                    VerifyTestResult (i == ii);
+                    EXPECT_TRUE (i == ii);
                 }
                 {
-                    VerifyTestResult (collection.size () == 2); // cuz we said so above
+                    EXPECT_TRUE (collection.size () == 2); // cuz we said so above
                     Iterator<typename CONCRETE_CONTAINER::value_type> i = collection.begin ();
-                    VerifyTestResult (not i.Done ());
-                    VerifyTestResult (i != collection.end ());
+                    EXPECT_TRUE (not i.Done ());
+                    EXPECT_TRUE (i != collection.end ());
                     ++i;
-                    VerifyTestResult (not i.Done ());
-                    VerifyTestResult (i != collection.end ());
+                    EXPECT_TRUE (not i.Done ());
+                    EXPECT_TRUE (i != collection.end ());
                     ++i;
-                    VerifyTestResult (i.Done ());
-                    VerifyTestResult (i == collection.end ());
+                    EXPECT_TRUE (i.Done ());
+                    EXPECT_TRUE (i == collection.end ());
                 }
             }
 
@@ -347,7 +347,7 @@ namespace CommonTests {
                         count++;
                         sum = sum + i;
                     });
-                    VerifyTestResult (count == LAST - FIRST);
+                    EXPECT_TRUE (count == LAST - FIRST);
                 }
 
                 applyToContainer (b);

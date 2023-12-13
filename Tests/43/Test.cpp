@@ -31,30 +31,30 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"Test1_URI_::Private_::TestHostParsing_"};
                 using UniformResourceIdentification::Host;
-                VerifyTestResult ((Host{Network::V4::kLocalhost}.AsEncoded () == L"127.0.0.1"sv));
-                VerifyTestResult ((Host{InternetAddress{169, 254, 0, 1}}.AsEncoded () == L"169.254.0.1"sv));
-                VerifyTestResult ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncoded () == "[fe80::44de:4247:5b76:ddc9]"sv));
-                VerifyTestResult ((Host::Parse ("[fe80::44de:4247:5b76:ddc9]"sv).AsInternetAddress () == InternetAddress{"fe80::44de:4247:5b76:ddc9"sv}));
-                VerifyTestResult ((Host{"www.sophists.com"}.AsEncoded () == "www.sophists.com"sv));
-                VerifyTestResult ((Host{"hello mom"}.AsEncoded () == L"hello%20mom"sv));
-                VerifyTestResult ((Host::Parse ("hello%20mom") == Host{"hello mom"}));
+                EXPECT_TRUE ((Host{Network::V4::kLocalhost}.AsEncoded () == L"127.0.0.1"sv));
+                EXPECT_TRUE ((Host{InternetAddress{169, 254, 0, 1}}.AsEncoded () == L"169.254.0.1"sv));
+                EXPECT_TRUE ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncoded () == "[fe80::44de:4247:5b76:ddc9]"sv));
+                EXPECT_TRUE ((Host::Parse ("[fe80::44de:4247:5b76:ddc9]"sv).AsInternetAddress () == InternetAddress{"fe80::44de:4247:5b76:ddc9"sv}));
+                EXPECT_TRUE ((Host{"www.sophists.com"}.AsEncoded () == "www.sophists.com"sv));
+                EXPECT_TRUE ((Host{"hello mom"}.AsEncoded () == L"hello%20mom"sv));
+                EXPECT_TRUE ((Host::Parse ("hello%20mom") == Host{"hello mom"}));
                 {
                     // negative tests - must throw
                     try {
                         (void)Host::Parse ("%%%");
-                        VerifyTestResult (false); // must throw
+                        EXPECT_TRUE (false); // must throw
                     }
                     catch (const runtime_error&) {
                     }
                     try {
                         (void)Host::Parse (L"%a");
-                        VerifyTestResult (false); // must throw
+                        EXPECT_TRUE (false); // must throw
                     }
                     catch (const runtime_error&) {
                     }
                     try {
                         (void)Host::Parse (L"%ag");
-                        VerifyTestResult (false); // must throw
+                        EXPECT_TRUE (false); // must throw
                     }
                     catch (const runtime_error&) {
                     }
@@ -66,47 +66,47 @@ namespace {
                 Debug::TraceContextBumper ctx{"Test1_URI_::Private_::SimpleURITests_"};
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"http://localhost:1234");
-                    VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "localhost");
-                    VerifyTestResult (uri.GetAuthority ()->GetPort () == 1234);
-                    VerifyTestResult (uri.As<String> () == "http://localhost:1234");
+                    EXPECT_TRUE (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "localhost");
+                    EXPECT_TRUE (uri.GetAuthority ()->GetPort () == 1234);
+                    EXPECT_TRUE (uri.As<String> () == "http://localhost:1234");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("localhost:1234");
-                    VerifyTestResult (not uri.GetAuthority ().has_value ()); // treated as a scheme
-                    VerifyTestResult (uri.As<String> () == "localhost:1234");
+                    EXPECT_TRUE (not uri.GetAuthority ().has_value ()); // treated as a scheme
+                    EXPECT_TRUE (uri.As<String> () == "localhost:1234");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("http://www.ics.uci.edu/pub/ietf/uri/#Related");
-                    VerifyTestResult (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "www.ics.uci.edu");
+                    EXPECT_TRUE (uri.GetAuthority ()->GetHost ()->AsRegisteredName () == "www.ics.uci.edu");
                     DbgTrace (L"X=%s", uri.As<String> ().c_str ());
-                    VerifyTestResult (uri.As<String> () == "http://www.ics.uci.edu/pub/ietf/uri/#Related");
+                    EXPECT_TRUE (uri.As<String> () == "http://www.ics.uci.edu/pub/ietf/uri/#Related");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("/uri/#Related");
-                    VerifyTestResult (not uri.GetAuthority ().has_value ());
-                    VerifyTestResult (uri.As<String> () == "/uri/#Related");
+                    EXPECT_TRUE (not uri.GetAuthority ().has_value ());
+                    EXPECT_TRUE (uri.As<String> () == "/uri/#Related");
                 }
                 {
                     // This behavior appears to meet the needs of my URL::eStroikaPre20a50BackCompatMode tests - so may work for Stroika - just replace its use with URI -- LGP 2019-04-04
                     // AT LEAST CLOSE - I THINK I CAN COME UP WITH CHEATSHEET TO MAP NAMES (like GetRElPath to GetPath () - but does it handle leading slash same?)
                     IO::Network::URI uri = IO::Network::URI::Parse ("dyn:/StyleSheet.css?ThemeName=Cupertino");
-                    VerifyTestResult (*uri.GetScheme () == SchemeType{"dyn"sv});
-                    VerifyTestResult (not uri.GetAuthority ().has_value ());
-                    VerifyTestResult (uri.GetPath () == "/StyleSheet.css");
-                    VerifyTestResult (uri.GetQuery<String> () == "ThemeName=Cupertino");
-                    VerifyTestResult (uri.GetQuery ()->operator() (L"ThemeName") == "Cupertino");
+                    EXPECT_TRUE (*uri.GetScheme () == SchemeType{"dyn"sv});
+                    EXPECT_TRUE (not uri.GetAuthority ().has_value ());
+                    EXPECT_TRUE (uri.GetPath () == "/StyleSheet.css");
+                    EXPECT_TRUE (uri.GetQuery<String> () == "ThemeName=Cupertino");
+                    EXPECT_TRUE (uri.GetQuery ()->operator() (L"ThemeName") == "Cupertino");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse ("HTTPS://www.MICROSOFT.com/Path");
-                    VerifyTestResult (uri.Normalize ().As<String> () == "https://www.microsoft.com/Path");
+                    EXPECT_TRUE (uri.Normalize ().As<String> () == "https://www.microsoft.com/Path");
                 }
                 {
                     URI base{"http://www.sophists.com"};
-                    VerifyTestResult (base.Combine (URI{"/blag/foo.icon"}).As<String> () == "http://www.sophists.com/blag/foo.icon");
+                    EXPECT_TRUE (base.Combine (URI{"/blag/foo.icon"}).As<String> () == "http://www.sophists.com/blag/foo.icon");
                 }
                 {
                     URI base{"http://www.sophists.com/"};
-                    VerifyTestResult (base.Combine (URI{"/blag/foo.icon"}).As<String> () == "http://www.sophists.com/blag/foo.icon");
+                    EXPECT_TRUE (base.Combine (URI{"/blag/foo.icon"}).As<String> () == "http://www.sophists.com/blag/foo.icon");
                 }
             }
             void Test_Reference_Resolution_Examples_From_RFC_3986_ ()
@@ -116,64 +116,64 @@ namespace {
                 URI base = URI::Parse (L"http://a/b/c/d;p?q");
 
                 // https://tools.ietf.org/html/rfc3986#section-5.4.1
-                VerifyTestResult (base.Combine (URI::Parse ("g:h")).As<String> () == L"g:h");
-                VerifyTestResult (base.Combine (URI::Parse ("g")).As<String> () == L"http://a/b/c/g");
-                VerifyTestResult (base.Combine (URI::Parse ("./g")).As<String> () == L"http://a/b/c/g");
-                VerifyTestResult (base.Combine (URI::Parse ("/g")).As<String> () == L"http://a/g");
-                VerifyTestResult (base.Combine (URI::Parse ("//g")).As<String> () == L"http://g");
-                VerifyTestResult (base.Combine (URI::Parse ("?y")).As<String> () == L"http://a/b/c/d;p?y");
-                VerifyTestResult (base.Combine (URI::Parse ("g?y")).As<String> () == L"http://a/b/c/g?y");
-                VerifyTestResult (base.Combine (URI::Parse ("#s")).As<String> () == L"http://a/b/c/d;p?q#s");
-                VerifyTestResult (base.Combine (URI::Parse ("g#s")).As<String> () == L"http://a/b/c/g#s");
-                VerifyTestResult (base.Combine (URI::Parse ("g?y#s")).As<String> () == L"http://a/b/c/g?y#s");
-                VerifyTestResult (base.Combine (URI::Parse (";x")).As<String> () == L"http://a/b/c/;x");
-                VerifyTestResult (base.Combine (URI::Parse ("g;x")).As<String> () == L"http://a/b/c/g;x");
-                VerifyTestResult (base.Combine (URI::Parse ("")).As<String> () == L"http://a/b/c/d;p?q");
-                VerifyTestResult (base.Combine (URI::Parse (".")).As<String> () == L"http://a/b/c/");
-                VerifyTestResult (base.Combine (URI::Parse ("./")).As<String> () == L"http://a/b/c/");
-                VerifyTestResult (base.Combine (URI::Parse ("..")).As<String> () == L"http://a/b/");
-                VerifyTestResult (base.Combine (URI::Parse ("../")).As<String> () == L"http://a/b/");
-                VerifyTestResult (base.Combine (URI::Parse ("../g")).As<String> () == L"http://a/b/g");
-                VerifyTestResult (base.Combine (URI::Parse ("../..")).As<String> () == L"http://a/");
-                VerifyTestResult (base.Combine (URI::Parse ("../../")).As<String> () == L"http://a/");
-                VerifyTestResult (base.Combine (URI::Parse ("../../g")).As<String> () == L"http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g:h")).As<String> () == L"g:h");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g")).As<String> () == L"http://a/b/c/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("./g")).As<String> () == L"http://a/b/c/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("/g")).As<String> () == L"http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("//g")).As<String> () == L"http://g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("?y")).As<String> () == L"http://a/b/c/d;p?y");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g?y")).As<String> () == L"http://a/b/c/g?y");
+                EXPECT_TRUE (base.Combine (URI::Parse ("#s")).As<String> () == L"http://a/b/c/d;p?q#s");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g#s")).As<String> () == L"http://a/b/c/g#s");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g?y#s")).As<String> () == L"http://a/b/c/g?y#s");
+                EXPECT_TRUE (base.Combine (URI::Parse (";x")).As<String> () == L"http://a/b/c/;x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g;x")).As<String> () == L"http://a/b/c/g;x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("")).As<String> () == L"http://a/b/c/d;p?q");
+                EXPECT_TRUE (base.Combine (URI::Parse (".")).As<String> () == L"http://a/b/c/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("./")).As<String> () == L"http://a/b/c/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("..")).As<String> () == L"http://a/b/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../")).As<String> () == L"http://a/b/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../g")).As<String> () == L"http://a/b/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../..")).As<String> () == L"http://a/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../../")).As<String> () == L"http://a/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../../g")).As<String> () == L"http://a/g");
 
                 // https://tools.ietf.org/html/rfc3986#section-5.4.2 Abnormal Examples
-                VerifyTestResult (base.Combine (URI::Parse ("../../../g")).As<String> () == L"http://a/g");
-                VerifyTestResult (base.Combine (URI::Parse ("../../../../g")).As<String> () == L"http://a/g");
-                VerifyTestResult (base.Combine (URI::Parse ("/./g")).As<String> () == L"http://a/g");
-                VerifyTestResult (base.Combine (URI::Parse ("/../g")).As<String> () == L"http://a/g");
-                VerifyTestResult (base.Combine (URI::Parse ("g.")).As<String> () == L"http://a/b/c/g.");
-                VerifyTestResult (base.Combine (URI::Parse (".g")).As<String> () == L"http://a/b/c/.g");
-                VerifyTestResult (base.Combine (URI::Parse ("g..")).As<String> () == L"http://a/b/c/g..");
-                VerifyTestResult (base.Combine (URI::Parse ("..g")).As<String> () == L"http://a/b/c/..g");
-                VerifyTestResult (base.Combine (URI::Parse ("./../g")).As<String> () == L"http://a/b/g");
-                VerifyTestResult (base.Combine (URI::Parse ("./g/.")).As<String> () == L"http://a/b/c/g/");
-                VerifyTestResult (base.Combine (URI::Parse ("g/./h")).As<String> () == L"http://a/b/c/g/h");
-                VerifyTestResult (base.Combine (URI::Parse ("g/../h")).As<String> () == L"http://a/b/c/h");
-                VerifyTestResult (base.Combine (URI::Parse ("g;x=1/./y")).As<String> () == L"http://a/b/c/g;x=1/y");
-                VerifyTestResult (base.Combine (URI::Parse ("g;x=1/../y")).As<String> () == L"http://a/b/c/y");
-                VerifyTestResult (base.Combine (URI::Parse ("g?y/./x")).As<String> () == L"http://a/b/c/g?y/./x");
-                VerifyTestResult (base.Combine (URI::Parse ("g?y/../x")).As<String> () == L"http://a/b/c/g?y/../x");
-                VerifyTestResult (base.Combine (URI::Parse ("g#s/./x")).As<String> () == L"http://a/b/c/g#s/./x");
-                VerifyTestResult (base.Combine (URI::Parse ("g#s/../x")).As<String> () == L"http://a/b/c/g#s/../x");
-                VerifyTestResult (base.Combine (URI::Parse ("http:g")).As<String> () == L"http:g"); // strict interpretation "for strict parsers"
+                EXPECT_TRUE (base.Combine (URI::Parse ("../../../g")).As<String> () == L"http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("../../../../g")).As<String> () == L"http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("/./g")).As<String> () == L"http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("/../g")).As<String> () == L"http://a/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g.")).As<String> () == L"http://a/b/c/g.");
+                EXPECT_TRUE (base.Combine (URI::Parse (".g")).As<String> () == L"http://a/b/c/.g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g..")).As<String> () == L"http://a/b/c/g..");
+                EXPECT_TRUE (base.Combine (URI::Parse ("..g")).As<String> () == L"http://a/b/c/..g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("./../g")).As<String> () == L"http://a/b/g");
+                EXPECT_TRUE (base.Combine (URI::Parse ("./g/.")).As<String> () == L"http://a/b/c/g/");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g/./h")).As<String> () == L"http://a/b/c/g/h");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g/../h")).As<String> () == L"http://a/b/c/h");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g;x=1/./y")).As<String> () == L"http://a/b/c/g;x=1/y");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g;x=1/../y")).As<String> () == L"http://a/b/c/y");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g?y/./x")).As<String> () == L"http://a/b/c/g?y/./x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g?y/../x")).As<String> () == L"http://a/b/c/g?y/../x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g#s/./x")).As<String> () == L"http://a/b/c/g#s/./x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("g#s/../x")).As<String> () == L"http://a/b/c/g#s/../x");
+                EXPECT_TRUE (base.Combine (URI::Parse ("http:g")).As<String> () == L"http:g"); // strict interpretation "for strict parsers"
             }
             void TestEmptyURI_ ()
             {
                 Debug::TraceContextBumper ctx{"TestEmptyURI_"};
                 {
                     URI u{};
-                    VerifyTestResult (u.As<String> () == "");
+                    EXPECT_TRUE (u.As<String> () == "");
                 }
                 {
                     URI u{""};
-                    VerifyTestResult (u.As<String> () == "");
+                    EXPECT_TRUE (u.As<String> () == "");
                 }
                 {
                     URI u{" "};
-                    VerifyTestResult (u.As<String> () == "%20"); // @todo REVIEW SPEC- urlparse(' ').geturl () produces space, but I think this makes more sense
-                    VerifyTestResult (u.GetPath () == " ");
+                    EXPECT_TRUE (u.As<String> () == "%20"); // @todo REVIEW SPEC- urlparse(' ').geturl () produces space, but I think this makes more sense
+                    EXPECT_TRUE (u.GetPath () == " ");
                 }
             }
             void TestSamplesFromPythonURLParseDocs_ ()
@@ -190,12 +190,12 @@ namespace {
                      *      o.geturl ()
                      */
                     auto o = URI{"http://www.cwi.nl:80/%7Eguido/Python.html"};
-                    VerifyTestResult (o.GetScheme () == SchemeType{"http"});
-                    VerifyTestResult (o.GetAuthority ()->GetPort () == 80);
+                    EXPECT_TRUE (o.GetScheme () == SchemeType{"http"});
+                    EXPECT_TRUE (o.GetAuthority ()->GetPort () == 80);
                     // NOTE - here python emits '%7Eguido' instead of '~guido'. However, according to
                     // https://tools.ietf.org/html/rfc3986#section-2.3, '~' - %7E - is an unreserved character, and
                     // so Stroika does NOT encode it.
-                    VerifyTestResult (o.As<string> () == "http://www.cwi.nl:80/~guido/Python.html");
+                    EXPECT_TRUE (o.As<string> () == "http://www.cwi.nl:80/~guido/Python.html");
                 }
                 {
                     /*
@@ -209,12 +209,12 @@ namespace {
                      *      o.fragment
                      */
                     auto o = URI{"//www.cwi.nl:80/%7Eguido/Python.html"};
-                    VerifyTestResult (o.GetScheme () == nullopt);
-                    VerifyTestResult (o.GetAuthority () == Authority::Parse ("www.cwi.nl:80"));
-                    VerifyTestResult (o.GetPath () == L"/~guido/Python.html");
-                    VerifyTestResult (o.GetQuery () == nullopt);
-                    VerifyTestResult (o.GetFragment () == nullopt);
-                    VerifyTestResult (o.As<string> () == "//www.cwi.nl:80/~guido/Python.html");
+                    EXPECT_TRUE (o.GetScheme () == nullopt);
+                    EXPECT_TRUE (o.GetAuthority () == Authority::Parse ("www.cwi.nl:80"));
+                    EXPECT_TRUE (o.GetPath () == L"/~guido/Python.html");
+                    EXPECT_TRUE (o.GetQuery () == nullopt);
+                    EXPECT_TRUE (o.GetFragment () == nullopt);
+                    EXPECT_TRUE (o.As<string> () == "//www.cwi.nl:80/~guido/Python.html");
                 }
                 {
                     /*
@@ -228,12 +228,12 @@ namespace {
                      *      o.fragment
                      */
                     auto o = URI{"www.cwi.nl/%7Eguido/Python.html"};
-                    VerifyTestResult (o.GetScheme () == nullopt);
-                    VerifyTestResult (o.GetAuthority () == nullopt);
-                    VerifyTestResult (o.GetPath () == L"www.cwi.nl/~guido/Python.html"); // again, differ from python because our getPath returns decoded string
-                    VerifyTestResult (o.GetQuery () == nullopt);
-                    VerifyTestResult (o.GetFragment () == nullopt);
-                    VerifyTestResult (o.As<string> () == "www.cwi.nl/~guido/Python.html"); // again, differ from python because %7E (~) is unreserved character
+                    EXPECT_TRUE (o.GetScheme () == nullopt);
+                    EXPECT_TRUE (o.GetAuthority () == nullopt);
+                    EXPECT_TRUE (o.GetPath () == L"www.cwi.nl/~guido/Python.html"); // again, differ from python because our getPath returns decoded string
+                    EXPECT_TRUE (o.GetQuery () == nullopt);
+                    EXPECT_TRUE (o.GetFragment () == nullopt);
+                    EXPECT_TRUE (o.As<string> () == "www.cwi.nl/~guido/Python.html"); // again, differ from python because %7E (~) is unreserved character
                 }
                 {
                     /*
@@ -247,12 +247,12 @@ namespace {
                      *      o.fragment
                      */
                     auto o = URI{"help/Python.html"};
-                    VerifyTestResult (o.GetScheme () == nullopt);
-                    VerifyTestResult (o.GetAuthority () == nullopt);
-                    VerifyTestResult (o.GetPath () == L"help/Python.html");
-                    VerifyTestResult (o.GetQuery () == nullopt);
-                    VerifyTestResult (o.GetFragment () == nullopt);
-                    VerifyTestResult (o.As<string> () == "help/Python.html");
+                    EXPECT_TRUE (o.GetScheme () == nullopt);
+                    EXPECT_TRUE (o.GetAuthority () == nullopt);
+                    EXPECT_TRUE (o.GetPath () == L"help/Python.html");
+                    EXPECT_TRUE (o.GetQuery () == nullopt);
+                    EXPECT_TRUE (o.GetFragment () == nullopt);
+                    EXPECT_TRUE (o.As<string> () == "help/Python.html");
                 }
                 {
                     /*
@@ -261,7 +261,7 @@ namespace {
                      *      urljoin('http://www.cwi.nl/%7Eguido/Python.html', 'FAQ.html')
                      */
                     auto o = URI{"http://www.cwi.nl/%7Eguido/Python.html"}.Combine (URI{"FAQ.html"});
-                    VerifyTestResult (o.As<string> () == "http://www.cwi.nl/~guido/FAQ.html"); // again, differ from python because %7E (~) is unreserved character
+                    EXPECT_TRUE (o.As<string> () == "http://www.cwi.nl/~guido/FAQ.html"); // again, differ from python because %7E (~) is unreserved character
                 }
                 {
                     /*
@@ -270,7 +270,7 @@ namespace {
                      *      urljoin('http://www.cwi.nl/%7Eguido/Python.html', '//www.python.org/%7Eguido')
                      */
                     auto o = URI{"http://www.cwi.nl/%7Eguido/Python.html"}.Combine (URI{"//www.python.org/%7Eguido"});
-                    VerifyTestResult (o.As<string> () == "http://www.python.org/~guido"); // again, differ from python because %7E (~) is unreserved character
+                    EXPECT_TRUE (o.As<string> () == "http://www.python.org/~guido"); // again, differ from python because %7E (~) is unreserved character
                 }
             }
             void Test_PatternUsedInHealthFrame_ ()
@@ -279,14 +279,14 @@ namespace {
                 using namespace IO::Network::UniformResourceIdentification;
                 {
                     auto o = URI{"dyn:/Reminders/Home.htm"};
-                    VerifyTestResult (o.GetScheme () == SchemeType{L"dyn"});
-                    VerifyTestResult (o.GetPath () == L"/Reminders/Home.htm");
+                    EXPECT_TRUE (o.GetScheme () == SchemeType{L"dyn"});
+                    EXPECT_TRUE (o.GetPath () == L"/Reminders/Home.htm");
                 }
                 {
                     auto o = URI{"dyn:/StyleSheet.css?ThemeName=Cupertino"};
-                    VerifyTestResult (o.GetScheme () == SchemeType{L"dyn"});
-                    VerifyTestResult (o.GetPath () == L"/StyleSheet.css");
-                    VerifyTestResult ((*o.GetQuery<Query> ()) (L"ThemeName") == L"Cupertino");
+                    EXPECT_TRUE (o.GetScheme () == SchemeType{L"dyn"});
+                    EXPECT_TRUE (o.GetPath () == L"/StyleSheet.css");
+                    EXPECT_TRUE ((*o.GetQuery<Query> ()) (L"ThemeName") == L"Cupertino");
                 }
             }
             void Test_RegressionDueToBugInCompareURIsC20Spaceship_ ()
@@ -297,7 +297,7 @@ namespace {
                     // make sure operator bool working
                 }
                 else {
-                    VerifyTestResult (false);
+                    EXPECT_TRUE (false);
                 }
 // workaround really only needed if ASAN enabled, but more of a PITA to test that
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
@@ -320,8 +320,8 @@ namespace {
                     auto b2 = (fURL_ < newURL);
                     auto b3 = (fURL_ > newURL);
                     auto b4 = (fURL_ != newURL);
-                    VerifyTestResult (b1 != b4);
-                    VerifyTestResult (b2 != b3 or b1);
+                    EXPECT_TRUE (b1 != b4);
+                    EXPECT_TRUE (b2 != b3 or b1);
                 }
             }
             void Test_UPNPBadURIIPv6_ ()
@@ -332,25 +332,25 @@ namespace {
                     // Sub-problem where original bug lies
                     try {
                         optional<Authority> authority = Authority::Parse ("[fe80::354f:9016:fed2:8b9b]:2869"sv);
-                        VerifyTestResult (authority->GetPort () == 2869);
-                        VerifyTestResult (authority->GetHost () == InternetAddress{"fe80::354f:9016:fed2:8b9b"sv});
+                        EXPECT_TRUE (authority->GetPort () == 2869);
+                        EXPECT_TRUE (authority->GetHost () == InternetAddress{"fe80::354f:9016:fed2:8b9b"sv});
                     }
                     catch (...) {
-                        VerifyTestResult (false); // not reached - valid parse
+                        EXPECT_TRUE (false); // not reached - valid parse
                     }
                 }
                 try {
                     auto uri = URI::Parse ("http://[fe80::354f:9016:fed2:8b9b]:2869/upnphost/udhisapi.dll?content=uuid:4becec11-428e-46e0-801b-9b293cf1d2c7"sv);
-                    VerifyTestResult (uri.GetAuthority ()->GetPort () == 2869);
-                    VerifyTestResult (uri.GetAuthority ()->GetHost () == InternetAddress{"fe80::354f:9016:fed2:8b9b"sv});
-                    VerifyTestResult (uri.GetAbsPath () == "/upnphost/udhisapi.dll"sv);
+                    EXPECT_TRUE (uri.GetAuthority ()->GetPort () == 2869);
+                    EXPECT_TRUE (uri.GetAuthority ()->GetHost () == InternetAddress{"fe80::354f:9016:fed2:8b9b"sv});
+                    EXPECT_TRUE (uri.GetAbsPath () == "/upnphost/udhisapi.dll"sv);
                 }
                 catch (...) {
-                    VerifyTestResult (false); // not reached - valid parse
+                    EXPECT_TRUE (false); // not reached - valid parse
                 }
                 try {
                     auto uri = URI::Parse ("http://[fe80::354f:9016:fed2:8b9b"sv);
-                    VerifyTestResult (false); // not reached - invalid URL
+                    EXPECT_TRUE (false); // not reached - invalid URL
                 }
                 catch (...) {
                     // GOOD - sb exception
@@ -383,25 +383,25 @@ namespace {
     {
         Debug::TraceContextBumper trcCtx{"Test2_InternetAddress_"};
         {
-            VerifyTestResult ((InternetAddress{169, 254, 0, 1}).As<String> () == L"169.254.0.1");
-            VerifyTestResult ((InternetAddress{1, 2, 3, 4}).As<String> () == L"1.2.3.4");
-            VerifyTestResult ((InternetAddress{L"1.2.3.4"}).As<String> () == L"1.2.3.4");
-            VerifyTestResult ((InternetAddress{"1.2.3.4"}).As<String> () == L"1.2.3.4");
+            EXPECT_TRUE ((InternetAddress{169, 254, 0, 1}).As<String> () == L"169.254.0.1");
+            EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}).As<String> () == L"1.2.3.4");
+            EXPECT_TRUE ((InternetAddress{L"1.2.3.4"}).As<String> () == L"1.2.3.4");
+            EXPECT_TRUE ((InternetAddress{"1.2.3.4"}).As<String> () == L"1.2.3.4");
         }
         {
-            VerifyTestResult ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[0] == 1));
-            VerifyTestResult ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[2] == 3));
+            EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[0] == 1));
+            EXPECT_TRUE ((InternetAddress{1, 2, 3, 4}.As<array<uint8_t, 4>> ()[2] == 3));
         }
         {
             auto testRoundtrip = [] (const String& s) {
                 InternetAddress iaddr1{s};
                 InternetAddress iaddr2{s.As<wstring> ()};
                 InternetAddress iaddr3{s.AsASCII ()};
-                VerifyTestResult (iaddr1 == iaddr2);
-                VerifyTestResult (iaddr2 == iaddr3);
-                VerifyTestResult (iaddr1.As<String> () == s);
-                VerifyTestResult (iaddr2.As<String> () == s);
-                VerifyTestResult (iaddr3.As<String> () == s);
+                EXPECT_TRUE (iaddr1 == iaddr2);
+                EXPECT_TRUE (iaddr2 == iaddr3);
+                EXPECT_TRUE (iaddr1.As<String> () == s);
+                EXPECT_TRUE (iaddr2.As<String> () == s);
+                EXPECT_TRUE (iaddr3.As<String> () == s);
             };
             testRoundtrip (L"192.168.131.3");
             testRoundtrip (L"::");
@@ -440,21 +440,21 @@ namespace {
             };
             for (auto i : kTests_) {
                 DbgTrace (L"i.addr=%s", i.addr.As<String> ().c_str ());
-                VerifyTestResult (i.addr.IsLocalhostAddress () == i.isLocalHost);
-                VerifyTestResult (i.addr.IsLinkLocalAddress () == i.isLinkLocal);
-                VerifyTestResult (i.addr.IsMulticastAddress () == i.isMulticast);
-                VerifyTestResult (i.addr.IsPrivateAddress () == i.isPrivate);
+                EXPECT_TRUE (i.addr.IsLocalhostAddress () == i.isLocalHost);
+                EXPECT_TRUE (i.addr.IsLinkLocalAddress () == i.isLinkLocal);
+                EXPECT_TRUE (i.addr.IsMulticastAddress () == i.isMulticast);
+                EXPECT_TRUE (i.addr.IsPrivateAddress () == i.isPrivate);
             }
         }
         {
-            VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
-            VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or
+            EXPECT_TRUE (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
+            EXPECT_TRUE (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or
                               ntohl (0x01020304) == 0x01020304); // if big-endian machine, net byte order equals host byte order
         }
         {
-            VerifyTestResult (InternetAddress{"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) ==
+            EXPECT_TRUE (InternetAddress{"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) ==
                               InternetAddress{"2002:C0A8:6301::"});
-            VerifyTestResult (InternetAddress{"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) == InternetAddress{"192.168.99.1"});
+            EXPECT_TRUE (InternetAddress{"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) == InternetAddress{"192.168.99.1"});
         }
     }
 }
@@ -476,16 +476,16 @@ namespace {
             Debug::TraceContextBumper ctx{"Test4_DNS_::DoTests_"};
             {
                 DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.sophists.com");
-                VerifyTestResult (e.fCanonicalName.Contains (".sophists.com"));
-                VerifyTestResult (e.fAddressList.size () >= 1);
+                EXPECT_TRUE (e.fCanonicalName.Contains (".sophists.com"));
+                EXPECT_TRUE (e.fAddressList.size () >= 1);
             }
             {
                 DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.google.com");
-                VerifyTestResult (e.fAddressList.size () >= 1);
+                EXPECT_TRUE (e.fAddressList.size () >= 1);
             }
             {
                 DNS::HostEntry e = DNS::kThe.GetHostEntry ("www.cnn.com");
-                VerifyTestResult (e.fAddressList.size () >= 1);
+                EXPECT_TRUE (e.fAddressList.size () >= 1);
             }
             {
                 optional<String> aaa = DNS::kThe.ReverseLookup (InternetAddress{23, 56, 90, 167});
@@ -503,29 +503,29 @@ namespace {
             {
                 CIDR cidr{"10.70.0.0/15"};
                 auto cidr2 = CIDR{InternetAddress{"10.70.0.0"}, 15};
-                VerifyTestResult (cidr == cidr2);
-                VerifyTestResult (Characters::ToString (cidr) == "10.70.0.0/15");
-                VerifyTestResult (cidr.GetNumberOfSignificantBits () == 15);
-                VerifyTestResult ((cidr.GetRange () == Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0},
+                EXPECT_TRUE (cidr == cidr2);
+                EXPECT_TRUE (Characters::ToString (cidr) == "10.70.0.0/15");
+                EXPECT_TRUE (cidr.GetNumberOfSignificantBits () == 15);
+                EXPECT_TRUE ((cidr.GetRange () == Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0},
                                                                                                  InternetAddress{10, 71, 255, 255}}));
             }
             {
                 auto cidr = CIDR{InternetAddress{"192.168.56.1"}, 24};
-                VerifyTestResult (Characters::ToString (cidr) == "192.168.56.0/24");
+                EXPECT_TRUE (Characters::ToString (cidr) == "192.168.56.0/24");
             }
             {
                 auto cidr = CIDR{InternetAddress{"172.28.240.1"}, 20};
-                VerifyTestResult (Characters::ToString (cidr) == "172.28.240.0/20");
+                EXPECT_TRUE (Characters::ToString (cidr) == "172.28.240.0/20");
             }
             {
                 auto cidr = CIDR{InternetAddress{"172.17.185.1"}, 28};
-                VerifyTestResult (Characters::ToString (cidr) == "172.17.185.0/28");
+                EXPECT_TRUE (Characters::ToString (cidr) == "172.17.185.0/28");
             }
             {
                 // fix for https://stroika.atlassian.net/browse/STK-909
                 auto cidr = CIDR{V6::kAddrAny, 64};
-                VerifyTestResult (Characters::ToString (cidr) == "in6addr_any/64");
-                VerifyTestResult (CIDR{cidr.As<String> ()} == cidr); // can roundtrip numeric form
+                EXPECT_TRUE (Characters::ToString (cidr) == "in6addr_any/64");
+                EXPECT_TRUE (CIDR{cidr.As<String> ()} == cidr); // can roundtrip numeric form
             }
         }
     }
@@ -585,6 +585,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

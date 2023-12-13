@@ -34,13 +34,13 @@ namespace CommonTests {
                 typedef typename CONCRETE_CONTAINER::value_type ELEMENT_TYPE;
                 CONCRETE_CONTAINER                              s;
                 s.Enqueue (1);
-                VerifyTestResult (s.size () == 1);
+                EXPECT_TRUE (s.size () == 1);
                 s.Enqueue (1);
-                VerifyTestResult (s.size () == 2);
-                VerifyTestResult (EQUALS_COMPARER{}(s.Dequeue (), ELEMENT_TYPE{1}));
-                VerifyTestResult (s.size () == 1);
+                EXPECT_TRUE (s.size () == 2);
+                EXPECT_TRUE (EQUALS_COMPARER{}(s.Dequeue (), ELEMENT_TYPE{1}));
+                EXPECT_TRUE (s.size () == 1);
                 s.RemoveAll ();
-                VerifyTestResult (s.size () == 0);
+                EXPECT_TRUE (s.size () == 0);
             }
         }
 
@@ -52,15 +52,15 @@ namespace CommonTests {
                 CONCRETE_CONTAINER s2 = s;
                 s.Enqueue (1);
                 s.Enqueue (2);
-                VerifyTestResult (s.size () == 2);
+                EXPECT_TRUE (s.size () == 2);
                 CONCRETE_CONTAINER s3 = s;
-                //VerifyTestResult (s == s3);
-                VerifyTestResult (typename CONCRETE_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s3));
-                //VerifyTestResult (not (s != s3));
+                //EXPECT_TRUE (s == s3);
+                EXPECT_TRUE (typename CONCRETE_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s3));
+                //EXPECT_TRUE (not (s != s3));
 
-                //VerifyTestResult (s != s2);
-                VerifyTestResult (not typename CONCRETE_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s2));
-                //VerifyTestResult (not (s == s2));
+                //EXPECT_TRUE (s != s2);
+                EXPECT_TRUE (not typename CONCRETE_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s2));
+                //EXPECT_TRUE (not (s == s2));
             }
         }
 

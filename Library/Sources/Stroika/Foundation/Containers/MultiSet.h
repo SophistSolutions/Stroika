@@ -376,8 +376,8 @@ namespace Stroika::Foundation::Containers {
          *  \par Example Usage
          *      \code
          *          MultiSet<int> test{1, 1, 5, 1, 6, 5};
-         *          VerifyTestResult (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
-         *          VerifyTestResult (test.Top (1).SequentialEquals ({{1, 3}}));
+         *          EXPECT_TRUE (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
+         *          EXPECT_TRUE (test.Top (1).SequentialEquals ({{1, 3}}));
          *      \endcode
          * 
          *  \note n is allowed to exceed the size of the MultiSet, and the result of Top (n) maybe fewer than n values
@@ -395,8 +395,8 @@ namespace Stroika::Foundation::Containers {
          *  \par Example Usage
          *      \code
          *          MultiSet<int> test{1, 1, 5, 1, 6, 5};
-         *          VerifyTestResult (test.TopElements ().SequentialEquals ({1, 5, 6}));
-         *          VerifyTestResult (test.TopElements (1).SequentialEquals ({1}));
+         *          EXPECT_TRUE (test.TopElements ().SequentialEquals ({1, 5, 6}));
+         *          EXPECT_TRUE (test.TopElements (1).SequentialEquals ({1}));
          *      \endcode
          * 
          *  \note n is allowed to exceed the size of the MultiSet, and the result of Top (n) maybe fewer than n values

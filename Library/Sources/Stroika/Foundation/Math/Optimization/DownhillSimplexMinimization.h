@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
      *               return -std::cos (d);
      *           };
      *           Results<double> result = Run (f, {.1});
-     *           VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[0], 0.0, 1e-10));
+     *           EXPECT_TRUE (Math::NearlyEquals (result.fOptimizedParameters[0], 0.0, 1e-10));
      *      \endcode
      */
     template <typename FLOAT_TYPE>

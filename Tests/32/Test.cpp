@@ -173,7 +173,7 @@ namespace {
                 Assert (sizeof (ksample_zip_7z_) == 2157);
 #if qHasFeature_LZMA
                 Archive::_7z::Reader reader (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
-                VerifyTestResult ((reader.GetContainedFiles () ==
+                EXPECT_TRUE ((reader.GetContainedFiles () ==
                                    Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp",
                                                            L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 
@@ -181,20 +181,20 @@ namespace {
                     using Memory::byte;
                     using Streams::InputStream;
                     using Streams::TextReader;
-                    VerifyTestResult (reader.GetData ("sample_zip/TODO.txt").size () == 243);
-                    VerifyTestResult (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
-                    VerifyTestResult (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
-                    VerifyTestResult (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
-                    VerifyTestResult (
+                    EXPECT_TRUE (reader.GetData ("sample_zip/TODO.txt").size () == 243);
+                    EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
+                    EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
+                    EXPECT_TRUE (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
+                    EXPECT_TRUE (
                         TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ())
                             .ReadAll ()
                             .Contains (
                                 "Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
-                    VerifyTestResult (
+                    EXPECT_TRUE (
                         TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
                     try {
                         auto i = reader.GetData ("file-not-found");
-                        VerifyTestResult (false);
+                        EXPECT_TRUE (false);
                     }
                     catch (...) {
                         // good
@@ -371,26 +371,26 @@ namespace {
 #if qHasFeature_ZLib
                 Archive::Zip::Reader reader{Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (ksample_zip_), end (ksample_zip_))};
 
-                VerifyTestResult ((reader.GetContainedFiles () ==
+                EXPECT_TRUE ((reader.GetContainedFiles () ==
                                    Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
                                                            "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
                 {
                     using Streams::InputStream;
                     using Streams::TextReader;
-                    VerifyTestResult (reader.GetData ("sample_zip/TODO.txt").size () == 243);
-                    VerifyTestResult (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
-                    VerifyTestResult (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
-                    VerifyTestResult (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
-                    VerifyTestResult (
+                    EXPECT_TRUE (reader.GetData ("sample_zip/TODO.txt").size () == 243);
+                    EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
+                    EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
+                    EXPECT_TRUE (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
+                    EXPECT_TRUE (
                         TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ())
                             .ReadAll ()
                             .Contains (
                                 "Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
-                    VerifyTestResult (
+                    EXPECT_TRUE (
                         TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
                     try {
                         auto i = reader.GetData (L"file-not-found");
-                        VerifyTestResult (false);
+                        EXPECT_TRUE (false);
                     }
                     catch (...) {
                         // good
@@ -423,9 +423,9 @@ namespace {
             tmp << "SUPPORT_URL=\"http://help.ubuntu.com/\"" << endl;
             tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << endl;
             Variant::INI::Profile p = Variant::INI::Reader{}.ReadProfile (tmp);
-            VerifyTestResult (p.fNamedSections.empty ());
-            VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue ("NAME") == "Ubuntu");
-            VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue ("SUPPORT_URL") == "http://help.ubuntu.com/");
+            EXPECT_TRUE (p.fNamedSections.empty ());
+            EXPECT_TRUE (p.fUnnamedSection.fProperties.LookupValue ("NAME") == "Ubuntu");
+            EXPECT_TRUE (p.fUnnamedSection.fProperties.LookupValue ("SUPPORT_URL") == "http://help.ubuntu.com/");
         }
 
         struct Case_ {
@@ -467,8 +467,8 @@ namespace {
                 // is the same as the original data
                 auto serialized   = Variant::INI::Writer{}.WriteAsString (kCase1_.data);
                 auto deserialized = Variant::INI::Reader{}.ReadProfile (serialized);
-                VerifyTestResult (deserialized == kCase1_.data);
-                VerifyTestResult ((Variant::INI::Reader{}.ReadProfile (kCase1_.dataAsFile) == kCase1_.data));
+                EXPECT_TRUE (deserialized == kCase1_.data);
+                EXPECT_TRUE ((Variant::INI::Reader{}.ReadProfile (kCase1_.dataAsFile) == kCase1_.data));
             }
         }
 
@@ -491,8 +491,8 @@ namespace {
             tmp << "3,4" << endl;
             tmp << "4,5" << endl;
             Iterable<Sequence<String>> s = Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp);
-            VerifyTestResult (s.size () == 2);
-            VerifyTestResult (s.Nth (1)[1] == "5");
+            EXPECT_TRUE (s.size () == 2);
+            EXPECT_TRUE (s.Nth (1)[1] == "5");
         }
 
         struct Case_ {
@@ -533,17 +533,17 @@ namespace {
                 auto serialized =
                     Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate = true}}.WriteAsString (kCase1_spaceSep_.data);
                 String aaa = String{kCase1_spaceSep_.dataAsFile};
-                VerifyTestResult (serialized.AsASCII () == kCase1_spaceSep_.dataAsFile);
+                EXPECT_TRUE (serialized.AsASCII () == kCase1_spaceSep_.dataAsFile);
                 stringstream tmp{kCase1_spaceSep_.dataAsFile};
-                VerifyTestResult (
+                EXPECT_TRUE (
                     (kCase1_spaceSep_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
             }
             {
                 auto serialized =
                     Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate = false}}.WriteAsString (kCase2_noSpace_.data);
-                VerifyTestResult (serialized.AsASCII () == kCase2_noSpace_.dataAsFile);
+                EXPECT_TRUE (serialized.AsASCII () == kCase2_noSpace_.dataAsFile);
                 stringstream tmp{kCase2_noSpace_.dataAsFile};
-                VerifyTestResult (
+                EXPECT_TRUE (
                     (kCase2_noSpace_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
             }
         }
@@ -569,7 +569,7 @@ namespace {
                 Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, out);
                 string x = out.As<string> ();
-                // not quite true, but almost: VerifyTestResult (out.As<string> () == expected);
+                // not quite true, but almost: EXPECT_TRUE (out.As<string> () == expected);
                 if (x != expected) {
                     // Might be a bug, but probably not; before Stroika v3.0d1, we used Mapping_stdmap<> so
                     // the maps were really ordered. But now they are not, so the text representation can
@@ -578,7 +578,7 @@ namespace {
                     if (vvv != v) {
                         Stroika::Frameworks::Test::WarnTestIssue (string{"x: " + x}.c_str ());
                         Stroika::Frameworks::Test::WarnTestIssue (string{"expected: " + expected}.c_str ());
-                        VerifyTestResult (false);
+                        EXPECT_TRUE (false);
                     }
                 }
             }
@@ -659,7 +659,7 @@ namespace Test_02_BasicReaderTests_ {
         stringstream tmp;
         tmp << v;
         VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tmp);
-        VerifyTestResult (v1 == expected);
+        EXPECT_TRUE (v1 == expected);
     }
 
     void DoIt ()
@@ -728,7 +728,7 @@ namespace Test_02_BasicReaderTests_ {
             stringstream tmp;
             tmp << kExample;
             VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tmp);
-            VerifyTestResult (v1.GetType () == VariantValue::eMap);
+            EXPECT_TRUE (v1.GetType () == VariantValue::eMap);
         }
     }
 }
@@ -740,13 +740,13 @@ namespace Test_03_CheckCanReadFromSmallBadSrc_ {
         tmp << s;
         try {
             VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tmp);
-            VerifyTestResult (false); // should get exception
+            EXPECT_TRUE (false); // should get exception
         }
         catch (const DataExchange::BadFormatException&) {
             // GOOD
         }
         catch (...) {
-            VerifyTestResult (false); // should get BadFormatException
+            EXPECT_TRUE (false); // should get BadFormatException
         }
     }
     void DoIt ()
@@ -774,7 +774,7 @@ namespace Test_04_CheckStringQuoting_ {
             stringstream tmp;
             tmp << encodedRep;
             VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (tmp);
-            VerifyTestResult (vOut == v);
+            EXPECT_TRUE (vOut == v);
         }
     }
 
@@ -842,7 +842,7 @@ namespace Test_05_ParseRegressionTest_1_ {
                 reinterpret_cast<const byte*> (std::begin (kJSONExample_)),
                 reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             map<wstring, VariantValue> mv = v.As<map<wstring, VariantValue>> ();
-            VerifyTestResult (mv[L"Automated Backups"].GetType () == VariantValue::eMap);
+            EXPECT_TRUE (mv[L"Automated Backups"].GetType () == VariantValue::eMap);
             map<wstring, VariantValue> outputMap = v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
             outputMap[L"MaxFiles"]               = 123456789;
             mv[L"Output"]                        = outputMap;
@@ -859,7 +859,7 @@ namespace Test_05_ParseRegressionTest_1_ {
                 locale                           prevLocale = locale::global (locale{"C"});
                 Streams::MemoryStream<byte>::Ptr tmpStrm    = Streams::MemoryStream<byte>::New ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
-                VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
+                EXPECT_TRUE (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                 locale::global (prevLocale);
             }
             {
@@ -867,7 +867,7 @@ namespace Test_05_ParseRegressionTest_1_ {
                 Configuration::ScopedUseLocale   tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
                 Streams::MemoryStream<byte>::Ptr tmpStrm = Streams::MemoryStream<byte>::New ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
-                VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
+                EXPECT_TRUE (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
             }
         }
     }
@@ -890,7 +890,7 @@ namespace Test_06_ParseRegressionTest_2_ {
             }
             stringstream tnmStrStrm{encoded};
             VariantValue v1 = DataExchange::Variant::JSON::Reader{}.Read (tnmStrStrm);
-            VerifyTestResult (v1 == v);
+            EXPECT_TRUE (v1 == v);
         };
         f ();
         {
@@ -917,10 +917,10 @@ namespace Test_05_ParseRegressionTest_3_ {
                 reinterpret_cast<const byte*> (std::begin (kJSONExample_)),
                 reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> ();
-            VerifyTestResult (mv[L"T1"].GetType () == VariantValue::eString);
-            VerifyTestResult (mv[L"T1"] == String{});
-            VerifyTestResult (mv[L"T2"].GetType () == VariantValue::eNull);
-            VerifyTestResult (mv[L"T3"].GetType () == VariantValue::eMap);
+            EXPECT_TRUE (mv[L"T1"].GetType () == VariantValue::eString);
+            EXPECT_TRUE (mv[L"T1"] == String{});
+            EXPECT_TRUE (mv[L"T2"].GetType () == VariantValue::eNull);
+            EXPECT_TRUE (mv[L"T3"].GetType () == VariantValue::eMap);
         }
     }
 }
@@ -947,10 +947,10 @@ namespace Test_07_ParserTestReadWriteBasictypes_ {
                 v1 = VariantValue{v1.As<Time::DateTime> ()};
             }
             if (v.GetType () == VariantValue::eFloat) {
-                VerifyTestResult (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.001));
+                EXPECT_TRUE (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.001));
             }
             else {
-                VerifyTestResult (v1 == v);
+                EXPECT_TRUE (v1 == v);
             }
         };
         auto doAll = [f] () {
@@ -968,7 +968,7 @@ namespace Test_07_ParserTestReadWriteBasictypes_ {
                 stringstream tmpStrm;
                 DataExchange::Variant::JSON::Writer{}.Write (VariantValue{44905.3}, tmpStrm);
                 string tmp = tmpStrm.str ();
-                VerifyTestResult (tmp.find (",") == string::npos);
+                EXPECT_TRUE (tmp.find (",") == string::npos);
             }
         };
         {
@@ -985,7 +985,7 @@ namespace Test_08_ReadEmptyStreamShouldFail_ {
         Debug::TraceContextBumper ctx{"Test_08_ReadEmptyStreamShouldFail_::DoAll_"};
         try {
             VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (Streams::MemoryStream<byte>::New (nullptr, nullptr));
-            VerifyTestResult (false);
+            EXPECT_TRUE (false);
         }
         catch (const DataExchange::BadFormatException&) {
             // Good - this should fail
@@ -1007,7 +1007,7 @@ namespace Test_09_ReadWriteNANShouldNotFail_ {
             stringstream tmp;
             tmp << encodedRep;
             VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (tmp);
-            VerifyTestResult (vOut == v);
+            EXPECT_TRUE (vOut == v);
         }
     }
 
@@ -1093,19 +1093,19 @@ namespace {
             VariantValue v   = numeric_limits<T>::lowest ();
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
-            VerifyTestResult (v == vrt);
+            EXPECT_TRUE (v == vrt);
         }
         {
             VariantValue v   = numeric_limits<T>::min ();
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
-            VerifyTestResult (v == vrt);
+            EXPECT_TRUE (v == vrt);
         }
         {
             VariantValue v   = numeric_limits<T>::max ();
             VariantValue vs  = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
-            VerifyTestResult (v == vrt);
+            EXPECT_TRUE (v == vrt);
         }
     }
     void Test3_VariantValue ()
@@ -1113,9 +1113,9 @@ namespace {
         using Characters::String;
         {
             VariantValue v;
-            VerifyTestResult (v.empty ());
+            EXPECT_TRUE (v.empty ());
             v = String{L"hi"};
-            VerifyTestResult (v == L"hi");
+            EXPECT_TRUE (v == L"hi");
         }
         Test3_VariantValue_Helper_MinMax_<int> ();
         Test3_VariantValue_Helper_MinMax_<unsigned int> ();
@@ -1140,7 +1140,7 @@ namespace {
             auto roundTripCheck = [] (const VariantValue& vv) {
                 String       inputAsJSON = Variant::JSON::Writer{}.WriteAsString (vv);
                 VariantValue v           = Variant::JSON::Reader{}.Read (inputAsJSON);
-                VerifyTestResult (v == vv);
+                EXPECT_TRUE (v == vv);
             };
             roundTripCheck (VariantValue{3});
             roundTripCheck (VariantValue{L"x"});
@@ -1161,7 +1161,7 @@ namespace {
             {
 #if qHasFeature_ZLib
                 Memory::BLOB compressed = Compression::Zip::Reader{}.Compress (b);
-                VerifyTestResult (b == Compression::Zip::Reader{}.Decompress (compressed));
+                EXPECT_TRUE (b == Compression::Zip::Reader{}.Decompress (compressed));
 #endif
             }
         }
@@ -1195,7 +1195,7 @@ namespace {
             void ReadJSON_ (const Streams::InputStream<byte>::Ptr& in)
             {
                 using namespace DataExchange::Variant::JSON;
-                VerifyTestResult (kTestVariant_ == Reader{}.Read (in));
+                EXPECT_TRUE (kTestVariant_ == Reader{}.Read (in));
             }
         }
         void DoAll ()
@@ -1207,7 +1207,7 @@ namespace {
                 ReadJSON_ (memStream);
                 WriteJSON_ (memStream);
                 ReadJSON_ (memStream);
-                VerifyTestResult (memStream.IsAtEOF ()); // mem-stream is at EOF because we checked - it reads/advances read pointer
+                EXPECT_TRUE (memStream.IsAtEOF ()); // mem-stream is at EOF because we checked - it reads/advances read pointer
             }
             {
                 Streams::SharedMemoryStream<byte>::Ptr sharedMemStream = Streams::SharedMemoryStream<byte>::New ();
@@ -1215,9 +1215,9 @@ namespace {
                 ReadJSON_ (sharedMemStream);
                 WriteJSON_ (sharedMemStream);
                 ReadJSON_ (sharedMemStream);
-                VerifyTestResult (not sharedMemStream.ReadNonBlocking ().has_value ()); // would be at EOF, but not KNOWN at EOF til writing side closed.
+                EXPECT_TRUE (not sharedMemStream.ReadNonBlocking ().has_value ()); // would be at EOF, but not KNOWN at EOF til writing side closed.
                 sharedMemStream.CloseWrite ();
-                VerifyTestResult (sharedMemStream.IsAtEOF ()); // now at EOF because input closed
+                EXPECT_TRUE (sharedMemStream.IsAtEOF ()); // now at EOF because input closed
             }
         }
     }
@@ -1250,6 +1250,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

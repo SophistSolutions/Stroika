@@ -299,7 +299,7 @@ namespace {
             v.push_back (s2);
         }
         sort (v.begin (), v.end (), [] (S a, S b) { return b.fS1 < a.fS1; });
-        VerifyTestResult (v[0].fS1 == v[1].fS1);
+        EXPECT_TRUE (v[0].fS1 == v[1].fS1);
     }
 }
 
@@ -332,7 +332,7 @@ namespace {
             v.push_back (s2);
         }
         sort (v.begin (), v.end (), [] (S a, S b) { return b.fS1 < a.fS1; });
-        VerifyTestResult (v[0].fS1 == v[1].fS1);
+        EXPECT_TRUE (v[0].fS1 == v[1].fS1);
     }
 }
 
@@ -345,7 +345,7 @@ namespace {
         for (int i = 0; i < 10; ++i) {
             w += KBase;
         }
-        VerifyTestResult (w.length () == KBase.length () * 10);
+        EXPECT_TRUE (w.length () == KBase.length () * 10);
     }
 }
 
@@ -358,7 +358,7 @@ namespace {
         for (int i = 0; i < 10; ++i) {
             w += KBase;
         }
-        VerifyTestResult (w.length () == wcslen (KBase) * 10);
+        EXPECT_TRUE (w.length () == wcslen (KBase) * 10);
     }
 }
 
@@ -371,7 +371,7 @@ namespace {
         for (int i = 0; i < 100; ++i) {
             w += KBase;
         }
-        VerifyTestResult (w.length () == wcslen (KBase) * 100);
+        EXPECT_TRUE (w.length () == wcslen (KBase) * 100);
     }
 }
 
@@ -383,7 +383,7 @@ namespace {
             WIDESTRING_IMPL tmp = src + src;
             tmp                 = tmp + src;
             tmp                 = src + tmp;
-            VerifyTestResult (tmp.length () == src.length () * 4);
+            EXPECT_TRUE (tmp.length () == src.length () * 4);
         }
     }
     template <typename WIDESTRING_IMPL>
@@ -400,9 +400,9 @@ namespace {
         void Test_StringSubStr_T1_ (const WIDESTRING_IMPL& src)
         {
             WIDESTRING_IMPL tmp = src.substr (5, 20);
-            VerifyTestResult (tmp.length () == 20);
-            VerifyTestResult (src.substr (5, 20).length () == 20);
-            VerifyTestResult (src.substr (5, 20).substr (3, 3).length () == 3);
+            EXPECT_TRUE (tmp.length () == 20);
+            EXPECT_TRUE (src.substr (5, 20).length () == 20);
+            EXPECT_TRUE (src.substr (5, 20).substr (3, 3).length () == 3);
         }
     }
     template <typename WIDESTRING_IMPL>
@@ -451,7 +451,7 @@ namespace {
         for (int i = 0; i < 1000; ++i) {
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK (Test_MutexVersusSharedPtrCopy_COUNTEST);
         }
-        VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000); // so nothing optimized away
+        EXPECT_TRUE (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000); // so nothing optimized away
     }
     void Test_MutexVersusSharedPtrCopy_shared_ptr_copy ()
     {
@@ -460,7 +460,7 @@ namespace {
         for (int i = 0; i < 1000; ++i) {
             Test_MutexVersusSharedPtrCopy_SharedPtrCopy (Test_MutexVersusSharedPtrCopy_COUNTEST);
         }
-        VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000); // so nothing optimized away
+        EXPECT_TRUE (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000); // so nothing optimized away
     }
 }
 
@@ -493,7 +493,7 @@ namespace {
         for (int i = 0; i < 1000; ++i) {
             Test_MutexVersusSpinLock_MUTEXT_LOCK (Test_MutexVersusSpinLock_COUNTEST);
         }
-        VerifyTestResult (sRunningCnt_ == 1000); // so nothing optimized away
+        EXPECT_TRUE (sRunningCnt_ == 1000); // so nothing optimized away
     }
     void Test_MutexVersusSpinLock_SPIN_LOCK ()
     {
@@ -502,7 +502,7 @@ namespace {
         for (int i = 0; i < 1000; ++i) {
             Test_MutexVersusSpinLock_SPINLOCK_LOCK (Test_MutexVersusSpinLock_COUNTEST);
         }
-        VerifyTestResult (sRunningCnt_ == 1000); // so nothing optimized away
+        EXPECT_TRUE (sRunningCnt_ == 1000); // so nothing optimized away
     }
 }
 
@@ -518,7 +518,7 @@ namespace {
         for (int i = 0; i < 1000; ++i) {
             out << kT1 << kT2 << kT3;
         }
-        VerifyTestResult (out.str ().length () == 18 * 1000);
+        EXPECT_TRUE (out.str ().length () == 18 * 1000);
     }
 }
 
@@ -532,7 +532,7 @@ namespace {
             out << L" ";
             out << L"01234567890123456789";
         }
-        VerifyTestResult (extractor (out).length () == 31 * 20);
+        EXPECT_TRUE (extractor (out).length () == 31 * 20);
     }
 }
 
@@ -559,11 +559,11 @@ namespace {
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wvolatile\""); // warning: '++' expression of 'volatile'-qualified type is deprecated
 #endif
         for (volatile int i = 0; i < 200; ++i) {
-            VerifyTestResult (s1len == ::wcslen (s1.c_str ()));
-            VerifyTestResult (s2len == ::wcslen (s2.c_str ()));
-            VerifyTestResult (s3len == ::wcslen (s3.c_str ()));
-            VerifyTestResult (s4len == ::wcslen (s4.c_str ()));
-            VerifyTestResult (s5len == ::wcslen (s5.c_str ()));
+            EXPECT_TRUE (s1len == ::wcslen (s1.c_str ()));
+            EXPECT_TRUE (s2len == ::wcslen (s2.c_str ()));
+            EXPECT_TRUE (s3len == ::wcslen (s3.c_str ()));
+            EXPECT_TRUE (s4len == ::wcslen (s4.c_str ()));
+            EXPECT_TRUE (s5len == ::wcslen (s5.c_str ()));
         }
 #if (defined(__GNUC__) && !defined(__clang__)) && (__GNUC__ >= 10)
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wvolatile\"");
@@ -583,7 +583,7 @@ namespace {
             if (recCalls > 0) {
                 Test_SequenceVectorAdditionsAndCopies_RecCall_ (c, recCalls - 1);
             }
-            VerifyTestResult (c.size () == 500);
+            EXPECT_TRUE (c.size () == 500);
         }
     }
     template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
@@ -606,7 +606,7 @@ namespace {
             if (recCalls > 0) {
                 Test_CollectionVectorAdditionsAndCopies_RecCall_ (c, recCalls - 1);
             }
-            VerifyTestResult (c.size () == 500);
+            EXPECT_TRUE (c.size () == 500);
         }
     }
     template <typename CONTAINER, typename ELEMENTTYPE = typename CONTAINER::value_type>
@@ -629,17 +629,17 @@ namespace {
                 using ELEMENTTYPE = typename CONTAINER::value_type;
                 for (int i = 0; i < 500; ++i) {
                     if constexpr (is_same_v<set<ELEMENTTYPE>, CONTAINER>) {
-                        VerifyTestResult (c.find (i) != c.end ());
+                        EXPECT_TRUE (c.find (i) != c.end ());
                     }
                     else {
-                        VerifyTestResult (c.Contains (i));
+                        EXPECT_TRUE (c.Contains (i));
                     }
                 }
                 if constexpr (is_same_v<set<ELEMENTTYPE>, CONTAINER>) {
-                    VerifyTestResult (c.find (501) == c.end ());
+                    EXPECT_TRUE (c.find (501) == c.end ());
                 }
                 else {
-                    VerifyTestResult (not c.Contains (501));
+                    EXPECT_TRUE (not c.Contains (501));
                 }
             };
             if (nMoreCalls == 0) {
@@ -670,21 +670,21 @@ namespace {
     template <typename WIDESTRING_IMPL>
     void Test_String_Format_ ()
     {
-        VerifyTestResult (Format (L"a, %s, %d", L"xxx", 33) == L"a, xxx, 33");
-        VerifyTestResult (Format (L"0x%x", 0x20) == L"0x20");
+        EXPECT_TRUE (Format (L"a, %s, %d", L"xxx", 33) == L"a, xxx, 33");
+        EXPECT_TRUE (Format (L"0x%x", 0x20) == L"0x20");
     }
     template <>
     void Test_String_Format_<wstring> ()
     {
         {
             wchar_t buf[1024];
-            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %ls, %d", L"xxx", 33) == 10);
-            VerifyTestResult (wstring (buf) == L"a, xxx, 33");
+            EXPECT_TRUE (swprintf (buf, NEltsOf (buf), L"a, %ls, %d", L"xxx", 33) == 10);
+            EXPECT_TRUE (wstring (buf) == L"a, xxx, 33");
         }
         {
             wchar_t buf[1024];
-            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"0x%x", 0x20) == 4);
-            VerifyTestResult (wstring (buf) == L"0x20");
+            EXPECT_TRUE (swprintf (buf, NEltsOf (buf), L"0x%x", 0x20) == 4);
+            EXPECT_TRUE (wstring (buf) == L"0x20");
         }
     }
 }
@@ -713,7 +713,7 @@ namespace {
                 BLOBISH_IMPL b4 = bl;
                 bn              = b4;
             }
-            VerifyTestResult (T1_SIZER_ (bn) == sizeof (kCArr_4k_));
+            EXPECT_TRUE (T1_SIZER_ (bn) == sizeof (kCArr_4k_));
         }
     }
     template <typename BLOBISH_IMPL>
@@ -752,7 +752,7 @@ namespace {
                 BLOBISH_IMPL b4 = bl;
                 bn              = b4;
             }
-            VerifyTestResult (T1_SIZER_ (bn) == sizeof (kCArr_4k_));
+            EXPECT_TRUE (T1_SIZER_ (bn) == sizeof (kCArr_4k_));
         }
         template <typename BLOBISH_IMPL>
         void T2_ ()
@@ -765,7 +765,7 @@ namespace {
                 BLOBISH_IMPL b4 = bl;
                 bn              = b4;
             }
-            VerifyTestResult (T1_SIZER_ (bn) == sizeof (kCArr_32b_));
+            EXPECT_TRUE (T1_SIZER_ (bn) == sizeof (kCArr_32b_));
         }
     }
     template <typename BLOBISH_IMPL>
@@ -1092,13 +1092,13 @@ namespace {
         void DoRunPerfTest ()
         {
             ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
-            VerifyTestResult (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
-            VerifyTestResult (sd.fScanID == 5856);
+            EXPECT_TRUE (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
+            EXPECT_TRUE (sd.fScanID == 5856);
             Memory::BLOB b   = doWrite_ (sd);
             ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (b), end (b)));
-            VerifyTestResult (sd2.fScanID == sd.fScanID);
-            VerifyTestResult (sd2.fAuxData == sd.fAuxData);
-            VerifyTestResult (sd2.fRawSpectrum == sd.fRawSpectrum); // @todo - FIX - this test should pass!
+            EXPECT_TRUE (sd2.fScanID == sd.fScanID);
+            EXPECT_TRUE (sd2.fAuxData == sd.fAuxData);
+            EXPECT_TRUE (sd2.fRawSpectrum == sd.fRawSpectrum); // @todo - FIX - this test should pass!
         }
     }
 }

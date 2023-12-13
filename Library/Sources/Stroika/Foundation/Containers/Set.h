@@ -361,7 +361,7 @@ namespace Stroika::Foundation::Containers {
          *  \par Example Usage
          *      \code
          *          Set<int> s{ 1, 2, 3, 4, 5 };
-         *          VerifyTestResult ((s.Where ([](int i) {return Math::IsPrime (i); }) == Set<int>{ 2, 3, 5 }));
+         *          EXPECT_TRUE ((s.Where ([](int i) {return Math::IsPrime (i); }) == Set<int>{ 2, 3, 5 }));
          *      \endcode
          */
         template <derived_from<Iterable<T>> RESULT_CONTAINER = Set<T>, predicate<T> INCLUDE_PREDICATE>

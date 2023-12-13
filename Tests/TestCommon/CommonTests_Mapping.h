@@ -72,14 +72,14 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    VerifyTestResult (m.size () == 1);
+                    EXPECT_TRUE (m.size () == 1);
                     Verify (m.Lookup (1, nullptr));
                     Verify (not m.Lookup (2, nullptr));
                     m.Add (1, 2);
-                    VerifyTestResult (m.size () == 1);
+                    EXPECT_TRUE (m.size () == 1);
                     IterableTests::SimpleIterableTest_All_For_Type<ConcreteContainerType> (m);
                     m.Remove (1);
-                    VerifyTestResult (m.size () == 0);
+                    EXPECT_TRUE (m.size () == 0);
 
                     {
                         m.Add (1, 2);
@@ -87,30 +87,30 @@ namespace CommonTests {
                         size_t oldLength = m.size ();
                         m += m;
                         testingSchema.ApplyToContainerExtraTest (m);
-                        VerifyTestResult (m.size () == oldLength);
+                        EXPECT_TRUE (m.size () == oldLength);
                     }
 
                     {
                         m.RemoveAll ();
                         m.Add (1, 2);
                         m.Add (3, 66);
-                        VerifyTestResult (m.size () == 2);
+                        EXPECT_TRUE (m.size () == 2);
                         m.erase (1);
-                        VerifyTestResult (m.size () == 1);
+                        EXPECT_TRUE (m.size () == 1);
                         auto i = m.erase (m.begin ());
                         //
-                        VerifyTestResult (m.size () == 0);
+                        EXPECT_TRUE (m.size () == 0);
                         m.Add (1, 2);
                         m.Add (3, 66);
                         m.Add (5, 66);
-                        VerifyTestResult (m.size () == 3);
+                        EXPECT_TRUE (m.size () == 3);
                         i = m.begin ();
                         i = m.erase (i);
-                        VerifyTestResult (m.size () == 2);
+                        EXPECT_TRUE (m.size () == 2);
                     }
 
                     m.RemoveAll ();
-                    VerifyTestResult (m.size () == 0);
+                    EXPECT_TRUE (m.size () == 0);
                 }
             }
 
@@ -123,19 +123,19 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    VerifyTestResult (m.size () == 1);
+                    EXPECT_TRUE (m.size () == 1);
                     for (auto i : m) {
-                        VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
+                        EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                     }
                     m.Add (1, 2);
-                    VerifyTestResult (m.size () == 1);
+                    EXPECT_TRUE (m.size () == 1);
                     for (auto i : m) {
-                        VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
+                        EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                     }
                     m.Remove (1);
-                    VerifyTestResult (m.size () == 0);
+                    EXPECT_TRUE (m.size () == 0);
                     for ([[maybe_unused]] auto i : m) {
-                        VerifyTestResult (false);
+                        EXPECT_TRUE (false);
                     }
                     m.Add (1, 2);
                     m.Add (2, 3);
@@ -143,22 +143,22 @@ namespace CommonTests {
                     vector<key_type> ss;
                     for (auto i : m) {
                         if (m.GetKeyEqualsComparer () (i.fKey, key_type{1})) {
-                            VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 2));
+                            EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 2));
                         }
                         else if (m.GetKeyEqualsComparer () (i.fKey, key_type{2})) {
-                            VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 3));
+                            EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 3));
                         }
                         else if (m.GetKeyEqualsComparer () (i.fKey, key_type{3})) {
-                            VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 4));
+                            EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 4));
                         }
                         else {
-                            VerifyTestResult (false);
+                            EXPECT_TRUE (false);
                         }
                         ss.push_back (i.fKey);
                     }
-                    VerifyTestResult (ss.size () == 3);
+                    EXPECT_TRUE (ss.size () == 3);
                     m.RemoveAll ();
-                    VerifyTestResult (m.size () == 0);
+                    EXPECT_TRUE (m.size () == 0);
                 }
             }
 
@@ -175,20 +175,20 @@ namespace CommonTests {
                     ConcreteContainerType m2             = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
-                    VerifyTestResult (m.size () == 2);
+                    EXPECT_TRUE (m.size () == 2);
                     ConcreteContainerType m3 = m;
                     testingSchema.ApplyToContainerExtraTest (m);
                     testingSchema.ApplyToContainerExtraTest (m2);
                     testingSchema.ApplyToContainerExtraTest (m3);
-                    //VerifyTestResult (m == m3);
-                    VerifyTestResult ((typename Mapping<key_type, mapped_type>::template EqualsComparer<ValueEqualsCompareFunctionType>{
+                    //EXPECT_TRUE (m == m3);
+                    EXPECT_TRUE ((typename Mapping<key_type, mapped_type>::template EqualsComparer<ValueEqualsCompareFunctionType>{
                         testingSchema.fValueEqualsComparer}(m, m3)));
-                    //VerifyTestResult (not (m != m3));
+                    //EXPECT_TRUE (not (m != m3));
 
-                    //VerifyTestResult (m != m2);
-                    VerifyTestResult ((not typename Mapping<key_type, mapped_type>::template EqualsComparer<ValueEqualsCompareFunctionType>{
+                    //EXPECT_TRUE (m != m2);
+                    EXPECT_TRUE ((not typename Mapping<key_type, mapped_type>::template EqualsComparer<ValueEqualsCompareFunctionType>{
                         testingSchema.fValueEqualsComparer}(m, m2)));
-                    //VerifyTestResult (not (m == m2));
+                    //EXPECT_TRUE (not (m == m2));
                 }
             }
 
@@ -207,11 +207,11 @@ namespace CommonTests {
 
                     {
                         map<key_type, mapped_type> n = m.template As<map<key_type, mapped_type>> ();
-                        VerifyTestResult (n.size () == 2);
+                        EXPECT_TRUE (n.size () == 2);
                         ConcreteContainerType tmp = ConcreteContainerType{n};
-                        VerifyTestResult (testingSchema.fValueEqualsComparer (*tmp.Lookup (1), 88));
+                        EXPECT_TRUE (testingSchema.fValueEqualsComparer (*tmp.Lookup (1), 88));
                         map<key_type, mapped_type> nn = tmp.template As<map<key_type, mapped_type>> ();
-                        VerifyTestResult (nn == n);
+                        EXPECT_TRUE (nn == n);
                     }
                 }
             }
@@ -228,15 +228,15 @@ namespace CommonTests {
                     ConcreteContainerType m2    = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
-                    VerifyTestResult (m.size () == 2);
+                    EXPECT_TRUE (m.size () == 2);
 
                     {
                         vector<KeyValuePair<key_type, mapped_type>> n = m.template As<vector<KeyValuePair<key_type, mapped_type>>> ();
-                        VerifyTestResult (n.size () == m.size ());
+                        EXPECT_TRUE (n.size () == m.size ());
                     }
                     {
                         vector<pair<key_type, mapped_type>> n = m.template As<vector<pair<key_type, mapped_type>>> ();
-                        VerifyTestResult (n.size () == m.size ());
+                        EXPECT_TRUE (n.size () == m.size ());
                     }
                 }
             }
@@ -252,21 +252,21 @@ namespace CommonTests {
                     for (size_t i = 0; i < K; ++i) {
                         c.Add (i, i);
                     }
-                    VerifyTestResult (c.Keys ().length () == K);
+                    EXPECT_TRUE (c.Keys ().length () == K);
                     {
                         // be sure copying and iterating multiple times over the iterable doesnt produce differnt results.
                         auto keys = c.Keys ();
-                        VerifyTestResult (keys.length () == K);
+                        EXPECT_TRUE (keys.length () == K);
                         size_t a = 0;
                         for ([[maybe_unused]] auto i : keys) {
                             a++;
                         }
-                        VerifyTestResult (a == K);
+                        EXPECT_TRUE (a == K);
                         a = 0;
                         for ([[maybe_unused]] auto i : keys) {
                             a++;
                         }
-                        VerifyTestResult (a == K);
+                        EXPECT_TRUE (a == K);
                     }
                 }
             }
@@ -280,41 +280,41 @@ namespace CommonTests {
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
-                    VerifyTestResult (m.size () == 1);
+                    EXPECT_TRUE (m.size () == 1);
                     for (auto i : m) {
-                        VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
-                        VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 2));
+                        EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
+                        EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 2));
                     }
                     m.Add (1, 2);
-                    VerifyTestResult (m.size () == 1);
+                    EXPECT_TRUE (m.size () == 1);
                     for (auto i : m) {
-                        VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
-                        VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 2));
+                        EXPECT_TRUE (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
+                        EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 2));
                     }
                     m.Remove (1);
-                    VerifyTestResult (m.size () == 0);
+                    EXPECT_TRUE (m.size () == 0);
                     for ([[maybe_unused]] auto i : m) {
-                        VerifyTestResult (false);
+                        EXPECT_TRUE (false);
                     }
                     m.Add (1, 2);
                     m.Add (2, 3);
                     m.Add (3, 4);
                     for (auto i : m) {
                         if (m.GetKeyEqualsComparer () (i.fKey, key_type{1})) {
-                            VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 2));
+                            EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 2));
                         }
                         else if (m.GetKeyEqualsComparer () (i.fKey, key_type{2})) {
-                            VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 3));
+                            EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 3));
                         }
                         else if (m.GetKeyEqualsComparer () (i.fKey, key_type{3})) {
-                            VerifyTestResult (testingSchema.fValueEqualsComparer (i.fValue, 4));
+                            EXPECT_TRUE (testingSchema.fValueEqualsComparer (i.fValue, 4));
                         }
                         else {
-                            VerifyTestResult (false);
+                            EXPECT_TRUE (false);
                         }
                     }
                     m.RemoveAll ();
-                    VerifyTestResult (m.size () == 0);
+                    EXPECT_TRUE (m.size () == 0);
                 }
             }
 
@@ -328,16 +328,16 @@ namespace CommonTests {
                     for (int i = 0; i < 100; ++i) {
                         c.Add (i, i);
                     }
-                    VerifyTestResult (c.Keys ().length () == 100);
+                    EXPECT_TRUE (c.Keys ().length () == 100);
 
                     using KT = typename ConcreteContainerType::key_type;
                     c.RetainAll (initializer_list<KT>{1, 3, 5});
-                    VerifyTestResult (c.Keys ().length () == 3);
-                    VerifyTestResult (c.Keys ().SetEquals (Iterable<KT>{1, 3, 5}, c.GetKeyEqualsComparer ()));
+                    EXPECT_TRUE (c.Keys ().length () == 3);
+                    EXPECT_TRUE (c.Keys ().SetEquals (Iterable<KT>{1, 3, 5}, c.GetKeyEqualsComparer ()));
 
                     c.RetainAll (Iterable<KT>{3});
-                    VerifyTestResult (not c.Keys ().SetEquals (Iterable<KT>{1, 3, 5}, c.GetKeyEqualsComparer ()));
-                    VerifyTestResult (c.Keys ().SetEquals (Iterable<KT>{3}, c.GetKeyEqualsComparer ()));
+                    EXPECT_TRUE (not c.Keys ().SetEquals (Iterable<KT>{1, 3, 5}, c.GetKeyEqualsComparer ()));
+                    EXPECT_TRUE (c.Keys ().SetEquals (Iterable<KT>{3}, c.GetKeyEqualsComparer ()));
                 }
             }
             namespace Test10_NewIteratorPatching {
@@ -350,13 +350,13 @@ namespace CommonTests {
                     headers.Add (1, 2);
                     headers.Add (2, 3);
                     ConcreteContainerType headers2 = headers; // up ref count before change
-                    VerifyTestResult (headers.size () == 2);
-                    VerifyTestResult (headers2.size () == 2);
+                    EXPECT_TRUE (headers.size () == 2);
+                    EXPECT_TRUE (headers2.size () == 2);
                     for (auto hi = headers.begin (); hi != headers.end ();) {
                         hi = headers.erase (hi);
                     }
-                    VerifyTestResult (headers2.size () == 2);
-                    VerifyTestResult (headers.empty ());
+                    EXPECT_TRUE (headers2.size () == 2);
+                    EXPECT_TRUE (headers.empty ());
                 }
             }
         }

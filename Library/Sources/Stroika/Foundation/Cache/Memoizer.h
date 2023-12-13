@@ -62,8 +62,8 @@ namespace Stroika::Foundation::Cache {
          *      \code
          *          unsigned int                      totalCallsCount{};
          *          Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount](int a, int b) { ++totalCallsCount;  return a + b; }};
-         *          VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
-         *          VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *          EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+         *          EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
          *      \endcode
          */
         Memoizer (const function<RESULT (ARGS...)>& f, CACHE<tuple<ARGS...>, RESULT>&& cache = CACHE<tuple<ARGS...>, RESULT>{});

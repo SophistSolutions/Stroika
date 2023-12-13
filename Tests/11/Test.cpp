@@ -132,37 +132,37 @@ namespace {
             {
                 Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
                                         KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
-                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) {
+                EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) {
                     return Math::IsPrime (value.fKey);
                 }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
-                VerifyTestResult ((m.Where ([] (int key) {
+                EXPECT_TRUE ((m.Where ([] (int key) {
                     return Math::IsPrime (key);
                 }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
             }
             {
                 // same but letting system guess type of arg to association
                 Association<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
-                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
                                    Association<int, int>{{2, 4}, {3, 5}, {5, 7}}));
-                VerifyTestResult ((m.Where ([] (int key) {
+                EXPECT_TRUE ((m.Where ([] (int key) {
                     return Math::IsPrime (key);
                 }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
             }
             {
                 // same but using pair<>
                 Association<int, int> m{pair<int, int>{1, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{4, 5}, pair<int, int>{5, 7}};
-                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
                                    Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
-                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) ==
+                EXPECT_TRUE ((m.Where ([] (int key) { return Math::IsPrime (key); }) ==
                                    Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
             }
             {
                 // simular but example has duplicates
                 Association<int, int> m{pair<int, int>{1, 3}, pair<int, int>{2, 3}, pair<int, int>{2, 4},
                                         pair<int, int>{3, 5}, pair<int, int>{4, 5}, pair<int, int>{5, 7}};
-                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
                                    Association<int, int>{pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
-                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) ==
+                EXPECT_TRUE ((m.Where ([] (int key) { return Math::IsPrime (key); }) ==
                                    Association<int, int>{pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
             }
         }
@@ -174,7 +174,7 @@ namespace {
         void DoAll ()
         {
             Association<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
-            VerifyTestResult ((m.WithKeys ({2, 5}) == Association<int, int>{{2, 4}, {5, 7}}));
+            EXPECT_TRUE ((m.WithKeys ({2, 5}) == Association<int, int>{{2, 4}, {5, 7}}));
         }
     }
 }
@@ -201,18 +201,18 @@ namespace {
                 Association<int, int> m;
                 m.Add (1, 2);
                 m.Add (1, 2);
-                VerifyTestResult (m.size () == 2);
-                VerifyTestResult ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<int>{2, 2})));
-                VerifyTestResult (m.Lookup (2).empty ());
+                EXPECT_TRUE (m.size () == 2);
+                EXPECT_TRUE ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<int>{2, 2})));
+                EXPECT_TRUE (m.Lookup (2).empty ());
                 m.Add (1, 3);
-                VerifyTestResult ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<int>{2, 3, 2})));
+                EXPECT_TRUE ((m.Lookup (1).MultiSetEquals (Traversal::Iterable<int>{2, 3, 2})));
 
                 Association<int, int> m2;
                 m2.Add (1, 3);
                 m2.Add (1, 2);
-                VerifyTestResult (m != m2);
+                EXPECT_TRUE (m != m2);
                 m2.Add (1, 2);
-                VerifyTestResult (m == m2);
+                EXPECT_TRUE (m == m2);
             }
         }
     }
@@ -310,7 +310,7 @@ namespace {
         BasicNewAssociationRules_Test_9_::DoAll ();
         CTORWithComparerAndContainer_Test_10_::DoAll ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -320,6 +320,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

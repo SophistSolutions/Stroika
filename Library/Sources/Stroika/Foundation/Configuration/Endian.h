@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Configuration {
      * 
      *  \par Example Usage
      *      \code
-     *          VerifyTestResult (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle) == 0xBBAA);
+     *          EXPECT_TRUE (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle) == 0xBBAA);
      *          uint16_t useThisNumber = EndianConverter<uint16_t> (0xAABB, Endian::eBig, GetEndianness ());
      *      \endcode
      */

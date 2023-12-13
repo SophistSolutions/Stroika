@@ -60,16 +60,16 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"{}::...Test_1_SimpleFetch_Google_C_"};
                 Response                  r = c.GET (URI{"http://www.google.com"});
-                VerifyTestResult (r.GetSucceeded ());
-                VerifyTestResult (r.GetData ().size () > 1);
+                EXPECT_TRUE (r.GetSucceeded ());
+                EXPECT_TRUE (r.GetData ().size () > 1);
             }
             void Test_2_SimpleFetch_SSL_Google_C_ (Connection::Ptr c)
             {
                 Debug::TraceContextBumper ctx{"{}::...Test_2_SimpleFetch_SSL_Google_C_"};
                 try {
                     Response r = c.GET (URI{"https://www.google.com"});
-                    VerifyTestResult (r.GetSucceeded ());
-                    VerifyTestResult (r.GetData ().size () > 1);
+                    EXPECT_TRUE (r.GetSucceeded ());
+                    EXPECT_TRUE (r.GetData ().size () > 1);
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
                     if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
@@ -167,13 +167,13 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"T1_httpbin_SimpleGET_"};
                 Response                  r = c.GET (URI{"http://httpbin.org/get"});
-                VerifyTestResult (r.GetSucceeded ());
-                VerifyTestResult (r.GetData ().size () > 1);
+                EXPECT_TRUE (r.GetSucceeded ());
+                EXPECT_TRUE (r.GetData ().size () > 1);
                 {
                     VariantValue                  v  = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
-                    VerifyTestResult (vv.ContainsKey ("args"));
-                    VerifyTestResult (vv["url"] == "http://httpbin.org/get" or vv["url"] == "https://httpbin.org/get");
+                    EXPECT_TRUE (vv.ContainsKey ("args"));
+                    EXPECT_TRUE (vv["url"] == "http://httpbin.org/get" or vv["url"] == "https://httpbin.org/get");
                 }
             }
             DISABLE_COMPILER_MSC_WARNING_START (4102);
@@ -234,7 +234,7 @@ namespace {
                     Execution::ReThrow ();
                 }
                 Response r = *optResp;
-                VerifyTestResult (r.GetSucceeded ());
+                EXPECT_TRUE (r.GetSucceeded ());
                 {
                     VariantValue                  v  = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
@@ -250,7 +250,7 @@ namespace {
                         }
                     }
                     BLOB resultBLOB = Cryptography::Encoding::Algorithm::DecodeBase64 (dataValueString.AsUTF8 ());
-                    VerifyTestResult (resultBLOB == roundTripTestData);
+                    EXPECT_TRUE (resultBLOB == roundTripTestData);
                 }
             }
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-label\"")
@@ -270,7 +270,7 @@ namespace {
                     return BLOB (buf.begin (), buf.end ());
                 }();
                 Response r = c.PUT (URI{"http://httpbin.org/put"}, roundTripTestData, DataExchange::InternetMediaTypes::kOctetStream);
-                VerifyTestResult (r.GetSucceeded ()); // because throws on failure
+                EXPECT_TRUE (r.GetSucceeded ()); // because throws on failure
                 {
                     VariantValue                  v  = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
@@ -286,7 +286,7 @@ namespace {
                         }
                     }
                     BLOB resultBLOB = Cryptography::Encoding::Algorithm::DecodeBase64 (dataValueString.AsUTF8 ());
-                    VerifyTestResult (resultBLOB == roundTripTestData);
+                    EXPECT_TRUE (resultBLOB == roundTripTestData);
                 }
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
@@ -378,7 +378,7 @@ namespace {
             void Test_1_SimpleFetch_Google_C_ (Connection::Ptr c)
             {
                 Response r = c.GET (URI{"http://www.google.com"});
-                VerifyTestResultWarning (r.GetSucceeded ());
+                EXPECT_TRUEWarning (r.GetSucceeded ());
                 for (auto i : r.GetHeaders ()) {
                     DbgTrace (L"%s=%s", i.fKey.c_str (), i.fValue.c_str ());
                 }
@@ -386,7 +386,7 @@ namespace {
                 String            responseText = r.GetDataTextInputStream ().ReadAll ();
                 DbgTrace (L"responseText = %s", responseText.c_str ());
                 // rarely, but sometimes, this returns text that doesn't contain the word google --LGP 2019-04-19
-                VerifyTestResultWarning (responseText.Contains ("google", Characters::eCaseInsensitive));
+                EXPECT_TRUEWarning (responseText.Contains ("google", Characters::eCaseInsensitive));
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
@@ -442,8 +442,8 @@ namespace {
             {
                 Connection::Ptr c = IO::Network::Transfer::Connection::New (kDefaultTestOptions_);
                 Response        r = c.GET (URI{"http://www.google.com"});
-                VerifyTestResultWarning (r.GetSucceeded ());
-                VerifyTestResultWarning (r.GetData ().size () > 1);
+                EXPECT_TRUEWarning (r.GetSucceeded ());
+                EXPECT_TRUEWarning (r.GetData ().size () > 1);
             }
         }
         void DoTests_ ()
@@ -490,7 +490,7 @@ namespace {
                 Connection::Ptr c = IO::Network::Transfer::Connection::New (o);
                 try {
                     Response r = c.GET (uri);
-                    VerifyTestResultWarning (r.GetData ().size () > 1);
+                    EXPECT_TRUEWarning (r.GetData ().size () > 1);
                 }
                 catch ([[maybe_unused]] const system_error& lce) {
 #if qHasFeature_LibCurl && !qHasFeature_OpenSSL
@@ -565,7 +565,7 @@ namespace {
                 try {
                     o.fFailConnectionIfSSLCertificateInvalid = true;
                     T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);
-                    VerifyTestResult (false); // getting here means our check for invalid cert didn't work, so thats bad
+                    EXPECT_TRUE (false); // getting here means our check for invalid cert didn't work, so thats bad
                 }
                 catch (...) {
                     DbgTrace ("Good - this should fail");
@@ -612,12 +612,12 @@ namespace {
                 ) {
                     try {
                         Response r = c.GET (u);
-                        VerifyTestResult (not r.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault));
-                        VerifyTestResult (r.GetSucceeded ());
-                        VerifyTestResult (r.GetData ().size () > 1);
+                        EXPECT_TRUE (not r.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault));
+                        EXPECT_TRUE (r.GetSucceeded ());
+                        EXPECT_TRUE (r.GetData ().size () > 1);
                         Response r2           = c.GET (u);
                         bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
-                        VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
+                        EXPECT_TRUE (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
                         DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (),
                                   Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
                     }
@@ -689,11 +689,11 @@ namespace {
                 ) {
                     Connection::Ptr c = factory (u);
                     Response        r = c.GET (u);
-                    VerifyTestResult (r.GetSucceeded ());
-                    VerifyTestResult (r.GetData ().size () > 1);
+                    EXPECT_TRUE (r.GetSucceeded ());
+                    EXPECT_TRUE (r.GetData ().size () > 1);
                     Response r2           = c.GET (u);
                     bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
-                    VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
+                    EXPECT_TRUE (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
                     DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (),
                               Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
                 }
@@ -779,6 +779,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

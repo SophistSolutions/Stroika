@@ -36,8 +36,8 @@ namespace Stroika::Foundation::IO::FileSystem {
      *              FileSystem::ThrowPOSIXErrNo (make_error_code (errc::filename_too_long).value ());
      *          }
      *          catch (const std::filesystem_error& e) {
-     *              VerifyTestResult (e.code ().value () == make_error_code (errc::filename_too_long).value ());
-     *              VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
+     *              EXPECT_TRUE (e.code ().value () == make_error_code (errc::filename_too_long).value ());
+     *              EXPECT_TRUE (e.code ().category () == system_category () or e.code ().category () == generic_category ());
      *          }
      *      \endcode
      *
@@ -47,8 +47,8 @@ namespace Stroika::Foundation::IO::FileSystem {
      *              FileSystem::ThrowPOSIXErrNo (make_error_code (errc::filename_too_long).value ());
      *          }
      *          catch (const std::system_error& e) {
-     *              VerifyTestResult (e.code ().value () == make_error_code (errc::filename_too_long).value ());
-     *              VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
+     *              EXPECT_TRUE (e.code ().value () == make_error_code (errc::filename_too_long).value ());
+     *              EXPECT_TRUE (e.code ().category () == system_category () or e.code ().category () == generic_category ());
      *          }
      *      \endcode
      *

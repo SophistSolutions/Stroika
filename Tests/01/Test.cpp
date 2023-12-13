@@ -41,14 +41,14 @@ namespace {
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
                 tmp.Add ("d", "4");
-                VerifyTestResult (not tmp.Lookup ("a").has_value ());
-                VerifyTestResult (tmp.Lookup ("b") == "2");
-                VerifyTestResult (tmp.Lookup ("d") == "4");
+                EXPECT_TRUE (not tmp.Lookup ("a").has_value ());
+                EXPECT_TRUE (tmp.Lookup ("b") == "2");
+                EXPECT_TRUE (tmp.Lookup ("d") == "4");
 
                 LRUCache<string, string> tmp2 = tmp;
-                VerifyTestResult (not tmp2.Lookup ("a").has_value ());
-                VerifyTestResult (tmp2.Lookup ("b") == "2");
-                VerifyTestResult (tmp2.Lookup ("d") == "4");
+                EXPECT_TRUE (not tmp2.Lookup ("a").has_value ());
+                EXPECT_TRUE (tmp2.Lookup ("b") == "2");
+                EXPECT_TRUE (tmp2.Lookup ("d") == "4");
             }
             void T2_ ()
             {
@@ -59,14 +59,14 @@ namespace {
                 tmp.Add ("c", "3");
                 tmp.Add ("d", "4");
 
-                VerifyTestResult (not tmp.Lookup ("a").has_value () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
-                VerifyTestResult (tmp.Lookup ("b") == "2");
-                VerifyTestResult (tmp.Lookup ("d") == "4");
+                EXPECT_TRUE (not tmp.Lookup ("a").has_value () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
+                EXPECT_TRUE (tmp.Lookup ("b") == "2");
+                EXPECT_TRUE (tmp.Lookup ("d") == "4");
 
                 CACHE tmp2 = tmp;
-                VerifyTestResult (not tmp2.Lookup ("a").has_value () or *tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
-                VerifyTestResult (tmp2.Lookup ("b") == "2");
-                VerifyTestResult (tmp2.Lookup ("d") == "4");
+                EXPECT_TRUE (not tmp2.Lookup ("a").has_value () or *tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
+                EXPECT_TRUE (tmp2.Lookup ("b") == "2");
+                EXPECT_TRUE (tmp2.Lookup ("d") == "4");
             }
             void T3_ ()
             {
@@ -82,14 +82,14 @@ namespace {
                 tmp.Add ("c", "3");
                 tmp.Add ("d", "4");
 
-                VerifyTestResult (not tmp.Lookup ("a").has_value () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
-                VerifyTestResult (tmp.Lookup ("b") == "2");
-                VerifyTestResult (tmp.Lookup ("d") == "4");
+                EXPECT_TRUE (not tmp.Lookup ("a").has_value () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
+                EXPECT_TRUE (tmp.Lookup ("b") == "2");
+                EXPECT_TRUE (tmp.Lookup ("d") == "4");
 
                 LRUCache tmp2 = tmp;
-                VerifyTestResult (not tmp2.Lookup ("a").has_value () or *tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
-                VerifyTestResult (tmp2.Lookup ("b") == "2");
-                VerifyTestResult (tmp2.Lookup ("d") == "4");
+                EXPECT_TRUE (not tmp2.Lookup ("a").has_value () or *tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
+                EXPECT_TRUE (tmp2.Lookup ("b") == "2");
+                EXPECT_TRUE (tmp2.Lookup ("d") == "4");
             }
         }
         void DoIt ()
@@ -147,10 +147,10 @@ namespace {
             tmp.Add ("c", "3");
             tmp.Add ("d", "4");
             Containers::Mapping<string, string> x = tmp.Elements (); // subtle cuz converting traits type
-            VerifyTestResult (x.length () <= 4);
+            EXPECT_TRUE (x.length () <= 4);
             for (auto i : tmp.Elements ()) {
-                VerifyTestResult (i.fKey == "a" or i.fKey == "b" or i.fKey == "c" or i.fKey == "d");
-                VerifyTestResult (i.fValue == "1" or i.fValue == "2" or i.fValue == "3" or i.fValue == "4");
+                EXPECT_TRUE (i.fKey == "a" or i.fKey == "b" or i.fKey == "c" or i.fKey == "d");
+                EXPECT_TRUE (i.fValue == "1" or i.fValue == "2" or i.fValue == "3" or i.fValue == "4");
             }
         }
     }
@@ -205,9 +205,9 @@ namespace {
                 }
                 void DoIt ()
                 {
-                    VerifyTestResult (Memory::NullCoalesce (LookupDiskStats_Try1 (L"xx")).size == 33);
-                    VerifyTestResult (LookupDiskStats_Try2 (L"xx").size == 33);
-                    VerifyTestResult (LookupDiskStats_Try3 (L"xx").size == 33);
+                    EXPECT_TRUE (Memory::NullCoalesce (LookupDiskStats_Try1 (L"xx")).size == 33);
+                    EXPECT_TRUE (LookupDiskStats_Try2 (L"xx").size == 33);
+                    EXPECT_TRUE (LookupDiskStats_Try3 (L"xx").size == 33);
                     [[maybe_unused]] auto n = sDiskUsageCache_.Elements ().size ();
                     for (const auto& ci : sDiskUsageCache_.Elements ()) {
                         sDiskUsageCache_.Add (ci.fKey, ci.fValue, ci.fLastRefreshedAt);
@@ -275,8 +275,8 @@ namespace {
                     return a + b;
                 }};
 #endif
-                VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
-                VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
+                EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+                EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
             }
 #if 0
             {
@@ -284,8 +284,8 @@ namespace {
                 // trying to figure out how to do...
                 unsigned int totalCallsCount{};
                 Memoizer     memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
-                VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
-                VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
+                EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
+                EXPECT_TRUE (memoizer (1, 1) == 2 and totalCallsCount == 1);
             }
 #endif
         }
@@ -308,8 +308,8 @@ namespace {
             }
             void Test_void_ ()
             {
-                VerifyTestResult (LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
-                VerifyTestResult (LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
+                EXPECT_TRUE (LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
+                EXPECT_TRUE (LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
             }
         }
         namespace Private_ {
@@ -325,10 +325,10 @@ namespace {
             }
             void Test_keyed_ ()
             {
-                VerifyTestResult (MapValue_ (1) == 1 and sCalls2_ == 1);
-                VerifyTestResult (MapValue_ (2) == 2 and sCalls2_ == 2);
-                VerifyTestResult (MapValue_ (1) == 1 and sCalls2_ == 2);
-                VerifyTestResult (MapValue_ (2) == 2 and sCalls2_ == 2);
+                EXPECT_TRUE (MapValue_ (1) == 1 and sCalls2_ == 1);
+                EXPECT_TRUE (MapValue_ (2) == 2 and sCalls2_ == 2);
+                EXPECT_TRUE (MapValue_ (1) == 1 and sCalls2_ == 2);
+                EXPECT_TRUE (MapValue_ (2) == 2 and sCalls2_ == 2);
             }
         }
         namespace Private_Sync_ {
@@ -344,8 +344,8 @@ namespace {
             }
             void Test_void_ ()
             {
-                VerifyTestResult (LookupExternalInternetAddress_ () == 1 and sCalls1_ == 1);
-                VerifyTestResult (LookupExternalInternetAddress_ () == 1 and sCalls1_ == 1);
+                EXPECT_TRUE (LookupExternalInternetAddress_ () == 1 and sCalls1_ == 1);
+                EXPECT_TRUE (LookupExternalInternetAddress_ () == 1 and sCalls1_ == 1);
             }
         }
         namespace Private_Sync_ {
@@ -361,10 +361,10 @@ namespace {
             }
             void Test_keyed_ ()
             {
-                VerifyTestResult (MapValue_ (1) == 1 and sCalls2_ == 1);
-                VerifyTestResult (MapValue_ (2) == 2 and sCalls2_ == 2);
-                VerifyTestResult (MapValue_ (1) == 1 and sCalls2_ == 2);
-                VerifyTestResult (MapValue_ (2) == 2 and sCalls2_ == 2);
+                EXPECT_TRUE (MapValue_ (1) == 1 and sCalls2_ == 1);
+                EXPECT_TRUE (MapValue_ (2) == 2 and sCalls2_ == 2);
+                EXPECT_TRUE (MapValue_ (1) == 1 and sCalls2_ == 2);
+                EXPECT_TRUE (MapValue_ (2) == 2 and sCalls2_ == 2);
             }
         }
         void DoIt ()
@@ -393,7 +393,7 @@ namespace {
                 unsigned int falsePositives{};
                 for (auto i : Traversal::DiscreteRange<int>{1, kTotalEntries_}) {
                     if (i & 1) {
-                        VerifyTestResult (f.Contains (i));
+                        EXPECT_TRUE (f.Contains (i));
                     }
                     else {
                         if (f.Contains (i)) {
@@ -405,11 +405,11 @@ namespace {
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (kTotalEntries_));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (kTotalEntries_));
-                VerifyTestResultWarning (falsePositives < 100); // last measured was 75 (was 60 with old hash function) no matter how things change
+                EXPECT_TRUEWarning (falsePositives < 100); // last measured was 75 (was 60 with old hash function) no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (kTotalEntries_);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
-                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
+                EXPECT_TRUEWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleInternetAddressTest ()
             {
@@ -431,7 +431,7 @@ namespace {
                 unsigned int falsePositives{};
                 for (const InternetAddress& ia : cidr.GetRange ()) {
                     if (oracle.Contains (ia)) {
-                        VerifyTestResult (f.Contains (ia));
+                        EXPECT_TRUE (f.Contains (ia));
                     }
                     else {
                         if (f.Contains (ia)) {
@@ -444,11 +444,11 @@ namespace {
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
-                VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
+                EXPECT_TRUEWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
-                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
+                EXPECT_TRUEWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleInternetAddressTestWithExplicitHash ()
             {
@@ -471,7 +471,7 @@ namespace {
                 unsigned int falsePositives{};
                 for (const InternetAddress& ia : cidr.GetRange ()) {
                     if (oracle.Contains (ia)) {
-                        VerifyTestResult (f.Contains (ia));
+                        EXPECT_TRUE (f.Contains (ia));
                     }
                     else {
                         if (f.Contains (ia)) {
@@ -484,11 +484,11 @@ namespace {
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
-                VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
+                EXPECT_TRUEWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
-                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
+                EXPECT_TRUEWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void SimpleBloomTestWithStroikaDigester ()
             {
@@ -514,7 +514,7 @@ namespace {
                 unsigned int falsePositives{};
                 for (const InternetAddress& ia : cidr.GetRange ()) {
                     if (oracle.Contains (ia)) {
-                        VerifyTestResult (f.Contains (ia));
+                        EXPECT_TRUE (f.Contains (ia));
                     }
                     else {
                         if (f.Contains (ia)) {
@@ -527,11 +527,11 @@ namespace {
                 DbgTrace (L"stats: %s", Characters::ToString (f.GetStatistics ()).c_str ());
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
-                VerifyTestResultWarning (falsePositives < 75); // typically around 14 (now 20)
+                EXPECT_TRUEWarning (falsePositives < 75); // typically around 14 (now 20)
                 auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
-                VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
+                EXPECT_TRUEWarning (expectedFalsePositiveRange.Contains (falsePositives));
             }
             void TestSuggestionsForFilterSize ()
             {
@@ -670,9 +670,6 @@ namespace {
 namespace {
 #if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Test1_Simple_::DoIt ();
         Test2_LRUCache_ObjWithNoArgCTORs_::DoIt ();
@@ -683,6 +680,7 @@ namespace {
         Test7_BloomFilter_::DoIt ();
         Test8_NewLRUCacheConstructors_::DoIt ();
     }
+#endif
 }
 
 int main (int argc, const char* argv[])
@@ -691,6 +689,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

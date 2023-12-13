@@ -189,8 +189,8 @@ namespace Stroika::Foundation::Characters {
          *          span<const byte>         someRandomTextBinarySpan =  as_bytes (span<const char8_t> {someRandomText, Characters::CString::Length (someRandomText)});
          *          StackBuffer<Character> buf{cc.ComputeTargetCharacterBufferSize (someRandomTextBinarySpan)};
          *          auto b = cc.Bytes2Characters (&someRandomTextBinarySpan, span{buf});
-         *          VerifyTestResult (someRandomTextBinarySpan.size () == 0);   // ALL CONSUMED
-         *          VerifyTestResult (b.size () == 9 and b[0] == 'h');
+         *          EXPECT_TRUE (someRandomTextBinarySpan.size () == 0);   // ALL CONSUMED
+         *          EXPECT_TRUE (b.size () == 9 and b[0] == 'h');
          *      \endcode
          * 
          *  \par Example Usage:

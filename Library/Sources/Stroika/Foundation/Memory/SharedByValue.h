@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Memory {
      *      \code
      *          SharedByValue<vector<byte>> b{BLOB::Hex ("abcd1245").Repeat (100).As<vector<byte>> ()};
      *          SharedByValue<vector<byte>> c = b;  // copied by reference until 'c' or 'b' changed values
-     *          VerifyTestResult (c == b);
+     *          EXPECT_TRUE (c == b);
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>

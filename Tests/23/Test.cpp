@@ -39,7 +39,7 @@ namespace {
             optional<value_type> last;
             for (value_type i : m) {
                 if (last.has_value ()) {
-                    VerifyTestResult (Common::ThreeWayComparerAdapter{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0);
+                    EXPECT_TRUE (Common::ThreeWayComparerAdapter{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0);
                 }
                 last = i;
             }
@@ -58,7 +58,7 @@ namespace {
             optional<value_type> last;
             for (value_type i : m) {
                 if (last.has_value ()) {
-                    VerifyTestResult (Common::ThreeWayComparerAdapter{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0);
+                    EXPECT_TRUE (Common::ThreeWayComparerAdapter{m.GetInOrderKeyComparer ()}(last->fKey, i.fKey) <= 0);
                 }
                 last = i;
             }
@@ -73,8 +73,8 @@ namespace {
         {
             Association<int, int>       m{pair<int, int>{1, 2}, pair<int, int>{2, 4}};
             SortedAssociation<int, int> ms{m};
-            VerifyTestResult (ms.size () == 2);
-            VerifyTestResult ((*ms.begin () == pair<int, int>{1, 2}));
+            EXPECT_TRUE (ms.size () == 2);
+            EXPECT_TRUE ((*ms.begin () == pair<int, int>{1, 2}));
         }
     }
 }
@@ -123,7 +123,7 @@ namespace {
 
         Test3_ConvertAssociation2SortedAssociation::TestAll ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -133,6 +133,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

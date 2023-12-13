@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Traversal {
      *              Map<int> ([] (int s) { return s + 5; }).
      *              Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; })
      *          ;
-     *          VerifyTestResult (answer == 2);
+     *          EXPECT_TRUE (answer == 2);
      *      }
      *      \endcode
      *
@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Traversal {
      *              Map<int> ([] (int s) { return s + 5; }).
      *              Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; })
      *          ;
-     *          VerifyTestResult (answer == 2);
+     *          EXPECT_TRUE (answer == 2);
      *      }
      *      \endcode
      *  \par Example Usage
@@ -175,8 +175,8 @@ namespace Stroika::Foundation::Traversal {
      *              Filter ([countSoFar] (int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).
      *              Map<int> ([] (int s) { return s + 5; })
      *          );
-     *          VerifyTestResult (r.length () == 2);
-     *          VerifyTestResult (r[0] == 6 and r[1] == 8);
+     *          EXPECT_TRUE (r.length () == 2);
+     *          EXPECT_TRUE (r[0] == 6 and r[1] == 8);
      *      }
      *      \endcode
      *

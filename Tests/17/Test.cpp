@@ -135,12 +135,12 @@ namespace {
                 const auto kReference2c_ =
                     Mapping<String, String>{pair<String, String>{L"Content-Length", L"3"}, pair<String, String>{L"xx", L"3"}};
                 const auto kReference3a_ = Mapping<String, String>{{{L"Content-Length", L"3"}}};
-                VerifyTestResult (kReference3a_.size () == 1);
+                EXPECT_TRUE (kReference3a_.size () == 1);
                 using Characters::operator""_k;
                 const auto kReference3b_ = Mapping<String, String>{{{L"Content-Length"_k, L"3"_k}, {L"x"_k, L"3"_k}}}; // need _k on some compilers to avoid error due to invoke explicit String/2 (g++10) - not sure if bug or not but easy to avoid ambiguity
-                VerifyTestResult (kReference3b_.size () == 2);
+                EXPECT_TRUE (kReference3b_.size () == 2);
                 const auto kReference3c_ = Mapping<String, String>{{L"Content-Length", L"3"}, {L"x", L"3"}};
-                VerifyTestResult (kReference3c_.size () == 2);
+                EXPECT_TRUE (kReference3c_.size () == 2);
             }
         }
     }
@@ -151,9 +151,9 @@ namespace {
         void DoAll ()
         {
             Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
-            VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+            EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
                                Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
-            VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+            EXPECT_TRUE ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
         }
     }
 }
@@ -163,7 +163,7 @@ namespace {
         void DoAll ()
         {
             Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
-            VerifyTestResult ((m.WithKeys ({2, 5}) == Mapping<int, int>{{2, 4}, {5, 7}}));
+            EXPECT_TRUE ((m.WithKeys ({2, 5}) == Mapping<int, int>{{2, 4}, {5, 7}}));
         }
     }
 }
@@ -189,13 +189,13 @@ namespace {
             {
                 Mapping<int, int> m;
                 m.Add (1, 2);
-                VerifyTestResult (m[1] == 2);
+                EXPECT_TRUE (m[1] == 2);
                 m.Add (1, 3);
-                VerifyTestResult (m[1] == 3);
-                VerifyTestResult (not m.Add (1, 4, AddReplaceMode::eAddIfMissing));
-                VerifyTestResult (m[1] == 3);
-                VerifyTestResult (m.Add (2, 3, AddReplaceMode::eAddIfMissing));
-                VerifyTestResult (m[2] == 3);
+                EXPECT_TRUE (m[1] == 3);
+                EXPECT_TRUE (not m.Add (1, 4, AddReplaceMode::eAddIfMissing));
+                EXPECT_TRUE (m[1] == 3);
+                EXPECT_TRUE (m.Add (2, 3, AddReplaceMode::eAddIfMissing));
+                EXPECT_TRUE (m[2] == 3);
             }
         }
     }
@@ -284,20 +284,20 @@ namespace {
                 Mapping_stdhashmap<size_t, size_t> fred{};
                 fred.Add (1, 2);
                 fred.Add (1, 3);
-                VerifyTestResult (fred.size () == 1);
+                EXPECT_TRUE (fred.size () == 1);
             }
             {
                 Mapping_stdhashmap<size_t, size_t> fred{};
                 fred.Add (1, 2);
                 fred.Add (2, 4);
                 fred.Add (3, 9);
-                VerifyTestResult (fred.size () == 3);
-                VerifyTestResult ((fred == Mapping<size_t, size_t>{{1, 2}, {2, 4}, {3, 9}}));
+                EXPECT_TRUE (fred.size () == 3);
+                EXPECT_TRUE ((fred == Mapping<size_t, size_t>{{1, 2}, {2, 4}, {3, 9}}));
             }
             {
                 static_assert (Cryptography::Digest::IHashFunction<std::hash<size_t>, size_t>);
                 Mapping_stdhashmap<size_t, size_t> fred{std::hash<size_t>{}, std::equal_to<size_t>{}};
-                VerifyTestResult ((fred == Mapping_stdhashmap<size_t, size_t>{}));
+                EXPECT_TRUE ((fred == Mapping_stdhashmap<size_t, size_t>{}));
             }
             {
                 using Characters::String;
@@ -306,8 +306,8 @@ namespace {
                 m.Add ("b", "beta");
                 m.Add ("c", "gamma");
                 m.Add ("d", "delta");
-                VerifyTestResult (m.size () == 4);
-                VerifyTestResult ((m == Mapping<String, String>{{"a", "alpha"}, {"b", "beta"}, {"c", "gamma"}, {"d", "delta"}}));
+                EXPECT_TRUE (m.size () == 4);
+                EXPECT_TRUE ((m == Mapping<String, String>{{"a", "alpha"}, {"b", "beta"}, {"c", "gamma"}, {"d", "delta"}}));
             }
 
             DoTestForConcreteContainer_<Mapping_stdhashmap<size_t, size_t>> ();
@@ -333,7 +333,7 @@ namespace {
         AddVsAddIf_Test_9_::DoAll ();
         CTORWithComparerAndContainer_Test_10_::DoAll ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -343,6 +343,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

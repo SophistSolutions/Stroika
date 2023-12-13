@@ -68,12 +68,12 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          Memory::BLOB value2Hash     = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
      *          auto         h1             = ComputeDigest<Digest::Algorithm::SuperFastHash> (value2Hash);
      *          uint8_t      h2             = ComputeDigest<Digest::Algorithm::SuperFastHash, uint8_t> (value2Hash);
-     *          VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
-     *          VerifyTestResult (h2 == 215);
+     *          EXPECT_TRUE (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
+     *          EXPECT_TRUE (h2 == 215);
      *          std::array<byte, 40> h3 = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
-     *          VerifyTestResult (h3[0] == 215_b and h3[1] == 66_b and h3[39] == 0_b);
+     *          EXPECT_TRUE (h3[0] == 215_b and h3[1] == 66_b and h3[39] == 0_b);
      *          if (Configuration::GetEndianness () == Configuration::Endian::eX86) {
-     *              VerifyTestResult ((ComputeDigest<Digest::Algorithm::SuperFastHash, string>(value2Hash) == "0x2512011991"));
+     *              EXPECT_TRUE ((ComputeDigest<Digest::Algorithm::SuperFastHash, string>(value2Hash) == "0x2512011991"));
      *          }
      *      \endcode
      *
@@ -222,13 +222,13 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
      *          auto         h1                         = digesterWithDefaultResult (value2Hash);
      *          uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
-     *          VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
-     *          VerifyTestResult (h2 == 215);
+     *          EXPECT_TRUE (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
+     *          EXPECT_TRUE (h2 == 215);
      *          auto                 digesterWithResult_array40 = Digester<Algorithm::SuperFastHash, std::array<byte, 40>>{};
      *          std::array<byte, 40> h3                         = digesterWithResult_array40 (value2Hash);
-     *          VerifyTestResult (h3[0] == byte{215} and h3[1] == byte{66} and h3[39] == byte{0});
+     *          EXPECT_TRUE (h3[0] == byte{215} and h3[1] == byte{66} and h3[39] == byte{0});
      *          if (Configuration::GetEndianness () == Configuration::Endian::eX86) {
-     *              VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x2512011991"));
+     *              EXPECT_TRUE ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x2512011991"));
      *          }
      *      \endcode
      *

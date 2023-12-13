@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Execution {
         *          Streams::MemoryStream<byte>::Ptr processStdOut = Streams::MemoryStream<byte> {};
         *          ProcessRunner                    pr{"cat", processStdIn, processStdOut};
         *          pr.Run ();
-        *          VerifyTestResult (processStdOut.ReadAll () == kData_);
+        *          EXPECT_TRUE (processStdOut.ReadAll () == kData_);
         *      \endcode
         *
         */

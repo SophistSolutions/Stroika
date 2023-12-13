@@ -68,7 +68,7 @@ namespace {
             Set<int> s7{v.begin (), v.end ()};
             Set<int> s8{move (s1)};
             Set<int> s9{1, 2, 3};
-            VerifyTestResult (s9.size () == 3);
+            EXPECT_TRUE (s9.size () == 3);
             Set<int> s10{Common::DeclareEqualsComparer ([] (int l, int r) { return l == r; }), c};
         }
         void TestCTORFromOtherContainer_ ()
@@ -91,7 +91,7 @@ namespace {
         void DoAll ()
         {
             Set<int> s{1, 2, 3, 4, 5};
-            VerifyTestResult ((s.Where ([] (int i) { return Math::IsPrime (i); }) == Set<int>{2, 3, 5}));
+            EXPECT_TRUE ((s.Where ([] (int i) { return Math::IsPrime (i); }) == Set<int>{2, 3, 5}));
         }
     }
 }
@@ -156,7 +156,7 @@ namespace {
         Where_Test_3_::DoAll ();
         EqualsTests_Test_4_::DoAll ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -166,6 +166,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

@@ -25,7 +25,7 @@ namespace CommonTests {
                 for ([[maybe_unused]] auto i : container) {
                     ++cnt;
                 }
-                VerifyTestResult (cnt == l);
+                EXPECT_TRUE (cnt == l);
             }
         }
 
@@ -39,7 +39,7 @@ namespace CommonTests {
         void Test3_SetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER&& equalsComparer)
         {
             auto iterableCopy = container;
-            VerifyTestResult (
+            EXPECT_TRUE (
                 (iterableCopy.template SetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward<EQUALS_COMPARER> (equalsComparer))));
         }
 
@@ -47,7 +47,7 @@ namespace CommonTests {
         void Test4_MultiSetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER&& equalsComparer)
         {
             auto iterableCopy = container;
-            VerifyTestResult ((iterableCopy.template MultiSetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (
+            EXPECT_TRUE ((iterableCopy.template MultiSetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (
                 container, forward<EQUALS_COMPARER> (equalsComparer))));
         }
 
@@ -56,9 +56,9 @@ namespace CommonTests {
         {
             auto iterableCopy = container;
 #if qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy
-            VerifyTestResult ((iterableCopy.SequentialEquals (container, forward<EQUALS_COMPARER> (equalsComparer))));
+            EXPECT_TRUE ((iterableCopy.SequentialEquals (container, forward<EQUALS_COMPARER> (equalsComparer))));
 #else
-            VerifyTestResult ((iterableCopy.template SequentialEquals (container, forward<EQUALS_COMPARER> (equalsComparer))));
+            EXPECT_TRUE ((iterableCopy.template SequentialEquals (container, forward<EQUALS_COMPARER> (equalsComparer))));
 #endif
         }
 

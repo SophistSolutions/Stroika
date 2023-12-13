@@ -104,8 +104,8 @@ namespace Stroika::Foundation::Cache {
      *                  // return null here, or Execution::ReThrow ()
      *              }
      *          }
-     *          VerifyTestResult (MapValue_ (1) == 1);  // skips 'more expensive computation' if in cache
-     *          VerifyTestResult (MapValue_ (2) == 2);  // ''
+     *          EXPECT_TRUE (MapValue_ (1) == 1);  // skips 'more expensive computation' if in cache
+     *          EXPECT_TRUE (MapValue_ (2) == 2);  // ''
      *      \endcode
      * 
      *  \par Example Usage

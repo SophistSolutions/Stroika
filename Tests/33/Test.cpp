@@ -48,7 +48,7 @@ namespace {
         void RoundTripTest_ (T v)
         {
             VariantValue mv = v;
-            VerifyTestResult (mv.As<T> () == v);
+            EXPECT_TRUE (mv.As<T> () == v);
         }
         template <typename T>
         void RoundTripMinMax_ ()
@@ -148,7 +148,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+        EXPECT_TRUE (tmp2 == tmp);
     }
 }
 
@@ -211,7 +211,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+        EXPECT_TRUE (tmp2 == tmp);
     }
 }
 
@@ -268,7 +268,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+        EXPECT_TRUE (tmp2 == tmp);
     }
 }
 
@@ -336,7 +336,7 @@ namespace {
 
             // THEN deserialized, and mapped back to C++ object form
             SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-            VerifyTestResult (tmp2 == tmp);
+            EXPECT_TRUE (tmp2 == tmp);
         }
 
         {
@@ -366,7 +366,7 @@ namespace {
 
             // THEN deserialized, and mapped back to C++ object form
             SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-            VerifyTestResult (tmp2 == tmp);
+            EXPECT_TRUE (tmp2 == tmp);
         }
     }
 }
@@ -426,7 +426,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+        EXPECT_TRUE (tmp2 == tmp);
     }
 }
 
@@ -467,7 +467,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+        EXPECT_TRUE (tmp2 == tmp);
     }
 }
 
@@ -553,7 +553,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+        EXPECT_TRUE (tmp2 == tmp);
     }
 }
 
@@ -597,7 +597,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         Derived_ tmp2 = mapper.ToObject<Derived_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+        EXPECT_TRUE (tmp2 == tmp);
     }
 }
 
@@ -680,7 +680,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+        EXPECT_TRUE (tmp2 == tmp);
     }
 }
 
@@ -740,7 +740,7 @@ namespace {
 
             // THEN deserialized, and mapped back to C++ object form
             RGBColor tmp2 = mapper.ToObject<RGBColor> (Variant::JSON::Reader{}.Read (tmpStream));
-            VerifyTestResult (tmp2 == tmp);
+            EXPECT_TRUE (tmp2 == tmp);
         }
     }
 }
@@ -806,7 +806,7 @@ namespace {
 
             // THEN deserialized, and mapped back to C++ object form
             SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-            VerifyTestResult (tmp2 == tmp);
+            EXPECT_TRUE (tmp2 == tmp);
         }
     }
 }
@@ -817,7 +817,7 @@ namespace {
         {
             ObjectVariantMapper m;
             Common::GUID        g = Common::GUID::GenerateNew ();
-            VerifyTestResult (m.ToObject<Common::GUID> (m.FromObject (g)) == g);
+            EXPECT_TRUE (m.ToObject<Common::GUID> (m.FromObject (g)) == g);
         }
     }
 }
@@ -845,11 +845,11 @@ namespace {
                 {L"mediaType", StructFieldMetaInfo{&T::mediaType}},
             });
             T g1{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::V6::kAddrAny, 64}, DataExchange::InternetMediaTypes::kJPEG};
-            VerifyTestResult (mapper.ToObject<T> (mapper.FromObject (g1)) == g1);
+            EXPECT_TRUE (mapper.ToObject<T> (mapper.FromObject (g1)) == g1);
             T g2{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::V4::kLocalhost, 16}, DataExchange::InternetMediaTypes::kGIF};
-            VerifyTestResult (mapper.ToObject<T> (mapper.FromObject (g2)) == g2);
+            EXPECT_TRUE (mapper.ToObject<T> (mapper.FromObject (g2)) == g2);
             T g3{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::InternetAddress{"192.22.4.4"}, 9}, DataExchange::InternetMediaTypes::kGIF};
-            VerifyTestResult (mapper.ToObject<T> (mapper.FromObject (g3)) == g3);
+            EXPECT_TRUE (mapper.ToObject<T> (mapper.FromObject (g3)) == g3);
         }
     }
 }
@@ -880,7 +880,7 @@ namespace {
                 s1.Add (3);
                 VariantValue  sAsVariant         = mapper.FromObject (s1);
                 MultiSet<int> mappedBackToObject = mapper.ToObject<MultiSet<int>> (sAsVariant);
-                VerifyTestResult (s1 == mappedBackToObject);
+                EXPECT_TRUE (s1 == mappedBackToObject);
             }
             {
                 ObjectVariantMapper mapper;
@@ -892,7 +892,7 @@ namespace {
                 s1.Add (3);
                 VariantValue  sAsVariant         = mapper.FromObject (s1);
                 MultiSet<int> mappedBackToObject = mapper.ToObject<MultiSet<int>> (sAsVariant);
-                VerifyTestResult (s1 == mappedBackToObject);
+                EXPECT_TRUE (s1 == mappedBackToObject);
             }
             {
                 ObjectVariantMapper mapper;
@@ -904,7 +904,7 @@ namespace {
                 s1.Add (3);
                 VariantValue        sAsVariant         = mapper.FromObject (s1);
                 SortedMultiSet<int> mappedBackToObject = mapper.ToObject<SortedMultiSet<int>> (sAsVariant);
-                VerifyTestResult (s1 == mappedBackToObject);
+                EXPECT_TRUE (s1 == mappedBackToObject);
             }
         }
     }
@@ -941,6 +941,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

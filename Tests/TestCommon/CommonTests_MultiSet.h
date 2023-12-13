@@ -64,11 +64,11 @@ namespace CommonTests {
                     using T                  = typename CONCRETE_CONTAINER::MultiSetOfElementType;
                     const size_t kTestSize   = 6;
 
-                    VerifyTestResult (s.size () == 0);
+                    EXPECT_TRUE (s.size () == 0);
                     applyToContainer (s);
 
                     for ([[maybe_unused]] CountedValue<T> i : s) {
-                        VerifyTestResult (false);
+                        EXPECT_TRUE (false);
                     }
                     IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
 
@@ -87,19 +87,19 @@ namespace CommonTests {
                         }
                         applyToContainer (s);
 
-                        VerifyTestResult (s.size () == kTestSize);
+                        EXPECT_TRUE (s.size () == kTestSize);
 
                         {
                             for ([[maybe_unused]] CountedValue<T> it : s) {
                             }
                             for (size_t i = 1; i <= kTestSize; i++) {
-                                VerifyTestResult (s.Contains (i));
-                                VerifyTestResult (s.size () == kTestSize - i + 1);
+                                EXPECT_TRUE (s.Contains (i));
+                                EXPECT_TRUE (s.size () == kTestSize - i + 1);
                                 s.Remove (i);
-                                VerifyTestResult (not s.Contains (i - 1));
+                                EXPECT_TRUE (not s.Contains (i - 1));
                             }
-                            VerifyTestResult (s.empty ());
-                            VerifyTestResult (s.size () == 0);
+                            EXPECT_TRUE (s.empty ());
+                            EXPECT_TRUE (s.size () == 0);
                         }
 
                         for (size_t i = 1; i <= kTestSize; i++) {
@@ -107,28 +107,28 @@ namespace CommonTests {
                             applyToContainer (s);
                         }
                         applyToContainer (s);
-                        VerifyTestResult (s.size () == kTestSize);
+                        EXPECT_TRUE (s.size () == kTestSize);
                         {
                             for (auto it = s.begin (); it != s.end ();) {
                                 it = s.erase (it);
                                 applyToContainer (s);
                             }
-                            VerifyTestResult (s.empty ());
-                            VerifyTestResult (s.size () == 0);
+                            EXPECT_TRUE (s.empty ());
+                            EXPECT_TRUE (s.size () == 0);
                         }
 
                         for (size_t i = 1; i <= kTestSize; i++) {
                             s.Add (i);
                             applyToContainer (s);
                         }
-                        VerifyTestResult (s.size () == kTestSize);
+                        EXPECT_TRUE (s.size () == kTestSize);
                         for (auto it2 = s.begin (); it2 != s.end ();) {
                             auto current = it2.Current ().fValue;
                             it2          = s.end (); // cannot keep live iterator during remove
                             s.Remove (current);
                             it2 = s.begin ();
                         }
-                        VerifyTestResult (s.size () == 0);
+                        EXPECT_TRUE (s.size () == 0);
                     }
 
                     /*
@@ -137,12 +137,12 @@ namespace CommonTests {
                     {
                         s.RemoveAll ();
                         applyToContainer (s);
-                        VerifyTestResult (s.size () == 0);
+                        EXPECT_TRUE (s.size () == 0);
                         for (size_t i = 1; i <= kTestSize; i++) {
                             s.Add (i);
                             applyToContainer (s);
                         }
-                        VerifyTestResult (s.size () == kTestSize);
+                        EXPECT_TRUE (s.size () == kTestSize);
                         for (auto it3 = s.begin (); it3 != s.end ();) {
                             if (s.size () != 0) {
                                 applyToContainer (s);
@@ -168,44 +168,44 @@ namespace CommonTests {
 
                     TALLY_ARCHTYPE s1 (s);
 
-                    VerifyTestResult (s1 == s);
+                    EXPECT_TRUE (s1 == s);
                     TALLY_ARCHTYPE s2 = s1;
 
-                    VerifyTestResult (s2 == s);
-                    VerifyTestResult (s2 == s1);
+                    EXPECT_TRUE (s2 == s);
+                    EXPECT_TRUE (s2 == s1);
                     s2.Add (three);
                     applyToContainer (mk_ (testingSchema.Factory, s2));
-                    VerifyTestResult (s1 == s);
-                    VerifyTestResult (s2 != s1);
+                    EXPECT_TRUE (s1 == s);
+                    EXPECT_TRUE (s2 != s1);
 
                     MultiSetIteratorTests_ (testingSchema, s);
 
                     static const size_t K = qDebug ? (Debug::IsRunningUnderValgrind () ? 50 : 250) : 500;
 
-                    VerifyTestResult (s.empty ());
+                    EXPECT_TRUE (s.empty ());
                     s.Add (three);
-                    VerifyTestResult (s.size () == 1);
+                    EXPECT_TRUE (s.size () == 1);
                     s += three;
-                    VerifyTestResult (s.size () == 1);
-                    VerifyTestResult (s.Contains (three));
-                    VerifyTestResult (s.OccurrencesOf (three) == 2);
+                    EXPECT_TRUE (s.size () == 1);
+                    EXPECT_TRUE (s.Contains (three));
+                    EXPECT_TRUE (s.OccurrencesOf (three) == 2);
                     s.Remove (three);
                     applyToContainer (s);
-                    VerifyTestResult (s.size () == 1);
-                    VerifyTestResult (s.Contains (three));
-                    VerifyTestResult (s.OccurrencesOf (three) == 1);
+                    EXPECT_TRUE (s.size () == 1);
+                    EXPECT_TRUE (s.Contains (three));
+                    EXPECT_TRUE (s.OccurrencesOf (three) == 1);
                     s.Remove (three);
-                    VerifyTestResult (s.empty ());
+                    EXPECT_TRUE (s.empty ());
                     s.RemoveAll ();
-                    VerifyTestResult (s.empty ());
+                    EXPECT_TRUE (s.empty ());
                     for (size_t i = 1; i <= K; i++) {
                         s.Add (i);
                         applyToContainer (s);
                     }
 
                     for (size_t i = 1; i <= s.size (); i++) {
-                        VerifyTestResult (s.Contains (i));
-                        VerifyTestResult (not s.Contains (0));
+                        EXPECT_TRUE (s.Contains (i));
+                        EXPECT_TRUE (not s.Contains (0));
                     }
 
                     for (size_t i = 1; i <= s.size (); i++) {
@@ -217,7 +217,7 @@ namespace CommonTests {
                     }
 
                     s.RemoveAll ();
-                    VerifyTestResult (s.empty ());
+                    EXPECT_TRUE (s.empty ());
                     for (size_t i = 1; i <= K / 50; i++) {
                         s.Add (i);
                     }
@@ -300,40 +300,40 @@ namespace CommonTests {
                             applyToContainer (s);
                         }
                     }
-                    VerifyTestResult (s.empty ());
-                    VerifyTestResult (s.size () == 0);
+                    EXPECT_TRUE (s.empty ());
+                    EXPECT_TRUE (s.size () == 0);
 
                     for (auto it1 = s.begin (); it1 != s.end (); ++it1) {
                         for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
-                            VerifyTestResult (false);
+                            EXPECT_TRUE (false);
                         }
                     }
-                    VerifyTestResult (s.empty ());
+                    EXPECT_TRUE (s.empty ());
 
                     for (size_t i = 1; i <= K; i++) {
                         s.Add (i);
-                        VerifyTestResult (s.Contains (i));
-                        VerifyTestResult (s.OccurrencesOf (i) == 1);
-                        VerifyTestResult (s.size () == i);
+                        EXPECT_TRUE (s.Contains (i));
+                        EXPECT_TRUE (s.OccurrencesOf (i) == 1);
+                        EXPECT_TRUE (s.size () == i);
                     }
                     for (size_t i = K; i > 0; --i) {
                         s.Remove (i);
-                        VerifyTestResult (not s.Contains (i));
-                        VerifyTestResult (s.size () == (i - 1));
+                        EXPECT_TRUE (not s.Contains (i));
+                        EXPECT_TRUE (s.size () == (i - 1));
                     }
-                    VerifyTestResult (s.empty ());
+                    EXPECT_TRUE (s.empty ());
 
                     for (size_t i = 1; i <= K / 2; i++) {
                         s += 1;
-                        VerifyTestResult (s.OccurrencesOf (1) == i);
+                        EXPECT_TRUE (s.OccurrencesOf (1) == i);
                     }
                     size_t oldLength = s.size ();
                     size_t oldTotal  = s.TotalOccurrences ();
                     applyToContainer (s);
                     s += s;
                     applyToContainer (s);
-                    VerifyTestResult (s.size () == oldLength);
-                    VerifyTestResult (s.TotalOccurrences () == oldTotal * 2);
+                    EXPECT_TRUE (s.size () == oldLength);
+                    EXPECT_TRUE (s.TotalOccurrences () == oldTotal * 2);
                 }
 
                 template <typename DEFAULT_TESTING_SCHEMA>
@@ -359,13 +359,13 @@ namespace CommonTests {
                     s.Add (1);
                     s.Add (1);
                     s.Add (2);
-                    VerifyTestResult (s.size () == 2);
+                    EXPECT_TRUE (s.size () == 2);
                     CONCRETE_CONTAINER s3 = s;
-                    VerifyTestResult (s == s3);
-                    VerifyTestResult (not(s != s3));
+                    EXPECT_TRUE (s == s3);
+                    EXPECT_TRUE (not(s != s3));
 
-                    VerifyTestResult (s != s2);
-                    VerifyTestResult (not(s == s2));
+                    EXPECT_TRUE (s != s2);
+                    EXPECT_TRUE (not(s == s2));
                 }
             }
 
@@ -378,12 +378,12 @@ namespace CommonTests {
                         using CONCRETE_CONTAINER = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                         using TALLY_ARCHTYPE     = typename CONCRETE_CONTAINER::ArchetypeContainerType;
                         CONCRETE_CONTAINER s     = mk_ (testingSchema.Factory, initializer_list<int>{1, 2, 3, 4, 4, 4, 4});
-                        VerifyTestResult (s.size () == 4);
-                        VerifyTestResult (s.Elements ().size () == 7);
+                        EXPECT_TRUE (s.size () == 4);
+                        EXPECT_TRUE (s.Elements ().size () == 7);
                         TALLY_ARCHTYPE tmp = mk_ (testingSchema.Factory, s.Elements ());
-                        VerifyTestResult (tmp.OccurrencesOf (1) == 1);
-                        VerifyTestResult (tmp.OccurrencesOf (0) == 0);
-                        VerifyTestResult (tmp.OccurrencesOf (4) == 4);
+                        EXPECT_TRUE (tmp.OccurrencesOf (1) == 1);
+                        EXPECT_TRUE (tmp.OccurrencesOf (0) == 0);
+                        EXPECT_TRUE (tmp.OccurrencesOf (4) == 4);
                     }
                 }
             }
@@ -396,8 +396,8 @@ namespace CommonTests {
                     using CONCRETE_CONTAINER = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     {
                         CONCRETE_CONTAINER s = mk_ (testingSchema.Factory, initializer_list<int>{1, 2, 3, 4, 4, 4, 4});
-                        VerifyTestResult (s.size () == 4);
-                        VerifyTestResult (s.UniqueElements ().size () == 4);
+                        EXPECT_TRUE (s.size () == 4);
+                        EXPECT_TRUE (s.UniqueElements ().size () == 4);
                     }
                 }
             }
@@ -429,7 +429,7 @@ namespace CommonTests {
                     CONCRETE_CONTAINER s     = testingSchema.Factory ();
                     const size_t       K     = 500;
                     s.RemoveAll ();
-                    VerifyTestResult (s.empty ());
+                    EXPECT_TRUE (s.empty ());
                     for (size_t i = 1; i <= K / 50; i++) {
                         s.Add (i);
                     }

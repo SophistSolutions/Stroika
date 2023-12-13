@@ -108,30 +108,30 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *
      *  \par Example Usage
      *      \code
-     *          VerifyTestResult (Hash<int>{} (1) == someNumber);
-     *          VerifyTestResult (Hash<string>{} ("1") == someNumber2);
-     *          VerifyTestResult (Hash<String>{} ("1") == someNumber3);
-     *          VerifyTestResult (Hash<String>{"somesalt"} ("1") == someNumber4);
+     *          EXPECT_TRUE (Hash<int>{} (1) == someNumber);
+     *          EXPECT_TRUE (Hash<string>{} ("1") == someNumber2);
+     *          EXPECT_TRUE (Hash<String>{} ("1") == someNumber3);
+     *          EXPECT_TRUE (Hash<String>{"somesalt"} ("1") == someNumber4);
      *      \endcode
      *
      *  \par Example Usage
      *      \code
      *          using   USE_DIGESTER_     =   Digester<Algorithm::Jenkins>;
-     *          VerifyTestResult (Hash<int, USE_DIGESTER_>{} (1) == 10338022);
-     *          VerifyTestResult (Hash<string, USE_DIGESTER_>{} ("1") == 2154528969);
-     *          VerifyTestResult (Hash<String, USE_DIGESTER_>{} ("1") == 2154528969);
+     *          EXPECT_TRUE (Hash<int, USE_DIGESTER_>{} (1) == 10338022);
+     *          EXPECT_TRUE (Hash<string, USE_DIGESTER_>{} ("1") == 2154528969);
+     *          EXPECT_TRUE (Hash<String, USE_DIGESTER_>{} ("1") == 2154528969);
      *      \endcode
      * 
      *  \par Example Usage (using explicitly specified serializer)
      *      \code
-     *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
+     *          EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
      *          struct altStringSerializer {
      *               auto operator () (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
      *          };
      *          // NICE to figure out how to get this working instead of the 'struct' above - @todo
      *          //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
-     *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") != Hash<String>{}(L"xxx")));
-     *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x1") == Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x2")));
+     *          EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") != Hash<String>{}(L"xxx")));
+     *          EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x1") == Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x2")));
      *      \endcode
      * 
      *  \par Example Usage (using explicit result type - typically string)
@@ -140,10 +140,10 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          auto    hasherWithResult_uint8_t = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, uint8_t>{};
      *          auto    value2Hash               = InternetAddress{"192.168.244.33"};
      *          uint8_t h2                       = hasherWithResult_uint8_t (value2Hash);
-     *          VerifyTestResult (h2 == 215);
+     *          EXPECT_TRUE (h2 == 215);
      *          auto                 hasherWithResult_array40 = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, std::array<byte, 40>>{};
      *          std::array<byte, 40> h3                       = hasherWithResult_array40 (value2Hash);
-     *          VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == "..."));
+     *          EXPECT_TRUE ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == "..."));
      *      \endcode
      * 
      *      AND see docs on DefaultSerializer<> for how to explicitly specialize it for a given type (often better than passing

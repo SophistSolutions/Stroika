@@ -50,8 +50,8 @@ namespace {
             Debug::TraceContextBumper ctx{"{}::test_02"};
             forward_list<int>         a;
             a.push_front (2);
-            VerifyTestResult (a.pop_front () == 2);
-            VerifyTestResult (a.empty ());
+            EXPECT_TRUE (a.pop_front () == 2);
+            EXPECT_TRUE (a.empty ());
         }
 
         void test_03 ()
@@ -60,9 +60,9 @@ namespace {
             forward_list<int>         a;
             a.push_front (2);
             a.push_front (5);
-            VerifyTestResult (a.pop_front () == 5);
-            VerifyTestResult (a.pop_front () == 2);
-            VerifyTestResult (a.empty ());
+            EXPECT_TRUE (a.pop_front () == 5);
+            EXPECT_TRUE (a.pop_front () == 2);
+            EXPECT_TRUE (a.empty ());
         }
 
         void test_04 ()
@@ -84,9 +84,9 @@ namespace {
             }
             int totalElementCount = perThreadElementCount * threadCount;
             for (int k = 0; k < totalElementCount; k++) {
-                VerifyTestResult (a.pop_front ().has_value ());
+                EXPECT_TRUE (a.pop_front ().has_value ());
             }
-            VerifyTestResult (a.empty ());
+            EXPECT_TRUE (a.empty ());
         }
 
         void test_05 ()
@@ -115,7 +115,7 @@ namespace {
             for (auto& thread : threads) {
                 thread.join ();
             }
-            VerifyTestResult (a.empty ());
+            EXPECT_TRUE (a.empty ());
         }
 
         void test_06 ()
@@ -142,11 +142,11 @@ namespace {
             }
             for (int k = 0; k < totalElementCount; k++) {
                 optional<int> v = a.pop_front ();
-                VerifyTestResult (v.has_value ());
-                VerifyTestResult (remainingNumbers.erase (*v));
+                EXPECT_TRUE (v.has_value ());
+                EXPECT_TRUE (remainingNumbers.erase (*v));
             }
-            VerifyTestResult (remainingNumbers.empty ());
-            VerifyTestResult (a.empty ());
+            EXPECT_TRUE (remainingNumbers.empty ());
+            EXPECT_TRUE (a.empty ());
         }
 
         void test_07 ()
@@ -170,9 +170,9 @@ namespace {
                         std::this_thread::sleep_for (chrono::microseconds{rand () % 50});
                         optional<int> x = a.pop_front ();
                         {
-                            VerifyTestResult (x.has_value ());
+                            EXPECT_TRUE (x.has_value ());
                             std::unique_lock<std::mutex> lock{mutex};
-                            VerifyTestResult (remainingNumbers.erase (*x));
+                            EXPECT_TRUE (remainingNumbers.erase (*x));
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         if (x == y) {
@@ -188,8 +188,8 @@ namespace {
             for (auto& thread : threads) {
                 thread.join ();
             }
-            VerifyTestResult (a.empty ());
-            VerifyTestResult (remainingNumbers.empty ());
+            EXPECT_TRUE (a.empty ());
+            EXPECT_TRUE (remainingNumbers.empty ());
         }
 
         void test_08 ()
@@ -231,10 +231,10 @@ namespace {
                             Execution::Sleep (5ms);
                             goto retry;
                         }
-                        VerifyTestResult (r);
+                        EXPECT_TRUE (r);
                         {
                             std::unique_lock<std::mutex> lock (mutex);
-                            VerifyTestResult (remainingNumbers.erase (*x));
+                            EXPECT_TRUE (remainingNumbers.erase (*x));
                         }
                     }
                 });
@@ -242,8 +242,8 @@ namespace {
             for (auto& thread : threads) {
                 thread.join ();
             }
-            VerifyTestResult (a.empty ());
-            VerifyTestResult (remainingNumbers.empty ());
+            EXPECT_TRUE (a.empty ());
+            EXPECT_TRUE (remainingNumbers.empty ());
         }
 
         void test_09 ()
@@ -253,11 +253,11 @@ namespace {
             a.push_front (2);
             a.push_front (5);
             auto i = a.begin ();
-            VerifyTestResult (*i == 5);
+            EXPECT_TRUE (*i == 5);
             ++i;
-            VerifyTestResult (*i == 2);
+            EXPECT_TRUE (*i == 2);
             ++i;
-            VerifyTestResult (i == a.end ());
+            EXPECT_TRUE (i == a.end ());
         }
 
         void test_10 ()
@@ -266,10 +266,10 @@ namespace {
             forward_list<int>         a;
             a.push_front (2);
             auto i = a.begin ();
-            VerifyTestResult (*i == 2);
+            EXPECT_TRUE (*i == 2);
             a.push_front (5);
             ++i;
-            VerifyTestResult (i == a.end ());
+            EXPECT_TRUE (i == a.end ());
         }
 
         void test_11 ()
@@ -281,12 +281,12 @@ namespace {
             [[maybe_unused]] optional<int> v = a.pop_front ();
             a.push_front (5);
             auto j = a.begin ();
-            VerifyTestResult (*i == 2);
-            VerifyTestResult (*j == 5);
+            EXPECT_TRUE (*i == 2);
+            EXPECT_TRUE (*j == 5);
             ++i;
-            VerifyTestResult (i == a.end ());
+            EXPECT_TRUE (i == a.end ());
             ++j;
-            VerifyTestResult (j == a.end ());
+            EXPECT_TRUE (j == a.end ());
         }
 
         void test_12 ()
@@ -297,13 +297,13 @@ namespace {
             a.push_front (5);
             a.insert_after (a.begin (), 3);
             auto i = a.begin ();
-            VerifyTestResult (*i == 5);
+            EXPECT_TRUE (*i == 5);
             ++i;
-            VerifyTestResult (*i == 3);
+            EXPECT_TRUE (*i == 3);
             ++i;
-            VerifyTestResult (*i == 2);
+            EXPECT_TRUE (*i == 2);
             ++i;
-            VerifyTestResult (i == a.end ());
+            EXPECT_TRUE (i == a.end ());
         }
 
         void test_13 ()
@@ -314,15 +314,15 @@ namespace {
             a.push_front (3);
             a.push_front (5);
             auto i = a.begin ();
-            VerifyTestResult (*i == 5);
+            EXPECT_TRUE (*i == 5);
             ++i;
             int v;
             a.erase_after (a.begin (), &v);
-            VerifyTestResult (v == 3);
-            VerifyTestResult (*i == 3);
+            EXPECT_TRUE (v == 3);
+            EXPECT_TRUE (*i == 3);
             ++i;
-            VerifyTestResult (i == a.end ());
-            VerifyTestResult (*(++a.begin ()) == 2);
+            EXPECT_TRUE (i == a.end ());
+            EXPECT_TRUE (*(++a.begin ()) == 2);
         }
 
         void test_14 ()
@@ -428,6 +428,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

@@ -88,7 +88,7 @@ namespace {
         Thread::Ptr thread2      = Thread::New (bind (DoIt, &updaterValue));
         Thread::Start ({thread1, thread2});
         Thread::WaitForDone ({thread1, thread2});
-        VerifyTestResult (updaterValue == 2 * 10);
+        EXPECT_TRUE (updaterValue == 2 * 10);
     }
 }
 
@@ -109,7 +109,7 @@ namespace {
                         int tmp = *argP;
                         Execution::Sleep (.001);
                         // Since fred1/fred2 always take turns, and Fred1 always goes first...
-                        VerifyTestResult (tmp % 2 == 0);
+                        EXPECT_TRUE (tmp % 2 == 0);
                         //DbgTrace ("FRED1: Updating value in of %d", tmp);
                         *argP = tmp + 1;
                         sRegTest3Event_T2_.Set ();
@@ -145,7 +145,7 @@ namespace {
                 Thread::WaitForDone ({thread1, thread2});
                 //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
                 // If there was a race - its unlikely you'd end up with exact 20 as your result
-                VerifyTestResult (updaterValue == 2 * 10);
+                EXPECT_TRUE (updaterValue == 2 * 10);
             }
         }
         void PingBackAndForthWithSimpleTimeouts_ ()
@@ -161,7 +161,7 @@ namespace {
                         int tmp = *argP;
                         Execution::Sleep (1ms);
                         // Since fred1/fred2 always take turns, and Fred1 always goes first...
-                        VerifyTestResult (tmp % 2 == 0);
+                        EXPECT_TRUE (tmp % 2 == 0);
                         //DbgTrace ("FRED1: Updating value in of %d", tmp);
                         *argP = tmp + 1;
                         sRegTest3Event_T2_.Set ();
@@ -197,7 +197,7 @@ namespace {
                 thread2.WaitForDone ();
                 //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
                 // If there was a race - its unlikely you'd end up with exact 20 as your result
-                VerifyTestResult (updaterValue == 2 * 10);
+                EXPECT_TRUE (updaterValue == 2 * 10);
             }
         }
         void TEST_TIMEOUT_EXECPETIONS_ ()
@@ -214,7 +214,7 @@ namespace {
             }
             catch (...) {
             }
-            VerifyTestResult (passed);
+            EXPECT_TRUE (passed);
             if (Time::GetTickCount () - startAt > 1.0s) {
                 Stroika::Frameworks::Test::WarnTestIssue ("TEST_TIMEOUT_EXECPETIONS_ took too long");
             }
@@ -256,7 +256,7 @@ namespace {
                     DbgTrace ("expectedEndAt=%f, caughtExceptAt=%f", double (expectedEndAt.time_since_epoch ().count ()),
                               double (caughtExceptAt.time_since_epoch ().count ()));
                 }
-                VerifyTestResult (expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt);
+                EXPECT_TRUE (expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt);
                 // FAILURE:
                 //      2.0a208x release - in regtests on raspberrypi-gcc-5, regtests  - (caughtExceptAt - expectedEndAt) was 4.1,
                 //      so may need to be much larger occasionally (on slow raspberry pi) - but rarely fails.
@@ -271,12 +271,12 @@ namespace {
                 //      so set kMarginOfErrorHi_ to 7.0 -- LGP 2019-02-27
                 //
                 // Got another failure 2019-04-17 on raspberrypi - so change limit of kMarginOfErrorHi_==7, to kMarginOfErrorHi_Warn_ = 5.0, kMarginOfErrorHi_Error_ = 10.0
-                // and use VerifyTestResultWarning -- LGP 2019-04-17
+                // and use EXPECT_TRUEWarning -- LGP 2019-04-17
                 //
                 // Got another warning 2019-08-12 on raspberrypi - but no change cuz about to upgrade to faster raspberrypi
                 //
-                VerifyTestResult (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Error_);
-                VerifyTestResultWarning (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_);
+                EXPECT_TRUE (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Error_);
+                EXPECT_TRUEWarning (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_Warn_);
             }
 
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
@@ -298,7 +298,7 @@ namespace {
                     t.AbortAndWaitForDone (kWaitOnAbortFor);
                 }
                 catch (const Execution::TimeOutException&) {
-                    VerifyTestResult (false); // shouldn't fail to wait cuz we did abort
+                    EXPECT_TRUE (false); // shouldn't fail to wait cuz we did abort
                     // Note - saw this fail once on raspberry pi but appears the machine was just being slow - nothing looked other than slow - wrong in
                     // the tracelog - so don't worry unless we see again. That machine can be quite slow
                     //  -- LGP 2017-07-05
@@ -367,11 +367,11 @@ namespace {
                     DbgTrace (L"startTestAt=%f, doneAt=%f, expectedEndAt=%f", double (startTestAt.time_since_epoch ().count ()),
                               double (doneAt.time_since_epoch ().count ()), double (expectedEndAt.time_since_epoch ().count ()));
                 }
-                VerifyTestResult (startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_);
+                EXPECT_TRUE (startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_);
             }
 
             // Thread MUST be done/terminated by this point
-            VerifyTestResult (t.GetStatus () == Thread::Status::eCompleted);
+            EXPECT_TRUE (t.GetStatus () == Thread::Status::eCompleted);
         }
     }
     void RegressionTest3_WaitableEvents_ ()
@@ -440,7 +440,7 @@ namespace {
                     Thread::Start ({thread1, thread2});
                     thread1.WaitForDone ();
                     thread2.WaitForDone ();
-                    VerifyTestResult (updaterValue == 2 * 10);
+                    EXPECT_TRUE (updaterValue == 2 * 10);
                 }
             }
             void Test2_LongWritesBlock_ ()
@@ -458,7 +458,7 @@ namespace {
                         if (writerDone) {
                             readsDoneAfterWriterDone++;
                         }
-                        VerifyTestResult (syncData.cget ().load () % 2 == 0);
+                        EXPECT_TRUE (syncData.cget ().load () % 2 == 0);
                         Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0 (note - on ubuntu 1804 and fast host, inside vm, median sleep time here is really about 2ms despite division - LGP 2018-06-20)
                     }
                 });
@@ -468,10 +468,10 @@ namespace {
                         auto rwLock = syncData.rwget ();
                         rwLock.store (rwLock.load () + 1); // set to a value that will cause reader thread to fail
                         Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
-                        VerifyTestResult (rwLock.load () % 2 == 1);
+                        EXPECT_TRUE (rwLock.load () % 2 == 1);
                         rwLock.store (rwLock.load () + 1); // set to a safe value
                     }
-                    VerifyTestResult (syncData.cget ().load () == kBaseRepititionCount_ * 2);
+                    EXPECT_TRUE (syncData.cget ().load () == kBaseRepititionCount_ * 2);
                     writerDone = true;
                 });
                 Thread::Start ({readerThread, writerThread});
@@ -519,13 +519,13 @@ namespace {
             thread.Start ();
             try {
                 thread.WaitForDone (0.3s); // should timeout
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
             catch (const Execution::TimeOutException&) {
                 // GOOD
             }
             catch (...) {
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
             // Now - abort it, and wait
             thread.AbortAndWaitForDone ();
@@ -540,13 +540,13 @@ namespace {
             thread.Start ();
             try {
                 thread.WaitForDone (0.3s); // should timeout
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
             catch (const Execution::TimeOutException&) {
                 // GOOD
             }
             catch (...) {
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
             // Now - abort it, and wait
             thread.AbortAndWaitForDone ();
@@ -579,7 +579,7 @@ namespace {
                     DbgTrace ("trying again...");
                     goto again;
                 }
-                VerifyTestResult (runningThreads.size () == 0);
+                EXPECT_TRUE (runningThreads.size () == 0);
         });
 #endif
         struct FRED {
@@ -630,7 +630,7 @@ namespace {
             ThreadPool::TaskType task{[&intVal] () { intVal++; }};
             p.AddTask (task);
             p.WaitForTask (task);
-            VerifyTestResult (intVal == 4);
+            EXPECT_TRUE (intVal == 4);
         }
     }
 }
@@ -666,7 +666,7 @@ namespace {
                 p.AddTask (task2);
                 p.WaitForTask (task1);
                 p.WaitForTask (task2);
-                VerifyTestResult (updaterValue == 2 * 10);
+                EXPECT_TRUE (updaterValue == 2 * 10);
             }
         }
     }
@@ -754,7 +754,7 @@ namespace {
             Execution::Sleep (1s); // wait til both threads running and blocked in sleeps
             testThread.AbortAndWaitForDone ();
             // This is the BUG SuppressInterruptionInContext was meant to solve!
-            VerifyTestResult (innerThread.GetStatus () == Thread::Status::eRunning);
+            EXPECT_TRUE (innerThread.GetStatus () == Thread::Status::eRunning);
             innerThread.AbortAndWaitForDone ();
         };
         auto testInnerThreadProperlyShutDownByOuterThread = [] () {
@@ -772,7 +772,7 @@ namespace {
             Execution::Sleep (1s); // wait til both threads running and blocked in sleeps
             // This is the BUG SuppressInterruptionInContext was meant to solve!
             testThread.AbortAndWaitForDone ();
-            VerifyTestResult (innerThread.GetStatus () == Thread::Status::eCompleted);
+            EXPECT_TRUE (innerThread.GetStatus () == Thread::Status::eCompleted);
         };
         testFailToProperlyAbort ();
         testInnerThreadProperlyShutDownByOuterThread ();
@@ -809,10 +809,10 @@ namespace {
          *      2021-05-29 - saw happen on Ubuntu 2004(docker), but still very rare
          *      2022-04-10 - saw happen on Ununtu 2004(docker), but still very rare
          */
-        VerifyTestResultWarning (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) ==
+        EXPECT_TRUEWarning (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) ==
                                  set<WaitableEvent*> ({&we2})); // may not indicate a real problem if triggered rarely - just threads ran in queer order, but can happen
         Time::DurationSeconds timeTaken = Time::GetTickCount () - startAt;
-        VerifyTestResult (timeTaken <= kMaxWaitTime_); // make sure we didnt wait for the full kMaxWaitTime_ on first thread
+        EXPECT_TRUE (timeTaken <= kMaxWaitTime_); // make sure we didnt wait for the full kMaxWaitTime_ on first thread
         // They capture so must wait for them to complete
         t1.AbortAndWaitForDone ();
         t2.AbortAndWaitForDone ();
@@ -844,7 +844,7 @@ namespace {
         t2.Start ();
         t1.Start ();
         WaitableEvent::WaitForAll (Sequence<WaitableEvent*>{{&we1, &we2}});
-        VerifyTestResult (w1Fired and w2Fired);
+        EXPECT_TRUE (w1Fired and w2Fired);
         // They capture so must wait for them to complete
         t1.AbortAndWaitForDone ();
         t2.AbortAndWaitForDone ();
@@ -876,7 +876,7 @@ namespace {
         Thread::Start ({t1, t2});
         t1.WaitForDone ();
         t2.WaitForDone ();
-        VerifyTestResult (sum == 0);
+        EXPECT_TRUE (sum == 0);
     }
 }
 
@@ -920,7 +920,7 @@ namespace {
                 }
                 Execution::Sleep (.5s); // dont spin too aggressively.
             }
-            VerifyTestResult (p.GetTasksCount () == 0);
+            EXPECT_TRUE (p.GetTasksCount () == 0);
             Time::DurationSeconds totalTestTime = Time::GetTickCount () - testStartedAt;
             Verify (totalTestTime < kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_);
         }
@@ -954,7 +954,7 @@ namespace {
                 /**
                  *  Verify that both threads are maintaining the lock at the same time.
                  */
-                // NOTE - CRITICALLY - IF YOU CHANGE RWSynchronized to Synchronized the VerifyTestResult about countWhereTwoHoldingRead below will fail!
+                // NOTE - CRITICALLY - IF YOU CHANGE RWSynchronized to Synchronized the EXPECT_TRUE about countWhereTwoHoldingRead below will fail!
                 SYNCRHONIZED_INT sharedData{0};
                 atomic<unsigned int> countMaybeHoldingReadLock{0}; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
                 atomic<unsigned int> countWhereTwoHoldingRead{0};
@@ -977,10 +977,10 @@ namespace {
                 Thread::Start ({t1, t2});
                 Thread::WaitForDone ({t1, t2});
                 if (mustBeEqualToZero) {
-                    VerifyTestResult (countWhereTwoHoldingRead == 0);
+                    EXPECT_TRUE (countWhereTwoHoldingRead == 0);
                 }
                 else {
-                    VerifyTestResult (countWhereTwoHoldingRead >= 1 or sleepTime <= 0); // not logically true, but a good test.. (if sleepTime == 0, this is less likely to be true - so dont fail test because of it)
+                    EXPECT_TRUE (countWhereTwoHoldingRead >= 1 or sleepTime <= 0); // not logically true, but a good test.. (if sleepTime == 0, this is less likely to be true - so dont fail test because of it)
                 }
                 DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (),
                           100.0 * double (countWhereTwoHoldingRead.load ()) / (2 * repeatCount));
@@ -996,7 +996,7 @@ namespace {
                         Debug::TraceContextBumper ctx{"readerThread"};
                         // Do 10x more reads than writer loop, but sleep 1/10th as long
                         for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
-                            VerifyTestResult (syncData.cget ().load () % 2 == 0);
+                            EXPECT_TRUE (syncData.cget ().load () % 2 == 0);
                             // occasional sleep so the reader doesn't get ahead of writer, but rarely cuz this is very slow on linux (ubuntu 1804) - often taking > 2ms, even for sleep of 100us) -- LGP 2018-06-20
                             if (i % 100 == 0) {
                                 Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
@@ -1011,10 +1011,10 @@ namespace {
                             auto rwLock = syncData.rwget ();
                             rwLock.store (rwLock.load () + 1);  // set to a value that will cause reader thread to fail
                             Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
-                            VerifyTestResult (rwLock.load () % 2 == 1);
+                            EXPECT_TRUE (rwLock.load () % 2 == 1);
                             rwLock.store (rwLock.load () + 1); // set to a safe value
                         }
-                        VerifyTestResult (syncData.cget ().load () == kBaseRepititionCount_ * 2);
+                        EXPECT_TRUE (syncData.cget ().load () == kBaseRepititionCount_ * 2);
                     },
                     "writerThread"sv);
                 Thread::Start ({readerThread, writerThread});
@@ -1213,7 +1213,7 @@ namespace {
                             });
                             // WE CANNOT test this - because UpgradeLockNonAtomically () releases lock before re-acuqitring readlock - but should fix that soon
                             // so we can test this!!!
-                            //VerifyTestResult (not isEven.cget ());
+                            //EXPECT_TRUE (not isEven.cget ());
                         }
                     }
                 };
@@ -1260,7 +1260,7 @@ namespace {
                                 }
                                 else {
                                     // in this case we effectively did an atomic upgrade, because no intervening writers
-                                    VerifyTestResult (writeLock.load ());
+                                    EXPECT_TRUE (writeLock.load ());
                                     writeLock.store (false);
                                     return true; // instead of reloading here, could return false and let retyr code happen
                                 }
@@ -1291,14 +1291,14 @@ namespace {
         Sleep (1s); // long enough so t1 running
         try {
             test.load (5ms);
-            VerifyTestResult (false); // NOT REACHED
+            EXPECT_TRUE (false); // NOT REACHED
         }
         catch (...) {
             DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
         }
         try {
             auto c = test.cget (5ms);
-            VerifyTestResult (false); // NOT REACHED
+            EXPECT_TRUE (false); // NOT REACHED
         }
         catch (...) {
             DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
@@ -1308,7 +1308,7 @@ namespace {
             auto c = test.cget (5ms);
         }
         catch (...) {
-            VerifyTestResult (false); // NOT REACHED
+            EXPECT_TRUE (false); // NOT REACHED
         }
     }
 }
@@ -1393,14 +1393,14 @@ namespace {
         Sleep (1s); // long enough so t1 running
         try {
             test.load (5ms);
-            VerifyTestResult (false); // NOT REACHED
+            EXPECT_TRUE (false); // NOT REACHED
         }
         catch (...) {
             DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
         }
         try {
             auto c = test.cget (5ms);
-            VerifyTestResult (false); // NOT REACHED
+            EXPECT_TRUE (false); // NOT REACHED
         }
         catch (...) {
             DbgTrace ("Expect this to timeout, cuz t1 holding the lock");
@@ -1412,7 +1412,7 @@ namespace {
             auto c = test.cget (5ms);
         }
         catch (...) {
-            VerifyTestResult (false); // NOT REACHED
+            EXPECT_TRUE (false); // NOT REACHED
         }
     }
 }
@@ -1445,7 +1445,7 @@ namespace {
             for (Execution::Thread::IDType threadID : runningThreads) {
                 DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
             }
-            VerifyTestResult (runningThreads.size () == 0);
+            EXPECT_TRUE (runningThreads.size () == 0);
         });
 #endif
         RegressionTest1_ ();
@@ -1481,6 +1481,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

@@ -139,7 +139,7 @@ namespace {
                 {
                     auto r1 = GetLastScan_Explicit_ (scanKind);
                     auto r2 = GetLastScan_Bind_ (scanKind);
-                    VerifyTestResult (r1 == r2);
+                    EXPECT_TRUE (r1 == r2);
                     return r2;
                 }
                 nonvirtual optional<ScanIDType_> GetLastScan_Explicit_ (ScanKindType_ scanKind)
@@ -307,7 +307,7 @@ namespace {
                 Connection::Options o = options;
                 o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
                 auto conn             = Connection::New (o);
-                VerifyTestResult (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
+                EXPECT_TRUE (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
                 constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
                 SQL::ORM::ProvisionForVersion (
                     conn, kCurrentVersion_,
@@ -622,7 +622,7 @@ namespace {
                 Connection::Options o = options;
                 o.fBusyTimeout        = o.fBusyTimeout.value_or (1s); // default to 1 second busy timeout for these tests
                 auto conn             = Connection::New (o);
-                VerifyTestResult (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
+                EXPECT_TRUE (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
                 constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
                 SQL::ORM::ProvisionForVersion (conn, kCurrentVersion_,
                                                Traversal::Iterable<SQL::ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
@@ -778,6 +778,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

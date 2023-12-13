@@ -43,6 +43,7 @@ using std::byte;
 
 #define qPrintTimings 0
 
+#if qHasFeature_GoogleTest
 /**
  * TODO:
  *
@@ -86,10 +87,10 @@ namespace {
     struct RunTest_VerifyStatics_ {
         RunTest_VerifyStatics_ ()
         {
-            VerifyTestResult (s_TestEmptyString_.empty ());
-            VerifyTestResult (s_TestStringInit_ == "my very good test");
-            VerifyTestResult (s_TestStringConstantInit_ == "my very very good test");
-            VerifyTestResult (s_TestStringAssignInit_ == s_TestStringInit_);
+            EXPECT_TRUE (s_TestEmptyString_.empty ());
+            EXPECT_TRUE (s_TestStringInit_ == "my very good test");
+            EXPECT_TRUE (s_TestStringConstantInit_ == "my very very good test");
+            EXPECT_TRUE (s_TestStringAssignInit_ == s_TestStringInit_);
         }
     } _s_RunTest_VerifyStaticAssigns_;
 }
@@ -121,8 +122,8 @@ namespace {
                 String a = "a"_k;
                 for (size_t i = 0; i <= kLoopEnd; ++i) {
                     big += a;
-                    VerifyTestResult ((big.size () - 1) == i);
-                    VerifyTestResult (big[i] == 'a');
+                    EXPECT_TRUE ((big.size () - 1) == i);
+                    EXPECT_TRUE (big[i] == 'a');
                 }
                 big.clear ();
             }
@@ -130,7 +131,7 @@ namespace {
             String s1 = "test strings";
             for (int i = 1; i <= kLoopEnd; ++i) {
                 big += s1;
-                VerifyTestResult (big.size () == s1.size () * i);
+                EXPECT_TRUE (big.size () == s1.size () * i);
             }
         }
         void StressTest2_ (String big)
@@ -138,7 +139,7 @@ namespace {
             String s1 = "test strings";
             for (int i = 1; i <= kLoopEnd; ++i) {
                 big = big + s1;
-                VerifyTestResult (big.size () == s1.size () * i);
+                EXPECT_TRUE (big.size () == s1.size () * i);
 #if 0
                 for (int j = 0; j < big.size (); ++j) {
                     Character c = big[j];
@@ -211,35 +212,35 @@ namespace {
 namespace {
     void Test2_Helper_ (String& s1, String& s2)
     {
-        VerifyTestResult (s1.size () == 12);
-        VerifyTestResult (String{s1}.size () == 12);
-        VerifyTestResult (s1 == s2);
-        VerifyTestResult (!(s1 != s2));
-        VerifyTestResult (s1 + s1 == s2 + s2);
-        VerifyTestResult ((s1 + s1).size () == s1.size () * 2);
-        VerifyTestResult (s1[2] == 's');
-        VerifyTestResult ('s' == s1[2].GetCharacterCode ());
-        VerifyTestResult (s1.size () == 12);
+        EXPECT_TRUE (s1.size () == 12);
+        EXPECT_TRUE (String{s1}.size () == 12);
+        EXPECT_TRUE (s1 == s2);
+        EXPECT_TRUE (!(s1 != s2));
+        EXPECT_TRUE (s1 + s1 == s2 + s2);
+        EXPECT_TRUE ((s1 + s1).size () == s1.size () * 2);
+        EXPECT_TRUE (s1[2] == 's');
+        EXPECT_TRUE ('s' == s1[2].GetCharacterCode ());
+        EXPECT_TRUE (s1.size () == 12);
 
         String s3;
         s3 += s1;
         s3 += s2;
 
         s1 += "\n";
-        VerifyTestResult (s1.size () == 13);
+        EXPECT_TRUE (s1.size () == 13);
     }
 
-    void Test1_ ()
+    GTEST_TEST (Foundation_Characters, Test1)
     {
         Debug::TraceContextBumper ctx{"Test1_"};
         /*
          * Some simple tests to start off with.
          */
         {
-            VerifyTestResult (String{"a"}.length () == 1);
-            VerifyTestResult (String{String{"fred"} + String{"joe"}}.size () == 7);
+            EXPECT_TRUE (String{"a"}.length () == 1);
+            EXPECT_TRUE (String{String{"fred"} + String{"joe"}}.size () == 7);
 
-            VerifyTestResult (String{"fred"} + String{"joe"} == String{"fredjoe"});
+            EXPECT_TRUE (String{"fred"} + String{"joe"} == String{"fredjoe"});
 
             {
                 String s1 = String{"test strings"};
@@ -251,7 +252,7 @@ namespace {
                 String s1{"test strings"};
                 String s2{"test strings"};
 
-                VerifyTestResult (Character{'a'} == 'a');
+                EXPECT_TRUE (Character{'a'} == 'a');
 
                 Test2_Helper_ (s1, s2);
             }
@@ -281,13 +282,13 @@ namespace {
         String                    t3 = "a";
         String                    t4 = "a";
 
-        VerifyTestResult (t1 == "");
-        VerifyTestResult (t1 == String{});
-        VerifyTestResult (t1 == String{""});
-        VerifyTestResult (t1 == t2);
-        VerifyTestResult (t3 == "a");
-        VerifyTestResult (t3 == String{"a"});
-        VerifyTestResult (t4 == "a");
+        EXPECT_TRUE (t1 == "");
+        EXPECT_TRUE (t1 == String{});
+        EXPECT_TRUE (t1 == String{""});
+        EXPECT_TRUE (t1 == t2);
+        EXPECT_TRUE (t3 == "a");
+        EXPECT_TRUE (t3 == String{"a"});
+        EXPECT_TRUE (t4 == "a");
 #if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable of type 'Stroika::Foundation::Characters::String' to itself
@@ -297,42 +298,42 @@ namespace {
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
 #endif
-        VerifyTestResult (t1 == "");
+        EXPECT_TRUE (t1 == "");
 
         t1 += 'F';
         t1 += 'r';
         t1 += 'e';
         t1 += 'd';
         t1 += " Flintstone";
-        VerifyTestResult (t1 == "Fred Flintstone");
-        VerifyTestResult (String{"Fred Flintstone"} == t1);
-        VerifyTestResult (String{"Fred Flintstone"} == t1);
-        VerifyTestResult (t1 == String{"Fred Flintstone"});
-        VerifyTestResult (t2 != "Fred Flintstone");
-        VerifyTestResult (String{"Fred Flintstone"} != t2);
-        VerifyTestResult (String{"Fred Flintstone"} != t2);
-        VerifyTestResult (t2 != String{L"Fred Flintstone"});
+        EXPECT_TRUE (t1 == "Fred Flintstone");
+        EXPECT_TRUE (String{"Fred Flintstone"} == t1);
+        EXPECT_TRUE (String{"Fred Flintstone"} == t1);
+        EXPECT_TRUE (t1 == String{"Fred Flintstone"});
+        EXPECT_TRUE (t2 != "Fred Flintstone");
+        EXPECT_TRUE (String{"Fred Flintstone"} != t2);
+        EXPECT_TRUE (String{"Fred Flintstone"} != t2);
+        EXPECT_TRUE (t2 != String{L"Fred Flintstone"});
 
-        VerifyTestResult (t1.size () == 15);
+        EXPECT_TRUE (t1.size () == 15);
         t1.erase (4);
-        VerifyTestResult (t1.size () == 4);
-        VerifyTestResult (t1 == "Fred");
+        EXPECT_TRUE (t1.size () == 4);
+        EXPECT_TRUE (t1 == "Fred");
 
-        VerifyTestResult (t1[0] == 'F');
-        VerifyTestResult (t1[1] == 'r');
-        VerifyTestResult (t1[2] == 'e');
-        VerifyTestResult (t1[3] == 'd');
+        EXPECT_TRUE (t1[0] == 'F');
+        EXPECT_TRUE (t1[1] == 'r');
+        EXPECT_TRUE (t1[2] == 'e');
+        EXPECT_TRUE (t1[3] == 'd');
 
-        VerifyTestResult (t1[0] == 'F');
-        VerifyTestResult (t1[1] == 'r');
-        VerifyTestResult (t1[2] == 'e');
-        VerifyTestResult (t1[3] == 'd');
+        EXPECT_TRUE (t1[0] == 'F');
+        EXPECT_TRUE (t1[1] == 'r');
+        EXPECT_TRUE (t1[2] == 'e');
+        EXPECT_TRUE (t1[3] == 'd');
 
         String a[10];
-        VerifyTestResult (a[2] == "");
+        EXPECT_TRUE (a[2] == "");
         a[3] = "Fred";
-        VerifyTestResult (a[3] == "Fred");
-        VerifyTestResult (a[2] != "Fred");
+        EXPECT_TRUE (a[3] == "Fred");
+        EXPECT_TRUE (a[2] != "Fred");
     }
 
     void Test4_ ()
@@ -357,24 +358,24 @@ namespace {
     (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
 #endif
-        VerifyTestResult (t1 == "");
-        VerifyTestResult (t5 == "");
+        EXPECT_TRUE (t1 == "");
+        EXPECT_TRUE (t5 == "");
 
         t1 += 'F';
         t1 += 'r';
         t1 += 'e';
         t1 += 'd';
         t1 += " Flintstone";
-        VerifyTestResult (t1 == "Fred Flintstone");
+        EXPECT_TRUE (t1 == "Fred Flintstone");
         t5 = t1.SubString (5, 5 + 10);
-        VerifyTestResult (t5 == "Flintstone");
-        VerifyTestResult (not t5.Find ("STONE").has_value ());
-        VerifyTestResult (not t5.Contains ("SToNE"));
-        VerifyTestResult (t5.Find ("STONE", eCaseInsensitive) == 5u);
-        VerifyTestResult (t5.Contains ("SToNE", eCaseInsensitive));
+        EXPECT_TRUE (t5 == "Flintstone");
+        EXPECT_TRUE (not t5.Find ("STONE").has_value ());
+        EXPECT_TRUE (not t5.Contains ("SToNE"));
+        EXPECT_TRUE (t5.Find ("STONE", eCaseInsensitive) == 5u);
+        EXPECT_TRUE (t5.Contains ("SToNE", eCaseInsensitive));
 
         t1.erase (4);
-        VerifyTestResult (t1.length () == 4);
+        EXPECT_TRUE (t1.length () == 4);
 
         t5 = t1;
         t5.SetCharAt ('f', 0);
@@ -382,50 +383,50 @@ namespace {
         t5.SetCharAt ('E', 2);
         t5.SetCharAt ('D', 3);
 
-        VerifyTestResult (t5[0] == 'f');
-        VerifyTestResult (t5[1] == 'R');
-        VerifyTestResult (t5[2] == 'E');
-        VerifyTestResult (t5[3] == 'D');
-        VerifyTestResult (t5.Find ('f') == 0u);
-        VerifyTestResult (t5.Find ("f") == 0u);
-        VerifyTestResult (t5.Find ("fR") == 0u);
-        VerifyTestResult (t5.Find ("fRE") == 0u);
-        VerifyTestResult (t5.Find ("fRED") == 0u);
-        VerifyTestResult (not t5.Find ("fRD").has_value ());
-        VerifyTestResult (t5.Find ('R') == 1u);
-        VerifyTestResult (t5.Find ('E') == 2u);
-        VerifyTestResult (t5.Find ('D') == 3u);
-        VerifyTestResult (t5.Find ("D") == 3u);
+        EXPECT_TRUE (t5[0] == 'f');
+        EXPECT_TRUE (t5[1] == 'R');
+        EXPECT_TRUE (t5[2] == 'E');
+        EXPECT_TRUE (t5[3] == 'D');
+        EXPECT_TRUE (t5.Find ('f') == 0u);
+        EXPECT_TRUE (t5.Find ("f") == 0u);
+        EXPECT_TRUE (t5.Find ("fR") == 0u);
+        EXPECT_TRUE (t5.Find ("fRE") == 0u);
+        EXPECT_TRUE (t5.Find ("fRED") == 0u);
+        EXPECT_TRUE (not t5.Find ("fRD").has_value ());
+        EXPECT_TRUE (t5.Find ('R') == 1u);
+        EXPECT_TRUE (t5.Find ('E') == 2u);
+        EXPECT_TRUE (t5.Find ('D') == 3u);
+        EXPECT_TRUE (t5.Find ("D") == 3u);
 
-        VerifyTestResult (t5.RFind ('f') == 0u);
-        VerifyTestResult (t5.RFind ('R') == 1u);
-        VerifyTestResult (t5.RFind ('E') == 2u);
-        VerifyTestResult (t5.RFind ('D') == 3u);
-        VerifyTestResult (t5.RFind ("D") == 3u);
-        VerifyTestResult (t5.RFind ("ED") == 2u);
-        VerifyTestResult (t5.RFind ("RED") == 1u);
-        VerifyTestResult (t5.RFind ("fRED") == 0u);
-        VerifyTestResult (not t5.RFind ("fr").has_value ());
-        VerifyTestResult (t5.RFind ("f") == 0u);
+        EXPECT_TRUE (t5.RFind ('f') == 0u);
+        EXPECT_TRUE (t5.RFind ('R') == 1u);
+        EXPECT_TRUE (t5.RFind ('E') == 2u);
+        EXPECT_TRUE (t5.RFind ('D') == 3u);
+        EXPECT_TRUE (t5.RFind ("D") == 3u);
+        EXPECT_TRUE (t5.RFind ("ED") == 2u);
+        EXPECT_TRUE (t5.RFind ("RED") == 1u);
+        EXPECT_TRUE (t5.RFind ("fRED") == 0u);
+        EXPECT_TRUE (not t5.RFind ("fr").has_value ());
+        EXPECT_TRUE (t5.RFind ("f") == 0u);
 
         t5.SetCharAt ('D', 0);
         t5.SetCharAt ('D', 1);
         t5.SetCharAt ('D', 2);
         t5.SetCharAt ('D', 3);
-        VerifyTestResult (t5.Find ('D') == 0u);
-        VerifyTestResult (t5.Find ("D") == 0u);
-        VerifyTestResult (t5.RFind ('D') == 3u);
-        VerifyTestResult (t5.RFind ("D") == 3u);
+        EXPECT_TRUE (t5.Find ('D') == 0u);
+        EXPECT_TRUE (t5.Find ("D") == 0u);
+        EXPECT_TRUE (t5.RFind ('D') == 3u);
+        EXPECT_TRUE (t5.RFind ("D") == 3u);
 
-        VerifyTestResult (not t5.Find ('f').has_value ());
-        VerifyTestResult (not t5.Find ("f").has_value ());
-        VerifyTestResult (not t5.RFind ('f').has_value ());
-        VerifyTestResult (not t5.RFind ("f").has_value ());
+        EXPECT_TRUE (not t5.Find ('f').has_value ());
+        EXPECT_TRUE (not t5.Find ("f").has_value ());
+        EXPECT_TRUE (not t5.RFind ('f').has_value ());
+        EXPECT_TRUE (not t5.RFind ("f").has_value ());
 
-        VerifyTestResult (t5[0] == 'D');
-        VerifyTestResult (t5[1] == 'D');
-        VerifyTestResult (t5[2] == 'D');
-        VerifyTestResult (t5[3] == 'D');
+        EXPECT_TRUE (t5[0] == 'D');
+        EXPECT_TRUE (t5[1] == 'D');
+        EXPECT_TRUE (t5[2] == 'D');
+        EXPECT_TRUE (t5[3] == 'D');
     }
 
     void Test5_ ()
@@ -433,11 +434,11 @@ namespace {
         Debug::TraceContextBumper ctx{"Test5_"};
         String                    arr[100];
         arr[3] = "fred";
-        VerifyTestResult (arr[3] == "fred");
+        EXPECT_TRUE (arr[3] == "fred");
         String* l = new String[100];
         l[3]      = "FRED";
-        VerifyTestResult (l[3] == "FRED");
-        VerifyTestResult (l[99] == "");
+        EXPECT_TRUE (l[3] == "FRED");
+        EXPECT_TRUE (l[99] == "");
         delete[] (l);
         size_t nSlots = 100;
         l             = new String[size_t (nSlots)];
@@ -476,7 +477,7 @@ namespace {
 #endif
 
             STRING s = Test6_Helper_<STRING> (testString, kRecurseDepth); // returns length 114688 for depth 6
-            VerifyTestResult (s.length () == (ipow (4, kRecurseDepth) * 2 * testString.length ()));
+            EXPECT_TRUE (s.length () == (ipow (4, kRecurseDepth) * 2 * testString.length ()));
 
 #if qPrintTimings
             t = Time::GetTickCount () - t;
@@ -494,33 +495,33 @@ namespace {
     void Test7_Comparisons_ ()
     {
         Debug::TraceContextBumper ctx{"Test7_Comparisons_"};
-        VerifyTestResult (String{"1"} <= String{"1"});
-        VerifyTestResult ("1" <= String{"1"});
-        VerifyTestResult (String{"1"} <= "1");
-        VerifyTestResult (String{"1"} <= String{"10"});
-        VerifyTestResult (not(String{"1"} > String{"10"}));
-        VerifyTestResult (not(String{"1"} > String{"10"}));
-        VerifyTestResult (not(String{"1"} >= String{"10"}));
-        VerifyTestResult (String{"1"} < String{"10"});
+        EXPECT_TRUE (String{"1"} <= String{"1"});
+        EXPECT_TRUE ("1" <= String{"1"});
+        EXPECT_TRUE (String{"1"} <= "1");
+        EXPECT_TRUE (String{"1"} <= String{"10"});
+        EXPECT_TRUE (not(String{"1"} > String{"10"}));
+        EXPECT_TRUE (not(String{"1"} > String{"10"}));
+        EXPECT_TRUE (not(String{"1"} >= String{"10"}));
+        EXPECT_TRUE (String{"1"} < String{"10"});
 
-        VerifyTestResult (String{"20"} > String{"11"});
-        VerifyTestResult (String{"20"} >= String{"11"});
-        VerifyTestResult (not(String{"20"} < String{"11"}));
-        VerifyTestResult (not(String{"20"} <= String{"11"}));
-        VerifyTestResult (String{"11"} < String{"20"});
-        VerifyTestResult (String{"11"} <= String{"20"});
-        VerifyTestResult (not(String{"11"} > String{"20"}));
-        VerifyTestResult (not(String{"11"} >= String{"20"}));
+        EXPECT_TRUE (String{"20"} > String{"11"});
+        EXPECT_TRUE (String{"20"} >= String{"11"});
+        EXPECT_TRUE (not(String{"20"} < String{"11"}));
+        EXPECT_TRUE (not(String{"20"} <= String{"11"}));
+        EXPECT_TRUE (String{"11"} < String{"20"});
+        EXPECT_TRUE (String{"11"} <= String{"20"});
+        EXPECT_TRUE (not(String{"11"} > String{"20"}));
+        EXPECT_TRUE (not(String{"11"} >= String{"20"}));
 
-        VerifyTestResult (String{"aac"} > String{"aab"});
-        VerifyTestResult (String{"aac"} >= String{"aab"});
-        VerifyTestResult (not(String{"aac"} < String{"aab"}));
-        VerifyTestResult (not(String{"aac"} <= String{"aab"}));
+        EXPECT_TRUE (String{"aac"} > String{"aab"});
+        EXPECT_TRUE (String{"aac"} >= String{"aab"});
+        EXPECT_TRUE (not(String{"aac"} < String{"aab"}));
+        EXPECT_TRUE (not(String{"aac"} <= String{"aab"}));
 
-        VerifyTestResult (String{"apple"} < String{"apples"});
-        VerifyTestResult (String{"apple"} <= String{"apples"});
-        VerifyTestResult (not(String{"apple"} > String{"apples"}));
-        VerifyTestResult (not(String{"apple"} >= String{"apples"}));
+        EXPECT_TRUE (String{"apple"} < String{"apples"});
+        EXPECT_TRUE (String{"apple"} <= String{"apples"});
+        EXPECT_TRUE (not(String{"apple"} > String{"apples"}));
+        EXPECT_TRUE (not(String{"apple"} >= String{"apples"}));
     }
 
     void Test8_ReadOnlyStrings_ ()
@@ -529,25 +530,25 @@ namespace {
         // NOTE - THIS TESTS String_Constant
         //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime;
         String s = String::FromStringConstant ("fred");
-        VerifyTestResult (s[0] == 'f');
+        EXPECT_TRUE (s[0] == 'f');
         s.erase (3);
-        VerifyTestResult (s[0] == 'f');
-        VerifyTestResult (s.size () == 3);
-        VerifyTestResult (s == "fre");
+        EXPECT_TRUE (s[0] == 'f');
+        EXPECT_TRUE (s.size () == 3);
+        EXPECT_TRUE (s == "fre");
         s += "x";
-        VerifyTestResult (s.size () == 4);
-        VerifyTestResult (s[3] == 'x');
-        VerifyTestResult (s == "frex");
+        EXPECT_TRUE (s.size () == 4);
+        EXPECT_TRUE (s[3] == 'x');
+        EXPECT_TRUE (s == "frex");
         s = s.InsertAt ('x', 2);
-        VerifyTestResult (s == "frxex");
+        EXPECT_TRUE (s == "frxex");
         {
             wchar_t kZero[] = L"";
             s               = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 0);
-            VerifyTestResult (s == "frxex");
+            EXPECT_TRUE (s == "frxex");
             s = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 1);
-            VerifyTestResult (s == "frxex");
+            EXPECT_TRUE (s == "frxex");
             s = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 5);
-            VerifyTestResult (s == "frxex");
+            EXPECT_TRUE (s == "frxex");
         }
     }
 
@@ -555,16 +556,16 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test8_ExternalMemoryOwnershipStrings_"};
         String                    s = String::FromStringConstant ("fred");
-        VerifyTestResult (s[0] == 'f');
+        EXPECT_TRUE (s[0] == 'f');
         s.erase (3);
-        VerifyTestResult (s[0] == 'f');
-        VerifyTestResult (s.size () == 3);
+        EXPECT_TRUE (s[0] == 'f');
+        EXPECT_TRUE (s.size () == 3);
         s += "x";
-        VerifyTestResult (s.size () == 4);
-        VerifyTestResult (s[3] == 'x');
-        VerifyTestResult (s == "frex");
+        EXPECT_TRUE (s.size () == 4);
+        EXPECT_TRUE (s[3] == 'x');
+        EXPECT_TRUE (s == "frex");
         s = s.InsertAt ('x', 2);
-        VerifyTestResult (s == "frxex");
+        EXPECT_TRUE (s == "frxex");
     }
 
     namespace {
@@ -579,7 +580,7 @@ namespace {
                 }
                 STRING t2 = t1;
                 if (t1 != t2) {
-                    VerifyTestResult (false);
+                    EXPECT_TRUE (false);
                 }
             }
         }
@@ -598,8 +599,8 @@ namespace {
         Debug::TraceContextBumper ctx{"Test10_ConvertToFromSTDStrings_"};
         const wstring             kT1 = L"abcdefh124123985213129314234";
         String                    t1  = kT1;
-        VerifyTestResult (t1.As<wstring> () == kT1);
-        VerifyTestResult (t1 == kT1);
+        EXPECT_TRUE (t1.As<wstring> () == kT1);
+        EXPECT_TRUE (t1 == kT1);
     }
 }
 
@@ -608,13 +609,13 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test11_Trim_"};
         const String              kT1 = "  abc";
-        VerifyTestResult (kT1.RTrim () == kT1);
-        VerifyTestResult (kT1.LTrim () == kT1.Trim ());
-        VerifyTestResult (kT1.Trim () == "abc");
-        VerifyTestResult (String{" abc "}.Trim () == "abc");
+        EXPECT_TRUE (kT1.RTrim () == kT1);
+        EXPECT_TRUE (kT1.LTrim () == kT1.Trim ());
+        EXPECT_TRUE (kT1.Trim () == "abc");
+        EXPECT_TRUE (String{" abc "}.Trim () == "abc");
 
-        VerifyTestResult (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
-        VerifyTestResult (String{"/\n"}.Trim () == "/");
+        EXPECT_TRUE (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
+        EXPECT_TRUE (String{"/\n"}.Trim () == "/");
     }
 }
 
@@ -625,7 +626,7 @@ namespace {
         wstring                   w = L"<PHRMode";
         using namespace Characters;
         using namespace Memory;
-        VerifyTestResult ((CodeCvt<wchar_t>{WellKnownCodePages::kUTF8}.String2Bytes<string> (span{w}) == "<PHRMode"));
+        EXPECT_TRUE ((CodeCvt<wchar_t>{WellKnownCodePages::kUTF8}.String2Bytes<string> (span{w}) == "<PHRMode"));
     }
 }
 
@@ -634,9 +635,9 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test13_ToLowerUpper_"};
         String                    w = "Lewis";
-        VerifyTestResult (w.ToLowerCase () == "lewis");
-        VerifyTestResult (w.ToUpperCase () == "LEWIS");
-        VerifyTestResult (w == "Lewis");
+        EXPECT_TRUE (w.ToLowerCase () == "lewis");
+        EXPECT_TRUE (w.ToUpperCase () == "LEWIS");
+        EXPECT_TRUE (w == "Lewis");
     }
 }
 
@@ -645,10 +646,10 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test15_StripAll_"};
         String                    w = "Le wis";
-        VerifyTestResult (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == "Lewis");
+        EXPECT_TRUE (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == "Lewis");
 
         w = "This is a very good test    ";
-        VerifyTestResult (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == "Thisisaverygoodtest");
+        EXPECT_TRUE (w.StripAll ([] (Character c) -> bool { return c.IsWhitespace (); }) == "Thisisaverygoodtest");
     }
 }
 
@@ -656,22 +657,22 @@ namespace {
     void Test16_Format_ ()
     {
         Debug::TraceContextBumper ctx{"Test16_Format_"};
-        VerifyTestResult (CString::Format ("%d", 123) == "123");
-        VerifyTestResult (CString::Format ("%s", "123") == "123");
+        EXPECT_TRUE (CString::Format ("%d", 123) == "123");
+        EXPECT_TRUE (CString::Format ("%s", "123") == "123");
 
         // SUBTLE - this would FAIL with vsnprintf on gcc -- See docs in Header for
         // Format string
-        VerifyTestResult (CString::Format (L"%s", L"123") == L"123");
-        VerifyTestResult (Format (L"%s", L"123") == L"123");
+        EXPECT_TRUE (CString::Format (L"%s", L"123") == L"123");
+        EXPECT_TRUE (Format (L"%s", L"123") == L"123");
 
-        VerifyTestResult (Format (L"%20s", L"123") == L"                 123");
-        VerifyTestResult (Format (L"%.20s", L"123") == L"123");
+        EXPECT_TRUE (Format (L"%20s", L"123") == L"                 123");
+        EXPECT_TRUE (Format (L"%.20s", L"123") == L"123");
 
         for (size_t i = 1; i < 1000; ++i) {
             String format = Format (L"%%%ds", static_cast<int> (i));
-            VerifyTestResult (Format (format.c_str (), L"x").length () == i);
+            EXPECT_TRUE (Format (format.c_str (), L"x").length () == i);
         }
-        VerifyTestResult (Characters::Format (L"%d.%d%s%s", 1, 0, L"a", L"1x") == L"1.0a1x"); // 2 conseq %s%s POSIX bug fixed 2014-01-22
+        EXPECT_TRUE (Characters::Format (L"%d.%d%s%s", 1, 0, L"a", L"1x") == L"1.0a1x"); // 2 conseq %s%s POSIX bug fixed 2014-01-22
     }
 }
 
@@ -679,48 +680,48 @@ namespace {
     namespace Test17_Private_ {
         void Test17_Find_ ()
         {
-            VerifyTestResult (String{"abc"}.Find ("b") == 1u);
-            VerifyTestResult (not String{"abc"}.Find ("x").has_value ());
-            VerifyTestResult (not String{"abc"}.Find ("b", 2).has_value ());
+            EXPECT_TRUE (String{"abc"}.Find ("b") == 1u);
+            EXPECT_TRUE (not String{"abc"}.Find ("x").has_value ());
+            EXPECT_TRUE (not String{"abc"}.Find ("b", 2).has_value ());
         }
         void Test17_FindEach_ ()
         {
             {
                 // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-                VerifyTestResult (String{"abc"}.FindEach ("b") == Containers::Sequence<size_t> ({1}).As<vector<size_t>> ());
+                EXPECT_TRUE (String{"abc"}.FindEach ("b") == Containers::Sequence<size_t> ({1}).As<vector<size_t>> ());
             }
             // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-            VerifyTestResult (String{"01-23-45-67-89"}.FindEach ("-") == Containers::Sequence<size_t> ({2, 5, 8, 11}).As<vector<size_t>> ());
+            EXPECT_TRUE (String{"01-23-45-67-89"}.FindEach ("-") == Containers::Sequence<size_t> ({2, 5, 8, 11}).As<vector<size_t>> ());
             // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-            VerifyTestResult (String{"AAAA"}.FindEach ("AA") == Containers::Sequence<size_t> ({0, 2}).As<vector<size_t>> ());
+            EXPECT_TRUE (String{"AAAA"}.FindEach ("AA") == Containers::Sequence<size_t> ({0, 2}).As<vector<size_t>> ());
         }
         void Test17_ReplaceAll_ ()
         {
-            VerifyTestResult (String{"01-23-45-67-89"}.ReplaceAll ("-", "") == "0123456789");
-            VerifyTestResult (String{"01-23-45-67-89"}.ReplaceAll ("-", "x") == "01x23x45x67x89");
-            VerifyTestResult (String{"01-23-45-67-89"}.ReplaceAll ("-", "--") == "01--23--45--67--89");
+            EXPECT_TRUE (String{"01-23-45-67-89"}.ReplaceAll ("-", "") == "0123456789");
+            EXPECT_TRUE (String{"01-23-45-67-89"}.ReplaceAll ("-", "x") == "01x23x45x67x89");
+            EXPECT_TRUE (String{"01-23-45-67-89"}.ReplaceAll ("-", "--") == "01--23--45--67--89");
         }
         void Test17_Replace_ ()
         {
-            VerifyTestResult (String{u8"abc"}.Replace (1, 2, "B") == "aBc");
+            EXPECT_TRUE (String{u8"abc"}.Replace (1, 2, "B") == "aBc");
         }
         void Test17_RegExpMatch_ ()
         {
             {
                 for (String i : Sequence<String>{"01-23-45-67-89", "", "a"}) {
-                    VerifyTestResult (not i.Matches (RegularExpression::kNONE));
-                    VerifyTestResult (i.Matches (RegularExpression::kAny));
+                    EXPECT_TRUE (not i.Matches (RegularExpression::kNONE));
+                    EXPECT_TRUE (i.Matches (RegularExpression::kAny));
                 }
             }
             {
                 // Test from String::Match () docs
                 static const RegularExpression kSonosRE_{"([0-9.:]*)( - .*)"_RegEx};
                 static const String            kTestStr_{"192.168.244.104 - Sonos Play:5"};
-                VerifyTestResult (kTestStr_.Matches (kSonosRE_));
+                EXPECT_TRUE (kTestStr_.Matches (kSonosRE_));
                 optional<String> match1;
-                VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1) and match1 == "192.168.244.104");
+                EXPECT_TRUE (kTestStr_.Matches (kSonosRE_, &match1) and match1 == "192.168.244.104");
                 optional<String> match2;
-                VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == "192.168.244.104" and match2 == " - Sonos Play:5");
+                EXPECT_TRUE (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == "192.168.244.104" and match2 == " - Sonos Play:5");
             }
         }
         void Test17_RegExp_Search_ ()
@@ -728,15 +729,15 @@ namespace {
             {
                 RegularExpression regExp{"abc"};
                 String            testStr2Search = String{"abc"};
-                VerifyTestResult (testStr2Search.FindEach (regExp).size () == 1);
-                VerifyTestResult ((testStr2Search.FindEach (regExp)[0] == pair<size_t, size_t> (0, 3)));
+                EXPECT_TRUE (testStr2Search.FindEach (regExp).size () == 1);
+                EXPECT_TRUE ((testStr2Search.FindEach (regExp)[0] == pair<size_t, size_t> (0, 3)));
             }
             {
                 // Test replace crlfs
                 String stringWithCRLFs = "abc\r\ndef\r\n";
 #if !qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
                 String replaced = stringWithCRLFs.ReplaceAll (RegularExpression{"[\r\n]*"}, "");
-                VerifyTestResult (replaced == "abcdef");
+                EXPECT_TRUE (replaced == "abcdef");
 #endif
             }
 #if 0
@@ -744,9 +745,9 @@ namespace {
             {
                 String  abc     =   String {"abc"};
                 String  abcabc  =   String {"abc abc"};
-                VerifyTestResult (abcabc.Search (abc).size () == 2);
-                VerifyTestResult ((abcabc.Search (abc)[0] == pair<size_t, size_t> (0, abc.length ())));
-                VerifyTestResult ((abcabc.Search (abc)[1] == pair<size_t, size_t> (3, abc.length ())));
+                EXPECT_TRUE (abcabc.Search (abc).size () == 2);
+                EXPECT_TRUE ((abcabc.Search (abc)[0] == pair<size_t, size_t> (0, abc.length ())));
+                EXPECT_TRUE ((abcabc.Search (abc)[1] == pair<size_t, size_t> (3, abc.length ())));
             }
 #endif
         }
@@ -757,10 +758,10 @@ namespace {
             Test17_RegExp_Search_ ();
             Test17_RegExpMatch_ ();
             Test17_Replace_ ();
-            VerifyTestResult ((String{"Hello world"}.Find (RegularExpression{"ello"}) == pair<size_t, size_t> (1, 5)));
+            EXPECT_TRUE ((String{"Hello world"}.Find (RegularExpression{"ello"}) == pair<size_t, size_t> (1, 5)));
             vector<RegularExpressionMatch> r = String{"<h2>Egg prices</h2>"}.FindEachMatch (RegularExpression{"<h(.)>([^<]+)"});
-            VerifyTestResult (r.size () == 1 and r[0].GetSubMatches ()[0] == "2" and r[0].GetSubMatches ()[1] == "Egg prices");
-            VerifyTestResult (String{"Hello world"}.ReplaceAll (RegularExpression{"world"}, "Planet") == "Hello Planet");
+            EXPECT_TRUE (r.size () == 1 and r[0].GetSubMatches ()[0] == "2" and r[0].GetSubMatches ()[1] == "Egg prices");
+            EXPECT_TRUE (String{"Hello world"}.ReplaceAll (RegularExpression{"world"}, "Planet") == "Hello Planet");
         }
         void docsTests_ ()
         {
@@ -771,7 +772,7 @@ namespace {
                 if (kTest_.Find (kLbl2LookFor_)) {
                     tmp = String{kTest_.SubString (kLbl2LookFor_.length ())};
                 }
-                VerifyTestResult (tmp == "b");
+                EXPECT_TRUE (tmp == "b");
             }
             {
 // SEE http://en.cppreference.com/w/cpp/regex/match_results/operator_at
@@ -806,31 +807,31 @@ namespace {
                     const String            kTest_{"a=b,"_k};
                     const RegularExpression kRE_{"a=(.*)"};
                     Sequence<String>        tmp1{kTest_.FindEachString (kRE_)};
-                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == "a=b,");
+                    EXPECT_TRUE (tmp1.size () == 1 and tmp1[0] == "a=b,");
                     Sequence<RegularExpressionMatch> tmp2{kTest_.FindEachMatch (kRE_)};
-                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String>{"b,"});
+                    EXPECT_TRUE (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String>{"b,"});
                 }
                 {
                     const String            kTest_ = String::FromStringConstant ("a=b,");
                     const RegularExpression kRE_{"a=(.*),"};
                     Sequence<String>        tmp1{kTest_.FindEachString (kRE_)};
-                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == "a=b,");
+                    EXPECT_TRUE (tmp1.size () == 1 and tmp1[0] == "a=b,");
                     Sequence<RegularExpressionMatch> tmp2{kTest_.FindEachMatch (kRE_)};
-                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String>{"b"});
+                    EXPECT_TRUE (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String>{"b"});
                 }
 
                 {
                     const String            kTest_ = String::FromStringConstant ("a=b,");
                     const RegularExpression kRE_{"a=(.*)[, ]"};
                     Sequence<String>        tmp1{kTest_.FindEachString (kRE_)};
-                    VerifyTestResult (tmp1.size () == 1 and tmp1[0] == "a=b,");
+                    EXPECT_TRUE (tmp1.size () == 1 and tmp1[0] == "a=b,");
                     Sequence<RegularExpressionMatch> tmp2{kTest_.FindEachMatch (kRE_)};
-                    VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String>{"b"});
+                    EXPECT_TRUE (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String>{"b"});
                 }
                 {
                     const String            kTest_{"a=b, c=d"sv};
                     const RegularExpression kRE_{"(.)=(.)"};
-                    VerifyTestResult ((kTest_.FindEachString (kRE_) == vector<String>{"a=b", "c=d"}));
+                    EXPECT_TRUE ((kTest_.FindEachString (kRE_) == vector<String>{"a=b", "c=d"}));
                 }
             }
         }
@@ -851,16 +852,16 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test18_Compare_"};
         const String              kHELLOWorld = String{"Hello world"};
-        VerifyTestResult ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, kHELLOWorld) == 0));
-        VerifyTestResult ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, String{"Hello world"}) == 0));
-        VerifyTestResult ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) <= 0));
-        VerifyTestResult ((String::ThreeWayComparer{eCaseInsensitive}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) == 0));
-        VerifyTestResult ((String::ThreeWayComparer{eCaseInsensitive}("fred", "fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{eCaseInsensitive}("fred", "Fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{eCaseInsensitive}("Fred", "fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{eWithCase}("fred", "fredy") < 0));
-        VerifyTestResult ((String::ThreeWayComparer{eWithCase}("fred", "Fredy") > 0));
-        VerifyTestResult ((String::ThreeWayComparer{eWithCase}("Fred", "fredy") < 0));
+        EXPECT_TRUE ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, kHELLOWorld) == 0));
+        EXPECT_TRUE ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, String{"Hello world"}) == 0));
+        EXPECT_TRUE ((String::ThreeWayComparer{eWithCase}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) <= 0));
+        EXPECT_TRUE ((String::ThreeWayComparer{eCaseInsensitive}(kHELLOWorld, kHELLOWorld.ToLowerCase ()) == 0));
+        EXPECT_TRUE ((String::ThreeWayComparer{eCaseInsensitive}("fred", "fredy") < 0));
+        EXPECT_TRUE ((String::ThreeWayComparer{eCaseInsensitive}("fred", "Fredy") < 0));
+        EXPECT_TRUE ((String::ThreeWayComparer{eCaseInsensitive}("Fred", "fredy") < 0));
+        EXPECT_TRUE ((String::ThreeWayComparer{eWithCase}("fred", "fredy") < 0));
+        EXPECT_TRUE ((String::ThreeWayComparer{eWithCase}("fred", "Fredy") > 0));
+        EXPECT_TRUE ((String::ThreeWayComparer{eWithCase}("Fred", "fredy") < 0));
     }
 }
 
@@ -868,21 +869,21 @@ namespace {
     void Test19_ConstCharStar_ ()
     {
         Debug::TraceContextBumper ctx{"Test19_ConstCharStar_"};
-        VerifyTestResult (wcscmp (String{"fred"}.c_str (), L"fred") == 0);
-        VerifyTestResult (wcscmp (String{"0123456789abcde"}.c_str (), L"0123456789abcde") == 0);                                 // 15 chars
-        VerifyTestResult (wcscmp (String{"0123456789abcdef"}.c_str (), L"0123456789abcdef") == 0);                               // 16 chars
-        VerifyTestResult (wcscmp (String{"0123456789abcdef0123456789abcde"}.c_str (), L"0123456789abcdef0123456789abcde") == 0); // 31 chars
-        VerifyTestResult (wcscmp (String{"0123456789abcdef0123456789abcdef"}.c_str (), L"0123456789abcdef0123456789abcdef") == 0); // 32 chars
+        EXPECT_TRUE (wcscmp (String{"fred"}.c_str (), L"fred") == 0);
+        EXPECT_TRUE (wcscmp (String{"0123456789abcde"}.c_str (), L"0123456789abcde") == 0);                                 // 15 chars
+        EXPECT_TRUE (wcscmp (String{"0123456789abcdef"}.c_str (), L"0123456789abcdef") == 0);                               // 16 chars
+        EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcde"}.c_str (), L"0123456789abcdef0123456789abcde") == 0); // 31 chars
+        EXPECT_TRUE (wcscmp (String{"0123456789abcdef0123456789abcdef"}.c_str (), L"0123456789abcdef0123456789abcdef") == 0); // 32 chars
         {
             String tmp = "333";
-            VerifyTestResult (wcscmp (tmp.c_str (), L"333") == 0);
+            EXPECT_TRUE (wcscmp (tmp.c_str (), L"333") == 0);
             tmp = "Barny";
-            VerifyTestResult (wcscmp (tmp.c_str (), L"Barny") == 0);
+            EXPECT_TRUE (wcscmp (tmp.c_str (), L"Barny") == 0);
             tmp.SetCharAt ('c', 2);
-            VerifyTestResult (wcscmp (tmp.c_str (), L"Bacny") == 0);
+            EXPECT_TRUE (wcscmp (tmp.c_str (), L"Bacny") == 0);
             String bumpRefCnt = tmp;
             tmp.SetCharAt ('d', 2);
-            VerifyTestResult (wcscmp (tmp.c_str (), L"Badny") == 0);
+            EXPECT_TRUE (wcscmp (tmp.c_str (), L"Badny") == 0);
         }
     }
 }
@@ -891,33 +892,33 @@ namespace {
     void Test20_CStringHelpers_ ()
     {
         Debug::TraceContextBumper ctx{"Test20_CStringHelpers_"};
-        VerifyTestResult (CString::Length ("hi") == 2);
-        VerifyTestResult (CString::Length (L"hi") == 2);
+        EXPECT_TRUE (CString::Length ("hi") == 2);
+        EXPECT_TRUE (CString::Length (L"hi") == 2);
         {
             // This test was mostly to confirm the false-warning from valgrind
             // SEE THIS VALGRIND SUPPRESSION - wcscmp_appears_to_generate_false_warnings_gcc48_ubuntu
             wchar_t buf[3] = {'1', '2', 0};
-            VerifyTestResult (::wcscmp (buf, L"12") == 0);
+            EXPECT_TRUE (::wcscmp (buf, L"12") == 0);
         }
         {
             char buf[3] = {'1', '1', '1'};
             CString::Copy (buf, Memory::NEltsOf (buf), "3");
-            VerifyTestResult (::strcmp (buf, "3") == 0);
+            EXPECT_TRUE (::strcmp (buf, "3") == 0);
         }
         {
             wchar_t buf[3] = {'1', '1', '1'};
             CString::Copy (buf, Memory::NEltsOf (buf), L"3");
-            VerifyTestResult (::wcscmp (buf, L"3") == 0);
+            EXPECT_TRUE (::wcscmp (buf, L"3") == 0);
         }
         {
             char buf[3] = {'1', '1', '1'};
             CString::Copy (buf, Memory::NEltsOf (buf), "12345");
-            VerifyTestResult (::strcmp (buf, "12") == 0);
+            EXPECT_TRUE (::strcmp (buf, "12") == 0);
         }
         {
             wchar_t buf[3] = {'1', '1', '1'};
             CString::Copy (buf, Memory::NEltsOf (buf), L"12345");
-            VerifyTestResult (::wcscmp (buf, L"12") == 0);
+            EXPECT_TRUE (::wcscmp (buf, L"12") == 0);
         }
     }
 }
@@ -928,11 +929,11 @@ namespace {
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
             if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-                VerifyTestResult (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
+                EXPECT_TRUE (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
                                                              l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
             }
             else {
-                VerifyTestResult (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
+                EXPECT_TRUE (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
                                                              l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
             }
         }
@@ -941,24 +942,24 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test21_StringNumericConversions_"};
         {
-            VerifyTestResult (CString::String2Int<int> ("-3") == -3);
-            VerifyTestResult (CString::String2Int<int> ("3") == 3);
-            VerifyTestResult (CString::String2Int<int> (wstring{L"3"}) == 3);
-            VerifyTestResult (String2Int<int> (String{"3"}) == 3);
+            EXPECT_TRUE (CString::String2Int<int> ("-3") == -3);
+            EXPECT_TRUE (CString::String2Int<int> ("3") == 3);
+            EXPECT_TRUE (CString::String2Int<int> (wstring{L"3"}) == 3);
+            EXPECT_TRUE (String2Int<int> (String{"3"}) == 3);
         }
         {
-            VerifyTestResult (CString::String2Int<int> ("") == 0);
-            VerifyTestResult (String2Int<int> ("") == 0);
-            VerifyTestResult (CString::String2Int<int> (wstring{L""}) == 0);
-            VerifyTestResult (String2Int<int> (String{}) == 0);
-            VerifyTestResult (CString::String2Int<int> ("     ") == 0);
+            EXPECT_TRUE (CString::String2Int<int> ("") == 0);
+            EXPECT_TRUE (String2Int<int> ("") == 0);
+            EXPECT_TRUE (CString::String2Int<int> (wstring{L""}) == 0);
+            EXPECT_TRUE (String2Int<int> (String{}) == 0);
+            EXPECT_TRUE (CString::String2Int<int> ("     ") == 0);
         }
         {
-            VerifyTestResult (CString::HexString2Int ("") == 0);
-            VerifyTestResult (CString::HexString2Int (L"") == 0);
-            VerifyTestResult (CString::HexString2Int (wstring{L""}) == 0);
-            VerifyTestResult (HexString2Int (String{}) == 0);
-            VerifyTestResult (CString::HexString2Int ("     ") == 0);
+            EXPECT_TRUE (CString::HexString2Int ("") == 0);
+            EXPECT_TRUE (CString::HexString2Int (L"") == 0);
+            EXPECT_TRUE (CString::HexString2Int (wstring{L""}) == 0);
+            EXPECT_TRUE (HexString2Int (String{}) == 0);
+            EXPECT_TRUE (CString::HexString2Int ("     ") == 0);
         }
         {
             // https://stroika.atlassian.net/browse/STK-966
@@ -969,7 +970,7 @@ namespace {
                 span<const wchar_t>          tmpData1 = sb1.GetData (&ignoreBuf1);
                 double                       ff2      = Characters::FloatConversion::ToFloat<double> (tmpData1);
                 DbgTrace (L"*in reader:  ff2-> %f", ff2);
-                VerifyTestResult (Math::NearlyEquals (ff2, wVal, 0.001));
+                EXPECT_TRUE (Math::NearlyEquals (ff2, wVal, 0.001));
             };
             for (int i = 1; i < 10; ++i) {
                 doTest (L"405.1", 405.1);
@@ -978,44 +979,44 @@ namespace {
             }
         }
         {
-            VerifyTestResult (isnan (FloatConversion::ToFloat<double> (String{})));
-            VerifyTestResult (isnan (FloatConversion::ToFloat (string{})));
-            VerifyTestResult (isnan (FloatConversion::ToFloat<double> (wstring{})));
-            VerifyTestResult (isnan (FloatConversion::ToFloat ("")));
-            VerifyTestResult (isnan (FloatConversion::ToFloat (wstring{L""})));
-            VerifyTestResult (isnan (FloatConversion::ToFloat<double> (String{})));
-            VerifyTestResult (isnan (FloatConversion::ToFloat ("     ")));
-            VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L"-1.#INF000000000000"))); // MSFT sometimes generates these but they arent legal INF values!
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat<double> (String{})));
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat (string{})));
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat<double> (wstring{})));
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat ("")));
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat (wstring{L""})));
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat<double> (String{})));
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat ("     ")));
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat<double> (L"-1.#INF000000000000"))); // MSFT sometimes generates these but they arent legal INF values!
             {
                 String remainder;
-                VerifyTestResult (FloatConversion::ToFloat<double> (L"-INF  f", &remainder) == FloatConversion::ToFloat<double> (L"-INF"));
-                VerifyTestResult (remainder == L"  f");
+                EXPECT_TRUE (FloatConversion::ToFloat<double> (L"-INF  f", &remainder) == FloatConversion::ToFloat<double> (L"-INF"));
+                EXPECT_TRUE (remainder == L"  f");
             }
             {
                 // leading/trailing space (or other bad trailing characters) produces NAN for no &remainder overload
-                VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"INF")));
-                VerifyTestResult (not isnan (FloatConversion::ToFloat<double> (L"INF")));
-                VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"iNF")));
-                VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L" INF")));
-                VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L"INF ")));
+                EXPECT_TRUE (isinf (FloatConversion::ToFloat<double> (L"INF")));
+                EXPECT_TRUE (not isnan (FloatConversion::ToFloat<double> (L"INF")));
+                EXPECT_TRUE (isinf (FloatConversion::ToFloat<double> (L"iNF")));
+                EXPECT_TRUE (isnan (FloatConversion::ToFloat<double> (L" INF")));
+                EXPECT_TRUE (isnan (FloatConversion::ToFloat<double> (L"INF ")));
                 // leading/trailing space produces NAN for WITH &remainder overload produces right value
                 String remainder;
-                VerifyTestResult (FloatConversion::ToFloat<double> (L"-INF  f", &remainder) == FloatConversion::ToFloat<double> (L"-INF"));
-                VerifyTestResult (remainder == L"  f");
-                VerifyTestResult (FloatConversion::ToFloat<double> (L" INF  f", &remainder) == FloatConversion::ToFloat<double> (L"INF"));
-                VerifyTestResult (remainder == L"  f");
-                VerifyTestResult (FloatConversion::ToFloat<double> (L" 3.0 ", &remainder) == 3.0);
-                VerifyTestResult (remainder == L" ");
+                EXPECT_TRUE (FloatConversion::ToFloat<double> (L"-INF  f", &remainder) == FloatConversion::ToFloat<double> (L"-INF"));
+                EXPECT_TRUE (remainder == L"  f");
+                EXPECT_TRUE (FloatConversion::ToFloat<double> (L" INF  f", &remainder) == FloatConversion::ToFloat<double> (L"INF"));
+                EXPECT_TRUE (remainder == L"  f");
+                EXPECT_TRUE (FloatConversion::ToFloat<double> (L" 3.0 ", &remainder) == 3.0);
+                EXPECT_TRUE (remainder == L" ");
             }
-            VerifyTestResult (isnan (FloatConversion::ToFloat ("-1.#INF000000000000")));
-            VerifyTestResult (isnan (FloatConversion::ToFloat<double> (L"1.#INF000000000000")));
-            VerifyTestResult (isnan (FloatConversion::ToFloat ("1.#INF000000000000")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"INF")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"INFINITY")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"-INF")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"-INFINITY")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"+INF")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat<double> (L"+INFINITY")));
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat ("-1.#INF000000000000")));
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat<double> (L"1.#INF000000000000")));
+            EXPECT_TRUE (isnan (FloatConversion::ToFloat ("1.#INF000000000000")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat<double> (L"INF")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat<double> (L"INFINITY")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat<double> (L"-INF")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat<double> (L"-INFINITY")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat<double> (L"+INF")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat<double> (L"+INFINITY")));
 
             {
                 /*
@@ -1054,28 +1055,28 @@ namespace {
                     // See https://docs.oracle.com/cd/E19455-01/806-0169/overview-9/index.html
                     if (auto ln = Configuration::FindLocaleNameQuietly (L"en", L"US")) {
                         Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
-                        VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> ("100.1"), 100.1));
+                        EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> ("100.1"), 100.1));
                         [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> ("967,295.01");
-                        //VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967,295.01") , 967295.01));     -- https://stroika.atlassian.net/browse/STK-748
+                        //EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967,295.01") , 967295.01));     -- https://stroika.atlassian.net/browse/STK-748
                     }
                     if (auto ln = Configuration::FindLocaleNameQuietly (L"es", L"ES")) {
                         Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
                         //DbgTrace ("using locale %s", locale{}.name ().c_str ());
                         //DbgTrace (L"decimal separator: %c", std::use_facet<std::numpunct<char>> (locale{}).decimal_point ());
-                        VerifyTestResult (std::use_facet<std::numpunct<char>> (locale{}).decimal_point () == ',');
-                        VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"100,1"), 100.1));
+                        EXPECT_TRUE (std::use_facet<std::numpunct<char>> (locale{}).decimal_point () == ',');
+                        EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"100,1"), 100.1));
                         [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> (L"967.295,01");
-                        //VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967.295,01") , 967295.01)); -- https://stroika.atlassian.net/browse/STK-748
+                        //EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967.295,01") , 967295.01)); -- https://stroika.atlassian.net/browse/STK-748
                     }
                 }
             }
 
-            VerifyTestResult (isinf (FloatConversion::ToFloat (L"INF")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat (L"INFINITY")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat (L"-INF")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat (L"-INFINITY")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat (L"+INF")));
-            VerifyTestResult (isinf (FloatConversion::ToFloat (L"+INFINITY")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat (L"INF")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat (L"INFINITY")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat (L"-INF")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat (L"-INFINITY")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat (L"+INF")));
+            EXPECT_TRUE (isinf (FloatConversion::ToFloat (L"+INFINITY")));
         }
         {
             // roundtrip lossless
@@ -1090,17 +1091,17 @@ namespace {
             Test21_StringNumericConversions_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::lowest ());
         }
         {
-            VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat ("3"), 3.0));
-            VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat (L"3"), 3.0));
-            VerifyTestResult (Math::NearlyEquals (Characters::FloatConversion::ToFloat (L"3"), 3.0));
-            VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat ("-44.4"), -44.4));
-            VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat (L"-44.4"), -44.4));
-            VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"-44.4"), -44.4));
-            VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (String{L"44.4333"}), 44.4333));
+            EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat ("3"), 3.0));
+            EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat (L"3"), 3.0));
+            EXPECT_TRUE (Math::NearlyEquals (Characters::FloatConversion::ToFloat (L"3"), 3.0));
+            EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat ("-44.4"), -44.4));
+            EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat (L"-44.4"), -44.4));
+            EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"-44.4"), -44.4));
+            EXPECT_TRUE (Math::NearlyEquals (FloatConversion::ToFloat<double> (String{L"44.4333"}), 44.4333));
         }
         [[maybe_unused]] auto runLocaleIndepTest = [] () {
-            VerifyTestResult (FloatConversion::ToString (3000.5) == "3000.5");
-            VerifyTestResult (FloatConversion::ToString (30000.5) == "30000.5");
+            EXPECT_TRUE (FloatConversion::ToString (3000.5) == "3000.5");
+            EXPECT_TRUE (FloatConversion::ToString (30000.5) == "30000.5");
         };
         {
             // Verify change of locale has no effect on results
@@ -1114,7 +1115,7 @@ namespace {
             runLocaleIndepTest ();
         }
         {
-            VerifyTestResult (String2Int ("0587:c413:5500:0000:0000:0000:0001]:60000") == 0);
+            EXPECT_TRUE (String2Int ("0587:c413:5500:0000:0000:0000:0001]:60000") == 0);
         }
     }
 }
@@ -1123,17 +1124,17 @@ namespace {
     void Test22_StartsWithEndsWithMatch_ ()
     {
         Debug::TraceContextBumper ctx{"Test22_StartsWithEndsWithMatch_"};
-        VerifyTestResult (String{"abc"}.Matches (RegularExpression{"abc"}));
-        VerifyTestResult (not(String{"abc"}.Matches (RegularExpression{"bc"})));
-        VerifyTestResult (String{"abc"}.Matches (RegularExpression{".*bc"}));
-        VerifyTestResult (not String{"abc"}.Matches (RegularExpression{"b.*c"}));
-        VerifyTestResult (not String{"Hello world"}.Matches (RegularExpression{"ello"}));
-        VerifyTestResult (String{"abc"}.StartsWith ("AB", eCaseInsensitive));
-        VerifyTestResult (not String{"abc"}.StartsWith ("AB", eWithCase));
-        VerifyTestResult (String{"abc"}.EndsWith ("bc", eCaseInsensitive));
-        VerifyTestResult (String{"abc"}.EndsWith ("bc", eWithCase));
-        VerifyTestResult (String{"abc"}.EndsWith ("BC", eCaseInsensitive));
-        VerifyTestResult (not String{"abc"}.EndsWith ("BC", eWithCase));
+        EXPECT_TRUE (String{"abc"}.Matches (RegularExpression{"abc"}));
+        EXPECT_TRUE (not(String{"abc"}.Matches (RegularExpression{"bc"})));
+        EXPECT_TRUE (String{"abc"}.Matches (RegularExpression{".*bc"}));
+        EXPECT_TRUE (not String{"abc"}.Matches (RegularExpression{"b.*c"}));
+        EXPECT_TRUE (not String{"Hello world"}.Matches (RegularExpression{"ello"}));
+        EXPECT_TRUE (String{"abc"}.StartsWith ("AB", eCaseInsensitive));
+        EXPECT_TRUE (not String{"abc"}.StartsWith ("AB", eWithCase));
+        EXPECT_TRUE (String{"abc"}.EndsWith ("bc", eCaseInsensitive));
+        EXPECT_TRUE (String{"abc"}.EndsWith ("bc", eWithCase));
+        EXPECT_TRUE (String{"abc"}.EndsWith ("BC", eCaseInsensitive));
+        EXPECT_TRUE (not String{"abc"}.EndsWith ("BC", eWithCase));
     }
 }
 
@@ -1156,7 +1157,7 @@ namespace {
     {
         using namespace Test23_PRIVATE_;
         Debug::TraceContextBumper ctx{"Test23_FormatV_"};
-        VerifyTestResult (Test23_help1_HELPER (L"joe%sx", L"1") == L"joe1x");
+        EXPECT_TRUE (Test23_help1_HELPER (L"joe%sx", L"1") == L"joe1x");
     }
 }
 
@@ -1164,13 +1165,13 @@ namespace {
     void Test24_Float2String ()
     {
         Debug::TraceContextBumper ctx{"Test24_Float2String"};
-        VerifyTestResult (FloatConversion::ToString (0.0) == "0");
-        VerifyTestResult (FloatConversion::ToString (3000.5) == "3000.5");
-        VerifyTestResult (FloatConversion::ToString (3000.500) == "3000.5");
-        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{2}) == "3.1");
-        VerifyTestResult (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{3}) == "3.12");
-        VerifyTestResult (FloatConversion::ToString (31.234, Characters::FloatConversion::Precision{3}) == "31.2");
-        VerifyTestResult (FloatConversion::ToString (30707548160.0) == "3.07075e+10");
+        EXPECT_TRUE (FloatConversion::ToString (0.0) == "0");
+        EXPECT_TRUE (FloatConversion::ToString (3000.5) == "3000.5");
+        EXPECT_TRUE (FloatConversion::ToString (3000.500) == "3000.5");
+        EXPECT_TRUE (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{2}) == "3.1");
+        EXPECT_TRUE (FloatConversion::ToString (3.1234, Characters::FloatConversion::Precision{3}) == "3.12");
+        EXPECT_TRUE (FloatConversion::ToString (31.234, Characters::FloatConversion::Precision{3}) == "31.2");
+        EXPECT_TRUE (FloatConversion::ToString (30707548160.0) == "3.07075e+10");
     }
 }
 
@@ -1180,9 +1181,9 @@ namespace {
         Debug::TraceContextBumper ctx{"Test25_RemoveAt_"};
         String                    x = "123";
         x                           = x.RemoveAt (1);
-        VerifyTestResult (x == "13");
+        EXPECT_TRUE (x == "13");
         x = x.RemoveAt (0, 2);
-        VerifyTestResult (x.empty ());
+        EXPECT_TRUE (x.empty ());
     }
 }
 
@@ -1194,10 +1195,10 @@ namespace {
             String x = "123";
             int    i = 0;
             for (auto c : x) {
-                VerifyTestResult (c == x[i]);
+                EXPECT_TRUE (c == x[i]);
                 ++i;
             }
-            VerifyTestResult (i == 3);
+            EXPECT_TRUE (i == 3);
         }
     }
 }
@@ -1209,13 +1210,13 @@ namespace {
         {
             String x;
             String r = x.Repeat (5);
-            VerifyTestResult (r.length () == 0);
+            EXPECT_TRUE (r.length () == 0);
         }
         {
             String x = "123";
             String r = x.Repeat (3);
-            VerifyTestResult (r.length () == 9);
-            VerifyTestResult (r.SubString (3, 6) == "123");
+            EXPECT_TRUE (r.length () == 9);
+            EXPECT_TRUE (r.SubString (3, 6) == "123");
         }
     }
 }
@@ -1225,9 +1226,9 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test28_ReplacementForStripTrailingCharIfAny_"};
         auto StripTrailingCharIfAny = [] (const String& s, const Character& c) -> String { return s.EndsWith (c) ? s.SubString (0, -1) : s; };
-        VerifyTestResult (StripTrailingCharIfAny ("xxx", '.') == "xxx");
-        VerifyTestResult (StripTrailingCharIfAny ("xxx.", '.') == "xxx");
-        VerifyTestResult (StripTrailingCharIfAny ("xxx..", '.') == "xxx.");
+        EXPECT_TRUE (StripTrailingCharIfAny ("xxx", '.') == "xxx");
+        EXPECT_TRUE (StripTrailingCharIfAny ("xxx.", '.') == "xxx");
+        EXPECT_TRUE (StripTrailingCharIfAny ("xxx..", '.') == "xxx.");
     }
 }
 
@@ -1239,7 +1240,7 @@ namespace {
             String              initialString = "012345";
             Sequence<Character> s1            = Sequence<Character> (initialString); // THIS NEEDS TO BE MORE SEEMLESS
             s1.SetAt (3, 'E');
-            VerifyTestResult (String{s1} == "012E45");
+            EXPECT_TRUE (String{s1} == "012E45");
         }
     }
 }
@@ -1249,12 +1250,12 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test30_LimitLength_"};
         if constexpr (qCompiler_vswprintf_on_elispisStr_Buggy) {
-            VerifyTestResult (String{"12345"}.LimitLength (3) == "...");
+            EXPECT_TRUE (String{"12345"}.LimitLength (3) == "...");
         }
         else {
-            VerifyTestResult (String{"12345"}.LimitLength (3) == L"12\u2026");
+            EXPECT_TRUE (String{"12345"}.LimitLength (3) == L"12\u2026");
         }
-        VerifyTestResult (String{"12345"}.LimitLength (5) == "12345");
+        EXPECT_TRUE (String{"12345"}.LimitLength (5) == "12345");
     }
 }
 
@@ -1264,7 +1265,7 @@ namespace {
         Debug::TraceContextBumper ctx{"Test31_OperatorINSERT_ostream_"};
         wstringstream             out;
         out << String{"abc"};
-        VerifyTestResult (out.str () == L"abc");
+        EXPECT_TRUE (out.str () == L"abc");
     }
 }
 
@@ -1275,15 +1276,15 @@ namespace {
         {
             StringBuilder out;
             out << L"hi mom";
-            VerifyTestResult (out.str () == "hi mom");
+            EXPECT_TRUE (out.str () == "hi mom");
             out += ".";
-            VerifyTestResult (out.str () == "hi mom.");
-            VerifyTestResult (out.As<String> () == "hi mom.");
-            VerifyTestResult (out.As<wstring> () == L"hi mom.");
+            EXPECT_TRUE (out.str () == "hi mom.");
+            EXPECT_TRUE (out.As<String> () == "hi mom.");
+            EXPECT_TRUE (out.As<wstring> () == L"hi mom.");
         }
         {
             StringBuilder out{"x"};
-            VerifyTestResult (out.As<String> () == "x");
+            EXPECT_TRUE (out.As<String> () == "x");
         }
     }
 }
@@ -1297,8 +1298,8 @@ namespace {
         for (int i = 0; i < 10; ++i) {
             result.Append (std::begin (buf), std::begin (buf) + Memory::NEltsOf (buf));
         }
-        VerifyTestResult (result.size () == 4 * 10);
-        VerifyTestResult (result == "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
+        EXPECT_TRUE (result.size () == 4 * 10);
+        EXPECT_TRUE (result == "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
         Verify (L"a" + String{} == "a"); // we had bug in v2.0a100 and earlier with null string on RHS of operator+
     }
 }
@@ -1307,14 +1308,14 @@ namespace {
     void Test44_LocaleUNICODEConversions_ ()
     {
         Debug::TraceContextBumper ctx{"Test44_LocaleUNICODEConversions_"};
-        VerifyTestResult (String{"abcdefgjij"}.AsNarrowSDKString () == "abcdefgjij"); // Failed due to bug in CodePageConverter::MapFromUNICODE before v3.0d2
+        EXPECT_TRUE (String{"abcdefgjij"}.AsNarrowSDKString () == "abcdefgjij"); // Failed due to bug in CodePageConverter::MapFromUNICODE before v3.0d2
         auto testRoundtrip = [] (const char* localName, const string& localMBString, const wstring& wideStr) {
             bool initializedLocale = false;
             try {
                 locale l{localName};
                 initializedLocale = true;
-                VerifyTestResult (String::FromNarrowString (localMBString, l) == wideStr);
-                VerifyTestResult (String{wideStr}.AsNarrowString (l) == localMBString);
+                EXPECT_TRUE (String::FromNarrowString (localMBString, l) == wideStr);
+                EXPECT_TRUE (String{wideStr}.AsNarrowString (l) == localMBString);
             }
             catch (const runtime_error&) {
                 // https://en.cppreference.com/w/cpp/locale/locale/locale says must throw std::runtime_error if invalid locale
@@ -1323,12 +1324,12 @@ namespace {
 #if qCompilerAndStdLib_locale_utf8_string_convert_Buggy
 // sigh - fails to convert unicode characters
 #else
-                VerifyTestResult (not initializedLocale); // else means throw from conversion which would be bad
+                EXPECT_TRUE (not initializedLocale);                                        // else means throw from conversion which would be bad
 #endif
             }
             catch (...) {
                 DbgTrace (L"error: %s", Characters::ToString (current_exception ()).c_str ());
-                VerifyTestResult (false); // I think docs say must throw std::runtime_error
+                EXPECT_TRUE (false); // I think docs say must throw std::runtime_error
             }
         };
         //testRoundtrip ("en_US.utf8", u8"z\u00df\u6c34\U0001d10b", L"zß水𝄋");
@@ -1345,29 +1346,29 @@ namespace {
         {
             String           t{"ABC DEF G"};
             Sequence<String> tt{t.Tokenize ()};
-            VerifyTestResult (tt.size () == 3);
-            VerifyTestResult (tt[1] == "DEF");
+            EXPECT_TRUE (tt.size () == 3);
+            EXPECT_TRUE (tt[1] == "DEF");
         }
         {
             String t{"foo=   7"};
             auto   tt = t.Tokenize (Containers::Set<Character>{'='});
-            VerifyTestResult (tt.length () == 2);
-            VerifyTestResult (tt[0] == "foo");
-            VerifyTestResult (tt[1] == "7");
+            EXPECT_TRUE (tt.length () == 2);
+            EXPECT_TRUE (tt[0] == "foo");
+            EXPECT_TRUE (tt[1] == "7");
         }
         {
             String t{"           \n foo=   7"};
             auto   tt = t.Tokenize ({'='});
-            VerifyTestResult (tt.length () == 2);
-            VerifyTestResult (tt[1] == "7");
+            EXPECT_TRUE (tt.length () == 2);
+            EXPECT_TRUE (tt[1] == "7");
         }
         {
             String t{"MemTotal:        3082000 kB"};
             auto   tt = t.Tokenize ({':', ' ', '\t'});
-            VerifyTestResult (tt.length () == 3);
-            VerifyTestResult (tt[0] == "MemTotal");
-            VerifyTestResult (tt[1] == "3082000");
-            VerifyTestResult (tt[2] == "kB");
+            EXPECT_TRUE (tt.length () == 3);
+            EXPECT_TRUE (tt[0] == "MemTotal");
+            EXPECT_TRUE (tt[1] == "3082000");
+            EXPECT_TRUE (tt[2] == "kB");
         }
     }
 }
@@ -1379,13 +1380,13 @@ namespace {
         const wchar_t*            i = L"One";
         Characters::String        n = "Two";
         if (i == n) {
-            VerifyTestResult (false);
+            EXPECT_TRUE (false);
         }
         if (n == i) {
-            VerifyTestResult (false);
+            EXPECT_TRUE (false);
         }
-        VerifyTestResult (i != n);
-        VerifyTestResult (n != i);
+        EXPECT_TRUE (i != n);
+        EXPECT_TRUE (n != i);
     }
 }
 
@@ -1395,7 +1396,7 @@ namespace {
         Debug::TraceContextBumper ctx{"Test47_SubString_"};
         {
             String tmp{"This is good"};
-            VerifyTestResult (tmp.SubString (5) == "is good");
+            EXPECT_TRUE (tmp.SubString (5) == "is good");
         }
         {
             const String kTest_{"a=b"_k};
@@ -1404,7 +1405,7 @@ namespace {
             if (kTest_.Find (kLbl2LookFor_)) {
                 tmp = String{kTest_.SubString (kLbl2LookFor_.length ())};
             }
-            VerifyTestResult (tmp == "b");
+            EXPECT_TRUE (tmp == "b");
         }
     }
 }
@@ -1413,25 +1414,25 @@ namespace {
     void Test48_ToString_ ()
     {
         Debug::TraceContextBumper ctx{"Test48_ToString_"};
-        VerifyTestResult (ToString (3) == "3");
-        VerifyTestResult (ToString (3u, ios_base::hex) == "0x3");
-        VerifyTestResult (ToString (3u) == "3");
-        VerifyTestResult (ToString (1.0).StartsWith ("1"));
-        VerifyTestResult (ToString ("abc") == "'abc'");
-        VerifyTestResult (ToString (String{"abc"}) == "'abc'");
-        VerifyTestResult (ToString (initializer_list<int>{3, 4, 5}) == "[ 3, 4, 5 ]");
+        EXPECT_TRUE (ToString (3) == "3");
+        EXPECT_TRUE (ToString (3u, ios_base::hex) == "0x3");
+        EXPECT_TRUE (ToString (3u) == "3");
+        EXPECT_TRUE (ToString (1.0).StartsWith ("1"));
+        EXPECT_TRUE (ToString ("abc") == "'abc'");
+        EXPECT_TRUE (ToString (String{"abc"}) == "'abc'");
+        EXPECT_TRUE (ToString (initializer_list<int>{3, 4, 5}) == "[ 3, 4, 5 ]");
         {
             using namespace Memory;
             constexpr byte kSample_[] = {0x34_b, 0x55_b, 0x1f_b};
             Memory::BLOB   b{begin (kSample_), end (kSample_)};
-            VerifyTestResult (b.ToString () == "[3 bytes: 34551f]");
-            VerifyTestResult (Characters::ToString (b) == "[3 bytes: 34551f]");
+            EXPECT_TRUE (b.ToString () == "[3 bytes: 34551f]");
+            EXPECT_TRUE (Characters::ToString (b) == "[3 bytes: 34551f]");
         }
         {
             constexpr int ca[3]{1, 3, 5};
             int           a[3]{1, 3, 5};
-            VerifyTestResult (Characters::ToString (ca) == "[ 1, 3, 5 ]");
-            VerifyTestResult (Characters::ToString (a) == "[ 1, 3, 5 ]");
+            EXPECT_TRUE (Characters::ToString (ca) == "[ 1, 3, 5 ]");
+            EXPECT_TRUE (Characters::ToString (a) == "[ 1, 3, 5 ]");
         }
     }
 }
@@ -1451,12 +1452,12 @@ namespace {
         {
             const char16_t microChars16[] = u"\u00B5";
             const char32_t microChars32[] = U"\U000000B5";
-            VerifyTestResult (0x00B5 == microChars16[0]);
-            VerifyTestResult (0x00B5 == microChars32[0]);
-            VerifyTestResult (sizeof (microChars16) == 2 * 2);
-            VerifyTestResult (sizeof (microChars32) == 2 * 4);
-            VerifyTestResult (String{microChars16}.size () == 1);
-            VerifyTestResult (String{microChars32}.size () == 1);
+            EXPECT_TRUE (0x00B5 == microChars16[0]);
+            EXPECT_TRUE (0x00B5 == microChars32[0]);
+            EXPECT_TRUE (sizeof (microChars16) == 2 * 2);
+            EXPECT_TRUE (sizeof (microChars32) == 2 * 4);
+            EXPECT_TRUE (String{microChars16}.size () == 1);
+            EXPECT_TRUE (String{microChars32}.size () == 1);
         }
         {
             // Argument must be "45 µs"
@@ -1464,14 +1465,14 @@ namespace {
                 {
                     Memory::StackBuffer<wchar_t> ignored1;
                     auto                         rhsSpan = a.GetData (&ignored1);
-                    VerifyTestResult (rhsSpan.size () == 5);
+                    EXPECT_TRUE (rhsSpan.size () == 5);
                 }
                 String b;
                 b += a;
-                VerifyTestResult (a == b);
-                VerifyTestResult (a.size () == 5);
-                VerifyTestResult (a[3] == 0x00b5);
-                VerifyTestResult (a[4] == 's');
+                EXPECT_TRUE (a == b);
+                EXPECT_TRUE (a.size () == 5);
+                EXPECT_TRUE (a[3] == 0x00b5);
+                EXPECT_TRUE (a[4] == 's');
             };
             test45mus (String{L"45 \u00b5s"});
             test45mus (String{u"45 \u00b5s"});
@@ -1484,17 +1485,17 @@ namespace {
                     u16string l = u"Fluorouracil\u00c2\u00ae"; // ORIG TEST
                     String    t1{l};
                     String    t2{t1.AsUTF8 ()};
-                    VerifyTestResult (t1 == t2);
+                    EXPECT_TRUE (t1 == t2);
                 }
                 {
                     // narrowed/simplified test
                     u16string test     = u"\u00c2";
                     u8string  testAsU8 = String{test}.AsUTF8 ();
-                    VerifyTestResult (testAsU8 == u8"\u00c2"); //u8"\xc382"); // according to https://www.utf8-chartable.de/
+                    EXPECT_TRUE (testAsU8 == u8"\u00c2"); //u8"\xc382"); // according to https://www.utf8-chartable.de/
                     String    readingThatUTF8{testAsU8};
                     u16string ttt = readingThatUTF8.AsUTF16 ();
-                    VerifyTestResult (readingThatUTF8.length () == 1);
-                    VerifyTestResult (readingThatUTF8 == test);
+                    EXPECT_TRUE (readingThatUTF8.length () == 1);
+                    EXPECT_TRUE (readingThatUTF8 == test);
                 }
             }
         }
@@ -1506,9 +1507,9 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test50_Utf8Conversions_"};
         {
-            VerifyTestResult (String::FromUTF8 (u8"phred") == String{"phred"});
+            EXPECT_TRUE (String::FromUTF8 (u8"phred") == String{"phred"});
             // Need char8_t to use this constructor
-            VerifyTestResult (String{u8"phred"} == String{"phred"});
+            EXPECT_TRUE (String{u8"phred"} == String{"phred"});
         }
         {
             StringBuilder tmp;
@@ -1516,63 +1517,63 @@ namespace {
             Verify (tmp.str () == L"€");
         }
         {
-            VerifyTestResult (u8"שלום" == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
-            VerifyTestResult (u8string{u8"phred"} == String::FromUTF8 (u8string{u8"phred"}).AsUTF8<u8string> ());
-            VerifyTestResult (u8string{u8"שלום"} == String::FromUTF8 (u8string{u8"שלום"}).AsUTF8<u8string> ());
+            EXPECT_TRUE (u8"שלום" == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
+            EXPECT_TRUE (u8string{u8"phred"} == String::FromUTF8 (u8string{u8"phred"}).AsUTF8<u8string> ());
+            EXPECT_TRUE (u8string{u8"שלום"} == String::FromUTF8 (u8string{u8"שלום"}).AsUTF8<u8string> ());
         }
         {
-            VerifyTestResult (u8string{u8"phred"} == String::FromUTF8 (u8"phred").AsUTF8<u8string> ());
-            VerifyTestResult (u8string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
+            EXPECT_TRUE (u8string{u8"phred"} == String::FromUTF8 (u8"phred").AsUTF8<u8string> ());
+            EXPECT_TRUE (u8string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
         }
         {// clang-format off
             // examples from https://en.wikipedia.org/wiki/UTF-8#Encoding
             {
                 char8_t dollarSign[] = u8"$";
-                VerifyTestResult (sizeof (dollarSign) == 2);
-                VerifyTestResult (dollarSign[0] == 0x0024);
-                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{dollarSign}) == 1u);
-                VerifyTestResult (dollarSign[*UTFConvert::NextCharacter (span<const char8_t>{dollarSign})] == '\0');
-                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{dollarSign}) == 2u); // Nul byte
+                EXPECT_TRUE (sizeof (dollarSign) == 2);
+                EXPECT_TRUE (dollarSign[0] == 0x0024);
+                EXPECT_TRUE (UTFConvert::NextCharacter (span<const char8_t>{dollarSign}) == 1u);
+                EXPECT_TRUE (dollarSign[*UTFConvert::NextCharacter (span<const char8_t>{dollarSign})] == '\0');
+                EXPECT_TRUE (UTFConvert::ComputeCharacterLength (span<const char8_t>{dollarSign}) == 2u); // Nul byte
             }
             {
                 //char8_t poundSign[] = u8"£";
                 char8_t poundSign[] = u8"\u00a3";
                 static_assert (sizeof (poundSign) == 3);
-                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{poundSign}) == 2u);
-                VerifyTestResult (poundSign[*UTFConvert::NextCharacter (span<const char8_t>{poundSign})] == '\0');
-                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{poundSign}) == 2u); // Nul byte
+                EXPECT_TRUE (UTFConvert::NextCharacter (span<const char8_t>{poundSign}) == 2u);
+                EXPECT_TRUE (poundSign[*UTFConvert::NextCharacter (span<const char8_t>{poundSign})] == '\0');
+                EXPECT_TRUE (UTFConvert::ComputeCharacterLength (span<const char8_t>{poundSign}) == 2u); // Nul byte
             }
             {
                 char8_t devanagari[] = u8"\u0939";
                 //char8_t devanagari[] = u8"ह";
                 static_assert (sizeof (devanagari) == 4);
-                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{devanagari}) == 3u);
-                VerifyTestResult (devanagari[*UTFConvert::NextCharacter (span<const char8_t>{devanagari})] == '\0');
-                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{devanagari}) == 2u); // Nul byte
+                EXPECT_TRUE (UTFConvert::NextCharacter (span<const char8_t>{devanagari}) == 3u);
+                EXPECT_TRUE (devanagari[*UTFConvert::NextCharacter (span<const char8_t>{devanagari})] == '\0');
+                EXPECT_TRUE (UTFConvert::ComputeCharacterLength (span<const char8_t>{devanagari}) == 2u); // Nul byte
             }
             {
                 char8_t euroSign[] = u8"\u0939";
                 //char8_t euroSign[] = u8"€";
                 static_assert (sizeof (euroSign) == 4);
-                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{euroSign}) == 3u);
-                VerifyTestResult (euroSign[*UTFConvert::NextCharacter (span<const char8_t>{euroSign})] == '\0');
-                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{euroSign}) == 2u); // Nul byte
+                EXPECT_TRUE (UTFConvert::NextCharacter (span<const char8_t>{euroSign}) == 3u);
+                EXPECT_TRUE (euroSign[*UTFConvert::NextCharacter (span<const char8_t>{euroSign})] == '\0');
+                EXPECT_TRUE (UTFConvert::ComputeCharacterLength (span<const char8_t>{euroSign}) == 2u); // Nul byte
             }
             {
                 char8_t hangull[] = u8"\uD55C";
                 //char8_t hangull[] = u8"한";
                 static_assert (sizeof (hangull) == 4);
-                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{hangull}) == 3u);
-                VerifyTestResult (hangull[*UTFConvert::NextCharacter (span<const char8_t>{hangull})] == '\0');
-                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{hangull}) == 2u); // Nul byte
+                EXPECT_TRUE (UTFConvert::NextCharacter (span<const char8_t>{hangull}) == 3u);
+                EXPECT_TRUE (hangull[*UTFConvert::NextCharacter (span<const char8_t>{hangull})] == '\0');
+                EXPECT_TRUE (UTFConvert::ComputeCharacterLength (span<const char8_t>{hangull}) == 2u); // Nul byte
             }
             {
                 char8_t hwair[] = u8"\U00010348";
                 //char8_t hwair[] = u8"𐍈";
                 static_assert (sizeof (hwair) == 5);
-                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{hwair}) == 4u);
-                VerifyTestResult (hwair[*UTFConvert::NextCharacter (span<const char8_t>{hwair})] == '\0');
-                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{hwair}) == 2u); // Nul byte
+                EXPECT_TRUE (UTFConvert::NextCharacter (span<const char8_t>{hwair}) == 4u);
+                EXPECT_TRUE (hwair[*UTFConvert::NextCharacter (span<const char8_t>{hwair})] == '\0');
+                EXPECT_TRUE (UTFConvert::ComputeCharacterLength (span<const char8_t>{hwair}) == 2u); // Nul byte
             }
         }
         {
@@ -1580,15 +1581,15 @@ namespace {
                 //char8_t poundSign[] = u8"£";
                 char8_t poundSign[] = u8"\u00a3";
                 static_assert (sizeof (poundSign) == 3);
-                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{poundSign}) == 2u);
+                EXPECT_TRUE (UTFConvert::NextCharacter (span<const char8_t>{poundSign}) == 2u);
                 UTFConvert c;
                 Character outBuf[1024];
                 auto a = c.ConvertQuietly (span<const char8_t>{&poundSign[0], 1}, span<Character> {outBuf});
-                VerifyTestResult (a.fSourceConsumed == 0 and a.fTargetProduced == 0);
-                VerifyTestResult (a.fStatus == UTFConvert::ConversionStatusFlag::sourceExhausted );
+                EXPECT_TRUE (a.fSourceConsumed == 0 and a.fTargetProduced == 0);
+                EXPECT_TRUE (a.fStatus == UTFConvert::ConversionStatusFlag::sourceExhausted );
                 try {
                     c.Convert (span<const char8_t>{&poundSign[0], 1}, span<Character> {outBuf});
-                    VerifyTestResult (false);   // not reached
+                    EXPECT_TRUE (false);   // not reached
                 }
                 catch (...) {
                     // good
@@ -1606,12 +1607,12 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test51_Utf16Conversions_"};
         {
-            VerifyTestResult (u16string{u"phred"} == String{u16string{u"phred"}}.AsUTF16 ());
-            VerifyTestResult (u16string{u"שלום"} == String{u16string{u"שלום"}}.AsUTF16 ()); // @todo CORRECT but misleading since file encoding doesnt match these characters
+            EXPECT_TRUE (u16string{u"phred"} == String{u16string{u"phred"}}.AsUTF16 ());
+            EXPECT_TRUE (u16string{u"שלום"} == String{u16string{u"שלום"}}.AsUTF16 ()); // @todo CORRECT but misleading since file encoding doesnt match these characters
         }
         {
-            VerifyTestResult (u16string{u"phred"} == String{u"phred"}.AsUTF16 ());
-            VerifyTestResult (u16string{u"שלום"} == String{u"שלום"}.AsUTF16 ());
+            EXPECT_TRUE (u16string{u"phred"} == String{u"phred"}.AsUTF16 ());
+            EXPECT_TRUE (u16string{u"שלום"} == String{u"שלום"}.AsUTF16 ());
         }
         {
             String tmp;
@@ -1645,36 +1646,36 @@ namespace {
             // From https://en.wikipedia.org/wiki/UTF-16
             // http://www.fileformat.info/info/unicode/char/2008a/index.htm
             static const u16string kTestWithSurrogates_ = u16string{u"\U0002008A"};
-            VerifyTestResult (kTestWithSurrogates_.size () == 2);
-            VerifyTestResult (kTestWithSurrogates_ == String{kTestWithSurrogates_}.AsUTF16 ());
-            VerifyTestResult (String{kTestWithSurrogates_}.length () == 1);
-            VerifyTestResult (String{kTestWithSurrogates_}.AsUTF16 ().length () == 2);
+            EXPECT_TRUE (kTestWithSurrogates_.size () == 2);
+            EXPECT_TRUE (kTestWithSurrogates_ == String{kTestWithSurrogates_}.AsUTF16 ());
+            EXPECT_TRUE (String{kTestWithSurrogates_}.length () == 1);
+            EXPECT_TRUE (String{kTestWithSurrogates_}.AsUTF16 ().length () == 2);
         }
         {
             // https://www.informit.com/articles/article.aspx?p=2274038&seqNum=10 SURROGATE SAMPLES
             {
                 constexpr auto ch = Character{0x10000};
-                VerifyTestResult ((ch.IsSurrogatePair () and
+                EXPECT_TRUE ((ch.IsSurrogatePair () and
                                    ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD800), static_cast<char16_t> (0xDC00)}));
-                VerifyTestResult ((ch == Character{0xD800, 0xDC00}));
+                EXPECT_TRUE ((ch == Character{0xD800, 0xDC00}));
             }
             {
                 constexpr auto ch = Character{0x10E6D};
-                VerifyTestResult ((ch.IsSurrogatePair () and
+                EXPECT_TRUE ((ch.IsSurrogatePair () and
                                    ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD803), static_cast<char16_t> (0xDE6D)}));
-                VerifyTestResult ((ch == Character{0xD803, 0xDE6D}));
+                EXPECT_TRUE ((ch == Character{0xD803, 0xDE6D}));
             }
             {
                 constexpr auto ch = Character{0x1D11E};
-                VerifyTestResult ((ch.IsSurrogatePair () and
+                EXPECT_TRUE ((ch.IsSurrogatePair () and
                                    ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD834), static_cast<char16_t> (0xDD1E)}));
-                VerifyTestResult ((ch == Character{0xD834, 0xDD1E}));
+                EXPECT_TRUE ((ch == Character{0xD834, 0xDD1E}));
             }
             {
                 constexpr auto ch = Character{0x10FFFF};
-                VerifyTestResult ((ch.IsSurrogatePair () and
+                EXPECT_TRUE ((ch.IsSurrogatePair () and
                                    ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xDBFF), static_cast<char16_t> (0xDFFF)}));
-                VerifyTestResult ((ch == Character{0xDBFF, 0xDFFF}));
+                EXPECT_TRUE ((ch == Character{0xDBFF, 0xDFFF}));
             }
         }
     }
@@ -1685,40 +1686,40 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"Test52_Utf32Conversions_"};
         {
-            VerifyTestResult (u32string{U"phred"} == String{u32string{U"phred"}}.AsUTF32 ());
-            VerifyTestResult (u32string{U"שלום"} == String{u32string{U"שלום"}}.AsUTF32 ());
-            //            VerifyTestResult (u32string{U"שלום"}.size () == 4);
-            //           VerifyTestResult (String{u32string{U"שלום"}}.size () == 4);
+            EXPECT_TRUE (u32string{U"phred"} == String{u32string{U"phred"}}.AsUTF32 ());
+            EXPECT_TRUE (u32string{U"שלום"} == String{u32string{U"שלום"}}.AsUTF32 ());
+            //            EXPECT_TRUE (u32string{U"שלום"}.size () == 4);
+            //           EXPECT_TRUE (String{u32string{U"שלום"}}.size () == 4);
         }
         {
-            VerifyTestResult (u32string{U"phred"} == String{U"phred"}.AsUTF32 ());
-            VerifyTestResult (u32string{U"שלום"} == String{U"שלום"}.AsUTF32 ());
-            VerifyTestResult (String{U"שלום"} == String{u"שלום"});
+            EXPECT_TRUE (u32string{U"phred"} == String{U"phred"}.AsUTF32 ());
+            EXPECT_TRUE (u32string{U"שלום"} == String{U"שלום"}.AsUTF32 ());
+            EXPECT_TRUE (String{U"שלום"} == String{u"שלום"});
         }
         {
             using namespace SampleUNICODE_::RawConstants_;
-            VerifyTestResult (String{Heb1_::k8_}.size () == 4);
-            VerifyTestResult (String{Heb1_::k16_}.size () == 4);
-            VerifyTestResult (String{Heb1_::k32_}.size () == 4);
-            VerifyTestResult (String{Heb1_::kWide_}.size () == 4);
-            VerifyTestResult (String{Heb1_::k8_} == String{Heb1_::k16_} and String{Heb1_::k16_} == String{Heb1_::k32_} and
+            EXPECT_TRUE (String{Heb1_::k8_}.size () == 4);
+            EXPECT_TRUE (String{Heb1_::k16_}.size () == 4);
+            EXPECT_TRUE (String{Heb1_::k32_}.size () == 4);
+            EXPECT_TRUE (String{Heb1_::kWide_}.size () == 4);
+            EXPECT_TRUE (String{Heb1_::k8_} == String{Heb1_::k16_} and String{Heb1_::k16_} == String{Heb1_::k32_} and
                               String{Heb1_::k32_} == String{Heb1_::kWide_});
             StringBuilder tmp;
             tmp += Heb1_::k8_;
-            VerifyTestResult (tmp.length () == 4);
-            VerifyTestResult (tmp.str () == Heb1_::k8_);
-            VerifyTestResult (tmp.str () == Heb1_::kWide_);
+            EXPECT_TRUE (tmp.length () == 4);
+            EXPECT_TRUE (tmp.str () == Heb1_::k8_);
+            EXPECT_TRUE (tmp.str () == Heb1_::kWide_);
         }
         {
             StringBuilder tmp;
             tmp.Append (u8"שלום");
-            //   VerifyTestResult (tmp.size () == 4);
-            VerifyTestResult (tmp.str () == u8"שלום");
+            //   EXPECT_TRUE (tmp.size () == 4);
+            EXPECT_TRUE (tmp.str () == u8"שלום");
         }
         {
             StringBuilder tmp;
             tmp += U"שלום";
-            VerifyTestResult (tmp.str () == U"שלום");
+            EXPECT_TRUE (tmp.str () == U"שלום");
         }
     }
 }
@@ -1731,10 +1732,10 @@ namespace {
         if constexpr (not qCompiler_vswprintf_on_elispisStr_Buggy) {
             try {
                 String x = Characters::Format (L"%s", b.c_str ());
-                VerifyTestResult (x == b);
+                EXPECT_TRUE (x == b);
             }
             catch (...) {
-                VerifyTestResult (false); // means we have the bug...
+                EXPECT_TRUE (false); // means we have the bug...
             }
         }
     }
@@ -1744,11 +1745,11 @@ namespace {
     void Test54_StringAs_ ()
     {
         Debug::TraceContextBumper ctx{"Test54_StringAs_"};
-        VerifyTestResult (String{"hi mom"}.AsASCII () == "hi mom");
+        EXPECT_TRUE (String{"hi mom"}.AsASCII () == "hi mom");
         {
             try {
                 string a2 = String{u"שלום"}.AsASCII (); // throws
-                VerifyTestResult (false);               // not reached
+                EXPECT_TRUE (false);               // not reached
             }
             catch (...) {
                 // good
@@ -1764,7 +1765,7 @@ namespace {
         (void)String{"a"};
         try {
             (void)String{"\x81"};
-            VerifyTestResult (false); // not reached
+            EXPECT_TRUE (false); // not reached
         }
         catch (...) {
             // good
@@ -1779,7 +1780,7 @@ namespace {
         {
             wstring stuff{L"abc"};
             String  a{move (stuff)};
-            VerifyTestResult (a == "abc");
+            EXPECT_TRUE (a == "abc");
         }
     }
 }
@@ -1808,18 +1809,18 @@ namespace {
             Assert (nonAsciiLatin1Test.length () == 3 and static_cast<unsigned char> (nonAsciiLatin1Test[1]) == kCedilla);
         }
         {
-            VerifyTestResult (String{plainAsciiTest} == String{plainAsciiTest});
+            EXPECT_TRUE (String{plainAsciiTest} == String{plainAsciiTest});
             try {
                 [[maybe_unused]] auto ignored = String{nonAsciiLatin1Test};
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
             catch (...) {
                 // good
             }
             String latin1AsStr = String::FromLatin1 (nonAsciiLatin1Test);
-            VerifyTestResult (latin1AsStr.length () == nonAsciiLatin1Test.length ());
+            EXPECT_TRUE (latin1AsStr.length () == nonAsciiLatin1Test.length ());
             for (size_t i = 0; i < nonAsciiLatin1Test.length (); ++i) {
-                VerifyTestResult (latin1AsStr[i] == static_cast<unsigned char> (nonAsciiLatin1Test[i]));
+                EXPECT_TRUE (latin1AsStr[i] == static_cast<unsigned char> (nonAsciiLatin1Test[i]));
             }
         }
         {
@@ -1840,7 +1841,7 @@ namespace {
             span<const char16_t>      someRandomTextSpan{someRandomText, Characters::CString::Length (someRandomText)};
             Memory::StackBuffer<byte> targetBuf{ccvt.ComputeTargetByteBufferSize (someRandomTextSpan)};
             auto                      b = ccvt.Characters2Bytes (someRandomTextSpan, span{targetBuf});
-            VerifyTestResult (b.size () == 9 and b[0] == static_cast<byte> ('h'));
+            EXPECT_TRUE (b.size () == 9 and b[0] == static_cast<byte> ('h'));
         };
         {
             // simple fast converter from char16_t characters <-> UTF-8
@@ -1879,21 +1880,16 @@ namespace {
                     as_bytes (span<const char8_t>{someRandomText, Characters::CString::Length (someRandomText)});
                 Memory::StackBuffer<Character> buf{cc.ComputeTargetCharacterBufferSize (someRandomTextBinarySpan)};
                 auto                           b = cc.Bytes2Characters (&someRandomTextBinarySpan, span{buf});
-                VerifyTestResult (someRandomTextBinarySpan.size () == 0); // ALL CONSUMED
-                VerifyTestResult (b.size () == 9 and b[0] == 'h');
+                EXPECT_TRUE (someRandomTextBinarySpan.size () == 0); // ALL CONSUMED
+                EXPECT_TRUE (b.size () == 9 and b[0] == 'h');
             }
         }
     }
 }
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Characters, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
-        Test1_ ();
         Test2_ ();
         Test3_ ();
         Test4_ ();
@@ -1944,6 +1940,7 @@ namespace {
         Test58_CodeCVT_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -1951,6 +1948,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

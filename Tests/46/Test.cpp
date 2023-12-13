@@ -67,7 +67,7 @@ namespace {
             //DbgTrace (L"kTestSubDir_=%s", Characters::ToString (kTestSubDir_).c_str ());
             //DbgTrace (L"kFileNamesForDir_=%s", Characters::ToString (kFileNamesForDir_).c_str ());
             //DbgTrace (L"DirectoryIterable (kTestSubDir_)=%s", Characters::ToString (DirectoryIterable (kTestSubDir_)).c_str ());
-            VerifyTestResult (Containers::Set<filesystem::path>::EqualsComparer{}(kFileNamesForDir_, DirectoryIterable (kTestSubDir_)));
+            EXPECT_TRUE (Containers::Set<filesystem::path>::EqualsComparer{}(kFileNamesForDir_, DirectoryIterable (kTestSubDir_)));
             {
                 Containers::Set<filesystem::path> answers1;
                 Containers::Set<filesystem::path> answers2;
@@ -78,8 +78,8 @@ namespace {
                     i2 = i;
                     answers2 += *i;
                 }
-                VerifyTestResult (kFileNamesForDir_ == answers1);
-                VerifyTestResult (kFileNamesForDir_ == answers2);
+                EXPECT_TRUE (kFileNamesForDir_ == answers1);
+                EXPECT_TRUE (kFileNamesForDir_ == answers2);
             }
         }
     }
@@ -91,45 +91,45 @@ namespace {
         {
 // Tests from DOCS line in ExtractDirAndBaseName (except now with different values - cuz using filesystem::path::parent_path/filename
 #if qPlatform_POSIX
-            VerifyTestResult ((filesystem::path (L"/usr/lib").parent_path () == L"/usr"));
-            VerifyTestResult ((filesystem::path (L"/usr/lib").filename () == L"lib"));
-            VerifyTestResult ((filesystem::path (L"/usr/").parent_path () == L"/usr"));
-            VerifyTestResult ((filesystem::path (L"/usr/").filename () == L""));
-            VerifyTestResult ((filesystem::path (L"usr").parent_path () == L""));
-            VerifyTestResult ((filesystem::path (L"usr").filename () == L"usr"));
-            VerifyTestResult ((filesystem::path (L"/").parent_path () == L"/"));
-            VerifyTestResult ((filesystem::path (L"/").filename () == L""));
-            VerifyTestResult ((filesystem::path (L".").parent_path () == L""));
-            VerifyTestResult ((filesystem::path (L".").filename () == L"."));
-            VerifyTestResult ((filesystem::path (L"..").parent_path () == L""));
-            VerifyTestResult ((filesystem::path (L"..").filename () == L".."));
+            EXPECT_TRUE ((filesystem::path (L"/usr/lib").parent_path () == L"/usr"));
+            EXPECT_TRUE ((filesystem::path (L"/usr/lib").filename () == L"lib"));
+            EXPECT_TRUE ((filesystem::path (L"/usr/").parent_path () == L"/usr"));
+            EXPECT_TRUE ((filesystem::path (L"/usr/").filename () == L""));
+            EXPECT_TRUE ((filesystem::path (L"usr").parent_path () == L""));
+            EXPECT_TRUE ((filesystem::path (L"usr").filename () == L"usr"));
+            EXPECT_TRUE ((filesystem::path (L"/").parent_path () == L"/"));
+            EXPECT_TRUE ((filesystem::path (L"/").filename () == L""));
+            EXPECT_TRUE ((filesystem::path (L".").parent_path () == L""));
+            EXPECT_TRUE ((filesystem::path (L".").filename () == L"."));
+            EXPECT_TRUE ((filesystem::path (L"..").parent_path () == L""));
+            EXPECT_TRUE ((filesystem::path (L"..").filename () == L".."));
 #elif qPlatform_Windows
-            VerifyTestResult ((filesystem::path{L"\\usr\\lib"}.parent_path () == L"\\usr"));
-            VerifyTestResult ((filesystem::path (L"\\usr\\lib").filename () == L"lib"));
-            VerifyTestResult ((filesystem::path (L"\\usr\\").parent_path () == L"\\usr"));
-            VerifyTestResult ((filesystem::path (L"\\usr\\").filename () == L""));
-            VerifyTestResult ((filesystem::path (L"usr").parent_path () == ""));
-            VerifyTestResult ((filesystem::path (L"usr").filename () == L"usr"));
-            VerifyTestResult ((filesystem::path (L"\\").parent_path () == L"\\"));
-            VerifyTestResult ((filesystem::path (L"\\").filename () == L""));
-            VerifyTestResult ((filesystem::path (L".").parent_path () == ""));
-            VerifyTestResult ((filesystem::path (L".").filename () == L"."));
-            VerifyTestResult ((filesystem::path (L"..").parent_path () == L""));
-            VerifyTestResult ((filesystem::path (L"..").filename () == L".."));
-            VerifyTestResult ((filesystem::path (L"c:\\h\\m.t").parent_path () == L"c:\\h"));
-            VerifyTestResult ((filesystem::path (L"c:\\h\\m.t").filename () == L"m.t"));
+            EXPECT_TRUE ((filesystem::path{L"\\usr\\lib"}.parent_path () == L"\\usr"));
+            EXPECT_TRUE ((filesystem::path (L"\\usr\\lib").filename () == L"lib"));
+            EXPECT_TRUE ((filesystem::path (L"\\usr\\").parent_path () == L"\\usr"));
+            EXPECT_TRUE ((filesystem::path (L"\\usr\\").filename () == L""));
+            EXPECT_TRUE ((filesystem::path (L"usr").parent_path () == ""));
+            EXPECT_TRUE ((filesystem::path (L"usr").filename () == L"usr"));
+            EXPECT_TRUE ((filesystem::path (L"\\").parent_path () == L"\\"));
+            EXPECT_TRUE ((filesystem::path (L"\\").filename () == L""));
+            EXPECT_TRUE ((filesystem::path (L".").parent_path () == ""));
+            EXPECT_TRUE ((filesystem::path (L".").filename () == L"."));
+            EXPECT_TRUE ((filesystem::path (L"..").parent_path () == L""));
+            EXPECT_TRUE ((filesystem::path (L"..").filename () == L".."));
+            EXPECT_TRUE ((filesystem::path (L"c:\\h\\m.t").parent_path () == L"c:\\h"));
+            EXPECT_TRUE ((filesystem::path (L"c:\\h\\m.t").filename () == L"m.t"));
 #endif
         }
         void Test_GetFileBaseName_ ()
         {
-            VerifyTestResult (filesystem::path (L"foo").stem () == L"foo");
-            VerifyTestResult (filesystem::path (L"foo.cpp").stem () == L"foo");
-            VerifyTestResult (filesystem::path (L"foo.exe").stem () == L"foo");
-            VerifyTestResult (filesystem::path (L".exe").stem () == L".exe");
+            EXPECT_TRUE (filesystem::path (L"foo").stem () == L"foo");
+            EXPECT_TRUE (filesystem::path (L"foo.cpp").stem () == L"foo");
+            EXPECT_TRUE (filesystem::path (L"foo.exe").stem () == L"foo");
+            EXPECT_TRUE (filesystem::path (L".exe").stem () == L".exe");
 #if qPlatform_POSIX
-            VerifyTestResult (filesystem::path (L"/tmp/.CPUBurner").stem () == L".CPUBurner");
+            EXPECT_TRUE (filesystem::path (L"/tmp/.CPUBurner").stem () == L".CPUBurner");
 #elif qPlatform_Windows
-            VerifyTestResult (filesystem::path (L"c:\\tmp\\.CPUBurner").stem () == L".CPUBurner");
+            EXPECT_TRUE (filesystem::path (L"c:\\tmp\\.CPUBurner").stem () == L".CPUBurner");
 #endif
         }
 
@@ -187,6 +187,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

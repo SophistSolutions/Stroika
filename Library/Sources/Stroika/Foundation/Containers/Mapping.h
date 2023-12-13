@@ -484,8 +484,8 @@ namespace Stroika::Foundation::Containers {
          *  \par Example Usage
          *      \code
          *          Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
-         *          VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
-         *          VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+         *          EXPECT_TRUE ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+         *          EXPECT_TRUE ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
          *      \endcode
          */
         template <derived_from<Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> RESULT_CONTAINER = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, typename INCLUDE_PREDICATE>
@@ -506,7 +506,7 @@ namespace Stroika::Foundation::Containers {
          *  \par Example Usage
          *      \code
          *          Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
-         *          VerifyTestResult ((m.WithKeys ({2, 5}) == Mapping<int, int>{{2, 4}, {5, 7}}));
+         *          EXPECT_TRUE ((m.WithKeys ({2, 5}) == Mapping<int, int>{{2, 4}, {5, 7}}));
          *      \endcode
          */
         template <typename CONTAINER_OF_KEYS>

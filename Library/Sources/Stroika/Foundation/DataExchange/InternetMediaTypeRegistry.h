@@ -56,7 +56,7 @@ namespace Stroika::Foundation::DataExchange {
      *          InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
      *          InternetMediaTypeRegistry updatedRegistry = origRegistry;
      *          const auto                kHFType_        = InternetMediaType{"application/fake-heatlthframe-phr+xml"};
-     *          VerifyTestResult (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+     *          EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
      *          updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Set<String>{".HPHR"}, L".HPHR"});
      *          InternetMediaTypeRegistry::Set (updatedRegistry);
      *          Assert (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));

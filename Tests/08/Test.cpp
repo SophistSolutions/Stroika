@@ -30,7 +30,7 @@ namespace {
         constexpr size_t                         kBigSize = 1001;
 
         Assert (kBigSize > 100);
-        VerifyTestResult (someLL.size () == 0);
+        EXPECT_TRUE (someLL.size () == 0);
         {
             for (size_t i = 1; i <= kBigSize; i++) {
                 someLL.Prepend (0);
@@ -54,10 +54,10 @@ namespace {
             }
         }
 
-        VerifyTestResult (someLL.size () == kBigSize);
+        EXPECT_TRUE (someLL.size () == kBigSize);
         someLL.SetAt (55, 55);                      //  someLL [55] = 55;
-        VerifyTestResult (someLL.GetAt (55) == 55); //  VerifyTestResult(someArray [55] == 55);
-        VerifyTestResult (someLL.GetAt (55) != 56); //  VerifyTestResult(someArray [55] != 56);
+        EXPECT_TRUE (someLL.GetAt (55) == 55); //  EXPECT_TRUE(someArray [55] == 55);
+        EXPECT_TRUE (someLL.GetAt (55) != 56); //  EXPECT_TRUE(someArray [55] != 56);
         {
             size_t i = 1;
             for (DataStructures::DoublyLinkedList<size_t>::ForwardIterator it{&someLL}; not it.Done (); ++it, ++i) {
@@ -68,14 +68,14 @@ namespace {
             }
         } //   someLL.InsertAt(1, 100);
 
-        VerifyTestResult (someLL.size () == kBigSize + 1);
-        VerifyTestResult (someLL.GetAt (100) == 1); //  VerifyTestResult(someArray [100] == 1);
+        EXPECT_TRUE (someLL.size () == kBigSize + 1);
+        EXPECT_TRUE (someLL.GetAt (100) == 1); //  EXPECT_TRUE(someArray [100] == 1);
 
         someLL.SetAt (101, someLL.GetAt (100) + 5);
 
-        VerifyTestResult (someLL.GetAt (101) == 6);
+        EXPECT_TRUE (someLL.GetAt (101) == 6);
         someLL.RemoveFirst ();
-        VerifyTestResult (someLL.GetAt (100) == 6);
+        EXPECT_TRUE (someLL.GetAt (100) == 6);
     }
 
     static void Test2 ()
@@ -83,10 +83,10 @@ namespace {
         DataStructures::DoublyLinkedList<SimpleClass> someLL;
         const size_t                                  kBigSize = 1000;
 
-        VerifyTestResult (someLL.size () == 0);
+        EXPECT_TRUE (someLL.size () == 0);
 
         Assert (kBigSize > 10);
-        VerifyTestResult (someLL.size () == 0);
+        EXPECT_TRUE (someLL.size () == 0);
         {
             for (size_t i = 1; i <= kBigSize; i++) {
                 someLL.Prepend (0);
@@ -110,34 +110,34 @@ namespace {
             }
         }
 
-        VerifyTestResult (someLL.size () == kBigSize);
+        EXPECT_TRUE (someLL.size () == kBigSize);
 
         someLL.SetAt (55, 55); //  someLL [55] = 55;
-        VerifyTestResult (someLL.GetAt (55) == 55);
-        VerifyTestResult (not(someLL.GetAt (55) == 56));
+        EXPECT_TRUE (someLL.GetAt (55) == 55);
+        EXPECT_TRUE (not(someLL.GetAt (55) == 56));
 
         someLL.RemoveAll ();
-        VerifyTestResult (someLL.size () == 0);
+        EXPECT_TRUE (someLL.size () == 0);
 
         for (size_t i = kBigSize; i >= 1; --i) {
-            VerifyTestResult (not someLL.Contains (i));
+            EXPECT_TRUE (not someLL.Contains (i));
             someLL.Prepend (i);
-            VerifyTestResult (someLL.GetFirst () == i);
-            VerifyTestResult (someLL.Contains (i));
+            EXPECT_TRUE (someLL.GetFirst () == i);
+            EXPECT_TRUE (someLL.Contains (i));
         }
         for (size_t i = 1; i <= kBigSize; ++i) {
-            VerifyTestResult (someLL.GetFirst () == i);
+            EXPECT_TRUE (someLL.GetFirst () == i);
             someLL.RemoveFirst ();
-            VerifyTestResult (not someLL.Contains (i));
+            EXPECT_TRUE (not someLL.Contains (i));
         }
-        VerifyTestResult (someLL.size () == 0);
+        EXPECT_TRUE (someLL.size () == 0);
 
         for (size_t i = kBigSize; i >= 1; --i) {
             someLL.Prepend (i);
         }
         for (size_t i = kBigSize; i >= 1; --i) {
             //cerr << "i, getat(i-1) = " << i << ", " << someLL.GetAt (i-1).GetValue () << endl;
-            VerifyTestResult (someLL.GetAt (i - 1) == i);
+            EXPECT_TRUE (someLL.GetAt (i - 1) == i);
         }
     }
 }
@@ -160,6 +160,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

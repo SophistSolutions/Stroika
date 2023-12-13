@@ -57,20 +57,20 @@ namespace CommonTests {
                     IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s);
                     IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s2);
                     USING_BASESET_CONTAINER s3 = mk_ (factory, initializer_list<int>{1, 3, 4, 2});
-                    VerifyTestResult (s3.size () == 4);
-                    VerifyTestResult (s3.Contains (1));
-                    VerifyTestResult (s3.Contains (2));
-                    VerifyTestResult (s3.Contains (3));
-                    VerifyTestResult (s3.Contains (4));
-                    VerifyTestResult (not s3.Contains (5));
+                    EXPECT_TRUE (s3.size () == 4);
+                    EXPECT_TRUE (s3.Contains (1));
+                    EXPECT_TRUE (s3.Contains (2));
+                    EXPECT_TRUE (s3.Contains (3));
+                    EXPECT_TRUE (s3.Contains (4));
+                    EXPECT_TRUE (not s3.Contains (5));
                 }
                 {
                     USING_SET_CONTAINER     s1 = mk_ (factory, initializer_list<int>{1});
                     USING_SET_CONTAINER     s2 = mk_ (factory, initializer_list<int>{1});
                     USING_BASESET_CONTAINER s3 = mk_ (factory, initializer_list<int>{1});
-                    VerifyTestResult (s1.length () == 1);
-                    VerifyTestResult (s2.length () == 1);
-                    VerifyTestResult (s3.length () == 1);
+                    EXPECT_TRUE (s1.length () == 1);
+                    EXPECT_TRUE (s2.length () == 1);
+                    EXPECT_TRUE (s3.length () == 1);
                 }
             }
         }
@@ -82,18 +82,18 @@ namespace CommonTests {
                 USING_SET_CONTAINER s = factory ();
                 s.Add (1);
                 applyToContainer (s);
-                VerifyTestResult (s.size () == 1);
-                VerifyTestResult (s.Contains (1));
-                VerifyTestResult (not s.Contains (2));
+                EXPECT_TRUE (s.size () == 1);
+                EXPECT_TRUE (s.Contains (1));
+                EXPECT_TRUE (not s.Contains (2));
                 applyToContainer (s);
                 s.Add (1);
                 applyToContainer (s);
-                VerifyTestResult (s.size () == 1);
+                EXPECT_TRUE (s.size () == 1);
                 applyToContainer (s);
                 IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s);
                 s.Remove (1);
                 applyToContainer (s);
-                VerifyTestResult (s.size () == 0);
+                EXPECT_TRUE (s.size () == 0);
                 applyToContainer (s);
 
                 {
@@ -102,12 +102,12 @@ namespace CommonTests {
                     size_t oldLength = s.size ();
                     s += s;
                     applyToContainer (s);
-                    VerifyTestResult (s.size () == oldLength);
+                    EXPECT_TRUE (s.size () == oldLength);
                 }
 
                 s.RemoveAll ();
                 applyToContainer (s);
-                VerifyTestResult (s.size () == 0);
+                EXPECT_TRUE (s.size () == 0);
             }
         }
 
@@ -119,18 +119,18 @@ namespace CommonTests {
                 USING_SET_CONTAINER s2 = s;
                 s.Add (1);
                 s.Add (2);
-                VerifyTestResult (s.size () == 2);
+                EXPECT_TRUE (s.size () == 2);
                 USING_SET_CONTAINER s3 = s;
                 applyToContainer (s);
                 applyToContainer (s2);
                 applyToContainer (s3);
-                VerifyTestResult (s == s3);
-                VerifyTestResult (typename USING_SET_CONTAINER::EqualsComparer{}(s, s3));
-                VerifyTestResult (not(s != s3));
+                EXPECT_TRUE (s == s3);
+                EXPECT_TRUE (typename USING_SET_CONTAINER::EqualsComparer{}(s, s3));
+                EXPECT_TRUE (not(s != s3));
 
-                VerifyTestResult (s != s2);
-                VerifyTestResult (not typename USING_SET_CONTAINER::EqualsComparer{}(s, s2));
-                VerifyTestResult (not(s == s2));
+                EXPECT_TRUE (s != s2);
+                EXPECT_TRUE (not typename USING_SET_CONTAINER::EqualsComparer{}(s, s2));
+                EXPECT_TRUE (not(s == s2));
             }
         }
 
@@ -143,25 +143,25 @@ namespace CommonTests {
                 s1.Add (2);
                 USING_SET_CONTAINER s2 = s1;
 
-                VerifyTestResult (s2 == s1.Union (s2));
-                VerifyTestResult (s2 == s1 + s2);
-                VerifyTestResult ((s1 == mk_ (factory, initializer_list<int>{1, 2})));
-                VerifyTestResult ((s2 == mk_ (factory, initializer_list<int>{1, 2})));
+                EXPECT_TRUE (s2 == s1.Union (s2));
+                EXPECT_TRUE (s2 == s1 + s2);
+                EXPECT_TRUE ((s1 == mk_ (factory, initializer_list<int>{1, 2})));
+                EXPECT_TRUE ((s2 == mk_ (factory, initializer_list<int>{1, 2})));
 
-                VerifyTestResult (s1.Difference (s2).empty ());
-                VerifyTestResult ((s1 - s2).empty ());
+                EXPECT_TRUE (s1.Difference (s2).empty ());
+                EXPECT_TRUE ((s1 - s2).empty ());
                 s2.Add (3);
-                VerifyTestResult ((s1 == mk_ (factory, initializer_list<int>{1, 2})));
-                VerifyTestResult ((s2 == mk_ (factory, initializer_list<int>{1, 2, 3})));
+                EXPECT_TRUE ((s1 == mk_ (factory, initializer_list<int>{1, 2})));
+                EXPECT_TRUE ((s2 == mk_ (factory, initializer_list<int>{1, 2, 3})));
 
-                VerifyTestResult ((s1 - s2).empty ());
-                VerifyTestResult ((s2 - s1).length () == 1);
-                VerifyTestResult (((s1 - s2) == factory ()));
-                VerifyTestResult (((s2 - s1) == mk_ (factory, initializer_list<int>{3})));
+                EXPECT_TRUE ((s1 - s2).empty ());
+                EXPECT_TRUE ((s2 - s1).length () == 1);
+                EXPECT_TRUE (((s1 - s2) == factory ()));
+                EXPECT_TRUE (((s2 - s1) == mk_ (factory, initializer_list<int>{3})));
 
                 Verify (s1.Intersects (s2));
-                VerifyTestResult ((s1.Intersection (s2) == mk_ (factory, initializer_list<int>{1, 2})));
-                VerifyTestResult (((s1 ^ s2) == mk_ (factory, initializer_list<int>{1, 2})));
+                EXPECT_TRUE ((s1.Intersection (s2) == mk_ (factory, initializer_list<int>{1, 2})));
+                EXPECT_TRUE (((s1 ^ s2) == mk_ (factory, initializer_list<int>{1, 2})));
                 Verify (s1.Intersection (s2).length () == 2);
             }
         }

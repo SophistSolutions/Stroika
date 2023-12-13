@@ -115,7 +115,7 @@ namespace {
             }
             virtual void EndDocument () override
             {
-                VerifyTestResult (fEltDepthCount == 0);
+                EXPECT_TRUE (fEltDepthCount == 0);
             }
             virtual void StartElement (const StructuredStreamEvents::Name&                                   name,
                                        [[maybe_unused]] const Mapping<StructuredStreamEvents::Name, String>& attributes) override
@@ -125,7 +125,7 @@ namespace {
             }
             virtual void EndElement (const StructuredStreamEvents::Name& name) override
             {
-                VerifyTestResult (fEltStack.back () == Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
+                EXPECT_TRUE (fEltStack.back () == Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
                 fEltStack.pop_back ();
                 fEltDepthCount--;
             }
@@ -203,14 +203,14 @@ namespace {
                     registry, make_shared<ObjectReader::ReadDownToReader> (
                                   make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar), Name{"Appointment"})};
                 XML::SAXParse (mkdata_ (), ctx);
-                VerifyTestResult (calendar.size () == 2);
-                VerifyTestResult (calendar[0].withWhom.firstName == "Jim");
-                VerifyTestResult (calendar[0].withWhom.lastName == "Smith");
-                VerifyTestResult (*calendar[0].withWhom.middleName == "Up");
-                VerifyTestResult (
+                EXPECT_TRUE (calendar.size () == 2);
+                EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
+                EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
+                EXPECT_TRUE (*calendar[0].withWhom.middleName == "Up");
+                EXPECT_TRUE (
                     (calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
-                VerifyTestResult (calendar[1].withWhom.firstName == "Fred");
-                VerifyTestResult (calendar[1].withWhom.lastName == "Down");
+                EXPECT_TRUE (calendar[1].withWhom.firstName == "Fred");
+                EXPECT_TRUE (calendar[1].withWhom.lastName == "Down");
             }
             // must figure out how to get below working
             {
@@ -218,14 +218,14 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext ctx{
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar))};
                 XML::SAXParse (mkdata_ (), ctx);
-                VerifyTestResult (calendar.size () == 2);
-                VerifyTestResult (calendar[0].withWhom.firstName == "Jim");
-                VerifyTestResult (calendar[0].withWhom.lastName == "Smith");
-                VerifyTestResult (*calendar[0].withWhom.middleName == "Up");
-                VerifyTestResult (
+                EXPECT_TRUE (calendar.size () == 2);
+                EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
+                EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
+                EXPECT_TRUE (*calendar[0].withWhom.middleName == "Up");
+                EXPECT_TRUE (
                     (calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
-                VerifyTestResult (calendar[1].withWhom.firstName == "Fred");
-                VerifyTestResult (calendar[1].withWhom.lastName == "Down");
+                EXPECT_TRUE (calendar[1].withWhom.firstName == "Fred");
+                EXPECT_TRUE (calendar[1].withWhom.lastName == "Down");
             }
         }
     }
@@ -285,11 +285,11 @@ namespace {
                                                                            Name{"envelope2"}, Name{"WithWhom"})};
                 XML::SAXParse (mkdata_ (), ctx);
 
-                VerifyTestResult (people.size () == 2);
-                VerifyTestResult (people[0].firstName == "Jim");
-                VerifyTestResult (people[0].lastName == "Smith");
-                VerifyTestResult (people[1].firstName == "Fred");
-                VerifyTestResult (people[1].lastName == "Down");
+                EXPECT_TRUE (people.size () == 2);
+                EXPECT_TRUE (people[0].firstName == "Jim");
+                EXPECT_TRUE (people[0].lastName == "Smith");
+                EXPECT_TRUE (people[1].firstName == "Fred");
+                EXPECT_TRUE (people[1].lastName == "Down");
             }
 
             vector<Person_> people2; // add the vector type to the registry instead of explicitly constructing the right reader
@@ -299,7 +299,7 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext ctx{
                     newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name{"envelope2"})};
                 XML::SAXParse (mkdata_ (), ctx);
-                VerifyTestResult (people2 == people);
+                EXPECT_TRUE (people2 == people);
             }
 
             Sequence<Person_> people3; // use sequence instead of vector
@@ -309,7 +309,7 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext ctx{
                     newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name{"envelope2"})};
                 XML::SAXParse (mkdata_ (), ctx);
-                VerifyTestResult (people3.As<vector<Person_>> () == people);
+                EXPECT_TRUE (people3.As<vector<Person_>> () == people);
             }
         }
     }
@@ -383,11 +383,11 @@ namespace {
                                                                      Name{"RetrievePropertiesResponse"}, Name{"returnval"})};
             XML::SAXParse (mkdata_ (), ctx);
 
-            VerifyTestResult (objsContent.size () == 2);
-            VerifyTestResult (objsContent[0].obj.type == "VirtualMachine");
-            VerifyTestResult (objsContent[0].obj.value == "8");
-            VerifyTestResult (objsContent[1].obj.type == "VirtualMachine");
-            VerifyTestResult (objsContent[1].obj.value == "9");
+            EXPECT_TRUE (objsContent.size () == 2);
+            EXPECT_TRUE (objsContent[0].obj.type == "VirtualMachine");
+            EXPECT_TRUE (objsContent[0].obj.value == "8");
+            EXPECT_TRUE (objsContent[1].obj.type == "VirtualMachine");
+            EXPECT_TRUE (objsContent[1].obj.value == "9");
         }
     }
 }
@@ -420,8 +420,8 @@ namespace {
             Person_ p;
             ObjectReader::IConsumerDelegateToContext tmp{mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p))};
             XML::SAXParse (mkdata_ (), tmp);
-            VerifyTestResult (p.firstName == "Jim");
-            VerifyTestResult (p.lastName == "Smith");
+            EXPECT_TRUE (p.firstName == "Jim");
+            EXPECT_TRUE (p.lastName == "Smith");
         }
         void DoTests ()
         {
@@ -511,20 +511,20 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext ctx{registry,
                                                              make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
                 XML::SAXParse (mkdata_ (), ctx);
-                VerifyTestResult (data.people.size () == 2);
-                VerifyTestResult (data.people[0].firstName == "Jim");
-                VerifyTestResult (data.people[0].lastName == "Smith");
-                VerifyTestResult (data.people[0].gender == GenderType_::Male);
-                VerifyTestResult (data.people[1].firstName == "Fred");
-                VerifyTestResult (data.people[1].lastName == "Down");
-                VerifyTestResult (not data.people[1].gender.has_value ());
-                VerifyTestResult (data.addresses.size () == 3);
-                VerifyTestResult (data.addresses[0].city == "Boston");
-                VerifyTestResult (data.addresses[0].state == "MA");
-                VerifyTestResult (data.addresses[1].city == "New York");
-                VerifyTestResult (data.addresses[1].state == "NY");
-                VerifyTestResult (data.addresses[2].city == "Albany");
-                VerifyTestResult (data.addresses[2].state == "NY");
+                EXPECT_TRUE (data.people.size () == 2);
+                EXPECT_TRUE (data.people[0].firstName == "Jim");
+                EXPECT_TRUE (data.people[0].lastName == "Smith");
+                EXPECT_TRUE (data.people[0].gender == GenderType_::Male);
+                EXPECT_TRUE (data.people[1].firstName == "Fred");
+                EXPECT_TRUE (data.people[1].lastName == "Down");
+                EXPECT_TRUE (not data.people[1].gender.has_value ());
+                EXPECT_TRUE (data.addresses.size () == 3);
+                EXPECT_TRUE (data.addresses[0].city == "Boston");
+                EXPECT_TRUE (data.addresses[0].state == "MA");
+                EXPECT_TRUE (data.addresses[1].city == "New York");
+                EXPECT_TRUE (data.addresses[1].state == "NY");
+                EXPECT_TRUE (data.addresses[2].city == "Albany");
+                EXPECT_TRUE (data.addresses[2].state == "NY");
             }
         }
     }
@@ -677,18 +677,18 @@ namespace {
                 DbgTrace (L"MirrorTemperature=%s", Characters::ToString (data.MirrorTemperatures).c_str ());
                 DbgTrace (L"LaserCurrents=%s", Characters::ToString (data.LaserCurrents).c_str ());
                 DbgTrace (L"TECPowerConsumptionStats=%s", Characters::ToString (data.TECPowerConsumptionStats->TunerTECCurrent).c_str ());
-                VerifyTestResult (not data.ActiveLaser.has_value ());
-                VerifyTestResult (Math::NearlyEquals (*data.DetectorTemperature, 13.1));
-                VerifyTestResult (Math::NearlyEquals (*data.OpticsTemperature, 0.86115019791435543));
-                VerifyTestResult ((data.LaserTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1}));
-                VerifyTestResult (Math::NearlyEquals (*data.LaserTemperatures.Lookup (TunerNumberType_::eT1), 20.899877489241646));
-                VerifyTestResult ((data.LaserCurrents.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1}));
-                VerifyTestResult (Math::NearlyEquals (*data.LaserCurrents.Lookup (TunerNumberType_::eT1), 0.86871794871794872));
-                VerifyTestResult ((data.MirrorTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT2}));
-                VerifyTestResult (Math::NearlyEquals (*data.MirrorTemperatures.Lookup (TunerNumberType_::eT2), 0.86115019791435543));
-                VerifyTestResult ((data.TECPowerConsumptionStats->TunerTECCurrent.Keys () ==
+                EXPECT_TRUE (not data.ActiveLaser.has_value ());
+                EXPECT_TRUE (Math::NearlyEquals (*data.DetectorTemperature, 13.1));
+                EXPECT_TRUE (Math::NearlyEquals (*data.OpticsTemperature, 0.86115019791435543));
+                EXPECT_TRUE ((data.LaserTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1}));
+                EXPECT_TRUE (Math::NearlyEquals (*data.LaserTemperatures.Lookup (TunerNumberType_::eT1), 20.899877489241646));
+                EXPECT_TRUE ((data.LaserCurrents.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1}));
+                EXPECT_TRUE (Math::NearlyEquals (*data.LaserCurrents.Lookup (TunerNumberType_::eT1), 0.86871794871794872));
+                EXPECT_TRUE ((data.MirrorTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT2}));
+                EXPECT_TRUE (Math::NearlyEquals (*data.MirrorTemperatures.Lookup (TunerNumberType_::eT2), 0.86115019791435543));
+                EXPECT_TRUE ((data.TECPowerConsumptionStats->TunerTECCurrent.Keys () ==
                                    Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2, TunerNumberType_::eT3, TunerNumberType_::eT4}));
-                VerifyTestResult (Math::NearlyEquals (*data.ExternalTemperature1, 0.0));
+                EXPECT_TRUE (Math::NearlyEquals (*data.ExternalTemperature1, 0.0));
             }
         }
     }
@@ -754,7 +754,7 @@ namespace {
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
-                VerifyTestResult ((data == Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
+                EXPECT_TRUE ((data == Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
             }
             const Name kAlarmName_ = Name{"Alarm"};
             registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kAlarmName_));
@@ -767,7 +767,7 @@ namespace {
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
-                VerifyTestResult ((data == Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
+                EXPECT_TRUE ((data == Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
             }
             const Name kWrongAlarmName_ = Name{"xxxAlarm"};
             registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kWrongAlarmName_));
@@ -781,7 +781,7 @@ namespace {
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
-                VerifyTestResult ((data == Set<AlarmType_>{}));
+                EXPECT_TRUE ((data == Set<AlarmType_>{}));
             }
         }
     }
@@ -937,13 +937,13 @@ namespace {
                     DbgTrace (L"RawSpectrum=%s", Characters::ToString (*data.RawSpectrum).c_str ());
                 }
                 DbgTrace (L"AuxData=%s", Characters::ToString (data.AuxData).c_str ());
-                VerifyTestResult (data.ScanID == 8320);
-                VerifyTestResult (data.ScanStart == DateTime::Parse ("2016-07-28T20:14:30Z", DateTime::kISO8601Format));
-                VerifyTestResult (data.ScanEnd == DateTime::Parse ("2016-07-28T20:14:44Z", DateTime::kISO8601Format));
-                VerifyTestResult (not data.ScanLabel.has_value ());
-                VerifyTestResult ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_>{pair<WaveNumberType_, IntensityType_>{901.5, 0},
+                EXPECT_TRUE (data.ScanID == 8320);
+                EXPECT_TRUE (data.ScanStart == DateTime::Parse ("2016-07-28T20:14:30Z", DateTime::kISO8601Format));
+                EXPECT_TRUE (data.ScanEnd == DateTime::Parse ("2016-07-28T20:14:44Z", DateTime::kISO8601Format));
+                EXPECT_TRUE (not data.ScanLabel.has_value ());
+                EXPECT_TRUE ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_>{pair<WaveNumberType_, IntensityType_>{901.5, 0},
                                                                                                 pair<WaveNumberType_, IntensityType_>{902.5, 1}}));
-                VerifyTestResult (
+                EXPECT_TRUE (
                     (data.AuxData == Mapping<String, String>{pair<String, String>{"Cell-Pressure", "1000"}, pair<String, String>{"Cell-Temperature", "0"},
                                                              pair<String, String>{"EngineId", "B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
             }
@@ -991,10 +991,10 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext ctx{
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{"Values"})};
                 XML::SAXParse (mkdata_ (), ctx);
-                VerifyTestResult (values.valueMissing == 999);
-                VerifyTestResult (Math::NearlyEquals (values.valueExplicitGood, 3.0));
-                VerifyTestResult (isnan (values.valueExplicitNAN1));
-                VerifyTestResult (isnan (values.valueExplicitNAN2));
+                EXPECT_TRUE (values.valueMissing == 999);
+                EXPECT_TRUE (Math::NearlyEquals (values.valueExplicitGood, 3.0));
+                EXPECT_TRUE (isnan (values.valueExplicitNAN1));
+                EXPECT_TRUE (isnan (values.valueExplicitNAN2));
             }
         }
     }
@@ -1157,11 +1157,11 @@ namespace {
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace (L"Tuners=%s", Characters::ToString (data.Tuners).c_str ());
-                VerifyTestResult ((data.Tuners.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2}));
-                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorOperationFrequency, 40.0));
-                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorResonantFrequency, 150.0));
-                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT2)->MirrorOperationFrequency, 41.0));
-                VerifyTestResult (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT2)->MirrorResonantFrequency, 151.0));
+                EXPECT_TRUE ((data.Tuners.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2}));
+                EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorOperationFrequency, 40.0));
+                EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorResonantFrequency, 150.0));
+                EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT2)->MirrorOperationFrequency, 41.0));
+                EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT2)->MirrorResonantFrequency, 151.0));
             }
         }
     }
@@ -1214,8 +1214,8 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext ctx{
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{"Values"})};
                 XML::SAXParse (mkdata_ (), ctx);
-                VerifyTestResult (Math::NearlyEquals (values.r.GetLowerBound (), 3.0));
-                VerifyTestResult (Math::NearlyEquals (values.r.GetUpperBound (), 6.0));
+                EXPECT_TRUE (Math::NearlyEquals (values.r.GetLowerBound (), 3.0));
+                EXPECT_TRUE (Math::NearlyEquals (values.r.GetUpperBound (), 6.0));
             }
         }
     }
@@ -1280,13 +1280,13 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext ctx{registry,
                                                              make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
                 XML::SAXParse (mkdata_ (), ctx);
-                VerifyTestResult (data.people.size () == 2);
-                VerifyTestResult (data.people[0].firstName == "Jim");
-                VerifyTestResult (data.people[0].lastName == "Smith");
-                VerifyTestResult (data.people[0].gender == GenderType_::Male);
-                VerifyTestResult (data.people[1].firstName == "Fred");
-                VerifyTestResult (data.people[1].lastName == "Down");
-                VerifyTestResult (data.people[1].gender == GenderType_::Female);
+                EXPECT_TRUE (data.people.size () == 2);
+                EXPECT_TRUE (data.people[0].firstName == "Jim");
+                EXPECT_TRUE (data.people[0].lastName == "Smith");
+                EXPECT_TRUE (data.people[0].gender == GenderType_::Male);
+                EXPECT_TRUE (data.people[1].firstName == "Fred");
+                EXPECT_TRUE (data.people[1].lastName == "Down");
+                EXPECT_TRUE (data.people[1].gender == GenderType_::Female);
             }
         }
     }
@@ -1350,13 +1350,13 @@ namespace T14_SAXObjectReader_CustomSimpleType_ {
         {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
             XML::SAXParse (mkdata_ (), ctx);
-            VerifyTestResult (data.people.size () == 2);
-            VerifyTestResult (data.people[0].firstName == "Jim");
-            VerifyTestResult (data.people[0].lastName == "Smith");
-            VerifyTestResult (data.people[0].gender.fRep == "Male");
-            VerifyTestResult (data.people[1].firstName == "Fred");
-            VerifyTestResult (data.people[1].lastName == "Down");
-            VerifyTestResult (data.people[1].gender.fRep == "Female");
+            EXPECT_TRUE (data.people.size () == 2);
+            EXPECT_TRUE (data.people[0].firstName == "Jim");
+            EXPECT_TRUE (data.people[0].lastName == "Smith");
+            EXPECT_TRUE (data.people[0].gender.fRep == "Male");
+            EXPECT_TRUE (data.people[1].firstName == "Fred");
+            EXPECT_TRUE (data.people[1].lastName == "Down");
+            EXPECT_TRUE (data.people[1].gender.fRep == "Female");
         }
     }
 }
@@ -1394,6 +1394,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

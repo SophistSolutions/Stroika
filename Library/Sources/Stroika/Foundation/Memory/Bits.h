@@ -21,12 +21,12 @@ namespace Stroika::Foundation::Memory {
      *
      *  \par Example Usage
      *      \code
-     *          VerifyTestResult (Bit (0) == 0x1);
-     *          VerifyTestResult (Bit (1) == 0x2);
-     *          VerifyTestResult (Bit (3) == 0x8);
-     *          VerifyTestResult (Bit (15) == 0x8000);
-     *          VerifyTestResult (Bit<int> (1, 2) == 0x6);
-     *          VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
+     *          EXPECT_TRUE (Bit (0) == 0x1);
+     *          EXPECT_TRUE (Bit (1) == 0x2);
+     *          EXPECT_TRUE (Bit (3) == 0x8);
+     *          EXPECT_TRUE (Bit (15) == 0x8000);
+     *          EXPECT_TRUE (Bit<int> (1, 2) == 0x6);
+     *          EXPECT_TRUE (Bit<int> (1, 2, 15) == 0x8006);
      *      \endcode
      */
     template <typename INT_TYPE = unsigned int>
@@ -44,14 +44,14 @@ namespace Stroika::Foundation::Memory {
      *
      *  \par Example Usage
      *      \code
-     *          VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
-     *          VerifyTestResult (BitSubstring (0x3, 1, 2) == 1);
-     *          VerifyTestResult (BitSubstring (0x3, 2, 3) == 0);
-     *          VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
-     *          VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
-     *          VerifyTestResult (BitSubstring (0xff, 8, 16) == 0x0);
-     *          VerifyTestResult (BitSubstring (0b10101010, 0, 1) == 0x0);  // low# bit on right
-     *          VerifyTestResult (BitSubstring (0b10101010, 7, 8) == 0x1);  // high# bit on left
+     *          EXPECT_TRUE (BitSubstring (0x3, 0, 1) == 1);
+     *          EXPECT_TRUE (BitSubstring (0x3, 1, 2) == 1);
+     *          EXPECT_TRUE (BitSubstring (0x3, 2, 3) == 0);
+     *          EXPECT_TRUE (BitSubstring (0x3, 0, 3) == 0x3);
+     *          EXPECT_TRUE (BitSubstring (0xff, 0, 8) == 0xff);
+     *          EXPECT_TRUE (BitSubstring (0xff, 8, 16) == 0x0);
+     *          EXPECT_TRUE (BitSubstring (0b10101010, 0, 1) == 0x0);  // low# bit on right
+     *          EXPECT_TRUE (BitSubstring (0b10101010, 7, 8) == 0x1);  // high# bit on left
      *      \endcode
      *
      *  \note   The startOffset/endOffset pattern matches that with STL iterators (not including the last item)

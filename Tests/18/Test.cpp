@@ -69,13 +69,13 @@ namespace {
         {
             {
                 MultiSet<int> test{1, 1, 5, 1, 6, 5};
-                VerifyTestResult (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
-                VerifyTestResult (test.Top (1).SequentialEquals ({{1, 3}}));
+                EXPECT_TRUE (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
+                EXPECT_TRUE (test.Top (1).SequentialEquals ({{1, 3}}));
             }
             {
                 MultiSet<int> test{1, 1, 5, 1, 6, 5};
-                VerifyTestResult (test.TopElements ().SequentialEquals ({1, 5, 6}));
-                VerifyTestResult (test.TopElements (1).SequentialEquals ({1}));
+                EXPECT_TRUE (test.TopElements ().SequentialEquals ({1, 5, 6}));
+                EXPECT_TRUE (test.TopElements (1).SequentialEquals ({1}));
             }
         }
     }
@@ -150,7 +150,7 @@ namespace {
         ExampleCTORS_Test_2_::DoTest ();
         Top_Test_3_::DoTest ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -160,6 +160,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

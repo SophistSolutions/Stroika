@@ -42,9 +42,9 @@ namespace {
                 std::locale              l{localeName.AsNarrowSDKString ()};
                 const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
 #if qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy
-                VerifyTestResultWarning (tmget.date_order () == time_base::no_order);
+                EXPECT_TRUEWarning (tmget.date_order () == time_base::no_order);
 #else
-                VerifyTestResultWarning (tmget.date_order () == time_base::mdy);
+                EXPECT_TRUEWarning (tmget.date_order () == time_base::mdy);
 #endif
             }
             catch (...) {
@@ -70,10 +70,10 @@ namespace {
             tmput.put (oss, oss, ' ', &when, begin (kPattern), begin (kPattern) + ::wcslen (kPattern));
             String tmpStringRep = oss.str ();
             if (expect4DigitYear) {
-                VerifyTestResult (tmpStringRep == "7/3/2001" or tmpStringRep == "07/03/2001");
+                EXPECT_TRUE (tmpStringRep == "7/3/2001" or tmpStringRep == "07/03/2001");
             }
             else {
-                VerifyTestResult (tmpStringRep == "7/3/01" or tmpStringRep == "07/03/01");
+                EXPECT_TRUE (tmpStringRep == "7/3/01" or tmpStringRep == "07/03/01");
             }
         };
         auto localetimeputPCTX_CHECK_StdCPctxTraits = [=] () {
@@ -129,9 +129,9 @@ namespace {
                 tmget.get (itbegin, itend, iss, state, &resultTM, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
             }
             //DbgTrace (L"resultTM.tm_year=%d", resultTM.tm_year);
-            VerifyTestResultWarning (origDateTM.tm_year == resultTM.tm_year);
-            VerifyTestResultWarning (origDateTM.tm_mon == resultTM.tm_mon);
-            VerifyTestResultWarning (origDateTM.tm_mday == resultTM.tm_mday);
+            EXPECT_TRUEWarning (origDateTM.tm_year == resultTM.tm_year);
+            EXPECT_TRUEWarning (origDateTM.tm_mon == resultTM.tm_mon);
+            EXPECT_TRUEWarning (origDateTM.tm_mday == resultTM.tm_mday);
         };
         // this test doesnt make much sense - revisit!!! --LGP 2021-03-05
         testDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (12, 5, 1, locale::classic ());
@@ -151,9 +151,9 @@ namespace {
             wstring                      fmt = String{Date::kMonthDayYearFormat}.As<wstring> ();
             [[maybe_unused]] auto        i   = tmget.get (itbegin, itend, iss, state, &resultTM, fmt.data (), fmt.data () + fmt.length ());
 #if qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
-            VerifyTestResult ((state & ios::badbit) or (state & ios::failbit));
+            EXPECT_TRUE ((state & ios::badbit) or (state & ios::failbit));
 #else
-            VerifyTestResult (not((state & ios::badbit) or (state & ios::failbit)));
+            EXPECT_TRUE (not((state & ios::badbit) or (state & ios::failbit)));
 #endif
         };
         getPCTMRequiresLeadingZeroBug ();
@@ -193,7 +193,7 @@ namespace {
                 istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
                 istreambuf_iterator<wchar_t> itend;        // end-of-stream
                 tm                           resultTM{};
-                VerifyTestResultWarning (tmget.date_order () == time_base::mdy or qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy);
+                EXPECT_TRUEWarning (tmget.date_order () == time_base::mdy or qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy);
                 static const wstring  kFmt_ = String{DateTime::kShortLocaleFormatPattern}.As<wstring> ();
                 [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, kFmt_.data (), kFmt_.data () + kFmt_.length ());
                 if ((state & ios::badbit) or (state & ios::failbit)) {
@@ -203,23 +203,23 @@ namespace {
 #endif
                 }
                 else {
-                    VerifyTestResult (resultTM.tm_sec == kTargetTM_MDY_.tm_sec);   // which == kTargetTM_DMY_
-                    VerifyTestResult (resultTM.tm_min == kTargetTM_MDY_.tm_min);   // ..
-                    VerifyTestResult (resultTM.tm_hour == kTargetTM_MDY_.tm_hour); // ..
+                    EXPECT_TRUE (resultTM.tm_sec == kTargetTM_MDY_.tm_sec);   // which == kTargetTM_DMY_
+                    EXPECT_TRUE (resultTM.tm_min == kTargetTM_MDY_.tm_min);   // ..
+                    EXPECT_TRUE (resultTM.tm_hour == kTargetTM_MDY_.tm_hour); // ..
                     // libstdc++ returns 21, and visual studio 121 - clang libc++ -1879 - all reasonable - DONT CHECK THIS - undefined for 2-digit year -- LGP 2021-03-08
                     if (tmget.date_order () == time_base::mdy or
                         (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)) {
 #if qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
-                        VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday); // sadly wrong values
-                        VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
+                        EXPECT_TRUE (resultTM.tm_mday == kTargetTM_DMY_.tm_mday); // sadly wrong values
+                        EXPECT_TRUE (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
 #else
-                        VerifyTestResult (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
-                        VerifyTestResult (resultTM.tm_mon == kTargetTM_MDY_.tm_mon);
+                        EXPECT_TRUE (resultTM.tm_mday == kTargetTM_MDY_.tm_mday);
+                        EXPECT_TRUE (resultTM.tm_mon == kTargetTM_MDY_.tm_mon);
 #endif
                     }
                     else if (tmget.date_order () == time_base::dmy) {
-                        VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday);
-                        VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
+                        EXPECT_TRUE (resultTM.tm_mday == kTargetTM_DMY_.tm_mday);
+                        EXPECT_TRUE (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
                     }
                 }
             }
@@ -241,7 +241,7 @@ namespace {
         // disable for now cuz fails SO OFTEN
         String     formatByLocale = startDateOrTime.Format (l);
         DATEORTIME andBack        = DATEORTIME::Parse (formatByLocale, l);
-        VerifyTestResult (startDateOrTime == andBack);
+        EXPECT_TRUE (startDateOrTime == andBack);
     }
     template <typename DATEORTIME>
     void TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime)
@@ -251,7 +251,7 @@ namespace {
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale ("en", "us"));
 
         // should add test like this...
-        //VerifyTestResult (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
+        //EXPECT_TRUE (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
     }
 }
 
@@ -295,7 +295,7 @@ namespace {
         TraceContextBumper     ctx{"Test_1_TestTickCountGrowsMonotonically_"};
         Time::TimePointSeconds start = Time::GetTickCount ();
         Execution::Sleep (100ms);
-        VerifyTestResult (start <= Time::GetTickCount ());
+        EXPECT_TRUE (start <= Time::GetTickCount ());
     }
 }
 
@@ -306,44 +306,44 @@ namespace {
         TraceContextBumper ctx{"Test_2_TestTimeOfDay_"};
         {
             optional<TimeOfDay> t;
-            VerifyTestResult (not t.has_value ());
+            EXPECT_TRUE (not t.has_value ());
             TimeOfDay t2{2};
-            VerifyTestResult (t < t2);
-            VerifyTestResult (not t2.Format (locale{}).empty ());
-            VerifyTestResult (t2.GetHours () == 0);
-            VerifyTestResult (t2.GetMinutes () == 0);
-            VerifyTestResult (t2.GetSeconds () == 2);
+            EXPECT_TRUE (t < t2);
+            EXPECT_TRUE (not t2.Format (locale{}).empty ());
+            EXPECT_TRUE (t2.GetHours () == 0);
+            EXPECT_TRUE (t2.GetMinutes () == 0);
+            EXPECT_TRUE (t2.GetSeconds () == 2);
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
             TimeOfDay t2{5 * 60 * 60 + 3 * 60 + 49};
-            VerifyTestResult (t2.GetHours () == 5);
-            VerifyTestResult (t2.GetMinutes () == 3);
-            VerifyTestResult (t2.GetSeconds () == 49);
+            EXPECT_TRUE (t2.GetHours () == 5);
+            EXPECT_TRUE (t2.GetMinutes () == 3);
+            EXPECT_TRUE (t2.GetSeconds () == 49);
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
             TimeOfDay t2{24 * 60 * 60 - 1};
-            VerifyTestResult (t2.GetHours () == 23);
-            VerifyTestResult (t2.GetMinutes () == 59);
-            VerifyTestResult (t2.GetSeconds () == 59);
-            VerifyTestResult (t2 == TimeOfDay::kMax);
+            EXPECT_TRUE (t2.GetHours () == 23);
+            EXPECT_TRUE (t2.GetMinutes () == 59);
+            EXPECT_TRUE (t2.GetSeconds () == 59);
+            EXPECT_TRUE (t2 == TimeOfDay::kMax);
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
-            VerifyTestResult (TimeOfDay::Parse ("3pm", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse ("3PM", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse ("3am", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse ("3:00", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse ("16:00", locale::classic ()).GetAsSecondsCount () == 16 * 60 * 60);
+            EXPECT_TRUE (TimeOfDay::Parse ("3pm", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
+            EXPECT_TRUE (TimeOfDay::Parse ("3PM", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
+            EXPECT_TRUE (TimeOfDay::Parse ("3am", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
+            EXPECT_TRUE (TimeOfDay::Parse ("3:00", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
+            EXPECT_TRUE (TimeOfDay::Parse ("16:00", locale::classic ()).GetAsSecondsCount () == 16 * 60 * 60);
         }
         {
             // Not sure these should ALWAYS work in any locale. Probably not. But any locale I'd test in??? Maybe... Good for starters anyhow...
             //      -- LGP 2011-10-08
-            VerifyTestResult (TimeOfDay::Parse ("3pm").GetAsSecondsCount () == 15 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse ("3am").GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse ("3:00").GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse ("16:00").GetAsSecondsCount () == 16 * 60 * 60);
+            EXPECT_TRUE (TimeOfDay::Parse ("3pm").GetAsSecondsCount () == 15 * 60 * 60);
+            EXPECT_TRUE (TimeOfDay::Parse ("3am").GetAsSecondsCount () == 3 * 60 * 60);
+            EXPECT_TRUE (TimeOfDay::Parse ("3:00").GetAsSecondsCount () == 3 * 60 * 60);
+            EXPECT_TRUE (TimeOfDay::Parse ("16:00").GetAsSecondsCount () == 16 * 60 * 60);
         }
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
@@ -351,30 +351,30 @@ namespace {
 #if qCompilerAndStdLib_locale_pctX_print_time_Buggy
             // NOTE - these values are wrong, but since using locale code, not easy to fix/workaround - but to note XCode locale stuff still
             // somewhat broken...
-            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == "00:01:41");
-            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "0:01");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01");
+            EXPECT_TRUE (TimeOfDay{101}.Format (locale{}) == "00:01:41");
+            EXPECT_TRUE (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "0:01");
+            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41");
+            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41");
+            EXPECT_TRUE (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01");
 #else
-            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == "12:01:41 AM");
-            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "12:01 AM");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "1:01:41 AM" or TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41 AM");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41 AM");
-            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01 AM");
+            EXPECT_TRUE (TimeOfDay{101}.Format (locale{}) == "12:01:41 AM");
+            EXPECT_TRUE (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "12:01 AM");
+            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "1:01:41 AM" or TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41 AM");
+            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41 AM");
+            EXPECT_TRUE (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01 AM");
 #endif
         }
         {
-            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == "00:01:41");
-            VerifyTestResult (TimeOfDay{60}.Format (locale{}) == "00:01:00");
-            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "0:01");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (locale{}) == "01:01:00");
+            EXPECT_TRUE (TimeOfDay{101}.Format (locale{}) == "00:01:41");
+            EXPECT_TRUE (TimeOfDay{60}.Format (locale{}) == "00:01:00");
+            EXPECT_TRUE (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "0:01");
+            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41");
+            EXPECT_TRUE (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41");
+            EXPECT_TRUE (TimeOfDay{60 * 60 + 60}.Format (locale{}) == "01:01:00");
         }
         {
             TimeOfDay threePM = TimeOfDay::Parse ("3pm", locale::classic ());
-            VerifyTestResult (threePM.Format (locale::classic ()) == "15:00:00"); // UGH!!!
+            EXPECT_TRUE (threePM.Format (locale::classic ()) == "15:00:00"); // UGH!!!
             TestRoundTripFormatThenParseNoChange_ (threePM);
         }
     }
@@ -383,7 +383,7 @@ namespace {
 namespace {
     void VERIFY_ROUNDTRIP_XML_ (const Date& d)
     {
-        VerifyTestResult (Date::Parse (d.Format (Date::kISO8601Format), Date::kISO8601Format) == d);
+        EXPECT_TRUE (Date::Parse (d.Format (Date::kISO8601Format), Date::kISO8601Format) == d);
     }
 
     void Test_3_TestDate_ ()
@@ -392,67 +392,67 @@ namespace {
         {
             Date d{Year{1903}, April, DayOfMonth{4}};
             TestRoundTripFormatThenParseNoChange_ (d);
-            VerifyTestResult (d.Format (Date::kISO8601Format) == "1903-04-04");
+            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
             d = d.Add (4);
             VERIFY_ROUNDTRIP_XML_ (d);
-            VerifyTestResult (d.Format (Date::kISO8601Format) == "1903-04-08");
+            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "1903-04-08");
             d = d.Add (-4);
             VERIFY_ROUNDTRIP_XML_ (d);
-            VerifyTestResult (d.Format (Date::kISO8601Format) == "1903-04-04");
+            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
             Date d = Date::Parse ("09/14/1752", Date::kMonthDayYearFormat);
-            VerifyTestResult (d == Date::kGregorianCalendarEpoch.fYMD);
-            VerifyTestResult (d.Format (Date::kISO8601Format) == "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            EXPECT_TRUE (d == Date::kGregorianCalendarEpoch.fYMD);
+            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         catch (...) {
-            VerifyTestResult (false);
+            EXPECT_TRUE (false);
         }
         {
             optional<Date> d;
-            VerifyTestResult (d < DateTime::GetToday ());
-            VerifyTestResult (DateTime::GetToday () > d);
+            EXPECT_TRUE (d < DateTime::GetToday ());
+            EXPECT_TRUE (DateTime::GetToday () > d);
             //TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             Date d = Date::kGregorianCalendarEpoch.fYMD;
-            VerifyTestResult (d < DateTime::Now ().GetDate ());
-            VerifyTestResult (not(DateTime::Now ().GetDate () < d));
-            VerifyTestResult (d.Format (Date::kISO8601Format) == "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            EXPECT_TRUE (d < DateTime::Now ().GetDate ());
+            EXPECT_TRUE (not(DateTime::Now ().GetDate () < d));
+            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             Date d = Date{300y / January / 3};
-            VerifyTestResult (d < DateTime::Now ().GetDate ());
-            VerifyTestResult (not(DateTime::Now ().GetDate () < d));
-            VerifyTestResult (d.Format (Date::kISO8601Format) == "0300-01-03");
+            EXPECT_TRUE (d < DateTime::Now ().GetDate ());
+            EXPECT_TRUE (not(DateTime::Now ().GetDate () < d));
+            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "0300-01-03");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             Date d = Date::kMin;
-            VerifyTestResult (d < DateTime::Now ().GetDate ());
-            VerifyTestResult (not(DateTime::Now ().GetDate () < d));
-            VerifyTestResult (d.Format (Date::kISO8601Format) == "-4712-01-01"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            EXPECT_TRUE (d < DateTime::Now ().GetDate ());
+            EXPECT_TRUE (not(DateTime::Now ().GetDate () < d));
+            EXPECT_TRUE (d.Format (Date::kISO8601Format) == "-4712-01-01"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
-            VerifyTestResult ((Date::Parse ("11/3/2001", Date::kMonthDayYearFormat) == Date{Year (2001), Time::November, DayOfMonth (3)}));
-            VerifyTestResult (Date::Parse ("11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat) == L"11/03/2001");
+            EXPECT_TRUE ((Date::Parse ("11/3/2001", Date::kMonthDayYearFormat) == Date{Year (2001), Time::November, DayOfMonth (3)}));
+            EXPECT_TRUE (Date::Parse ("11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat) == L"11/03/2001");
         }
         catch (...) {
             // See qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy if this is triggered
             DbgTrace ("qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy");
-            VerifyTestResult (false);
+            EXPECT_TRUE (false);
             Execution::ReThrow ();
         }
         {
-            VerifyTestResult (Date::kMin < Date::kMax);
-            VerifyTestResult (Date::kMin <= Date::kMax);
-            VerifyTestResult (not(Date::kMin > Date::kMax));
-            VerifyTestResult (not(Date::kMin >= Date::kMax));
+            EXPECT_TRUE (Date::kMin < Date::kMax);
+            EXPECT_TRUE (Date::kMin <= Date::kMax);
+            EXPECT_TRUE (not(Date::kMin > Date::kMax));
+            EXPECT_TRUE (not(Date::kMin >= Date::kMax));
             TestRoundTripFormatThenParseNoChange_ (Date::kMin);
             TestRoundTripFormatThenParseNoChange_ (Date::kMax);
         }
@@ -461,34 +461,34 @@ namespace {
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
             Date                           d = Date{Year{1903}, April, DayOfMonth{5}};
             TestRoundTripFormatThenParseNoChange_ (d);
-            VerifyTestResult (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903");
-            VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903");
+            EXPECT_TRUE (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903");
+            EXPECT_TRUE (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903");
         }
         {
             Date d = Date (1903y, April, 5d);
-            VerifyTestResult (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903" or d.Format (locale{}) == "04/05/03");
-            VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903" or
+            EXPECT_TRUE (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903" or d.Format (locale{}) == "04/05/03");
+            EXPECT_TRUE (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903" or
                               d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/03");
         }
         {
             Date d = Date{Date::JulianDayNumber{2455213}};
-            VerifyTestResult (d.Format () == "1/16/10");
+            EXPECT_TRUE (d.Format () == "1/16/10");
         }
         {
             Date d = Date{2012y / May / 1d};
-            VerifyTestResult (d.GetJulianRep () == 2456049); //https://aa.usno.navy.mil/data/JulianDate
+            EXPECT_TRUE (d.GetJulianRep () == 2456049); //https://aa.usno.navy.mil/data/JulianDate
         }
         {
-            VerifyTestResult (Date::ToJulianRep (Date::FromJulianRep (0)) == 0);
+            EXPECT_TRUE (Date::ToJulianRep (Date::FromJulianRep (0)) == 0);
             for (int i = 0; i < 10 * 1000; ++i) {
                 // just a random sampling to assure reversible/consistent
-                VerifyTestResult (Date::ToJulianRep (Date::FromJulianRep (i * 300)) == i * 300u);
+                EXPECT_TRUE (Date::ToJulianRep (Date::FromJulianRep (i * 300)) == i * 300u);
             }
         }
         {
             Date d = 1906y / May / 12d;
             d      = d + 1;
-            VerifyTestResult (d == (1906y / May / 13d));
+            EXPECT_TRUE (d == (1906y / May / 13d));
         }
     }
 }
@@ -500,13 +500,13 @@ namespace {
         TraceContextBumper ctx{"Test_4_TestDateTime_"};
         {
             DateTime d = Date (Year{1903}, April, DayOfMonth{4});
-            VerifyTestResult (d.Format (DateTime::kISO8601Format) == "1903-04-04");
+            EXPECT_TRUE (d.Format (DateTime::kISO8601Format) == "1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             optional<DateTime> d;
-            VerifyTestResult (d < DateTime::Now ());
-            VerifyTestResult (DateTime::Now () > d);
+            EXPECT_TRUE (d < DateTime::Now ());
+            EXPECT_TRUE (DateTime::Now () > d);
             //TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
@@ -517,12 +517,12 @@ namespace {
                       Timezone::kLocalTime.GetBiasFromUTC (DateTime::Now ().GetDate (), TimeOfDay{0}));
             {
                 DateTime regTest{time_t (1598992961)};
-                VerifyTestResult (regTest.GetTimezone () == Timezone::kUTC);
-                VerifyTestResult ((regTest.GetDate () == Date{Year{2020}, September, DayOfMonth{1}}));
-                VerifyTestResult ((regTest.GetTimeOfDay () == TimeOfDay{20, 42, 41}));
+                EXPECT_TRUE (regTest.GetTimezone () == Timezone::kUTC);
+                EXPECT_TRUE ((regTest.GetDate () == Date{Year{2020}, September, DayOfMonth{1}}));
+                EXPECT_TRUE ((regTest.GetTimeOfDay () == TimeOfDay{20, 42, 41}));
                 if (Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()) == -4 * 60 * 60) {
                     DbgTrace ("Eastern US timezone");
-                    VerifyTestResult ((regTest.AsLocalTime () ==
+                    EXPECT_TRUE ((regTest.AsLocalTime () ==
                                        DateTime{Date{Year{2020}, September, DayOfMonth{1}}, TimeOfDay{20 - 4, 42, 41}, Timezone::kLocalTime}));
                 }
                 else {
@@ -532,18 +532,18 @@ namespace {
         }
         {
             DateTime d = {Date::kGregorianCalendarEpoch.fYMD, TimeOfDay{0}};
-            VerifyTestResult (d < DateTime::Now ());
-            VerifyTestResult (DateTime::Now () > d);
+            EXPECT_TRUE (d < DateTime::Now ());
+            EXPECT_TRUE (DateTime::Now () > d);
             d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC}; // so that compare works - cuz we don't know timezone we'll run test with...
-            VerifyTestResult (d.Format (DateTime::kISO8601Format) == "1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            EXPECT_TRUE (d.Format (DateTime::kISO8601Format) == "1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             DateTime d = DateTime::kMin;
-            VerifyTestResult (d < DateTime::Now ());
-            VerifyTestResult (DateTime::Now () > d);
+            EXPECT_TRUE (d < DateTime::Now ());
+            EXPECT_TRUE (DateTime::Now () > d);
             d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC}; // so that compare works - cuz we don't know timezone we'll run test with...
-            VerifyTestResult (d.Format (DateTime::kISO8601Format) == "-4712-01-01T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            EXPECT_TRUE (d.Format (DateTime::kISO8601Format) == "-4712-01-01T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
@@ -556,17 +556,17 @@ namespace {
             {
                 String tmp = dt.Format (locale{});
 #if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
-                VerifyTestResult (tmp == "4/5/1903 12:01:41 AM" or tmp == "04/05/1903 12:01:41 AM");
+                EXPECT_TRUE (tmp == "4/5/1903 12:01:41 AM" or tmp == "04/05/1903 12:01:41 AM");
 #else
 #if qCompilerAndStdLib_locale_pctX_print_time_Buggy
-                VerifyTestResult (tmp == "Sun Apr  5 00:01:41 1903");
+                EXPECT_TRUE (tmp == "Sun Apr  5 00:01:41 1903");
 #else
-                VerifyTestResult (tmp == "Sun 05 Apr 1903 12:01:41 AM");
+                EXPECT_TRUE (tmp == "Sun 05 Apr 1903 12:01:41 AM");
 #endif
 #endif
             }
             DateTime dt2{d, TimeOfDay{60}};
-            //TOFIX!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+            //TOFIX!EXPECT_TRUE (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
         }
         {
             Date d = Date{Year{1903}, April, DayOfMonth{6}};
@@ -574,13 +574,13 @@ namespace {
             DateTime dt{d, TimeOfDay{101}};
             TestRoundTripFormatThenParseNoChange_ (dt);
             String tmp = dt.Format (locale{});
-            VerifyTestResult (tmp == "Mon Apr  6 00:01:41 1903");
+            EXPECT_TRUE (tmp == "Mon Apr  6 00:01:41 1903");
             DateTime dt2{d, TimeOfDay{60}};
             TestRoundTripFormatThenParseNoChange_ (dt2);
             // want a variant that does this formatting!
-            //VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+            //EXPECT_TRUE (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
         }
-        VerifyTestResult (DateTime::Parse (L"2010-01-01", DateTime::kISO8601Format).GetDate ().GetYear () == Time::Year{2010});
+        EXPECT_TRUE (DateTime::Parse (L"2010-01-01", DateTime::kISO8601Format).GetDate ().GetYear () == Time::Year{2010});
         {
             DateTime now = DateTime::Now ();
             TestRoundTripFormatThenParseNoChange_ (now);
@@ -594,21 +594,21 @@ namespace {
                 Time::Year nYear = now.GetDate ().GetYear ();
                 Date       d     = dt.GetDate ();
                 if (d.GetYear () != nYear) {
-                    VerifyTestResult (((nYear - d.GetYear ()).count () % 100) == 0);
+                    EXPECT_TRUE (((nYear - d.GetYear ()).count () % 100) == 0);
                     d  = Date{nYear, d.GetMonth (), d.GetDayOfMonth ()};
                     dt = DateTime{dt, d};
                 }
-                VerifyTestResult (now == dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
+                EXPECT_TRUE (now == dt); // if this fails, look at qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
             }
             else {
-                VerifyTestResult (now == DateTime::Parse (now.Format (DateTime::kShortLocaleFormatPattern), DateTime::kShortLocaleFormatPattern));
+                EXPECT_TRUE (now == DateTime::Parse (now.Format (DateTime::kShortLocaleFormatPattern), DateTime::kShortLocaleFormatPattern));
             }
         }
         {
             const DateTime kProblemBaseDT_ = DateTime{Date{2023y / February / 18}, TimeOfDay{10, 35, 59}}.AsLocalTime ();
             const DateTime kProblemDT_     = DateTime{Date{2023y / March / 2d}, TimeOfDay{10, 35, 59}}.AsLocalTime ();
             Duration       diff            = kProblemDT_ - kProblemBaseDT_;
-            VerifyTestResult (diff == days{12}); // note not a leap year
+            EXPECT_TRUE (diff == days{12}); // note not a leap year
         }
         {
             Time::TimePointSeconds now = Time::GetTickCount ();
@@ -627,14 +627,14 @@ namespace {
                 // test going back and forth between TimePointSeconds and DateTime...
                 Time::TimePointSeconds ds = dso + now;
                 DateTime               dt{ds};
-                VerifyTestResult ((Math::NearlyEquals (dt, DateTime{dt.As<Time::TimePointSeconds> ()})));
+                EXPECT_TRUE ((Math::NearlyEquals (dt, DateTime{dt.As<Time::TimePointSeconds> ()})));
                 // crazy large epsilon for now because we represent datetime to nearest second
                 // (note - failed once with clang++ on vm - could be something else slowed vm down - LGP 2018-04-17 - ignore for now)
                 // But even the 1.1 failed once (--LGP 2019-05-03) - so change to warning and use bigger number (2.1) for error check
                 // Failed again on (slowish) vm under VS2k17 - but rarely --LGP 2021-05-20
-                VerifyTestResultWarning (Math::NearlyEquals (dt.AsLocalTime ().As<Time::TimePointSeconds> ().time_since_epoch ().count (),
+                EXPECT_TRUEWarning (Math::NearlyEquals (dt.AsLocalTime ().As<Time::TimePointSeconds> ().time_since_epoch ().count (),
                                                              ds.time_since_epoch ().count (), 1.1));
-                VerifyTestResult (Math::NearlyEquals (dt.AsLocalTime ().As<Time::TimePointSeconds> ().time_since_epoch ().count (),
+                EXPECT_TRUE (Math::NearlyEquals (dt.AsLocalTime ().As<Time::TimePointSeconds> ().time_since_epoch ().count (),
                                                       ds.time_since_epoch ().count (),
                                                       7.5)); // failed once - with value 2.1 - 2023-11-10, so up this to 5 (sometimes run on slow machines)
                 // Failed once (after change to more jittery tickcount logic) on macos, so upped to 7.5 seconds --LGP 2023-11-23
@@ -644,25 +644,25 @@ namespace {
             auto roundTripD = [] (DateTime dt) {
                 String   s   = dt.Format (DateTime::kRFC1123Format);
                 DateTime dt2 = DateTime::Parse (s, DateTime::kRFC1123Format);
-                VerifyTestResult (dt == dt2);
+                EXPECT_TRUE (dt == dt2);
             };
             auto roundTripS = [] (String s) {
                 DateTime dt = DateTime::Parse (s, DateTime::kRFC1123Format);
-                VerifyTestResult (dt.Format (DateTime::kRFC1123Format) == s);
+                EXPECT_TRUE (dt.Format (DateTime::kRFC1123Format) == s);
             };
 
             // Parse eRFC1123
-            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::kRFC1123Format) ==
+            EXPECT_TRUE (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::kRFC1123Format) ==
                               (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
             // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::kRFC1123Format) ==
+            EXPECT_TRUE (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::kRFC1123Format) ==
                               (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::kRFC1123Format) ==
+            EXPECT_TRUE (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::kRFC1123Format) ==
                               (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::kRFC1123Format) ==
+            EXPECT_TRUE (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::kRFC1123Format) ==
                               (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
 
-            VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::kRFC1123Format) ==
+            EXPECT_TRUE (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::kRFC1123Format) ==
                               (DateTime{Date{Time::Year{2018}, November, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
 
             roundTripD (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC});
@@ -679,13 +679,13 @@ namespace {
                 constexpr Date kDate_{Time::Year {2016}, Time::MonthOfYear{9}, Time::DayOfMonth{29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 constexpr TimeOfDay kTOD2_{10, 21, 35};
-                VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_, kTOD2_}).As<Time::DurationSeconds::rep> () == -3);
-                VerifyTestResult ((DateTime {kDate_, kTOD2_} - DateTime {kDate_, kTOD_}).As<Time::DurationSeconds::rep> () == 3);
-                VerifyTestResult ((DateTime {kDate_.Add (1), kTOD_} - DateTime {kDate_, kTOD_}).As<Time::DurationSeconds::rep> () == 24 * 60 * 60);
-                VerifyTestResult ((DateTime {kDate_, kTOD_} - DateTime {kDate_.Add (1), kTOD_}).As<Time::DurationSeconds::rep> () == -24 * 60 * 60);
+                EXPECT_TRUE ((DateTime {kDate_, kTOD_} - DateTime {kDate_, kTOD2_}).As<Time::DurationSeconds::rep> () == -3);
+                EXPECT_TRUE ((DateTime {kDate_, kTOD2_} - DateTime {kDate_, kTOD_}).As<Time::DurationSeconds::rep> () == 3);
+                EXPECT_TRUE ((DateTime {kDate_.Add (1), kTOD_} - DateTime {kDate_, kTOD_}).As<Time::DurationSeconds::rep> () == 24 * 60 * 60);
+                EXPECT_TRUE ((DateTime {kDate_, kTOD_} - DateTime {kDate_.Add (1), kTOD_}).As<Time::DurationSeconds::rep> () == -24 * 60 * 60);
             }
             {
-                VerifyTestResult ((DateTime::Now () - DateTime::kMin) > "P200Y"_duration);
+                EXPECT_TRUE ((DateTime::Now () - DateTime::kMin) > "P200Y"_duration);
             }
         }
         {
@@ -695,53 +695,53 @@ namespace {
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-04:00", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
-                VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+                EXPECT_TRUE ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
             {
                 constexpr Date      kDate_ = Date {Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth{29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-0400", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
-                VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+                EXPECT_TRUE ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
             {
                 constexpr Date      kDate_{Time::Year{2016}, Time::MonthOfYear {9}, Time::DayOfMonth {29}};
                 constexpr TimeOfDay kTOD_{10, 21, 32};
                 DateTime            td  = DateTime::Parse ("2016-09-29T10:21:32-04", DateTime::kISO8601Format);
                 DateTime            tdu = td.AsUTC ();
-                VerifyTestResult ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
+                EXPECT_TRUE ((tdu == DateTime{kDate_, TimeOfDay{kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()}, Timezone::kUTC}));
             }
         }
         {
             // https://stroika.atlassian.net/browse/STK-950
             try {
                 [[maybe_unused]]DateTime dt = DateTime::Parse (L"1906-05-12x12:00:00+00", DateTime::kISO8601Format);
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
             catch (const DateTime::FormatException&) {
                 // good
             }
             catch (...) {
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
             try {
                 DateTime dt = DateTime::Parse (L"1906-05-12 12:00:00+00", DateTime::kISO8601Format);    //allowed to use space or 't'
-                VerifyTestResult ((dt.GetDate () == Date{1906y, May, 12d}));
-                VerifyTestResult ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
-                VerifyTestResult (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
+                EXPECT_TRUE ((dt.GetDate () == Date{1906y, May, 12d}));
+                EXPECT_TRUE ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
+                EXPECT_TRUE (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
             }
             catch (...) {
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
             try {
                 DateTime dt = DateTime::Parse (L"1906-05-12T12:00:00+00", DateTime::kISO8601Format);
-                VerifyTestResult ((dt.GetDate () == Date{1906y, May, 12d}));
-                VerifyTestResult ((1906y/May/12d == Date{1906y, May, 12d}));
-                VerifyTestResult ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
-                VerifyTestResult (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
+                EXPECT_TRUE ((dt.GetDate () == Date{1906y, May, 12d}));
+                EXPECT_TRUE ((1906y/May/12d == Date{1906y, May, 12d}));
+                EXPECT_TRUE ((dt.GetTimeOfDay () == TimeOfDay {12, 0, 0}));
+                EXPECT_TRUE (dt.GetTimezone ()->GetBiasFromUTC (dt.GetDate (), *dt.GetTimeOfDay ()) == 0);
             }
             catch (...) {
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
          }
     }
@@ -755,28 +755,28 @@ namespace {
         TraceContextBumper ctx{"Test_5_DateTimeTimeT_"};
         {
             DateTime d = Date{Year{2000}, April, DayOfMonth{20}};
-            VerifyTestResult (d.As<time_t> () == 956188800); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_TRUE (d.As<time_t> () == 956188800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3pm", locale{})};
-            VerifyTestResult (d.As<time_t> () == 802278000); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_TRUE (d.As<time_t> () == 802278000); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3pm")};
-            VerifyTestResult (d.As<time_t> () == 802278000); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_TRUE (d.As<time_t> () == 802278000); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3am")};
-            VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_TRUE (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00")};
-            VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_TRUE (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
             const time_t kTEST = 802234800;
             DateTime     d     = DateTime{kTEST};
-            VerifyTestResult (d.As<time_t> () == kTEST); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_TRUE (d.As<time_t> () == kTEST); // source - http://www.onlineconversion.com/unix_time.htm
         }
     }
 }
@@ -795,11 +795,11 @@ namespace {
             x.tm_mday    = 15;
             DateTime  d  = DateTime{x};
             struct tm x2 = d.As<struct tm> ();
-            VerifyTestResult (x.tm_hour == x2.tm_hour);
-            VerifyTestResult (x.tm_min == x2.tm_min);
-            VerifyTestResult (x.tm_sec == x2.tm_sec);
-            VerifyTestResult (x.tm_year == x2.tm_year);
-            VerifyTestResult (x.tm_mday == x2.tm_mday);
+            EXPECT_TRUE (x.tm_hour == x2.tm_hour);
+            EXPECT_TRUE (x.tm_min == x2.tm_min);
+            EXPECT_TRUE (x.tm_sec == x2.tm_sec);
+            EXPECT_TRUE (x.tm_year == x2.tm_year);
+            EXPECT_TRUE (x.tm_mday == x2.tm_mday);
         }
     }
 }
@@ -810,121 +810,121 @@ namespace {
     {
         TraceContextBumper ctx{"Test_7_Duration_"};
         {
-            VerifyTestResult (Duration{0}.As<time_t> () == 0);
-            VerifyTestResult (Duration{0}.As<String> () == L"PT0S");
-            VerifyTestResult (Duration{0}.Format () == L"0 seconds");
+            EXPECT_TRUE (Duration{0}.As<time_t> () == 0);
+            EXPECT_TRUE (Duration{0}.As<String> () == L"PT0S");
+            EXPECT_TRUE (Duration{0}.Format () == L"0 seconds");
         }
         {
-            VerifyTestResult (Duration{3}.As<time_t> () == 3);
-            VerifyTestResult (Duration{3}.As<String> () == L"PT3S");
-            VerifyTestResult (Duration{3}.Format () == L"3 seconds");
+            EXPECT_TRUE (Duration{3}.As<time_t> () == 3);
+            EXPECT_TRUE (Duration{3}.As<String> () == L"PT3S");
+            EXPECT_TRUE (Duration{3}.Format () == L"3 seconds");
         }
         const int kSecondsPerDay = TimeOfDay::kMaxSecondsPerDay;
         {
             const Duration k30Days = Duration{L"P30D"};
-            VerifyTestResult (k30Days.As<time_t> () == 30 * kSecondsPerDay);
+            EXPECT_TRUE (k30Days.As<time_t> () == 30 * kSecondsPerDay);
         }
         {
             const Duration k6Months = Duration{"P6M"};
-            VerifyTestResult (k6Months.As<time_t> () == 6 * 30 * kSecondsPerDay);
+            EXPECT_TRUE (k6Months.As<time_t> () == 6 * 30 * kSecondsPerDay);
         }
         {
             const Duration kP1Y = Duration{"P1Y"};
-            VerifyTestResult (kP1Y.As<time_t> () == 365 * kSecondsPerDay);
+            EXPECT_TRUE (kP1Y.As<time_t> () == 365 * kSecondsPerDay);
         }
         {
             const Duration kP2Y = Duration{"P2Y"};
-            VerifyTestResult (kP2Y.As<time_t> () == 2 * 365 * kSecondsPerDay);
-            VerifyTestResult (Duration{2 * 365 * kSecondsPerDay}.As<String> () == "P2Y");
+            EXPECT_TRUE (kP2Y.As<time_t> () == 2 * 365 * kSecondsPerDay);
+            EXPECT_TRUE (Duration{2 * 365 * kSecondsPerDay}.As<String> () == "P2Y");
         }
         {
             const Duration kHalfMinute = Duration{"PT0.5M"};
-            VerifyTestResult (kHalfMinute.As<time_t> () == 30);
+            EXPECT_TRUE (kHalfMinute.As<time_t> () == 30);
         }
         {
             const Duration kD = Duration{L"PT0.1S"};
-            VerifyTestResult (kD.As<time_t> () == 0);
-            VerifyTestResult (kD.As<double> () == 0.1);
+            EXPECT_TRUE (kD.As<time_t> () == 0);
+            EXPECT_TRUE (kD.As<double> () == 0.1);
         }
         {
             const Duration kHalfMinute = Duration{L"PT0.5M"};
-            VerifyTestResult (kHalfMinute.PrettyPrint () == L"30 seconds");
+            EXPECT_TRUE (kHalfMinute.PrettyPrint () == L"30 seconds");
         }
         {
             const Duration k3MS = Duration{L"PT0.003S"};
-            VerifyTestResult (k3MS.PrettyPrint () == L"3 ms");
+            EXPECT_TRUE (k3MS.PrettyPrint () == L"3 ms");
         }
         {
             const Duration kD = Duration{L"PT1.003S"};
-            VerifyTestResult (kD.PrettyPrint () == L"1.003 seconds");
+            EXPECT_TRUE (kD.PrettyPrint () == L"1.003 seconds");
         }
         {
             const Duration kD = Duration{L"PT0.000045S"};
-            //VerifyTestResult (kD.PrettyPrint () == L"45 µs");   // SAD - but L"45 µs" 'works' but doesn't provide the RIGHT string portably
-            VerifyTestResult (kD.PrettyPrint () == L"45 \u00b5s");
+            //EXPECT_TRUE (kD.PrettyPrint () == L"45 µs");   // SAD - but L"45 µs" 'works' but doesn't provide the RIGHT string portably
+            EXPECT_TRUE (kD.PrettyPrint () == L"45 \u00b5s");
         }
         {
             // todo use constexpr
             const Duration kD = Duration{};
-            VerifyTestResult (kD.empty ());
+            EXPECT_TRUE (kD.empty ());
         }
         {
             // todo use constexpr
             const Duration kD = Duration{1.6e-6};
-            VerifyTestResult (kD.PrettyPrint () == L"1.6 \u00b5s");
+            EXPECT_TRUE (kD.PrettyPrint () == L"1.6 \u00b5s");
         }
         {
             // todo use constexpr
             const Duration kD{33us};
-            VerifyTestResult (kD.PrettyPrint () == L"33 \u00b5s");
+            EXPECT_TRUE (kD.PrettyPrint () == L"33 \u00b5s");
         }
         {
             const Duration kD = Duration{"PT0.000045S"};
-            VerifyTestResult (kD.PrettyPrint () == L"45 \u00b5s");
-            VerifyTestResult ((-kD).PrettyPrint () == L"-45 \u00b5s");
-            VerifyTestResult ((-kD).As<String> () == "-PT0.000045S");
+            EXPECT_TRUE (kD.PrettyPrint () == L"45 \u00b5s");
+            EXPECT_TRUE ((-kD).PrettyPrint () == L"-45 \u00b5s");
+            EXPECT_TRUE ((-kD).As<String> () == "-PT0.000045S");
         }
-        VerifyTestResult (Duration{"P30S"}.As<time_t> () == 30);
-        VerifyTestResult (Duration{"PT30S"}.As<time_t> () == 30);
-        VerifyTestResult (Duration{60}.As<String> () == L"PT1M");
-        VerifyTestResult (Duration{"-PT1H1S"}.As<time_t> () == -3601);
-        VerifyTestResult (-Duration{"-PT1H1S"}.As<time_t> () == 3601);
+        EXPECT_TRUE (Duration{"P30S"}.As<time_t> () == 30);
+        EXPECT_TRUE (Duration{"PT30S"}.As<time_t> () == 30);
+        EXPECT_TRUE (Duration{60}.As<String> () == L"PT1M");
+        EXPECT_TRUE (Duration{"-PT1H1S"}.As<time_t> () == -3601);
+        EXPECT_TRUE (-Duration{"-PT1H1S"}.As<time_t> () == 3601);
 
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1;
             for (time_t i = -45; i < 60 * 3 * 60 + 99; i += K) {
-                VerifyTestResult (Duration{Duration{i}.As<String> ()}.As<time_t> () == i);
+                EXPECT_TRUE (Duration{Duration{i}.As<String> ()}.As<time_t> () == i);
             }
         }
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 2630 : 263;
             for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += K) {
-                VerifyTestResult (Duration{Duration{i}.As<String> ()}.As<time_t> () == i);
+                EXPECT_TRUE (Duration{Duration{i}.As<String> ()}.As<time_t> () == i);
             }
         }
-        VerifyTestResult (Duration::min () < Duration::max ());
-        VerifyTestResult (Duration::min () != Duration::max ());
-        VerifyTestResult (Duration::min () < Duration{"P30S"} and Duration{"P30S"} < Duration::max ());
+        EXPECT_TRUE (Duration::min () < Duration::max ());
+        EXPECT_TRUE (Duration::min () != Duration::max ());
+        EXPECT_TRUE (Duration::min () < Duration{"P30S"} and Duration{"P30S"} < Duration::max ());
         {
             Duration d = Duration{L"PT0.1S"};
-            VerifyTestResult (d == "PT0.1S"_duration);
+            EXPECT_TRUE (d == "PT0.1S"_duration);
             d += chrono::milliseconds{30};
-            VerifyTestResult (Math::NearlyEquals (d.As<DurationSeconds::rep> (), static_cast<DurationSeconds::rep> (.130)));
+            EXPECT_TRUE (Math::NearlyEquals (d.As<DurationSeconds::rep> (), static_cast<DurationSeconds::rep> (.130)));
         }
         {
-            VerifyTestResult (Duration{"PT1.4S"}.PrettyPrintAge () == "now");
-            VerifyTestResult (Duration{"-PT9M"}.PrettyPrintAge () == "now");
-            VerifyTestResult (Duration{"-PT20M"}.PrettyPrintAge () == "20 minutes ago");
-            VerifyTestResult (Duration{"PT20M"}.PrettyPrintAge () == "20 minutes from now");
-            VerifyTestResult (Duration{"PT4H"}.PrettyPrintAge () == "4 hours from now");
-            VerifyTestResult (Duration{"PT4.4H"}.PrettyPrintAge () == "4 hours from now");
-            VerifyTestResult (Duration{"P2Y"}.PrettyPrintAge () == "2 years from now");
-            VerifyTestResult (Duration{"P2.4Y"}.PrettyPrintAge () == "2 years from now");
-            VerifyTestResult (Duration{"P2.6Y"}.PrettyPrintAge () == "3 years from now");
-            VerifyTestResult (Duration{"-P1M"}.PrettyPrintAge () == "1 month ago");
-            VerifyTestResult (Duration{"-P2M"}.PrettyPrintAge () == "2 months ago");
-            VerifyTestResult (Duration{"-PT1Y"}.PrettyPrintAge () == "1 year ago");
-            VerifyTestResult (Duration{"-PT2Y"}.PrettyPrintAge () == "2 years ago");
+            EXPECT_TRUE (Duration{"PT1.4S"}.PrettyPrintAge () == "now");
+            EXPECT_TRUE (Duration{"-PT9M"}.PrettyPrintAge () == "now");
+            EXPECT_TRUE (Duration{"-PT20M"}.PrettyPrintAge () == "20 minutes ago");
+            EXPECT_TRUE (Duration{"PT20M"}.PrettyPrintAge () == "20 minutes from now");
+            EXPECT_TRUE (Duration{"PT4H"}.PrettyPrintAge () == "4 hours from now");
+            EXPECT_TRUE (Duration{"PT4.4H"}.PrettyPrintAge () == "4 hours from now");
+            EXPECT_TRUE (Duration{"P2Y"}.PrettyPrintAge () == "2 years from now");
+            EXPECT_TRUE (Duration{"P2.4Y"}.PrettyPrintAge () == "2 years from now");
+            EXPECT_TRUE (Duration{"P2.6Y"}.PrettyPrintAge () == "3 years from now");
+            EXPECT_TRUE (Duration{"-P1M"}.PrettyPrintAge () == "1 month ago");
+            EXPECT_TRUE (Duration{"-P2M"}.PrettyPrintAge () == "2 months ago");
+            EXPECT_TRUE (Duration{"-PT1Y"}.PrettyPrintAge () == "1 year ago");
+            EXPECT_TRUE (Duration{"-PT2Y"}.PrettyPrintAge () == "2 years ago");
         }
     }
 }
@@ -936,24 +936,24 @@ namespace {
         TraceContextBumper ctx{"Test_8_DateTimeWithDuration_"};
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00")};
-            VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
+            EXPECT_TRUE (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
             const Duration k30Days = Duration{"P30D"};
             DateTime       d2      = d + k30Days;
-            VerifyTestResult (d2.GetDate ().GetYear () == Year{1995});
-            VerifyTestResult (d2.GetDate ().GetMonth () == July);
-            VerifyTestResult (d2.GetDate ().GetDayOfMonth () == DayOfMonth{4});
-            VerifyTestResult (d2.GetTimeOfDay () == d.GetTimeOfDay ());
+            EXPECT_TRUE (d2.GetDate ().GetYear () == Year{1995});
+            EXPECT_TRUE (d2.GetDate ().GetMonth () == July);
+            EXPECT_TRUE (d2.GetDate ().GetDayOfMonth () == DayOfMonth{4});
+            EXPECT_TRUE (d2.GetTimeOfDay () == d.GetTimeOfDay ());
         }
         {
             DateTime n1 = DateTime{Date{Year{2015}, June, DayOfMonth{9}}, TimeOfDay{19, 18, 42}, Timezone::kLocalTime};
             DateTime n2 = n1 - Duration{L"P100Y"};
-            VerifyTestResult (n2.GetDate ().GetYear () == Year ((int)n1.GetDate ().GetYear () - 100));
+            EXPECT_TRUE (n2.GetDate ().GetYear () == Year ((int)n1.GetDate ().GetYear () - 100));
 #if 0
             // @todo - Improve - increment by 100 years not as exact as one might like @todo --LGP 2015-06-09
-            VerifyTestResult (n2.GetDate ().GetMonth () == n1.GetDate ().GetMonth ());
-            VerifyTestResult (n2.GetDate ().GetDayOfMonth () == n1.GetDate ().GetDayOfMonth ());
+            EXPECT_TRUE (n2.GetDate ().GetMonth () == n1.GetDate ().GetMonth ());
+            EXPECT_TRUE (n2.GetDate ().GetDayOfMonth () == n1.GetDate ().GetDayOfMonth ());
 #endif
-            VerifyTestResult (n2.GetTimeOfDay () == n1.GetTimeOfDay ());
+            EXPECT_TRUE (n2.GetTimeOfDay () == n1.GetTimeOfDay ());
         }
     }
 }
@@ -976,7 +976,7 @@ namespace {
             [[maybe_unused]] optional<bool> isDst = n.IsDaylightSavingsTime ();
             DateTime                        n2    = n.AddDays (180);
             // This verify was wrong. Consider a system on GMT! Besides that - its still not reliable because DST doesnt end 180 days exactly apart.
-            //VerifyTestResult (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2));
+            //EXPECT_TRUE (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2));
             if (n.IsDaylightSavingsTime () != n2.IsDaylightSavingsTime ()) {
             }
         }
@@ -995,18 +995,18 @@ namespace {
     {
         TraceContextBumper ctx{"Test_10_std_duration_"};
         const Duration     k30Seconds = Duration{30.0};
-        VerifyTestResult (k30Seconds.As<time_t> () == 30);
-        VerifyTestResult (k30Seconds.As<String> () == L"PT30S");
-        VerifyTestResult (k30Seconds.As<chrono::duration<double>> () == chrono::duration<double>{30.0});
-        VerifyTestResult (Duration{chrono::duration<double> (4)}.As<time_t> () == 4);
-        VerifyTestResult (Math::NearlyEquals (Duration{chrono::milliseconds{50}}.As<Time::DurationSeconds::rep> (), 0.050));
-        VerifyTestResult (Math::NearlyEquals (Duration{chrono::microseconds{50}}.As<Time::DurationSeconds::rep> (), 0.000050));
-        VerifyTestResult (Math::NearlyEquals (Duration{chrono::nanoseconds{50}}.As<Time::DurationSeconds::rep> (), 0.000000050));
-        VerifyTestResult (Math::NearlyEquals (Duration{chrono::nanoseconds{1}}.As<Time::DurationSeconds::rep> (), 0.000000001));
-        VerifyTestResult (Duration{5.0}.As<chrono::milliseconds> () == chrono::milliseconds{5000});
-        VerifyTestResult (Duration{-5.0}.As<chrono::milliseconds> () == chrono::milliseconds{-5000});
-        VerifyTestResult (Duration{1.0}.As<chrono::nanoseconds> () == chrono::nanoseconds{1000 * 1000 * 1000});
-        VerifyTestResult (Duration{1} == Duration{chrono::seconds{1}});
+        EXPECT_TRUE (k30Seconds.As<time_t> () == 30);
+        EXPECT_TRUE (k30Seconds.As<String> () == L"PT30S");
+        EXPECT_TRUE (k30Seconds.As<chrono::duration<double>> () == chrono::duration<double>{30.0});
+        EXPECT_TRUE (Duration{chrono::duration<double> (4)}.As<time_t> () == 4);
+        EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::milliseconds{50}}.As<Time::DurationSeconds::rep> (), 0.050));
+        EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::microseconds{50}}.As<Time::DurationSeconds::rep> (), 0.000050));
+        EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::nanoseconds{50}}.As<Time::DurationSeconds::rep> (), 0.000000050));
+        EXPECT_TRUE (Math::NearlyEquals (Duration{chrono::nanoseconds{1}}.As<Time::DurationSeconds::rep> (), 0.000000001));
+        EXPECT_TRUE (Duration{5.0}.As<chrono::milliseconds> () == chrono::milliseconds{5000});
+        EXPECT_TRUE (Duration{-5.0}.As<chrono::milliseconds> () == chrono::milliseconds{-5000});
+        EXPECT_TRUE (Duration{1.0}.As<chrono::nanoseconds> () == chrono::nanoseconds{1000 * 1000 * 1000});
+        EXPECT_TRUE (Duration{1} == Duration{chrono::seconds{1}});
     }
 }
 
@@ -1017,10 +1017,10 @@ namespace {
         using Traversal::Range;
         Range<Duration> d1;
         Range<Duration> d2 = Range<Duration>::FullRange ();
-        VerifyTestResult (d1.empty ());
-        VerifyTestResult (not d2.empty ());
-        VerifyTestResult (d2.GetLowerBound () == Duration::min ());
-        VerifyTestResult (d2.GetUpperBound () == Duration::max ());
+        EXPECT_TRUE (d1.empty ());
+        EXPECT_TRUE (not d2.empty ());
+        EXPECT_TRUE (d2.GetLowerBound () == Duration::min ());
+        EXPECT_TRUE (d2.GetUpperBound () == Duration::max ());
     }
 }
 
@@ -1032,42 +1032,42 @@ namespace {
         {
             DiscreteRange<Date> d1;
             DiscreteRange<Date> d2 = DiscreteRange<Date>::FullRange ();
-            VerifyTestResult (d1.empty ());
-            VerifyTestResult (not d2.empty ());
-            VerifyTestResult (d2.GetLowerBound () == Date::kMin);
-            VerifyTestResult (d2.GetUpperBound () == Date::kMax);
+            EXPECT_TRUE (d1.empty ());
+            EXPECT_TRUE (not d2.empty ());
+            EXPECT_TRUE (d2.GetLowerBound () == Date::kMin);
+            EXPECT_TRUE (d2.GetUpperBound () == Date::kMax);
         }
         {
             DiscreteRange<Date> dr{Date{Year{1903}, April, DayOfMonth{5}}, Date{Year{1903}, April, DayOfMonth{6}}};
             unsigned int        i = 0;
             for (Date d : dr) {
                 ++i;
-                VerifyTestResult (d.GetYear () == Year{1903});
-                VerifyTestResult (d.GetMonth () == April);
+                EXPECT_TRUE (d.GetYear () == Year{1903});
+                EXPECT_TRUE (d.GetMonth () == April);
                 if (i == 1) {
-                    VerifyTestResult (d.GetDayOfMonth () == DayOfMonth{5});
+                    EXPECT_TRUE (d.GetDayOfMonth () == DayOfMonth{5});
                 }
                 else {
-                    VerifyTestResult (d.GetDayOfMonth () == DayOfMonth{6});
+                    EXPECT_TRUE (d.GetDayOfMonth () == DayOfMonth{6});
                 }
             }
-            VerifyTestResult (i == 2);
+            EXPECT_TRUE (i == 2);
         }
         {
             DiscreteRange<Date> dr{Date{Year{1903}, April, DayOfMonth{5}}, Date{Year{1903}, April, DayOfMonth{6}}};
             unsigned int        i = 0;
             for (Date d : dr.Elements ()) {
                 ++i;
-                VerifyTestResult (d.GetYear () == Year{1903});
-                VerifyTestResult (d.GetMonth () == April);
+                EXPECT_TRUE (d.GetYear () == Year{1903});
+                EXPECT_TRUE (d.GetMonth () == April);
                 if (i == 1) {
-                    VerifyTestResult (d.GetDayOfMonth () == DayOfMonth{5});
+                    EXPECT_TRUE (d.GetDayOfMonth () == DayOfMonth{5});
                 }
                 else {
-                    VerifyTestResult (d.GetDayOfMonth () == DayOfMonth{6});
+                    EXPECT_TRUE (d.GetDayOfMonth () == DayOfMonth{6});
                 }
             }
-            VerifyTestResult (i == 2);
+            EXPECT_TRUE (i == 2);
         }
         {
 #if qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
@@ -1080,7 +1080,7 @@ namespace {
 #else
             DiscreteRange<Date> dr{DateTime::Now ().GetDate () - 1, DateTime::Now ().GetDate () + 1};
 #endif
-            VerifyTestResult (dr.Contains (dr.GetMidpoint ()));
+            EXPECT_TRUE (dr.Contains (dr.GetMidpoint ()));
         }
     }
 }
@@ -1093,16 +1093,16 @@ namespace {
         {
             Range<DateTime> d1;
             Range<DateTime> d2 = Range<DateTime>::FullRange ();
-            VerifyTestResult (d1.empty ());
-            VerifyTestResult (not d2.empty ());
-            VerifyTestResult (d2.GetLowerBound () == DateTime::kMin);
-            VerifyTestResult (d2.GetUpperBound () == DateTime::kMax);
+            EXPECT_TRUE (d1.empty ());
+            EXPECT_TRUE (not d2.empty ());
+            EXPECT_TRUE (d2.GetLowerBound () == DateTime::kMin);
+            EXPECT_TRUE (d2.GetUpperBound () == DateTime::kMax);
         }
         {
             Range<DateTime> d1{DateTime{Date{Year{2000}, April, DayOfMonth{20}}}, DateTime{Date{Year{2000}, April, DayOfMonth{22}}}};
-            VerifyTestResult (d1.GetDistanceSpanned () / 2 == Duration{"PT1D"});
+            EXPECT_TRUE (d1.GetDistanceSpanned () / 2 == Duration{"PT1D"});
             // SEE https://stroika.atlassian.net/browse/STK-514 for accuracy of compare (sb .1 or less)
-            VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date{Year{2000}, April, DayOfMonth{21}}, DurationSeconds{2}));
+            EXPECT_TRUE (Math::NearlyEquals (d1.GetMidpoint (), Date{Year{2000}, April, DayOfMonth{21}}, DurationSeconds{2}));
         }
     }
 }
@@ -1111,8 +1111,8 @@ namespace {
     void Test_14_timepoint_ ()
     {
         TraceContextBumper ctx{"Test_14_timepoint_"};
-        // @see https://stroika.atlassian.net/browse/STK-619 - VerifyTestResult (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinity) == time_point<chrono::steady_clock>::max ());
-        VerifyTestResult (Time::GetTickCount () + Time::kInfinity > chrono::steady_clock::now () + chrono::seconds (10000));
+        // @see https://stroika.atlassian.net/browse/STK-619 - EXPECT_TRUE (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinity) == time_point<chrono::steady_clock>::max ());
+        EXPECT_TRUE (Time::GetTickCount () + Time::kInfinity > chrono::steady_clock::now () + chrono::seconds (10000));
     }
 }
 
@@ -1148,6 +1148,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

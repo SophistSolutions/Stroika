@@ -621,7 +621,7 @@ namespace Stroika::Foundation::Traversal {
         *  \par Example Usage
         *       \code
         *           Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-        *           VerifyTestResult (c.Nth (1) == 2);
+        *           EXPECT_TRUE (c.Nth (1) == 2);
         *       \endcode
         *
         *  \req n < size ()
@@ -635,8 +635,8 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.NthValue (1) == 2);
-         *          VerifyTestResult (c.NthValue (99) == int{});
+         *          EXPECT_TRUE (c.NthValue (1) == 2);
+         *          EXPECT_TRUE (c.NthValue (99) == int{});
          *      \endcode
          *
          */
@@ -655,7 +655,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequentialEquals (Iterable<int> { 2, 4, 6 }));
+         *          EXPECT_TRUE (c.Where ([] (int i) { return i % 2 == 0; }).SequentialEquals (Iterable<int> { 2, 4, 6 }));
          *      \endcode
          *
          *  \note   Could have been called EachWith, EachWhere, EachThat (), AllThat, AllWhere, Filter, or SubsetWhere.
@@ -687,7 +687,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 2, 5, 9, 4, 5, 6 };
-         *          VerifyTestResult (c.Distinct ().SetEquals (Iterable<int> { 1, 2, 4, 5, 6, 9 }));
+         *          EXPECT_TRUE (c.Distinct ().SetEquals (Iterable<int> { 1, 2, 4, 5, 6, 9 }));
          *      \endcode
          *
          *  @todo need overloads taking lambda that projects
@@ -730,21 +730,21 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
-         *          VerifyTestResult (c.Map<Iterable<int>> ([] (pair<int,char> p) { return p.first; }).SequentialEquals (Iterable<int> { 1, 2, 3 }));
+         *          EXPECT_TRUE (c.Map<Iterable<int>> ([] (pair<int,char> p) { return p.first; }).SequentialEquals (Iterable<int> { 1, 2, 3 }));
          *      \endcode
          *
          *  This can also easily be used to TRANSFORM an iterable.
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          VerifyTestResult (c.Map<Iterable<String>> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { "3", "4", "7" }));
+         *          EXPECT_TRUE (c.Map<Iterable<String>> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { "3", "4", "7" }));
          *      \endcode
          *
          *  \par Example Usage
          *      or transform into another container type
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          VerifyTestResult ((c.Map<vector<String>> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
+         *          EXPECT_TRUE ((c.Map<vector<String>> ([] (int i) { return Characters::Format (L"%d", i); }) == vector<String>{L"3", L"4", L"7"}));
          *      \endcode
          *
          *  \par Example Usage
@@ -792,7 +792,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-         *          VerifyTestResult (c.Reduce ([] (T lhs, T rhs) { return lhs + rhs; }) == 24);
+         *          EXPECT_TRUE (c.Reduce ([] (T lhs, T rhs) { return lhs + rhs; }) == 24);
          *      \endcode
          * 
          *  \par Implementation As if:
@@ -843,8 +843,8 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
-         *          VerifyTestResult (c.Join () == "localhost, INADDR_ANY");
-         *          VerifyTestResult (c.Join ("; ") == "localhost, INADDR_ANY");
+         *          EXPECT_TRUE (c.Join () == "localhost, INADDR_ANY");
+         *          EXPECT_TRUE (c.Join ("; ") == "localhost, INADDR_ANY");
          *      \endcode
          *
          *  See:
@@ -870,7 +870,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Skip (3).SequentialEquals (Iterable<int> { 4, 5, 6 }));
+         *          EXPECT_TRUE (c.Skip (3).SequentialEquals (Iterable<int> { 4, 5, 6 }));
          *      \endcode
          *
          *  @see https://msdn.microsoft.com/en-us/library/bb358985%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -888,7 +888,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Take (3).SequentialEquals (Iterable<int> { 1, 2, 3 }));
+         *          EXPECT_TRUE (c.Take (3).SequentialEquals (Iterable<int> { 1, 2, 3 }));
          *      \endcode
          *
          *  @see    https://msdn.microsoft.com/en-us/library/bb503062(v=vs.110).aspx
@@ -905,7 +905,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Slice (3, 5).SequentialEquals ({ 4, 5 }));
+         *          EXPECT_TRUE (c.Slice (3, 5).SequentialEquals ({ 4, 5 }));
          *      \endcode
          *
          *  \req from <= to
@@ -932,10 +932,10 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c{ 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.Top ().SequentialEquals (c.OrderBy (std::greater<int>{})));
-         *          VerifyTestResult (c.Top (2).SequentialEquals ({38, 9}));
-         *          VerifyTestResult (c.Top (2, std::greater<int>{}).SequentialEquals ({38, 9}));   // same as previous line
-         *          VerifyTestResult (c.Top (3, std::less<int>{}).SequentialEquals ({3, 3, 5}));
+         *          EXPECT_TRUE (c.Top ().SequentialEquals (c.OrderBy (std::greater<int>{})));
+         *          EXPECT_TRUE (c.Top (2).SequentialEquals ({38, 9}));
+         *          EXPECT_TRUE (c.Top (2, std::greater<int>{}).SequentialEquals ({38, 9}));   // same as previous line
+         *          EXPECT_TRUE (c.Top (3, std::less<int>{}).SequentialEquals ({3, 3, 5}));
          *      \endcode
          * 
          *  \note Uses IPotentiallyComparer instead of IInOrderComparer since from context, if you pass in a lambda, it
@@ -955,13 +955,13 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c{ 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy ().SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
+         *          EXPECT_TRUE (c.OrderBy ().SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
          *  \par Example Usage
          *      \code
          *          Iterable<int> c{ 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
+         *          EXPECT_TRUE (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
          *  \note This defaults to using seq=Execution::SequencePolicy::ePar, parallel sort, so be careful if your compare function doesn't support this - pass in 
@@ -988,8 +988,8 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (*c.First () == 3);
-         *          VerifyTestResult (*c.First ([](int i){ return i % 2 == 0;}) == 38);
+         *          EXPECT_TRUE (*c.First () == 3);
+         *          EXPECT_TRUE (*c.First ([](int i){ return i % 2 == 0;}) == 38);
          *      \endcode
          *
          *  \par Example Usage
@@ -1016,7 +1016,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (c.FirstValue () == 3);
+         *          EXPECT_TRUE (c.FirstValue () == 3);
          *      \endcode
          *
          *  \note
@@ -1032,8 +1032,8 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          VerifyTestResult (*c.Last () == 5);
-         *          VerifyTestResult (*c.Last ([](int i){ return i % 2 == 0;}) == 38);
+         *          EXPECT_TRUE (*c.Last () == 5);
+         *          EXPECT_TRUE (*c.Last ([](int i){ return i % 2 == 0;}) == 38);
          *      \endcode
          *
          *  \note
@@ -1052,7 +1052,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *      VerifyTestResult (c.LastValue () == 5);
+         *      EXPECT_TRUE (c.LastValue () == 5);
          *      \endcode
          *
          *  See:
@@ -1067,7 +1067,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 3, 5 };
-         *          VerifyTestResult (c.All ([](int i){ return i % 2 == 1;}));
+         *          EXPECT_TRUE (c.All ([](int i){ return i % 2 == 1;}));
          *      \endcode
          *
          *  \note
@@ -1085,7 +1085,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Min () == 1);
+         *          EXPECT_TRUE (c.Min () == 1);
          *      \endcode
          *
          *  \note   returns nullopt if empty list
@@ -1112,7 +1112,7 @@ namespace Stroika::Foundation::Traversal {
          *  EXAMPLE:
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *          VerifyTestResult (c.Max () == 6);
+         *          EXPECT_TRUE (c.Max () == 6);
          *      \endcode
          *
          *  \note   returns nullopt if empty list
@@ -1139,7 +1139,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-         *          VerifyTestResult (c.Mean () == 4);
+         *          EXPECT_TRUE (c.Mean () == 4);
          *      \endcode
          *
          *  \note   returns nullopt if empty list
@@ -1166,7 +1166,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-         *          VerifyTestResult (c.Sum () == 24);
+         *          EXPECT_TRUE (c.Sum () == 24);
          *      \endcode
          *
          *  \note   Equivalent to Reduce ([] (T lhs, T rhs) { return lhs + rhs; })
@@ -1191,7 +1191,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 1, 2, 9, 4, 5, 3 };
-         *          VerifyTestResult (NearlyEquals (c.Median (), 3.5));
+         *          EXPECT_TRUE (NearlyEquals (c.Median (), 3.5));
          *      \endcode
          *
          *  \note   returns nullopt if empty list
@@ -1218,7 +1218,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c{1};
-         *          VerifyTestResult (c.Repeat (5).SequentialEquals ({1, 1, 1, 1, 1}));
+         *          EXPECT_TRUE (c.Repeat (5).SequentialEquals ({1, 1, 1, 1, 1}));
          *      \endcode
          */
         nonvirtual Iterable<T> Repeat (size_t count) const;

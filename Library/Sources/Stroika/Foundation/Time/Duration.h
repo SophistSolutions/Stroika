@@ -264,11 +264,11 @@ namespace Stroika::Foundation::Time {
          *
          *  \par Example Usage
          *      \code
-         *          VerifyTestResult (Duration{"PT1.4S"}.PrettyPrintAge () == "now");
-         *          VerifyTestResult (Duration{"-PT9M"}.PrettyPrintAge () == "now");
-         *          VerifyTestResult (Duration{"-PT20M"}.PrettyPrintAge () == "20 minutes ago");
-         *          VerifyTestResult (Duration{"PT20M"}.PrettyPrintAge () == "20 minutes from now");
-         *          VerifyTestResult (Duration{"PT4H"}.PrettyPrintAge () == "4 hours from now");
+         *          EXPECT_TRUE (Duration{"PT1.4S"}.PrettyPrintAge () == "now");
+         *          EXPECT_TRUE (Duration{"-PT9M"}.PrettyPrintAge () == "now");
+         *          EXPECT_TRUE (Duration{"-PT20M"}.PrettyPrintAge () == "20 minutes ago");
+         *          EXPECT_TRUE (Duration{"PT20M"}.PrettyPrintAge () == "20 minutes from now");
+         *          EXPECT_TRUE (Duration{"PT4H"}.PrettyPrintAge () == "4 hours from now");
          *      \endcode
          */
         nonvirtual Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo,

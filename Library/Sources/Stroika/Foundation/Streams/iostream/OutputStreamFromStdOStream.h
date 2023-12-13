@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Streams::iostream {
          *          OutputStreamFromStdOStream<byte>::Ptr so = OutputStreamFromStdOStream<byte>::New (s);
          *          const char                                    kData_[] = "ddasdf3294234";
          *          so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
-         *          VerifyTestResult (s.str () == kData_);
+         *          EXPECT_TRUE (s.str () == kData_);
          *      \endcode
          *
          *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::ostream
@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Streams::iostream {
          *          OutputStreamFromStdOStream<byte>::Ptr so = OutputStreamFromStdOStream<byte>::New (s);
          *          const char                                    kData_[] = "ddasdf3294234";
          *          so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
-         *          VerifyTestResult (s.str () == kData_);
+         *          EXPECT_TRUE (s.str () == kData_);
          *      \endcode
          */
         Ptr ()                = default;

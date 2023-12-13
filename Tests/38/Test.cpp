@@ -41,7 +41,7 @@ namespace {
         // quickie about to test..
         ProcessRunner pr (L"echo hi mom");
         String        out = pr.Run (L"");
-        VerifyTestResult (out.Trim () == L"hi mom");
+        EXPECT_TRUE (out.Trim () == L"hi mom");
     }
     void RegressionTest3_Pipe_ ()
     {
@@ -61,7 +61,7 @@ namespace {
 
         String out = String::FromUTF8 (pr2Out.As<string> ());
 
-        VerifyTestResult (out.Trim () == L"hi mom");
+        EXPECT_TRUE (out.Trim () == L"hi mom");
     }
     void RegressionTest4_DocSample_ ()
     {
@@ -73,7 +73,7 @@ namespace {
         Streams::MemoryStream<byte>::Ptr processStdOut = Streams::MemoryStream<byte>::New ();
         ProcessRunner                    pr (L"cat", processStdIn, processStdOut);
         pr.Run ();
-        VerifyTestResult (processStdOut.ReadAll () == kData_);
+        EXPECT_TRUE (processStdOut.ReadAll () == kData_);
     }
 }
 
@@ -97,7 +97,7 @@ namespace {
                 Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
                 ProcessRunner                    pr (L"cat", myStdIn, myStdOut);
                 pr.Run ();
-                VerifyTestResult (myStdOut.ReadAll () == testBLOB);
+                EXPECT_TRUE (myStdOut.ReadAll () == testBLOB);
             }
         }
         void DoTests ()
@@ -124,7 +124,7 @@ namespace {
                 ProcessRunner                          pr (L"cat", myStdIn, myStdOut);
                 ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
                 Execution::Sleep (1);
-                VerifyTestResult (not myStdOut.ReadNonBlocking ().has_value ()); // sb no data available, but NOT EOF
+                EXPECT_TRUE (not myStdOut.ReadNonBlocking ().has_value ()); // sb no data available, but NOT EOF
                 /*
                  *  "Valgrind's memory management: out of memory:"
                  *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
@@ -134,7 +134,7 @@ namespace {
                 myStdIn.CloseWrite (); // so cat process can finish
                 bg.WaitForDone ();
                 myStdOut.CloseWrite (); // one process done, no more writes to this stream
-                VerifyTestResult (myStdOut.ReadAll () == testBLOB);
+                EXPECT_TRUE (myStdOut.ReadAll () == testBLOB);
             }
         }
         void DoTests ()
@@ -151,7 +151,7 @@ void RegressionTes7_FaledRun_ ()
     try {
         ProcessRunner pr (L"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//");
         pr.Run ();
-        VerifyTestResult (false);
+        EXPECT_TRUE (false);
     }
     catch (...) {
         DbgTrace (L"got failure msg: %s", Characters::ToString (current_exception ()).c_str ());
@@ -188,6 +188,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

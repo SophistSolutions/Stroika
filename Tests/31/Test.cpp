@@ -85,14 +85,14 @@ namespace {
                         Memory::StackBuffer<char> relBuf{0};
                         int                       relEncodedSize = ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
                         relBuf.GrowToSize (relEncodedSize);
-                        VerifyTestResult (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)),
+                        EXPECT_TRUE (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)),
                                                              static_cast<int> (totalSize), relBuf.data (), &relEncodedSize));
                         relBuf[relEncodedSize] = '\0';
                         if (lb == LineBreak::eCRLF_LB) {
                             return (static_cast<const char*> (relBuf));
                         }
                         else {
-                            VerifyTestResult (lb == LineBreak::eLF_LB);
+                            EXPECT_TRUE (lb == LineBreak::eLF_LB);
                             string result;
                             result.reserve (relEncodedSize);
                             for (int i = 0; i < relEncodedSize; ++i) {
@@ -117,9 +117,9 @@ namespace {
                 inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
                 {
 #if qPlatform_Windows && qHasFeature_ATLMFC
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)),
+                    EXPECT_TRUE (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)),
                                                                          LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)),
+                    EXPECT_TRUE (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)),
                                                                          LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
 #endif
                 }
@@ -134,7 +134,7 @@ namespace {
             namespace {
                 void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<byte>& bytes)
                 {
-                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (
+                    EXPECT_TRUE (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (
                                           ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)))) == bytes);
                 }
             }
@@ -142,9 +142,9 @@ namespace {
             namespace {
                 void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<byte>& originalUnEncodedBytes)
                 {
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (
+                    EXPECT_TRUE (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (
                                           begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
-                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
+                    EXPECT_TRUE (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
                 }
@@ -209,17 +209,17 @@ namespace {
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult (Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (
+                EXPECT_TRUE (Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (
                                       (const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
             }
             {
                 int tmp = 3;
                 string digestStr = Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (Streams::iostream::SerializeItemToBLOB (tmp)));
-                VerifyTestResult (digestStr == "eccbc87e4b5ce2fe28308fd9f2a7baf3");
+                EXPECT_TRUE (digestStr == "eccbc87e4b5ce2fe28308fd9f2a7baf3");
             }
             {
                 int tmp = 3;
-                VerifyTestResult ((Digest::Hash<int, DIGESTER_, string>{}(tmp) == "edcfae989540fd42e4b8556d5b723bb6"));
+                EXPECT_TRUE ((Digest::Hash<int, DIGESTER_, string>{}(tmp) == "edcfae989540fd42e4b8556d5b723bb6"));
             }
         }
     }
@@ -235,11 +235,11 @@ namespace {
 
             using namespace Characters;
             {
-                VerifyTestResult ((Hash<String>{}("x") != Hash<String>{}("y"))); // practically this should never fail if not absolutely required
-                VerifyTestResult ((Hash<String>{"somesalt"}("x") != Hash<String>{}("x")));
-                VerifyTestResult ((Hash<String>{"somesalt"}("x") == Hash<String>{"somesalt"}(L"x")));
+                EXPECT_TRUE ((Hash<String>{}("x") != Hash<String>{}("y"))); // practically this should never fail if not absolutely required
+                EXPECT_TRUE ((Hash<String>{"somesalt"}("x") != Hash<String>{}("x")));
+                EXPECT_TRUE ((Hash<String>{"somesalt"}("x") == Hash<String>{"somesalt"}(L"x")));
 
-                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
+                EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
                 struct altStringSerializer {
                     auto operator() (String s)
                     {
@@ -247,23 +247,23 @@ namespace {
                     };
                 };
                 //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
-                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") !=
+                EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") !=
                                    Hash<String>{}("xxx")));
-                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x1") ==
+                EXPECT_TRUE ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x1") ==
                                    Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x2")));
             }
             {
                 auto ec1{make_error_code (std::errc::already_connected)};
                 auto ec2{make_error_code (std::errc::directory_not_empty)};
                 auto hasher = Hash<error_code, SystemHashDigester<error_code>>{};
-                VerifyTestResultWarning (hasher (ec1) != hasher (ec2));
-                VerifyTestResult ((hasher (ec1) == hash<error_code>{}(ec1)));
-                VerifyTestResult ((hasher (ec2) == hash<error_code>{}(ec2)));
+                EXPECT_TRUEWarning (hasher (ec1) != hasher (ec2));
+                EXPECT_TRUE ((hasher (ec1) == hash<error_code>{}(ec1)));
+                EXPECT_TRUE ((hasher (ec2) == hash<error_code>{}(ec2)));
             }
             {
                 using namespace IO::Network;
                 auto hasher = Hash<InternetAddress>{};
-                VerifyTestResultWarning ((hasher (InternetAddress{L"192.168.243.3"}) != hasher (InternetAddress{L"192.168.243.4"})));
+                EXPECT_TRUEWarning ((hasher (InternetAddress{L"192.168.243.3"}) != hasher (InternetAddress{L"192.168.243.4"})));
             }
         }
     }
@@ -293,14 +293,14 @@ namespace {
                 /*
                  *  NOTE - basically ALL these tests vary on a number of parameters
                  *      o   some values involve casts of integers of byte array data which depends on endianness
-                 *      but otherwise I dont think these values should float/vary (thus the VerifyTestResult tests).
+                 *      but otherwise I dont think these values should float/vary (thus the EXPECT_TRUE tests).
                  * Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
                  * so if these fail, either something relevant changed or bug...
                  */
-                VerifyTestResult (h1 == 808390013);
-                VerifyTestResult (h2 == 125);
-                VerifyTestResult (h3[0] == 0x7d_b and h3[1] == 0x0d_b and h3[39] == 0_b);
-                VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x808390013"));
+                EXPECT_TRUE (h1 == 808390013);
+                EXPECT_TRUE (h2 == 125);
+                EXPECT_TRUE (h3[0] == 0x7d_b and h3[1] == 0x0d_b and h3[39] == 0_b);
+                EXPECT_TRUE ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x808390013"));
             }
 
             {
@@ -312,12 +312,12 @@ namespace {
                 Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
                 auto         h1                         = digesterWithDefaultResult (value2Hash);
                 uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
-                VerifyTestResult (h2 == h1[0]);
+                EXPECT_TRUE (h2 == h1[0]);
                 auto digesterWithResult_string = Digester<Digest::Algorithm::MD5, string>{};
                 // Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
                 // so if these fail, either something relevant changed or bug...
-                VerifyTestResult (digesterWithResult_string (value2Hash) == "4fa4ac89a4c435e7899a53afa9fcdc5b");
-                VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"4fa4ac89a4c435e7899a53afa9fcdc5b"));
+                EXPECT_TRUE (digesterWithResult_string (value2Hash) == "4fa4ac89a4c435e7899a53afa9fcdc5b");
+                EXPECT_TRUE ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"4fa4ac89a4c435e7899a53afa9fcdc5b"));
             }
             {
                 using namespace IO::Network;
@@ -330,9 +330,9 @@ namespace {
                 std::array<byte, 40> h3       = hasherWithResult_array40 (value2Hash);
                 // Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
                 // so if these fail, either something relevant changed or bug...
-                VerifyTestResult (h1 == 808390013);
-                VerifyTestResult (h2 == 125);
-                VerifyTestResult (h3[0] == byte{0x7d} and h3[1] == byte{0x0d} and h3[39] == byte{0});
+                EXPECT_TRUE (h1 == 808390013);
+                EXPECT_TRUE (h2 == 125);
+                EXPECT_TRUE (h3[0] == byte{0x7d} and h3[1] == byte{0x0d} and h3[39] == byte{0});
             }
             {
                 // verify can do digest of an Iterable<T>
@@ -349,8 +349,8 @@ namespace {
     template <typename DIGESTER>
     void DoCommonDigesterTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
     {
-        VerifyTestResult (DIGESTER{}(dataStart, dataEnd) == answer);
-        VerifyTestResult (DIGESTER{}(Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<byte>::Ptr> ()) == answer);
+        EXPECT_TRUE (DIGESTER{}(dataStart, dataEnd) == answer);
+        EXPECT_TRUE (DIGESTER{}(Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<byte>::Ptr> ()) == answer);
     }
 }
 
@@ -387,11 +387,11 @@ namespace {
             using Configuration::EndianConverter;
             using USE_DIGESTER_ = Digester<Algorithm::Jenkins>;
             {
-                VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 10338022));
-                VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{}("1") == 2154528969));
-                VerifyTestResult ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 2154528969));
-                VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{"mysalt"}("1") == 1355707049));
-                VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 1748544338));
+                EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 10338022));
+                EXPECT_TRUE ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{}("1") == 2154528969));
+                EXPECT_TRUE ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 2154528969));
+                EXPECT_TRUE ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{"mysalt"}("1") == 1355707049));
+                EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 1748544338));
             }
             {
                 const char kSrc[] = "This is a very good test of a very good test";
@@ -414,15 +414,15 @@ namespace {
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_, string>{}(kSrc)) == kEncodedVal);
+                EXPECT_TRUE ((Cryptography::Digest::Hash<string, USE_DIGESTER_, string>{}(kSrc)) == kEncodedVal);
             }
             {
                 using namespace Characters; // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
-                VerifyTestResult (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
-                VerifyTestResult (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
-                VerifyTestResult (
+                EXPECT_TRUE (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
+                EXPECT_TRUE (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
+                EXPECT_TRUE (
                     (Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
-                VerifyTestResult (
+                EXPECT_TRUE (
                     (Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
             }
         }
@@ -441,8 +441,8 @@ namespace {
             // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             using USE_DIGESTER_ = Digester<Algorithm::SuperFastHash>;
             {
-                VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 3282063817u)); // value before 2.1b10 was 422304363
-                VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 2783293987u)); // value before 2.1b10 was 2489559407
+                EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 3282063817u)); // value before 2.1b10 was 422304363
+                EXPECT_TRUE ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 2783293987u)); // value before 2.1b10 was 2489559407
             }
             {
                 // special case where these collide (USED TO BUT NO LONGER DO DUE TO CHANGE IN what amounts to SEED in 2.1b10)
@@ -521,7 +521,7 @@ namespace {
                 BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
                 BLOB decodedData =
                     OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
-                VerifyTestResult (src == decodedData);
+                EXPECT_TRUE (src == decodedData);
             };
 
             const char        kKey1_[]        = "Mr Key";
@@ -711,14 +711,14 @@ namespace {
                 unsigned int nRounds = 1; // command-line tool uses this
                 DerivedKey   dk      = OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds};
                 DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
-                VerifyTestResult (dk == expected);
+                EXPECT_TRUE (dk == expected);
             };
             auto checkWithSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password,
                                      const BLOB& salt, const DerivedKey& expected) {
                 unsigned int nRounds = 1; // command-line tool uses this
                 DerivedKey   dk      = OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds, salt};
                 DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
-                VerifyTestResult (dk == expected);
+                EXPECT_TRUE (dk == expected);
             };
 
             // openssl rc4 -P -k mypass -md md5 -nosalt
@@ -784,8 +784,8 @@ namespace {
                     DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (),
                               Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (),
                               Characters::ToString (decodedData).c_str ());
-                    VerifyTestResult (encodedData == expected);
-                    VerifyTestResult (src == decodedData);
+                    EXPECT_TRUE (encodedData == expected);
+                    EXPECT_TRUE (src == decodedData);
                 }
             };
 
@@ -853,8 +853,8 @@ namespace {
                     OpenSSL::EVP_BytesToKey{OpenSSL::CipherAlgorithms::kAES_256_CBC (), OpenSSL::DigestAlgorithms::kMD5, "password"};
                 // HORRIBLE MESS OF AN API! -
                 // @todo - FIX
-                VerifyTestResult (EncodeAES (kDerivedKey, srcText, AESOptions::e256_CBC) == encResult);
-                VerifyTestResult (DecodeAES (kDerivedKey, encResult, AESOptions::e256_CBC) == srcText);
+                EXPECT_TRUE (EncodeAES (kDerivedKey, srcText, AESOptions::e256_CBC) == encResult);
+                EXPECT_TRUE (DecodeAES (kDerivedKey, encResult, AESOptions::e256_CBC) == srcText);
 #endif
             }
         }
@@ -891,6 +891,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

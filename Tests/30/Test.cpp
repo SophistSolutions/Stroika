@@ -25,9 +25,9 @@ namespace {
         void DoTest ()
         {
             vector<int> v1 = {1, 2, 3};
-            VerifyTestResult ((STL::Concatenate (v1) == v1));
-            VerifyTestResult ((STL::Concatenate (v1, v1) == vector<int>{1, 2, 3, 1, 2, 3}));
-            VerifyTestResult ((STL::Concatenate (v1, v1, v1) == vector<int>{1, 2, 3, 1, 2, 3, 1, 2, 3}));
+            EXPECT_TRUE ((STL::Concatenate (v1) == v1));
+            EXPECT_TRUE ((STL::Concatenate (v1, v1) == vector<int>{1, 2, 3, 1, 2, 3}));
+            EXPECT_TRUE ((STL::Concatenate (v1, v1, v1) == vector<int>{1, 2, 3, 1, 2, 3, 1, 2, 3}));
         }
     }
 }
@@ -41,7 +41,7 @@ namespace {
     {
         Test01_Concatenate_::DoTest ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -51,6 +51,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

@@ -43,15 +43,15 @@ namespace Stroika::Foundation::Traversal {
      *  \par Example Usage
      *      \code
      *          using RT = Range<double>;
-     *          VerifyTestResult (not IsPartition (Sequence<RT>{RT{1, 2}, RT{3, 4}}));
-     *          VerifyTestResult (IsPartition (Sequence<RT>{RT{1, 2}, RT{2, 4}}));
+     *          EXPECT_TRUE (not IsPartition (Sequence<RT>{RT{1, 2}, RT{3, 4}}));
+     *          EXPECT_TRUE (IsPartition (Sequence<RT>{RT{1, 2}, RT{2, 4}}));
      *      \endcode
      *
      *  \par Example Usage (using integers)
      *      \code
      *          using RT = Range<int, Explicit<int, ExplicitOpenness<Openness::eClosed, Openness::eOpen>>>; // half open intervals best for partitions
-     *          VerifyTestResult (not IsPartition (Sequence<RT>{RT{1, 2}, RT{3, 4}}));
-     *          VerifyTestResult (IsPartition (Sequence<RT>{RT{1, 2}, RT{2, 4}}));
+     *          EXPECT_TRUE (not IsPartition (Sequence<RT>{RT{1, 2}, RT{3, 4}}));
+     *          EXPECT_TRUE (IsPartition (Sequence<RT>{RT{1, 2}, RT{2, 4}}));
      *      \endcode
      */
     template <Traversal::IRange RANGETYPE>

@@ -84,9 +84,9 @@ namespace Stroika::Foundation::IO::Network::Transfer::Connection {
      *  \par Example Usage
      *      \code
      *          Connection::Ptr c   =   IO::Network::Transfer::CreateConnection ();
-     *          Response        r   =   c.GET (URI {L"http://www.google.com"});
+     *          Response        r   =   c.GET (URI{L"http://www.google.com"});
      *          Assert (r.GetSucceeded ());
-     *          VerifyTestResult (r.GetData ().size () > 1);
+     *          EXPECT_TRUE (r.GetData ().size () > 1);
      *      \endcode
      *
      */

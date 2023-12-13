@@ -162,8 +162,8 @@ namespace Stroika::Foundation::Memory {
      *      \code
      *          float*  d1 = nullptr;
      *          double* d2 = nullptr;
-     *          VerifyTestResult (not OptionalFromNullable (d1).has_value ());
-     *          VerifyTestResult (not OptionalFromNullable (d2).has_value ());
+     *          EXPECT_TRUE (not OptionalFromNullable (d1).has_value ());
+     *          EXPECT_TRUE (not OptionalFromNullable (d2).has_value ());
      *      \endcode
      */
     template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, constructible_from<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T> T = RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>

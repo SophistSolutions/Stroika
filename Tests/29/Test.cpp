@@ -39,13 +39,13 @@ namespace {
     void SimpleTest_2_ (StackOfT s)
     {
         s.Push (1);
-        VerifyTestResult (s.size () == 1);
+        EXPECT_TRUE (s.size () == 1);
         s.Push (2);
-        VerifyTestResult (s.size () == 2);
+        EXPECT_TRUE (s.size () == 2);
         s.Pop ();
-        VerifyTestResult (s.size () == 1);
+        EXPECT_TRUE (s.size () == 1);
         s.RemoveAll ();
-        VerifyTestResult (s.size () == 0);
+        EXPECT_TRUE (s.size () == 0);
     }
 }
 
@@ -55,21 +55,21 @@ namespace {
     {
 #if 0
         m.Add (1, 2);
-        VerifyTestResult (m.size () == 1);
+        EXPECT_TRUE (m.size () == 1);
         for (auto i : m) {
-            VerifyTestResult (i.first == 1);
-            VerifyTestResult (i.second == 2);
+            EXPECT_TRUE (i.first == 1);
+            EXPECT_TRUE (i.second == 2);
         }
         m.Add (1, 2);
-        VerifyTestResult (m.size () == 1);
+        EXPECT_TRUE (m.size () == 1);
         for (auto i : m) {
-            VerifyTestResult (i.first == 1);
-            VerifyTestResult (i.second == 2);
+            EXPECT_TRUE (i.first == 1);
+            EXPECT_TRUE (i.second == 2);
         }
         m.Remove (1);
-        VerifyTestResult (m.size () == 0);
+        EXPECT_TRUE (m.size () == 0);
         for (auto i : m) {
-            VerifyTestResult (false);
+            EXPECT_TRUE (false);
         }
         m.Add (1, 2);
         m.Add (2, 3);
@@ -78,22 +78,22 @@ namespace {
         for (auto i : m) {
             ++cnt;
             if (cnt == 1) {
-                VerifyTestResult (i.first == 1);
-                VerifyTestResult (i.second == 2);
+                EXPECT_TRUE (i.first == 1);
+                EXPECT_TRUE (i.second == 2);
             }
             if (cnt == 2) {
-                VerifyTestResult (i.first == 2);
-                VerifyTestResult (i.second == 3);
+                EXPECT_TRUE (i.first == 2);
+                EXPECT_TRUE (i.second == 3);
             }
             if (cnt == 3) {
-                VerifyTestResult (i.first == 3);
-                VerifyTestResult (i.second == 4);
+                EXPECT_TRUE (i.first == 3);
+                EXPECT_TRUE (i.second == 4);
             }
         }
-        VerifyTestResult (cnt == 3);
+        EXPECT_TRUE (cnt == 3);
 #endif
         s.RemoveAll ();
-        VerifyTestResult (s.size () == 0);
+        EXPECT_TRUE (s.size () == 0);
     }
 }
 
@@ -105,11 +105,11 @@ namespace Test4_Equals {
         USING_STACK_CONTAINER s2 = s;
         s.Push (1);
         s.Push (2);
-        VerifyTestResult (s.size () == 2);
+        EXPECT_TRUE (s.size () == 2);
         USING_STACK_CONTAINER s3 = s;
-        VerifyTestResult (typename USING_STACK_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s3));
-        VerifyTestResult (not typename USING_STACK_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s2));
-        VerifyTestResult (EQUALS_COMPARER{}(s.Pop (), 2));
+        EXPECT_TRUE (typename USING_STACK_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s3));
+        EXPECT_TRUE (not typename USING_STACK_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s2));
+        EXPECT_TRUE (EQUALS_COMPARER{}(s.Pop (), 2));
     }
 }
 
@@ -142,9 +142,9 @@ namespace {
             a.Push (2);
             vector<int> aa (a.begin (), a.end ());
             Stack<int>  b{aa};
-            VerifyTestResult (b.size () == 2);
-            VerifyTestResult (b.Pop () == 2);
-            VerifyTestResult (b.Pop () == 1);
+            EXPECT_TRUE (b.size () == 2);
+            EXPECT_TRUE (b.Pop () == 2);
+            EXPECT_TRUE (b.Pop () == 1);
         }
     }
 }
@@ -178,7 +178,7 @@ namespace {
 
         Test3_StackContructionByValue_::Test ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -188,6 +188,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

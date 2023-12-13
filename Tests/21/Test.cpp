@@ -64,33 +64,33 @@ namespace {
         static const size_t       K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
         {
             CONCRETE_SEQUENCE_T s;
-            VerifyTestResult (s.size () == 0);
+            EXPECT_TRUE (s.size () == 0);
             s.Append (1);
-            VerifyTestResult (s.size () == 1);
-            VerifyTestResult (EQUALS_COMPARER{}(s.GetAt (0), 1));
+            EXPECT_TRUE (s.size () == 1);
+            EXPECT_TRUE (EQUALS_COMPARER{}(s.GetAt (0), 1));
             s.Append (2);
-            VerifyTestResult (s.size () == 2);
-            VerifyTestResult (EQUALS_COMPARER{}(s.GetAt (0), 1));
-            VerifyTestResult (EQUALS_COMPARER{}(s.GetAt (1), 2));
+            EXPECT_TRUE (s.size () == 2);
+            EXPECT_TRUE (EQUALS_COMPARER{}(s.GetAt (0), 1));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s.GetAt (1), 2));
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
         }
         {
             CONCRETE_SEQUENCE_T s;
             for (size_t i = 0; i < K; ++i) {
                 s.Append (i);
             }
-            VerifyTestResult (s.size () == K);
-            VerifyTestResult (EQUALS_COMPARER{}(s[0], 0));
-            VerifyTestResult (EQUALS_COMPARER{}(s[1], 1));
-            VerifyTestResult (EQUALS_COMPARER{}(s[K - 1], K - 1));
+            EXPECT_TRUE (s.size () == K);
+            EXPECT_TRUE (EQUALS_COMPARER{}(s[0], 0));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s[1], 1));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s[K - 1], K - 1));
             s.Remove (0);
-            VerifyTestResult (s.size () == K - 1);
+            EXPECT_TRUE (s.size () == K - 1);
             for (size_t i = 0; i < K - 1; ++i) {
-                VerifyTestResult (EQUALS_COMPARER{}(s[i], i + 1));
+                EXPECT_TRUE (EQUALS_COMPARER{}(s[i], i + 1));
             }
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
         }
     }
 }
@@ -103,13 +103,13 @@ namespace {
         Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_2_Contains_ ()"};
         {
             CONCRETE_SEQUENCE_T s;
-            VerifyTestResult (s.size () == 0);
-            VerifyTestResult (not s.template Contains<EQUALS_COMPARER> (1));
+            EXPECT_TRUE (s.size () == 0);
+            EXPECT_TRUE (not s.template Contains<EQUALS_COMPARER> (1));
             s.Append (1);
-            VerifyTestResult (s.template Contains<EQUALS_COMPARER> (1));
+            EXPECT_TRUE (s.template Contains<EQUALS_COMPARER> (1));
             s.RemoveAll ();
-            VerifyTestResult (not s.template Contains<EQUALS_COMPARER> (1));
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (not s.template Contains<EQUALS_COMPARER> (1));
+            EXPECT_TRUE (s.empty ());
         }
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 50 : 1000;
@@ -118,11 +118,11 @@ namespace {
                 s.Append (i + K);
             }
             for (size_t i = 0; i < K; ++i) {
-                VerifyTestResult (not s.template Contains<EQUALS_COMPARER> (i));
-                VerifyTestResult (s.template Contains<EQUALS_COMPARER> (i + K));
+                EXPECT_TRUE (not s.template Contains<EQUALS_COMPARER> (i));
+                EXPECT_TRUE (s.template Contains<EQUALS_COMPARER> (i + K));
             }
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
         }
     }
 }
@@ -136,17 +136,17 @@ namespace {
 #if 0
         // This is RIGHT but We need a way to use 'TRAITS' to extend the definition of Sequence<T> or some such - to make this work...
         {
-            VerifyTestResult (s.size () == 0);
+            EXPECT_TRUE (s.size () == 0);
             s.Append (1);
             Sequence<T> s2 = s;
             s2.Append (2);
-            VerifyTestResult (s.Compare (s2) < 0);
-            VerifyTestResult (s2.Compare (s) > 0);
+            EXPECT_TRUE (s.Compare (s2) < 0);
+            EXPECT_TRUE (s2.Compare (s) > 0);
             s.Append (2);
-            VerifyTestResult (s2.Compare (s) == 0);
+            EXPECT_TRUE (s2.Compare (s) == 0);
             s.RemoveAll ();
-            VerifyTestResult (s.Compare (s2) < 0);
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.Compare (s2) < 0);
+            EXPECT_TRUE (s.empty ());
         }
 #endif
     }
@@ -161,18 +161,18 @@ namespace {
         // This is RIGHT but We need a way to use 'TRAITS' to extend the definition of Sequence<T> or some such - to make this work...
         {
             CONCRETE_SEQUENCE_T s;
-            VerifyTestResult (s.size () == 0);
+            EXPECT_TRUE (s.size () == 0);
             s.Append (1);
             Sequence<T> s2 = s;
             s2.Append (2);
             auto useEqualsComparer = typename CONCRETE_SEQUENCE_T::template EqualsComparer<EQUALS_COMPARER>{};
-            VerifyTestResult (not useEqualsComparer (s, s2));
-            VerifyTestResult (not useEqualsComparer (s2, s));
+            EXPECT_TRUE (not useEqualsComparer (s, s2));
+            EXPECT_TRUE (not useEqualsComparer (s2, s));
             s.Append (2);
-            VerifyTestResult (useEqualsComparer (s2, s));
+            EXPECT_TRUE (useEqualsComparer (s2, s));
             s.RemoveAll ();
-            VerifyTestResult (not useEqualsComparer (s, s2));
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (not useEqualsComparer (s, s2));
+            EXPECT_TRUE (s.empty ());
         }
     }
 }
@@ -183,19 +183,19 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_5_RemoveAll_ ()"};
         CONCRETE_SEQUENCE_T       s;
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
         s.RemoveAll ();
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
         static const size_t K = Debug::IsRunningUnderValgrind () ? 50 : 1000;
         for (size_t i = 0; i < K; ++i) {
             s.Append (i + K);
         }
-        VerifyTestResult (not s.empty ());
+        EXPECT_TRUE (not s.empty ());
         s.RemoveAll ();
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
         s.RemoveAll ();
         s.RemoveAll ();
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
     }
 }
 
@@ -206,22 +206,22 @@ namespace {
         Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_6_GetSetAt_ ()"};
         static const size_t       K = Debug::IsRunningUnderValgrind () ? 50 : 1000;
         CONCRETE_SEQUENCE_T       s;
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
         for (size_t i = 0; i < K; ++i) {
             s.Append (1);
-            VerifyTestResult (EQUALS_COMPARER{}(s.GetAt (i), 1));
-            VerifyTestResult (EQUALS_COMPARER{}(s[i], 1));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s.GetAt (i), 1));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s[i], 1));
         }
         for (size_t i = 0; i < K; ++i) {
             s.SetAt (i, 5000 + i);
-            VerifyTestResult (EQUALS_COMPARER{}(s[i], 5000 + i));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s[i], 5000 + i));
         }
         for (size_t i = 0; i < K; ++i) {
-            VerifyTestResult (EQUALS_COMPARER{}(s.GetAt (i), 5000 + i));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s.GetAt (i), 5000 + i));
         }
-        VerifyTestResult (not s.empty ());
+        EXPECT_TRUE (not s.empty ());
         s.RemoveAll ();
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
     }
 }
 
@@ -234,46 +234,46 @@ namespace {
         using T                     = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
             for (size_t i = 0; i < K; ++i) {
                 s.Append (21 + i);
             }
-            VerifyTestResult (not s.template IndexOf<EQUALS_COMPARER> (5).has_value ());
-            VerifyTestResult (not s.empty ());
+            EXPECT_TRUE (not s.template IndexOf<EQUALS_COMPARER> (5).has_value ());
+            EXPECT_TRUE (not s.empty ());
 
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
         }
         {
             for (size_t i = 0; i < K; ++i) {
                 s.Append (i);
             }
-            VerifyTestResult (not s.empty ());
-            VerifyTestResult (s.size () == K);
+            EXPECT_TRUE (not s.empty ());
+            EXPECT_TRUE (s.size () == K);
 
             Sequence<T> s2 = s;
-            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s2) == 0u);
-            VerifyTestResult (s2.template IndexOf<EQUALS_COMPARER> (s) == 0u);
+            EXPECT_TRUE (s.template IndexOf<EQUALS_COMPARER> (s2) == 0u);
+            EXPECT_TRUE (s2.template IndexOf<EQUALS_COMPARER> (s) == 0u);
 
             Sequence<T> s3;
             s3.Append (3);
             s3.Append (4);
-            VerifyTestResult (not s3.template IndexOf<EQUALS_COMPARER> (s).has_value ());
-            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s3) == 3u);
+            EXPECT_TRUE (not s3.template IndexOf<EQUALS_COMPARER> (s).has_value ());
+            EXPECT_TRUE (s.template IndexOf<EQUALS_COMPARER> (s3) == 3u);
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
         }
         {
             for (size_t i = 0; i < K; ++i) {
                 s.Append (i);
             }
-            VerifyTestResult (s.size () == K);
+            EXPECT_TRUE (s.size () == K);
             size_t j = 0;
             for (Iterator<T> i = s.MakeIterator (); i != s.end (); ++i, ++j) {
-                VerifyTestResult (s.IndexOf (i) == j);
+                EXPECT_TRUE (s.IndexOf (i) == j);
             }
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
         }
     }
 }
@@ -292,11 +292,11 @@ namespace {
             }
             size_t j = 0;
             for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
-                VerifyTestResult (EQUALS_COMPARER{}(*i, j));
+                EXPECT_TRUE (EQUALS_COMPARER{}(*i, j));
             }
-            VerifyTestResult (s.size () == K);
+            EXPECT_TRUE (s.size () == K);
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
         }
         {
             for (size_t i = 0; i < K; ++i) {
@@ -304,11 +304,11 @@ namespace {
             }
             size_t j = 0;
             for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
-                VerifyTestResult (EQUALS_COMPARER{}(*i, K - j - 1));
+                EXPECT_TRUE (EQUALS_COMPARER{}(*i, K - j - 1));
             }
-            VerifyTestResult (s.size () == K);
+            EXPECT_TRUE (s.size () == K);
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
         }
 
         {
@@ -319,11 +319,11 @@ namespace {
             x.Append (12);
 
             s.PrependAll (x);
-            VerifyTestResult (typename CONCRETE_SEQUENCE_T::template EqualsComparer<EQUALS_COMPARER>{}(s, x));
+            EXPECT_TRUE (typename CONCRETE_SEQUENCE_T::template EqualsComparer<EQUALS_COMPARER>{}(s, x));
             s.AppendAll (x);
-            VerifyTestResult (EQUALS_COMPARER{}(s[1], 11));
-            VerifyTestResult (EQUALS_COMPARER{}(s[2], 12));
-            VerifyTestResult (EQUALS_COMPARER{}(s[3], 10));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s[1], 11));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s[2], 12));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s[3], 10));
         }
     }
 }
@@ -342,7 +342,7 @@ namespace {
                 s.Update (i, 5, &i);
             }
             for (auto i : s) {
-                VerifyTestResult (EQUALS_COMPARER{}(i, 5));
+                EXPECT_TRUE (EQUALS_COMPARER{}(i, 5));
             }
             s.SetAt (16, 16);
             for (auto i = s.begin (); i != s.end (); ++i) {
@@ -350,13 +350,13 @@ namespace {
                     s.Update (i, 17, &i);
                 }
             }
-            VerifyTestResult (EQUALS_COMPARER{}(s[16], 17));
+            EXPECT_TRUE (EQUALS_COMPARER{}(s[16], 17));
             for (auto i = s.begin (); i != s.end (); ++i) {
-                VerifyTestResult (EQUALS_COMPARER{}(*i, 5) or s.IndexOf (i) == 16);
+                EXPECT_TRUE (EQUALS_COMPARER{}(*i, 5) or s.IndexOf (i) == 16);
             }
 
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
         }
         {
             // Update just 'fixes' iterator for re-use but we still hit every item
@@ -369,7 +369,7 @@ namespace {
                 ++cnt;
             }
             for (size_t i = 0; i < 100; ++i) {
-                VerifyTestResult (EQUALS_COMPARER{}(s[i], i * 2));
+                EXPECT_TRUE (EQUALS_COMPARER{}(s[i], i * 2));
             }
         }
     }
@@ -382,41 +382,41 @@ namespace {
         Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_10_Remove_ ()"};
         CONCRETE_SEQUENCE_T       s;
         {
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
             for (size_t i = 0; i < 100; ++i) {
                 s.Append (i);
             }
             s.Remove (5);
-            VerifyTestResult (s.size () == 99);
+            EXPECT_TRUE (s.size () == 99);
             for (auto i = s.begin (); i != s.end (); ++i) {
                 if (s.IndexOf (i) < 5) {
-                    VerifyTestResult (EQUALS_COMPARER{}(*i, s.IndexOf (i)));
+                    EXPECT_TRUE (EQUALS_COMPARER{}(*i, s.IndexOf (i)));
                 }
                 else {
-                    VerifyTestResult (EQUALS_COMPARER{}((*i), s.IndexOf (i) + 1));
+                    EXPECT_TRUE (EQUALS_COMPARER{}((*i), s.IndexOf (i) + 1));
                 }
             }
         }
         {
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
             for (size_t i = 0; i < 100; ++i) {
                 s.Append (i);
             }
             s.Remove (5, 95);
-            VerifyTestResult (s.size () == 10);
+            EXPECT_TRUE (s.size () == 10);
             for (auto i = s.begin (); i != s.end (); ++i) {
                 if (s.IndexOf (i) < 5) {
-                    VerifyTestResult (EQUALS_COMPARER{}(*i, s.IndexOf (i)));
+                    EXPECT_TRUE (EQUALS_COMPARER{}(*i, s.IndexOf (i)));
                 }
                 else {
-                    VerifyTestResult (EQUALS_COMPARER{}((*i), s.IndexOf (i) + 90));
+                    EXPECT_TRUE (EQUALS_COMPARER{}((*i), s.IndexOf (i) + 90));
                 }
             }
         }
         {
             s.RemoveAll ();
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
             for (size_t i = 0; i < 100; ++i) {
                 s.Append (i);
             }
@@ -429,19 +429,19 @@ namespace {
                     ++i;
                 }
             }
-            VerifyTestResult (s.size () == 99);
+            EXPECT_TRUE (s.size () == 99);
             for (auto i = s.begin (); i != s.end (); ++i) {
                 if (s.IndexOf (i) < 5) {
-                    VerifyTestResult (EQUALS_COMPARER{}(*i, s.IndexOf (i)));
+                    EXPECT_TRUE (EQUALS_COMPARER{}(*i, s.IndexOf (i)));
                 }
                 else {
-                    VerifyTestResult (EQUALS_COMPARER{}((*i), s.IndexOf (i) + 1));
+                    EXPECT_TRUE (EQUALS_COMPARER{}((*i), s.IndexOf (i) + 1));
                 }
             }
             s.RemoveAll ();
         }
         s.RemoveAll ();
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
     }
 }
 
@@ -453,58 +453,58 @@ namespace {
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
-            VerifyTestResult (s.empty ());
+            EXPECT_TRUE (s.empty ());
             for (size_t i = 0; i < 100; ++i) {
                 s.Append (i);
             }
             {
                 vector<T> vs;
                 s.As (&vs);
-                VerifyTestResult (vs.size () == 100);
+                EXPECT_TRUE (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
-                    VerifyTestResult (EQUALS_COMPARER{}(T (i - vs.begin ()), *i));
+                    EXPECT_TRUE (EQUALS_COMPARER{}(T (i - vs.begin ()), *i));
                 }
             }
             {
                 vector<T> vs = s.template As<vector<T>> ();
-                VerifyTestResult (vs.size () == 100);
+                EXPECT_TRUE (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
-                    VerifyTestResult (EQUALS_COMPARER{}(T (i - vs.begin ()), *i));
+                    EXPECT_TRUE (EQUALS_COMPARER{}(T (i - vs.begin ()), *i));
                 }
             }
             {
                 list<T> vs;
                 s.As (&vs);
-                VerifyTestResult (vs.size () == 100);
+                EXPECT_TRUE (vs.size () == 100);
                 int idx = 0;
                 for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
-                    VerifyTestResult (EQUALS_COMPARER{}(T (idx), *i));
+                    EXPECT_TRUE (EQUALS_COMPARER{}(T (idx), *i));
                 }
             }
             {
                 list<T> vs = s.template As<list<T>> ();
-                VerifyTestResult (vs.size () == 100);
+                EXPECT_TRUE (vs.size () == 100);
                 int idx = 0;
                 for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
-                    VerifyTestResult (EQUALS_COMPARER{}(T (idx), *i));
+                    EXPECT_TRUE (EQUALS_COMPARER{}(T (idx), *i));
                 }
             }
         }
         {
             vector<T>   vs  = s.template As<vector<T>> ();
             Sequence<T> tmp = Sequence<T> (vs);
-            VerifyTestResult (tmp.size () == vs.size ());
-            VerifyTestResult (STL::equal (tmp.template As<vector<T>> (), vs, EQUALS_COMPARER{}));
+            EXPECT_TRUE (tmp.size () == vs.size ());
+            EXPECT_TRUE (STL::equal (tmp.template As<vector<T>> (), vs, EQUALS_COMPARER{}));
         }
         {
             list<T>     ls  = s.template As<list<T>> ();
             Sequence<T> tmp = Sequence<T> (ls);
-            VerifyTestResult (tmp.size () == ls.size ());
-            VerifyTestResult (STL::equal (tmp.template As<list<T>> (), ls, EQUALS_COMPARER{}));
+            EXPECT_TRUE (tmp.size () == ls.size ());
+            EXPECT_TRUE (STL::equal (tmp.template As<list<T>> (), ls, EQUALS_COMPARER{}));
         }
 
         s.RemoveAll ();
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
     }
 }
 
@@ -515,7 +515,7 @@ namespace {
         Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_12_ToFromSTLVector_ ()"};
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
 
         {
             vector<T> n;
@@ -524,11 +524,11 @@ namespace {
             n.push_back (9);
             s            = CONCRETE_SEQUENCE_T (n);
             vector<T> nn = s.template As<vector<T>> ();
-            VerifyTestResult (STL::equal (nn, n, EQUALS_COMPARER{}));
+            EXPECT_TRUE (STL::equal (nn, n, EQUALS_COMPARER{}));
         }
 
         s.RemoveAll ();
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
     }
 }
 
@@ -538,15 +538,15 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_13_Initializers_ ()"};
         CONCRETE_SEQUENCE_T       s;
-        VerifyTestResult (s.empty ());
+        EXPECT_TRUE (s.empty ());
 
         // fix - once we have on all subclasses - do be basic test for aech
         {
             Sequence<int> x1 = {};
-            VerifyTestResult (x1.size () == 0);
+            EXPECT_TRUE (x1.size () == 0);
             Sequence<int> x2 = {1, 2, 3};
-            VerifyTestResult (x2.size () == 3);
-            VerifyTestResult (x2[0] == 1);
+            EXPECT_TRUE (x2.size () == 3);
+            EXPECT_TRUE (x2[0] == 1);
         }
     }
 }
@@ -583,15 +583,15 @@ namespace {
         tmp.Append (2);
 
         CONCRETE_SEQUENCE_T tmp2 = tmp;
-        VerifyTestResult (not(tmp < tmp2));
-        VerifyTestResult (not(tmp > tmp2));
-        VerifyTestResult (tmp <= tmp2);
-        VerifyTestResult (tmp >= tmp2);
-        VerifyTestResult (tmp == tmp2);
+        EXPECT_TRUE (not(tmp < tmp2));
+        EXPECT_TRUE (not(tmp > tmp2));
+        EXPECT_TRUE (tmp <= tmp2);
+        EXPECT_TRUE (tmp >= tmp2);
+        EXPECT_TRUE (tmp == tmp2);
         tmp.Append (3);
-        VerifyTestResult (tmp > tmp2);
+        EXPECT_TRUE (tmp > tmp2);
         tmp2.Append (4);
-        VerifyTestResult (tmp < tmp2);
+        EXPECT_TRUE (tmp < tmp2);
     }
 }
 
@@ -632,23 +632,23 @@ namespace {
         tmp.Append (1);
         tmp.Append (2);
         tmp.Append (3);
-        VerifyTestResult (counter (tmp) == 3);
-        VerifyTestResult (counterI (tmp.begin ()) == 3);
+        EXPECT_TRUE (counter (tmp) == 3);
+        EXPECT_TRUE (counterI (tmp.begin ()) == 3);
 
         CONCRETE_SEQUENCE_T tmp2 = tmp;
-        VerifyTestResult (counter (tmp) == 3);
-        VerifyTestResult (counterI (tmp.begin ()) == 3);
-        VerifyTestResult (counter (tmp2) == 3);
-        VerifyTestResult (counterI (tmp2.begin ()) == 3);
+        EXPECT_TRUE (counter (tmp) == 3);
+        EXPECT_TRUE (counterI (tmp.begin ()) == 3);
+        EXPECT_TRUE (counter (tmp2) == 3);
+        EXPECT_TRUE (counterI (tmp2.begin ()) == 3);
 
         {
             Iterator<ELTTYPE> i = tmp.begin ();
             tmp2.RemoveAll ();
-            VerifyTestResult (counter (tmp) == 3);
-            VerifyTestResult (counterI (tmp.begin ()) == 3);
-            VerifyTestResult (counterI (i) == 3);
-            VerifyTestResult (counter (tmp2) == 0);
-            VerifyTestResult (counterI (tmp2.begin ()) == 0);
+            EXPECT_TRUE (counter (tmp) == 3);
+            EXPECT_TRUE (counterI (tmp.begin ()) == 3);
+            EXPECT_TRUE (counterI (i) == 3);
+            EXPECT_TRUE (counter (tmp2) == 0);
+            EXPECT_TRUE (counterI (tmp2.begin ()) == 0);
         }
     }
 }
@@ -698,9 +698,9 @@ namespace SequenceIndexing_Test_16_ {
             Sequence<int> a;
             a += 1;
             int a0 = a[0];
-            VerifyTestResult (a0 == 1);
+            EXPECT_TRUE (a0 == 1);
             a (0) = 3;
-            VerifyTestResult (a (0) == 3);
+            EXPECT_TRUE (a (0) == 3);
         }
 #endif
 #if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
@@ -708,9 +708,9 @@ namespace SequenceIndexing_Test_16_ {
             Sequence<int> a;
             a += 1;
             int a0 = a[0];
-            VerifyTestResult (a0 == 1);
+            EXPECT_TRUE (a0 == 1);
             a[0] = 3;
-            VerifyTestResult (a[0] == 3);
+            EXPECT_TRUE (a[0] == 3);
         }
 #endif
         {
@@ -726,10 +726,10 @@ namespace SequenceIndexing_Test_16_ {
             using Characters::String;
             Sequence<String> a;
             a += L"1";
-            VerifyTestResult (a (0) == L"1");
+            EXPECT_TRUE (a (0) == L"1");
             String a0 = a[0];
             a (0)     = L"3";
-            VerifyTestResult (a (0) == L"3");
+            EXPECT_TRUE (a (0) == L"3");
         }
         {
             using Characters::String;
@@ -737,7 +737,7 @@ namespace SequenceIndexing_Test_16_ {
             a += L"1";
             String a0 = a[0];
             a (0)     = L"3";
-            VerifyTestResult (a (0).Contains (L"3")); // can call '.' methods on result of a(n)
+            EXPECT_TRUE (a (0).Contains (L"3")); // can call '.' methods on result of a(n)
         }
 #endif
 #if Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket
@@ -745,10 +745,10 @@ namespace SequenceIndexing_Test_16_ {
             using Characters::String;
             Sequence<String> a;
             a += L"1";
-            VerifyTestResult (a[0] == L"1");
+            EXPECT_TRUE (a[0] == L"1");
             String a0 = a[0];
             a[0]      = L"3";
-            VerifyTestResult (a[0] == L"3");
+            EXPECT_TRUE (a[0] == L"3");
         }
         {
             using Characters::String;
@@ -756,7 +756,7 @@ namespace SequenceIndexing_Test_16_ {
             a += L"1";
             String a0 = a[0];
             a[0]      = L"3";
-            VerifyTestResult (a[0].Contains (L"3")); // can call '.' methods on result of a(n)
+            EXPECT_TRUE (a[0].Contains (L"3")); // can call '.' methods on result of a(n)
         }
 #endif
     }
@@ -803,17 +803,17 @@ namespace {
                 Sequence<int> s1 = {1, 2, 3};
                 Sequence<int> s2 = {4, 5, 6};
                 if (s1 == s2) {
-                    VerifyTestResult (false);
+                    EXPECT_TRUE (false);
                 }
 // todo get this type deduction working
 #if 0
                 if (not Sequence<int>::EqualsComparer{[](int l, int r) { return l % 3 == r % 3; }}(s1, s2)) {
-                    VerifyTestResult (false);
+                    EXPECT_TRUE (false);
                 }
 #endif
                 auto cmp = Common::DeclareEqualsComparer ([] (int l, int r) { return l % 3 == r % 3; });
                 if (not Sequence<int>::EqualsComparer<decltype (cmp)>{cmp}(s1, s2)) {
-                    VerifyTestResult (false);
+                    EXPECT_TRUE (false);
                 }
             }
         }
@@ -827,11 +827,11 @@ namespace {
             // From Sequence<> CTOR docs
             {
                 Sequence<int> c{3, 5, 9, 38, 3, 5};
-                VerifyTestResult ((c.OrderBy () == Sequence<int>{3, 3, 5, 5, 9, 38}));
+                EXPECT_TRUE ((c.OrderBy () == Sequence<int>{3, 3, 5, 5, 9, 38}));
             }
             {
                 Sequence<int> c{3, 5, 9, 38, 3, 5};
-                VerifyTestResult ((c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs < rhs; }) == Sequence<int>{3, 3, 5, 5, 9, 38}));
+                EXPECT_TRUE ((c.OrderBy ([] (int lhs, int rhs) -> bool { return lhs < rhs; }) == Sequence<int>{3, 3, 5, 5, 9, 38}));
             }
         }
     }
@@ -905,7 +905,7 @@ namespace {
         ExampleOrderBy_Test19_::DoTest ();
         BugWithWhereCallingAdd_Test20_::DoTest ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -915,6 +915,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

@@ -33,17 +33,17 @@ namespace {
         using namespace Configuration;
         {
             constexpr Version kTestVersion_ = Version (1, 0, VersionStage::Alpha, 1, false);
-            VerifyTestResult (kTestVersion_.AsPrettyVersionString () == "1.0a1x");
-            VerifyTestResult (kTestVersion_ == Configuration::Version::FromPrettyVersionString ("1.0a1x"));
+            EXPECT_TRUE (kTestVersion_.AsPrettyVersionString () == "1.0a1x");
+            EXPECT_TRUE (kTestVersion_ == Configuration::Version::FromPrettyVersionString ("1.0a1x"));
         }
-        VerifyTestResult (Version (1, 0, VersionStage::Release, 0) == Version::FromPrettyVersionString ("1.0"));
-        VerifyTestResult (Version (1, 0, VersionStage::Release, 1) == Version::FromPrettyVersionString ("1.0.1"));
-        VerifyTestResult (Version (2, 0, VersionStage::Beta, 3) == Version::FromPrettyVersionString ("2.0b3"));
+        EXPECT_TRUE (Version (1, 0, VersionStage::Release, 0) == Version::FromPrettyVersionString ("1.0"));
+        EXPECT_TRUE (Version (1, 0, VersionStage::Release, 1) == Version::FromPrettyVersionString ("1.0.1"));
+        EXPECT_TRUE (Version (2, 0, VersionStage::Beta, 3) == Version::FromPrettyVersionString ("2.0b3"));
 
         auto verifier = [] (const Version& v, const String& prettyName, const String& win32VersionString) {
-            VerifyTestResult (Version::FromPrettyVersionString (prettyName).AsWin32Version4DotString () == win32VersionString);
-            VerifyTestResult (Version::FromPrettyVersionString (prettyName) == v);
-            VerifyTestResult (Version::FromPrettyVersionString (prettyName) == Version::FromWin32Version4DotString (win32VersionString));
+            EXPECT_TRUE (Version::FromPrettyVersionString (prettyName).AsWin32Version4DotString () == win32VersionString);
+            EXPECT_TRUE (Version::FromPrettyVersionString (prettyName) == v);
+            EXPECT_TRUE (Version::FromPrettyVersionString (prettyName) == Version::FromWin32Version4DotString (win32VersionString));
         };
         /*
          *  FROM EXAMPLE TEXT
@@ -60,12 +60,12 @@ namespace {
         {
             auto testRoundTrip = [] (uint32_t fullVer, uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint16_t verSubStage, bool finalBuild) {
                 Version sv{fullVer};
-                VerifyTestResult (sv.fMajorVer == majorVer);
-                VerifyTestResult (sv.fMinorVer == minorVer);
-                VerifyTestResult (sv.fVerStage == verStage);
-                VerifyTestResult (sv.fVerSubStage == verSubStage);
-                VerifyTestResult (sv.fFinalBuild == finalBuild);
-                VerifyTestResult (sv.AsFullVersionNum () == fullVer);
+                EXPECT_TRUE (sv.fMajorVer == majorVer);
+                EXPECT_TRUE (sv.fMinorVer == minorVer);
+                EXPECT_TRUE (sv.fVerStage == verStage);
+                EXPECT_TRUE (sv.fVerSubStage == verSubStage);
+                EXPECT_TRUE (sv.fFinalBuild == finalBuild);
+                EXPECT_TRUE (sv.AsFullVersionNum () == fullVer);
             };
             // Could try a variety of these versions, but this should be enough...
             testRoundTrip (kStroika_Version_FullVersion, kStroika_Version_Major, kStroika_Version_Minor,
@@ -97,17 +97,17 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"{}::Test2_EnumNames_"};
         using namespace Test2_EnumNames_Private_;
-        VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
-        VerifyTestResult (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
+        EXPECT_TRUE (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
+        EXPECT_TRUE (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
         {
-            VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
-            VerifyTestResult (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
+            EXPECT_TRUE (wstring (L"eOne") == DefaultNames<fooEnum>{}.GetName (fooEnum::eOne));
+            EXPECT_TRUE (wstring (L"eTwo") == DefaultNames<fooEnum>{}.GetName (fooEnum::eTwo));
         }
         {
-            VerifyTestResult ((DefaultNames<fooEnum>{}.GetValue (L"eTwo", Execution::Exception<> (L"OutOfRange")) == fooEnum::eTwo));
+            EXPECT_TRUE ((DefaultNames<fooEnum>{}.GetValue (L"eTwo", Execution::Exception<> (L"OutOfRange")) == fooEnum::eTwo));
             try {
                 DefaultNames<fooEnum>{}.GetValue (L"missing", Execution::Exception<> (L"OutOfRange"));
-                VerifyTestResult (false); // above should throw
+                EXPECT_TRUE (false); // above should throw
             }
             catch (const Execution::Exception<>&) {
                 // good
@@ -121,8 +121,8 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"{}::Test3_Endian_"};
         using namespace Configuration;
-        VerifyTestResult (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle) == 0xBBAA);
-        VerifyTestResult (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle) == 0xDDCCBBAA);
+        EXPECT_TRUE (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle) == 0xBBAA);
+        EXPECT_TRUE (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle) == 0xDDCCBBAA);
     }
 }
 
@@ -265,6 +265,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

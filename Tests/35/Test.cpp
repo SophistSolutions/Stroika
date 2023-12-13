@@ -34,22 +34,22 @@ namespace {
         {
             Atom<> a = L"d";
             Atom<> b = L"d";
-            VerifyTestResult (a == b);
-            VerifyTestResult (a.GetPrintName () == L"d");
-            VerifyTestResult (a.As<String> () == L"d");
-            VerifyTestResult (a.As<wstring> () == L"d");
-            VerifyTestResult (not a.empty ());
+            EXPECT_TRUE (a == b);
+            EXPECT_TRUE (a.GetPrintName () == L"d");
+            EXPECT_TRUE (a.As<String> () == L"d");
+            EXPECT_TRUE (a.As<wstring> () == L"d");
+            EXPECT_TRUE (not a.empty ());
         }
         {
-            VerifyTestResult (Atom<> ().empty ());
+            EXPECT_TRUE (Atom<> ().empty ());
         }
         {
             Atom<> a = L"d";
             Atom<> b = L"e";
-            VerifyTestResult (a != b);
-            VerifyTestResult (not a.empty ());
+            EXPECT_TRUE (a != b);
+            EXPECT_TRUE (not a.empty ());
             Atom<> c = a;
-            VerifyTestResult (c == a);
+            EXPECT_TRUE (c == a);
         }
     }
 }
@@ -148,40 +148,40 @@ namespace {
             Debug::TraceContextBumper ctx{"{}::Test5_InternetMediaType_"};
             {
                 InternetMediaType ct0{"text/plain"};
-                VerifyTestResult (ct0.GetType () == "text");
-                VerifyTestResult (ct0.GetSubType () == "plain");
-                VerifyTestResult (ct0.GetSuffix () == nullopt);
+                EXPECT_TRUE (ct0.GetType () == "text");
+                EXPECT_TRUE (ct0.GetSubType () == "plain");
+                EXPECT_TRUE (ct0.GetSuffix () == nullopt);
 
                 InternetMediaType ct1{L"text/plain;charset=ascii"};
-                VerifyTestResult ((ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{"charset", "ascii"}}));
-                VerifyTestResult (ct1.GetSuffix () == nullopt);
+                EXPECT_TRUE ((ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{"charset", "ascii"}}));
+                EXPECT_TRUE (ct1.GetSuffix () == nullopt);
 
                 InternetMediaType ct2{"text/plain; charset = ascii"};
-                VerifyTestResult (ct1 == ct2);
+                EXPECT_TRUE (ct1 == ct2);
 
                 InternetMediaType ct3{"text/plain; charset = \"ascii\""};
-                VerifyTestResult (ct1 == ct3);
+                EXPECT_TRUE (ct1 == ct3);
 
                 InternetMediaType ct4{"text/plain; charset = \"ASCII\""}; // case insensitive compare key, but not value
-                VerifyTestResult (ct1 != ct4);
+                EXPECT_TRUE (ct1 != ct4);
 
                 InternetMediaType ct5{"application/vnd.ms-excel"};
-                VerifyTestResult (ct5.GetType () == "application");
-                VerifyTestResult (ct5.GetSubType () == "vnd.ms-excel");
-                VerifyTestResult (ct5.GetSuffix () == nullopt);
+                EXPECT_TRUE (ct5.GetType () == "application");
+                EXPECT_TRUE (ct5.GetSubType () == "vnd.ms-excel");
+                EXPECT_TRUE (ct5.GetSuffix () == nullopt);
 
                 InternetMediaType ct6{"application/mathml+xml"};
-                VerifyTestResult (ct6.GetType () == "application");
-                VerifyTestResult (ct6.GetSubType () == "mathml");
-                VerifyTestResult (ct6.GetSuffix () == "xml");
-                VerifyTestResult (ct6.As<wstring> () == L"application/mathml+xml");
+                EXPECT_TRUE (ct6.GetType () == "application");
+                EXPECT_TRUE (ct6.GetSubType () == "mathml");
+                EXPECT_TRUE (ct6.GetSuffix () == "xml");
+                EXPECT_TRUE (ct6.As<wstring> () == L"application/mathml+xml");
             }
             {
                 // Example from https://tools.ietf.org/html/rfc2045#page-10 - comments ignored, and quotes on value
                 InternetMediaType ct1{"text/plain; charset=us-ascii (Plain text)"};
                 InternetMediaType ct2{"text/plain; charset=\"us-ascii\""};
-                VerifyTestResult (ct1 == ct2);
-                VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (ct1));
+                EXPECT_TRUE (ct1 == ct2);
+                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (ct1));
             }
             {
                 auto dumpCT = [] ([[maybe_unused]] const String& label, InternetMediaType i) {
@@ -222,17 +222,17 @@ namespace {
                 dumpCT (L"PNG", InternetMediaTypes::kPNG);
                 checkCT (InternetMediaTypes::kPNG, {".png"});
                 {
-                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kPNG));
-                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kJSON));
-                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kXML));
-                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kText_PLAIN));
-                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_PLAIN));
-                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kXML));
-                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kHTML));
-                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kJSON));
-                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kPNG));
-                    VerifyTestResult (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar"}));
-                    VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar+xml"}));
+                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kPNG));
+                    EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kJSON));
+                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kXML));
+                    EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kText_PLAIN));
+                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_PLAIN));
+                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kXML));
+                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kHTML));
+                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kJSON));
+                    EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kPNG));
+                    EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar"}));
+                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar+xml"}));
                 }
             }
             {
@@ -247,13 +247,13 @@ namespace {
                 InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
                 InternetMediaTypeRegistry updatedRegistry = origRegistry;
                 const auto                kHFType_        = InternetMediaType{"application/fake-heatlthframe-phr+xml"};
-                VerifyTestResult (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+                EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
                 updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Containers::Set<String>{".HPHR"}, ".HPHR"});
                 InternetMediaTypeRegistry::Set (updatedRegistry);
-                VerifyTestResult (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
-                VerifyTestResult (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
-                VerifyTestResult (not origRegistry.GetMediaTypes ().Contains (kHFType_));
-                VerifyTestResult (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
+                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
+                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+                EXPECT_TRUE (not origRegistry.GetMediaTypes ().Contains (kHFType_));
+                EXPECT_TRUE (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
             }
         }
     }
@@ -281,6 +281,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

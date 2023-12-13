@@ -39,24 +39,24 @@ namespace {
         }
         {
             optional<int> x;
-            VerifyTestResult (not x.has_value ());
+            EXPECT_TRUE (not x.has_value ());
             x = 1;
-            VerifyTestResult (x.has_value ());
-            VerifyTestResult (*x == 1);
+            EXPECT_TRUE (x.has_value ());
+            EXPECT_TRUE (*x == 1);
         }
         {
             // Careful about self-assignment
             optional<int> x;
             x = 3;
             x = max (*x, 1);
-            VerifyTestResult (x == 3);
+            EXPECT_TRUE (x == 3);
         }
         auto testOptionalOfThingNotCopyable = [] () {
             {
                 optional<NotCopyable> n1;
-                VerifyTestResult (not n1.has_value ());
+                EXPECT_TRUE (not n1.has_value ());
                 optional<NotCopyable> n2{NotCopyable ()}; // use r-value reference to move
-                VerifyTestResult (n2.has_value ());
+                EXPECT_TRUE (n2.has_value ());
             }
             {
                 [[maybe_unused]] optional<NotCopyable> a;
@@ -68,33 +68,33 @@ namespace {
         {
             optional<int> x;
             if (x) {
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
         }
         {
             optional<int> x;
             if (optional<int> y = x) {
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
         }
         {
             optional<int> x = 3;
             if (optional<int> y = x) {
-                VerifyTestResult (y == 3);
+                EXPECT_TRUE (y == 3);
             }
             else {
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
         }
         {
             float*  d1 = nullptr;
             double* d2 = nullptr;
-            VerifyTestResult (not OptionalFromNullable (d1).has_value ());
-            VerifyTestResult (not OptionalFromNullable (d2).has_value ());
+            EXPECT_TRUE (not OptionalFromNullable (d1).has_value ());
+            EXPECT_TRUE (not OptionalFromNullable (d2).has_value ());
         }
         {
             constexpr optional<int> x{1};
-            VerifyTestResult (x == 1);
+            EXPECT_TRUE (x == 1);
         }
         {
             optional<int>                     d;
@@ -108,12 +108,12 @@ namespace {
         }
         {
             optional<int> x = 1;
-            VerifyTestResult (Characters::ToString (x) == L"1");
+            EXPECT_TRUE (Characters::ToString (x) == L"1");
         }
         {
             // empty optional < any other value
-            VerifyTestResult (optional<int>{} < -9999);
-            VerifyTestResult (optional<int>{-9999} > optional<int>{});
+            EXPECT_TRUE (optional<int>{} < -9999);
+            EXPECT_TRUE (optional<int>{-9999} > optional<int>{});
         }
     }
     void Test2_SharedByValue ()
@@ -122,7 +122,7 @@ namespace {
         // par Example Usage from doc header
         SharedByValue<vector<byte>> b{BLOB::FromHex ("abcd1245").Repeat (100).As<vector<byte>> ()};
         SharedByValue<vector<byte>> c = b; // copied by reference until 'c' or 'b' changed values
-        VerifyTestResult (c.cget () == b.cget ());
+        EXPECT_TRUE (c.cget () == b.cget ());
     }
     void Test_4_Optional_Of_Mapping_Copy_Problem_ ()
     {
@@ -173,22 +173,22 @@ namespace {
     void Test_6_Bits_ ()
     {
         {
-            VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
-            VerifyTestResult (BitSubstring (0x3, 1, 2) == 1);
-            VerifyTestResult (BitSubstring (0x3, 2, 3) == 0);
-            VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
-            VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
-            VerifyTestResult (BitSubstring (0xff, 8, 16) == 0x0);
-            VerifyTestResult (BitSubstring (0b10101010, 0, 1) == 0x0);
-            VerifyTestResult (BitSubstring (0b10101010, 7, 8) == 0x1);
+            EXPECT_TRUE (BitSubstring (0x3, 0, 1) == 1);
+            EXPECT_TRUE (BitSubstring (0x3, 1, 2) == 1);
+            EXPECT_TRUE (BitSubstring (0x3, 2, 3) == 0);
+            EXPECT_TRUE (BitSubstring (0x3, 0, 3) == 0x3);
+            EXPECT_TRUE (BitSubstring (0xff, 0, 8) == 0xff);
+            EXPECT_TRUE (BitSubstring (0xff, 8, 16) == 0x0);
+            EXPECT_TRUE (BitSubstring (0b10101010, 0, 1) == 0x0);
+            EXPECT_TRUE (BitSubstring (0b10101010, 7, 8) == 0x1);
         }
         {
-            VerifyTestResult (Bit (0) == 0x1);
-            VerifyTestResult (Bit (1) == 0x2);
-            VerifyTestResult (Bit (3) == 0x8);
-            VerifyTestResult (Bit (15) == 0x8000);
-            VerifyTestResult (Bit<int> (1, 2) == 0x6);
-            VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
+            EXPECT_TRUE (Bit (0) == 0x1);
+            EXPECT_TRUE (Bit (1) == 0x2);
+            EXPECT_TRUE (Bit (3) == 0x8);
+            EXPECT_TRUE (Bit (15) == 0x8000);
+            EXPECT_TRUE (Bit<int> (1, 2) == 0x6);
+            EXPECT_TRUE (Bit<int> (1, 2, 15) == 0x8006);
         }
     }
 }
@@ -199,12 +199,12 @@ namespace {
         {
             vector<uint8_t> b  = {1, 2, 3, 4, 5};
             Memory::BLOB    bl = b;
-            VerifyTestResult (bl.size () == 5 and b == bl.As<vector<uint8_t>> ());
-            VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == b);
+            EXPECT_TRUE (bl.size () == 5 and b == bl.As<vector<uint8_t>> ());
+            EXPECT_TRUE (bl.size () == 5 and bl.As<vector<uint8_t>> () == b);
         }
         {
             Memory::BLOB bl{1, 2, 3, 4, 5};
-            VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
+            EXPECT_TRUE (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
         }
         {
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
@@ -214,7 +214,7 @@ namespace {
             Memory::BLOB bl{1, 2, 3, 4, 5};
             bl = bl; // assure self-assign OK
             bl = move (bl);
-            VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
+            EXPECT_TRUE (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-move\"")
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wself-move\"")
@@ -226,41 +226,41 @@ namespace {
             const char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
             const char kSrc4_[] = "0123456789";
 
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
+            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
                               Memory::BLOB::FromRaw (kSrc1_, kSrc1_ + strlen (kSrc1_)));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
+            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
                               Memory::BLOB::FromRaw (kSrc2_, kSrc2_ + strlen (kSrc2_)));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
+            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
                               Memory::BLOB::FromRaw (kSrc3_, kSrc3_ + strlen (kSrc3_)));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
+            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
                               Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
 
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
+            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
                               Memory::BLOB::FromRaw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
+            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
                               Memory::BLOB::FromRaw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
+            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
                               Memory::BLOB::FromRaw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
+            EXPECT_TRUE (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
                               Memory::BLOB::FromRaw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
         }
         {
             using Memory::BLOB;
-            VerifyTestResult ((BLOB::FromHex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a") ==
+            EXPECT_TRUE ((BLOB::FromHex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a") ==
                                BLOB{0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a}));
-            VerifyTestResult ((BLOB::FromHex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d") ==
+            EXPECT_TRUE ((BLOB::FromHex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d") ==
                                BLOB{0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d}));
-            VerifyTestResult ((BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a") == BLOB{0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a}));
-            VerifyTestResult ((BLOB::FromHex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6") ==
+            EXPECT_TRUE ((BLOB::FromHex ("68 69 20 6d 6f 6d 0d 0a") == BLOB{0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a}));
+            EXPECT_TRUE ((BLOB::FromHex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6") ==
                                BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
-            VerifyTestResult ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6") ==
+            EXPECT_TRUE ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6") ==
                                BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
-            VerifyTestResult ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6"));
+            EXPECT_TRUE ((BLOB::FromHex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6"));
         }
         {
             using Memory::BLOB;
-            VerifyTestResult ((BLOB::FromBase64 ("aGVsbG8=") == BLOB{'h', 'e', 'l', 'l', 'o'}));
-            VerifyTestResult ((BLOB{'h', 'e', 'l', 'l', 'o'}.AsBase64 () == "aGVsbG8="));
+            EXPECT_TRUE ((BLOB::FromBase64 ("aGVsbG8=") == BLOB{'h', 'e', 'l', 'l', 'o'}));
+            EXPECT_TRUE ((BLOB{'h', 'e', 'l', 'l', 'o'}.AsBase64 () == "aGVsbG8="));
         }
     }
 }
@@ -288,8 +288,8 @@ namespace {
                 InlineBuffer<int> x0{4};
                 InlineBuffer<int> assign2;
                 assign2 = x0;
-                VerifyTestResult (x0.size () == assign2.size ()); // test regression fixed 2019-03-20
-                VerifyTestResult (x0.size () == 4);
+                EXPECT_TRUE (x0.size () == assign2.size ()); // test regression fixed 2019-03-20
+                EXPECT_TRUE (x0.size () == 4);
             }
         }
     }
@@ -311,7 +311,7 @@ namespace {
             {
                 StackBuffer<int> x0{4};
                 StackBuffer<int> assign2;
-                VerifyTestResult (x0.size () == 4);
+                EXPECT_TRUE (x0.size () == 4);
             }
         }
     }
@@ -375,16 +375,16 @@ namespace {
         void DoTest ()
         {
             {
-                VerifyTestResult (OffsetOf (&Private_::X1::a) == 0);
-                VerifyTestResult (OffsetOf (&Private_::X1::b) >= sizeof (int));
+                EXPECT_TRUE (OffsetOf (&Private_::X1::a) == 0);
+                EXPECT_TRUE (OffsetOf (&Private_::X1::b) >= sizeof (int));
             }
             {
                 Private_::X1 t;
                 static_assert (is_standard_layout_v<Private_::X1>);
                 void* aAddr = &t.a;
                 void* bAddr = &t.b;
-                VerifyTestResult (GetObjectOwningField (aAddr, &Private_::X1::a) == &t);
-                VerifyTestResult (GetObjectOwningField (bAddr, &Private_::X1::b) == &t);
+                EXPECT_TRUE (GetObjectOwningField (aAddr, &Private_::X1::a) == &t);
+                EXPECT_TRUE (GetObjectOwningField (bAddr, &Private_::X1::b) == &t);
             }
             {
                 // Check and warning but since X2 is not standard layout, this isn't guaranteed to work
@@ -392,8 +392,8 @@ namespace {
                 static_assert (not is_standard_layout_v<Private_::X2>);
                 void* aAddr = &t.a;
                 void* bAddr = &t.b;
-                VerifyTestResultWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
-                VerifyTestResultWarning (GetObjectOwningField (bAddr, &Private_::X2::b) == &t);
+                EXPECT_TRUEWarning (GetObjectOwningField (aAddr, &Private_::X2::a) == &t);
+                EXPECT_TRUEWarning (GetObjectOwningField (bAddr, &Private_::X2::b) == &t);
             }
         }
     }
@@ -417,11 +417,11 @@ namespace {
         {
             {
                 [[maybe_unused]] size_t kOffset_ = OffsetOf (&Person::lastName);
-                VerifyTestResult (OffsetOf (&Person::firstName) == 0);
+                EXPECT_TRUE (OffsetOf (&Person::firstName) == 0);
             }
             {
                 [[maybe_unused]] size_t kOffset_ = OffsetOf (&NotDefaultConstructible::lastName);
-                VerifyTestResult (OffsetOf (&NotDefaultConstructible::firstName) == 0);
+                EXPECT_TRUE (OffsetOf (&NotDefaultConstructible::firstName) == 0);
             }
 #if 0
             // disabled til we can figure out a way to get this constexpr version of OffsetOf() working...
@@ -445,17 +445,17 @@ namespace {
             for (size_t len = 0; len < kCountOfResizes_; ++len) {
                 if (len > currentCapacity) {
                     size_t newCapacity = Containers::Support::ReserveTweaks::GetScaledUpCapacity (len);
-                    VerifyTestResult (newCapacity >= len);
+                    EXPECT_TRUE (newCapacity >= len);
                     currentCapacity = newCapacity;
                     //DbgTrace (L"For %d (%f its log) resizes, we got %d reallocs, and allocated size=%d", len, log (len), countOfReallocCopies, newCapacity);
                     if (len > 1) {
-                        VerifyTestResult (countOfReallocCopies < log (len) * 4); // grows roughly logarithmically, but factor depends on scaling in GetScaledUpCapacity
+                        EXPECT_TRUE (countOfReallocCopies < log (len) * 4); // grows roughly logarithmically, but factor depends on scaling in GetScaledUpCapacity
                     }
                     ++countOfReallocCopies;
                 }
             }
             DbgTrace (L"For %d (%f its log) resizes, we got %d reallocs", kCountOfResizes_, log (kCountOfResizes_), countOfReallocCopies);
-            VerifyTestResultWarning (5 <= countOfReallocCopies and countOfReallocCopies <= 50);
+            EXPECT_TRUEWarning (5 <= countOfReallocCopies and countOfReallocCopies <= 50);
         }
     }
 }
@@ -512,45 +512,45 @@ namespace {
         {
             using namespace Private_;
             // no constructor, default aligning
-            VerifyTestResult (OffsetOf (&s::a) == 0);
-            VerifyTestResult (OffsetOf (&s::b) == sizeof (float));
-            VerifyTestResult (OffsetOf (&s::bb) == sizeof (float) + sizeof (char));
-            VerifyTestResult (OffsetOf (&s::c) == alignof (s) * 2); // aligned b with bb
+            EXPECT_TRUE (OffsetOf (&s::a) == 0);
+            EXPECT_TRUE (OffsetOf (&s::b) == sizeof (float));
+            EXPECT_TRUE (OffsetOf (&s::bb) == sizeof (float) + sizeof (char));
+            EXPECT_TRUE (OffsetOf (&s::c) == alignof (s) * 2); // aligned b with bb
 
             // no alignment
-            VerifyTestResult (OffsetOf (&s2::a) == 0);
-            VerifyTestResult (OffsetOf (&s2::b) == sizeof (float));
-            VerifyTestResult (OffsetOf (&s2::bb) == sizeof (float) + sizeof (char));
-            VerifyTestResult (OffsetOf (&s2::c) == sizeof (float) + sizeof (char) * 2);
-            VerifyTestResult (OffsetOf (&s2::d) == sizeof (float) + sizeof (char) * 2 + sizeof (int));
-            VerifyTestResult (OffsetOf (&s2::e) == sizeof (float) + sizeof (char) * 2 + sizeof (int) + sizeof (double));
+            EXPECT_TRUE (OffsetOf (&s2::a) == 0);
+            EXPECT_TRUE (OffsetOf (&s2::b) == sizeof (float));
+            EXPECT_TRUE (OffsetOf (&s2::bb) == sizeof (float) + sizeof (char));
+            EXPECT_TRUE (OffsetOf (&s2::c) == sizeof (float) + sizeof (char) * 2);
+            EXPECT_TRUE (OffsetOf (&s2::d) == sizeof (float) + sizeof (char) * 2 + sizeof (int));
+            EXPECT_TRUE (OffsetOf (&s2::e) == sizeof (float) + sizeof (char) * 2 + sizeof (int) + sizeof (double));
             static_assert (is_standard_layout_v<s2>);
-            VerifyTestResult (OffsetOf (&s2::a) == offsetof (s2, a));
-            VerifyTestResult (OffsetOf (&s2::b) == offsetof (s2, b));
-            VerifyTestResult (OffsetOf (&s2::bb) == offsetof (s2, bb));
-            VerifyTestResult (OffsetOf (&s2::c) == offsetof (s2, c));
-            VerifyTestResult (OffsetOf (&s2::d) == offsetof (s2, d));
-            VerifyTestResult (OffsetOf (&s2::e) == offsetof (s2, e));
+            EXPECT_TRUE (OffsetOf (&s2::a) == offsetof (s2, a));
+            EXPECT_TRUE (OffsetOf (&s2::b) == offsetof (s2, b));
+            EXPECT_TRUE (OffsetOf (&s2::bb) == offsetof (s2, bb));
+            EXPECT_TRUE (OffsetOf (&s2::c) == offsetof (s2, c));
+            EXPECT_TRUE (OffsetOf (&s2::d) == offsetof (s2, d));
+            EXPECT_TRUE (OffsetOf (&s2::e) == offsetof (s2, e));
 
             // simply
-            VerifyTestResult (OffsetOf (&a::i) == 0);
-            VerifyTestResult (OffsetOf (&a::j) == sizeof (int));
-            VerifyTestResult (OffsetOf (&b::i) == 0);
-            VerifyTestResult (OffsetOf (&b::k) == sizeof (int));
+            EXPECT_TRUE (OffsetOf (&a::i) == 0);
+            EXPECT_TRUE (OffsetOf (&a::j) == sizeof (int));
+            EXPECT_TRUE (OffsetOf (&b::i) == 0);
+            EXPECT_TRUE (OffsetOf (&b::k) == sizeof (int));
 
             // other based
             //Assert (OffsetOf(&ab::j) == sizeof (int));
             //Assert (OffsetOf<ab> (&ab::k) == sizeof (int) * 3);
 
             // special alignments
-            VerifyTestResult (OffsetOf (&al::a) == 0);
-            VerifyTestResult (OffsetOf (&al::b) == 8);
-            VerifyTestResult (OffsetOf (&al::bb) == 9);
+            EXPECT_TRUE (OffsetOf (&al::a) == 0);
+            EXPECT_TRUE (OffsetOf (&al::b) == 8);
+            EXPECT_TRUE (OffsetOf (&al::bb) == 9);
             // Assert (OffsetOf (&al::arr) == 16);
 
-            VerifyTestResult (OffsetOf (&al2::a) == 0);
-            VerifyTestResult (OffsetOf (&al2::b) == 2);
-            VerifyTestResult (OffsetOf (&al2::c) == 6);
+            EXPECT_TRUE (OffsetOf (&al2::a) == 0);
+            EXPECT_TRUE (OffsetOf (&al2::b) == 2);
+            EXPECT_TRUE (OffsetOf (&al2::c) == 6);
         }
     }
 }
@@ -562,9 +562,9 @@ namespace {
             {
                 char buf1[1024];
                 char buf2[1024];
-                VerifyTestResult (not Intersects (span{buf1}, span{buf2}));
-                VerifyTestResult (Intersects (span{buf1}, span{buf1}));
-                VerifyTestResult (Intersects (span{buf1}.subspan (3, 10), span{buf1}.subspan (4, 10)));
+                EXPECT_TRUE (not Intersects (span{buf1}, span{buf2}));
+                EXPECT_TRUE (Intersects (span{buf1}, span{buf1}));
+                EXPECT_TRUE (Intersects (span{buf1}.subspan (3, 10), span{buf1}.subspan (4, 10)));
             }
         }
     }
@@ -599,6 +599,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

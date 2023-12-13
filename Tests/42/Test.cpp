@@ -35,7 +35,7 @@ namespace {
     atomic<bool> sAtomicBoolNotInitializedTilAfterStaticInitizers_{true}; // for calls before start of or after end of main ()
     int          TestAtomicInitializedCoorectly_ ()
     {
-        VerifyTestResult (sAtomicBoolNotInitializedTilAfterStaticInitizers_);
+        EXPECT_TRUE (sAtomicBoolNotInitializedTilAfterStaticInitizers_);
         return 1;
     }
 }
@@ -46,20 +46,20 @@ namespace {
         // Make sure Function<> works as well as std::function
         {
             Function<int (bool)> f = [] ([[maybe_unused]] bool b) -> int { return 3; };
-            VerifyTestResult (f (true) == 3);
+            EXPECT_TRUE (f (true) == 3);
             function<int (bool)> ff = f;
-            VerifyTestResult (ff (true) == 3);
+            EXPECT_TRUE (ff (true) == 3);
         }
         // Make sure Function<> serves its one purpose - being comparable
         {
             Function<int (bool)> f1 = [] ([[maybe_unused]] bool b) -> int { return 3; };
             Function<int (bool)> f2 = [] ([[maybe_unused]] bool b) -> int { return 3; };
 
-            VerifyTestResult (f1 != f2);
-            VerifyTestResult (f1 < f2 or f2 < f1); // SEE qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy
+            EXPECT_TRUE (f1 != f2);
+            EXPECT_TRUE (f1 < f2 or f2 < f1); // SEE qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy
             Function<int (bool)> f3 = f1;
-            VerifyTestResult (f3 == f1);
-            VerifyTestResult (f3 != f2);
+            EXPECT_TRUE (f3 == f1);
+            EXPECT_TRUE (f3 != f2);
         }
         {
             // https://stroika.atlassian.net/browse/STK-960
@@ -68,7 +68,7 @@ namespace {
             // with old code?
             Function<int ()> f1 = [] () { return 1; };
             Function<int ()> f2 = [] () { return -1; };
-            VerifyTestResult (f1 != f2);
+            EXPECT_TRUE (f1 != f2);
         }
     }
 }
@@ -79,32 +79,32 @@ namespace {
         {
             String           cmdLine = "/bin/sh -c \"a b c\"";
             Sequence<String> l       = ParseCommandLine (cmdLine);
-            VerifyTestResult (l.size () == 3);
-            VerifyTestResult (l[0] == "/bin/sh");
-            VerifyTestResult (l[1] == "-c");
-            VerifyTestResult (l[2] == "a b c");
+            EXPECT_TRUE (l.size () == 3);
+            EXPECT_TRUE (l[0] == "/bin/sh");
+            EXPECT_TRUE (l[1] == "-c");
+            EXPECT_TRUE (l[2] == "a b c");
         }
         {
             String           cmdLine = "";
             Sequence<String> l       = ParseCommandLine (cmdLine);
-            VerifyTestResult (l.size () == 0);
+            EXPECT_TRUE (l.size () == 0);
         }
         {
             String           cmdLine = "/bin/sh -c \'a b c\'";
             Sequence<String> l       = ParseCommandLine (cmdLine);
-            VerifyTestResult (l.size () == 3);
-            VerifyTestResult (l[0] == "/bin/sh");
-            VerifyTestResult (l[1] == "-c");
-            VerifyTestResult (l[2] == "a b c");
+            EXPECT_TRUE (l.size () == 3);
+            EXPECT_TRUE (l[0] == "/bin/sh");
+            EXPECT_TRUE (l[1] == "-c");
+            EXPECT_TRUE (l[2] == "a b c");
         }
         {
             String           cmdLine = "/bin/sh\t b c     -d";
             Sequence<String> l       = ParseCommandLine (cmdLine);
-            VerifyTestResult (l.size () == 4);
-            VerifyTestResult (l[0] == "/bin/sh");
-            VerifyTestResult (l[1] == "b");
-            VerifyTestResult (l[2] == "c");
-            VerifyTestResult (l[3] == "-d");
+            EXPECT_TRUE (l.size () == 4);
+            EXPECT_TRUE (l[0] == "/bin/sh");
+            EXPECT_TRUE (l[1] == "b");
+            EXPECT_TRUE (l[2] == "c");
+            EXPECT_TRUE (l[3] == "-d");
         }
     }
 }
@@ -119,7 +119,7 @@ namespace {
                     [[maybe_unused]] auto&& c = Finally ([&cnt] () noexcept { cnt--; });
                     ++cnt;
                 }
-                VerifyTestResult (cnt == 0);
+                EXPECT_TRUE (cnt == 0);
             }
         }
     }
@@ -141,7 +141,7 @@ namespace {
                 void                                   DoIt ()
                 {
                     const String a = kX;
-                    VerifyTestResult (a == "6"); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
+                    EXPECT_TRUE (a == "6"); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
                 }
             }
             namespace T3_ {
@@ -158,7 +158,7 @@ namespace {
                 void                                DoIt ()
                 {
                     const int a [[maybe_unused]] = kX;
-                    VerifyTestResult (a == 4); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
+                    EXPECT_TRUE (a == 4); // Before Stroika 2.1b12 there was a bug that ConstantProperty stored teh constant in a static variable not data member!
                 }
             }
         }
@@ -279,6 +279,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

@@ -97,8 +97,8 @@ namespace {
                         ++i;
                     }
                 }
-                VerifyTestResult (sum == 10); // verify we still hit all items
-                VerifyTestResult (c.Sum () == 7);
+                EXPECT_TRUE (sum == 10); // verify we still hit all items
+                EXPECT_TRUE (c.Sum () == 7);
             }
         }
     }
@@ -123,8 +123,8 @@ namespace {
             Debug::TraceContextBumper ctx{"{}::ExampleUsingWhere"};
             {
                 Collection<int> c{1, 2, 3, 4, 5, 6};
-                VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SetEquals (Iterable<int>{2, 4, 6}));
-                VerifyTestResult (c.Where<Iterable<int>> ([] (int i) { return i % 2 == 0; }).SetEquals (Iterable<int>{2, 4, 6})); // to get lazy evaluation
+                EXPECT_TRUE (c.Where ([] (int i) { return i % 2 == 0; }).SetEquals (Iterable<int>{2, 4, 6}));
+                EXPECT_TRUE (c.Where<Iterable<int>> ([] (int i) { return i % 2 == 0; }).SetEquals (Iterable<int>{2, 4, 6})); // to get lazy evaluation
             }
         }
     }
@@ -181,7 +181,7 @@ namespace {
         RemoveAndUpdateIteratorUpdate_Test3::DoTest ();
         ExampleUsingWhere::DoTest ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -191,6 +191,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

@@ -29,36 +29,36 @@ namespace {
             // Examples from https://tools.ietf.org/html/rfc6265#section-3.1
             {
                 Cookie c = Cookie::Parse (L"SID=31d4d96e407aad42");
-                VerifyTestResult (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
-                VerifyTestResult (c.GetAttributes ().empty ());
+                EXPECT_TRUE (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
+                EXPECT_TRUE (c.GetAttributes ().empty ());
             }
             {
                 Cookie c = Cookie::Parse (L"SID=31d4d96e407aad42; Path=/; Secure; HttpOnly");
-                VerifyTestResult (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
-                VerifyTestResult (c.fPath == L"/");
-                VerifyTestResult (c.fSecure);
-                VerifyTestResult (c.fHttpOnly);
+                EXPECT_TRUE (c.fKey == L"SID" and c.fValue == L"31d4d96e407aad42");
+                EXPECT_TRUE (c.fPath == L"/");
+                EXPECT_TRUE (c.fSecure);
+                EXPECT_TRUE (c.fHttpOnly);
                 c.fPath.reset ();
                 c.fSecure   = false;
                 c.fHttpOnly = false;
-                VerifyTestResult (c.GetAttributes ().empty ());
+                EXPECT_TRUE (c.GetAttributes ().empty ());
             }
             {
                 Cookie c = Cookie::Parse (L"lang=en-US; Path=/; Domain=example.com");
-                VerifyTestResult (c.fKey == L"lang" and c.fValue == L"en-US");
-                VerifyTestResult (c.fPath == L"/");
-                VerifyTestResult (c.fDomain == L"example.com");
+                EXPECT_TRUE (c.fKey == L"lang" and c.fValue == L"en-US");
+                EXPECT_TRUE (c.fPath == L"/");
+                EXPECT_TRUE (c.fDomain == L"example.com");
                 c.fPath.reset ();
                 c.fDomain.reset ();
-                VerifyTestResult (c.GetAttributes ().empty ());
+                EXPECT_TRUE (c.GetAttributes ().empty ());
             }
             {
                 Cookie c = Cookie::Parse (L"lang=en-US; Expires=Wed, 09 Jun 2021 10:18:14 GMT");
-                VerifyTestResult (c.fKey == L"lang" and c.fValue == L"en-US");
+                EXPECT_TRUE (c.fKey == L"lang" and c.fValue == L"en-US");
                 using namespace Time;
-                VerifyTestResult (c.fExpires == (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
+                EXPECT_TRUE (c.fExpires == (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
                 c.fExpires.reset ();
-                VerifyTestResult (c.GetAttributes ().empty ());
+                EXPECT_TRUE (c.GetAttributes ().empty ());
             }
         }
     }
@@ -67,18 +67,18 @@ namespace {
         {
             {
                 CacheControl c{};
-                VerifyTestResult (c.As<String> () == L"");
-                VerifyTestResult (c == CacheControl::Parse (L""));
+                EXPECT_TRUE (c.As<String> () == L"");
+                EXPECT_TRUE (c == CacheControl::Parse (L""));
             }
             {
                 CacheControl c{CacheControl::eNoStore};
-                VerifyTestResult (c.As<String> () == L"no-store");
-                VerifyTestResult (c == CacheControl::Parse (L"no-store"));
+                EXPECT_TRUE (c.As<String> () == L"no-store");
+                EXPECT_TRUE (c == CacheControl::Parse (L"no-store"));
             }
             {
                 CacheControl c{.fCacheability = CacheControl::eNoStore, .fMaxAge = 0};
-                VerifyTestResult (c.As<String> () == L"no-store, max-age=0");
-                VerifyTestResult (c == CacheControl::Parse (L"no-store, max-age=0"));
+                EXPECT_TRUE (c.As<String> () == L"no-store, max-age=0");
+                EXPECT_TRUE (c == CacheControl::Parse (L"no-store, max-age=0"));
             }
         }
     }
@@ -89,30 +89,30 @@ namespace {
                 IO::Network::HTTP::Headers h;
                 h.contentLength        = 3;
                 const auto kReference_ = Mapping<String, String>{{L"Content-Length", L"3"}};
-                VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
+                EXPECT_TRUE ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
                 IO::Network::HTTP::Headers h;
                 h.ETag                 = ETag{L"1-2-3-4"};
                 const auto kReference_ = Mapping<String, String>{{L"ETag", L"\"1-2-3-4\""}};
-                VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
+                EXPECT_TRUE ((h.As<Mapping<String, String>> () == kReference_));
                 h = IO::Network::HTTP::Headers{kReference_};
-                VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
+                EXPECT_TRUE ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
                 IO::Network::HTTP::Headers h;
                 h.contentLength        = 3;
                 h.cacheControl         = CacheControl{CacheControl::eNoCache};
                 const auto kReference_ = Mapping<String, String>{{L"Cache-Control", L"no-cache"}, {L"Content-Length", L"3"}};
-                VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
+                EXPECT_TRUE ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
                 const auto kReference_ =
                     Mapping<String, String>{{L"Cache-Control", L"no-cache"}, {L"blah-blah", L"unknown-header"}, {L"Content-Length", L"3"}};
                 IO::Network::HTTP::Headers h{kReference_};
-                VerifyTestResult (h.contentLength () == 3);
-                VerifyTestResult (h.cacheControl () == CacheControl{CacheControl::eNoCache});
-                VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
+                EXPECT_TRUE (h.contentLength () == 3);
+                EXPECT_TRUE (h.cacheControl () == CacheControl{CacheControl::eNoCache});
+                EXPECT_TRUE ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
                 using namespace Time;
@@ -122,28 +122,28 @@ namespace {
                 const String   kTest1_ = L"Sun, 06 Nov 1994 08:49:37 GMT";
                 const String   kTest2_ = L"Sunday, 06-Nov-94 08:49:37 GMT";
                 const String   kTest3_ = L"Sun Nov  6 08:49:37 1994";
-                VerifyTestResult (h1.date == nullopt);
-                VerifyTestResult (h1.LookupOne (HTTP::HeaderName::kDate) == nullopt);
+                EXPECT_TRUE (h1.date == nullopt);
+                EXPECT_TRUE (h1.LookupOne (HTTP::HeaderName::kDate) == nullopt);
                 h1.date = kReferenceTest_;
-                VerifyTestResult (h1.date == kReferenceTest_);
-                VerifyTestResult (h1.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
+                EXPECT_TRUE (h1.date == kReferenceTest_);
+                EXPECT_TRUE (h1.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
                 IO::Network::HTTP::Headers h2 = h1;
-                VerifyTestResult (h2.date == kReferenceTest_);
-                VerifyTestResult (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
+                EXPECT_TRUE (h2.date == kReferenceTest_);
+                EXPECT_TRUE (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
                 // now check older formats still work
                 h2.date = nullopt;
                 h2.Set (HTTP::HeaderName::kDate, kTest2_);
 #if 0
                 // see https://stroika.atlassian.net/browse/STK-731 - should support parsing (not writing) older formats too
-                VerifyTestResult (h2.date == kReferenceTest_);
-                VerifyTestResult (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
+                EXPECT_TRUE (h2.date == kReferenceTest_);
+                EXPECT_TRUE (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
 #endif
                 h2.date = nullopt;
                 h2.Set (HTTP::HeaderName::kDate, kTest3_);
 #if 0
                 // see https://stroika.atlassian.net/browse/STK-731 - should support parsing (not writing) older formats too
-                VerifyTestResult (h2.date == kReferenceTest_);
-                VerifyTestResult (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
+                EXPECT_TRUE (h2.date == kReferenceTest_);
+                EXPECT_TRUE (h2.LookupOne (HTTP::HeaderName::kDate) == kTest1_);
 #endif
             }
             {
@@ -152,8 +152,8 @@ namespace {
                 h1.ETag                         = etag;
                 IO::Network::HTTP::Headers h2;
                 h2.ifNoneMatch = IfNoneMatch{{etag}};
-                VerifyTestResult (h1 != h2);
-                VerifyTestResult (h2.ifNoneMatch ().value ().fETags.Contains (etag));
+                EXPECT_TRUE (h1 != h2);
+                EXPECT_TRUE (h2.ifNoneMatch ().value ().fETags.Contains (etag));
             }
         }
     }
@@ -178,6 +178,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

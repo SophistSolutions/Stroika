@@ -41,7 +41,7 @@ namespace {
             optional<T> last;
             for (T i : s) {
                 if (last.has_value ()) {
-                    VerifyTestResult (inorderComparer (*last, i));
+                    EXPECT_TRUE (inorderComparer (*last, i));
                 }
                 last = i;
             }
@@ -61,28 +61,28 @@ namespace {
         {
             {
                 SortedSet<int> tmp{1, 3};
-                VerifyTestResult (tmp.size () == 2);
-                VerifyTestResult (tmp.Contains (1));
-                VerifyTestResult (not tmp.Contains (2));
-                VerifyTestResult (tmp.Contains (3));
+                EXPECT_TRUE (tmp.size () == 2);
+                EXPECT_TRUE (tmp.Contains (1));
+                EXPECT_TRUE (not tmp.Contains (2));
+                EXPECT_TRUE (tmp.Contains (3));
             }
             {
                 SortedSet<int> tmp{1, 3, 4, 5, 7};
-                VerifyTestResult (tmp.size () == 5);
-                VerifyTestResult (tmp.Contains (1));
-                VerifyTestResult (not tmp.Contains (2));
-                VerifyTestResult (tmp.Contains (3));
-                VerifyTestResult (tmp.Contains (7));
+                EXPECT_TRUE (tmp.size () == 5);
+                EXPECT_TRUE (tmp.Contains (1));
+                EXPECT_TRUE (not tmp.Contains (2));
+                EXPECT_TRUE (tmp.Contains (3));
+                EXPECT_TRUE (tmp.Contains (7));
             }
             {
                 Set<int>       t1{1, 3, 4, 5, 7};
                 SortedSet<int> tmp = SortedSet<int>{t1.begin (), t1.end ()};
                 //SortedSet<int> tmp  {t1.begin (), t1.end () };
-                VerifyTestResult (tmp.size () == 5);
-                VerifyTestResult (tmp.Contains (1));
-                VerifyTestResult (not tmp.Contains (2));
-                VerifyTestResult (tmp.Contains (3));
-                VerifyTestResult (tmp.Contains (7));
+                EXPECT_TRUE (tmp.size () == 5);
+                EXPECT_TRUE (tmp.Contains (1));
+                EXPECT_TRUE (not tmp.Contains (2));
+                EXPECT_TRUE (tmp.Contains (3));
+                EXPECT_TRUE (tmp.Contains (7));
             }
         }
     }
@@ -95,16 +95,16 @@ namespace {
             {
                 using Characters::String;
                 SortedSet<String> tmp{L"a", L"b", L"A"};
-                VerifyTestResult (tmp.size () == 3);
-                VerifyTestResult (tmp.Contains (L"A"));
-                VerifyTestResult (not tmp.Contains (L"B"));
+                EXPECT_TRUE (tmp.size () == 3);
+                EXPECT_TRUE (tmp.Contains (L"A"));
+                EXPECT_TRUE (not tmp.Contains (L"B"));
             }
             {
                 using Characters::String;
                 SortedSet<String> tmp{String::LessComparer{Characters::eCaseInsensitive}, {"a", L"b", "A"sv}};
-                VerifyTestResult (tmp.size () == 2);
-                VerifyTestResult (tmp.Contains (L"A"));
-                VerifyTestResult (tmp.Contains (L"B"));
+                EXPECT_TRUE (tmp.size () == 2);
+                EXPECT_TRUE (tmp.Contains (L"A"));
+                EXPECT_TRUE (tmp.Contains (L"B"));
             }
         }
     }
@@ -140,7 +140,7 @@ namespace {
         Test2_InitalizeCTORs_::DoRun ();
         Test3_ExplicitSortFunction_::DoRun ();
 
-        VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
 
@@ -150,6 +150,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

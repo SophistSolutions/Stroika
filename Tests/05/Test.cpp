@@ -29,7 +29,7 @@ namespace {
 
         const size_t kBigSize = 1001;
 
-        VerifyTestResult (someArray.size () == 0);
+        EXPECT_TRUE (someArray.size () == 0);
 
         someArray.SetLength (kBigSize, 0);
         someArray.RemoveAll ();
@@ -37,22 +37,22 @@ namespace {
         someArray.SetLength (10, 0);
         someArray.SetLength (kBigSize, 0);
 
-        VerifyTestResult (someArray.size () == kBigSize);
+        EXPECT_TRUE (someArray.size () == kBigSize);
         someArray[55] = 55;
-        VerifyTestResult (someArray[55] == 55);
-        VerifyTestResult (someArray[55] != 56);
+        EXPECT_TRUE (someArray[55] == 55);
+        EXPECT_TRUE (someArray[55] != 56);
 
         someArray.InsertAt (100, 1);
-        VerifyTestResult (someArray.size () == kBigSize + 1);
-        VerifyTestResult (someArray[100] == 1);
+        EXPECT_TRUE (someArray.size () == kBigSize + 1);
+        EXPECT_TRUE (someArray[100] == 1);
 
         someArray[101] = someArray[100] + 10;
-        VerifyTestResult (someArray[101] == 11);
+        EXPECT_TRUE (someArray[101] == 11);
         someArray.RemoveAt (0);
-        VerifyTestResult (someArray[100] == 11);
+        EXPECT_TRUE (someArray[100] == 11);
         someArray.RemoveAt (1);
 
-        VerifyTestResult (someArray[99] == 11);
+        EXPECT_TRUE (someArray[99] == 11);
     }
 
     static void Test2 ()
@@ -74,17 +74,17 @@ namespace {
 
         const size_t kBigSize = 1001;
 
-        VerifyTestResult (someArray.size () == 0);
+        EXPECT_TRUE (someArray.size () == 0);
         someArray.SetLength (kBigSize, 0);
         someArray.SetLength (0, 0);
         someArray.SetLength (kBigSize, 0);
         someArray.SetLength (10, 0);
         someArray.SetLength (kBigSize, 0);
 
-        VerifyTestResult (someArray.size () == kBigSize);
+        EXPECT_TRUE (someArray.size () == kBigSize);
         someArray[55] = 55;
-        VerifyTestResult (someArray[55] == 55);
-        VerifyTestResult (not(someArray[55] == 56));
+        EXPECT_TRUE (someArray[55] == 55);
+        EXPECT_TRUE (not(someArray[55] == 56));
 
         someArray.RemoveAt (100);
 
@@ -96,11 +96,11 @@ namespace {
         }
 
         someArray.InsertAt (100, 1);
-        VerifyTestResult (someArray.size () == kBigSize + 1);
-        VerifyTestResult (someArray[100] == 1);
+        EXPECT_TRUE (someArray.size () == kBigSize + 1);
+        EXPECT_TRUE (someArray[100] == 1);
         someArray[101] = 1 + someArray[100].GetValue ();
         someArray.RemoveAt (1);
-        VerifyTestResult (someArray[100].GetValue () == 2);
+        EXPECT_TRUE (someArray[100].GetValue () == 2);
     }
 }
 
@@ -122,6 +122,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

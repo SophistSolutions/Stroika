@@ -218,8 +218,8 @@ namespace Stroika::Foundation::Execution {
      *              ThrowPOSIXErrNo (make_error_code (errc::bad_address).value ());
      *          }
      *          catch (const std::system_error& e) {
-     *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
-     *              VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
+     *              EXPECT_TRUE (e.code ().value () == make_error_code (errc::bad_address).value ());
+     *              EXPECT_TRUE (e.code ().category () == system_category () or e.code ().category () == generic_category ());
      *              Assert (Characters::ToString (e).Contains ("bad address {errno: 14}"));
      *          }
      *      \endcode

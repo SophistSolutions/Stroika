@@ -37,19 +37,19 @@ namespace {
         {
             try {
                 Throw (Exception{L"HiMom"});
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
             catch (const Exception<>& e) {
-                VerifyTestResult (e.As<wstring> () == L"HiMom");
+                EXPECT_TRUE (e.As<wstring> () == L"HiMom");
             }
         }
         {
             try {
                 Throw (Exception{L"HiMom"});
-                VerifyTestResult (false);
+                EXPECT_TRUE (false);
             }
             catch (const std::exception& e) {
-                VerifyTestResult (strcmp (e.what (), "HiMom") == 0); // IF THIS FAILS SEE qCompilerAndStdLib_Debug32_asan_Poison_Buggy
+                EXPECT_TRUE (strcmp (e.what (), "HiMom") == 0); // IF THIS FAILS SEE qCompilerAndStdLib_Debug32_asan_Poison_Buggy
             }
         }
     }
@@ -67,13 +67,13 @@ namespace {
                     ThrowPOSIXErrNo (kErr2TestFor_);
                 }
                 catch (const std::system_error& e) {
-                    VerifyTestResult (e.code ().value () == kErr2TestFor_);
-                    VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-                    VerifyTestResult (Characters::ToString (e).Contains (kErr2TestForExpectedMsg_, Characters::eCaseInsensitive));
+                    EXPECT_TRUE (e.code ().value () == kErr2TestFor_);
+                    EXPECT_TRUE (e.code ().category () == system_category () or e.code ().category () == generic_category ());
+                    EXPECT_TRUE (Characters::ToString (e).Contains (kErr2TestForExpectedMsg_, Characters::eCaseInsensitive));
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
+                    EXPECT_TRUE (false); //oops
                 }
                 // and test throwing fancy unicode string
 
@@ -82,13 +82,13 @@ namespace {
                     Execution::Throw (SystemErrorException{kErr2TestFor_, generic_category (), kMsgWithUnicode_});
                 }
                 catch (const std::system_error& e) {
-                    VerifyTestResult (e.code ().value () == kErr2TestFor_);
-                    VerifyTestResult (e.code ().category () == generic_category ());
-                    VerifyTestResult (Characters::ToString (e).Contains (kMsgWithUnicode_, Characters::eCaseInsensitive));
+                    EXPECT_TRUE (e.code ().value () == kErr2TestFor_);
+                    EXPECT_TRUE (e.code ().category () == generic_category ());
+                    EXPECT_TRUE (Characters::ToString (e).Contains (kMsgWithUnicode_, Characters::eCaseInsensitive));
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
+                    EXPECT_TRUE (false); //oops
                 }
             }
             void T2_TestTimeout_ ()
@@ -97,36 +97,36 @@ namespace {
                     Execution::Throw (Execution::TimeOutException{});
                 }
                 catch (const system_error& e) {
-                    VerifyTestResult (e.code () == errc::timed_out);
-                    VerifyTestResult (e.code () != errc::already_connected);
+                    EXPECT_TRUE (e.code () == errc::timed_out);
+                    EXPECT_TRUE (e.code () != errc::already_connected);
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
+                    EXPECT_TRUE (false); //oops
                 }
                 try {
                     Execution::Throw (Execution::TimeOutException{});
                 }
                 catch (const Execution::TimeOutException& e) {
-                    VerifyTestResult (e.code () == errc::timed_out);
-                    VerifyTestResult (e.code () != errc::already_connected);
+                    EXPECT_TRUE (e.code () == errc::timed_out);
+                    EXPECT_TRUE (e.code () != errc::already_connected);
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
+                    EXPECT_TRUE (false); //oops
                 }
                 const Characters::String kMsg1_ = L"to abcd 123 zß水𝄋";
                 try {
                     Execution::Throw (Execution::TimeOutException{kMsg1_});
                 }
                 catch (const system_error& e) {
-                    VerifyTestResult (e.code () == errc::timed_out);
-                    VerifyTestResult (e.code () != errc::already_connected);
-                    VerifyTestResult (Characters::ToString (e).Contains (kMsg1_));
+                    EXPECT_TRUE (e.code () == errc::timed_out);
+                    EXPECT_TRUE (e.code () != errc::already_connected);
+                    EXPECT_TRUE (Characters::ToString (e).Contains (kMsg1_));
                 }
                 catch (...) {
                     DbgTrace (L"err=%s", Characters::ToString (current_exception ()).c_str ());
-                    VerifyTestResult (false); //oops
+                    EXPECT_TRUE (false); //oops
                 }
             }
         }
@@ -171,11 +171,11 @@ namespace {
                 }
                 catch (...) {
                     String msg = Characters::ToString (current_exception ());
-                    VerifyTestResult (msg.Contains ("testing 123"));
-                    VerifyTestResult (msg.Contains ("a1"));
-                    VerifyTestResult (msg.Contains ("kOtherActivity"));
-                    VerifyTestResult (msg.Contains ("otherActivity"));
-                    VerifyTestResult (msg.Contains ("xxx"));
+                    EXPECT_TRUE (msg.Contains ("testing 123"));
+                    EXPECT_TRUE (msg.Contains ("a1"));
+                    EXPECT_TRUE (msg.Contains ("kOtherActivity"));
+                    EXPECT_TRUE (msg.Contains ("otherActivity"));
+                    EXPECT_TRUE (msg.Contains ("xxx"));
                 }
             }
         }
@@ -196,18 +196,18 @@ namespace {
                     throw std::system_error (ENOENT, std::system_category ());
                 }
                 catch (std::system_error const& e) {
-                    VerifyTestResult (e.code ().value () == static_cast<int> (std::errc::no_such_file_or_directory)); // workaround?
-                    VerifyTestResult (e.code () == std::errc::no_such_file_or_directory);                             // <- FAILS!?
+                    EXPECT_TRUE (e.code ().value () == static_cast<int> (std::errc::no_such_file_or_directory)); // workaround?
+                    EXPECT_TRUE (e.code () == std::errc::no_such_file_or_directory);                             // <- FAILS!?
                 }
                 catch (...) {
-                    VerifyTestResult (false);
+                    EXPECT_TRUE (false);
                 }
             }
 #if qPlatform_Windows
             void Bug2_Windows_Errors_Mapped_To_Conditions_ ()
             {
-                VerifyTestResult ((error_code{ERROR_NOT_ENOUGH_MEMORY, system_category ()} == errc::not_enough_memory));
-                VerifyTestResult ((error_code{ERROR_OUTOFMEMORY, system_category ()} == errc::not_enough_memory));
+                EXPECT_TRUE ((error_code{ERROR_NOT_ENOUGH_MEMORY, system_category ()} == errc::not_enough_memory));
+                EXPECT_TRUE ((error_code{ERROR_OUTOFMEMORY, system_category ()} == errc::not_enough_memory));
 #if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
                 if ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out)) {
                     DbgTrace (L"FIXED - qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy");
@@ -216,8 +216,8 @@ namespace {
                     DbgTrace (L"FIXED");
                 }
 #else
-                VerifyTestResult ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out));
-                VerifyTestResult ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out));
+                EXPECT_TRUE ((error_code{WAIT_TIMEOUT, system_category ()} == errc::timed_out));
+                EXPECT_TRUE ((error_code{ERROR_INTERNET_TIMEOUT, system_category ()} == errc::timed_out));
 #endif
 
                 try {
@@ -227,7 +227,7 @@ namespace {
                     // Good
                 }
                 catch (...) {
-                    VerifyTestResult (false);
+                    EXPECT_TRUE (false);
                 }
                 try {
                     ThrowSystemErrNo (ERROR_OUTOFMEMORY);
@@ -236,7 +236,7 @@ namespace {
                     // Good
                 }
                 catch (...) {
-                    VerifyTestResult (false);
+                    EXPECT_TRUE (false);
                 }
                 try {
                     ThrowSystemErrNo (WAIT_TIMEOUT);
@@ -245,7 +245,7 @@ namespace {
                     // Good
                 }
                 catch (...) {
-                    VerifyTestResult (false);
+                    EXPECT_TRUE (false);
                 }
                 try {
                     ThrowSystemErrNo (ERROR_INTERNET_TIMEOUT);
@@ -254,7 +254,7 @@ namespace {
                     // Good
                 }
                 catch (...) {
-                    VerifyTestResult (false);
+                    EXPECT_TRUE (false);
                 }
             }
 #endif
@@ -279,19 +279,19 @@ namespace {
                 {
                     try {
                         Throw (Exception (L"HiMom"));
-                        VerifyTestResult (false);
+                        EXPECT_TRUE (false);
                     }
                     catch (const Exception<>& e) {
-                        VerifyTestResult (e.As<wstring> () == L"HiMom");
+                        EXPECT_TRUE (e.As<wstring> () == L"HiMom");
                     }
                 }
                 {
                     try {
                         Throw (Exception (L"HiMom"));
-                        VerifyTestResult (false);
+                        EXPECT_TRUE (false);
                     }
                     catch (const std::exception& e) {
-                        VerifyTestResult (strcmp (e.what (), "HiMom") == 0);
+                        EXPECT_TRUE (strcmp (e.what (), "HiMom") == 0);
                     }
                 }
             }
@@ -335,6 +335,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

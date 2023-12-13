@@ -39,10 +39,10 @@ namespace {
             ::raise (SIGINT);
             DISABLE_COMPILER_MSC_WARNING_START (4127) // conditional expression is constant - WRONG - CAN be constant - but if qCompiler_ValgrindDirectSignalHandler_Buggy, depends on non constexpr function
             if (qCompiler_ValgrindDirectSignalHandler_Buggy and Debug::IsRunningUnderValgrind ()) {
-                VerifyTestResultWarning (called);
+                EXPECT_TRUEWarning (called);
             }
             else {
-                VerifyTestResult (called);
+                EXPECT_TRUE (called);
             }
             DISABLE_COMPILER_MSC_WARNING_END (4127)
         }
@@ -63,7 +63,7 @@ namespace {
                     SIGINT, SignalHandler{[&called] ([[maybe_unused]] SignalID signal) -> void { called = true; }});
                 ::raise (SIGINT);
                 Execution::Sleep (0.5s); // delivery could be delayed because signal is pushed to another thread
-                VerifyTestResult (called);
+                EXPECT_TRUE (called);
             }
         }
         {
@@ -76,7 +76,7 @@ namespace {
                     SIGINT, SignalHandler ([&called] ([[maybe_unused]] SignalID signal) -> void { called = true; }));
                 ::raise (SIGINT);
                 Execution::Sleep (0.5s); // delivery could be delayed because signal is pushed to another thread
-                VerifyTestResult (called);
+                EXPECT_TRUE (called);
             }
         }
     }
@@ -101,6 +101,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

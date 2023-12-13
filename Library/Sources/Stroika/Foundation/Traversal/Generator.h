@@ -61,10 +61,10 @@ namespace Stroika::Foundation::Traversal {
      *
      *          int sum = 0;
      *          for (auto i : CreateGenerator<int> (getNext)) {
-     *              VerifyTestResult (1 <= i and i <= 10);
+     *              EXPECT_TRUE (1 <= i and i <= 10);
      *              sum += i;
      *          }
-     *          VerifyTestResult (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
+     *          EXPECT_TRUE (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
      *      \endcode
      */
     template <typename T>

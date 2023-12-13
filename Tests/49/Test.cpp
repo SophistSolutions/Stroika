@@ -32,19 +32,19 @@ namespace {
         {
             {
                 MemoryStream<byte>::Ptr s = MemoryStream<byte>::New (nullptr, nullptr);
-                VerifyTestResult (s != nullptr);
-                VerifyTestResult (s.IsSeekable ());
+                EXPECT_TRUE (s != nullptr);
+                EXPECT_TRUE (s.IsSeekable ());
             }
             {
                 const char              kData[] = "1";
                 MemoryStream<byte>::Ptr s       = MemoryStream<byte>::New (reinterpret_cast<const byte*> (std::begin (kData)),
                                                                            reinterpret_cast<const byte*> (std::end (kData)));
-                VerifyTestResult (s != nullptr);
-                VerifyTestResult (s.IsSeekable ());
+                EXPECT_TRUE (s != nullptr);
+                EXPECT_TRUE (s.IsSeekable ());
                 byte result[100] = {byte{0}};
-                VerifyTestResult (s.Read (std::begin (result), std::end (result)) == 2);
-                VerifyTestResult (to_integer<char> (result[0]) == '1');
-                VerifyTestResult (to_integer<char> (result[1]) == '\0');
+                EXPECT_TRUE (s.Read (std::begin (result), std::end (result)) == 2);
+                EXPECT_TRUE (to_integer<char> (result[0]) == '1');
+                EXPECT_TRUE (to_integer<char> (result[1]) == '\0');
             }
         }
 
@@ -62,20 +62,20 @@ namespace {
         {
             {
                 MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
-                VerifyTestResult (s != nullptr);
-                VerifyTestResult (s.IsSeekable ());
+                EXPECT_TRUE (s != nullptr);
+                EXPECT_TRUE (s.IsSeekable ());
             }
             {
                 MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
-                VerifyTestResult (s != nullptr);
-                VerifyTestResult (s.IsSeekable ());
+                EXPECT_TRUE (s != nullptr);
+                EXPECT_TRUE (s.IsSeekable ());
 
                 using namespace Memory;
                 constexpr byte kData_[] = {3_b, 53_b, 43_b, 23_b, 3_b};
                 s.Write (std::begin (kData_), std::end (kData_));
                 Memory::BLOB b = s.As<Memory::BLOB> ();
-                VerifyTestResult (b.size () == sizeof (kData_));
-                VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
+                EXPECT_TRUE (b.size () == sizeof (kData_));
+                EXPECT_TRUE (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
         }
 
@@ -93,34 +93,34 @@ namespace {
         {
             {
                 MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
-                VerifyTestResult (s != nullptr);
-                VerifyTestResult (s.IsSeekable ());
-                VerifyTestResult (static_cast<InputStream<byte>::Ptr> (s).IsSeekable ());
-                VerifyTestResult (static_cast<OutputStream<byte>::Ptr> (s).IsSeekable ());
+                EXPECT_TRUE (s != nullptr);
+                EXPECT_TRUE (s.IsSeekable ());
+                EXPECT_TRUE (static_cast<InputStream<byte>::Ptr> (s).IsSeekable ());
+                EXPECT_TRUE (static_cast<OutputStream<byte>::Ptr> (s).IsSeekable ());
             }
             {
                 MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
-                VerifyTestResult (s != nullptr);
+                EXPECT_TRUE (s != nullptr);
 
                 const uint8_t kData_[] = {3, 53, 43, 23, 3};
                 s.Write (std::begin (kData_), std::end (kData_));
                 Memory::BLOB b = s.As<Memory::BLOB> ();
-                VerifyTestResult (b.size () == sizeof (kData_));
-                VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
+                EXPECT_TRUE (b.size () == sizeof (kData_));
+                EXPECT_TRUE (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
             {
                 MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
-                VerifyTestResult (s.GetReadOffset () == 0);
-                VerifyTestResult (s.GetWriteOffset () == 0);
+                EXPECT_TRUE (s.GetReadOffset () == 0);
+                EXPECT_TRUE (s.GetWriteOffset () == 0);
                 const uint8_t kData_[] = {3, 53, 43, 23, 3};
                 s.Write (std::begin (kData_), std::end (kData_));
-                VerifyTestResult (s.GetReadOffset () == 0);
-                VerifyTestResult (s.GetWriteOffset () == sizeof (kData_));
+                EXPECT_TRUE (s.GetReadOffset () == 0);
+                EXPECT_TRUE (s.GetWriteOffset () == sizeof (kData_));
                 byte bArr[1024];
                 Verify (s.Read (std::begin (bArr), std::end (bArr)) == sizeof (kData_));
-                VerifyTestResult (s.GetReadOffset () == sizeof (kData_));
-                VerifyTestResult (s.GetWriteOffset () == sizeof (kData_));
-                VerifyTestResult (Memory::BLOB (std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()) ==
+                EXPECT_TRUE (s.GetReadOffset () == sizeof (kData_));
+                EXPECT_TRUE (s.GetWriteOffset () == sizeof (kData_));
+                EXPECT_TRUE (Memory::BLOB (std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()) ==
                                   Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
         }
@@ -142,7 +142,7 @@ namespace {
                 OutputStreamFromStdOStream<Memory::byte>::Ptr so       = OutputStreamFromStdOStream<Memory::byte>::New (s);
                 const char                                    kData_[] = "ddasdf3294234";
                 so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
-                VerifyTestResult (s.str () == kData_);
+                EXPECT_TRUE (s.str () == kData_);
             }
         }
 
@@ -163,21 +163,21 @@ namespace {
             {
                 MemoryStream<Character>::Ptr out = MemoryStream<Character>::New ();
                 out << L"abc";
-                VerifyTestResult (out.As<String> () == L"abc");
+                EXPECT_TRUE (out.As<String> () == L"abc");
                 out << L"123";
-                VerifyTestResult (out.As<String> () == L"abc123");
+                EXPECT_TRUE (out.As<String> () == L"abc123");
             }
             void T2_ ()
             {
                 MemoryStream<Character>::Ptr out = MemoryStream<Character>::New ();
                 out << L"abc";
-                VerifyTestResult (out.As<String> () == L"abc");
+                EXPECT_TRUE (out.As<String> () == L"abc");
                 out << L"123";
-                VerifyTestResult (out.As<String> () == L"abc123");
+                EXPECT_TRUE (out.As<String> () == L"abc123");
                 out.SeekWrite (2);
                 out.SeekRead (3); // safe but irrelevant, as we don't read
                 out << L"C";
-                VerifyTestResult (out.As<String> () == L"abC123");
+                EXPECT_TRUE (out.As<String> () == L"abC123");
             }
         }
 
@@ -198,10 +198,10 @@ namespace {
             {
                 Traversal::Iterable<Character> s  = String{"This"};
                 TextReader::Ptr                tr = TextReader::New (s);
-                VerifyTestResult (tr.ReadAll () == "This");
+                EXPECT_TRUE (tr.ReadAll () == "This");
             }
             {
-                VerifyTestResult ((TextReader::New (String{"hello world"}).ReadAll () == "hello world"));
+                EXPECT_TRUE ((TextReader::New (String{"hello world"}).ReadAll () == "hello world"));
             }
         }
 
@@ -222,7 +222,7 @@ namespace {
             {
                 Memory::BLOB    s  = Memory::BLOB::FromRaw (u8"Testing 1, 2, 3");
                 TextReader::Ptr tr = TextReader::New (s);
-                VerifyTestResult (tr.ReadAll () == L"Testing 1, 2, 3");
+                EXPECT_TRUE (tr.ReadAll () == L"Testing 1, 2, 3");
             }
         }
 
@@ -279,11 +279,11 @@ namespace {
                 using Characters::String;
                 MemoryStream<Character>::Ptr in = MemoryStream<Character>::New ();
                 in << L"abc";
-                VerifyTestResult (in.As<String> () == L"abc");
+                EXPECT_TRUE (in.As<String> () == L"abc");
 
                 MemoryStream<Character>::Ptr out = MemoryStream<Character>::New ();
                 Streams::CopyAll<Character> (in, out);
-                VerifyTestResult (out.As<String> () == L"abc");
+                EXPECT_TRUE (out.As<String> () == L"abc");
             }
         }
 
@@ -319,6 +319,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    return Stroika::Frameworks::Test::PrintPassOrFail (DoRegressionTests_);
+    cerr << "Stroika regression tests require building with google test feature" << endl;
 #endif
 }

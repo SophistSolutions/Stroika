@@ -35,27 +35,27 @@ namespace CommonTests {
             template <typename CONTAINER, typename TEST_FUNCTION>
             void RunTest (CONTAINER coll, TEST_FUNCTION testFunction)
             {
-                VerifyTestResult (coll.empty ());
+                EXPECT_TRUE (coll.empty ());
                 testFunction (coll);
                 coll.Add (T1{1, 101});
-                VerifyTestResult (coll.size () == 1);
-                VerifyTestResult (coll.Lookup (1)->value == 101);
+                EXPECT_TRUE (coll.size () == 1);
+                EXPECT_TRUE (coll.Lookup (1)->value == 101);
                 coll.Add (T1{1, 201});
-                VerifyTestResult (coll.size () == 1);
-                VerifyTestResult (coll.Contains (1));
-                VerifyTestResult (coll.Lookup (1)->value == 201);
-                VerifyTestResult (not coll.Contains (2));
+                EXPECT_TRUE (coll.size () == 1);
+                EXPECT_TRUE (coll.Contains (1));
+                EXPECT_TRUE (coll.Lookup (1)->value == 201);
+                EXPECT_TRUE (not coll.Contains (2));
                 auto prevValue = coll;
-                VerifyTestResult (prevValue == coll);
+                EXPECT_TRUE (prevValue == coll);
                 coll.Add (T1{2, 102});
-                VerifyTestResult (prevValue != coll);
-                VerifyTestResult (coll.Contains (2));
-                VerifyTestResult (coll.size () == 2);
-                VerifyTestResult ((coll.Keys () == Set<int>{1, 2}));
-                VerifyTestResult (not coll.RemoveIf (99));
-                VerifyTestResult (coll.size () == 2);
+                EXPECT_TRUE (prevValue != coll);
+                EXPECT_TRUE (coll.Contains (2));
+                EXPECT_TRUE (coll.size () == 2);
+                EXPECT_TRUE ((coll.Keys () == Set<int>{1, 2}));
+                EXPECT_TRUE (not coll.RemoveIf (99));
+                EXPECT_TRUE (coll.size () == 2);
                 coll.Remove (1);
-                VerifyTestResult (coll.size () == 1);
+                EXPECT_TRUE (coll.size () == 1);
                 testFunction (coll);
             };
         }
