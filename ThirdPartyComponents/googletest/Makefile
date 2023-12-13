@@ -51,7 +51,7 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 OUTPUT_LIB_=gtest${LIB_SUFFIX}
 else
-OUTPUT_LIB_=libgtest.${LIB_SUFFIX}
+OUTPUT_LIB_=libgtest${LIB_SUFFIX}
 endif
 
 PRODUCED_OUTPUT_ARTIFACTS_=	\
