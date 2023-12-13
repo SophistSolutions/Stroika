@@ -6,6 +6,11 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#if qHasFeature_GoogleTest
+#define GTEST_DONT_DEFINE_TEST 1
+#include <gtest/gtest.h>
+#endif
+
 #include "Stroika/Foundation/Configuration/Common.h"
 
 namespace Stroika::Frameworks::Test {
@@ -18,9 +23,13 @@ namespace Stroika::Frameworks::Test {
      *              Test::Setup (argc, argv);
      *              return Test::PrintPassOrFail (DoRegressionTests_);
      *          }
-     *      \endcode     
+     *      \endcode
+     * 
+     *  if qHasFeature_GoogleTest is enabled, this calls testing::InitGoogleTest(), which may remove some values from argc/argv.
+     *  Use the value returned from Setup() to get the adjusted args list. Note - no characterset mapping is done in this routine. Just copying of the same
+     *  starting raw data.
      */
-    void Setup (int argc, const char* argv[]);
+    vector<string> Setup (int argc, const char* argv[]);
 
     /**
      * print succeeded if it completes, and failed if exception caught

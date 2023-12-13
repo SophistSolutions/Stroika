@@ -75,7 +75,7 @@ namespace {
     }
 }
 
-void Test::Setup ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
+vector<string> Test::Setup ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
 #if qDebug
     Stroika::Foundation::Debug::SetAssertionHandler (ASSERT_HANDLER_);
@@ -84,12 +84,35 @@ void Test::Setup ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[]
     Debug::RegisterDefaultFatalErrorHandlers (FatalErrorHandler_);
     using namespace Execution;
     SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler{FatalSignalHandler_, SignalHandler::Type::eDirect});
+#if qHasFeature_GoogleTest
+    // @todo fix to COPY so safe...
+    testing::InitGoogleTest (&argc, const_cast<char**> (argv));
+#endif
+    vector<string> v;
+    for (int i = 0; i < argc; ++i) {
+        v.push_back (argv[i]);
+    }
+    return v;
 }
 
+#if qHasFeature_GoogleTest
+namespace {
+    function<void ()> sLegacyTest2Run_;
+    GTEST_TEST (legacyTest_, testname)
+    {
+        sLegacyTest2Run_ ();
+    }
+}
+#endif
 int Test::PrintPassOrFail (void (*regressionTest) ())
 {
     try {
+#if qHasFeature_GoogleTest
+        sLegacyTest2Run_ = regressionTest;
+        return RUN_ALL_TESTS ();
+#else
         (*regressionTest) ();
+#endif
         cout << "Succeeded" << endl;
         DbgTrace (L"Succeeded");
     }
