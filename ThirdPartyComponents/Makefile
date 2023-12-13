@@ -36,6 +36,9 @@ endif
 ifeq ($(qFeatureFlag_sqlite), use)
 	BUILD_sqlite=1
 endif
+ifeq ($(qFeatureFlag_GoogleTest), use)
+	BUILD_GoogleTest=1
+endif
 ifeq ($(qFeatureFlag_Xerces), use)
 	BUILD_Xerces=1
 endif
@@ -66,6 +69,9 @@ ifeq ($(BUILD_openssl), 1)
 endif
 ifeq ($(BUILD_sqlite), 1)
 	SubDirs+= sqlite
+endif
+ifeq ($(BUILD_GoogleTest), 1)
+	SubDirs+= GoogleTest
 endif
 ifeq ($(BUILD_Xerces), 1)
 	SubDirs+= Xerces
