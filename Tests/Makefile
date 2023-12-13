@@ -18,6 +18,10 @@ BASEEXEPATTERN=Test$$i${EXE_SUFFIX}
 EXEPATTERN=../Builds/$(CONFIGURATION)/Tests/${BASEEXEPATTERN}
 
 
+GTEST_ARGS_=
+GTEST_ARGS_+= --gtest_brief
+
+
 # Only applies to run-tests
 export TEST_FAILURES_CAUSE_FAILED_MAKE?=1
 
@@ -71,15 +75,15 @@ endif
 RUNTEST_EXE_RUN=ssh $(SSH_REMOTE_WARNINGS_OFF) $(REMOTE) ${RUN_PREFIX} "$(VALEXTRARUN_) /tmp/$(BASEEXEPATTERN)"
 RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) ${RUN_PREFIX} $(VALEXTRARUN_) /tmp/$(BASEEXEPATTERN)
 else ifeq (memcheck,$(VALGRIND))
-RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN)
-RUNTEST_EXE_RUN_PRINTLINE=$(RUNTEST_EXE_RUN)
+RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN) ${GTEST_ARGS_}
+RUNTEST_EXE_RUN_PRINTLINE=$(RUNTEST_EXE_RUN) ${GTEST_ARGS_}
 else
 ifeq (${RUN_PREFIX},)
-RUNTEST_EXE_RUN=$(EXEPATTERN)
-RUNTEST_EXE_RUN_PRINTLINE=$(EXEPATTERN)
+RUNTEST_EXE_RUN=$(EXEPATTERN) ${GTEST_ARGS_}
+RUNTEST_EXE_RUN_PRINTLINE=$(EXEPATTERN) ${GTEST_ARGS_}
 else
-RUNTEST_EXE_RUN=${RUN_PREFIX} $(EXEPATTERN)
-RUNTEST_EXE_RUN_PRINTLINE=${RUN_PREFIX} $(EXEPATTERN)
+RUNTEST_EXE_RUN=${RUN_PREFIX} $(EXEPATTERN) ${GTEST_ARGS_}
+RUNTEST_EXE_RUN_PRINTLINE=${RUN_PREFIX} $(EXEPATTERN) ${GTEST_ARGS_}
 endif
 endif
 
@@ -163,6 +167,8 @@ endif
 	@$(MAKE) --no-print-directory $(TESTS) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
 
+PREFIX_:=$(shell ../ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL) + 1)))
+
 
 #### @todo make targets final EXE and don't need PHONY and can be even quicker running
 .PHONY: $(TESTS)
@@ -173,7 +179,6 @@ endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Test $@: `$(StroikaRoot)Tests/ScriptsLib/PrintTestName $@`:"
 	@$(MAKE) --directory $@ -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 
-
 run-tests:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations` ; do\
@@ -182,38 +187,34 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
-	@PREFIX=`../ScriptsLib/PrintLevelLeader $$(($(MAKE_INDENT_LEVEL) + 1))`;\
-    if [ "$(CrossCompiling)" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
-           $(ECHO) "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\
+	@if [ "$(CrossCompiling)" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
+           $(ECHO) "${PREFIX_}Skiping cuz Cross-Compiling and REMOTE= not specified...";\
 	else\
 		FAILED=0;\
 		for i in $(TESTS); do\
 			TESTNAME=`ScriptsLib/PrintTestName $$i`;\
 			$(RUNTEST_REMOTECOPYSETUP);\
 			$(RUNTEST_REMOTECOPYSETUP2);\
-			TIMESTAMP=`date +%s`;\
-			EXERESULT=`$(RUNTEST_EXE_RUN)`;\
-			EXERESULT=`$(ECHO) $$EXERESULT | tr -d '\n' | tr -d '\r'`;\
-			if [ "$$EXERESULT" != "Succeeded" ]; then\
+			$(ECHO) "${PREFIX_} [$$i] $$TESTNAME - $(RUNTEST_EXE_RUN_PRINTLINE)";\
+			EXEOUTPUT=`$(RUNTEST_EXE_RUN)`;\
+			EXERESULT=$$?; \
+			$(ECHO) "$$EXEOUTPUT" | sed -e 's/^/${PREFIX_}    /g'; \
+			if [ "$$EXERESULT" -ne 0 ]; then\
 			    FAILED=1;\
 			fi;\
 			if [ -e PerformanceDump.txt ]; then\
 			  mv PerformanceDump.txt ../Builds/$(CONFIGURATION)/PerformanceDump.txt 2>/dev/null;\
 			fi;\
-			TIMESTAMP2=`date +%s`;\
-			DIFFTIME=`expr $$TIMESTAMP2 - $$TIMESTAMP`;\
-			if [ "$$DIFFTIME" -lt "10" ]; then\
-			    DIFFTIME=$$DIFFTIME" ";\
-			fi;\
-			$(ECHO) "$$PREFIX[$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 		done;\
 		if [ "$$FAILED" -ne 0 ]; then\
 			if [ "$$TEST_FAILURES_CAUSE_FAILED_MAKE" -ne 0 ]; then\
-				$(ECHO) "$$PREFIX" "   ***SOME TESTS FAILED***";\
+				$(ECHO) "${PREFIX_}   ***SOME TESTS FAILED***";\
 				exit 1;\
 			else\
-				$(ECHO) "$$PREFIX" "   ***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
+				$(ECHO) "${PREFIX_}   ***SOME TESTS FAILED*** (exit suppressed by TEST_FAILURES_CAUSE_FAILED_MAKE)";\
 			fi;\
 		fi\
     fi
 endif
+
+
