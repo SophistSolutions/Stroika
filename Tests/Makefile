@@ -198,7 +198,7 @@ else
 			$(ECHO) "${PREFIX_} [$$i] $$TESTNAME - $(RUNTEST_EXE_RUN_PRINTLINE)";\
 			EXEOUTPUT=`$(RUNTEST_EXE_RUN)`;\
 			EXERESULT=$$?; \
-			$(ECHO) "$$EXEOUTPUT" | sed -e 's/^/${PREFIX_}    /g'; \
+			$(ECHO) "$$EXEOUTPUT" | sed -e 's/^/${PREFIX_}      /g'; \
 			if [ "$$EXERESULT" -ne 0 ]; then\
 			    FAILED=1;\
 			fi;\
