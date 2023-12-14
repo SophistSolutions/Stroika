@@ -79,7 +79,6 @@ FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/beta/$(VERSION_WITH_2DOTS)
 
 ## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/						\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/config.hpp				\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/process.hpp			\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/type_traits.hpp
