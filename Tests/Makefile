@@ -176,8 +176,7 @@ $(TESTS):
 ifeq ($(CONFIGURATION),)
 	$(error CONFIGURATION variable required for this target)
 endif
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Test $@: `$(StroikaRoot)Tests/ScriptsLib/PrintTestName $@`:"
-	@$(MAKE) --directory $@ -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
+	@$(MAKE) --directory $@ -s all
 
 run-tests:
 ifeq ($(CONFIGURATION),)
