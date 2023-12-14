@@ -42,6 +42,9 @@ endif
 ifeq ($(qFeatureFlag_Xerces), use)
 	BUILD_Xerces=1
 endif
+ifeq ($(qFeatureFlag_libxml2), use)
+	BUILD_libxml2=1
+endif
 ifeq ($(qFeatureFlag_WIX), use)
 	BUILD_WIX=1
 endif
@@ -75,6 +78,9 @@ ifeq ($(BUILD_GoogleTest), 1)
 endif
 ifeq ($(BUILD_Xerces), 1)
 	SubDirs+= Xerces
+endif
+ifeq ($(BUILD_libxml2), 1)
+	SubDirs+= libxml2
 endif
 ifeq ($(BUILD_WIX), 1)
 	SubDirs+= WIX

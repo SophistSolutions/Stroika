@@ -168,6 +168,7 @@ my $FEATUREFLAG_OpenSSLExtraArgs = "";
 my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_ATLMFC = undef;
 my $FEATUREFLAG_Xerces = undef;
+my $FEATUREFLAG_libxml2 = undef;
 my $FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
@@ -258,11 +259,12 @@ sub	DoHelp_
 		print("	    --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
 		print("	    --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
 		print("	    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */\n");
+		print("	    --libxml2 {build-only|use|use-system|no}        /* Enables/disables use of libxml2 for this configuration [default use] */\n");
 		print("	    --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */\n");
 		print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
 		print("	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
 		print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
-		print("	    --no-third-party-components           			/* equivilent to --StrawberryPerl no --LibCurl no --boost no --OpenSSL no --WinHTTP no --ATLMFC no --Xerces no --sqlite no --ZLib no --WIX no --lzma no  */\n");
+		print("	    --no-third-party-components           			/* equivilent to --StrawberryPerl no --LibCurl no --boost no --OpenSSL no --WinHTTP no --ATLMFC no --Xerces no --limxml2 no --sqlite no --ZLib no --WIX no --lzma no  */\n");
 		print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
 		print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
 		print("	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
@@ -438,6 +440,7 @@ sub     FillDefaultIncludesPathIfNeeded_
 	if ($includeAutomaticDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -469,6 +472,7 @@ sub     FillDefaultLibsPathIfNeeded_
 	if ($includeAutomaticDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -534,6 +538,10 @@ sub     FillDefaultLibDependencies_
 			else {
 				PortablyAddLibToLibDependencies_("xerces-c");
 			}
+		}
+
+		if ($FEATUREFLAG_libxml2 ne $LIBFEATUREFLAG_No) {
+			push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs libxml-2.0");
 		}
 
 		#	$ pkg-config --static --libs openssl
@@ -1102,6 +1110,10 @@ sub	SetDefaultForCompilerDriver_
 		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 	}
 
+	if (! defined $FEATUREFLAG_libxml2) {
+		$FEATUREFLAG_libxml2 = $LIBFEATUREFLAG_UseStaticTPP;
+	}
+
 	if ($MACOSX_DEPLOYMENT_TARGET ne "") {
 		$LinkerArgs_ExtraPrefix .= " -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET";
 	}
@@ -1426,6 +1438,11 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			$FEATUREFLAG_Xerces = $var;
+		}
+		elsif ((lc ($var) eq "-libxml2") or (lc ($var) eq "--libxml2")) {
+			$i++;
+			$var = $args[$i];
+			$FEATUREFLAG_libxml2 = $var;
 		}
 		elsif ((lc ($var) eq "-zlib") or (lc ($var) eq "--zlib")) {
 			$i++;
@@ -2060,6 +2077,7 @@ sub GetDefaultCZZFLAGS_flags_
 				push @flags, $dashFlag . "qHasFeature_ATLMFC=" . ZERO_OR_1_ ($FEATUREFLAG_ATLMFC eq $LIBFEATUREFLAG_UseSystem);
 			}
 			push @flags, $dashFlag . "qHasFeature_Xerces=" . ZERO_OR_1_ (($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseSystem));
+			push @flags, $dashFlag . "qHasFeature_libxml2=" . ZERO_OR_1_ (($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_ZLib=" . ZERO_OR_1_ (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_GoogleTest=" . ZERO_OR_1_ (($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_GoogleTest eq $LIBFEATUREFLAG_UseSystem));
 			push @flags, $dashFlag . "qHasFeature_sqlite=" . ZERO_OR_1_ (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem));
@@ -2613,6 +2631,7 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
 	print (OUT "    <qFeatureFlag_WIX>$FEATUREFLAG_WIX</qFeatureFlag_WIX>\n");
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_Xerces</qFeatureFlag_Xerces>\n");
+	print (OUT "    <qFeatureFlag_libxml2>$FEATUREFLAG_libxml2</qFeatureFlag_libxml2>\n");
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
 	if ($gAssertionsEnabled != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <AssertionsEnabled>$gAssertionsEnabled</AssertionsEnabled>\n");

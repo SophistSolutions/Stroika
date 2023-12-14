@@ -160,6 +160,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_Xerces'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<qFeatureFlag_libxml2>");
+		if (defined $pps) {
+			$configuration {'qFeatureFlag_libxml2'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_ZLib>");
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_ZLib'} = $pps;

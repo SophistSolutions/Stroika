@@ -40,6 +40,7 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 
 
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
 MAYBED_=d
@@ -47,16 +48,14 @@ else
 CMAKE_BUILD_TYPE_=Release
 MAYBED_=
 endif
-
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-OUTPUT_LIB_=libxml2${MAYBED_}${LIB_SUFFIX}
-else
-OUTPUT_LIB_=libxml2${LIB_SUFFIX}
 endif
+
+OUTPUT_LIB_=libxml2${LIB_SUFFIX}
 
 PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/${OUTPUT_LIB_}		\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libxml-2.0.pc	\
+	${PER_CONFIGURATION_BUILDS_DIR_}include/libxml2/libxml/	\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/libxml2/libxml/SAX.h	\
 
 
@@ -117,6 +116,11 @@ endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "libxml2 ${libxml2_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
+ifneq (${MAYBED_},)
+	ln -s "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2.lib
+endif
+	@#existing produced .pc file bad in several ways for windows, and want to try to use pkg-config so hopefully this hack adequate
+	@cp PatchReplacements/libxml-2.0.pc "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
 endif
@@ -136,12 +140,13 @@ else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 else
 	@tar xf ${ZIPPED_SOURCES_FILE_} --no-same-owner --directory $@ --strip-components=1
 endif
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@if [ "$@" != "ORIGs" ] ; then \
-		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "libxml2 ${VERSION} - Patching ... ";\
-		patch -p0 $@/libxml2/cmake/gtest.pc.in Patches/Patch-PKGConfig4Windoze.patch >> $@/PATCHING.OUT;\
-	fi
-endif
+# ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
+# 	@#Experimenting with simplifying builds to use pkg-config, but alas the default .pc file that comes out of libxml2 doesn't work for windoze?  (maybe submit a patch?)
+# 	@if [ "$@" != "ORIGs" ] ; then \
+# 		$(StroikaRoot)ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "libxml2 ${VERSION} - Patching $@... ";\
+# 		patch  -d $@ < Patches/Patch-PKGConfig4Windoze.patch >> $@/PATCHING.OUT;\
+# 	fi
+# endif
 
 check-prerequisite-tools:
 	@#nothing
@@ -166,7 +171,7 @@ endif
 
 clobber:	clean
 ifeq (${CONFIGURATION},)
-	# @rm -rf ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/libxml2${LIB_SUFFIX} ${StroikaRoot}Builds/*/ThirdPartyComponents/include/{zlib,zconf}.h
+	@rm -rf ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/libxml2* ${StroikaRoot}Builds/*/ThirdPartyComponents/include/libxml2 ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/pkgconfig/libxml-2.0.pc
 	@rm -rf CURRENT
 else
 	@rm -rf ${PRODUCED_OUTPUT_ARTIFACTS_}
