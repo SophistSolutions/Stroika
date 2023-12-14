@@ -74,8 +74,10 @@ CMAKE_ARGS+=	-D LIBXML2_WITH_ICONV="OFF"
 CMAKE_ARGS+=	-D LIBXML2_WITH_LZMA="OFF"
 CMAKE_ARGS+=	-D LIBXML2_WITH_PYTHON="OFF"
 
+# needed on unix to get static libs built
+ifneq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 CMAKE_ARGS+=	-D BUILD_SHARED_LIBS="OFF"
-
+endif
 all:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
@@ -108,7 +110,6 @@ endif
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "libxml2 ${libxml2_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	echo cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_} AND ${CMAKE}  --build . --config=${CMAKE_BUILD_TYPE_}"
 	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE_}  > BUILD-OUT.txt 2>&1
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}"  --build .  > BUILD-OUT.txt 2>&1
