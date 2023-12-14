@@ -56,6 +56,14 @@ RUN apt-get -qq install -y software-properties-common && \
     add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     apt-get update
 
+# libxml2 requires more recent cmake
+RUN \
+    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null; \
+    sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"; \
+    sudo apt -y update; \
+    sudo apt -y install cmake
+make
+
 #You need some compiler, - can be clang or g++, but pick g++-11 as a good default
 RUN apt-get -qq install -y g++ g++-11
 
