@@ -187,6 +187,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Running Stroika Tests {$(CONFIGURATION)}:"
+	@#NOTE - not obvious we want the 'tr -d but makes it a bit more terse'
 	@if [ "$(CrossCompiling)" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
            $(ECHO) "${PREFIX_}Skiping cuz Cross-Compiling and REMOTE= not specified...";\
 	else\
@@ -198,7 +199,7 @@ else
 			$(ECHO) "${PREFIX_} [$$i] $$TESTNAME - $(RUNTEST_EXE_RUN_PRINTLINE)";\
 			EXEOUTPUT=`$(RUNTEST_EXE_RUN)`;\
 			EXERESULT=$$?; \
-			$(ECHO) "$$EXEOUTPUT" | sed -e 's/^/${PREFIX_}      /g'; \
+			$(ECHO) "$$EXEOUTPUT" | sed -e 's/^/${PREFIX_}      /g' | tr -d "\r\n"; $(ECHO); \
 			if [ "$$EXERESULT" -ne 0 ]; then\
 			    FAILED=1;\
 			fi;\
