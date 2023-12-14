@@ -34,7 +34,8 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-VERSION=1_83_0
+VERSION=1_84_0
+#VERSION=1_83_0
 #VERSION=1_82_0
 #VERSION=1_81_0
 #VERSION=1_80_0
@@ -78,6 +79,7 @@ FETCHURLS+=https://boostorg.jfrog.io/artifactory/main/beta/$(VERSION_WITH_2DOTS)
 
 ## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS=	\
+	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/						\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/config.hpp				\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/process.hpp			\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/boost/type_traits.hpp
