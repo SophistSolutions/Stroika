@@ -119,5 +119,6 @@
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true
   },
-  "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "cmake.sourceDirectory": "/Sandbox/Stroika-Dev/.dockerstuff/.vscode-server/extensions/twxs.cmake-0.0.17/node_modules/peg-cmake/test"
 }
