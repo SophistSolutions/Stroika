@@ -62,7 +62,6 @@ RUN \
     sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"; \
     sudo apt -y update; \
     sudo apt -y install cmake
-make
 
 #You need some compiler, - can be clang or g++, but pick g++-11 as a good default
 RUN apt-get -qq install -y g++ g++-11
