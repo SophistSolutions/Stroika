@@ -55,7 +55,6 @@ OUTPUT_LIB_=libxml2${LIB_SUFFIX}
 PRODUCED_OUTPUT_ARTIFACTS_=	\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/${OUTPUT_LIB_}		\
 	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libxml-2.0.pc	\
-	${PER_CONFIGURATION_BUILDS_DIR_}include/libxml2/libxml/	\
 	${PER_CONFIGURATION_BUILDS_DIR_}include/libxml2/libxml/SAX.h	\
 
 
