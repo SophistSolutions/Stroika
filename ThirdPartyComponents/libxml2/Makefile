@@ -72,6 +72,10 @@ CMAKE_ARGS+=	-D LIBXML2_WITH_ICONV="OFF"
 CMAKE_ARGS+=	-D LIBXML2_WITH_LZMA="OFF"
 CMAKE_ARGS+=	-D LIBXML2_WITH_PYTHON="OFF"
 
+ifeq ($(qFeatureFlag_ZLib), no)
+CMAKE_ARGS+=	-D LIBXML2_WITH_ZLIB="OFF"
+endif
+
 # needed on unix to get static libs built
 ifneq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 CMAKE_ARGS+=	-D BUILD_SHARED_LIBS="OFF"

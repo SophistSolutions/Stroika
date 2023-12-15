@@ -97,6 +97,12 @@ openssl:	StrawberryPerl
 endif
 endif
 
+ifeq ($(BUILD_libxml2), 1)
+ifeq ($(BUILD_zlib), 1)
+libxml2:		zlib
+endif
+endif
+
 
 ifeq ($(BUILD_boost), 1)
 ifeq ($(BUILD_zlib), 1)
