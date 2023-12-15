@@ -111,7 +111,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Containers_Set, all)
     {
         using namespace CommonTests::SetTests;
 

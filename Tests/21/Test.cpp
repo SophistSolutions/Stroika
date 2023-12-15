@@ -851,7 +851,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Containers_Sequence, all)
     {
         using COMPARE_SIZET       = equal_to<size_t>;
         using COMPARE_SimpleClass = equal_to<SimpleClass>;

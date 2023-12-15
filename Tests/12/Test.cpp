@@ -46,31 +46,32 @@ namespace {
 
 namespace {
     GTEST_TEST (Foundation_Containers_Bijection, all)
-    struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-        : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-        using value_type = SimpleClassWithoutComparisonOperators;
-        bool operator() (value_type v1, value_type v2) const
-        {
-            return v1.GetValue () == v2.GetValue ();
-        }
-    };
+    {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
+            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
+            using value_type = SimpleClassWithoutComparisonOperators;
+            bool operator() (value_type v1, value_type v2) const
+            {
+                return v1.GetValue () == v2.GetValue ();
+            }
+        };
 
-    RunTests_<Bijection<size_t, size_t>> ();
-    RunTests_<Bijection<SimpleClass, SimpleClass>> ();
-    RunTests_<Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ([] () {
-        return Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
-    });
+        RunTests_<Bijection<size_t, size_t>> ();
+        RunTests_<Bijection<SimpleClass, SimpleClass>> ();
+        RunTests_<Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ([] () {
+            return Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
+                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
+        });
 
-    RunTests_<Bijection_LinkedList<size_t, size_t>> ();
-    RunTests_<Bijection_LinkedList<SimpleClass, SimpleClass>> ();
-    RunTests_<Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ([] () {
-        return Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
-    });
+        RunTests_<Bijection_LinkedList<size_t, size_t>> ();
+        RunTests_<Bijection_LinkedList<SimpleClass, SimpleClass>> ();
+        RunTests_<Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ([] () {
+            return Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>{
+                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
+        });
 
-    EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
-}
+        EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
+    }
 }
 #endif
 

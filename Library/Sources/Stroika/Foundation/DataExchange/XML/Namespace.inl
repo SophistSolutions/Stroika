@@ -16,7 +16,7 @@ namespace Stroika::Foundation::DataExchange::XML {
      ******************************** NamespaceDefinition ***************************
      ********************************************************************************
      */
-    inline NamespaceDefinition::NamespaceDefinition (const wstring& uri, const wstring& prefix)
+    inline NamespaceDefinition::NamespaceDefinition (const URI& uri, const optional<String>& prefix)
         : fURI{uri}
         , fPrefix{prefix}
     {

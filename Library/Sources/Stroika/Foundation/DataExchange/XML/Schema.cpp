@@ -298,35 +298,6 @@ Memory::BLOB Schema::GetSchemaData_ () const
 
 /*
  ********************************************************************************
- ********************************* TempSchemaSetter *****************************
- ********************************************************************************
- */
-TempSchemaSetter::TempSchemaSetter (Document& doc, const Schema* s)
-    : fDoc (&doc)
-    , fOldSchema (doc.GetSchema ())
-{
-    if (fOldSchema == s) {
-        fDoc = nullptr; // don't bother reseting here or our DTOR
-    }
-    else {
-        doc.SetSchema (s);
-    }
-}
-
-TempSchemaSetter::~TempSchemaSetter ()
-{
-    if (fDoc != nullptr) {
-        try {
-            fDoc->SetSchema (fOldSchema);
-        }
-        catch (...) {
-            DbgTrace ("serious error - ~TempSchemaSetter exception caught - ignoring");
-        }
-    }
-}
-
-/*
- ********************************************************************************
  ****************************** ValidateExternalFile ****************************
  ********************************************************************************
  */
@@ -334,7 +305,7 @@ void DataExchange::XML::ValidateExternalFile (const filesystem::path& externalFi
 {
     START_LIB_EXCEPTION_MAPPER
     {
-        Schema::AccessCompiledXSD accessSchema (schema); // REALLY need READLOCK - cuz this just prevents UPDATE of Scehma (never happens anyhow) -- LGP 2009-05-19
+        Schema::AccessCompiledXSD accessSchema{schema}; // REALLY need READLOCK - cuz this just prevents UPDATE of Scehma (never happens anyhow) -- LGP 2009-05-19
         shared_ptr<SAX2XMLReader> parser =
             shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema.GetCachedTRep ()));
         SetupCommonParserFeatures_ (*parser, true);

@@ -127,6 +127,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         RecordNotFoundException ();
     };
 
+    /**
+    *   !@todo better docs/clearer design - but I think Document is immutable in current design? Else not sure what we have RWDocument).
+    * 
+    *   Also - consider IRep, and Ptr style names.
+     */
     class Document {
     public:
         class Rep;
@@ -167,6 +172,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         shared_ptr<Rep> fRep;
     };
 
+    /**
+     *  RWDocument is a modifiable DOM document.
+     */
     class RWDocument : public Document {
     public:
         RWDocument (const Schema* schema = nullptr);

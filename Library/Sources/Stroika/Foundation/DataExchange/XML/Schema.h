@@ -27,11 +27,12 @@ namespace xercesc_3_2 {
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
 namespace Stroika::Foundation::DataExchange::XML {
 
+    /**
     // Schema objects can be shared among XMLDB Document objects.
     //
     // This class is used BOTH for a schema, and for a namespace. Really - we should separate the
     // concepts, but for simplicity of implementation - for now - leave things that way (--LGP 2008-08-09)
-    //
+     */
     class Schema {
     public:
         // This is a named BLOB which is used to define a Schema. The BLOB can be named by a variety of
@@ -45,7 +46,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         };
 
     public:
-        Schema (const Schema& from) = default;
+        Schema (const Schema&) = default;
         // The targetNamespace argument is optional (we can have a schema with a blank target namespace).
         // The referencedSchema to support load/define the given schema (e.g. for xsd:import directives).
         Schema (const String& targetNamespace, const Memory::BLOB& targetNamespaceData, const vector<SourceComponent>& otherSources = {},
@@ -67,7 +68,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const;
 
     public:
-        typedef xercesc_3_2::XMLGrammarPool* T_CompiledXSDRep;
+        using T_CompiledXSDRep = xercesc_3_2::XMLGrammarPool*;
 
     public:
         class AccessCompiledXSD {
@@ -101,18 +102,8 @@ namespace Stroika::Foundation::DataExchange::XML {
         class Document;
     }
 
-    // helpful utility class to assure a particular schema is set into an XMLDocument for a particular
-    // stack-based context
-    class TempSchemaSetter {
-    public:
-        TempSchemaSetter (DOM::Document& doc, const Schema* s);
-        ~TempSchemaSetter ();
-
-    private:
-        DOM::Document* fDoc;
-        const Schema*  fOldSchema;
-    };
-
+    /**
+     */
     void ValidateExternalFile (const filesystem::path& externalFileName, const Schema& schema); // throws BadFormatException exception on error
 
 };

@@ -6,32 +6,34 @@
 
 #include "../../StroikaPreComp.h"
 
-#include <compare>
-#include <istream>
+#include "../../Characters/String.h"
+#include "../../IO/Network/URI.h"
 
-#include "../../Configuration/Common.h"
-
-#include "../VariantValue.h"
 #include "Common.h"
 
 namespace Stroika::Foundation::DataExchange::XML {
 
+    using Characters::String;
+    using IO::Network::URI;
+
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
+     * 
+     *  /// @todo redo URI using URI class
      */
     struct NamespaceDefinition {
-        NamespaceDefinition (const wstring& uri, const wstring& prefix = wstring{});
+        NamespaceDefinition (const URI& uri, const optional<String>& prefix = {});
 
-        wstring fURI;    // required non-null
-        wstring fPrefix; // can be nullptr
+        URI              fURI; // required non-null
+        optional<String> fPrefix;
 
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+        //   DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
         auto operator<=> (const NamespaceDefinition& rhs) const = default;
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+        //     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
     };
 
@@ -43,6 +45,8 @@ namespace Stroika::Foundation::DataExchange::XML {
      *  REally - sb not VECTOR - but MAPPING from prefix (whci cna be empty) to namespace string.
      * 
      *  REALLY - to be clear - this sin't ncesariyl all naemapces, just all prefixes...
+     * 
+     *      @todo use Sequnce not vector
      */
     class NamespaceDefinitionsList {
     public:
@@ -56,7 +60,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         nonvirtual void                        SetNamespaces (const vector<NamespaceDefinition>& namespaces);
 
     public:
-        nonvirtual void Add (const wstring& uri, const wstring& prefix = wstring{});
+        nonvirtual void Add (const URI& uri, const optional<String>& prefix = {});
 
     private:
         vector<NamespaceDefinition> fNamespaces;
