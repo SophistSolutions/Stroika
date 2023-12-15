@@ -26,6 +26,19 @@ namespace Stroika::Foundation::DataExchange::XML {
 
     using namespace std;
 
+#if 0
+#if __has_include(<xercesc/dom/DOM.hpp>)
+    constexpr bool kHasXerces = true;
+#else
+    constexpr bool kHasXerces  = false;
+#endif
+#if __has_include(<libxml2/libxml/xmlversion.h>)
+    constexpr bool kHasLibXML2 = true;
+#else
+    constexpr bool kHasLibXML2 = false;
+#endif
+#endif
+
 /**
  *  As of Stroika v3.0d4, we only support XML DOM if Xerces is builtin (could use libxml2 as well in the future).
  */
