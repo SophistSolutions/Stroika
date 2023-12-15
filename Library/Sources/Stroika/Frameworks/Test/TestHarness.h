@@ -6,6 +6,9 @@
 
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <string>
+#include <vector>
+
 #if qHasFeature_GoogleTest
 #define GTEST_DONT_DEFINE_TEST 1
 #include <gtest/gtest.h>
