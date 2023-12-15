@@ -78,8 +78,8 @@ namespace CommonTests {
             SimpleQueueTest_All_NotRequiringEquals_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
             Test3_Equals::DoAllTests_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
         }
-        #endif
-        
+#endif
+
     }
 }
 #endif /* _Stroika_Foundation_Tests_TestCommon_CommonTests_Queue_h_ */

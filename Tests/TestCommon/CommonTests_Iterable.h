@@ -77,8 +77,8 @@ namespace CommonTests {
             Test4_MultiSetEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward<EQUALS_COMPARER> (equalsComparer));
             Test5_SequenceEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward<EQUALS_COMPARER> (equalsComparer));
         }
-        #endif
-        
+#endif
+
     }
 }
 

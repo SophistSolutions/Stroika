@@ -4,9 +4,8 @@
 //  TEST    Foundation::Execution::ThreadSafetyBuiltinObject
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <mutex>
 #include <iostream>
-
+#include <mutex>
 
 #include "Stroika/Foundation/Cache/SynchronizedCallerStalenessCache.h"
 #include "Stroika/Foundation/Cache/SynchronizedLRUCache.h"

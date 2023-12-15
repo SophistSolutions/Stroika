@@ -4,9 +4,8 @@
 //  TEST    Foundation::Database
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <random>
 #include <iostream>
-
+#include <random>
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"

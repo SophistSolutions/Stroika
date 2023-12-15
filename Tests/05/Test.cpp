@@ -122,6 +122,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-     cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

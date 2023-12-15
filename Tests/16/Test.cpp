@@ -5,8 +5,8 @@
 //      STATUS  Alpha-Late
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <typeindex>
 #include <iostream>
+#include <typeindex>
 
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_LinkedList.h"

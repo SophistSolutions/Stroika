@@ -4,8 +4,8 @@
 //  TEST    Foundation::Containers::Sequence
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <list>
 #include <iostream>
+#include <list>
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Collection.h"
@@ -907,7 +907,6 @@ namespace {
     }
 }
 #endif
-
 
 int main (int argc, const char* argv[])
 {

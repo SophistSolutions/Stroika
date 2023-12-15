@@ -129,7 +129,6 @@ namespace {
 // Use this so when running #if qDebug case - we don't waste a ton of time with this test
 #define qDebugCaseRuncountRatio (.01)
 
-
 namespace {
     ostream& GetOutStream_ ()
     {
@@ -303,7 +302,7 @@ namespace {
         sort (v.begin (), v.end (), [] (S a, S b) { return b.fS1 < a.fS1; });
 #if qHasFeature_GoogleTest
         EXPECT_TRUE (v[0].fS1 == v[1].fS1);
-        #endif
+#endif
     }
 }
 
@@ -338,7 +337,7 @@ namespace {
         sort (v.begin (), v.end (), [] (S a, S b) { return b.fS1 < a.fS1; });
 #if qHasFeature_GoogleTest
         EXPECT_TRUE (v[0].fS1 == v[1].fS1);
-        #endif
+#endif
     }
 }
 
@@ -353,7 +352,7 @@ namespace {
         }
 #if qHasFeature_GoogleTest
         EXPECT_TRUE (w.length () == KBase.length () * 10);
-        #endif
+#endif
     }
 }
 
@@ -368,7 +367,7 @@ namespace {
         }
 #if qHasFeature_GoogleTest
         EXPECT_TRUE (w.length () == wcslen (KBase) * 10);
-        #endif
+#endif
     }
 }
 
@@ -381,9 +380,9 @@ namespace {
         for (int i = 0; i < 100; ++i) {
             w += KBase;
         }
- #if qHasFeature_GoogleTest
-       EXPECT_TRUE (w.length () == wcslen (KBase) * 100);
-       #endif
+#if qHasFeature_GoogleTest
+        EXPECT_TRUE (w.length () == wcslen (KBase) * 100);
+#endif
     }
 }
 
@@ -1585,7 +1584,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
 #if qHasFeature_GoogleTest
     TemporaryTest_::DoTest_ ();
-    #endif
+#endif
 
     Test::Setup (argc, argv);
 #if qHasFeature_GoogleTest

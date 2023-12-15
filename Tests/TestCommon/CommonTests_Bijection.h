@@ -207,8 +207,8 @@ namespace CommonTests {
             Private_::Test3_ConstructFromOtherTypes_::DoAllTests_ (testingSchema);
             Private_::Test5_As_WithDefaultComparers_::DoAllTests_ (testingSchema);
         }
-        #endif
-        
+#endif
+
     }
 }
 

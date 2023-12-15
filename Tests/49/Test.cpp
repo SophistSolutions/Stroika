@@ -4,9 +4,8 @@
 //  TEST    Foundation::Streams
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include <sstream>
 #include <iostream>
-
+#include <sstream>
 
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Thread.h"

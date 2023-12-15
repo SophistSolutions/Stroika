@@ -176,8 +176,8 @@ namespace CommonTests {
             Test4_Equals_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (factory, applyToContainer);
             Test5_UnionDifferenceIntersectionEtc_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (factory, applyToContainer);
         }
-        #endif
-        
+#endif
+
     }
 }
 

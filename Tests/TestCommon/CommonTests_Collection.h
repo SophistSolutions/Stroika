@@ -381,8 +381,8 @@ namespace CommonTests {
             Debug::TraceContextBumper ctx{"CommonTests::CollectionTests::SimpleCollectionTest_TestsWhichRequireEquals"};
             Test2_TestsWithComparer_::DoAllTests_<CONCRETE_CONTAINER, WITH_COMPARE_EQUALS> ();
         }
-    #endif
-    
+#endif
+
     }
 }
 

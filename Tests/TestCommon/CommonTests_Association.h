@@ -390,8 +390,8 @@ namespace CommonTests {
             // @todo FIX - RetainAll has no good reason to require operator < etc to work o it but current impl does - LGP 2018-04-14
             Private_::Test9_RetainAll::DoAllTests_ (testingSchema);
         }
-        #endif
-        
+#endif
+
     }
 }
 #endif /* _Stroika_Foundation_Tests_TestCommon_CommonTests_Association_h_ */
