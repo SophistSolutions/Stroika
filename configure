@@ -2242,12 +2242,12 @@ sub PostProcessOptions_ ()
 					my $dir2Add  = GetMSVCVarName_ ("ASAN_DLL_DIR");
 					# ls -l /c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx64/x64/
 					if ($ARCH eq "x86") {
-						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-i386.dll"`);
-						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-i386.pdb"`);
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --mixed "$dir2Add/clang_rt.asan_dynamic-i386.dll"`);
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --mixed "$dir2Add/clang_rt.asan_dynamic-i386.pdb"`);
 					}
 					elsif ($ARCH eq "x86_64") {
-						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-x86_64.dll"`);
-						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --unix "$dir2Add/clang_rt.asan_dynamic-x86_64.pdb"`);
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --mixed "$dir2Add/clang_rt.asan_dynamic-x86_64.dll"`);
+						push @LinkTime_CopyFilesToEXEDir, trim (`cygpath --mixed "$dir2Add/clang_rt.asan_dynamic-x86_64.pdb"`);
 					}
 				}
 			}
