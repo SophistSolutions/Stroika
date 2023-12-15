@@ -114,18 +114,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         nonvirtual size_t GetLength () const;
 
     public:
-        nonvirtual void operator++ ()
-        {
-            Next ();
-        }
-        nonvirtual void operator++ (int)
-        {
-            Next ();
-        }
-        nonvirtual Node operator* () const
-        {
-            return Current ();
-        }
+        nonvirtual void operator++ ();
+        nonvirtual void operator++ (int);
+        nonvirtual Node operator* () const;
 
     protected:
         shared_ptr<Rep> fRep;
@@ -142,21 +133,15 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     public:
         Document (const Schema* schema = nullptr);
-        ~Document ();
+        ~Document () = default;
 
     protected:
-        Document (Rep* rep);
+        Document (const shared_ptr<Rep>& rep);
 
         // No copying. (maybe create a RWDocument for that - but doesnt appear needed externally)
     private:
         Document (const Document& from)           = delete;
         Document& operator= (const Document& rhs) = delete;
-
-    public:
-        // this call returns the object you can use with lock_gaurd<>
-        // The Document is already largely threadsafe, but if you want to do logically coordianted changes, you can
-        // use this locker object to assure consistency
-        nonvirtual recursive_mutex& GetLock () const;
 
     public:
         nonvirtual const Schema* GetSchema () const;
@@ -196,17 +181,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         nonvirtual void SetRootElement (const Node& newRoot);
 
     public:
-        nonvirtual void Read (Streams::InputStream<byte>::Ptr& in, bool encrypted, Execution::ProgressMonitor::Updater progressCallback);
-        /*
-         * ReadAllowingInvalidSrc () does a normal Read () - but if there is a validation exception, instead of throwing,
-         * it simply returns the result of that validation exception
-         * in the exceptionResult argument (it must be non-null). Note - OTHER exceptions (such as out of memory etc) are still
-         * thrown as normal. The point of this function is to accomodate MOSTLY valid & correct sources of HRs, but which
-         * may not be fully schema compliant. Shockingly, many medical record sources produce data that doesn't XSD validate!
-         *      (See http://bugzilla/show_bug.cgi?id=513)
-         */
-        nonvirtual void ReadAllowingInvalidSrc (Streams::InputStream<byte>::Ptr& in, bool encrypted, shared_ptr<BadFormatException>* exceptionResult,
-                                                Execution::ProgressMonitor::Updater progressCallback = nullptr);
+        nonvirtual void Read (Streams::InputStream<byte>::Ptr& in, Execution::ProgressMonitor::Updater progressCallback);
 
     public:
         nonvirtual void LoadXML (const String& xml); // 'xml' contains data to be parsed and to replace the current XML document

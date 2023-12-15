@@ -230,7 +230,29 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return fRep->GetLength ();
     }
+    inline void SubNodeIterator::operator++ ()
+    {
+        Next ();
+    }
+    inline void SubNodeIterator::operator++ (int)
+    {
+        Next ();
+    }
+    inline Node SubNodeIterator::operator* () const
+    {
+        return Current ();
+    }
 
+    inline Document::Document (const shared_ptr<Rep>& rep)
+        : fRep{rep}
+    {
+        RequireNotNull (rep);
+    }
+
+    inline shared_ptr<Document::Rep> Document::GetRep () const
+    {
+        return fRep;
+    }
 }
 #endif
 

@@ -143,7 +143,7 @@ XERCES_CPP_NAMESPACE_USE
     }
 
 namespace {
-    const XMLCh        kDOMImplFeatureDeclaration[] = u"Core";
+    constexpr XMLCh    kDOMImplFeatureDeclaration[] = u"Core";
     DOMImplementation& GetDOMIMPL_ ()
     {
         // safe to save in a static var? -- LGP 2007-05-20
@@ -393,7 +393,6 @@ namespace {
 
 namespace {
     class MyErrorReproter : public XMLErrorReporter, public ErrorHandler {
-        // XMLErrorReporter
     public:
         virtual void error ([[maybe_unused]] const unsigned int errCode, [[maybe_unused]] const XMLCh* const errDomain,
                             [[maybe_unused]] const ErrTypes type, const XMLCh* const errorText, [[maybe_unused]] const XMLCh* const systemId,
@@ -630,8 +629,7 @@ public:
     }
 
     Rep (const Rep& from)
-        : fXMLDoc ()
-        , fSchema (from.fSchema)
+        : fSchema{from.fSchema}
     {
         START_LIB_EXCEPTION_MAPPER
         {
@@ -644,12 +642,6 @@ public:
     }
 
     virtual ~Rep () = default;
-
-public:
-    nonvirtual recursive_mutex& GetLock () const
-    {
-        return fCriticalSection;
-    }
 
 public:
     nonvirtual const Schema* GetSchema () const
@@ -670,17 +662,16 @@ public:
     // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
     // failing the read (for http://bugzilla/show_bug.cgi?id=513).
     //
-    nonvirtual void Read (Streams::InputStream<byte>::Ptr& in, bool encrypted, shared_ptr<BadFormatException>* exceptionResult,
-                          Execution::ProgressMonitor::Updater progressCallback)
+    nonvirtual void Read (Streams::InputStream<byte>::Ptr& in, shared_ptr<BadFormatException>* exceptionResult, Execution::ProgressMonitor::Updater progressCallback)
     {
         TraceContextBumper ctx{"XMLDB::Document::Rep::Read"};
         AssertNotNull (fXMLDoc);
 
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_}; // write context cuz reading from stream, but writing to 'this'
         START_LIB_EXCEPTION_MAPPER
         {
-            MyMaybeSchemaDOMParser myDOMParser (fSchema);
-            if (!encrypted) {
+            MyMaybeSchemaDOMParser myDOMParser{fSchema};
+            {
                 try {
                     myDOMParser.fParser->parse (BinaryInputStream_InputSource_WithProgress{
                         in, Execution::ProgressMonitor::Updater (progressCallback, 0.1f, 0.8f), u"XMLDB"});
@@ -709,7 +700,7 @@ public:
 
         CompletedParse:
             fXMLDoc.reset ();
-            fXMLDoc = T_XMLDOMDocumentSmartPtr (myDOMParser.fParser->adoptDocument ());
+            fXMLDoc = T_XMLDOMDocumentSmartPtr{myDOMParser.fParser->adoptDocument ()};
             fXMLDoc->setXmlStandalone (true);
             fXMLDoc->setUserData (kXerces2XMLDBDocumentKey, this, nullptr);
         }
@@ -720,8 +711,8 @@ public:
 public:
     nonvirtual void SetRootElement (const Node& newRoot)
     {
-        TraceContextBumper          ctx{"XMLDB::Document::Rep::SetRootElement"};
-        lock_guard<recursive_mutex> enterCriticalSection{fCriticalSection};
+        TraceContextBumper                              ctx{"XMLDB::Document::Rep::SetRootElement"};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fXMLDoc);
         Node replacementRoot = CreateDocumentElement (newRoot.GetName ());
         // next copy all children
@@ -754,7 +745,7 @@ public:
 #if qDebug
         Require (ValidNewNodeName_ (name));
 #endif
-        lock_guard<recursive_mutex> enterCriticalSection{fCriticalSection};
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
@@ -797,17 +788,17 @@ public:
 public:
     nonvirtual void LoadXML (const String& xml)
     {
-        TraceContextBumper          ctx{"XMLDB::Document::Rep::LoadXML"};
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+        TraceContextBumper                             ctx{"XMLDB::Document::Rep::LoadXML"};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
             MyMaybeSchemaDOMParser myDOMParser{fSchema};
-            MemBufInputSource memBufIS (reinterpret_cast<const XMLByte*> (xml.As<u16string> ().c_str ()), xml.length () * sizeof (XMLCh), u"XMLDB");
+            MemBufInputSource memBufIS{reinterpret_cast<const XMLByte*> (xml.As<u16string> ().c_str ()), xml.length () * sizeof (XMLCh), u"XMLDB"};
             memBufIS.setEncoding (XMLUni::fgUTF16LEncodingString2);
             myDOMParser.fParser->parse (memBufIS);
             fXMLDoc.reset ();
-            fXMLDoc = T_XMLDOMDocumentSmartPtr (myDOMParser.fParser->adoptDocument ());
+            fXMLDoc = T_XMLDOMDocumentSmartPtr{myDOMParser.fParser->adoptDocument ()};
             fXMLDoc->setXmlStandalone (true);
             fXMLDoc->setUserData (kXerces2XMLDBDocumentKey, this, nullptr);
         }
@@ -817,8 +808,8 @@ public:
 public:
     nonvirtual void WritePrettyPrinted (ostream& out) const
     {
-        TraceContextBumper          ctx{"XMLDB::Document::Rep::WritePrettyPrinted"};
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+        TraceContextBumper                             ctx{"XMLDB::Document::Rep::WritePrettyPrinted"};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
@@ -832,8 +823,8 @@ public:
 public:
     nonvirtual void WriteAsIs (ostream& out) const
     {
-        TraceContextBumper          ctx{"XMLDB::Document::Rep::WriteAsIs"};
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+        TraceContextBumper                             ctx{"XMLDB::Document::Rep::WriteAsIs"};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
@@ -847,7 +838,7 @@ public:
     {
         //TraceContextBumper ctx (_T ("XMLDB::Document::Rep::GetChildren"));
         // really not enough - must pass critsection to iterator rep!
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
@@ -860,8 +851,8 @@ public:
     nonvirtual void Validate () const
     {
         RequireNotNull (fSchema);
-        TraceContextBumper          ctx{"XMLDB::Document::Rep::Validate"};
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+        TraceContextBumper                             ctx{"XMLDB::Document::Rep::Validate"};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
 
         START_LIB_EXCEPTION_MAPPER
         {
@@ -931,7 +922,7 @@ public:
                         String   tmpFileNameStr = IO::FileSystem::FromPath (tmpFileName);
                         size_t   idx            = tmpFileNameStr.find (".xml");
                         String   newTmpFile     = tmpFileNameStr.substr (0, idx) + "_MSG.txt";
-                        ofstream msgOut (newTmpFile.AsNarrowSDKString ().c_str ());
+                        ofstream msgOut{newTmpFile.AsNarrowSDKString ().c_str ()};
                         msgOut << "Reason:" << vf.GetDetails ().AsNarrowSDKString () << endl;
                         optional<unsigned int> lineNum;
                         optional<unsigned int> colNumber;
@@ -959,8 +950,8 @@ public:
 public:
     nonvirtual void Validate (const Schema* schema) const
     {
-        TraceContextBumper          ctx{"XMLDB::Document::Rep::Validate/1"};
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+        TraceContextBumper                             ctx{"XMLDB::Document::Rep::Validate/1"};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         RequireNotNull (schema); // if you explicitly specify a schema - it makes no sense for it to be nullptr!!!
 
         /*
@@ -983,7 +974,7 @@ public:
 public:
     nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const
     {
-        lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if (fSchema == nullptr) {
             return NamespaceDefinitionsList ();
         }
@@ -993,34 +984,14 @@ public:
     }
 
 private:
-    T_XMLDOMDocumentSmartPtr fXMLDoc;
-    const Schema*            fSchema;
-    mutable recursive_mutex  fCriticalSection;
+    T_XMLDOMDocumentSmartPtr                                       fXMLDoc;
+    const Schema*                                                  fSchema;
+    [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 
 Document::Document (const Schema* schema)
-    : fRep (new Rep{schema})
+    : fRep{make_shared<Rep> (schema)}
 {
-}
-
-Document::Document (Rep* rep)
-    : fRep (rep)
-{
-    RequireNotNull (rep);
-}
-
-Document::~Document ()
-{
-}
-
-shared_ptr<Document::Rep> Document::GetRep () const
-{
-    return fRep;
-}
-
-recursive_mutex& Document::GetLock () const
-{
-    return fRep->GetLock ();
 }
 
 const Schema* Document::GetSchema () const
@@ -1083,23 +1054,23 @@ void Document::Validate (const Schema* schema) const
  ********************************************************************************
  */
 RWDocument::RWDocument (const Schema* schema)
-    : Document (schema)
+    : Document{schema}
 {
 }
 
 RWDocument::RWDocument (const Document& from)
-    : Document (new Rep (*from.GetRep ()))
+    : Document{make_shared<Rep> (*from.GetRep ())}
 {
 }
 
 RWDocument::RWDocument (const RWDocument& from)
-    : Document (new Rep (*from.fRep))
+    : Document{make_shared<Rep> (*from.fRep)}
 {
 }
 
 RWDocument& RWDocument::operator= (const Document& rhs)
 {
-    fRep = shared_ptr<Rep> (new Rep (*rhs.GetRep ()));
+    fRep = make_shared<Rep> (*rhs.GetRep ());
     return *this;
 }
 
@@ -1113,17 +1084,9 @@ void RWDocument::SetRootElement (const Node& newRoot)
     return fRep->SetRootElement (newRoot);
 }
 
-void RWDocument::Read (Streams::InputStream<byte>::Ptr& in, bool encrypted, Execution::ProgressMonitor::Updater progressCallback)
+void RWDocument::Read (Streams::InputStream<byte>::Ptr& in, Execution::ProgressMonitor::Updater progressCallback)
 {
-    fRep->Read (in, encrypted, nullptr, progressCallback);
-}
-
-void RWDocument::ReadAllowingInvalidSrc (Streams::InputStream<byte>::Ptr& in, bool encrypted, shared_ptr<BadFormatException>* exceptionResult,
-                                         Execution::ProgressMonitor::Updater progressCallback)
-{
-    RequireNotNull (exceptionResult);
-    exceptionResult->reset ();
-    fRep->Read (in, encrypted, exceptionResult, progressCallback); // since we assert exceptionResult - that means that this will NOT throw BadFormatException
+    fRep->Read (in, nullptr, progressCallback);
 }
 
 void RWDocument::LoadXML (const String& xml)
@@ -1143,7 +1106,7 @@ namespace {
     class MyNodeRep : public Node::Rep, Memory::UseBlockAllocationIfAppropriate<MyNodeRep> {
     public:
         MyNodeRep (DOMNode* n)
-            : fNode (n)
+            : fNode{n}
         {
             RequireNotNull (n);
         }
@@ -1387,7 +1350,6 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-
         virtual Node AppendNode (const Node& n, bool inheritNamespaceFromInsertionPoint) override
         {
             START_LIB_EXCEPTION_MAPPER
