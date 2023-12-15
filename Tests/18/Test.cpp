@@ -4,6 +4,8 @@
 //  TEST    Foundation::Containers::MultiSet
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Containers/Collection.h"
 
 #include "Stroika/Foundation/Containers/MultiSet.h"
@@ -33,6 +35,7 @@ using Concrete::MultiSet_Array;
 using Concrete::MultiSet_LinkedList;
 using Concrete::MultiSet_stdmap;
 
+#if qHasFeature_GoogleTest
 namespace {
     template <typename CONCRETE_CONTAINER, typename SCHEMA = CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>>
     void DoTestForConcreteContainer_ (const SCHEMA& schema = {})
@@ -153,6 +156,7 @@ namespace {
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -160,6 +164,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

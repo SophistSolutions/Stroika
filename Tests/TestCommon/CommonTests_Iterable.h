@@ -16,6 +16,7 @@ namespace CommonTests {
         using namespace Stroika::Foundation;
         using namespace Stroika::Foundation::Containers;
 
+#if qHasFeature_GoogleTest
         template <typename USING_ITERABLE_CONTAINER>
         void SimpleIterableTests (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container)
         {
@@ -76,6 +77,8 @@ namespace CommonTests {
             Test4_MultiSetEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward<EQUALS_COMPARER> (equalsComparer));
             Test5_SequenceEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, forward<EQUALS_COMPARER> (equalsComparer));
         }
+        #endif
+        
     }
 }
 

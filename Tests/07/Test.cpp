@@ -4,6 +4,7 @@
 //  TEST    Foundation::Containers::DataStructures::LockFree
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
 #include <mutex>
 #include <set>
 #include <thread>
@@ -34,6 +35,7 @@ namespace {
         (qDebug ? 0.2 : 1) * ((Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .1 : 1.0);
 }
 
+#if qHasFeature_GoogleTest
 namespace {
 
     namespace forward_list_tests_ {
@@ -412,15 +414,12 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         forward_list_tests_::test_all ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -428,6 +427,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

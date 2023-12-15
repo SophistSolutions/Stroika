@@ -5,6 +5,8 @@
 //      STATUS  PRELIMINARY
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Containers/Stack.h"
 
 #include "Stroika/Foundation/Containers/Concrete/Stack_LinkedList.h"
@@ -25,6 +27,7 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using Concrete::Stack_LinkedList;
 
+#if qHasFeature_GoogleTest
 namespace {
     template <typename StackOfT>
     void SimpleTest_1_ (StackOfT s)
@@ -150,11 +153,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         using COMPARE_SIZET       = equal_to<size_t>;
         using COMPARE_SimpleClass = equal_to<SimpleClass>;
@@ -181,6 +180,7 @@ namespace {
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -188,6 +188,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

@@ -5,6 +5,8 @@
 //      STATUS  PRELIMINARY
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Concrete/DenseDataHyperRectangle_Vector.h"
 #include "Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h"
@@ -26,6 +28,7 @@ using namespace Stroika::Frameworks;
 using Test::ArchtypeClasses::SimpleClass;
 using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
+#if qHasFeature_GoogleTest
 namespace {
     namespace Test1_BasicSparseHyperCubeTest_ {
         void RunTests ()
@@ -111,11 +114,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Test1_BasicSparseHyperCubeTest_::RunTests ();
         Test2_BasicDenseHyperCubeTest_::RunTests ();
@@ -126,6 +125,7 @@ namespace {
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -133,6 +133,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

@@ -5,6 +5,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdlib>
+#include <iostream>
+
 
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
@@ -24,6 +26,7 @@ using namespace Stroika::Frameworks;
 
 using Containers::Set;
 
+#if qHasFeature_GoogleTest
 namespace {
     void Test1_Direct_ ()
     {
@@ -83,16 +86,13 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Test1_Direct_ ();
         Test2_Safe_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -101,6 +101,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

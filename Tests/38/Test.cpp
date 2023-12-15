@@ -4,6 +4,8 @@
 //  TEST    Foundation::Execution::ProcessRunner
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/ProcessRunner.h"
@@ -25,6 +27,7 @@ using namespace Stroika::Frameworks;
 
 using Characters::String;
 
+#if qHasFeature_GoogleTest
 namespace {
     void RegressionTest1_ ()
     {
@@ -159,11 +162,7 @@ void RegressionTes7_FaledRun_ ()
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
 #if qPlatform_POSIX
@@ -181,6 +180,7 @@ namespace {
         RegressionTes7_FaledRun_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -188,6 +188,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

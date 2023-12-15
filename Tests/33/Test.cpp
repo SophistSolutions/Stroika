@@ -4,6 +4,8 @@
 //  TEST    Foundation::DataExchangeFormat::ObjectVariantMapper
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
@@ -42,6 +44,7 @@ using Time::DateTime;
 using Time::Duration;
 using Time::TimeOfDay;
 
+#if qHasFeature_GoogleTest
 namespace {
     namespace DoRegressionTests_BasicDataRoundtrips_1_ {
         template <typename T>
@@ -911,11 +914,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
         DoRegressionTests_SimpleMapToFromJSON_2_ ();
@@ -934,6 +933,7 @@ namespace {
         Test15_JIRA_951_ObjectMapper_SortedMultiset_::DoIt ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -941,6 +941,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

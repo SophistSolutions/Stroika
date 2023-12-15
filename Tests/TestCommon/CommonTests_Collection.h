@@ -23,6 +23,7 @@ namespace CommonTests {
         using namespace Stroika::Foundation;
         using namespace Stroika::Foundation::Containers;
 
+#if qHasFeature_GoogleTest
         namespace Test1_OldMiscBagTests_ {
 
             template <typename CONCRETE_CONTAINER>
@@ -380,6 +381,8 @@ namespace CommonTests {
             Debug::TraceContextBumper ctx{"CommonTests::CollectionTests::SimpleCollectionTest_TestsWhichRequireEquals"};
             Test2_TestsWithComparer_::DoAllTests_<CONCRETE_CONTAINER, WITH_COMPARE_EQUALS> ();
         }
+    #endif
+    
     }
 }
 

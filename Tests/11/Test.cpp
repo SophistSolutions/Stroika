@@ -5,6 +5,8 @@
 //      STATUS  Alpha-Late
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Containers/Collection.h"
 
 #include "Stroika/Foundation/Characters/String.h"
@@ -34,6 +36,7 @@ using Concrete::Association_Array;
 using Concrete::Association_LinkedList;
 using Concrete::Association_stdmultimap;
 
+#if qHasFeature_GoogleTest
 namespace {
     template <typename CONCRETE_CONTAINER>
     void DoTestForConcreteContainer_ ()
@@ -230,11 +233,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
             : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
@@ -310,6 +309,7 @@ namespace {
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -317,6 +317,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

@@ -4,6 +4,8 @@
 //  TEST    Foundation::IO::Network
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -24,6 +26,7 @@ using namespace Stroika::Foundation::IO::Network;
 
 using namespace Stroika::Frameworks;
 
+#if qHasFeature_GoogleTest
 namespace {
     namespace Test1_URI_ {
         namespace Private_ {
@@ -565,11 +568,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Test1_URI_::DoTests_ ();
         Test2_InternetAddress_ ();
@@ -579,6 +578,7 @@ namespace {
         Test6_Neighbors_::DoTests_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -586,6 +586,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

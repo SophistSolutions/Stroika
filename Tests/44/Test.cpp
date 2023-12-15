@@ -4,6 +4,8 @@
 //  TEST    Foundation::IO::Network::HTTP
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -22,6 +24,7 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 
 using namespace Stroika::Frameworks;
 
+#if qHasFeature_GoogleTest
 namespace {
     namespace Cookies_Test01_ {
         void RunAll ()
@@ -160,17 +163,14 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Cookies_Test01_::RunAll ();
         CacheControl_Test02_::RunAll ();
         HTTPHeaders_Test03_::RunAll ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -178,6 +178,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

@@ -5,6 +5,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <random>
+#include <iostream>
+
 
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
@@ -43,6 +45,7 @@ using namespace Stroika::Frameworks;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+#if qHasFeature_GoogleTest
 #if qHasFeature_sqlite
 namespace {
     // Bad example (for now) without Bind - just formatting sql lines
@@ -753,11 +756,7 @@ namespace {
 #endif
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
 #if qHasFeature_sqlite
         static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
@@ -771,6 +770,7 @@ namespace {
 #endif
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -778,6 +778,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

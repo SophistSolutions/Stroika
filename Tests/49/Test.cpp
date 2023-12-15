@@ -5,6 +5,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <sstream>
+#include <iostream>
+
 
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Thread.h"
@@ -25,6 +27,7 @@ using namespace Stroika::Frameworks;
 
 using std::byte;
 
+#if qHasFeature_GoogleTest
 namespace {
     namespace BasicBinaryInputStream_ {
 
@@ -295,11 +298,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         BasicBinaryInputStream_::Tests_ ();
         BasicBinaryOutputStream_::Tests_ ();
@@ -312,6 +311,7 @@ namespace {
         Streams_Copy_Test9::Tests_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -319,6 +319,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

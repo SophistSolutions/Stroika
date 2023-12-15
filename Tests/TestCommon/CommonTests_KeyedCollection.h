@@ -20,6 +20,7 @@ namespace CommonTests {
         using namespace Stroika::Foundation;
         using namespace Stroika::Foundation::Containers;
 
+#if qHasFeature_GoogleTest
         namespace Test1_Basics_ {
             struct T1 {
                 int key;
@@ -68,6 +69,7 @@ namespace CommonTests {
             Debug::TraceContextBumper ctx{"CommonTests::CollectionTests::SimpleKeyedCollectionTest_TestBasics"};
             Test1_Basics_::RunTest (factory (), applyToContainer);
         }
+#endif
 
     }
 }

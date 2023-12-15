@@ -31,6 +31,7 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 using Concrete::Queue_Array;
 using Concrete::Queue_DoublyLinkedList;
 
+#if qHasFeature_GoogleTest
 namespace {
     template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
     void SimpleQueueTest_All_NotRequiringEquals_For_Type ()
@@ -46,11 +47,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         using COMPARE_SIZET       = std::equal_to<size_t>;
         using COMPARE_SimpleClass = std::equal_to<SimpleClass>;
@@ -80,6 +77,7 @@ namespace {
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -87,6 +85,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

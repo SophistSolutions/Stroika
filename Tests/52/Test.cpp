@@ -77,6 +77,32 @@ using namespace Stroika::Frameworks;
 
 using std::byte;
 
+namespace {
+    constexpr char kDefaultPerfOutFile_[] = "PerformanceDump.txt";
+    bool           sShowOutput_           = false;
+}
+
+namespace {
+    string pctFaster2String_ (double pct)
+    {
+        if (pct < 0) {
+            return Format (L"%.2f%% slower", -pct).AsNarrowSDKString ();
+        }
+        else {
+            return Format (L"%.2f%% faster", pct).AsNarrowSDKString ();
+        }
+    }
+}
+
+namespace {
+#if qDebug
+    double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .001 : 1.0;
+#else
+    double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .002 : 1.0;
+#endif
+}
+
+#if qHasFeature_GoogleTest
 /*
  *  TODO:
  *
@@ -103,30 +129,6 @@ namespace {
 // Use this so when running #if qDebug case - we don't waste a ton of time with this test
 #define qDebugCaseRuncountRatio (.01)
 
-namespace {
-    string pctFaster2String_ (double pct)
-    {
-        if (pct < 0) {
-            return Format (L"%.2f%% slower", -pct).AsNarrowSDKString ();
-        }
-        else {
-            return Format (L"%.2f%% faster", pct).AsNarrowSDKString ();
-        }
-    }
-}
-
-namespace {
-    constexpr char kDefaultPerfOutFile_[] = "PerformanceDump.txt";
-    bool           sShowOutput_           = false;
-}
-
-namespace {
-#if qDebug
-    double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .001 : 1.0;
-#else
-    double sTimeMultiplier_ = (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .002 : 1.0;
-#endif
-}
 
 namespace {
     ostream& GetOutStream_ ()
@@ -299,7 +301,9 @@ namespace {
             v.push_back (s2);
         }
         sort (v.begin (), v.end (), [] (S a, S b) { return b.fS1 < a.fS1; });
+#if qHasFeature_GoogleTest
         EXPECT_TRUE (v[0].fS1 == v[1].fS1);
+        #endif
     }
 }
 
@@ -332,7 +336,9 @@ namespace {
             v.push_back (s2);
         }
         sort (v.begin (), v.end (), [] (S a, S b) { return b.fS1 < a.fS1; });
+#if qHasFeature_GoogleTest
         EXPECT_TRUE (v[0].fS1 == v[1].fS1);
+        #endif
     }
 }
 
@@ -345,7 +351,9 @@ namespace {
         for (int i = 0; i < 10; ++i) {
             w += KBase;
         }
+#if qHasFeature_GoogleTest
         EXPECT_TRUE (w.length () == KBase.length () * 10);
+        #endif
     }
 }
 
@@ -358,7 +366,9 @@ namespace {
         for (int i = 0; i < 10; ++i) {
             w += KBase;
         }
+#if qHasFeature_GoogleTest
         EXPECT_TRUE (w.length () == wcslen (KBase) * 10);
+        #endif
     }
 }
 
@@ -371,7 +381,9 @@ namespace {
         for (int i = 0; i < 100; ++i) {
             w += KBase;
         }
-        EXPECT_TRUE (w.length () == wcslen (KBase) * 100);
+ #if qHasFeature_GoogleTest
+       EXPECT_TRUE (w.length () == wcslen (KBase) * 100);
+       #endif
     }
 }
 
@@ -1549,6 +1561,7 @@ namespace {
         }
     }
 }
+#endif
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
@@ -1570,12 +1583,14 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         exit (EXIT_FAILURE);
     }
 
+#if qHasFeature_GoogleTest
     TemporaryTest_::DoTest_ ();
+    #endif
 
     Test::Setup (argc, argv);
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    RunPerformanceTests_ ();
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

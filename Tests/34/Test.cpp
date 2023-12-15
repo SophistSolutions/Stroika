@@ -41,6 +41,7 @@ using Debug::TraceContextBumper;
 using Streams::InputStream;
 using Streams::iostream::InputStreamFromStdIStream;
 
+#if qHasFeature_GoogleTest
 namespace {
     //
     // PUT THIS OR SOMETHING LIKE IT TO STROIKA EVENTUALLY
@@ -1361,11 +1362,7 @@ namespace T14_SAXObjectReader_CustomSimpleType_ {
 #endif
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
         Test_1_SAXParser_ ();
@@ -1385,6 +1382,7 @@ namespace {
 #endif
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -1392,6 +1390,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

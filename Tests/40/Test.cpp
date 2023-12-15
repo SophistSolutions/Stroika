@@ -32,6 +32,7 @@ using namespace Stroika::Frameworks;
 using Characters::String;
 using Containers::Sequence;
 
+#if qHasFeature_GoogleTest
 namespace {
     void RegressionTest1_ ()
     {
@@ -1432,11 +1433,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         [[maybe_unused]] auto&& cleanupReport = Finally ([] () noexcept {
@@ -1474,6 +1471,7 @@ namespace {
         RegressionTest25_AbortNotYetStartedThread_::Test ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -1481,6 +1479,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

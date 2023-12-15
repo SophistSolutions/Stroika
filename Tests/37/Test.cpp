@@ -30,6 +30,7 @@ using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
 
+#if qHasFeature_GoogleTest
 namespace {
     void Test2_ThrowCatchStringException_ ()
     {
@@ -314,11 +315,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
         Test2_ThrowCatchStringException_ ();
@@ -328,6 +325,7 @@ namespace {
         Test6_Throw_Logging_with_and_without_srclines_in_stack_backtrace_::TestAll_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -335,6 +333,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

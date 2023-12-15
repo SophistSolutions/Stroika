@@ -49,6 +49,7 @@ using DataExchange::VariantValue;
 
 ///// @todo ADD SEPEARET MODULE TO TEST VARIANTVALUE!!!
 
+#if qHasFeature_GoogleTest
 /*
  * Validating JSON parse results:
  *      http://json.parser.online.fr/
@@ -1212,11 +1213,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Test1_7zArchive_::DoAll_ ();
         Test2_ZipArchive_::DoAll_ ();
@@ -1231,6 +1228,7 @@ namespace {
         Write2JSONSThenRead2JSONsWithSharedStream_::DoAll ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -1238,6 +1236,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

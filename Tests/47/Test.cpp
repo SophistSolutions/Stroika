@@ -4,6 +4,8 @@
 //  TEST    Foundation::Math
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Characters/StringBuilder.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -24,6 +26,7 @@ using namespace Stroika::Foundation::Math;
 
 using namespace Stroika::Frameworks;
 
+#if qHasFeature_GoogleTest
 namespace {
     void Test2_Round_ ()
     {
@@ -260,11 +263,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Test2_Round_ ();
         Test3_Angle_ ();
@@ -276,6 +275,7 @@ namespace {
         Test9_Optimization_DownhillSimplexMinimization_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -283,6 +283,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

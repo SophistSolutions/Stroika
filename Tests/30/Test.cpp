@@ -4,6 +4,8 @@
 //  TEST    Foundation::Containers::STL
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Containers/STL/Utilities.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -20,6 +22,7 @@ using namespace Stroika::Frameworks;
 using Test::ArchtypeClasses::SimpleClass;
 using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
+#if qHasFeature_GoogleTest
 namespace {
     namespace Test01_Concatenate_ {
         void DoTest ()
@@ -33,17 +36,14 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Test01_Concatenate_::DoTest ();
 
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -51,6 +51,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

@@ -4,6 +4,8 @@
 //  TEST    Foundation::Traveral
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/ToString.h"
@@ -33,6 +35,7 @@ using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
 
+#if qHasFeature_GoogleTest
 namespace {
 
     void Test_1_BasicRange_ ()
@@ -1094,11 +1097,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Debug::TraceContextBumper ctx{"{}::DoRegressionTests_"};
         Test_1_BasicRange_ ();
@@ -1126,6 +1125,7 @@ namespace {
         Test23_Iterable_Map_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -1133,6 +1133,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

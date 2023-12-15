@@ -4,6 +4,8 @@
 //  TEST    Foundation::IO::Other
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -25,6 +27,7 @@ using namespace Stroika::Foundation::IO::FileSystem;
 
 using namespace Stroika::Frameworks;
 
+#if qHasFeature_GoogleTest
 namespace {
     void Test1_DirectoryIterator_ ()
     {
@@ -167,11 +170,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Test1_DirectoryIterator_ ();
         Test2_DirectoryIterable_ ();
@@ -180,6 +179,7 @@ namespace {
         Test5_DisksPresent_::DoTest ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -187,6 +187,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

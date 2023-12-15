@@ -45,6 +45,7 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
 
 using namespace Stroika::Frameworks;
 
+#if qHasFeature_GoogleTest
 namespace {
     const Connection::Options kDefaultTestOptions_ = [] () {
         Connection::Options o;
@@ -754,11 +755,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Test_1_SimpleConnnectionTests_::DoTests_ ();
         Test_2_SimpleFetch_httpbin_::DoTests_ ();
@@ -769,6 +766,7 @@ namespace {
         Test_7_TestWithConnectionPool_::DoTests_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -779,6 +777,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

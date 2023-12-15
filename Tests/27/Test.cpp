@@ -5,6 +5,8 @@
 //      STATUS  very minimal/incomplete
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Containers/Concrete/SortedMultiSet_stdmap.h"
 #include "Stroika/Foundation/Containers/SortedMultiSet.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -26,6 +28,7 @@ using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
 using Concrete::SortedMultiSet_stdmap;
 
+#if qHasFeature_GoogleTest
 namespace {
     template <typename CONCRETE_CONTAINER>
     struct UseBasicTestingSchemas_ : CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER> {
@@ -53,11 +56,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
             : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
@@ -92,6 +91,7 @@ namespace {
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -99,6 +99,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

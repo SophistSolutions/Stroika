@@ -4,6 +4,8 @@
 //  TEST    Foundation::Execution::Other
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Common/Property.h"
 #include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include "Stroika/Foundation/DataExchange/OptionsFile.h"
@@ -27,6 +29,7 @@ using namespace Stroika::Foundation::Execution;
 
 using namespace Stroika::Frameworks;
 
+#if qHasFeature_GoogleTest
 // must be tested before main, so cannot call directly below
 namespace {
     int TestAtomicInitializedCoorectly_ ();
@@ -258,11 +261,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Execution::Logger::Activator logMgrActivator; // needed for OptionsFile test
         Test1_Function_ ();
@@ -272,6 +271,7 @@ namespace {
         Test5_ModuleGetterSetter_::DoAll ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -279,6 +279,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

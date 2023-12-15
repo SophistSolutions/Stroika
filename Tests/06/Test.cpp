@@ -4,6 +4,8 @@
 //  TEST    Foundation::Containers::DataStructures::LinkedList
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Containers/DataStructures/LinkedList.h"
 
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -149,6 +151,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

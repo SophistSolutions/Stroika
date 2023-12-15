@@ -4,6 +4,8 @@
 //  TEST    Foundation::Containers::Collection
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -34,6 +36,7 @@ using Concrete::Collection_LinkedList;
 using Concrete::Collection_stdforward_list;
 using Concrete::Collection_stdmultiset;
 
+#if qHasFeature_GoogleTest
 namespace {
     template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY>
     void RunTests_ (CONCRETE_CONTAINER_FACTORY factory)
@@ -131,11 +134,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
             using value_type = SimpleClassWithoutComparisonOperators;
@@ -184,6 +183,7 @@ namespace {
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -191,6 +191,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

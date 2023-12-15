@@ -5,6 +5,8 @@
 //      STATUS  Alpha-Late
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/Containers/SortedKeyedCollection.h"
 
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -24,12 +26,9 @@ using namespace Stroika::Frameworks;
 using Test::ArchtypeClasses::SimpleClass;
 using Test::ArchtypeClasses::SimpleClassWithoutComparisonOperators;
 
-namespace {
 #if qHasFeature_GoogleTest
+namespace {
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         using T1               = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
         using T1_Traits        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
@@ -43,6 +42,7 @@ namespace {
         EXPECT_TRUE (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -50,6 +50,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

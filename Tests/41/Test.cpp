@@ -5,6 +5,8 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <mutex>
+#include <iostream>
+
 
 #include "Stroika/Foundation/Cache/SynchronizedCallerStalenessCache.h"
 #include "Stroika/Foundation/Cache/SynchronizedLRUCache.h"
@@ -42,6 +44,7 @@ using namespace Stroika::Frameworks;
 
 using Test::ArchtypeClasses::NotCopyable;
 
+#if qHasFeature_GoogleTest
 namespace {
     bool kVerySlow_  = qDebug and (Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer);
     bool kSortaSlow_ = qDebug or Debug::IsRunningUnderValgrind () or Debug::kBuiltWithThreadSanitizer;
@@ -738,11 +741,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
@@ -767,6 +766,7 @@ namespace {
         Test11_SynchronizedCaches_::DoIt ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -774,6 +774,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

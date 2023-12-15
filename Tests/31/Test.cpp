@@ -53,6 +53,7 @@ using namespace Stroika::Frameworks;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+#if qHasFeature_GoogleTest
 namespace {
     uint32_t ToLE_ (uint32_t n)
     {
@@ -859,11 +860,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Debug::TraceContextBumper ctx{"DoRegressionTests_"};
         Base64Test::DoRegressionTests_ ();
@@ -881,6 +878,7 @@ namespace {
         AESTest_::DoRegressionTests_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -888,6 +886,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

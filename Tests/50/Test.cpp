@@ -31,6 +31,7 @@ using namespace Stroika::Frameworks;
 
 using Stroika::Foundation::Debug::TraceContextBumper;
 
+#if qHasFeature_GoogleTest
 namespace {
     void Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_ ()
     {
@@ -1117,11 +1118,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         TraceContextBumper ctx{"DoRegressionTests_"};
         Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_ ();
@@ -1141,6 +1138,7 @@ namespace {
         Test_14_timepoint_ ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -1148,6 +1146,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

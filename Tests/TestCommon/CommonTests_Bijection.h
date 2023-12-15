@@ -20,6 +20,7 @@ namespace CommonTests {
         using namespace Stroika::Foundation;
         using namespace Stroika::Foundation::Containers;
 
+#if qHasFeature_GoogleTest
         template <typename CONCRETE_CONTAINER>
         struct DefaultFactory {
             CONCRETE_CONTAINER operator() () const
@@ -206,6 +207,8 @@ namespace CommonTests {
             Private_::Test3_ConstructFromOtherTypes_::DoAllTests_ (testingSchema);
             Private_::Test5_As_WithDefaultComparers_::DoAllTests_ (testingSchema);
         }
+        #endif
+        
     }
 }
 

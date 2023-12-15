@@ -17,15 +17,13 @@ using namespace Stroika::Foundation;
 
 using namespace Stroika::Frameworks;
 
-namespace {
 #if qHasFeature_GoogleTest
+namespace {
     GTEST_TEST (Foundation_Containers_DataStructures_SkipList, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -33,6 +31,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

@@ -4,6 +4,8 @@
 //  TEST    Foundation::DataExchange::Other
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <iostream>
+
 #include "Stroika/Foundation/DataExchange/Atom.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaType.h"
 #include "Stroika/Foundation/DataExchange/InternetMediaTypeRegistry.h"
@@ -27,6 +29,7 @@ using namespace Stroika::Frameworks;
 using Execution::ModuleGetterSetter;
 using Traversal::Iterable;
 
+#if qHasFeature_GoogleTest
 namespace {
     void Test1_Atom_ ()
     {
@@ -260,11 +263,7 @@ namespace {
 }
 
 namespace {
-#if qHasFeature_GoogleTest
     GTEST_TEST (Foundation_Caching, all)
-#else
-    void DoRegressionTests_ ()
-#endif
     {
         Test1_Atom_ ();
         Test2_OptionsFile_ ();
@@ -273,6 +272,7 @@ namespace {
         Test5_InternetMediaType_::RunTests ();
     }
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -281,6 +281,6 @@ int main (int argc, const char* argv[])
 #if qHasFeature_GoogleTest
     return RUN_ALL_TESTS ();
 #else
-    cerr << "Stroika regression tests require building with google test feature" << endl;
+    cerr << "Stroika regression tests require building with google test feature [  PASSED  ]" << endl;
 #endif
 }

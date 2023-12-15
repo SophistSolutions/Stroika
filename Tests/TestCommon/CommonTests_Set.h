@@ -18,6 +18,7 @@ namespace CommonTests {
         using namespace Stroika::Foundation;
         using namespace Stroika::Foundation::Containers;
 
+#if qHasFeature_GoogleTest
         namespace {
             template <typename FACTORY, typename DEFAULT_VALUES_ITERABLE>
             auto mk_ (const FACTORY& f, const DEFAULT_VALUES_ITERABLE& il)
@@ -175,6 +176,8 @@ namespace CommonTests {
             Test4_Equals_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (factory, applyToContainer);
             Test5_UnionDifferenceIntersectionEtc_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (factory, applyToContainer);
         }
+        #endif
+        
     }
 }
 
