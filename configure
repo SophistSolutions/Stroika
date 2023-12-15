@@ -544,7 +544,8 @@ sub     FillDefaultLibDependencies_
 			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
 				# TEST IF HACK NEEDED/FIXES ISSUE WITH BUILD UNDER DOCKER ON CYGWIN for Debug-x86
 				# --define-variable=pcfiledir=c:/Sandbox...
-				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --define-variable=pcfiledir=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) --static --libs libxml-2.0");
+				my $wpath = trim (`cygpath -a --mixed \"$thisScriptDir/Builds/$configurationName/ThirdPartyComponents/lib/pkgconfig\"`);		# c:/foo as opposed to c:\foo
+				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --define-variable=pcfiledir=$wpath --static --libs libxml-2.0");
 			}
 			else {
 				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs libxml-2.0");
