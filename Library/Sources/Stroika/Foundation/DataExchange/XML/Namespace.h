@@ -7,6 +7,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/String.h"
+#include "../../Containers/Sequence.h"
 #include "../../IO/Network/URI.h"
 
 #include "Common.h"
@@ -14,6 +15,7 @@
 namespace Stroika::Foundation::DataExchange::XML {
 
     using Characters::String;
+    using Containers::Sequence;
     using IO::Network::URI;
 
     /**
@@ -29,11 +31,11 @@ namespace Stroika::Foundation::DataExchange::XML {
         optional<String> fPrefix;
 
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-        //   DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
         auto operator<=> (const NamespaceDefinition& rhs) const = default;
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-        //     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
     };
 
@@ -56,14 +58,14 @@ namespace Stroika::Foundation::DataExchange::XML {
         nonvirtual bool empty () const;
 
     public:
-        nonvirtual vector<NamespaceDefinition> GetNamespaces () const;
-        nonvirtual void                        SetNamespaces (const vector<NamespaceDefinition>& namespaces);
+        nonvirtual Sequence<NamespaceDefinition> GetNamespaces () const;
+        nonvirtual void                          SetNamespaces (const Sequence<NamespaceDefinition>& namespaces);
 
     public:
         nonvirtual void Add (const URI& uri, const optional<String>& prefix = {});
 
     private:
-        vector<NamespaceDefinition> fNamespaces;
+        Sequence<NamespaceDefinition> fNamespaces;
     };
 
 }

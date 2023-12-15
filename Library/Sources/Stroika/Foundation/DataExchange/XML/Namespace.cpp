@@ -17,10 +17,10 @@ using namespace Stroika::Foundation::DataExchange::XML;
  */
 void NamespaceDefinitionsList::Add (const URI& uri, const optional<String>& prefix)
 {
-#if defined(_DEBUG)
-    for (auto i = fNamespaces.begin (); i != fNamespaces.end (); ++i) {
-        Assert (uri != i->fURI);
-        Assert (prefix == nullopt or prefix != i->fPrefix);
+#if qDebug
+    for (auto i : fNamespaces) {
+        Assert (uri != i.fURI);
+        Assert (prefix == nullopt or prefix != i.fPrefix);
     }
 #endif
     fNamespaces.push_back (NamespaceDefinition{uri, prefix});
