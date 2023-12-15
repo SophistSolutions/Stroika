@@ -230,6 +230,16 @@ B2_CONFIGURATION_ARGS +=	--without-python
 B2_CONFIGURATION_ARGS +=	--without-regex
 B2_CONFIGURATION_ARGS +=	--without-wave
 
+
+# At least fails on build-n-test-Linux (Linux, ubuntu-22.04-clang++-15-debug-libc++-c++23, clang++-15, ubuntu-latest,... 
+# and build-n-test-MacOS (MacOS, MacOS-13-XCode-14.3-Debug, macos-13, 14.3, Debug, --apply-default-debu...
+#		--LGP 2023-12-15
+ifeq ($(VERSION),1_84_0)
+ifeq (clang,$(findstring clang,$(CXX)))
+B2_CONFIGURATION_ARGS +=	--without-cobalt
+endif
+endif
+
 ### shorter paths avoids problems building on windows (abbrevpaths not enuf on windows when root dir is maybe 100 chars, so use --hash which works better)
 #B2_CONFIGURATION_ARGS +=	--abbreviate-paths
 B2_CONFIGURATION_ARGS +=	--hash
