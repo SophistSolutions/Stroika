@@ -1543,7 +1543,8 @@ In file included from Namespace.cpp:10:
 
 #if defined(_LIBCPP_VERSION)
 // Reproduced using clang++15, libcpp 15007, and Ubunutu 22.04
-#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy (_LIBCPP_VERSION <= 15007)
+// Reproduced using xcode 15 with _LIBCPP_VERSION == 160006 (yes they appear to have added an extra digit recently)
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy (_LIBCPP_VERSION < 170000)
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
 #endif
