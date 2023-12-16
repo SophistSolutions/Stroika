@@ -31,7 +31,7 @@
 [31]	Foundation::Cryptography
 [32]	Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)
 [33]	Foundation::DataExchange::ObjectVariantMapper
-[34]	Foundation::DataExchange::XML::SaxParser
+[34]	Foundation::DataExchange::XML
 [35]	Foundation::DataExchange::Other
 [36]	Foundation::Database
 [37]	Foundation::Execution::Exceptions
