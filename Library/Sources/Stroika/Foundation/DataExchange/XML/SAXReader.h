@@ -29,8 +29,8 @@ namespace Stroika::Foundation::DataExchange::XML {
      */
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
     void SAXParse (const Streams::InputStream<byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback,
-                   const optional<Schema>& schema = nullopt, Execution::ProgressMonitor::Updater progress = nullptr);
-    void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const optional<Schema>& schema = nullopt,
+                   const Schema::Ptr& schema = nullptr, Execution::ProgressMonitor::Updater progress = nullptr);
+    void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const Schema::Ptr& schema = nullptr,
                    Execution::ProgressMonitor::Updater progress = nullptr);
 #endif
 

@@ -16,8 +16,8 @@
 #include "Namespace.h"
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
-namespace Stroika::Foundation::DataExchange::XML {
-    class Schema;
+namespace Stroika::Foundation::DataExchange::XML::Schema {
+    class Ptr;
 }
 #endif
 
@@ -137,7 +137,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         class Rep;
 
     public:
-        Document (const Schema* schema = nullptr);
+        Document ();
+        Document (const Schema::Ptr& schema);
         ~Document () = default;
 
     protected:
@@ -149,8 +150,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         Document& operator= (const Document& rhs) = delete;
 
     public:
-        nonvirtual const Schema* GetSchema () const;
-        nonvirtual void          SetSchema (const Schema* schema);
+        nonvirtual Schema::Ptr GetSchema () const;
+        // nonvirtual void          SetSchema (const Schema* schema);
 
         // IO routines - Serialize the document DOM
     public:
@@ -159,7 +160,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     public:
         nonvirtual void Validate () const; // throws BadFormatException exception on failure; uses current associated schema
-        nonvirtual void Validate (const Schema* schema) const; // ''; but uses PROVIDED schema
+                                           // nonvirtual void Validate (const Schema* schema) const; // ''; but uses PROVIDED schema
 
     public:
         nonvirtual SubNodeIterator GetChildren () const;
@@ -177,7 +178,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
      */
     class RWDocument : public Document {
     public:
-        RWDocument (const Schema* schema = nullptr);
+        RWDocument ();
+        RWDocument (const Schema::Ptr& schema);
         RWDocument (const Document& from);
         RWDocument (const RWDocument& from);
         RWDocument& operator= (const Document& rhs);

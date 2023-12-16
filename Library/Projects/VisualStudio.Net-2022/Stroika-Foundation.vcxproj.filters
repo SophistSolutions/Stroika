@@ -214,6 +214,9 @@
     <Filter Include="Sources\Containers\Support">
       <UniqueIdentifier>{4ef968d6-534b-440f-8fa4-c891d5c58da7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\DataExchange\XML\Providers">
+      <UniqueIdentifier>{b9c2e3c6-3185-4bdc-9f3e-9c6b32952aad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -818,6 +821,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Visualizations.cpp">
       <Filter>Sources\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.cpp">
+      <Filter>Sources\DataExchange\XML\Providers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2144,6 +2150,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Visualizations.h">
       <Filter>Sources\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.h">
+      <Filter>Sources\DataExchange\XML\Providers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3546,6 +3555,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Clock.inl">
       <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\Makefile">
+      <Filter>Sources\DataExchange\XML\Providers</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

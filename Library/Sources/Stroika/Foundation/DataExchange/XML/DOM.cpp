@@ -98,49 +98,12 @@ namespace {
     };
 }
 
-// avoid namespace conflcit with some Xerces code
-#undef Assert
+#if qHasFeature_Xerces && defined(_MSC_VER)
+#include "Providers/Xerces.h"
 
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/framework/LocalFileFormatTarget.hpp>
-#include <xercesc/framework/MemBufFormatTarget.hpp>
-#include <xercesc/framework/MemBufInputSource.hpp>
-#include <xercesc/framework/XMLGrammarPoolImpl.hpp>
-#include <xercesc/parsers/SAX2XMLReaderImpl.hpp>
-#include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/sax/InputSource.hpp>
-#include <xercesc/sax2/DefaultHandler.hpp>
-#include <xercesc/sax2/SAX2XMLReader.hpp>
-#include <xercesc/sax2/XMLReaderFactory.hpp>
-#include <xercesc/util/BinInputStream.hpp>
-#include <xercesc/util/OutOfMemoryException.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/util/XMLEntityResolver.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/util/XMLUni.hpp>
-#include <xercesc/validators/common/Grammar.hpp>
-#if qDebug
-#define Assert(c)                                                                                                                          \
-    (!!(c) || (Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_), false))
-#else
-#define Assert(c) ((void)0)
+using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
+
 #endif
-XERCES_CPP_NAMESPACE_USE
-
-/*
- *  UnderlyingXMLLibExcptionMapping layer
- */
-#define START_LIB_EXCEPTION_MAPPER try {
-#define END_LIB_EXCEPTION_MAPPER                                                                                                           \
-    }                                                                                                                                      \
-    catch (const OutOfMemoryException&)                                                                                                    \
-    {                                                                                                                                      \
-        Execution::Throw (bad_alloc{}, "xerces OutOfMemoryException - throwing bad_alloc");                                                \
-    }                                                                                                                                      \
-    catch (...)                                                                                                                            \
-    {                                                                                                                                      \
-        Execution::ReThrow ();                                                                                                             \
-    }
 
 namespace {
     constexpr XMLCh    kDOMImplFeatureDeclaration[] = u"Core";
@@ -392,65 +355,6 @@ namespace {
 }
 
 namespace {
-    class MyErrorReproter : public XMLErrorReporter, public ErrorHandler {
-    public:
-        virtual void error ([[maybe_unused]] const unsigned int errCode, [[maybe_unused]] const XMLCh* const errDomain,
-                            [[maybe_unused]] const ErrTypes type, const XMLCh* const errorText, [[maybe_unused]] const XMLCh* const systemId,
-                            [[maybe_unused]] const XMLCh* const publicId, const XMLFileLoc lineNum, const XMLFileLoc colNum) override
-        {
-            Execution::Throw (BadFormatException{errorText, static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0});
-        }
-        virtual void resetErrors () override
-        {
-        }
-
-        // ErrorHandler
-    public:
-        virtual void warning ([[maybe_unused]] const SAXParseException& exc) override
-        {
-            // ignore
-        }
-        virtual void error (const SAXParseException& exc) override
-        {
-            Execution::Throw (BadFormatException (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()),
-                                                  static_cast<unsigned int> (exc.getColumnNumber ()), 0));
-        }
-        virtual void fatalError (const SAXParseException& exc) override
-        {
-            Execution::Throw (BadFormatException (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()),
-                                                  static_cast<unsigned int> (exc.getColumnNumber ()), 0));
-        }
-    };
-    static MyErrorReproter sMyErrorReproter;
-}
-
-namespace {
-    inline void SetupCommonParserFeatures_ (SAX2XMLReader& reader)
-    {
-        reader.setFeature (XMLUni::fgSAX2CoreNameSpaces, true);
-        reader.setFeature (XMLUni::fgXercesDynamic, false);
-        reader.setFeature (XMLUni::fgSAX2CoreNameSpacePrefixes, false); // false:  * *Do not report attributes used for Namespace declarations, and optionally do not report original prefixed names
-    }
-    inline void SetupCommonParserFeatures_ (SAX2XMLReader& reader, bool validatingWithSchema)
-    {
-        reader.setFeature (XMLUni::fgXercesSchema, validatingWithSchema);
-        reader.setFeature (XMLUni::fgSAX2CoreValidation, validatingWithSchema);
-
-        // The purpose of this maybe to find errors with the schema itself, in which case,
-        // we shouldn't bother (esp for release builds)
-        //  (leave for now til we performance test)
-        //      -- LGP 2007-06-21
-        reader.setFeature (XMLUni::fgXercesSchemaFullChecking, validatingWithSchema);
-        reader.setFeature (XMLUni::fgXercesUseCachedGrammarInParse, validatingWithSchema);
-        reader.setFeature (XMLUni::fgXercesIdentityConstraintChecking, validatingWithSchema);
-
-        // we only want to use loaded schemas - don't save any more into the grammar cache, since that
-        // is global/shared.
-        reader.setFeature (XMLUni::fgXercesCacheGrammarFromParse, false);
-    }
-}
-
-namespace {
     inline void MakeXMLDoc_ (T_XMLDOMDocumentSmartPtr& newXMLDoc)
     {
         Require (newXMLDoc == nullptr);
@@ -573,28 +477,38 @@ namespace {
 
 class MyMaybeSchemaDOMParser {
 public:
-    shared_ptr<Schema::AccessCompiledXSD> fSchemaAccessor;
-    shared_ptr<XercesDOMParser>           fParser;
+    //   shared_ptr<Schema::AccessCompiledXSD> fSchemaAccessor;
+    Map2StroikaExceptionsErrorReporter myErrReporter;
+    shared_ptr<XercesDOMParser>        fParser;
+    Schema::Ptr                        fSchema{nullptr};
 
-    MyMaybeSchemaDOMParser (const Schema* schema)
+    MyMaybeSchemaDOMParser ()                              = delete;
+    MyMaybeSchemaDOMParser (const MyMaybeSchemaDOMParser&) = delete;
+    MyMaybeSchemaDOMParser (const Schema::Ptr& schema)
+        : fSchema{schema}
     {
+        shared_ptr<IXercesSchemaRep> accessSchema;
         if (schema != nullptr) {
+            accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
+        }
+        if (accessSchema != nullptr) {
             // REALLY need READLOCK - cuz this just prevents UPDATE of Schema (never happens anyhow) -- LGP 2009-05-19
-            fSchemaAccessor = make_shared<Schema::AccessCompiledXSD> (*schema);
-            fParser         = make_shared<XercesDOMParser> (nullptr, XMLPlatformUtils::fgMemoryManager, fSchemaAccessor->GetCachedTRep ());
+            //  fSchemaAccessor = make_shared<Schema::AccessCompiledXSD> (*schema);
+            fParser = make_shared<XercesDOMParser> (nullptr, XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ());
             fParser->cacheGrammarFromParse (false);
             fParser->useCachedGrammarInParse (true);
             fParser->setDoSchema (true);
             fParser->setValidationScheme (AbstractDOMParser::Val_Always);
             fParser->setValidationSchemaFullChecking (true);
             fParser->setIdentityConstraintChecking (true);
-            fParser->setErrorHandler (&sMyErrorReproter);
+
+            fParser->setErrorHandler (&myErrReporter);
         }
         else {
             fParser = make_shared<XercesDOMParser> ();
         }
         fParser->setDoNamespaces (true);
-        fParser->setErrorHandler (&sMyErrorReproter);
+        fParser->setErrorHandler (&myErrReporter);
 
         // LGP added 2009-09-07 - so must test carefully!
         {
@@ -616,7 +530,7 @@ public:
  */
 class DataExchange::XML::DOM::Document::Rep {
 public:
-    Rep (const Schema* schema)
+    Rep (const Schema::Ptr& schema)
         : fSchema{schema}
     {
         [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
@@ -644,16 +558,18 @@ public:
     virtual ~Rep () = default;
 
 public:
-    nonvirtual const Schema* GetSchema () const
+    nonvirtual const Schema::Ptr GetSchema () const
     {
         return fSchema;
     }
 
+#if 0
 public:
     nonvirtual void SetSchema (const Schema* s)
     {
         fSchema = s;
     }
+#endif
 
 public:
     //
@@ -749,11 +665,12 @@ public:
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
-            Node        result;
-            DOMElement* n       = fSchema == nullptr ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
-                                                     : fXMLDoc->createElementNS (fSchema->GetTargetNamespace ().As<u16string> ().c_str (),
-                                                                                 name.As<u16string> ().c_str ());
-            DOMElement* oldRoot = fXMLDoc->getDocumentElement ();
+            Node          result;
+            optional<URI> ns      = fSchema.GetTargetNamespace ();
+            DOMElement*   n       = ns == nullopt
+                                        ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
+                                        : fXMLDoc->createElementNS (ns->As<String> ().As<u16string> ().c_str (), name.As<u16string> ().c_str ());
+            DOMElement*   oldRoot = fXMLDoc->getDocumentElement ();
             if (oldRoot == nullptr) {
                 (void)fXMLDoc->insertBefore (n, nullptr);
             }
@@ -860,7 +777,7 @@ public:
                 return;
             }
             try {
-                DbgTrace (L"Validating against target namespace '%s'", fSchema->GetTargetNamespace ().c_str ());
+                DbgTrace (L"Validating against target namespace '%s'", Characters::ToString (fSchema.GetTargetNamespace ()).c_str ());
                 // As this CAN be expensive - especially if we need to externalize the file, and re-parse it!!! - just shortcut by
                 // checking the top-level DOM-node and assure that has the right namespace. At least quickie first check that works when
                 // reading files (doesnt help in pre-save check, of course)
@@ -868,10 +785,11 @@ public:
                 if (docNode == nullptr) {
                     Execution::Throw (BadFormatException (L"No document", 0, 0, 0));
                 }
-                String docURI = docNode->getNamespaceURI () == nullptr ? String{} : docNode->getNamespaceURI ();
-                if (docURI != fSchema->GetTargetNamespace ()) {
+                optional<URI> docURI = docNode->getNamespaceURI () == nullptr ? optional<URI>{} : docNode->getNamespaceURI ();
+                if (docURI != fSchema.GetTargetNamespace ()) {
                     Execution::Throw (BadFormatException (Format (L"Wrong document namespace (found '%s' and expected '%s')",
-                                                                  docURI.c_str (), fSchema->GetTargetNamespace ().c_str ()),
+                                                                  Characters::ToString (docURI).c_str (),
+                                                                  Characters::ToString (fSchema.GetTargetNamespace ()).c_str ()),
                                                           0, 0, 0));
                 }
 
@@ -891,12 +809,17 @@ public:
                     MemBufInputSource readReadSrc (destination.getRawBuffer (), destination.getLen (), u"tmp");
                     readReadSrc.setEncoding (XMLUni::fgUTF8EncodingString);
 
+                    shared_ptr<IXercesSchemaRep> accessSchema;
+                    if (fSchema != nullptr) {
+                        accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (fSchema.GetRep ());
+                    }
                     {
-                        Schema::AccessCompiledXSD accessSchema{*fSchema}; // REALLY need READLOCK - cuz this just prevents UPDATE of Scehma (never happens anyhow) -- LGP 2009-05-19
+                        AssertNotNull (accessSchema);
                         shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (
-                            XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema.GetCachedTRep ()));
-                        SetupCommonParserFeatures_ (*parser, true);
-                        parser->setErrorHandler (&sMyErrorReproter);
+                            XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ()));
+                        SetupCommonParserFeatures (*parser, true);
+                        Map2StroikaExceptionsErrorReporter myErrorReporter;
+                        parser->setErrorHandler (&myErrorReporter);
                         parser->parse (readReadSrc);
                     }
                 }
@@ -915,7 +838,7 @@ public:
                     }
                     try {
                         if (fSchema != nullptr) {
-                            ValidateExternalFile (tmpFileName.c_str (), *fSchema);
+                            ValidateExternalFile (tmpFileName.c_str (), fSchema);
                         }
                     }
                     catch (const BadFormatException& vf) {
@@ -948,30 +871,6 @@ public:
     }
 
 public:
-    nonvirtual void Validate (const Schema* schema) const
-    {
-        TraceContextBumper                             ctx{"XMLDB::Document::Rep::Validate/1"};
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        RequireNotNull (schema); // if you explicitly specify a schema - it makes no sense for it to be nullptr!!!
-
-        /*
-         *  This is SUPPOSED to be a CONST method, but there is no way I can see (cheaply) to validate
-         *  against a different schema. I could copy - but that would be expensive. So - temporarily reset
-         *  the schema, and set it back (careful of exceptions!)
-         */
-        const Schema* origSchema = GetSchema ();
-        try {
-            const_cast<Rep*> (this)->SetSchema (schema);
-            Validate ();
-            const_cast<Rep*> (this)->SetSchema (origSchema);
-        }
-        catch (...) {
-            const_cast<Rep*> (this)->SetSchema (origSchema);
-            Execution::ReThrow ();
-        }
-    }
-
-public:
     nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -979,29 +878,24 @@ public:
             return NamespaceDefinitionsList ();
         }
         else {
-            return fSchema->GetNamespaceDefinitions ();
+            return fSchema.GetNamespaceDefinitions ();
         }
     }
 
 private:
     T_XMLDOMDocumentSmartPtr                                       fXMLDoc;
-    const Schema*                                                  fSchema;
+    Schema::Ptr                                                    fSchema;
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 
-Document::Document (const Schema* schema)
+Document::Document (const Schema::Ptr& schema)
     : fRep{make_shared<Rep> (schema)}
 {
 }
 
-const Schema* Document::GetSchema () const
+Schema::Ptr Document::GetSchema () const
 {
     return fRep->GetSchema ();
-}
-
-void Document::SetSchema (const Schema* schema)
-{
-    fRep->SetSchema (schema);
 }
 
 void Document::WritePrettyPrinted (ostream& out) const
@@ -1042,18 +936,17 @@ void Document::Validate () const
     fRep->Validate ();
 }
 
-void Document::Validate (const Schema* schema) const
-{
-    RequireNotNull (schema);
-    fRep->Validate (schema);
-}
-
 /*
  ********************************************************************************
  ******************************** RWDocument ************************************
  ********************************************************************************
  */
-RWDocument::RWDocument (const Schema* schema)
+RWDocument::RWDocument ()
+    : Document{Schema::Ptr{nullptr}}
+{
+}
+
+RWDocument::RWDocument (const Schema::Ptr& schema)
     : Document{schema}
 {
 }

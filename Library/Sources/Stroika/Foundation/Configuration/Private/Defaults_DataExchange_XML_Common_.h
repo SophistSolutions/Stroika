@@ -9,7 +9,6 @@
  * Its used by StroikaConfig.h - optionally included there -
  * to help implement the set of Stroika public configuration defines.
  */
-
 #ifndef qHasFeature_Xerces
 #define qHasFeature_Xerces 0
 #endif

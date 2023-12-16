@@ -13,8 +13,8 @@
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
-#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/DataExchange/XML/DOM.h"
+#include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -24,14 +24,12 @@
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
-
 namespace Resources_ {
     constexpr
 #include "Tests/34/personal.xml.embed"
         constexpr
 #include "Tests/34/personal.xsd.embed"
 }
-
 
 using std::byte;
 
@@ -1320,7 +1318,6 @@ namespace {
         }
     }
 }
-
 
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, T15_DOMRead_)

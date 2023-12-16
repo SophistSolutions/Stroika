@@ -42,7 +42,7 @@ namespace Stroika::Foundation::DataExchange::XML {
 /**
  *  As of Stroika v3.0d4, we only support XML DOM if Xerces is builtin (could use libxml2 as well in the future).
  */
-#ifndef qStroikaFoundationDataExchangeXMLSupporDOM
+#ifndef qStroika_Foundation_DataExchange_XML_SupportDOM
 #define qStroika_Foundation_DataExchange_XML_SupportDOM qHasFeature_Xerces
 #endif
 

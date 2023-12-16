@@ -8,17 +8,13 @@
 
 #include <string>
 
+#include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
 #include "DOM.h"
-
-#if qHasFeature_Xerces
-namespace xercesc_3_2 {
-    class XMLGrammarPool;
-}
-#endif
 
 /*
  *  @todo needs alot of cleanups - use shared_ptr not bare pointers!!!! 
@@ -27,84 +23,89 @@ namespace xercesc_3_2 {
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
 namespace Stroika::Foundation::DataExchange::XML {
 
-    /**
-    // Schema objects can be shared among XMLDB Document objects.
-    //
-    // This class is used BOTH for a schema, and for a namespace. Really - we should separate the
-    // concepts, but for simplicity of implementation - for now - leave things that way (--LGP 2008-08-09)
-     */
-    class Schema {
-    public:
+    using Containers::Sequence;
+    using IO::Network::URI;
+
+    namespace Schema {
+
         // This is a named BLOB which is used to define a Schema. The BLOB can be named by a variety of
         // types of names (depending on the type of BLOB).
         class SourceComponent {
         public:
             Memory::BLOB     fBLOB;
-            optional<String> fNamespace;
+            optional<URI>    fNamespace;
             optional<String> fPublicID;
             optional<String> fSystemID;
         };
 
-    public:
-        Schema (const Schema&) = default;
-        // The targetNamespace argument is optional (we can have a schema with a blank target namespace).
-        // The referencedSchema to support load/define the given schema (e.g. for xsd:import directives).
-        Schema (const String& targetNamespace, const Memory::BLOB& targetNamespaceData, const vector<SourceComponent>& otherSources = {},
-                const NamespaceDefinitionsList& namespaceDefs = {});
-
-    public:
-        ~Schema () = default;
-
-    public:
-        Schema& operator= (const Schema& rhs) = default;
-
-    public:
-        nonvirtual vector<SourceComponent> GetSourceComponents () const;
-
-    public:
-        nonvirtual String GetTargetNamespace () const;
-
-    public:
-        nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const;
-
-    public:
-        using T_CompiledXSDRep = xercesc_3_2::XMLGrammarPool*;
-
-    public:
-        class AccessCompiledXSD {
-        public:
-            AccessCompiledXSD (const Schema& schema2Access);
-
-        public:
-            nonvirtual T_CompiledXSDRep GetCachedTRep () const;
-
-        private:
-            const Schema& fSchema2Access;
+        struct IRep {
+            virtual optional<URI>             GetTargetNamespace () const      = 0;
+            virtual NamespaceDefinitionsList  GetNamespaceDefinitions () const = 0;
+            virtual Sequence<SourceComponent> GetSourceComponents ()           = 0;
         };
 
-    private:
-        nonvirtual T_CompiledXSDRep GetCachedTRep_ () const;
+        class Ptr {
+        public:
+            Ptr (nullptr_t)
+            {
+            }
+            Ptr (shared_ptr<IRep> s)
+                : fRep_{s}
+            {
+            }
+            Ptr (const Ptr&) = default;
 
-    private:
-        nonvirtual Memory::BLOB GetSchemaData_ () const;
+            bool operator== (const Ptr& p) const = default;
 
-    private:
-        struct Rep_;
+        public:
+            nonvirtual Sequence<SourceComponent> GetSourceComponents () const
+            {
+                return fRep_->GetSourceComponents ();
+            }
 
-    private:
-        shared_ptr<Rep_> fRep;
+        public:
+            nonvirtual optional<URI> GetTargetNamespace () const
+            {
+                return fRep_->GetTargetNamespace ();
+            }
 
-    private:
-        friend class AccessCompiledXSD;
-    };
+        public:
+            nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const
+            {
+                return fRep_->GetNamespaceDefinitions ();
+            }
 
-    namespace DOM {
-        class Document;
+        public:
+            shared_ptr<IRep> GetRep () const
+            {
+                return fRep_;
+            }
+
+        public:
+            //   nonvirtual Memory::BLOB GetSchemaData () const;    // get as date or DOM maybe better
+
+        private:
+            shared_ptr<IRep> fRep_;
+        };
+
+        enum class Provider {
+
+            eXerces,
+            eDefault = eXerces
+        };
+        Ptr        New (Provider p, const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
+                        const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions);
+        inline Ptr New (const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
+                        const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {})
+        {
+            return New (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
+        }
+
     }
 
     /**
      */
-    void ValidateExternalFile (const filesystem::path& externalFileName, const Schema& schema); // throws BadFormatException exception on error
+    void ValidateExternalFile (const filesystem::path& externalFileName, const Schema::Ptr& schema); // throws BadFormatException exception on error
 
 };
 #endif

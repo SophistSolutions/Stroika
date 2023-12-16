@@ -9,6 +9,8 @@
 
 #include "Common.h"
 
+//using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
@@ -18,53 +20,9 @@ using namespace Stroika::Foundation::Debug;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 #if qHasFeature_Xerces && defined(_MSC_VER)
-// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#if qDebug
-#pragma comment(lib, "xerces-c_3d.lib")
-#else
-#pragma comment(lib, "xerces-c_3.lib")
-#endif
-#endif
+#include "Providers/Xerces.h"
 
-#if qHasFeature_Xerces
-
-// Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
-#define XML_LIBRARY 1
-#define XERCES_STATIC_LIBRARY 1
-
-// avoid namespace conflcit with some Xerces code
-#undef Assert
-
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/framework/LocalFileFormatTarget.hpp>
-#include <xercesc/framework/MemBufFormatTarget.hpp>
-#include <xercesc/framework/MemBufInputSource.hpp>
-#include <xercesc/framework/XMLGrammarPoolImpl.hpp>
-#include <xercesc/parsers/SAX2XMLReaderImpl.hpp>
-#include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/sax/InputSource.hpp>
-#include <xercesc/sax2/DefaultHandler.hpp>
-#include <xercesc/sax2/SAX2XMLReader.hpp>
-#include <xercesc/sax2/XMLReaderFactory.hpp>
-#include <xercesc/util/BinInputStream.hpp>
-#include <xercesc/util/OutOfMemoryException.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/util/XMLEntityResolver.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/util/XMLUni.hpp>
-#include <xercesc/validators/common/Grammar.hpp>
-#if qDebug
-#define Assert(c)                                                                                                                          \
-    {                                                                                                                                      \
-        if (!(c)) {                                                                                                                        \
-            Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, nullptr);                  \
-        }                                                                                                                                  \
-    }
-#else
-#define Assert(c)
-#endif
-
-XERCES_CPP_NAMESPACE_USE
+using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
 
 namespace {
     /*

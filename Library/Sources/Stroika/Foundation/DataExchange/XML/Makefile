@@ -25,4 +25,14 @@ Objs	=	\
 	$(ObjDir)WriterUtils${OBJ_SUFFIX}\
 
 
-all:	$(Objs)
+	
+SubDirs	=	\
+	Providers \
+	
+
+all:	$(Objs) $(SubDirs)
+
+
+.PHONY:				$(SubDirs)
+$(SubDirs):
+	@$(MAKE) --directory $@ -s
