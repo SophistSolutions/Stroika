@@ -1084,7 +1084,7 @@ void RWDocument::SetRootElement (const Node& newRoot)
     return fRep->SetRootElement (newRoot);
 }
 
-void RWDocument::Read (Streams::InputStream<byte>::Ptr& in, Execution::ProgressMonitor::Updater progressCallback)
+void RWDocument::Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback)
 {
     fRep->Read (in, nullptr, progressCallback);
 }

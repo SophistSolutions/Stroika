@@ -189,7 +189,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         nonvirtual void SetRootElement (const Node& newRoot);
 
     public:
-        nonvirtual void Read (Streams::InputStream<byte>::Ptr& in, Execution::ProgressMonitor::Updater progressCallback);
+        nonvirtual void Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback = nullptr);
 
     public:
         nonvirtual void LoadXML (const String& xml); // 'xml' contains data to be parsed and to replace the current XML document
