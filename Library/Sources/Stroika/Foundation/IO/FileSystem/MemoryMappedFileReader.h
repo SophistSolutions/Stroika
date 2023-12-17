@@ -21,13 +21,16 @@
  *          @todo   Add API controlling if  mapping is readonly or read/write
  *
  *          @todo   Consider adding a writable MemoryMappedFileReader variant
- *
  */
 
 namespace Stroika::Foundation::IO::FileSystem {
 
     /**
      *  MemoryMappedFileReader is a utility to allow memory mapping of a file.
+     * 
+     *  \note - this code doesn't facilitiate create a BLOB from this class, because doing so well requires application specific info
+     *        about lifetimes. You can use Memory::BLOB::Adopt (mf.AsSpan<> ()) - but BEWARE - user doing so MUST make sure lifetime
+     *        of MemoryMappedFileReader >= that of the produced BLOB (or any derivatives - its shared_rep).
      */
     class MemoryMappedFileReader {
     public:

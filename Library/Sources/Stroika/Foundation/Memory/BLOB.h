@@ -26,24 +26,6 @@
  *      @todo   SHOULD add template CTOR args - but must be careful to say iterator <byte> and
  *              only (or handle differently) random access iterators versus just plain forward iterators.
  *
- *      @todo   Closely consider Streams::TODO.md item about a new Streams::BLOB class. This may replace
- *              several of the BELOW TODO items more elegantly (wthout th eSeekOffsetType change would
- *              might cause some difficulties. So you have Memory::BLOB when you Know it must be in ram
- *              and you have ptr api. And you have Streams::BLOB when it may not fit in RAM!
- *
- *      @todo   Redo API - so its all based on SeekOffsetType - not size_t. Document that if you exceed
- *              available in-RAM storage, no biggie - you just throw bad_alloc. But at least you can
- *              construct and operate on large BLOBs (as streams).
- *              [[NB SEE Streams::BLOB todo/project]]
- *
- *      @todo   Add MemoryMappedFileBLOB to Foundation/File section � and have it subclass
- *              BLOB (object slicing) � and have different CTOR, and different virtual Rep
- *              (decide semantics � not clear � readonly)
- *          
- *              MAYBE better static method MemoryMappedFileAsBLOB () instead of separate class since
- *              then no object slicing, and we can document its just like the 'application lifetime' constructor - unsafe
- *              if the underlying mapped file data ever changes.
- *
  *      @todo   Do CTOR that uses iterator start/end not just const byte* start, const byte* end.
  *
  */
@@ -68,6 +50,11 @@ namespace Stroika::Foundation::Memory {
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      *  
      *      This is like memcmp() - bytewise unsigned comparison
+     * 
+     *  \note Interactions with Memory::MemoryMappedFileReader
+     *        We provide no AUTOMATIC way to combine these, because its not safe (in general, but can be given specific applicaiton
+     *        knowledge). And it can be quite efficient. So use BLOB::Adopt() on some existing MemoryMappedFileReader - but its up to use/
+     *        application to assure the lifetime of the filereader is > any copies of the shared_rep derived from the adopted BLOB.
      * 
      *  \note Performance
      *      o   Copying a BLOB is just copying a shared_ptr
@@ -224,7 +211,7 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
-         *  \req i < size  ();
+         *  \req i < size ();
          */
         nonvirtual byte operator[] (const size_t i) const;
 
