@@ -36,6 +36,8 @@ namespace Stroika::Foundation::Streams {
      *      @todo take optional CodeCvt argument, or things you would pass to CodeCvt (character coing) for what binary rep to create!
      * 
      *      WONT change this part of the API - just adding overloads, so OK to release as-is - 2023-07-10
+     * 
+     *      @todo this also should take Iterable<Character> and therefore String...
      */
     class TextToByteReader : public InputStream<byte> {
     public:
