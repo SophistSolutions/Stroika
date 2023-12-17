@@ -123,7 +123,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
                 Assert (not o->empty ());
                 m->rwResponse ().rwHeaders ().allow = o;
-                static const auto kException_ = ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed};
+                static const auto kException_       = ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed};
                 Execution::Throw (kException_);
             }
             else {
