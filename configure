@@ -1477,6 +1477,7 @@ sub	ParseCommandLine_Remaining_
 			$FEATUREFLAG_boost = "no";
 			$FEATUREFLAG_LIBCURL = "no";
 			$FEATUREFLAG_libxml2 = "no";
+			$FEATUREFLAG_Xerces = "no";
 			$FEATUREFLAG_LZMA = "no";
 			$FEATUREFLAG_OpenSSL = "no";
 			$FEATUREFLAG_sqlite = "no";
