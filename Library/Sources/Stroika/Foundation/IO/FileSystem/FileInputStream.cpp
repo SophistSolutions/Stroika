@@ -62,7 +62,7 @@ public:
         , fSeekable_{seekable}
         , fFileName_{fileName}
     {
-        auto activity = LazyEvalActivity {
+        auto activity = LazyEvalActivity{
             [&] () -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); }};
         DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
@@ -137,8 +137,8 @@ public:
         Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested)};
 #endif
         AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        auto                                            readingFromFileActivity = LazyEvalActivity {
-            [&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); }};
+        auto                                            readingFromFileActivity =
+            LazyEvalActivity{[&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); }};
         DeclareActivity currentActivity{&readingFromFileActivity};
 #if qPlatform_Windows
         return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
