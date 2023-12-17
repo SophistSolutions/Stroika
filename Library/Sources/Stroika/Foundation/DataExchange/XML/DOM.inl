@@ -10,185 +10,141 @@
  ********************************************************************************
  */
 
-#include "../../Traversal/Generator.h"
-
 #if qHasFeature_Xerces
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 
-    class Node::Rep {
-    public:
-        Rep ()          = default;
-        virtual ~Rep () = default;
-
-    public:
-        virtual NodeType       GetNodeType () const                                                                                 = 0;
-        virtual String         GetNamespace () const                                                                                = 0;
-        virtual String         GetName () const                                                                                     = 0;
-        virtual void           SetName (const String& name)                                                                         = 0;
-        virtual VariantValue   GetValue () const                                                                                    = 0;
-        virtual void           SetValue (const VariantValue& v)                                                                     = 0;
-        virtual void           SetAttribute (const String& attrName, const String& v)                                               = 0;
-        virtual bool           HasAttribute (const String& attrName, const String* value) const                                     = 0;
-        virtual String         GetAttribute (const String& attrName) const                                                          = 0;
-        virtual optional<Node> GetFirstAncestorNodeWithAttribute (const String& attrName) const                                     = 0;
-        virtual Node           InsertChild (const String& name, const String* ns, optional<Node> afterNode)                         = 0;
-        virtual Node           AppendChild (const String& name)                                                                     = 0;
-        virtual void           AppendChild (const String& name, const String* ns, const VariantValue& v)                            = 0;
-        virtual void           AppendChildIfNotEmpty (const String& name, const String* ns, const VariantValue& v)                  = 0;
-        virtual Node           InsertNode (const Node& n, const optional<Node>& afterNode, bool inheritNamespaceFromInsertionPoint) = 0;
-        virtual Node           AppendNode (const Node& n, bool inheritNamespaceFromInsertionPoint)                                  = 0;
-        virtual void           DeleteNode ()                                                                                        = 0;
-        virtual Node           ReplaceNode ()                                                                                       = 0;
-        virtual optional<Node> GetParentNode () const                                                                               = 0;
-        virtual Iterable<Node> GetChildren () const                                                                                 = 0;
-        virtual optional<Node> GetChildNodeByID (const String& id) const                                                            = 0;
-        virtual void*          GetInternalTRep ()                                                                                   = 0;
-
-    protected:
-        inline static shared_ptr<Rep> GetRep4Node (Node n)
-        {
-            return n.fRep;
-        } // propagate access to subclasses
-    };
-
     /*
      ********************************************************************************
-     *********************************** XML::DOM::Node *****************************
+     ****************************** XML::DOM::Node::Ptr *****************************
      ********************************************************************************
      */
-    inline Node::Node (const shared_ptr<Rep>& from)
-        : fRep{from}
+    inline Node::Ptr::Ptr (const shared_ptr<IRep>& from)
+        : fRep_{(RequireExpression (from != nullptr), from)}
     {
     }
-#if 0
-    inline bool Node::IsNull () const
+    inline Node::Type Node::Ptr::GetNodeType () const
     {
-        return fRep.get () == nullptr;
+        AssertNotNull (fRep_);
+        return fRep_->GetNodeType ();
     }
-#endif
-    inline Node::NodeType Node::GetNodeType () const
+    inline String Node::Ptr::GetNamespace () const
     {
-        AssertNotNull (fRep);
-        return fRep->GetNodeType ();
+        AssertNotNull (fRep_);
+        return fRep_->GetNamespace ();
     }
-    inline String Node::GetNamespace () const
+    inline String Node::Ptr::GetName () const
     {
-        AssertNotNull (fRep);
-        return fRep->GetNamespace ();
+        AssertNotNull (fRep_);
+        return fRep_->GetName ();
     }
-    inline String Node::GetName () const
+    inline void Node::Ptr::SetName (const String& name)
     {
-        AssertNotNull (fRep);
-        return fRep->GetName ();
+        AssertNotNull (fRep_);
+        fRep_->SetName (name);
     }
-    inline void Node::SetName (const String& name)
+    inline VariantValue Node::Ptr::GetValue () const
     {
-        AssertNotNull (fRep);
-        fRep->SetName (name);
+        AssertNotNull (fRep_);
+        return fRep_->GetValue ();
     }
-    inline VariantValue Node::GetValue () const
+    inline void Node::Ptr::SetValue (const VariantValue& v)
     {
-        AssertNotNull (fRep);
-        return fRep->GetValue ();
+        AssertNotNull (fRep_);
+        fRep_->SetValue (v);
     }
-    inline void Node::SetValue (const VariantValue& v)
+    inline void Node::Ptr::SetAttribute (const String& attrName, const String& v)
     {
-        AssertNotNull (fRep);
-        fRep->SetValue (v);
+        AssertNotNull (fRep_);
+        fRep_->SetAttribute (attrName, v);
     }
-    inline void Node::SetAttribute (const String& attrName, const String& v)
+    inline bool Node::Ptr::HasAttribute (const String& attrName) const
     {
-        AssertNotNull (fRep);
-        fRep->SetAttribute (attrName, v);
+        AssertNotNull (fRep_);
+        return fRep_->HasAttribute (attrName, nullptr);
     }
-    inline bool Node::HasAttribute (const String& attrName) const
+    inline bool Node::Ptr::HasAttribute (const String& attrName, const String& value) const
     {
-        AssertNotNull (fRep);
-        return fRep->HasAttribute (attrName, nullptr);
+        AssertNotNull (fRep_);
+        return fRep_->HasAttribute (attrName, &value);
     }
-    inline bool Node::HasAttribute (const String& attrName, const String& value) const
+    inline String Node::Ptr::GetAttribute (const String& attrName) const
     {
-        AssertNotNull (fRep);
-        return fRep->HasAttribute (attrName, &value);
+        AssertNotNull (fRep_);
+        return fRep_->GetAttribute (attrName);
     }
-    inline String Node::GetAttribute (const String& attrName) const
+    inline optional<Node::Ptr> Node::Ptr::GetFirstAncestorNodeWithAttribute (const String& attrName) const
     {
-        AssertNotNull (fRep);
-        return fRep->GetAttribute (attrName);
+        AssertNotNull (fRep_);
+        return fRep_->GetFirstAncestorNodeWithAttribute (attrName);
     }
-    inline optional<Node> Node::GetFirstAncestorNodeWithAttribute (const String& attrName) const
+    inline Node::Ptr Node::Ptr::InsertChild (const String& name, optional<Ptr> afterNode)
     {
-        AssertNotNull (fRep);
-        return fRep->GetFirstAncestorNodeWithAttribute (attrName);
+        AssertNotNull (fRep_);
+        return fRep_->InsertChild (name, nullptr, afterNode);
     }
-    inline Node Node::InsertChild (const String& name, optional<Node> afterNode)
+    inline Node::Ptr Node::Ptr::InsertChild (const String& name, const String& ns, optional<Node::Ptr> afterNode)
     {
-        AssertNotNull (fRep);
-        return fRep->InsertChild (name, nullptr, afterNode);
+        AssertNotNull (fRep_);
+        return fRep_->InsertChild (name, &ns, afterNode);
     }
-    inline Node Node::InsertChild (const String& name, const String& ns, optional<Node> afterNode)
+    inline Node::Ptr Node::Ptr::AppendChild (const String& name)
     {
-        AssertNotNull (fRep);
-        return fRep->InsertChild (name, &ns, afterNode);
+        AssertNotNull (fRep_);
+        return fRep_->AppendChild (name);
     }
-    inline Node Node::AppendChild (const String& name)
+    inline void Node::Ptr::AppendChild (const String& name, const VariantValue& v)
     {
-        AssertNotNull (fRep);
-        return fRep->AppendChild (name);
+        AssertNotNull (fRep_);
+        fRep_->AppendChild (name, nullptr, v);
     }
-    inline void Node::AppendChild (const String& name, const VariantValue& v)
+    inline void Node::Ptr::AppendChild (const String& name, const String& ns, const VariantValue& v)
     {
-        AssertNotNull (fRep);
-        fRep->AppendChild (name, nullptr, v);
+        AssertNotNull (fRep_);
+        fRep_->AppendChild (name, &ns, v);
     }
-    inline void Node::AppendChild (const String& name, const String& ns, const VariantValue& v)
+    inline void Node::Ptr::AppendChildIfNotEmpty (const String& name, const VariantValue& v)
     {
-        AssertNotNull (fRep);
-        fRep->AppendChild (name, &ns, v);
+        AssertNotNull (fRep_);
+        fRep_->AppendChildIfNotEmpty (name, nullptr, v);
     }
-    inline void Node::AppendChildIfNotEmpty (const String& name, const VariantValue& v)
+    inline void Node::Ptr::AppendChildIfNotEmpty (const String& name, const String& ns, const VariantValue& v)
     {
-        AssertNotNull (fRep);
-        fRep->AppendChildIfNotEmpty (name, nullptr, v);
+        AssertNotNull (fRep_);
+        fRep_->AppendChildIfNotEmpty (name, &ns, v);
     }
-    inline void Node::AppendChildIfNotEmpty (const String& name, const String& ns, const VariantValue& v)
+    inline Node::Ptr Node::Ptr::InsertNode (const Node::Ptr& n, const optional<Node::Ptr>& afterNode, bool inheritNamespaceFromInsertionPoint)
     {
-        AssertNotNull (fRep);
-        fRep->AppendChildIfNotEmpty (name, &ns, v);
+        AssertNotNull (fRep_);
+        return fRep_->InsertNode (n, afterNode, inheritNamespaceFromInsertionPoint);
     }
-    inline Node Node::InsertNode (const Node& n, const optional<Node>& afterNode, bool inheritNamespaceFromInsertionPoint)
+    inline Node::Ptr Node::Ptr::AppendNode (const Node::Ptr& n, bool inheritNamespaceFromInsertionPoint)
     {
-        AssertNotNull (fRep);
-        return fRep->InsertNode (n, afterNode, inheritNamespaceFromInsertionPoint);
+        AssertNotNull (fRep_);
+        return fRep_->AppendNode (n, inheritNamespaceFromInsertionPoint);
     }
-    inline Node Node::AppendNode (const Node& n, bool inheritNamespaceFromInsertionPoint)
+    inline void Node::Ptr::DeleteNode ()
     {
-        AssertNotNull (fRep);
-        return fRep->AppendNode (n, inheritNamespaceFromInsertionPoint);
+        AssertNotNull (fRep_);
+        fRep_->DeleteNode ();
     }
-    inline void Node::DeleteNode ()
+    inline Node::Ptr Node::Ptr::ReplaceNode ()
     {
-        AssertNotNull (fRep);
-        fRep->DeleteNode ();
+        AssertNotNull (fRep_);
+        return fRep_->ReplaceNode ();
     }
-    inline Node Node::ReplaceNode ()
+    inline optional<Node::Ptr> Node::Ptr::GetParentNode () const
     {
-        AssertNotNull (fRep);
-        return fRep->ReplaceNode ();
+        AssertNotNull (fRep_);
+        return fRep_->GetParentNode ();
     }
-    inline optional<Node> Node::GetParentNode () const
+    inline Iterable<Node::Ptr> Node::Ptr::GetChildren () const
     {
-        AssertNotNull (fRep);
-        return fRep->GetParentNode ();
+        AssertNotNull (fRep_);
+        return fRep_->GetChildren ();
     }
-    inline Iterable<Node> Node::GetChildren () const
+    inline optional<Node::Ptr> Node::Ptr::GetChildNodeByID (const String& id) const
     {
-        AssertNotNull (fRep);
-        return fRep->GetChildren ();
-    }
-    inline optional<Node> Node::GetChildNodeByID (const String& id) const
-    {
-        return fRep->GetChildNodeByID (id);
+        return fRep_->GetChildNodeByID (id);
     }
 
     /*

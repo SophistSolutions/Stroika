@@ -30,107 +30,199 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     /**
      * NB: A Node can be EITHER an ELEMENT or an ATTRIBUTE
      */
+    namespace Node {
+        class IRep;
 
-    // @todo name Node namespace with IRep and Ptr classes
-    class Node {
-    public:
-        class Rep;
-        Node () = delete; // @todo LOSE NULL NODE PTR OBJECTS  (two apis - change to return optional)
-        Node (const shared_ptr<Rep>& from);
-
-    public:
-        //   nonvirtual bool IsNull () const;
-
-    public:
-        enum NodeType {
+        /**
+         *  Prior to Stroika v3.0d5, this was Node::NodeType
+         */
+        enum Type {
             eAttributeNT,
             eElementNT,
             eTextNT,
             eCommentNT,
             eOtherNT
         };
-        nonvirtual NodeType GetNodeType () const;
 
-    public:
-        nonvirtual String GetNamespace () const;
-
-    public:
-        nonvirtual String GetName () const;
-
-    public:
-        nonvirtual void SetName (const String& name);
-
-    public:
-        nonvirtual VariantValue GetValue () const;
-
-    public:
         /**
-         *  Note a nullptr value is rendered as an empty DOM node, but then read back (GetValue) as an empty string.
-         *      @todo CONSIDER IF THIS MAKES SENSE
+        *  \brief Node::Ptr is a (never null) smart pointer to a Node::IRep
+        * 
+        *  \note Before Stroika v3.0d5 this was simply called "Node", and now Node::Ptr
+        * 
+        *   Note - Nodes are not created directly, but either via Node::Ptr methods, or Document::Ptr methods (because nodes are always associated with some document).
          */
-        nonvirtual void SetValue (const VariantValue& v);
+        class Ptr {
+        public:
+            /**
+             */
+            Ptr (const shared_ptr<IRep>& from);
 
-    public:
-        nonvirtual void SetAttribute (const String& attrName, const String& v);
+        public:
+            /**
+             */
+            nonvirtual Type GetNodeType () const;
 
-    public:
-        // return true iff attribute exists on this node
-        nonvirtual bool HasAttribute (const String& attrName) const;
-        // return true iff attribute exists on this node and equals value
-        nonvirtual bool HasAttribute (const String& attrName, const String& value) const;
-        // returns string value of attribute, and "" if doesn't exist (or empty - so not distinguishable this way)
-    public:
-        nonvirtual String GetAttribute (const String& attrName) const;
+        public:
+            /**
+             */
+            nonvirtual String GetNamespace () const;
 
-    public:
-        nonvirtual optional<Node> GetFirstAncestorNodeWithAttribute (const String& attrName) const;
-        // if afterNode is nullptr - then this is PREPEND
-    public:
-        nonvirtual Node InsertChild (const String& name, optional<Node> afterNode);
-        nonvirtual Node InsertChild (const String& name, const String& ns, optional<Node> afterNode);
+        public:
+            /**
+             */
+            nonvirtual String GetName () const;
 
-    public:
-        nonvirtual Node AppendChild (const String& name);
-        nonvirtual void AppendChild (const String& name, const VariantValue& v);
-        nonvirtual void AppendChild (const String& name, const String& ns, const VariantValue& v);
+        public:
+            /**
+             */
+            nonvirtual void SetName (const String& name);
 
-    public:
-        // Node 'n' COULD come from other XMLDoc - so be careful how its inserted
-        // NB: NODE CLONED/COPIED - NOT INSERTED BY REFERENCE!
-        // if afterNode == nullptr, then PREPEND!
-        nonvirtual Node InsertNode (const Node& n, const optional<Node>& afterNode, bool inheritNamespaceFromInsertionPoint = true);
-        // Node 'n' COULD come from other XMLDoc - so be careful how its appended
-        // NB: NODE CLONED/COPIED - NOT INSERTED BY REFERENCE!
-    public:
-        nonvirtual Node AppendNode (const Node& n, bool inheritNamespaceFromInsertionPoint = true);
+        public:
+            /**
+             */
+            nonvirtual VariantValue GetValue () const;
 
-    public:
-        nonvirtual void AppendChildIfNotEmpty (const String& name, const VariantValue& v);
-        nonvirtual void AppendChildIfNotEmpty (const String& name, const String& ns, const VariantValue& v);
+        public:
+            /**
+             *  Note a nullptr value is rendered as an empty DOM node, but then read back (GetValue) as an empty string.
+             *      @todo CONSIDER IF THIS MAKES SENSE
+             */
+            nonvirtual void SetValue (const VariantValue& v);
 
-    public:
-        nonvirtual void DeleteNode ();
+        public:
+            /**
+             */
+            nonvirtual void SetAttribute (const String& attrName, const String& v);
 
-    public:
-        nonvirtual Node ReplaceNode (); // creates a new (empty) node with same name (and namespace) as orig
-    public:
-        nonvirtual optional<Node> GetParentNode () const;
+        public:
+            /**
+            // return true iff attribute exists on this node
+            // return true iff attribute exists on this node and equals value
+             */
+            nonvirtual bool HasAttribute (const String& attrName) const;
+            nonvirtual bool HasAttribute (const String& attrName, const String& value) const;
 
-    public:
+        public:
+            /**
+            // returns string value of attribute, and "" if doesn't exist (or empty - so not distinguishable this way)
+             */
+            nonvirtual String GetAttribute (const String& attrName) const;
+
+        public:
+            /**
+             */
+            nonvirtual optional<Ptr> GetFirstAncestorNodeWithAttribute (const String& attrName) const;
+
+        public:
+            /**
+            // if afterNode is nullptr - then this is PREPEND
+             */
+            nonvirtual Ptr InsertChild (const String& name, optional<Ptr> afterNode);
+            nonvirtual Ptr InsertChild (const String& name, const String& ns, optional<Ptr> afterNode);
+
+        public:
+            /**
+             */
+            nonvirtual Ptr  AppendChild (const String& name);
+            nonvirtual void AppendChild (const String& name, const VariantValue& v);
+            nonvirtual void AppendChild (const String& name, const String& ns, const VariantValue& v);
+
+        public:
+            /**
+             */
+            // Node 'n' COULD come from other XMLDoc - so be careful how its inserted
+            // NB: NODE CLONED/COPIED - NOT INSERTED BY REFERENCE!
+            // if afterNode == nullopt, then PREPEND!
+            nonvirtual Ptr InsertNode (const Ptr& n, const optional<Ptr>& afterNode, bool inheritNamespaceFromInsertionPoint = true);
+            // Node 'n' COULD come from other XMLDoc - so be careful how its appended
+            // NB: NODE CLONED/COPIED - NOT INSERTED BY REFERENCE!
+        public:
+            /**
+             */
+            nonvirtual Ptr AppendNode (const Ptr& n, bool inheritNamespaceFromInsertionPoint = true);
+
+        public:
+            /**
+             */
+            nonvirtual void AppendChildIfNotEmpty (const String& name, const VariantValue& v);
+            nonvirtual void AppendChildIfNotEmpty (const String& name, const String& ns, const VariantValue& v);
+
+        public:
+            /**
+             */
+            nonvirtual void DeleteNode ();
+
+        public:
+            /**
+             */
+            nonvirtual Ptr ReplaceNode (); // creates a new (empty) node with same name (and namespace) as orig
+
+        public:
+            /**
+             */
+            nonvirtual optional<Ptr> GetParentNode () const;
+
+        public:
+            /**
+             */
+            nonvirtual Iterable<Ptr> GetChildren () const;
+
+        public:
+            /**
+            // can return a NULL Node. Only examines this node's children
+             */
+            nonvirtual optional<Ptr> GetChildNodeByID (const String& id) const;
+
+        private:
+            shared_ptr<IRep> fRep_;
+
+        private:
+            friend class IRep;
+        };
+
         /**
          */
-        nonvirtual Iterable<Node> GetChildren () const;
+        class IRep {
+        public:
+            IRep ()          = default;
+            virtual ~IRep () = default;
 
-    public:
-        // can return a NULL Node. Only examines this node's children
-        nonvirtual optional<Node> GetChildNodeByID (const String& id) const;
+        public:
+            virtual Type                GetNodeType () const                                                                         = 0;
+            virtual String              GetNamespace () const                                                                        = 0;
+            virtual String              GetName () const                                                                             = 0;
+            virtual void                SetName (const String& name)                                                                 = 0;
+            virtual VariantValue        GetValue () const                                                                            = 0;
+            virtual void                SetValue (const VariantValue& v)                                                             = 0;
+            virtual void                SetAttribute (const String& attrName, const String& v)                                       = 0;
+            virtual bool                HasAttribute (const String& attrName, const String* value) const                             = 0;
+            virtual String              GetAttribute (const String& attrName) const                                                  = 0;
+            virtual optional<Node::Ptr> GetFirstAncestorNodeWithAttribute (const String& attrName) const                             = 0;
+            virtual Ptr                 InsertChild (const String& name, const String* ns, optional<Ptr> afterNode)                  = 0;
+            virtual Ptr                 AppendChild (const String& name)                                                             = 0;
+            virtual void                AppendChild (const String& name, const String* ns, const VariantValue& v)                    = 0;
+            virtual void                AppendChildIfNotEmpty (const String& name, const String* ns, const VariantValue& v)          = 0;
+            virtual Ptr           InsertNode (const Ptr& n, const optional<Ptr>& afterNode, bool inheritNamespaceFromInsertionPoint) = 0;
+            virtual Ptr           AppendNode (const Ptr& n, bool inheritNamespaceFromInsertionPoint)                                 = 0;
+            virtual void          DeleteNode ()                                                                                      = 0;
+            virtual Ptr           ReplaceNode ()                                                                                     = 0;
+            virtual optional<Ptr> GetParentNode () const                                                                             = 0;
+            virtual Iterable<Ptr> GetChildren () const                                                                               = 0;
+            virtual optional<Ptr> GetChildNodeByID (const String& id) const                                                          = 0;
 
-    protected:
-        shared_ptr<Rep> fRep;
+            // @todo see if I can lose GetInteralRep, and do with dynamic_cast - better/more portable to diff impls...
+            virtual void*         GetInternalTRep ()                                                                                 = 0;
 
-    private:
-        friend class Rep;
-    };
+        protected:
+            inline static shared_ptr<IRep> GetRep4Node (Ptr n)
+            {
+                // @todo - see if this needed/why
+                return n.fRep_;
+            }
+        };
+    }
+
+    // &&& do DOCUMENT namespace treatment like I did for NODE next (and lose RWDocuemnt)
 
     /**
     *   !@todo better docs/clearer design - but I think Document is immutable in current design? Else not sure what we have RWDocument).
@@ -169,13 +261,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     public:
         /**
          */
-        nonvirtual Iterable<Node> GetChildren () const;
+        nonvirtual Iterable<Node::Ptr> GetChildren () const;
 
     public:
         /**
          * \brief always returns Node of eElement type, or throws on failure
          */
-        nonvirtual Node GetRootElement () const;
+        nonvirtual Node::Ptr GetRootElement () const;
 
     public:
         nonvirtual shared_ptr<Rep> GetRep () const;
@@ -198,10 +290,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         RWDocument& operator= (const Document& rhs);
 
     public:
-        nonvirtual Node CreateDocumentElement (const String& name);
+        nonvirtual Node::Ptr CreateDocumentElement (const String& name);
 
     public:
-        nonvirtual void SetRootElement (const Node& newRoot);
+        nonvirtual void SetRootElement (const Node::Ptr& newRoot);
 
     public:
         nonvirtual void Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback = nullptr);

@@ -20,6 +20,7 @@
 #include "Stroika/Foundation/Memory/MemoryAllocator.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Traversal/Generator.h"
 
 #include "Schema.h"
 
@@ -116,24 +117,24 @@ public:
         virtual ~Rep () = default;
 
     public:
-        virtual bool   IsAtEnd () const   = 0;
-        virtual void   Next ()            = 0;
-        virtual Node   Current () const   = 0;
-        virtual size_t GetLength () const = 0;
+        virtual bool      IsAtEnd () const   = 0;
+        virtual void      Next ()            = 0;
+        virtual Node::Ptr Current () const   = 0;
+        virtual size_t    GetLength () const = 0;
     };
     explicit SubNodeIterator (const shared_ptr<Rep>& from);
 
 public:
-    nonvirtual bool   NotDone () const;
-    nonvirtual bool   IsAtEnd () const;
-    nonvirtual void   Next ();
-    nonvirtual Node   Current () const;
-    nonvirtual size_t GetLength () const;
+    nonvirtual bool NotDone () const;
+    nonvirtual bool IsAtEnd () const;
+    nonvirtual void Next ();
+    nonvirtual Node::Ptr Current () const;
+    nonvirtual size_t    GetLength () const;
 
 public:
     nonvirtual void operator++ ();
     nonvirtual void operator++ (int);
-    nonvirtual Node operator* () const;
+    nonvirtual Node::Ptr operator* () const;
 
 protected:
     shared_ptr<Rep> fRep;
@@ -155,7 +156,7 @@ inline void SubNodeIterator::Next ()
 {
     fRep->Next ();
 }
-inline Node SubNodeIterator::Current () const
+inline Node::Ptr SubNodeIterator::Current () const
 {
     return fRep->Current ();
 }
@@ -171,7 +172,7 @@ inline void SubNodeIterator::operator++ (int)
 {
     Next ();
 }
-inline Node SubNodeIterator::operator* () const
+inline Node::Ptr SubNodeIterator::operator* () const
 {
     return Current ();
 }
@@ -338,10 +339,10 @@ namespace {
         SubNodeIteratorOver_SiblingList_Rep_ (T_DOMNode* nodeParent);
 
     public:
-        virtual bool   IsAtEnd () const override;
-        virtual void   Next () override;
-        virtual Node   Current () const override;
-        virtual size_t GetLength () const override;
+        virtual bool      IsAtEnd () const override;
+        virtual void      Next () override;
+        virtual Node::Ptr Current () const override;
+        virtual size_t    GetLength () const override;
 
     private:
         T_DOMNode*     fParentNode{nullptr};
@@ -350,7 +351,7 @@ namespace {
     };
 }
 namespace {
-    Node WrapImpl_ (T_DOMNode* n);
+    Node::Ptr WrapImpl_ (T_DOMNode* n);
 }
 
 namespace {
@@ -604,15 +605,15 @@ public:
     }
 
 public:
-    nonvirtual void SetRootElement (const Node& newRoot)
+    nonvirtual void SetRootElement (const Node::Ptr& newRoot)
     {
         TraceContextBumper                              ctx{"XMLDB::Document::Rep::SetRootElement"};
         AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fXMLDoc);
-        Node replacementRoot = CreateDocumentElement (newRoot.GetName ());
+        Node::Ptr replacementRoot = CreateDocumentElement (newRoot.GetName ());
         // next copy all children
         bool addedChildElts = false;
-        for (Node c : newRoot.GetChildren ()) {
+        for (Node::Ptr c : newRoot.GetChildren ()) {
             switch (c.GetNodeType ()) {
                 case Node::eElementNT: {
                     addedChildElts = true;
@@ -633,7 +634,7 @@ public:
     }
 
 public:
-    nonvirtual Node CreateDocumentElement (const String& name)
+    nonvirtual Node::Ptr CreateDocumentElement (const String& name)
     {
         TraceContextBumper ctx{"XMLDB::Document::Rep::CreateDocumentElement"};
 #if qDebug
@@ -728,17 +729,17 @@ public:
     }
 
 public:
-    nonvirtual Iterable<Node> GetChildren () const
+    nonvirtual Iterable<Node::Ptr> GetChildren () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
-        return Traversal::CreateGenerator<Node> (
-            [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fXMLDoc.get ())}] () mutable -> optional<Node> {
+        return Traversal::CreateGenerator<Node::Ptr> (
+            [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fXMLDoc.get ())}] () mutable -> optional<Node::Ptr> {
                 if (sni.IsAtEnd ()) {
-                    return optional<Node>{};
+                    return optional<Node::Ptr>{};
                 }
-                Node r = *sni;
+                Node::Ptr r = *sni;
                 ++sni;
                 return r;
             });
@@ -892,15 +893,15 @@ void Document::WriteAsIs (ostream& out) const
     fRep->WriteAsIs (out);
 }
 
-Iterable<Node> Document::GetChildren () const
+Iterable<Node::Ptr> Document::GetChildren () const
 {
     return fRep->GetChildren ();
 }
 
-Node Document::GetRootElement () const
+Node::Ptr Document::GetRootElement () const
 {
     // Should only be one in an XML document.
-    for (Node ni : fRep->GetChildren ()) {
+    for (Node::Ptr ni : fRep->GetChildren ()) {
         if (ni.GetNodeType () == Node::eElementNT) {
             return ni;
         }
@@ -945,12 +946,12 @@ RWDocument& RWDocument::operator= (const Document& rhs)
     return *this;
 }
 
-Node RWDocument::CreateDocumentElement (const String& name)
+Node::Ptr RWDocument::CreateDocumentElement (const String& name)
 {
     return fRep->CreateDocumentElement (name);
 }
 
-void RWDocument::SetRootElement (const Node& newRoot)
+void RWDocument::SetRootElement (const Node::Ptr& newRoot)
 {
     return fRep->SetRootElement (newRoot);
 }
@@ -966,7 +967,7 @@ void RWDocument::LoadXML (const String& xml)
 }
 
 namespace {
-    T_DOMNode* GetInternalRep_ (Node::Rep* anr)
+    T_DOMNode* GetInternalRep_ (Node::IRep* anr)
     {
         RequireNotNull (anr);
         AssertNotNull (anr->GetInternalTRep ());
@@ -974,7 +975,7 @@ namespace {
     }
 }
 namespace {
-    class MyNodeRep_ : public Node::Rep, Memory::UseBlockAllocationIfAppropriate<MyNodeRep_> {
+    class MyNodeRep_ : public Node::IRep, Memory::UseBlockAllocationIfAppropriate<MyNodeRep_> {
     public:
         MyNodeRep_ (DOMNode* n)
             : fNode_{n}
@@ -983,7 +984,7 @@ namespace {
         }
 
     public:
-        virtual Node::NodeType GetNodeType () const override
+        virtual Node::Type GetNodeType () const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
@@ -1117,7 +1118,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual optional<Node> GetFirstAncestorNodeWithAttribute (const String& attrName) const override
+        virtual optional<Node::Ptr> GetFirstAncestorNodeWithAttribute (const String& attrName) const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
@@ -1135,7 +1136,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual Node InsertChild (const String& name, const String* ns, optional<Node> afterNode) override
+        virtual Node::Ptr InsertChild (const String& name, const String* ns, optional<Node::Ptr> afterNode) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (name));
@@ -1161,7 +1162,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual Node AppendChild (const String& name) override
+        virtual Node::Ptr AppendChild (const String& name) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (name));
@@ -1204,7 +1205,7 @@ namespace {
                 AppendChild (name, ns, v);
             }
         }
-        virtual Node InsertNode (const Node& n, const optional<Node>& afterNode, bool inheritNamespaceFromInsertionPoint) override
+        virtual Node::Ptr InsertNode (const Node::Ptr& n, const optional<Node::Ptr>& afterNode, bool inheritNamespaceFromInsertionPoint) override
         {
             START_LIB_EXCEPTION_MAPPER
             {
@@ -1221,7 +1222,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual Node AppendNode (const Node& n, bool inheritNamespaceFromInsertionPoint) override
+        virtual Node::Ptr AppendNode (const Node::Ptr& n, bool inheritNamespaceFromInsertionPoint) override
         {
             START_LIB_EXCEPTION_MAPPER
             {
@@ -1259,7 +1260,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual Node ReplaceNode () override
+        virtual Node::Ptr ReplaceNode () override
         {
             RequireNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
@@ -1276,34 +1277,34 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual optional<Node> GetParentNode () const override
+        virtual optional<Node::Ptr> GetParentNode () const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
                 auto p = fNode_->getParentNode ();
-                return p == nullptr ? optional<Node>{} : WrapImpl_ (p);
+                return p == nullptr ? optional<Node::Ptr>{} : WrapImpl_ (p);
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual Iterable<Node> GetChildren () const override
+        virtual Iterable<Node::Ptr> GetChildren () const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
-                return Traversal::CreateGenerator<Node> (
-                    [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node> {
+                return Traversal::CreateGenerator<Node::Ptr> (
+                    [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node::Ptr> {
                         if (sni.IsAtEnd ()) {
-                            return optional<Node>{};
+                            return optional<Node::Ptr>{};
                         }
-                        Node r = *sni;
+                        Node::Ptr r = *sni;
                         ++sni;
                         return r;
                     });
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual optional<Node> GetChildNodeByID (const String& id) const override
+        virtual optional<Node::Ptr> GetChildNodeByID (const String& id) const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
@@ -1350,10 +1351,10 @@ namespace {
         // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
         DOMNode* fNode_;
     };
-    inline Node WrapImpl_ (T_DOMNode* n)
+    inline Node::Ptr WrapImpl_ (T_DOMNode* n)
     {
         RequireNotNull (n);
-        return Node{make_shared<MyNodeRep_> (n)};
+        return Node::Ptr{make_shared<MyNodeRep_> (n)};
     }
 }
 
@@ -1390,7 +1391,7 @@ void SubNodeIteratorOver_SiblingList_Rep_::Next ()
     END_LIB_EXCEPTION_MAPPER
 }
 
-Node SubNodeIteratorOver_SiblingList_Rep_::Current () const
+Node::Ptr SubNodeIteratorOver_SiblingList_Rep_::Current () const
 {
     return WrapImpl_ (fCurNode_);
 }
