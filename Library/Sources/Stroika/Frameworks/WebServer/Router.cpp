@@ -39,7 +39,8 @@ namespace {
             return url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
         }
         catch (...) {
-            Execution::Throw (ClientErrorException{HTTP::StatusCodes::kBadRequest, "request URI requires an absolute path"sv});
+            static const auto kException_ = ClientErrorException{HTTP::StatusCodes::kBadRequest, "request URI requires an absolute path"sv};
+            Execution::Throw (kException_);
         }
     }
 }
@@ -122,7 +123,8 @@ struct Router::Rep_ : Interceptor::_IRep {
                 //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
                 Assert (not o->empty ());
                 m->rwResponse ().rwHeaders ().allow = o;
-                Execution::Throw (ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed});
+                static const auto kException_ = ClientErrorException{HTTP::StatusCodes::kMethodNotAllowed};
+                Execution::Throw (kException_);
             }
             else {
                 DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (m->request ().url ()).c_str ());
