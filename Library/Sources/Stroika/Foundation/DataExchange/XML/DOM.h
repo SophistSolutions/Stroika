@@ -84,7 +84,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         nonvirtual Node GetParentNode () const;
 
     public:
-        nonvirtual SubNodeIterator GetChildren () const;
+        //   nonvirtual SubNodeIterator GetChildren () const;
+
+    public:
+        nonvirtual Traversal::Iterable<Node> GetChildren () const;
 
     public:
         // can return a NULL Node. Only examines this node's children
@@ -163,8 +166,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                                            // nonvirtual void Validate (const Schema* schema) const; // ''; but uses PROVIDED schema
 
     public:
-        nonvirtual SubNodeIterator GetChildren () const;
-        nonvirtual Node            GetRootElement () const;
+        nonvirtual Traversal::Iterable<Node> GetChildren () const;
+        //        nonvirtual SubNodeIterator           GetChildren () const;
+        nonvirtual Node GetRootElement () const;
 
     public:
         nonvirtual shared_ptr<Rep> GetRep () const;

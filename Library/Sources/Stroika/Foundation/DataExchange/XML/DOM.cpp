@@ -633,8 +633,7 @@ public:
         Node replacementRoot = CreateDocumentElement (newRoot.GetName ());
         // next copy all children
         bool addedChildElts = false;
-        for (SubNodeIterator i = newRoot.GetChildren (); i.NotDone (); ++i) {
-            Node c = *i;
+        for (Node c : newRoot.GetChildren ()) {
             switch (c.GetNodeType ()) {
                 case Node::eElementNT: {
                     addedChildElts = true;
@@ -914,15 +913,23 @@ void Document::WriteAsIs (ostream& out) const
     fRep->WriteAsIs (out);
 }
 
-SubNodeIterator Document::GetChildren () const
+Traversal::Iterable<Node> Document::GetChildren () const
 {
-    return fRep->GetChildren ();
+    return Traversal::CreateGenerator<Node> ([sni = fRep->GetChildren ()] () mutable -> optional<Node> {
+        if (sni.IsAtEnd ()) {
+            return optional<Node>{};
+        }
+        Node r = *sni;
+        ++sni;
+        return r;
+    });
+    // return fRep->GetChildren ();
 }
 
 Node Document::GetRootElement () const
 {
     // Should only be one in an XML document.
-    for (SubNodeIterator i = GetChildren (); i.NotDone (); ++i) {
+    for (SubNodeIterator i = fRep->GetChildren (); i.NotDone (); ++i) {
         if ((*i).GetNodeType () == Node::eElementNT) {
             return *i;
         }

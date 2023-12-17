@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 
+#include "../../Traversal/Generator.h"
+
 #if qHasFeature_Xerces
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 
@@ -191,10 +193,24 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         ThrowIfNull (fRep);
         return fRep->GetParentNode ();
     }
+#if 0
     inline SubNodeIterator Node::GetChildren () const
     {
         ThrowIfNull (fRep);
         return fRep->GetChildren ();
+    }
+#endif
+    inline Traversal::Iterable<Node> Node::GetChildren () const
+    {
+        AssertNotNull (fRep);
+        return Traversal::CreateGenerator<Node> ([sni = fRep->GetChildren ()] () mutable -> optional<Node> {
+            if (sni.IsAtEnd ()) {
+                return optional<Node>{};
+            }
+            Node r = *sni;
+            ++sni;
+            return r;
+        });
     }
     inline Node Node::GetChildNodeByID (const String& id) const
     {
