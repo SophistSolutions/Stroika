@@ -1322,11 +1322,13 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, T15_DOMRead_)
     {
-        DOM::RWDocument d = DOM::RWDocument{};
+        DOM::Document d;
         d.Read (Memory::BLOB::Attach (Resources_::personal_xml).As<Streams::InputStream<byte>::Ptr> ());
         stringstream ss;
         d.WritePrettyPrinted (ss);
-        DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
+
+        // this line I THINK crashes on MacOS under github actions, but not on my machine?? TESTING to viery  thats the issue
+        //         DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
     }
 }
 #endif

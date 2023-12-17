@@ -867,6 +867,11 @@ private:
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
 
+Document::Document ()
+    : fRep{make_shared<Rep> (nullptr)}
+{
+}
+
 Document::Document (const Schema::Ptr& schema)
     : fRep{make_shared<Rep> (schema)}
 {
@@ -906,7 +911,8 @@ Node::Ptr Document::GetRootElement () const
             return ni;
         }
     }
-    Execution::Throw (Execution::RuntimeErrorException{"No root element"});
+    static const auto kException_ = Execution::RuntimeErrorException{"No root element"};
+    Execution::Throw (kException_);
 }
 
 void Document::Validate () const
@@ -915,53 +921,22 @@ void Document::Validate () const
     fRep->Validate ();
 }
 
-/*
- ********************************************************************************
- ******************************** RWDocument ************************************
- ********************************************************************************
- */
-RWDocument::RWDocument ()
-    : Document{Schema::Ptr{nullptr}}
-{
-}
-
-RWDocument::RWDocument (const Schema::Ptr& schema)
-    : Document{schema}
-{
-}
-
-RWDocument::RWDocument (const Document& from)
-    : Document{make_shared<Rep> (*from.GetRep ())}
-{
-}
-
-RWDocument::RWDocument (const RWDocument& from)
-    : Document{make_shared<Rep> (*from.fRep)}
-{
-}
-
-RWDocument& RWDocument::operator= (const Document& rhs)
-{
-    fRep = make_shared<Rep> (*rhs.GetRep ());
-    return *this;
-}
-
-Node::Ptr RWDocument::CreateDocumentElement (const String& name)
+Node::Ptr Document::CreateDocumentElement (const String& name)
 {
     return fRep->CreateDocumentElement (name);
 }
 
-void RWDocument::SetRootElement (const Node::Ptr& newRoot)
+void Document::SetRootElement (const Node::Ptr& newRoot)
 {
     return fRep->SetRootElement (newRoot);
 }
 
-void RWDocument::Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback)
+void Document::Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback)
 {
     fRep->Read (in, nullptr, progressCallback);
 }
 
-void RWDocument::LoadXML (const String& xml)
+void Document::LoadXML (const String& xml)
 {
     fRep->LoadXML (xml);
 }

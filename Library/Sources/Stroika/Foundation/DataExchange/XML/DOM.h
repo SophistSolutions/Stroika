@@ -274,26 +274,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         nonvirtual Node::Ptr GetRootElement () const;
 
     public:
-        nonvirtual shared_ptr<Rep> GetRep () const;
-
-    protected:
-        shared_ptr<Rep> fRep;
-    };
-
-    /**
-     *  RWDocument is a modifiable DOM document.
-     * 
-     *      @todo LOSE THIS CONCEPT - Document is modifyable - even if no APIs for it, cuz you can modify the NODES.
-     */
-    class RWDocument : public Document {
-    public:
-        RWDocument ();
-        RWDocument (const Schema::Ptr& schema);
-        RWDocument (const Document& from);
-        RWDocument (const RWDocument& from);
-        RWDocument& operator= (const Document& rhs);
-
-    public:
         nonvirtual Node::Ptr CreateDocumentElement (const String& name);
 
     public:
@@ -304,6 +284,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     public:
         nonvirtual void LoadXML (const String& xml); // 'xml' contains data to be parsed and to replace the current XML document
+    public:
+        nonvirtual shared_ptr<Rep> GetRep () const;
+
+    protected:
+        shared_ptr<Rep> fRep;
     };
 
 };
