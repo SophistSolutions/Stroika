@@ -98,7 +98,7 @@ namespace {
     };
 }
 
-#if qHasFeature_Xerces && defined(_MSC_VER)
+#if qHasFeature_Xerces
 #include "Providers/Xerces.h"
 
 using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;

@@ -98,7 +98,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         inline Ptr New (const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
                         const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {})
         {
-            return New (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
+            return New (Provider::eDefault, targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
         }
 
     }

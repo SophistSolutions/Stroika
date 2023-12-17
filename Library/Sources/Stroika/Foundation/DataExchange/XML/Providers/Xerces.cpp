@@ -21,24 +21,11 @@ using namespace Stroika::Foundation::Execution;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qHasFeature_Xerces && defined(_MSC_VER)
+#if qHasFeature_Xerces
 
 using namespace Providers::Xerces;
 
-#if 0
-// now handled through pkg-config/configure
-// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#if qDebug
-#pragma comment(lib, "xerces-c_3d.lib")
-#else
-#pragma comment(lib, "xerces-c_3.lib")
-#endif
-#endif
-#endif
-
-#if qHasFeature_Xerces
-
-XERCES_CPP_NAMESPACE_USE
+//XERCES_CPP_NAMESPACE_USE
 void Map2StroikaExceptionsErrorReporter::error ([[maybe_unused]] const unsigned int errCode, [[maybe_unused]] const XMLCh* const errDomain,
                                                 [[maybe_unused]] const ErrTypes type, const XMLCh* const errorText,
                                                 [[maybe_unused]] const XMLCh* const systemId, [[maybe_unused]] const XMLCh* const publicId,

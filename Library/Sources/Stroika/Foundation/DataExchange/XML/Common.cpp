@@ -19,7 +19,7 @@ using namespace Stroika::Foundation::Debug;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qHasFeature_Xerces && defined(_MSC_VER)
+#if qHasFeature_Xerces
 #include "Providers/Xerces.h"
 
 using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
