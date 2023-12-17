@@ -49,7 +49,8 @@ RUN  \
 # Install a bunch of components - mostly that Stroika builds will find handy
 # doxygen for generating docs - optional
 # gdb for debugging - optional
-RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen jq
+# xxd for 'resource' strategy (currently just in Tests - as of 2023-12-16)
+RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen jq xxd
 
 COPY Windows-Cygwin/Getting-Started-With-Stroika.md ./tools/cygwin/home
 COPY Windows-Cygwin/.bash_profile ./tools/cygwin/home
