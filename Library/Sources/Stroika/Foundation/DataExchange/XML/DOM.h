@@ -45,15 +45,16 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         };
 
         /**
-        *  \brief Node::Ptr is a (never null) smart pointer to a Node::IRep
-        * 
-        *  \note Before Stroika v3.0d5 this was simply called "Node", and now Node::Ptr
-        * 
-        *   Note - Nodes are not created directly, but either via Node::Ptr methods, or Document::Ptr methods (because nodes are always associated with some document).
+         *  \brief Node::Ptr is a (never null) smart pointer to a Node::IRep
+         * 
+         *  \note Before Stroika v3.0d5 this was simply called "Node", and now Node::Ptr
+         * 
+         *   Note - Nodes are not created directly, but either via Node::Ptr methods, or Document::Ptr methods (because nodes are always associated with some document).
          */
         class Ptr {
         public:
             /**
+             *  \req not nullptr
              */
             Ptr (const shared_ptr<IRep>& from);
 
@@ -97,7 +98,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
             // return true iff attribute exists on this node
-            // return true iff attribute exists on this node and equals value
+            // return true iff attribute exists on this node and equals (case sensative) value
              */
             nonvirtual bool HasAttribute (const String& attrName) const;
             nonvirtual bool HasAttribute (const String& attrName, const String& value) const;
@@ -105,6 +106,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
             // returns string value of attribute, and "" if doesn't exist (or empty - so not distinguishable this way)
+
+            &&& todo redo this API so returns OPTIONAL and nullopt if missing
              */
             nonvirtual String GetAttribute (const String& attrName) const;
 
@@ -115,7 +118,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-            // if afterNode is nullptr - then this is PREPEND
+            // if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
              */
             nonvirtual Ptr InsertChild (const String& name, optional<Ptr> afterNode);
             nonvirtual Ptr InsertChild (const String& name, const String& ns, optional<Ptr> afterNode);
@@ -149,6 +152,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+            * @todo CLARIFY - THINK DELETES UNDERLYINHG NODE - LEAVES THIS PTR == nullptr (or should)
              */
             nonvirtual void DeleteNode ();
 
