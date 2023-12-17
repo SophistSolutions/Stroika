@@ -35,8 +35,8 @@ using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
-#if qHasFeature_Xerces
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
+#if qHasFeature_Xerces
 namespace {
     // These SHOULD be part of xerces! Perhaps someday post them?
     class StdIStream_InputSource_ : public InputSource {

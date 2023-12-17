@@ -14,7 +14,6 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
-using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 
@@ -23,6 +22,7 @@ using namespace Stroika::Foundation::Execution;
 
 #if qHasFeature_Xerces
 
+using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Providers::Xerces;
 
 //XERCES_CPP_NAMESPACE_USE

@@ -8,6 +8,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#if qStroika_Foundation_DataExchange_XML_SupportSchema
 namespace Stroika::Foundation::DataExchange::XML::Schema {
 
     /*
@@ -51,5 +52,6 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
     }
 
 }
+#endif
 
 #endif
