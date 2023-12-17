@@ -63,9 +63,9 @@
 // Must check CLANG first, since CLANG also defines GCC
 // see
 //      clang++-3.8 -dM -E - < /dev/null
-#if (__clang_major__ < 14) || (__clang_major__ == 14 && (__clang_minor__ < 0))
+#if (__clang_major__ < 15) || (__clang_major__ == 15 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: Stroika v3 (older clang versions supported by Stroika v2.1) does not support versions prior to APPLE clang++ 14 (XCode 14)"
+    "Warning: Stroika v3 (older clang versions supported by Stroika v2.1) does not support versions prior to APPLE clang++ 15 (XCode 14)"
 #endif
 #if (__clang_major__ > 15)
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
