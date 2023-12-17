@@ -242,23 +242,25 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         *   tthats not well thoguth out but a gbeeingg.
         * 
         *   idea is - might have quick and full schemas and use one sometimes andother other sometimes.
+        * 
+        * 
+        * UNSURE IF WE WANT TO KEEP SCHEMA ASSOCIATED. MAKES CONCEPT more complex. passing no schema to validate/read/write emthods COULD mean 
+        *   use default or could mean use none (both make sense). Probbaly best/most flexible to NOT have associauted schema. Then caller can pass 
+        * a schema to WRITE or READ oeprations, and its clearly valiating iwth that schema then, and not otherwise.
          */
         class Ptr {
         public:
             /**
-         */
+             */
             Ptr ();
             Ptr (const shared_ptr<IRep>& rep);
-            ~Ptr () = default;
-
-            // No copying. (maybe create a RWDocument for that - but doesnt appear needed externally)
-        private:
-            Ptr (const Ptr& from)           = delete;
-            Ptr& operator= (const Ptr& rhs) = delete;
+            Ptr (const Ptr& from)           = default;
+            Ptr& operator= (const Ptr& rhs) = default;
+            ~Ptr ()                         = default;
 
         public:
             /**
-         */
+             */
             nonvirtual Schema::Ptr GetSchema () const;
 
         public:
@@ -278,78 +280,74 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-         */
+             *  Return (and iterable) of nodes, which represent the top level children of the document. Typically there will be one interesting  - the
+             *  root element, so calling GetRootElement() will typically be easier/more useful (so as to not see/get confused with things like comments, or processing directives).
+             */
             nonvirtual Iterable<Node::Ptr> GetChildren () const;
 
         public:
             /**
-         * \brief always returns Node of eElement type, or throws on failure
-         */
+             * \brief always returns Node of eElement type, or throws on failure
+             */
             nonvirtual Node::Ptr GetRootElement () const;
 
         public:
             /**
-         */
+            *   @todo document - invistigate what this does? If there already is one (replace?) or erorr?
+             */
             nonvirtual Node::Ptr CreateDocumentElement (const String& name);
 
         public:
             /**
+            *   @todo document - invistigate what this does? look at impl - maybe delete API? What if goes cross documents????
          */
             nonvirtual void SetRootElement (const Node::Ptr& newRoot);
 
-            // bad api - redo
-        public:
-            nonvirtual void Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback = nullptr);
-
-            // bad api - redo
+            // bad api - redo (NEW - but is even needed? - as can use TextTobyteReader)
         public:
             nonvirtual void LoadXML (const String& xml); // 'xml' contains data to be parsed and to replace the current XML document
 
         public:
             /**
-         */
+             */
             nonvirtual shared_ptr<IRep> GetRep () const;
 
         private:
             shared_ptr<IRep> fRep_;
         };
 
-        // todo add overloads for input stream...
+        /**
+         *  Create a Document object and return a smart pointer (Ptr) to it.
+         * 
+         *  Use the optionally provided stream to deserialize the document from (or create an empty one).
+         */
         Ptr New ();
         Ptr New (const Schema::Ptr& schema);
+        Ptr New (const Streams::InputStream<byte>::Ptr& in);
+        Ptr New (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema);
 
         /**
          */
         struct IRep {
-
-            virtual ~IRep () = default;
-
+            virtual ~IRep ()                             = default;
             virtual const Schema::Ptr GetSchema () const = 0;
-
             //
             // If this function is passed a nullptr exceptionResult - it will throw on bad validation.
             // If it is passed a non-nullptr exceptionResult - then it will map BadFormatException to being ignored, but filling in this
             // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
             // failing the read (for http://bugzilla/show_bug.cgi?id=513).
             //
-            virtual void Read (Streams::InputStream<byte>::Ptr& in, shared_ptr<BadFormatException>* exceptionResult,
-                               Execution::ProgressMonitor::Updater progressCallback) = 0;
-
-            virtual void SetRootElement (const Node::Ptr& newRoot) = 0;
-
-            virtual Node::Ptr CreateDocumentElement (const String& name) = 0;
-
-            virtual void LoadXML (const String& xml)             = 0;
-            virtual void WritePrettyPrinted (ostream& out) const = 0;
-
-            virtual void WriteAsIs (ostream& out) const = 0;
-
-            virtual Iterable<Node::Ptr> GetChildren () const = 0;
-
-            virtual void                     Validate () const                = 0;
-            virtual NamespaceDefinitionsList GetNamespaceDefinitions () const = 0;
+            virtual void                Read (const Streams::InputStream<byte>::Ptr& in, shared_ptr<BadFormatException>* exceptionResult,
+                                              Execution::ProgressMonitor::Updater progressCallback) = 0;
+            virtual void                SetRootElement (const Node::Ptr& newRoot)                   = 0;
+            virtual Node::Ptr           CreateDocumentElement (const String& name)                  = 0;
+            virtual void                LoadXML (const String& xml)                                 = 0;
+            virtual void                WritePrettyPrinted (ostream& out) const                     = 0;
+            virtual void                WriteAsIs (ostream& out) const                              = 0;
+            virtual Iterable<Node::Ptr> GetChildren () const                                        = 0;
+            virtual void                Validate () const                                           = 0;
+            virtual NamespaceDefinitionsList GetNamespaceDefinitions () const                       = 0;
         };
-
     }
 
 };

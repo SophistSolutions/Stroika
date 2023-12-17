@@ -555,10 +555,10 @@ namespace {
         // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
         // failing the read (for http://bugzilla/show_bug.cgi?id=513).
         //
-        virtual void Read (Streams::InputStream<byte>::Ptr& in, shared_ptr<BadFormatException>* exceptionResult,
+        virtual void Read (const Streams::InputStream<byte>::Ptr& in, shared_ptr<BadFormatException>* exceptionResult,
                            Execution::ProgressMonitor::Updater progressCallback) override
         {
-            TraceContextBumper ctx{"XMLDB::Document::Rep::Read"};
+            TraceContextBumper ctx{"XercesDocRep_::Read"};
             AssertNotNull (fXMLDoc);
 
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_}; // write context cuz reading from stream, but writing to 'this'
@@ -603,7 +603,7 @@ namespace {
         }
         virtual void SetRootElement (const Node::Ptr& newRoot) override
         {
-            TraceContextBumper                              ctx{"XMLDB::Document::Rep::SetRootElement"};
+            TraceContextBumper                              ctx{"XercesDocRep_::SetRootElement"};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             AssertNotNull (fXMLDoc);
             Node::Ptr replacementRoot = CreateDocumentElement (newRoot.GetName ());
@@ -630,7 +630,7 @@ namespace {
         }
         virtual Node::Ptr CreateDocumentElement (const String& name) override
         {
-            TraceContextBumper ctx{"XMLDB::Document::Rep::CreateDocumentElement"};
+            TraceContextBumper ctx{"XercesDocRep_Rep::CreateDocumentElement"};
 #if qDebug
             Require (ValidNewNodeName_ (name));
 #endif
@@ -675,7 +675,7 @@ namespace {
         }
         virtual void LoadXML (const String& xml) override
         {
-            TraceContextBumper                             ctx{"XMLDB::Document::Rep::LoadXML"};
+            TraceContextBumper                             ctx{"XercesDocRep_::LoadXML"};
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             AssertNotNull (fXMLDoc);
             START_LIB_EXCEPTION_MAPPER
@@ -693,7 +693,7 @@ namespace {
         }
         virtual void WritePrettyPrinted (ostream& out) const override
         {
-            TraceContextBumper                             ctx{"XMLDB::Document::Rep::WritePrettyPrinted"};
+            TraceContextBumper                             ctx{"XercesDocRep_::WritePrettyPrinted"};
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             AssertNotNull (fXMLDoc);
             START_LIB_EXCEPTION_MAPPER
@@ -706,7 +706,7 @@ namespace {
         }
         virtual void WriteAsIs (ostream& out) const override
         {
-            TraceContextBumper                             ctx{"XMLDB::Document::Rep::WriteAsIs"};
+            TraceContextBumper                             ctx{"XercesDocRep_::WriteAsIs"};
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             AssertNotNull (fXMLDoc);
             START_LIB_EXCEPTION_MAPPER
@@ -734,7 +734,7 @@ namespace {
         virtual void Validate () const override
         {
             RequireNotNull (fSchema);
-            TraceContextBumper                             ctx{"XMLDB::Document::Rep::Validate"};
+            TraceContextBumper                             ctx{"XercesDocRep_::Validate"};
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             START_LIB_EXCEPTION_MAPPER
             {
@@ -859,6 +859,18 @@ Document::Ptr Document::New ()
 Document::Ptr Document::New (const Schema::Ptr& schema)
 {
     return Ptr{make_shared<XercesDocRep_> (schema)};
+}
+Document::Ptr Document::New (const Streams::InputStream<byte>::Ptr& in)
+{
+    Ptr p = New ();
+    p.GetRep ()->Read (in, nullptr, nullptr);
+    return p;
+}
+Document::Ptr Document::New (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema)
+{
+    Ptr p = New (schema);
+    p.GetRep ()->Read (in, nullptr, nullptr);
+    return p;
 }
 
 /////////////////////////

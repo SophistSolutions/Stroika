@@ -202,10 +202,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return fRep_->SetRootElement (newRoot);
     }
-    inline void Document::Ptr::Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback)
-    {
-        fRep_->Read (in, nullptr, progressCallback);
-    }
     inline void Document::Ptr::LoadXML (const String& xml)
     {
         fRep_->LoadXML (xml);

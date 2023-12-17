@@ -12,7 +12,7 @@ static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerce
 #define XML_LIBRARY 1
 #define XERCES_STATIC_LIBRARY 1
 
-// avoid namespace conflcit with some Xerces code
+// avoid namespace conflict with some Xerces code
 #undef Assert
 
 #include <xercesc/dom/DOM.hpp>
@@ -54,15 +54,14 @@ namespace Stroika::Foundation::Characters {
 
 namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
 
-    XERCES_CPP_NAMESPACE_USE
+    XERCES_CPP_NAMESPACE_USE;
 
 /*
- *  UnderlyingXMLLibExcptionMapping layer
  */
 #define START_LIB_EXCEPTION_MAPPER try {
 #define END_LIB_EXCEPTION_MAPPER                                                                                                           \
     }                                                                                                                                      \
-    catch (const OutOfMemoryException&)                                                                                                    \
+    catch (const xercesc_3_2::OutOfMemoryException&)                                                                                       \
     {                                                                                                                                      \
         Execution::Throw (bad_alloc{}, "xerces OutOfMemoryException - throwing bad_alloc");                                                \
     }                                                                                                                                      \
@@ -71,6 +70,8 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
         Execution::ReThrow ();                                                                                                             \
     }
 
+    /**
+     */
     struct IXercesSchemaRep {
         virtual xercesc_3_2::XMLGrammarPool* GetCachedGrammarPool () = 0;
     };
@@ -93,6 +94,8 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
         virtual void fatalError (const SAXParseException& exc) override;
     };
 
+    /**
+     */
     Characters::String xercesString2String (const XMLCh* s, const XMLCh* e);
     Characters::String xercesString2String (const XMLCh* t);
 
