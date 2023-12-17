@@ -16,7 +16,9 @@ include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Xerces${OBJ_SUFFIX}\
 
+ifneq ($(qFeatureFlag_Xerces), no)
+Objs +=	$(ObjDir)Xerces${OBJ_SUFFIX}
+endif
 
 all:	$(Objs)

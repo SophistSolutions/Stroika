@@ -6,7 +6,7 @@
 
 #include "../../../StroikaPreComp.h"
 
-#if qHasFeature_Xerces
+static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerces not set");
 
 // Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
 #define XML_LIBRARY 1
@@ -97,6 +97,5 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
     Characters::String xercesString2String (const XMLCh* t);
 
 }
-#endif
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Providers_Xerces_h_*/

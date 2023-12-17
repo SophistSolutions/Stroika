@@ -20,12 +20,16 @@ using namespace Stroika::Foundation::Execution;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qHasFeature_Xerces
+static_assert (qHasFeature_Xerces, "Don't compile this file if qHasFeature_Xerces not set");
 
 using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Providers::Xerces;
 
-//XERCES_CPP_NAMESPACE_USE
+/*
+ ********************************************************************************
+ *************** Provider::Xerces::Map2StroikaExceptionsErrorReporter ***********
+ ********************************************************************************
+ */
 void Map2StroikaExceptionsErrorReporter::error ([[maybe_unused]] const unsigned int errCode, [[maybe_unused]] const XMLCh* const errDomain,
                                                 [[maybe_unused]] const ErrTypes type, const XMLCh* const errorText,
                                                 [[maybe_unused]] const XMLCh* const systemId, [[maybe_unused]] const XMLCh* const publicId,
@@ -51,6 +55,11 @@ void Map2StroikaExceptionsErrorReporter::fatalError (const SAXParseException& ex
                                          static_cast<unsigned int> (exc.getColumnNumber ()), 0});
 }
 
+/*
+ ********************************************************************************
+ ********************* Provider::Xerces::SetupCommonParserFeatures **************
+ ********************************************************************************
+ */
 void Providers::Xerces::SetupCommonParserFeatures (SAX2XMLReader& reader)
 {
     reader.setFeature (XMLUni::fgSAX2CoreNameSpaces, true);
@@ -75,6 +84,11 @@ void Providers::Xerces::SetupCommonParserFeatures (SAX2XMLReader& reader, bool v
     reader.setFeature (XMLUni::fgXercesCacheGrammarFromParse, false);
 }
 
+/*
+ ********************************************************************************
+ ********************* Provider::Xerces::xercesString2String ********************
+ ********************************************************************************
+ */
 String Providers::Xerces::xercesString2String (const XMLCh* s, const XMLCh* e)
 {
     if constexpr (same_as<XMLCh, char16_t>) {
@@ -111,5 +125,3 @@ String Providers::Xerces::xercesString2String (const XMLCh* t)
         return String{};
     }
 }
-
-#endif
