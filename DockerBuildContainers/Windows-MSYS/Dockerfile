@@ -88,9 +88,10 @@ RUN  \
     [Environment]::SetEnvironmentVariable('HOME', 'c:\msys64\home', [EnvironmentVariableTarget]::Machine);
 
 # Install a bunch of components - mostly that Stroika builds will find handy
+# xxd for 'resource' strategy (currently just in Tests - as of 2023-12-16) - weirdly in vim package
 SHELL ["cmd", "/S", "/C"]
 RUN \
-    pacman --noconfirm -S base-devel git unzip p7zip doxygen mingw-w64-x86_64-jq && \
+    pacman --noconfirm -S base-devel git unzip p7zip doxygen mingw-w64-x86_64-jq vim && \
     pacman --noconfirm -Syuu
 
 COPY Windows-MSYS/Getting-Started-With-Stroika.md $MSYS_DIR/home/
