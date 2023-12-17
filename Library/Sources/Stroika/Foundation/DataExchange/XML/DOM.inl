@@ -152,14 +152,63 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
      *********************************** XML::DOM::Node *****************************
      ********************************************************************************
      */
-    inline Document::Document (const shared_ptr<Rep>& rep)
-        : fRep{rep}
+    inline Document::Ptr::Ptr (const shared_ptr<IRep>& rep)
+        : fRep_{rep}
     {
         RequireNotNull (rep);
     }
-    inline shared_ptr<Document::Rep> Document::GetRep () const
+    inline shared_ptr<Document::IRep> Document::Ptr::GetRep () const
     {
-        return fRep;
+        return fRep_;
+    }
+    inline void Document::Ptr::WritePrettyPrinted (ostream& out) const
+    {
+        /*
+     * Write pretty printed XML - where we generate the whitespace around nodes - ignoring any text fragments - except in leaf nodes.
+     */
+        fRep_->WritePrettyPrinted (out);
+    }
+    inline void Document::Ptr::WriteAsIs (ostream& out) const
+    {
+        /*
+     * Write - respecting all the little #text fragment nodes throughout the XML node tree
+     */
+        fRep_->WriteAsIs (out);
+    }
+    inline Iterable<Node::Ptr> Document::Ptr::GetChildren () const
+    {
+        return fRep_->GetChildren ();
+    }
+    inline Node::Ptr Document::Ptr::GetRootElement () const
+    {
+        // Should only be one in an XML document.
+        for (Node::Ptr ni : fRep_->GetChildren ()) {
+            if (ni.GetNodeType () == Node::eElementNT) {
+                return ni;
+            }
+        }
+        static const auto kException_ = Execution::RuntimeErrorException{"No root element"};
+        Execution::Throw (kException_);
+    }
+    inline void Document::Ptr::Validate () const
+    {
+        fRep_->Validate ();
+    }
+    inline Node::Ptr Document::Ptr::CreateDocumentElement (const String& name)
+    {
+        return fRep_->CreateDocumentElement (name);
+    }
+    inline void Document::Ptr::SetRootElement (const Node::Ptr& newRoot)
+    {
+        return fRep_->SetRootElement (newRoot);
+    }
+    inline void Document::Ptr::Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback)
+    {
+        fRep_->Read (in, nullptr, progressCallback);
+    }
+    inline void Document::Ptr::LoadXML (const String& xml)
+    {
+        fRep_->LoadXML (xml);
     }
 
 }

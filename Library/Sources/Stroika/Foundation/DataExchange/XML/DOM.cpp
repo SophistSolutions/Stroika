@@ -516,146 +516,140 @@ public:
  *********************************** Document ***********************************
  ********************************************************************************
  */
-class DataExchange::XML::DOM::Document::Rep {
-public:
-    Rep (const Schema::Ptr& schema)
-        : fSchema{schema}
-    {
-        [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
-        START_LIB_EXCEPTION_MAPPER
+namespace {
+
+    class XercesDocRep_ : public DataExchange::XML::DOM::Document::IRep {
+    public:
+        XercesDocRep_ (const Schema::Ptr& schema)
+            : fSchema{schema}
         {
-            MakeXMLDoc_ (fXMLDoc);
-            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
-        }
-        END_LIB_EXCEPTION_MAPPER
-    }
-
-    Rep (const Rep& from)
-        : fSchema{from.fSchema}
-    {
-        START_LIB_EXCEPTION_MAPPER
-        {
-            fXMLDoc = T_XMLDOMDocumentSmartPtr (dynamic_cast<T_XMLDOMDocument*> (from.fXMLDoc->cloneNode (true)));
-            fXMLDoc->setXmlStandalone (true);
-            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
-        }
-        END_LIB_EXCEPTION_MAPPER
-        EnsureNotNull (fXMLDoc);
-    }
-
-    virtual ~Rep () = default;
-
-public:
-    nonvirtual const Schema::Ptr GetSchema () const
-    {
-        return fSchema;
-    }
-
-public:
-    //
-    // If this function is passed a nullptr exceptionResult - it will throw on bad validation.
-    // If it is passed a non-nullptr exceptionResult - then it will map BadFormatException to being ignored, but filling in this
-    // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
-    // failing the read (for http://bugzilla/show_bug.cgi?id=513).
-    //
-    nonvirtual void Read (Streams::InputStream<byte>::Ptr& in, shared_ptr<BadFormatException>* exceptionResult, Execution::ProgressMonitor::Updater progressCallback)
-    {
-        TraceContextBumper ctx{"XMLDB::Document::Rep::Read"};
-        AssertNotNull (fXMLDoc);
-
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_}; // write context cuz reading from stream, but writing to 'this'
-        START_LIB_EXCEPTION_MAPPER
-        {
-            MyMaybeSchemaDOMParser_ myDOMParser{fSchema};
+            [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
+            START_LIB_EXCEPTION_MAPPER
             {
-                try {
-                    myDOMParser.fParser->parse (BinaryInputStream_InputSource_WithProgress_{
-                        in, Execution::ProgressMonitor::Updater (progressCallback, 0.1f, 0.8f), u"XMLDB"});
-                }
-                catch (const BadFormatException& vf) {
-                    // Support  http://bugzilla/show_bug.cgi?id=513  and allowing partially valid inputs (like bad ccrs)
-                    if (exceptionResult == nullptr) {
-                        ReThrow ();
-                        throw;
-                    }
-                    else {
-                        DbgTrace ("Validation failure passed by through Read () function argument");
-                        *exceptionResult = make_shared<BadFormatException> (vf);
-                        // and ignore - fall through to completed parse.
-                    }
-                }
-                goto CompletedParse;
+                MakeXMLDoc_ (fXMLDoc);
+                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
             }
-
+            END_LIB_EXCEPTION_MAPPER
+        }
+        XercesDocRep_ (const XercesDocRep_& from)
+            : fSchema{from.fSchema}
+        {
+            START_LIB_EXCEPTION_MAPPER
             {
-                u16string xmlText = Streams::TextReader::New (in).ReadAll ().As<u16string> ();
-                MemBufInputSource memBufIS (reinterpret_cast<const XMLByte*> (xmlText.c_str ()), xmlText.length () * sizeof (XMLCh), u"XMLDB");
-                memBufIS.setEncoding (XMLUni::fgUTF16LEncodingString2);
-                myDOMParser.fParser->parse (memBufIS);
+                fXMLDoc = T_XMLDOMDocumentSmartPtr (dynamic_cast<T_XMLDOMDocument*> (from.fXMLDoc->cloneNode (true)));
+                fXMLDoc->setXmlStandalone (true);
+                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
             }
-
-        CompletedParse:
-            fXMLDoc.reset ();
-            fXMLDoc = T_XMLDOMDocumentSmartPtr{myDOMParser.fParser->adoptDocument ()};
-            fXMLDoc->setXmlStandalone (true);
-            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
+            END_LIB_EXCEPTION_MAPPER
+            EnsureNotNull (fXMLDoc);
         }
-        END_LIB_EXCEPTION_MAPPER
-        progressCallback.SetProgress (1.0f);
-    }
 
-public:
-    nonvirtual void SetRootElement (const Node::Ptr& newRoot)
-    {
-        TraceContextBumper                              ctx{"XMLDB::Document::Rep::SetRootElement"};
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        AssertNotNull (fXMLDoc);
-        Node::Ptr replacementRoot = CreateDocumentElement (newRoot.GetName ());
-        // next copy all children
-        bool addedChildElts = false;
-        for (Node::Ptr c : newRoot.GetChildren ()) {
-            switch (c.GetNodeType ()) {
-                case Node::eElementNT: {
-                    addedChildElts = true;
-                    replacementRoot.AppendNode (c);
-                } break;
-                case Node::eAttributeNT: {
-                    replacementRoot.SetAttribute (c.GetName (), c.GetValue ().As<String> ());
-                } break;
-                case Node::eTextNT: {
-                    // Alas - this SetRootElement () is a bit buggy. Don't know how to do it right!
-                    // This maybe OK -- LGP 2006-09-13
-                    if (not addedChildElts) {
-                        replacementRoot.SetValue (c.GetValue ());
+        virtual const Schema::Ptr GetSchema () const override
+        {
+            return fSchema;
+        }
+
+        //
+        // If this function is passed a nullptr exceptionResult - it will throw on bad validation.
+        // If it is passed a non-nullptr exceptionResult - then it will map BadFormatException to being ignored, but filling in this
+        // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
+        // failing the read (for http://bugzilla/show_bug.cgi?id=513).
+        //
+        virtual void Read (Streams::InputStream<byte>::Ptr& in, shared_ptr<BadFormatException>* exceptionResult,
+                           Execution::ProgressMonitor::Updater progressCallback) override
+        {
+            TraceContextBumper ctx{"XMLDB::Document::Rep::Read"};
+            AssertNotNull (fXMLDoc);
+
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_}; // write context cuz reading from stream, but writing to 'this'
+            START_LIB_EXCEPTION_MAPPER
+            {
+                MyMaybeSchemaDOMParser_ myDOMParser{fSchema};
+                {
+                    try {
+                        myDOMParser.fParser->parse (BinaryInputStream_InputSource_WithProgress_{
+                            in, Execution::ProgressMonitor::Updater (progressCallback, 0.1f, 0.8f), u"XMLDB"});
                     }
-                } break;
+                    catch (const BadFormatException& vf) {
+                        // Support  http://bugzilla/show_bug.cgi?id=513  and allowing partially valid inputs (like bad ccrs)
+                        if (exceptionResult == nullptr) {
+                            ReThrow ();
+                            throw;
+                        }
+                        else {
+                            DbgTrace ("Validation failure passed by through Read () function argument");
+                            *exceptionResult = make_shared<BadFormatException> (vf);
+                            // and ignore - fall through to completed parse.
+                        }
+                    }
+                    goto CompletedParse;
+                }
+
+                {
+                    u16string xmlText = Streams::TextReader::New (in).ReadAll ().As<u16string> ();
+                    MemBufInputSource memBufIS (reinterpret_cast<const XMLByte*> (xmlText.c_str ()), xmlText.length () * sizeof (XMLCh), u"XMLDB");
+                    memBufIS.setEncoding (XMLUni::fgUTF16LEncodingString2);
+                    myDOMParser.fParser->parse (memBufIS);
+                }
+
+            CompletedParse:
+                fXMLDoc.reset ();
+                fXMLDoc = T_XMLDOMDocumentSmartPtr{myDOMParser.fParser->adoptDocument ()};
+                fXMLDoc->setXmlStandalone (true);
+                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
+            }
+            END_LIB_EXCEPTION_MAPPER
+            progressCallback.SetProgress (1.0f);
+        }
+        virtual void SetRootElement (const Node::Ptr& newRoot) override
+        {
+            TraceContextBumper                              ctx{"XMLDB::Document::Rep::SetRootElement"};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertNotNull (fXMLDoc);
+            Node::Ptr replacementRoot = CreateDocumentElement (newRoot.GetName ());
+            // next copy all children
+            bool addedChildElts = false;
+            for (Node::Ptr c : newRoot.GetChildren ()) {
+                switch (c.GetNodeType ()) {
+                    case Node::eElementNT: {
+                        addedChildElts = true;
+                        replacementRoot.AppendNode (c);
+                    } break;
+                    case Node::eAttributeNT: {
+                        replacementRoot.SetAttribute (c.GetName (), c.GetValue ().As<String> ());
+                    } break;
+                    case Node::eTextNT: {
+                        // Alas - this SetRootElement () is a bit buggy. Don't know how to do it right!
+                        // This maybe OK -- LGP 2006-09-13
+                        if (not addedChildElts) {
+                            replacementRoot.SetValue (c.GetValue ());
+                        }
+                    } break;
+                }
             }
         }
-    }
-
-public:
-    nonvirtual Node::Ptr CreateDocumentElement (const String& name)
-    {
-        TraceContextBumper ctx{"XMLDB::Document::Rep::CreateDocumentElement"};
+        virtual Node::Ptr CreateDocumentElement (const String& name) override
+        {
+            TraceContextBumper ctx{"XMLDB::Document::Rep::CreateDocumentElement"};
 #if qDebug
-        Require (ValidNewNodeName_ (name));
+            Require (ValidNewNodeName_ (name));
 #endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        AssertNotNull (fXMLDoc);
-        START_LIB_EXCEPTION_MAPPER
-        {
-            optional<URI> ns = fSchema.GetTargetNamespace ();
-            DOMElement*   n  = ns == nullopt
-                                   ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
-                                   : fXMLDoc->createElementNS (ns->As<String> ().As<u16string> ().c_str (), name.As<u16string> ().c_str ());
-            AssertNotNull (n);
-            DOMElement* oldRoot = fXMLDoc->getDocumentElement ();
-            if (oldRoot == nullptr) {
-                (void)fXMLDoc->insertBefore (n, nullptr);
-            }
-            else {
-                (void)fXMLDoc->replaceChild (n, oldRoot);
-                /*
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            AssertNotNull (fXMLDoc);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                optional<URI> ns = fSchema.GetTargetNamespace ();
+                DOMElement*   n  = ns == nullopt
+                                       ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
+                                       : fXMLDoc->createElementNS (ns->As<String> ().As<u16string> ().c_str (), name.As<u16string> ().c_str ());
+                AssertNotNull (n);
+                DOMElement* oldRoot = fXMLDoc->getDocumentElement ();
+                if (oldRoot == nullptr) {
+                    (void)fXMLDoc->insertBefore (n, nullptr);
+                }
+                else {
+                    (void)fXMLDoc->replaceChild (n, oldRoot);
+                    /*
                  * I THOGUHT this was a memory leak, but that appears to have been wrong. First, the
                  * DOMNode objects get associated with the document, and when the docment is destroyed
                  * this is cleaned up. Secondly, there are enough other memory leaks - its unclear if this
@@ -673,273 +667,201 @@ public:
                  *          oldRoot->release ();
                  *
                  */
+                }
+                Assert (fXMLDoc->getDocumentElement () == n);
+                return WrapImpl_ (n);
             }
-            Assert (fXMLDoc->getDocumentElement () == n);
-            return WrapImpl_ (n);
+            END_LIB_EXCEPTION_MAPPER
         }
-        END_LIB_EXCEPTION_MAPPER
-    }
-
-public:
-    nonvirtual void LoadXML (const String& xml)
-    {
-        TraceContextBumper                             ctx{"XMLDB::Document::Rep::LoadXML"};
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        AssertNotNull (fXMLDoc);
-        START_LIB_EXCEPTION_MAPPER
+        virtual void LoadXML (const String& xml) override
         {
-            MyMaybeSchemaDOMParser_ myDOMParser{fSchema};
-            MemBufInputSource memBufIS{reinterpret_cast<const XMLByte*> (xml.As<u16string> ().c_str ()), xml.length () * sizeof (XMLCh), u"XMLDB"};
-            memBufIS.setEncoding (XMLUni::fgUTF16LEncodingString2);
-            myDOMParser.fParser->parse (memBufIS);
-            fXMLDoc.reset ();
-            fXMLDoc = T_XMLDOMDocumentSmartPtr{myDOMParser.fParser->adoptDocument ()};
-            fXMLDoc->setXmlStandalone (true);
-            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
+            TraceContextBumper                             ctx{"XMLDB::Document::Rep::LoadXML"};
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertNotNull (fXMLDoc);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                MyMaybeSchemaDOMParser_ myDOMParser{fSchema};
+                MemBufInputSource memBufIS{reinterpret_cast<const XMLByte*> (xml.As<u16string> ().c_str ()), xml.length () * sizeof (XMLCh), u"XMLDB"};
+                memBufIS.setEncoding (XMLUni::fgUTF16LEncodingString2);
+                myDOMParser.fParser->parse (memBufIS);
+                fXMLDoc.reset ();
+                fXMLDoc = T_XMLDOMDocumentSmartPtr{myDOMParser.fParser->adoptDocument ()};
+                fXMLDoc->setXmlStandalone (true);
+                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
+            }
+            END_LIB_EXCEPTION_MAPPER
         }
-        END_LIB_EXCEPTION_MAPPER
-    }
-
-public:
-    nonvirtual void WritePrettyPrinted (ostream& out) const
-    {
-        TraceContextBumper                             ctx{"XMLDB::Document::Rep::WritePrettyPrinted"};
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        AssertNotNull (fXMLDoc);
-        START_LIB_EXCEPTION_MAPPER
+        virtual void WritePrettyPrinted (ostream& out) const override
         {
+            TraceContextBumper                             ctx{"XMLDB::Document::Rep::WritePrettyPrinted"};
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertNotNull (fXMLDoc);
+            START_LIB_EXCEPTION_MAPPER
+            {
 #if qHasFeature_Xerces
-            DoWrite2Stream_ (fXMLDoc.get (), out, true);
+                DoWrite2Stream_ (fXMLDoc.get (), out, true);
 #endif
+            }
+            END_LIB_EXCEPTION_MAPPER
         }
-        END_LIB_EXCEPTION_MAPPER
-    }
-
-public:
-    nonvirtual void WriteAsIs (ostream& out) const
-    {
-        TraceContextBumper                             ctx{"XMLDB::Document::Rep::WriteAsIs"};
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        AssertNotNull (fXMLDoc);
-        START_LIB_EXCEPTION_MAPPER
+        virtual void WriteAsIs (ostream& out) const override
         {
-            DoWrite2Stream_ (fXMLDoc.get (), out, false);
+            TraceContextBumper                             ctx{"XMLDB::Document::Rep::WriteAsIs"};
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertNotNull (fXMLDoc);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                DoWrite2Stream_ (fXMLDoc.get (), out, false);
+            }
+            END_LIB_EXCEPTION_MAPPER
         }
-        END_LIB_EXCEPTION_MAPPER
-    }
-
-public:
-    nonvirtual Iterable<Node::Ptr> GetChildren () const
-    {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        AssertNotNull (fXMLDoc);
-        START_LIB_EXCEPTION_MAPPER
-        return Traversal::CreateGenerator<Node::Ptr> (
-            [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fXMLDoc.get ())}] () mutable -> optional<Node::Ptr> {
-                if (sni.IsAtEnd ()) {
-                    return optional<Node::Ptr>{};
+        virtual Iterable<Node::Ptr> GetChildren () const override
+        {
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertNotNull (fXMLDoc);
+            START_LIB_EXCEPTION_MAPPER
+            return Traversal::CreateGenerator<Node::Ptr> (
+                [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fXMLDoc.get ())}] () mutable -> optional<Node::Ptr> {
+                    if (sni.IsAtEnd ()) {
+                        return optional<Node::Ptr>{};
+                    }
+                    Node::Ptr r = *sni;
+                    ++sni;
+                    return r;
+                });
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual void Validate () const override
+        {
+            RequireNotNull (fSchema);
+            TraceContextBumper                             ctx{"XMLDB::Document::Rep::Validate"};
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            START_LIB_EXCEPTION_MAPPER
+            {
+                if (fSchema == nullptr) {
+                    return;
                 }
-                Node::Ptr r = *sni;
-                ++sni;
-                return r;
-            });
-        END_LIB_EXCEPTION_MAPPER
-    }
+                try {
+                    DbgTrace (L"Validating against target namespace '%s'", Characters::ToString (fSchema.GetTargetNamespace ()).c_str ());
+                    // As this CAN be expensive - especially if we need to externalize the file, and re-parse it!!! - just shortcut by
+                    // checking the top-level DOM-node and assure that has the right namespace. At least quickie first check that works when
+                    // reading files (doesnt help in pre-save check, of course)
+                    T_DOMNode* docNode = fXMLDoc->getDocumentElement ();
+                    if (docNode == nullptr) {
+                        Execution::Throw (BadFormatException (L"No document", 0, 0, 0));
+                    }
+                    optional<URI> docURI = docNode->getNamespaceURI () == nullptr ? optional<URI>{} : docNode->getNamespaceURI ();
+                    if (docURI != fSchema.GetTargetNamespace ()) {
+                        Execution::Throw (BadFormatException (Format (L"Wrong document namespace (found '%s' and expected '%s')",
+                                                                      Characters::ToString (docURI).c_str (),
+                                                                      Characters::ToString (fSchema.GetTargetNamespace ()).c_str ()),
+                                                              0, 0, 0));
+                    }
 
-public:
-    nonvirtual void Validate () const
-    {
-        RequireNotNull (fSchema);
-        TraceContextBumper                             ctx{"XMLDB::Document::Rep::Validate"};
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+                    // EXTERNALIZE, AND THEN RE-PARSE USING CACHED SAX PARSER WTIH LOADED GRAMMAR
+                    {
+                        MemBufFormatTarget destination;
+                        {
+                            AutoRelease<DOMLSOutput> theOutputDesc = GetDOMIMPL_ ().createLSOutput ();
+                            theOutputDesc->setEncoding (XMLUni::fgUTF8EncodingString);
+                            AutoRelease<DOMLSSerializer> writer = GetDOMIMPL_ ().createLSSerializer ();
+                            theOutputDesc->setByteStream (&destination);
+                            theOutputDesc->setEncoding (XMLUni::fgUTF8EncodingString);
+                            Assert (fXMLDoc->getXmlStandalone ());
+                            writer->write (fXMLDoc.get (), theOutputDesc);
+                        }
 
-        START_LIB_EXCEPTION_MAPPER
+                        MemBufInputSource readReadSrc{destination.getRawBuffer (), destination.getLen (), u"tmp"};
+                        readReadSrc.setEncoding (XMLUni::fgUTF8EncodingString);
+
+                        shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (fSchema.GetRep ());
+                        {
+                            AssertNotNull (accessSchema); // for now only rep supported
+                            shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (
+                                XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ()));
+                            SetupCommonParserFeatures (*parser, true);
+                            Map2StroikaExceptionsErrorReporter myErrorReporter;
+                            parser->setErrorHandler (&myErrorReporter);
+                            parser->parse (readReadSrc);
+                        }
+                    }
+                }
+                catch (...) {
+                    if constexpr (qDumpXMLOnValidationError) {
+                        // Generate temp file (each with differnet names), and write out the bad XML.
+                        // Then - re-validate (with line#s) - and print the results of the validation to ANOTHER
+                        // temporary file
+                        //
+                        filesystem::path tmpFileName = IO::FileSystem::AppTempFileManager::sThe.GetTempFile ("FAILED_VALIDATION_.xml");
+                        DbgTrace (L"Error validating - so writing out temporary file = '%s'", Characters::ToString (tmpFileName).c_str ());
+                        {
+                            ofstream out{tmpFileName, ios_base::out | ios_base::binary};
+                            WritePrettyPrinted (out);
+                        }
+                        try {
+                            if (fSchema != nullptr) {
+                                ValidateFile (tmpFileName, fSchema);
+                            }
+                        }
+                        catch (const BadFormatException& vf) {
+                            String   tmpFileNameStr = IO::FileSystem::FromPath (tmpFileName);
+                            size_t   idx            = tmpFileNameStr.find (".xml");
+                            String   newTmpFile     = tmpFileNameStr.substr (0, idx) + "_MSG.txt";
+                            ofstream msgOut{newTmpFile.AsNarrowSDKString ().c_str ()};
+                            msgOut << "Reason:" << vf.GetDetails ().AsNarrowSDKString () << endl;
+                            optional<unsigned int> lineNum;
+                            optional<unsigned int> colNumber;
+                            optional<uint64_t>     fileOffset;
+                            vf.GetPositionInfo (&lineNum, &colNumber, &fileOffset);
+                            if (lineNum) {
+                                msgOut << "Line:" << *lineNum << endl;
+                            }
+                            if (colNumber) {
+                                msgOut << "Col: " << *colNumber << endl;
+                            }
+                            if (fileOffset) {
+                                msgOut << "FilePos: " << *fileOffset << endl;
+                            }
+                        }
+                        catch (...) {
+                        }
+                    }
+                    Execution::ReThrow ();
+                }
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual NamespaceDefinitionsList GetNamespaceDefinitions () const override
         {
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             if (fSchema == nullptr) {
-                return;
+                return NamespaceDefinitionsList{};
             }
-            try {
-                DbgTrace (L"Validating against target namespace '%s'", Characters::ToString (fSchema.GetTargetNamespace ()).c_str ());
-                // As this CAN be expensive - especially if we need to externalize the file, and re-parse it!!! - just shortcut by
-                // checking the top-level DOM-node and assure that has the right namespace. At least quickie first check that works when
-                // reading files (doesnt help in pre-save check, of course)
-                T_DOMNode* docNode = fXMLDoc->getDocumentElement ();
-                if (docNode == nullptr) {
-                    Execution::Throw (BadFormatException (L"No document", 0, 0, 0));
-                }
-                optional<URI> docURI = docNode->getNamespaceURI () == nullptr ? optional<URI>{} : docNode->getNamespaceURI ();
-                if (docURI != fSchema.GetTargetNamespace ()) {
-                    Execution::Throw (BadFormatException (Format (L"Wrong document namespace (found '%s' and expected '%s')",
-                                                                  Characters::ToString (docURI).c_str (),
-                                                                  Characters::ToString (fSchema.GetTargetNamespace ()).c_str ()),
-                                                          0, 0, 0));
-                }
-
-                // EXTERNALIZE, AND THEN RE-PARSE USING CACHED SAX PARSER WTIH LOADED GRAMMAR
-                {
-                    MemBufFormatTarget destination;
-                    {
-                        AutoRelease<DOMLSOutput> theOutputDesc = GetDOMIMPL_ ().createLSOutput ();
-                        theOutputDesc->setEncoding (XMLUni::fgUTF8EncodingString);
-                        AutoRelease<DOMLSSerializer> writer = GetDOMIMPL_ ().createLSSerializer ();
-                        theOutputDesc->setByteStream (&destination);
-                        theOutputDesc->setEncoding (XMLUni::fgUTF8EncodingString);
-                        Assert (fXMLDoc->getXmlStandalone ());
-                        writer->write (fXMLDoc.get (), theOutputDesc);
-                    }
-
-                    MemBufInputSource readReadSrc{destination.getRawBuffer (), destination.getLen (), u"tmp"};
-                    readReadSrc.setEncoding (XMLUni::fgUTF8EncodingString);
-
-                    shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (fSchema.GetRep ());
-                    {
-                        AssertNotNull (accessSchema); // for now only rep supported
-                        shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (
-                            XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ()));
-                        SetupCommonParserFeatures (*parser, true);
-                        Map2StroikaExceptionsErrorReporter myErrorReporter;
-                        parser->setErrorHandler (&myErrorReporter);
-                        parser->parse (readReadSrc);
-                    }
-                }
-            }
-            catch (...) {
-                if constexpr (qDumpXMLOnValidationError) {
-                    // Generate temp file (each with differnet names), and write out the bad XML.
-                    // Then - re-validate (with line#s) - and print the results of the validation to ANOTHER
-                    // temporary file
-                    //
-                    filesystem::path tmpFileName = IO::FileSystem::AppTempFileManager::sThe.GetTempFile ("FAILED_VALIDATION_.xml");
-                    DbgTrace (L"Error validating - so writing out temporary file = '%s'", Characters::ToString (tmpFileName).c_str ());
-                    {
-                        ofstream out{tmpFileName, ios_base::out | ios_base::binary};
-                        WritePrettyPrinted (out);
-                    }
-                    try {
-                        if (fSchema != nullptr) {
-                            ValidateFile (tmpFileName, fSchema);
-                        }
-                    }
-                    catch (const BadFormatException& vf) {
-                        String   tmpFileNameStr = IO::FileSystem::FromPath (tmpFileName);
-                        size_t   idx            = tmpFileNameStr.find (".xml");
-                        String   newTmpFile     = tmpFileNameStr.substr (0, idx) + "_MSG.txt";
-                        ofstream msgOut{newTmpFile.AsNarrowSDKString ().c_str ()};
-                        msgOut << "Reason:" << vf.GetDetails ().AsNarrowSDKString () << endl;
-                        optional<unsigned int> lineNum;
-                        optional<unsigned int> colNumber;
-                        optional<uint64_t>     fileOffset;
-                        vf.GetPositionInfo (&lineNum, &colNumber, &fileOffset);
-                        if (lineNum) {
-                            msgOut << "Line:" << *lineNum << endl;
-                        }
-                        if (colNumber) {
-                            msgOut << "Col: " << *colNumber << endl;
-                        }
-                        if (fileOffset) {
-                            msgOut << "FilePos: " << *fileOffset << endl;
-                        }
-                    }
-                    catch (...) {
-                    }
-                }
-                Execution::ReThrow ();
+            else {
+                return fSchema.GetNamespaceDefinitions ();
             }
         }
-        END_LIB_EXCEPTION_MAPPER
-    }
-
-public:
-    nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const
-    {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        if (fSchema == nullptr) {
-            return NamespaceDefinitionsList{};
-        }
-        else {
-            return fSchema.GetNamespaceDefinitions ();
-        }
-    }
-
-private:
-    T_XMLDOMDocumentSmartPtr                                       fXMLDoc;
-    Schema::Ptr                                                    fSchema;
-    [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
-};
-
-Document::Document ()
-    : fRep{make_shared<Rep> (nullptr)}
-{
+        T_XMLDOMDocumentSmartPtr                                       fXMLDoc;
+        Schema::Ptr                                                    fSchema;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+    };
 }
 
-Document::Document (const Schema::Ptr& schema)
-    : fRep{make_shared<Rep> (schema)}
+Schema::Ptr Document::Ptr::GetSchema () const
 {
+    return fRep_->GetSchema ();
 }
 
-Schema::Ptr Document::GetSchema () const
+Document::Ptr Document::New ()
 {
-    return fRep->GetSchema ();
+    return Ptr{make_shared<XercesDocRep_> (nullptr)};
+}
+Document::Ptr Document::New (const Schema::Ptr& schema)
+{
+    return Ptr{make_shared<XercesDocRep_> (schema)};
 }
 
-void Document::WritePrettyPrinted (ostream& out) const
-{
-    /*
-     * Write pretty printed XML - where we generate the whitespace around nodes - ignoring any text fragments - except in leaf nodes.
-     */
-    fRep->WritePrettyPrinted (out);
-}
-
-void Document::WriteAsIs (ostream& out) const
-{
-    /*
-     * Write - respecting all the little #text fragment nodes throughout the XML node tree
-     */
-    fRep->WriteAsIs (out);
-}
-
-Iterable<Node::Ptr> Document::GetChildren () const
-{
-    return fRep->GetChildren ();
-}
-
-Node::Ptr Document::GetRootElement () const
-{
-    // Should only be one in an XML document.
-    for (Node::Ptr ni : fRep->GetChildren ()) {
-        if (ni.GetNodeType () == Node::eElementNT) {
-            return ni;
-        }
-    }
-    static const auto kException_ = Execution::RuntimeErrorException{"No root element"};
-    Execution::Throw (kException_);
-}
-
-void Document::Validate () const
-{
-    RequireNotNull (GetSchema ());
-    fRep->Validate ();
-}
-
-Node::Ptr Document::CreateDocumentElement (const String& name)
-{
-    return fRep->CreateDocumentElement (name);
-}
-
-void Document::SetRootElement (const Node::Ptr& newRoot)
-{
-    return fRep->SetRootElement (newRoot);
-}
-
-void Document::Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback)
-{
-    fRep->Read (in, nullptr, progressCallback);
-}
-
-void Document::LoadXML (const String& xml)
-{
-    fRep->LoadXML (xml);
-}
+/////////////////////////
 
 namespace {
     T_DOMNode* GetInternalRep_ (Node::IRep* anr)
@@ -1305,14 +1227,14 @@ namespace {
         }
 
     private:
-        nonvirtual Document::Rep& GetAssociatedDoc_ () const
+        nonvirtual XercesDocRep_& GetAssociatedDoc_ () const
         {
             AssertNotNull (fNode_);
             T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
             AssertNotNull (doc);
             void* docData = doc->getUserData (kXerces2XMLDBDocumentKey_);
             AssertNotNull (docData);
-            return *reinterpret_cast<Document::Rep*> (docData);
+            return *reinterpret_cast<XercesDocRep_*> (docData);
         }
 
     private:

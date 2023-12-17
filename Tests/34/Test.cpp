@@ -1322,7 +1322,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, T15_DOMRead_)
     {
-        DOM::Document d;
+        DOM::Document::Ptr d = DOM::Document::New ();
         d.Read (Memory::BLOB::Attach (Resources_::personal_xml).As<Streams::InputStream<byte>::Ptr> ());
         stringstream ss;
         d.WritePrettyPrinted (ss);

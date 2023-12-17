@@ -28,7 +28,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     using Traversal::Iterable;
 
     /**
-     * NB: A Node can be EITHER an ELEMENT or an ATTRIBUTE
+     * NB: A Node can be EITHER an ELEMENT or an ATTRIBUTE (mostly). Nodes are 'internal' to a Document, and are always somehow contained in some document).
+     *  Nodes have an abstract IRep, the the Ptr object is just a 'smart pointer' to that IRep.
+     * 
+     *  Note - the IRep can be implemented by a variety of backend libraries (dubbed 'Providers').
+     * 
+     *  Principally, users will interact with a Document::Ptr (initialized from Document::New()), and only rarely deal with Nodes.
+     *  But Nodes can be accessed, created, update etc, once you start with a Document::Ptr.
      */
     namespace Node {
         class IRep;
@@ -226,70 +232,125 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         };
     }
 
-    // &&& do DOCUMENT namespace treatment like I did for NODE next (and lose RWDocuemnt)
+    namespace Document {
+        struct IRep;
 
-    /**
-    *   !@todo better docs/clearer design - but I think Document is immutable in current design? Else not sure what we have RWDocument).
-    * 
-    *   Also - consider IRep, and Ptr style names.
-     */
-    class Document {
-    public:
-        class Rep;
-
-    public:
-        Document ();
-        Document (const Schema::Ptr& schema);
-        ~Document () = default;
-
-    protected:
-        Document (const shared_ptr<Rep>& rep);
-
-        // No copying. (maybe create a RWDocument for that - but doesnt appear needed externally)
-    private:
-        Document (const Document& from)           = delete;
-        Document& operator= (const Document& rhs) = delete;
-
-    public:
-        nonvirtual Schema::Ptr GetSchema () const;
-
-        // IO routines - Serialize the document DOM
-    public:
-        nonvirtual void WritePrettyPrinted (ostream& out) const;
-        nonvirtual void WriteAsIs (ostream& out) const;
-
-    public:
-        nonvirtual void Validate () const; // throws BadFormatException exception on failure; uses current associated schema
-                                           // nonvirtual void Validate (const Schema* schema) const; // ''; but uses PROVIDED schema
-
-    public:
         /**
+        * 
+        * todo consider how schema associated with doc means?? one meaning:
+        *       Allow READ or WRITE to use ANY schema (or none) to validate, and just has assocaited schema be default for thiese?)
+        *   tthats not well thoguth out but a gbeeingg.
+        * 
+        *   idea is - might have quick and full schemas and use one sometimes andother other sometimes.
          */
-        nonvirtual Iterable<Node::Ptr> GetChildren () const;
+        class Ptr {
+        public:
+            /**
+         */
+            Ptr ();
+            Ptr (const shared_ptr<IRep>& rep);
+            ~Ptr () = default;
 
-    public:
-        /**
+            // No copying. (maybe create a RWDocument for that - but doesnt appear needed externally)
+        private:
+            Ptr (const Ptr& from)           = delete;
+            Ptr& operator= (const Ptr& rhs) = delete;
+
+        public:
+            /**
+         */
+            nonvirtual Schema::Ptr GetSchema () const;
+
+        public:
+            /**
+            // IO routines - Serialize the document DOM
+         */
+            nonvirtual void WritePrettyPrinted (ostream& out) const;
+            /**
+         */
+            nonvirtual void WriteAsIs (ostream& out) const;
+
+        public:
+            /**
+         */
+            nonvirtual void Validate () const; // throws BadFormatException exception on failure; uses current associated schema
+                                               // nonvirtual void Validate (const Schema* schema) const; // ''; but uses PROVIDED schema
+
+        public:
+            /**
+         */
+            nonvirtual Iterable<Node::Ptr> GetChildren () const;
+
+        public:
+            /**
          * \brief always returns Node of eElement type, or throws on failure
          */
-        nonvirtual Node::Ptr GetRootElement () const;
+            nonvirtual Node::Ptr GetRootElement () const;
 
-    public:
-        nonvirtual Node::Ptr CreateDocumentElement (const String& name);
+        public:
+            /**
+         */
+            nonvirtual Node::Ptr CreateDocumentElement (const String& name);
 
-    public:
-        nonvirtual void SetRootElement (const Node::Ptr& newRoot);
+        public:
+            /**
+         */
+            nonvirtual void SetRootElement (const Node::Ptr& newRoot);
 
-    public:
-        nonvirtual void Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback = nullptr);
+            // bad api - redo
+        public:
+            nonvirtual void Read (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback = nullptr);
 
-    public:
-        nonvirtual void LoadXML (const String& xml); // 'xml' contains data to be parsed and to replace the current XML document
-    public:
-        nonvirtual shared_ptr<Rep> GetRep () const;
+            // bad api - redo
+        public:
+            nonvirtual void LoadXML (const String& xml); // 'xml' contains data to be parsed and to replace the current XML document
 
-    protected:
-        shared_ptr<Rep> fRep;
-    };
+        public:
+            /**
+         */
+            nonvirtual shared_ptr<IRep> GetRep () const;
+
+        private:
+            shared_ptr<IRep> fRep_;
+        };
+
+        // todo add overloads for input stream...
+        Ptr New ();
+        Ptr New (const Schema::Ptr& schema);
+
+        /**
+         */
+        struct IRep {
+
+            virtual ~IRep () = default;
+
+            virtual const Schema::Ptr GetSchema () const = 0;
+
+            //
+            // If this function is passed a nullptr exceptionResult - it will throw on bad validation.
+            // If it is passed a non-nullptr exceptionResult - then it will map BadFormatException to being ignored, but filling in this
+            // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
+            // failing the read (for http://bugzilla/show_bug.cgi?id=513).
+            //
+            virtual void Read (Streams::InputStream<byte>::Ptr& in, shared_ptr<BadFormatException>* exceptionResult,
+                               Execution::ProgressMonitor::Updater progressCallback) = 0;
+
+            virtual void SetRootElement (const Node::Ptr& newRoot) = 0;
+
+            virtual Node::Ptr CreateDocumentElement (const String& name) = 0;
+
+            virtual void LoadXML (const String& xml)             = 0;
+            virtual void WritePrettyPrinted (ostream& out) const = 0;
+
+            virtual void WriteAsIs (ostream& out) const = 0;
+
+            virtual Iterable<Node::Ptr> GetChildren () const = 0;
+
+            virtual void                     Validate () const                = 0;
+            virtual NamespaceDefinitionsList GetNamespaceDefinitions () const = 0;
+        };
+
+    }
 
 };
 #endif
