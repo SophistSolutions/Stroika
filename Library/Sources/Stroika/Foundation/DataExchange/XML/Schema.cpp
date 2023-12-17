@@ -20,7 +20,6 @@ using namespace Stroika::Foundation::Memory;
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
 
-
 using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::DataExchange::XML::Schema;
 
