@@ -8,7 +8,6 @@
 #include <set>
 #include <sstream>
 
-#include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Characters/CodePage.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Configuration/StroikaVersion.h"
@@ -105,6 +104,78 @@ using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
 
 #endif
 
+/*
+ *  Short lifetime. Don't save these iterator objects. Just use them to enumerate a collection and then let them
+ *  go. They (could) become invalid after a call to update the database.
+ */
+class SubNodeIterator {
+public:
+    class Rep {
+    public:
+        Rep ()          = default;
+        virtual ~Rep () = default;
+
+    public:
+        virtual bool   IsAtEnd () const   = 0;
+        virtual void   Next ()            = 0;
+        virtual Node   Current () const   = 0;
+        virtual size_t GetLength () const = 0;
+    };
+    explicit SubNodeIterator (const shared_ptr<Rep>& from);
+
+public:
+    nonvirtual bool   NotDone () const;
+    nonvirtual bool   IsAtEnd () const;
+    nonvirtual void   Next ();
+    nonvirtual Node   Current () const;
+    nonvirtual size_t GetLength () const;
+
+public:
+    nonvirtual void operator++ ();
+    nonvirtual void operator++ (int);
+    nonvirtual Node operator* () const;
+
+protected:
+    shared_ptr<Rep> fRep;
+};
+
+inline SubNodeIterator::SubNodeIterator (const shared_ptr<Rep>& from)
+    : fRep{from}
+{
+}
+inline bool SubNodeIterator::NotDone () const
+{
+    return not fRep->IsAtEnd ();
+}
+inline bool SubNodeIterator::IsAtEnd () const
+{
+    return fRep->IsAtEnd ();
+}
+inline void SubNodeIterator::Next ()
+{
+    fRep->Next ();
+}
+inline Node SubNodeIterator::Current () const
+{
+    return fRep->Current ();
+}
+inline size_t SubNodeIterator::GetLength () const
+{
+    return fRep->GetLength ();
+}
+inline void SubNodeIterator::operator++ ()
+{
+    Next ();
+}
+inline void SubNodeIterator::operator++ (int)
+{
+    Next ();
+}
+inline Node SubNodeIterator::operator* () const
+{
+    return Current ();
+}
+
 namespace {
     constexpr XMLCh    kDOMImplFeatureDeclaration[] = u"Core";
     DOMImplementation& GetDOMIMPL_ ()
@@ -123,14 +194,11 @@ namespace {
 
 // Simple 'roughly analagous' type wrappers - start with 'T_'
 namespace {
-    typedef XERCES_CPP_NAMESPACE::DOMNode T_DOMNode;
-
-    typedef XERCES_CPP_NAMESPACE::DOMElement T_DOMElement;
-
-    typedef XERCES_CPP_NAMESPACE::DOMDocument T_XMLDOMDocument;
-    typedef shared_ptr<T_XMLDOMDocument>      T_XMLDOMDocumentSmartPtr;
-
-    typedef XERCES_CPP_NAMESPACE::DOMNodeList T_DOMNodeList;
+    using T_DOMNode                = XERCES_CPP_NAMESPACE::DOMNode;
+    using T_DOMElement             = XERCES_CPP_NAMESPACE::DOMElement;
+    using T_XMLDOMDocument         = XERCES_CPP_NAMESPACE::DOMDocument;
+    using T_XMLDOMDocumentSmartPtr = shared_ptr<T_XMLDOMDocument>;
+    using T_DOMNodeList            = XERCES_CPP_NAMESPACE::DOMNodeList;
 }
 
 #if qDebug
@@ -149,11 +217,11 @@ namespace {
 #endif
 
 namespace {
-    class StrmFmtTarget : public XMLFormatTarget {
+    class StrmFmtTarget_ : public XMLFormatTarget {
     public:
         ostream& fOut;
-        StrmFmtTarget (ostream& ostr)
-            : fOut (ostr)
+        StrmFmtTarget_ (ostream& ostr)
+            : fOut{ostr}
         {
         }
         virtual void writeChars (const XMLByte* const toWrite, const XMLSize_t count, [[maybe_unused]] XMLFormatter* const formatter) override
@@ -167,19 +235,6 @@ namespace {
     };
 
     // mostly for debugging purposes
-    void DoWrite2File (T_XMLDOMDocument* doc, const String& fileName, bool prettyPrint)
-    {
-        AutoRelease<DOMLSOutput> theOutputDesc = GetDOMIMPL_ ().createLSOutput ();
-        theOutputDesc->setEncoding (XMLUni::fgUTF8EncodingString);
-        AutoRelease<DOMLSSerializer> writer = GetDOMIMPL_ ().createLSSerializer ();
-        DOMConfiguration*            dc     = writer->getDomConfig ();
-        dc->setParameter (XMLUni::fgDOMWRTFormatPrettyPrint, prettyPrint);
-        dc->setParameter (XMLUni::fgDOMWRTBOM, true);
-        LocalFileFormatTarget ftg (fileName.As<u16string> ().c_str ());
-        theOutputDesc->setByteStream (&ftg);
-        Assert (doc->getXmlStandalone ());
-        writer->write (doc, theOutputDesc);
-    }
     void DoWrite2Stream_ (T_XMLDOMDocument* doc, ostream& ostr, bool prettyPrint)
     {
         AutoRelease<DOMLSOutput> theOutputDesc = GetDOMIMPL_ ().createLSOutput ();
@@ -188,14 +243,14 @@ namespace {
         DOMConfiguration*            dc     = writer->getDomConfig ();
         dc->setParameter (XMLUni::fgDOMWRTFormatPrettyPrint, prettyPrint);
         dc->setParameter (XMLUni::fgDOMWRTBOM, true);
-        StrmFmtTarget dest (ostr);
+        StrmFmtTarget_ dest{ostr};
         theOutputDesc->setByteStream (&dest);
         Assert (doc->getXmlStandalone ());
         writer->write (doc, theOutputDesc);
     }
     string DoWrite2UTF8String (T_XMLDOMDocument* doc, bool prettyPrint)
     {
-        stringstream resultBuf (ios_base::in | ios_base::out | ios_base::binary);
+        stringstream resultBuf{ios_base::in | ios_base::out | ios_base::binary};
         DoWrite2Stream_ (doc, resultBuf, prettyPrint);
         return resultBuf.str ();
     }
@@ -222,9 +277,9 @@ namespace {
 }
 
 namespace {
-    constexpr XMLCh* kXerces2XMLDBDocumentKey = nullptr; // just a unique key to lookup our doc object from the xerces doc object.
-                                                         // Could use real str, then xerces does strcmp() - but this appears slightly faster
-                                                         // so long as no conflict....
+    constexpr XMLCh* kXerces2XMLDBDocumentKey_ = nullptr; // just a unique key to lookup our doc object from the xerces doc object.
+                                                          // Could use real str, then xerces does strcmp() - but this appears slightly faster
+                                                          // so long as no conflict....
 }
 
 namespace {
@@ -276,66 +331,11 @@ namespace {
 }
 
 namespace {
-
-#if 0
-    class SubNodeIteratorOver_vectorDOMNODE_Rep_ : public SubNodeIterator::Rep,
-                                                   Memory::UseBlockAllocationIfAppropriate<SubNodeIteratorOver_vectorDOMNODE_Rep_> {
-    public:
-        SubNodeIteratorOver_vectorDOMNODE_Rep_ (const vector<T_DOMNode*>& dns)
-            : fDOMNodes (dns)
-            , fCur (0)
-        {
-        }
-
-    public:
-        virtual bool IsAtEnd () const override
-        {
-            return fCur >= fDOMNodes.size ();
-        }
-        virtual void Next () override
-        {
-            Require (not IsAtEnd ());
-            fCur++;
-        }
-        virtual Node   Current () const override;
-        virtual size_t GetLength () const override
-        {
-            return fDOMNodes.size ();
-        }
-
-    private:
-        vector<T_DOMNode*> fDOMNodes;
-        size_t             fCur;
-    };
-#endif
-
-#if 0
-
-    class SubNodeIteratorOver_DOMNodeList_Rep : SubNodeIterator::Rep, Memory::UseBlockAllocationIfAppropriate<SubNodeIteratorOver_DOMNodeList_Rep> {
-    public:
-        SubNodeIteratorOver_DOMNodeList_Rep (T_DOMNodeList* dln);
-
-    public:
-        virtual bool   IsAtEnd () const override;
-        virtual void   Next () override;
-        virtual Node   Current () const override;
-        virtual size_t GetLength () const override;
-
-    private:
-#if qHasFeature_Xerces
-        T_DOMNodeList* fMainNodeList;
-#endif
-        size_t fMainListLen;
-        size_t fAttrsListLen;
-        size_t fCur;
-    };
-#endif
-
-    class SubNodeIteratorOver_SiblingList_Rep : public SubNodeIterator::Rep,
-                                                Memory::UseBlockAllocationIfAppropriate<SubNodeIteratorOver_SiblingList_Rep> {
+    class SubNodeIteratorOver_SiblingList_Rep_ : public SubNodeIterator::Rep,
+                                                 Memory::UseBlockAllocationIfAppropriate<SubNodeIteratorOver_SiblingList_Rep_> {
     public:
         // Called iterates over CHILDREN of given parentNode
-        SubNodeIteratorOver_SiblingList_Rep (T_DOMNode* nodeParent);
+        SubNodeIteratorOver_SiblingList_Rep_ (T_DOMNode* nodeParent);
 
     public:
         virtual bool   IsAtEnd () const override;
@@ -348,7 +348,6 @@ namespace {
         T_DOMNode*     fCurNode{nullptr};
         mutable size_t fCachedMainListLen{};
     };
-
 }
 namespace {
     Node WrapImpl_ (T_DOMNode* n);
@@ -361,17 +360,11 @@ namespace {
         newXMLDoc = T_XMLDOMDocumentSmartPtr (GetDOMIMPL_ ().createDocument (0, nullptr, 0));
         newXMLDoc->setXmlStandalone (true);
     }
-
-}
-
-RecordNotFoundException::RecordNotFoundException ()
-    : Execution::RuntimeErrorException<> ("Record Not Found")
-{
 }
 
 namespace {
     // These SHOULD be part of xerces! Perhaps someday post them?
-    class BinaryInputStream_InputSource : public InputSource {
+    class BinaryInputStream_InputSource_ : public InputSource {
     protected:
         class _MyInputStrm : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
         public:
@@ -403,7 +396,7 @@ namespace {
         };
 
     public:
-        BinaryInputStream_InputSource (Streams::InputStream<byte>::Ptr in, const XMLCh* const bufId = nullptr)
+        BinaryInputStream_InputSource_ (Streams::InputStream<byte>::Ptr in, const XMLCh* const bufId = nullptr)
             : InputSource (bufId)
             , fSource (in)
         {
@@ -418,9 +411,9 @@ namespace {
     };
 
     // my variations of StdIInputSrc with progresstracker callback
-    class BinaryInputStream_InputSource_WithProgress : public BinaryInputStream_InputSource {
+    class BinaryInputStream_InputSource_WithProgress_ : public BinaryInputStream_InputSource_ {
     protected:
-        class _InStrWithProg : public BinaryInputStream_InputSource_WithProgress::_MyInputStrm {
+        class _InStrWithProg : public BinaryInputStream_InputSource_WithProgress_::_MyInputStrm {
         public:
             _InStrWithProg (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback)
                 : _MyInputStrm (in)
@@ -459,9 +452,9 @@ namespace {
         };
 
     public:
-        BinaryInputStream_InputSource_WithProgress (Streams::InputStream<byte>::Ptr in,
-                                                    Execution::ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr)
-            : BinaryInputStream_InputSource{in, bufId}
+        BinaryInputStream_InputSource_WithProgress_ (Streams::InputStream<byte>::Ptr in,
+                                                     Execution::ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr)
+            : BinaryInputStream_InputSource_{in, bufId}
             , fProgressCallback{progressCallback}
         {
         }
@@ -475,25 +468,19 @@ namespace {
     };
 }
 
-class MyMaybeSchemaDOMParser {
+class MyMaybeSchemaDOMParser_ {
 public:
-    //   shared_ptr<Schema::AccessCompiledXSD> fSchemaAccessor;
     Map2StroikaExceptionsErrorReporter myErrReporter;
     shared_ptr<XercesDOMParser>        fParser;
     Schema::Ptr                        fSchema{nullptr};
 
-    MyMaybeSchemaDOMParser ()                              = delete;
-    MyMaybeSchemaDOMParser (const MyMaybeSchemaDOMParser&) = delete;
-    MyMaybeSchemaDOMParser (const Schema::Ptr& schema)
+    MyMaybeSchemaDOMParser_ ()                               = delete;
+    MyMaybeSchemaDOMParser_ (const MyMaybeSchemaDOMParser_&) = delete;
+    MyMaybeSchemaDOMParser_ (const Schema::Ptr& schema)
         : fSchema{schema}
     {
-        shared_ptr<IXercesSchemaRep> accessSchema;
-        if (schema != nullptr) {
-            accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
-        }
+        shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
         if (accessSchema != nullptr) {
-            // REALLY need READLOCK - cuz this just prevents UPDATE of Schema (never happens anyhow) -- LGP 2009-05-19
-            //  fSchemaAccessor = make_shared<Schema::AccessCompiledXSD> (*schema);
             fParser = make_shared<XercesDOMParser> (nullptr, XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ());
             fParser->cacheGrammarFromParse (false);
             fParser->useCachedGrammarInParse (true);
@@ -501,14 +488,16 @@ public:
             fParser->setValidationScheme (AbstractDOMParser::Val_Always);
             fParser->setValidationSchemaFullChecking (true);
             fParser->setIdentityConstraintChecking (true);
-
-            fParser->setErrorHandler (&myErrReporter);
         }
         else {
             fParser = make_shared<XercesDOMParser> ();
         }
         fParser->setDoNamespaces (true);
         fParser->setErrorHandler (&myErrReporter);
+
+
+        // @todo make load-external DTD OPTION specified in NEW for document!!! - parser! --LGP 2023-12-16
+
 
         // LGP added 2009-09-07 - so must test carefully!
         {
@@ -537,7 +526,7 @@ public:
         START_LIB_EXCEPTION_MAPPER
         {
             MakeXMLDoc_ (fXMLDoc);
-            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey, this, nullptr);
+            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
         }
         END_LIB_EXCEPTION_MAPPER
     }
@@ -549,7 +538,7 @@ public:
         {
             fXMLDoc = T_XMLDOMDocumentSmartPtr (dynamic_cast<T_XMLDOMDocument*> (from.fXMLDoc->cloneNode (true)));
             fXMLDoc->setXmlStandalone (true);
-            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey, this, nullptr);
+            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
         }
         END_LIB_EXCEPTION_MAPPER
         EnsureNotNull (fXMLDoc);
@@ -562,14 +551,6 @@ public:
     {
         return fSchema;
     }
-
-#if 0
-public:
-    nonvirtual void SetSchema (const Schema* s)
-    {
-        fSchema = s;
-    }
-#endif
 
 public:
     //
@@ -586,10 +567,10 @@ public:
         AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_}; // write context cuz reading from stream, but writing to 'this'
         START_LIB_EXCEPTION_MAPPER
         {
-            MyMaybeSchemaDOMParser myDOMParser{fSchema};
+            MyMaybeSchemaDOMParser_ myDOMParser{fSchema};
             {
                 try {
-                    myDOMParser.fParser->parse (BinaryInputStream_InputSource_WithProgress{
+                    myDOMParser.fParser->parse (BinaryInputStream_InputSource_WithProgress_{
                         in, Execution::ProgressMonitor::Updater (progressCallback, 0.1f, 0.8f), u"XMLDB"});
                 }
                 catch (const BadFormatException& vf) {
@@ -618,7 +599,7 @@ public:
             fXMLDoc.reset ();
             fXMLDoc = T_XMLDOMDocumentSmartPtr{myDOMParser.fParser->adoptDocument ()};
             fXMLDoc->setXmlStandalone (true);
-            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey, this, nullptr);
+            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
         }
         END_LIB_EXCEPTION_MAPPER
         progressCallback.SetProgress (1.0f);
@@ -664,7 +645,6 @@ public:
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
-            Node          result;
             optional<URI> ns      = fSchema.GetTargetNamespace ();
             DOMElement*   n       = ns == nullopt
                                         ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
@@ -695,8 +675,7 @@ public:
                  */
             }
             Assert (fXMLDoc->getDocumentElement () == n);
-            result = WrapImpl_ (n);
-            return result;
+            return WrapImpl_ (n);
         }
         END_LIB_EXCEPTION_MAPPER
     }
@@ -709,14 +688,14 @@ public:
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
-            MyMaybeSchemaDOMParser myDOMParser{fSchema};
+            MyMaybeSchemaDOMParser_ myDOMParser{fSchema};
             MemBufInputSource memBufIS{reinterpret_cast<const XMLByte*> (xml.As<u16string> ().c_str ()), xml.length () * sizeof (XMLCh), u"XMLDB"};
             memBufIS.setEncoding (XMLUni::fgUTF16LEncodingString2);
             myDOMParser.fParser->parse (memBufIS);
             fXMLDoc.reset ();
             fXMLDoc = T_XMLDOMDocumentSmartPtr{myDOMParser.fParser->adoptDocument ()};
             fXMLDoc->setXmlStandalone (true);
-            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey, this, nullptr);
+            fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
         }
         END_LIB_EXCEPTION_MAPPER
     }
@@ -750,16 +729,20 @@ public:
     }
 
 public:
-    nonvirtual SubNodeIterator GetChildren () const
+    nonvirtual Iterable<Node> GetChildren () const
     {
-        //TraceContextBumper ctx (_T ("XMLDB::Document::Rep::GetChildren"));
-        // really not enough - must pass critsection to iterator rep!
         AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
-        {
-            return SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep> (fXMLDoc.get ())};
-        }
+        return Traversal::CreateGenerator<Node> (
+            [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fXMLDoc.get ())}] () mutable -> optional<Node> {
+                if (sni.IsAtEnd ()) {
+                    return optional<Node>{};
+                }
+                Node r = *sni;
+                ++sni;
+                return r;
+            });
         END_LIB_EXCEPTION_MAPPER
     }
 
@@ -805,15 +788,12 @@ public:
                         writer->write (fXMLDoc.get (), theOutputDesc);
                     }
 
-                    MemBufInputSource readReadSrc (destination.getRawBuffer (), destination.getLen (), u"tmp");
+                    MemBufInputSource readReadSrc{destination.getRawBuffer (), destination.getLen (), u"tmp"};
                     readReadSrc.setEncoding (XMLUni::fgUTF8EncodingString);
 
-                    shared_ptr<IXercesSchemaRep> accessSchema;
-                    if (fSchema != nullptr) {
-                        accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (fSchema.GetRep ());
-                    }
+                    shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (fSchema.GetRep ());
                     {
-                        AssertNotNull (accessSchema);
+                        AssertNotNull (accessSchema); // for now only rep supported
                         shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (
                             XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ()));
                         SetupCommonParserFeatures (*parser, true);
@@ -832,12 +812,12 @@ public:
                     filesystem::path tmpFileName = IO::FileSystem::AppTempFileManager::sThe.GetTempFile ("FAILED_VALIDATION_.xml");
                     DbgTrace (L"Error validating - so writing out temporary file = '%s'", Characters::ToString (tmpFileName).c_str ());
                     {
-                        ofstream out (tmpFileName.c_str (), ios_base::out | ios_base::binary);
+                        ofstream out{tmpFileName, ios_base::out | ios_base::binary};
                         WritePrettyPrinted (out);
                     }
                     try {
                         if (fSchema != nullptr) {
-                            ValidateExternalFile (tmpFileName.c_str (), fSchema);
+                            ValidateFile (tmpFileName, fSchema);
                         }
                     }
                     catch (const BadFormatException& vf) {
@@ -874,7 +854,7 @@ public:
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if (fSchema == nullptr) {
-            return NamespaceDefinitionsList ();
+            return NamespaceDefinitionsList{};
         }
         else {
             return fSchema.GetNamespaceDefinitions ();
@@ -913,28 +893,20 @@ void Document::WriteAsIs (ostream& out) const
     fRep->WriteAsIs (out);
 }
 
-Traversal::Iterable<Node> Document::GetChildren () const
+Iterable<Node> Document::GetChildren () const
 {
-    return Traversal::CreateGenerator<Node> ([sni = fRep->GetChildren ()] () mutable -> optional<Node> {
-        if (sni.IsAtEnd ()) {
-            return optional<Node>{};
-        }
-        Node r = *sni;
-        ++sni;
-        return r;
-    });
-    // return fRep->GetChildren ();
+    return fRep->GetChildren ();
 }
 
 Node Document::GetRootElement () const
 {
     // Should only be one in an XML document.
-    for (SubNodeIterator i = fRep->GetChildren (); i.NotDone (); ++i) {
-        if ((*i).GetNodeType () == Node::eElementNT) {
-            return *i;
+    for (Node ni : fRep->GetChildren ()) {
+        if (ni.GetNodeType () == Node::eElementNT) {
+            return ni;
         }
     }
-    return Node ();
+    return Node{};
 }
 
 void Document::Validate () const
@@ -1003,10 +975,10 @@ namespace {
     }
 }
 namespace {
-    class MyNodeRep : public Node::Rep, Memory::UseBlockAllocationIfAppropriate<MyNodeRep> {
+    class MyNodeRep_ : public Node::Rep, Memory::UseBlockAllocationIfAppropriate<MyNodeRep_> {
     public:
-        MyNodeRep (DOMNode* n)
-            : fNode{n}
+        MyNodeRep_ (DOMNode* n)
+            : fNode_{n}
         {
             RequireNotNull (n);
         }
@@ -1014,10 +986,10 @@ namespace {
     public:
         virtual Node::NodeType GetNodeType () const override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
-                switch (fNode->getNodeType ()) {
+                switch (fNode_->getNodeType ()) {
                     case DOMNode::ELEMENT_NODE:
                         return Node::eElementNT;
                     case DOMNode::ATTRIBUTE_NODE:
@@ -1034,72 +1006,72 @@ namespace {
         }
         virtual String GetNamespace () const override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
             START_LIB_EXCEPTION_MAPPER
             {
-                AssertNotNull (fNode->getNamespaceURI ());
-                return fNode->getNamespaceURI ();
+                AssertNotNull (fNode_->getNamespaceURI ());
+                return fNode_->getNamespaceURI ();
             }
             END_LIB_EXCEPTION_MAPPER
         }
         virtual String GetName () const override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
             START_LIB_EXCEPTION_MAPPER
             {
-                AssertNotNull (fNode->getNodeName ());
-                return fNode->getNodeName ();
+                AssertNotNull (fNode_->getNodeName ());
+                return fNode_->getNodeName ();
             }
             END_LIB_EXCEPTION_MAPPER
         }
         virtual void SetName (const String& name) override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
 #if qDebug
             Require (ValidNewNodeName_ (name));
 #endif
             START_LIB_EXCEPTION_MAPPER
             {
-                T_XMLDOMDocument* doc = fNode->getOwnerDocument ();
+                T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
                 AssertNotNull (doc);
-                fNode = doc->renameNode (fNode, fNode->getNamespaceURI (), name.As<u16string> ().c_str ());
-                AssertNotNull (fNode);
+                fNode_ = doc->renameNode (fNode_, fNode_->getNamespaceURI (), name.As<u16string> ().c_str ());
+                AssertNotNull (fNode_);
             }
             END_LIB_EXCEPTION_MAPPER
         }
         virtual VariantValue GetValue () const override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
-                return GetTextForDOMNode_ (fNode);
+                return GetTextForDOMNode_ (fNode_);
             }
             END_LIB_EXCEPTION_MAPPER
         }
         virtual void SetValue (const VariantValue& v) override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
                 String tmpStr = v.As<String> ();
-                fNode->setTextContent (tmpStr.empty () ? nullptr : tmpStr.As<u16string> ().c_str ());
+                fNode_->setTextContent (tmpStr.empty () ? nullptr : tmpStr.As<u16string> ().c_str ());
             }
             END_LIB_EXCEPTION_MAPPER
         }
         virtual void SetAttribute (const String& attrName, const String& v) override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
-                DOMElement* element = dynamic_cast<DOMElement*> (fNode);
+                DOMElement* element = dynamic_cast<DOMElement*> (fNode_);
                 ThrowIfNull (element);
                 /*
                  * For reasons that elude maybe (maybe because it was standard for XML early on)
                  * all my attributes are free of namespaces. So why use setAttributeNS? Because otherwise
                  * the XQilla code fails to match on the attribute names at all in its XPath stuff.
-                 * Considered copying the namespace from the parent element (fNode->getNamespaceURI()),
+                 * Considered copying the namespace from the parent element (fNode_->getNamespaceURI()),
                  * but XQilla didnt like that either (maybe then I needed M: on xpath).
                  * A differnt subclass object of DOMAttrNode is created - one that doesnt have a getLocalName,
                  * or something like that. Anyhow - this appears to do the right thing for now...
@@ -1111,12 +1083,12 @@ namespace {
         }
         virtual bool HasAttribute (const String& attrName, const String* value) const override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
-                if (fNode->getNodeType () == DOMNode::ELEMENT_NODE) {
-                    AssertMember (fNode, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                    T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (fNode);
+                if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
+                    AssertMember (fNode_, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
+                    T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (fNode_);
                     if (elt->hasAttribute (attrName.As<u16string> ().c_str ())) {
                         if (value != nullptr) {
                             const XMLCh* s = elt->getAttribute (attrName.As<u16string> ().c_str ());
@@ -1132,12 +1104,12 @@ namespace {
         }
         virtual String GetAttribute (const String& attrName) const override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
-                if (fNode->getNodeType () == DOMNode::ELEMENT_NODE) {
-                    AssertMember (fNode, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                    T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (fNode);
+                if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
+                    AssertMember (fNode_, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
+                    T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (fNode_);
                     const XMLCh*  s   = elt->getAttribute (attrName.As<u16string> ().c_str ());
                     AssertNotNull (s);
                     return s;
@@ -1148,10 +1120,10 @@ namespace {
         }
         virtual Node GetFirstAncestorNodeWithAttribute (const String& attrName) const override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
-                for (T_DOMNode* p = fNode; p != nullptr; p = p->getParentNode ()) {
+                for (T_DOMNode* p = fNode_; p != nullptr; p = p->getParentNode ()) {
                     if (p->getNodeType () == DOMNode::ELEMENT_NODE) {
                         AssertMember (p, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
                         const T_DOMElement* elt = reinterpret_cast<const T_DOMElement*> (p);
@@ -1171,20 +1143,20 @@ namespace {
 #endif
             START_LIB_EXCEPTION_MAPPER
             {
-                T_XMLDOMDocument* doc = fNode->getOwnerDocument ();
+                T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
                 // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
-                T_DOMNode* child = doc->createElementNS ((ns == nullptr) ? fNode->getNamespaceURI () : ns->As<u16string> ().c_str (),
+                T_DOMNode* child = doc->createElementNS ((ns == nullptr) ? fNode_->getNamespaceURI () : ns->As<u16string> ().c_str (),
                                                          name.As<u16string> ().c_str ());
                 T_DOMNode* refChildNode = nullptr;
                 if (afterNode.IsNull ()) {
                     // this means PREPEND.
                     // If there is a first element, then insert before it. If no elements, then append is the same thing.
-                    refChildNode = fNode->getFirstChild ();
+                    refChildNode = fNode_->getFirstChild ();
                 }
                 else {
                     refChildNode = GetInternalRep_ (GetRep4Node (afterNode).get ())->getNextSibling ();
                 }
-                T_DOMNode* childx = fNode->insertBefore (child, refChildNode);
+                T_DOMNode* childx = fNode_->insertBefore (child, refChildNode);
                 ThrowIfNull (childx);
                 return WrapImpl_ (childx);
             }
@@ -1197,11 +1169,11 @@ namespace {
 #endif
             START_LIB_EXCEPTION_MAPPER
             {
-                T_XMLDOMDocument* doc          = fNode->getOwnerDocument ();
-                const XMLCh*      namespaceURI = fNode->getNamespaceURI ();
+                T_XMLDOMDocument* doc          = fNode_->getOwnerDocument ();
+                const XMLCh*      namespaceURI = fNode_->getNamespaceURI ();
                 // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
                 T_DOMNode* child  = doc->createElementNS (namespaceURI, name.As<u16string> ().c_str ());
-                T_DOMNode* childx = fNode->appendChild (child);
+                T_DOMNode* childx = fNode_->appendChild (child);
                 ThrowIfNull (childx);
                 return WrapImpl_ (childx);
             }
@@ -1214,13 +1186,13 @@ namespace {
 #endif
             START_LIB_EXCEPTION_MAPPER
             {
-                T_XMLDOMDocument* doc = fNode->getOwnerDocument ();
+                T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
                 // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
-                T_DOMNode* child = doc->createElementNS ((ns == nullptr) ? fNode->getNamespaceURI () : ns->As<u16string> ().c_str (),
+                T_DOMNode* child = doc->createElementNS ((ns == nullptr) ? fNode_->getNamespaceURI () : ns->As<u16string> ().c_str (),
                                                          name.As<u16string> ().c_str ());
                 String tmpStr = v.As<String> (); // See http://bugzilla/show_bug.cgi?id=338
                 child->setTextContent (tmpStr.empty () ? nullptr : tmpStr.As<u16string> ().c_str ());
-                ThrowIfNull (fNode->appendChild (child));
+                ThrowIfNull (fNode_->appendChild (child));
             }
             END_LIB_EXCEPTION_MAPPER
         }
@@ -1237,14 +1209,14 @@ namespace {
         {
             START_LIB_EXCEPTION_MAPPER
             {
-                T_XMLDOMDocument* doc         = fNode->getOwnerDocument ();
+                T_XMLDOMDocument* doc         = fNode_->getOwnerDocument ();
                 T_DOMNode*        nodeToClone = GetInternalRep_ (GetRep4Node (n).get ());
                 T_DOMNode*        clone       = doc->importNode (nodeToClone, true);
                 if (inheritNamespaceFromInsertionPoint and clone->getNodeType () == DOMNode::ELEMENT_NODE) {
-                    clone = RecursivelySetNamespace_ (clone, fNode->getNamespaceURI ());
+                    clone = RecursivelySetNamespace_ (clone, fNode_->getNamespaceURI ());
                 }
                 T_DOMNode* insertAfterNode = afterNode.IsNull () ? nullptr : GetInternalRep_ (GetRep4Node (afterNode).get ());
-                T_DOMNode* clonex          = fNode->insertBefore (clone, insertAfterNode);
+                T_DOMNode* clonex          = fNode_->insertBefore (clone, insertAfterNode);
                 ThrowIfNull (clonex);
                 return WrapImpl_ (clonex);
             }
@@ -1254,13 +1226,13 @@ namespace {
         {
             START_LIB_EXCEPTION_MAPPER
             {
-                T_XMLDOMDocument* doc         = fNode->getOwnerDocument ();
+                T_XMLDOMDocument* doc         = fNode_->getOwnerDocument ();
                 T_DOMNode*        nodeToClone = GetInternalRep_ (GetRep4Node (n).get ());
                 T_DOMNode*        clone       = doc->importNode (nodeToClone, true);
                 if (inheritNamespaceFromInsertionPoint and clone->getNodeType () == DOMNode::ELEMENT_NODE) {
-                    clone = RecursivelySetNamespace_ (clone, fNode->getNamespaceURI ());
+                    clone = RecursivelySetNamespace_ (clone, fNode_->getNamespaceURI ());
                 }
-                T_DOMNode* clonex = fNode->appendChild (clone);
+                T_DOMNode* clonex = fNode_->appendChild (clone);
                 ThrowIfNull (clonex);
                 return WrapImpl_ (clonex);
             }
@@ -1270,15 +1242,15 @@ namespace {
         {
             START_LIB_EXCEPTION_MAPPER
             {
-                T_DOMNode* selNode = fNode;
+                T_DOMNode* selNode = fNode_;
                 ThrowIfNull (selNode);
                 T_DOMNode* parentNode = selNode->getParentNode ();
                 if (parentNode == nullptr) {
                     // This happens if the selected node is an attribute
-                    if (fNode != nullptr) {
+                    if (fNode_ != nullptr) {
                         const XMLCh* ln = selNode->getNodeName ();
                         AssertNotNull (ln);
-                        DOMElement* de = dynamic_cast<DOMElement*> (fNode);
+                        DOMElement* de = dynamic_cast<DOMElement*> (fNode_);
                         de->removeAttribute (ln);
                     }
                 }
@@ -1290,13 +1262,13 @@ namespace {
         }
         virtual Node ReplaceNode () override
         {
-            RequireNotNull (fNode);
+            RequireNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
-                T_XMLDOMDocument* doc = fNode->getOwnerDocument ();
+                T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
                 ThrowIfNull (doc);
-                T_DOMNode* selNode = fNode;
-                ThrowIfNull<RecordNotFoundException> (selNode);
+                T_DOMNode* selNode = fNode_;
+                ThrowIfNull (selNode); // perhaps this should be an assertion?
                 T_DOMNode* parentNode = selNode->getParentNode ();
                 ThrowIfNull (parentNode);
                 DOMElement* n = doc->createElementNS (selNode->getNamespaceURI (), selNode->getNodeName ());
@@ -1307,27 +1279,62 @@ namespace {
         }
         virtual Node GetParentNode () const override
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
-                return WrapImpl_ (fNode->getParentNode ());
+                return WrapImpl_ (fNode_->getParentNode ());
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual SubNodeIterator GetChildren () const override;
-        virtual Node            GetChildNodeByID (const String& id) const override;
-        virtual void*           GetInternalTRep () override
+        virtual Iterable<Node> GetChildren () const override
         {
-            return fNode;
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                return Traversal::CreateGenerator<Node> (
+                    [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node> {
+                        if (sni.IsAtEnd ()) {
+                            return optional<Node>{};
+                        }
+                        Node r = *sni;
+                        ++sni;
+                        return r;
+                    });
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual Node GetChildNodeByID (const String& id) const override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                for (T_DOMNode* i = fNode_->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
+                    if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
+                        AssertMember (i, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
+                        T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (i);
+                        const XMLCh*  s   = elt->getAttribute (u"id");
+                        AssertNotNull (s);
+                        if (CString::Equals (s, id.As<u16string> ().c_str ())) {
+                            return WrapImpl_ (i);
+                        }
+                    }
+                }
+                return Node{};
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual void* GetInternalTRep () override
+        {
+            return fNode_;
         }
 
     private:
         nonvirtual Document::Rep& GetAssociatedDoc_ () const
         {
-            AssertNotNull (fNode);
-            T_XMLDOMDocument* doc = fNode->getOwnerDocument ();
+            AssertNotNull (fNode_);
+            T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
             AssertNotNull (doc);
-            void* docData = doc->getUserData (kXerces2XMLDBDocumentKey);
+            void* docData = doc->getUserData (kXerces2XMLDBDocumentKey_);
             AssertNotNull (docData);
             return *reinterpret_cast<Document::Rep*> (docData);
         }
@@ -1335,65 +1342,26 @@ namespace {
     private:
         nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions_ () const
         {
-            AssertNotNull (fNode);
+            AssertNotNull (fNode_);
             return GetAssociatedDoc_ ().GetNamespaceDefinitions ();
         }
 
     private:
         // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
-        DOMNode* fNode;
+        DOMNode* fNode_;
     };
-}
-
-namespace {
     inline Node WrapImpl_ (T_DOMNode* n)
     {
-        return n == nullptr ? Node{} : Node{make_shared<MyNodeRep> (n)};
+        return n == nullptr ? Node{} : Node{make_shared<MyNodeRep_> (n)};
     }
 }
 
 /*
  ********************************************************************************
- ********************************** MyNodeRep ***********************************
+ ********************** SubNodeIteratorOver_SiblingList_Rep_ *********************
  ********************************************************************************
  */
-SubNodeIterator MyNodeRep::GetChildren () const
-{
-    AssertNotNull (fNode);
-    START_LIB_EXCEPTION_MAPPER
-    {
-        return SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep> (fNode)};
-    }
-    END_LIB_EXCEPTION_MAPPER
-}
-
-Node MyNodeRep::GetChildNodeByID (const String& id) const
-{
-    AssertNotNull (fNode);
-    START_LIB_EXCEPTION_MAPPER
-    {
-        for (T_DOMNode* i = fNode->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
-            if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
-                AssertMember (i, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (i);
-                const XMLCh*  s   = elt->getAttribute (u"id");
-                AssertNotNull (s);
-                if (CString::Equals (s, id.As<u16string> ().c_str ())) {
-                    return WrapImpl_ (i);
-                }
-            }
-        }
-        return Node ();
-    }
-    END_LIB_EXCEPTION_MAPPER
-}
-
-/*
- ********************************************************************************
- ********************** SubNodeIteratorOver_SiblingList_Rep *********************
- ********************************************************************************
- */
-SubNodeIteratorOver_SiblingList_Rep::SubNodeIteratorOver_SiblingList_Rep (T_DOMNode* nodeParent)
+SubNodeIteratorOver_SiblingList_Rep_::SubNodeIteratorOver_SiblingList_Rep_ (T_DOMNode* nodeParent)
     : fParentNode{nodeParent}
     , fCachedMainListLen{static_cast<size_t> (-1)}
 {
@@ -1405,12 +1373,12 @@ SubNodeIteratorOver_SiblingList_Rep::SubNodeIteratorOver_SiblingList_Rep (T_DOMN
     END_LIB_EXCEPTION_MAPPER
 }
 
-bool SubNodeIteratorOver_SiblingList_Rep::IsAtEnd () const
+bool SubNodeIteratorOver_SiblingList_Rep_::IsAtEnd () const
 {
     return fCurNode == nullptr;
 }
 
-void SubNodeIteratorOver_SiblingList_Rep::Next ()
+void SubNodeIteratorOver_SiblingList_Rep_::Next ()
 {
     Require (not IsAtEnd ());
     AssertNotNull (fCurNode);
@@ -1421,12 +1389,12 @@ void SubNodeIteratorOver_SiblingList_Rep::Next ()
     END_LIB_EXCEPTION_MAPPER
 }
 
-Node SubNodeIteratorOver_SiblingList_Rep::Current () const
+Node SubNodeIteratorOver_SiblingList_Rep_::Current () const
 {
     return WrapImpl_ (fCurNode);
 }
 
-size_t SubNodeIteratorOver_SiblingList_Rep::GetLength () const
+size_t SubNodeIteratorOver_SiblingList_Rep_::GetLength () const
 {
     if (fCachedMainListLen == static_cast<size_t> (-1)) {
         size_t n = 0;

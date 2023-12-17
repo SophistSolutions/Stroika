@@ -9,10 +9,7 @@
 #include "../../Characters/String.h"
 #include "../../Execution/ProgressMonitor.h"
 #include "../../Streams/InputStream.h"
-
 #include "../StructuredStreamEvents/IConsumer.h"
-#include "../VariantValue.h"
-
 #include "Common.h"
 #include "Schema.h"
 

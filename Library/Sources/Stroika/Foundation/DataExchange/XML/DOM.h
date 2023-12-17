@@ -25,16 +25,17 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     using DataExchange::BadFormatException;
-
-    class SubNodeIterator;
+    using Traversal::Iterable;
 
     /**
      * NB: A Node can be EITHER an ELEMENT or an ATTRIBUTE
      */
+
+    // @todo name Node namespace with IRep and Ptr classes
     class Node {
     public:
         class Rep;
-        Node () = default;
+        Node () = default; // @todo LOSE NULL NODE PTR OBJECTS
         Node (const shared_ptr<Rep>& from);
 
     public:
@@ -84,10 +85,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         nonvirtual Node GetParentNode () const;
 
     public:
-        //   nonvirtual SubNodeIterator GetChildren () const;
-
-    public:
-        nonvirtual Traversal::Iterable<Node> GetChildren () const;
+        /**
+         */
+        nonvirtual Iterable<Node> GetChildren () const;
 
     public:
         // can return a NULL Node. Only examines this node's children
@@ -98,36 +98,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     private:
         friend class Rep;
-    };
-
-    /*
-     *  Short lifetime. Don't save these iterator objects. Just use them to enumerate a collection and then let them
-     *  go. They (could) become invalid after a call to update the database.
-     */
-    class SubNodeIterator {
-    public:
-        class Rep;
-        explicit SubNodeIterator (const shared_ptr<Rep>& from);
-
-    public:
-        nonvirtual bool   NotDone () const;
-        nonvirtual bool   IsAtEnd () const;
-        nonvirtual void   Next ();
-        nonvirtual Node   Current () const;
-        nonvirtual size_t GetLength () const;
-
-    public:
-        nonvirtual void operator++ ();
-        nonvirtual void operator++ (int);
-        nonvirtual Node operator* () const;
-
-    protected:
-        shared_ptr<Rep> fRep;
-    };
-
-    class RecordNotFoundException : public Execution::RuntimeErrorException<> {
-    public:
-        RecordNotFoundException ();
     };
 
     /**
@@ -154,7 +124,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     public:
         nonvirtual Schema::Ptr GetSchema () const;
-        // nonvirtual void          SetSchema (const Schema* schema);
 
         // IO routines - Serialize the document DOM
     public:
@@ -166,8 +135,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                                            // nonvirtual void Validate (const Schema* schema) const; // ''; but uses PROVIDED schema
 
     public:
-        nonvirtual Traversal::Iterable<Node> GetChildren () const;
-        //        nonvirtual SubNodeIterator           GetChildren () const;
+        /**
+         */
+        nonvirtual Iterable<Node> GetChildren () const;
+
+    public:
+        /**
+         */
         nonvirtual Node GetRootElement () const;
 
     public:

@@ -23,46 +23,34 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         virtual ~Rep () = default;
 
     public:
-        virtual NodeType        GetNodeType () const                                                                       = 0;
-        virtual String          GetNamespace () const                                                                      = 0;
-        virtual String          GetName () const                                                                           = 0;
-        virtual void            SetName (const String& name)                                                               = 0;
-        virtual VariantValue    GetValue () const                                                                          = 0;
-        virtual void            SetValue (const VariantValue& v)                                                           = 0;
-        virtual void            SetAttribute (const String& attrName, const String& v)                                     = 0;
-        virtual bool            HasAttribute (const String& attrName, const String* value) const                           = 0;
-        virtual String          GetAttribute (const String& attrName) const                                                = 0;
-        virtual Node            GetFirstAncestorNodeWithAttribute (const String& attrName) const                           = 0;
-        virtual Node            InsertChild (const String& name, const String* ns, Node afterNode)                         = 0;
-        virtual Node            AppendChild (const String& name)                                                           = 0;
-        virtual void            AppendChild (const String& name, const String* ns, const VariantValue& v)                  = 0;
-        virtual void            AppendChildIfNotEmpty (const String& name, const String* ns, const VariantValue& v)        = 0;
-        virtual Node            InsertNode (const Node& n, const Node& afterNode, bool inheritNamespaceFromInsertionPoint) = 0;
-        virtual Node            AppendNode (const Node& n, bool inheritNamespaceFromInsertionPoint)                        = 0;
-        virtual void            DeleteNode ()                                                                              = 0;
-        virtual Node            ReplaceNode ()                                                                             = 0;
-        virtual Node            GetParentNode () const                                                                     = 0;
-        virtual SubNodeIterator GetChildren () const                                                                       = 0;
-        virtual Node            GetChildNodeByID (const String& id) const                                                  = 0;
-        virtual void*           GetInternalTRep ()                                                                         = 0;
+        virtual NodeType       GetNodeType () const                                                                       = 0;
+        virtual String         GetNamespace () const                                                                      = 0;
+        virtual String         GetName () const                                                                           = 0;
+        virtual void           SetName (const String& name)                                                               = 0;
+        virtual VariantValue   GetValue () const                                                                          = 0;
+        virtual void           SetValue (const VariantValue& v)                                                           = 0;
+        virtual void           SetAttribute (const String& attrName, const String& v)                                     = 0;
+        virtual bool           HasAttribute (const String& attrName, const String* value) const                           = 0;
+        virtual String         GetAttribute (const String& attrName) const                                                = 0;
+        virtual Node           GetFirstAncestorNodeWithAttribute (const String& attrName) const                           = 0;
+        virtual Node           InsertChild (const String& name, const String* ns, Node afterNode)                         = 0;
+        virtual Node           AppendChild (const String& name)                                                           = 0;
+        virtual void           AppendChild (const String& name, const String* ns, const VariantValue& v)                  = 0;
+        virtual void           AppendChildIfNotEmpty (const String& name, const String* ns, const VariantValue& v)        = 0;
+        virtual Node           InsertNode (const Node& n, const Node& afterNode, bool inheritNamespaceFromInsertionPoint) = 0;
+        virtual Node           AppendNode (const Node& n, bool inheritNamespaceFromInsertionPoint)                        = 0;
+        virtual void           DeleteNode ()                                                                              = 0;
+        virtual Node           ReplaceNode ()                                                                             = 0;
+        virtual Node           GetParentNode () const                                                                     = 0;
+        virtual Iterable<Node> GetChildren () const                                                                       = 0;
+        virtual Node           GetChildNodeByID (const String& id) const                                                  = 0;
+        virtual void*          GetInternalTRep ()                                                                         = 0;
 
     protected:
         inline static shared_ptr<Rep> GetRep4Node (Node n)
         {
             return n.fRep;
         } // propagate access to subclasses
-    };
-
-    class SubNodeIterator::Rep {
-    public:
-        Rep ()          = default;
-        virtual ~Rep () = default;
-
-    public:
-        virtual bool   IsAtEnd () const   = 0;
-        virtual void   Next ()            = 0;
-        virtual Node   Current () const   = 0;
-        virtual size_t GetLength () const = 0;
     };
 
     /*
@@ -193,24 +181,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         ThrowIfNull (fRep);
         return fRep->GetParentNode ();
     }
-#if 0
-    inline SubNodeIterator Node::GetChildren () const
-    {
-        ThrowIfNull (fRep);
-        return fRep->GetChildren ();
-    }
-#endif
-    inline Traversal::Iterable<Node> Node::GetChildren () const
+    inline Iterable<Node> Node::GetChildren () const
     {
         AssertNotNull (fRep);
-        return Traversal::CreateGenerator<Node> ([sni = fRep->GetChildren ()] () mutable -> optional<Node> {
-            if (sni.IsAtEnd ()) {
-                return optional<Node>{};
-            }
-            Node r = *sni;
-            ++sni;
-            return r;
-        });
+        return fRep->GetChildren ();
     }
     inline Node Node::GetChildNodeByID (const String& id) const
     {
@@ -219,56 +193,19 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     /*
      ********************************************************************************
-     **************************** XML::DOM::SubNodeIterator *************************
+     *********************************** XML::DOM::Node *****************************
      ********************************************************************************
      */
-    inline SubNodeIterator::SubNodeIterator (const shared_ptr<Rep>& from)
-        : fRep{from}
-    {
-    }
-    inline bool SubNodeIterator::NotDone () const
-    {
-        return not fRep->IsAtEnd ();
-    }
-    inline bool SubNodeIterator::IsAtEnd () const
-    {
-        return fRep->IsAtEnd ();
-    }
-    inline void SubNodeIterator::Next ()
-    {
-        fRep->Next ();
-    }
-    inline Node SubNodeIterator::Current () const
-    {
-        return fRep->Current ();
-    }
-    inline size_t SubNodeIterator::GetLength () const
-    {
-        return fRep->GetLength ();
-    }
-    inline void SubNodeIterator::operator++ ()
-    {
-        Next ();
-    }
-    inline void SubNodeIterator::operator++ (int)
-    {
-        Next ();
-    }
-    inline Node SubNodeIterator::operator* () const
-    {
-        return Current ();
-    }
-
     inline Document::Document (const shared_ptr<Rep>& rep)
         : fRep{rep}
     {
         RequireNotNull (rep);
     }
-
     inline shared_ptr<Document::Rep> Document::GetRep () const
     {
         return fRep;
     }
+
 }
 #endif
 

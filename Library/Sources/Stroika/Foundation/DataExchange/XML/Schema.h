@@ -6,8 +6,6 @@
 
 #include "../../StroikaPreComp.h"
 
-#include <string>
-
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
@@ -16,8 +14,8 @@
 
 #include "DOM.h"
 
-/*
- *  @todo needs alot of cleanups - use shared_ptr not bare pointers!!!! 
+/**
+ *  \file
  */
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
@@ -25,87 +23,95 @@ namespace Stroika::Foundation::DataExchange::XML {
 
     using Containers::Sequence;
     using IO::Network::URI;
+    using Memory::BLOB;
 
     namespace Schema {
 
-        // This is a named BLOB which is used to define a Schema. The BLOB can be named by a variety of
-        // types of names (depending on the type of BLOB).
+        /**
+         * This is a named BLOB which is used to define a Schema. The BLOB can be named by a variety of
+         * types of names (depending on the type of BLOB).
+         * 
+         *      // @todo CLEANUP DOCS ON SOURCE COMPNENT - FOR NOW I THINK ITS TREATED AS RAW TEXT TO BE PARSED AS XML as an XML FILE.
+         */
         class SourceComponent {
         public:
-            Memory::BLOB     fBLOB;
+            BLOB             fBLOB;
             optional<URI>    fNamespace;
             optional<String> fPublicID;
             optional<String> fSystemID;
         };
 
+        /**
+         *  There is more internally to a SchemaRep (perhaps should add method to extract it as a DOM)?
+         * 
+         *  But mostly, used for internal private data, and that is captured with dynamic_cast, but privately internally
+         */
         struct IRep {
             virtual optional<URI>             GetTargetNamespace () const      = 0;
             virtual NamespaceDefinitionsList  GetNamespaceDefinitions () const = 0;
             virtual Sequence<SourceComponent> GetSourceComponents ()           = 0;
         };
 
+        /**
+         *  This is the main way you work with Schema objects - through a smart pointer.
+         */
         class Ptr {
         public:
-            Ptr (nullptr_t)
-            {
-            }
-            Ptr (shared_ptr<IRep> s)
-                : fRep_{s}
-            {
-            }
+            /**
+             */
+            Ptr (nullptr_t);
+            Ptr (shared_ptr<IRep> s);
             Ptr (const Ptr&) = default;
 
+        public:
             bool operator== (const Ptr& p) const = default;
 
         public:
-            nonvirtual Sequence<SourceComponent> GetSourceComponents () const
-            {
-                return fRep_->GetSourceComponents ();
-            }
+            /**
+             */
+            nonvirtual Sequence<SourceComponent> GetSourceComponents () const;
 
         public:
-            nonvirtual optional<URI> GetTargetNamespace () const
-            {
-                return fRep_->GetTargetNamespace ();
-            }
+            /**
+             */
+            nonvirtual optional<URI> GetTargetNamespace () const;
 
         public:
-            nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const
-            {
-                return fRep_->GetNamespaceDefinitions ();
-            }
+            /**
+             */
+            nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const;
 
         public:
-            shared_ptr<IRep> GetRep () const
-            {
-                return fRep_;
-            }
+            /**
+             */
+            shared_ptr<IRep> GetRep () const;
 
         public:
-            //   nonvirtual Memory::BLOB GetSchemaData () const;    // get as date or DOM maybe better
+            //   nonvirtual BLOB GetSchemaData () const;    // get as date or DOM maybe better
 
         private:
             shared_ptr<IRep> fRep_;
         };
 
+        /**
+         */
         enum class Provider {
-
             eXerces,
             eDefault = eXerces
         };
-        Ptr        New (Provider p, const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
+
+        /**
+         */
+        Ptr        New (Provider p, const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
                         const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions);
-        inline Ptr New (const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
-                        const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {})
-        {
-            return New (Provider::eDefault, targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
-        }
+        inline Ptr New (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
+                        const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});
 
     }
 
     /**
      */
-    void ValidateExternalFile (const filesystem::path& externalFileName, const Schema::Ptr& schema); // throws BadFormatException exception on error
+    void ValidateFile (const filesystem::path& externalFileName, const Schema::Ptr& schema); // throws BadFormatException exception on error
 
 };
 #endif

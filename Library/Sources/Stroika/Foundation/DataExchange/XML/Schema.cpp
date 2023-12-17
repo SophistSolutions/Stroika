@@ -18,8 +18,6 @@ using namespace Stroika::Foundation::Memory;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-using std::byte;
-
 using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::DataExchange::XML::Schema;
 
@@ -114,9 +112,7 @@ namespace {
 
                 // Reset fgXercesCacheGrammarFromParse to TRUE so we actually load the XSD here
                 reader->setFeature (XMLUni::fgXercesCacheGrammarFromParse, true);
-
                 reader->setErrorHandler (&fErrorReporter_);
-
                 reader->loadGrammar (mis, Grammar::SchemaGrammarType, true);
             }
             catch (...) {
@@ -148,32 +144,35 @@ namespace {
         {
             return fSourceComponents;
         }
-
         virtual xercesc_3_2::XMLGrammarPool* GetCachedGrammarPool () override
         {
             return fCachedGrammarPool;
         }
     };
-
 }
 #endif
 
+#if qStroika_Foundation_DataExchange_XML_SupportSchema
+/*
+ ********************************************************************************
+ ************************************** ValidateFile ****************************
+ ********************************************************************************
+ */
 Schema::Ptr Schema::New ([[maybe_unused]] Provider p, const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
                          const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
 {
 #if qHasFeature_Xerces
     return Ptr{make_shared<XercesSchemaRep_> (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions)};
 #endif
+    return nullptr;
 }
-
-#if qStroika_Foundation_DataExchange_XML_SupportSchema
 
 /*
  ********************************************************************************
- ****************************** ValidateExternalFile ****************************
+ ************************************** ValidateFile ****************************
  ********************************************************************************
  */
-void DataExchange::XML::ValidateExternalFile (const filesystem::path& externalFileName, const Schema::Ptr& schema)
+void DataExchange::XML::ValidateFile (const filesystem::path& externalFileName, const Schema::Ptr& schema)
 {
 #if qHasFeature_Xerces
     START_LIB_EXCEPTION_MAPPER
@@ -189,5 +188,4 @@ void DataExchange::XML::ValidateExternalFile (const filesystem::path& externalFi
     END_LIB_EXCEPTION_MAPPER
 #endif
 }
-
 #endif
