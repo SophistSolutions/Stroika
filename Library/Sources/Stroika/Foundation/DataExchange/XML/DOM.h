@@ -211,7 +211,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual optional<Ptr> GetChildNodeByID (const String& id) const                                                          = 0;
 
             // @todo see if I can lose GetInteralRep, and do with dynamic_cast - better/more portable to diff impls...
-            virtual void*         GetInternalTRep ()                                                                                 = 0;
+            virtual void* GetInternalTRep () = 0;
 
         protected:
             inline static shared_ptr<IRep> GetRep4Node (Ptr n)
