@@ -26,6 +26,7 @@ RUN apt-get update && apt-get -qq install -y build-essential
 #doxygen:                       Not required, but if you want to generate docs
 #jq:                            needed for ApplyConfiguration to update vs-code configuration files
 #git:                           Not really a Stroika dependency, but its how we download/fetch stroika
+#xxd:                           used in regression tests (and maybe more soon as good resource strategy)
 #
 RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y unzip; \
@@ -35,7 +36,9 @@ RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y automake autoconf libtool-bin; \
     apt-get -qq install -y doxygen; \
     apt-get -qq install -y jq; \
-    apt-get -qq install -y git
+    apt-get -qq install -y git; \
+    apt-get -qq install -y xxd;
+    
 
 #You need some compiler, - can be clang or g++, but pick g++ as a good default
 RUN apt-get -qq install -y g++

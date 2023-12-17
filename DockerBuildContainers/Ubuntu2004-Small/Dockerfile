@@ -28,12 +28,14 @@ RUN apt-get -qq install -y locales && locale-gen en_US en_US.UTF-8
 # pkg-config only needed for building third-party components, like libcurl, etc, but also used in Stroika makefiles to find appropriate
 #   components
 # cmake required to build Xerces
+# xxd used for regression tests
 RUN apt-get -qq install -y p7zip-full; \
     apt-get -qq install -y unzip; \
     apt-get -qq install -y wget; \
     apt-get -qq install -y pkg-config; \
     apt-get update;\
-    apt-get -qq install -y cmake
+    apt-get -qq install -y cmake;\
+    apt-get -qq install -y xxd
 
 #required to build libcurl
 RUN apt-get -qq install -y automake autoconf libtool-bin
