@@ -278,8 +278,8 @@ namespace {
 
 namespace {
     constexpr XMLCh* kXerces2XMLDBDocumentKey_ = nullptr; // just a unique key to lookup our doc object from the xerces doc object.
-                                                          // Could use real str, then xerces does strcmp() - but this appears slightly faster
-                                                          // so long as no conflict....
+        // Could use real str, then xerces does strcmp() - but this appears slightly faster
+        // so long as no conflict....
 }
 
 namespace {
@@ -345,7 +345,7 @@ namespace {
 
     private:
         T_DOMNode*     fParentNode{nullptr};
-        T_DOMNode*     fCurNode{nullptr};
+        T_DOMNode*     fCurNode_{nullptr};
         mutable size_t fCachedMainListLen{};
     };
 }
@@ -495,9 +495,7 @@ public:
         fParser->setDoNamespaces (true);
         fParser->setErrorHandler (&myErrReporter);
 
-
         // @todo make load-external DTD OPTION specified in NEW for document!!! - parser! --LGP 2023-12-16
-
 
         // LGP added 2009-09-07 - so must test carefully!
         {
@@ -645,11 +643,12 @@ public:
         AssertNotNull (fXMLDoc);
         START_LIB_EXCEPTION_MAPPER
         {
-            optional<URI> ns      = fSchema.GetTargetNamespace ();
-            DOMElement*   n       = ns == nullopt
-                                        ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
-                                        : fXMLDoc->createElementNS (ns->As<String> ().As<u16string> ().c_str (), name.As<u16string> ().c_str ());
-            DOMElement*   oldRoot = fXMLDoc->getDocumentElement ();
+            optional<URI> ns = fSchema.GetTargetNamespace ();
+            DOMElement*   n  = ns == nullopt
+                                   ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
+                                   : fXMLDoc->createElementNS (ns->As<String> ().As<u16string> ().c_str (), name.As<u16string> ().c_str ());
+            AssertNotNull (n);
+            DOMElement* oldRoot = fXMLDoc->getDocumentElement ();
             if (oldRoot == nullptr) {
                 (void)fXMLDoc->insertBefore (n, nullptr);
             }
@@ -906,7 +905,7 @@ Node Document::GetRootElement () const
             return ni;
         }
     }
-    return Node{};
+    Execution::Throw (Execution::RuntimeErrorException{"No root element"});
 }
 
 void Document::Validate () const
@@ -1118,7 +1117,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual Node GetFirstAncestorNodeWithAttribute (const String& attrName) const override
+        virtual optional<Node> GetFirstAncestorNodeWithAttribute (const String& attrName) const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
@@ -1132,11 +1131,11 @@ namespace {
                         }
                     }
                 }
-                return Node{};
+                return nullopt;
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual Node InsertChild (const String& name, const String* ns, Node afterNode) override
+        virtual Node InsertChild (const String& name, const String* ns, optional<Node> afterNode) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (name));
@@ -1148,13 +1147,13 @@ namespace {
                 T_DOMNode* child = doc->createElementNS ((ns == nullptr) ? fNode_->getNamespaceURI () : ns->As<u16string> ().c_str (),
                                                          name.As<u16string> ().c_str ());
                 T_DOMNode* refChildNode = nullptr;
-                if (afterNode.IsNull ()) {
+                if (afterNode == nullopt) {
                     // this means PREPEND.
                     // If there is a first element, then insert before it. If no elements, then append is the same thing.
                     refChildNode = fNode_->getFirstChild ();
                 }
                 else {
-                    refChildNode = GetInternalRep_ (GetRep4Node (afterNode).get ())->getNextSibling ();
+                    refChildNode = GetInternalRep_ (GetRep4Node (*afterNode).get ())->getNextSibling ();
                 }
                 T_DOMNode* childx = fNode_->insertBefore (child, refChildNode);
                 ThrowIfNull (childx);
@@ -1205,7 +1204,7 @@ namespace {
                 AppendChild (name, ns, v);
             }
         }
-        virtual Node InsertNode (const Node& n, const Node& afterNode, bool inheritNamespaceFromInsertionPoint) override
+        virtual Node InsertNode (const Node& n, const optional<Node>& afterNode, bool inheritNamespaceFromInsertionPoint) override
         {
             START_LIB_EXCEPTION_MAPPER
             {
@@ -1215,7 +1214,7 @@ namespace {
                 if (inheritNamespaceFromInsertionPoint and clone->getNodeType () == DOMNode::ELEMENT_NODE) {
                     clone = RecursivelySetNamespace_ (clone, fNode_->getNamespaceURI ());
                 }
-                T_DOMNode* insertAfterNode = afterNode.IsNull () ? nullptr : GetInternalRep_ (GetRep4Node (afterNode).get ());
+                T_DOMNode* insertAfterNode = afterNode == nullopt ? nullptr : GetInternalRep_ (GetRep4Node (*afterNode).get ());
                 T_DOMNode* clonex          = fNode_->insertBefore (clone, insertAfterNode);
                 ThrowIfNull (clonex);
                 return WrapImpl_ (clonex);
@@ -1277,12 +1276,13 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual Node GetParentNode () const override
+        virtual optional<Node> GetParentNode () const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
             {
-                return WrapImpl_ (fNode_->getParentNode ());
+                auto p = fNode_->getParentNode ();
+                return p == nullptr ? optional<Node>{} : WrapImpl_ (p);
             }
             END_LIB_EXCEPTION_MAPPER
         }
@@ -1303,7 +1303,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual Node GetChildNodeByID (const String& id) const override
+        virtual optional<Node> GetChildNodeByID (const String& id) const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER
@@ -1319,7 +1319,7 @@ namespace {
                         }
                     }
                 }
-                return Node{};
+                return nullopt;
             }
             END_LIB_EXCEPTION_MAPPER
         }
@@ -1352,7 +1352,8 @@ namespace {
     };
     inline Node WrapImpl_ (T_DOMNode* n)
     {
-        return n == nullptr ? Node{} : Node{make_shared<MyNodeRep_> (n)};
+        RequireNotNull (n);
+        return Node{make_shared<MyNodeRep_> (n)};
     }
 }
 
@@ -1368,30 +1369,30 @@ SubNodeIteratorOver_SiblingList_Rep_::SubNodeIteratorOver_SiblingList_Rep_ (T_DO
     RequireNotNull (nodeParent);
     START_LIB_EXCEPTION_MAPPER
     {
-        fCurNode = nodeParent->getFirstChild ();
+        fCurNode_ = nodeParent->getFirstChild ();
     }
     END_LIB_EXCEPTION_MAPPER
 }
 
 bool SubNodeIteratorOver_SiblingList_Rep_::IsAtEnd () const
 {
-    return fCurNode == nullptr;
+    return fCurNode_ == nullptr;
 }
 
 void SubNodeIteratorOver_SiblingList_Rep_::Next ()
 {
     Require (not IsAtEnd ());
-    AssertNotNull (fCurNode);
+    AssertNotNull (fCurNode_);
     START_LIB_EXCEPTION_MAPPER
     {
-        fCurNode = fCurNode->getNextSibling ();
+        fCurNode_ = fCurNode_->getNextSibling ();
     }
     END_LIB_EXCEPTION_MAPPER
 }
 
 Node SubNodeIteratorOver_SiblingList_Rep_::Current () const
 {
-    return WrapImpl_ (fCurNode);
+    return WrapImpl_ (fCurNode_);
 }
 
 size_t SubNodeIteratorOver_SiblingList_Rep_::GetLength () const

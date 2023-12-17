@@ -35,11 +35,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     class Node {
     public:
         class Rep;
-        Node () = default; // @todo LOSE NULL NODE PTR OBJECTS
+        Node () = delete; // @todo LOSE NULL NODE PTR OBJECTS  (two apis - change to return optional)
         Node (const shared_ptr<Rep>& from);
 
     public:
-        nonvirtual bool IsNull () const;
+        //   nonvirtual bool IsNull () const;
 
     public:
         enum NodeType {
@@ -52,37 +52,69 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         nonvirtual NodeType GetNodeType () const;
 
     public:
-        nonvirtual String       GetNamespace () const;
-        nonvirtual String       GetName () const;
-        nonvirtual void         SetName (const String& name);
+        nonvirtual String GetNamespace () const;
+
+    public:
+        nonvirtual String GetName () const;
+
+    public:
+        nonvirtual void SetName (const String& name);
+
+    public:
         nonvirtual VariantValue GetValue () const;
-        nonvirtual void         SetValue (const VariantValue& v);
-        nonvirtual void         SetAttribute (const String& attrName, const String& v);
+
+    public:
+        /**
+         *  Note a nullptr value is rendered as an empty DOM node, but then read back (GetValue) as an empty string.
+         *      @todo CONSIDER IF THIS MAKES SENSE
+         */
+        nonvirtual void SetValue (const VariantValue& v);
+
+    public:
+        nonvirtual void SetAttribute (const String& attrName, const String& v);
+
+    public:
         // return true iff attribute exists on this node
         nonvirtual bool HasAttribute (const String& attrName) const;
         // return true iff attribute exists on this node and equals value
         nonvirtual bool HasAttribute (const String& attrName, const String& value) const;
         // returns string value of attribute, and "" if doesn't exist (or empty - so not distinguishable this way)
+    public:
         nonvirtual String GetAttribute (const String& attrName) const;
-        nonvirtual Node   GetFirstAncestorNodeWithAttribute (const String& attrName) const;
+
+    public:
+        nonvirtual optional<Node> GetFirstAncestorNodeWithAttribute (const String& attrName) const;
         // if afterNode is nullptr - then this is PREPEND
-        nonvirtual Node InsertChild (const String& name, Node afterNode);
-        nonvirtual Node InsertChild (const String& name, const String& ns, Node afterNode);
+    public:
+        nonvirtual Node InsertChild (const String& name, optional<Node> afterNode);
+        nonvirtual Node InsertChild (const String& name, const String& ns, optional<Node> afterNode);
+
+    public:
         nonvirtual Node AppendChild (const String& name);
         nonvirtual void AppendChild (const String& name, const VariantValue& v);
         nonvirtual void AppendChild (const String& name, const String& ns, const VariantValue& v);
+
+    public:
         // Node 'n' COULD come from other XMLDoc - so be careful how its inserted
         // NB: NODE CLONED/COPIED - NOT INSERTED BY REFERENCE!
         // if afterNode == nullptr, then PREPEND!
-        nonvirtual Node InsertNode (const Node& n, const Node& afterNode, bool inheritNamespaceFromInsertionPoint = true);
+        nonvirtual Node InsertNode (const Node& n, const optional<Node>& afterNode, bool inheritNamespaceFromInsertionPoint = true);
         // Node 'n' COULD come from other XMLDoc - so be careful how its appended
         // NB: NODE CLONED/COPIED - NOT INSERTED BY REFERENCE!
+    public:
         nonvirtual Node AppendNode (const Node& n, bool inheritNamespaceFromInsertionPoint = true);
+
+    public:
         nonvirtual void AppendChildIfNotEmpty (const String& name, const VariantValue& v);
         nonvirtual void AppendChildIfNotEmpty (const String& name, const String& ns, const VariantValue& v);
+
+    public:
         nonvirtual void DeleteNode ();
+
+    public:
         nonvirtual Node ReplaceNode (); // creates a new (empty) node with same name (and namespace) as orig
-        nonvirtual Node GetParentNode () const;
+    public:
+        nonvirtual optional<Node> GetParentNode () const;
 
     public:
         /**
@@ -91,7 +123,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     public:
         // can return a NULL Node. Only examines this node's children
-        nonvirtual Node GetChildNodeByID (const String& id) const;
+        nonvirtual optional<Node> GetChildNodeByID (const String& id) const;
 
     protected:
         shared_ptr<Rep> fRep;
@@ -141,6 +173,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     public:
         /**
+         * \brief always returns Node of eElement type, or throws on failure
          */
         nonvirtual Node GetRootElement () const;
 
@@ -153,6 +186,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     /**
      *  RWDocument is a modifiable DOM document.
+     * 
+     *      @todo LOSE THIS CONCEPT - Document is modifyable - even if no APIs for it, cuz you can modify the NODES.
      */
     class RWDocument : public Document {
     public:
