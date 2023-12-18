@@ -6,12 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
-#include <optional>
-
-#include "../Characters/UTFConvert.h"
+#include "../Traversal/Iterable.h"
 
 #include "InputStream.h"
-#include "InternallySynchronizedInputStream.h"
+
 
 /**
  *  \file
@@ -33,18 +31,12 @@ namespace Stroika::Foundation::Streams::TextToByteReader {
      * 
      * @todo NOTE - this CURRENTLY HARDWIRES converting to UTF-8
      * 
-     *      @todo take optional CodeCvt argument, or things you would pass to CodeCvt (character coing) for what binary rep to create!
+     * @todo take optional CodeCvt argument, or things you would pass to CodeCvt (character coing) for what binary rep to create!
      * 
-     *      WONT change this part of the API - just adding overloads, so OK to release as-is - 2023-07-10
-     * 
-     *      @todo this also should take Iterable<Character> and therefore String...
+     *  WONT change this part of the API - just adding overloads, so OK to release as-is - 2023-07-10
      */
-    using Ptr = InputStream<byte>::Ptr;
-
-    /**
-         */
-    Ptr New (const InputStream<Character>::Ptr& srcStream);
-    Ptr New (const Traversal::Iterable<Character>& srcText);
+    InputStream<byte>::Ptr New (const InputStream<Character>::Ptr& srcStream);
+    InputStream<byte>::Ptr New (const Traversal::Iterable<Character>& srcText);
 
 }
 

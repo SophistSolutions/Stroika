@@ -6,9 +6,8 @@
 #include "../Characters/UTFConvert.h"
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Execution/Common.h"
-#include "../Execution/OperationNotSupportedException.h"
-#include "../Memory/InlineBuffer.h"
 #include "../Memory/StackBuffer.h"
+
 #include "IterableToInputStream.h"
 #include "MemoryStream.h"
 
@@ -22,7 +21,6 @@ using std::byte;
 using Characters::Character;
 using Characters::String;
 using Debug::AssertExternallySynchronizedMutex;
-using Memory::InlineBuffer;
 using Memory::StackBuffer;
 
 namespace {
@@ -68,7 +66,7 @@ namespace {
             Character readBuf[1];
             if (size_t nChars = fSrc_.Read (begin (readBuf), end (readBuf))) {
                 char8_t       buf[10];
-                span<char8_t> convertedSpan  = Characters::UTFConvert::kThe.ConvertSpan (span{readBuf, nChars}, span{buf, sizeof (buf)});
+                span<char8_t> convertedSpan  = Characters::UTFConvert::kThe.ConvertSpan (span{readBuf, nChars}, span{buf});
                 auto          copiedIntoSpan = Memory::CopySpanData_StaticCast (convertedSpan, intoSpan);
                 if (copiedIntoSpan.size () < convertedSpan.size ()) {
                     // save extra bytes in fSrcBufferedSpan_
@@ -120,12 +118,12 @@ namespace {
  *********************** Streams::TextToByteReader::New *************************
  ********************************************************************************
  */
-auto TextToByteReader::New (const InputStream<Character>::Ptr& srcStream) -> Ptr
+auto TextToByteReader::New (const InputStream<Character>::Ptr& srcStream) -> InputStream<byte>::Ptr
 {
-    return Ptr{make_shared<Rep_> (srcStream)};
+    return InputStream<byte>::Ptr{make_shared<Rep_> (srcStream)};
 }
 
-auto TextToByteReader::New (const Traversal::Iterable<Character>& srcText) -> Ptr
+auto TextToByteReader::New (const Traversal::Iterable<Character>& srcText) -> InputStream<byte>::Ptr
 {
     // @todo - Could make this more efficient (by combining into one object) - but for now KISS
     return New (IterableToInputStream::New<Character> (srcText));

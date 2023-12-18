@@ -69,7 +69,6 @@ namespace {
                     return mkMemInputSrc_ (i->fBLOB);
                 }
             }
-            WeakAsserteNotReached (); // Untested if Xerces handles null here...
             return nullptr;
         }
 
@@ -79,7 +78,7 @@ namespace {
             // copy RAM to C++ array - freed by MemBufInputSource - adopt flag....
             XMLByte* useBuf = new XMLByte[schemaData.GetSize ()];
             memcpy (useBuf, schemaData.begin (), schemaData.GetSize ());
-            return new MemBufInputSource (useBuf, schemaData.GetSize (), "", true);
+            return new MemBufInputSource{useBuf, schemaData.GetSize (), "", true};
         }
     };
 
