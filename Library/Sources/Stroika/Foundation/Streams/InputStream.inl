@@ -46,7 +46,6 @@ namespace Stroika::Foundation::Streams {
     inline InputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<_IRep>& rep)
         : inherited{rep}
     {
-        RequireNotNull (rep);
     }
     template <typename ELEMENT_TYPE>
     inline InputStream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t)

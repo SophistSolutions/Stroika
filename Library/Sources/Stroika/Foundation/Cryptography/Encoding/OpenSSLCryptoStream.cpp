@@ -394,7 +394,7 @@ auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchr
  */
 auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<byte>::Ptr& realOut) -> Ptr
 {
-    return _mkPtr (make_shared<Rep_> (cryptoParams, direction, realOut));
+    return Ptr{make_shared<Rep_> (cryptoParams, direction, realOut)};
 }
 
 auto OpenSSLOutputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,

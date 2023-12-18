@@ -91,15 +91,6 @@ namespace Stroika::Foundation::Streams {
 
     public:
         class _IRep;
-
-    protected:
-        using _SharedIRep = shared_ptr<_IRep>;
-
-    protected:
-        /**
-         *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
-         */
-        static Ptr _mkPtr (const _SharedIRep& s);
     };
 
     /**
@@ -128,6 +119,7 @@ namespace Stroika::Foundation::Streams {
         Ptr (nullptr_t);
         Ptr (const Ptr&) = default;
         Ptr (Ptr&&)      = default;
+        Ptr (const shared_ptr<_IRep>& rep);
 
     public:
         /**
@@ -323,17 +315,9 @@ namespace Stroika::Foundation::Streams {
 
     protected:
         /**
-         * _SharedIRep rep is the underlying shared output Stream object.
-         *
-         *  \req rep != nullptr (use nullptr_t constructor)
-         */
-        explicit Ptr (const _SharedIRep& rep);
-
-    protected:
-        /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual _SharedIRep _GetSharedRep () const;
+        nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
 
     protected:
         /**
@@ -350,15 +334,6 @@ namespace Stroika::Foundation::Streams {
     private:
         friend class OutputStream<ELEMENT_TYPE>;
     };
-
-#if 0
-    template <>
-    template <>
-    void OutputStream<Characters::Character>::Ptr::Write (const Characters::String& s) const;
-    template <>
-    template <>
-    void OutputStream<Characters::Character>::Ptr::Write (const wchar_t* start, const wchar_t* end) const;
-#endif
 
     /**
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>

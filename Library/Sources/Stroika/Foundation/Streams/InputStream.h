@@ -165,14 +165,12 @@ namespace Stroika::Foundation::Streams {
          *  defaults to null (empty ())
          *
          * shared_ptr<_IRep> rep is the underlying shared input Stream object.
-         *
-         *  \req rep != nullptr (use nullptr_t constructor)
          */
         Ptr () = default;
         Ptr (nullptr_t);
         Ptr (const Ptr&)     = default;
         Ptr (Ptr&&) noexcept = default;
-        explicit Ptr (const shared_ptr<_IRep>& rep);
+        Ptr (const shared_ptr<_IRep>& rep);
 
     public:
         /**

@@ -26,10 +26,9 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline OutputStream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep)
+    inline OutputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<_IRep>& rep)
         : inherited{rep}
     {
-        RequireNotNull (rep);
     }
     template <typename ELEMENT_TYPE>
     inline OutputStream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t)
@@ -37,7 +36,7 @@ namespace Stroika::Foundation::Streams {
     {
     }
     template <typename ELEMENT_TYPE>
-    inline auto OutputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
+    inline auto OutputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> shared_ptr<_IRep>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return Debug::UncheckedDynamicPointerCast<_IRep> (inherited::_GetSharedRep ());
@@ -244,17 +243,6 @@ namespace Stroika::Foundation::Streams {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         Write (write2TextStream);
         return *this;
-    }
-
-    /*
-     ********************************************************************************
-     *************************** OutputStream<ELEMENT_TYPE> *************************
-     ********************************************************************************
-     */
-    template <typename ELEMENT_TYPE>
-    inline auto OutputStream<ELEMENT_TYPE>::_mkPtr (const _SharedIRep& s) -> Ptr
-    {
-        return Ptr{s};
     }
 
 }

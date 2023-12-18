@@ -48,10 +48,6 @@ namespace Stroika::Foundation::IO::FileSystem {
             return FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag);
         }
     }
-    inline auto FileOutputStream::_mkPtr (const shared_ptr<Rep_>& s) -> Ptr
-    {
-        return Ptr{s};
-    }
 
 }
 
