@@ -14,6 +14,7 @@
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include "Stroika/Foundation/DataExchange/XML/DOM.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -1322,12 +1323,24 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, T15_DOMRead_)
     {
-        DOM::Document::Ptr d = DOM::Document::New (Memory::BLOB::Attach (Resources_::personal_xml).As<Streams::InputStream<byte>::Ptr> ());
-        stringstream       ss;
-        d.WritePrettyPrinted (ss);
+        const Memory::BLOB kPersonalXML_ = Memory::BLOB::Attach (Resources_::personal_xml);
+        const Memory::BLOB kPersonalXSD_ = Memory::BLOB::Attach (Resources_::personal_xsd);
 
-        // this line I THINK crashes on MacOS under github actions, but not on my machine?? TESTING to viery  thats the issue
-        //         DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
+        {
+            DOM::Document::Ptr d = DOM::Document::New (kPersonalXML_.As<Streams::InputStream<byte>::Ptr> ());
+            stringstream       ss;
+            d.WritePrettyPrinted (ss);
+            // this line I THINK crashes on MacOS under github actions, but not on my machine?? TESTING to viery  thats the issue
+            //DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
+        }
+        {
+            Schema::Ptr        personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
+            DOM::Document::Ptr d              = DOM::Document::New (kPersonalXML_.As<Streams::InputStream<byte>::Ptr> (), personalSchema);
+            stringstream       ss;
+            d.WritePrettyPrinted (ss);
+            // this line I THINK crashes on MacOS under github actions, but not on my machine?? TESTING to viery  thats the issue
+           // DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
+        }
     }
 }
 #endif
