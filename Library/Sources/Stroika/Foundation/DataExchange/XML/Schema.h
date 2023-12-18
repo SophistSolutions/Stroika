@@ -94,9 +94,6 @@ namespace Stroika::Foundation::DataExchange::XML {
             shared_ptr<IRep> GetRep () const;
 
         public:
-            //   nonvirtual BLOB GetSchemaData () const;    // get as date or DOM maybe better
-
-        public:
             /**
              *  The schema can be best thoguht of as a set of rules (for validating) described by a text file (the .xsd file).
              *  This method can return that as a BLOB (for now default encoded), a String (for easy viewing/display), or as a DOM object.

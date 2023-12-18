@@ -75,7 +75,9 @@ namespace Stroika::Foundation::DataExchange::XML {
 #endif
 
     /**
-         */
+        @todo add DefaultNames suport and range (begin/end bounds) and add ifdefs for ef each of these values around.
+    
+    */
     enum class Provider {
         eXerces,
         eDefault = eXerces

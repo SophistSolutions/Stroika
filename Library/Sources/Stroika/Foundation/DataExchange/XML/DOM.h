@@ -10,7 +10,6 @@
 #include "../../Streams/InputStream.h"
 
 #include "../BadFormatException.h"
-#include "../VariantValue.h"
 
 #include "Namespace.h"
 #include "Schema.h"
@@ -49,17 +48,30 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          *  \note Before Stroika v3.0d5 this was simply called "Node", and now Node::Ptr
          * 
-         *   Note - Nodes are not created directly, but either via Node::Ptr methods, or Document::Ptr methods (because nodes are always associated with some document).
+         *   Nodes are not created directly, but either via Node::Ptr methods, or Document::Ptr methods (because nodes are always associated with some document).
          * 
+         *  Node::Ptr maybe nullptr (default constructed, assigned nullptr, or rendered null by a call to DeleteNode). Calling other methods (like GetName () etc)
+         *  while nullptr is a requires failure.
          * 
+         *  \note Older XMLDB InsertNode/AppendNode APIs - we had some APIs which more genreally operated on Nodes andding them and probably allowed moving them.
+         *        I couldnt think of any cases where I needed that, and it made it harder to port to other libraries, so I removed those APIs (til I see there utility again).
+         *        And then - need to better document just what they do/are for (so can do portable).
          * 
-         * &&& todo add == nullptr_t and to bool conversion to check for null and then note REQ cannog call any mthods like GetName() if == nullptr
+         *          SImilarly for Document::SetRootElement. (thats the only place this AppendNode code used). If we need SetRootElement, we need AppendNode.
+         *          But that seems to create lots of magic about being careful about tranplating nodes from one document to another. Not sure that was ever done properly and want to avoid
+         *          learnign how todo with each librariy. For now hope note needed.--LGP 2023-12-16
          */
         class Ptr {
         public:
             /**
              */
+            Ptr (nullptr_t);
             Ptr (const shared_ptr<IRep>& from);
+
+        public:
+            /**
+             */
+            bool operator== (const Ptr&) const = default;
 
         public:
             /**
@@ -83,15 +95,18 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  This is the value between the brackets <a>text</a>. Note that <a></a> is the same as <a/> - the empty string.
+             * 
+             *      \note before Stroika v3.0d5, the value API was VariantValue but that was always maningless, and just treated as a String.
+             *
+             *      \note the 'String' value maybe implemented in XML in a variety of ways (entities, CDATA, etc).
              */
-            nonvirtual VariantValue GetValue () const;
+            nonvirtual String GetValue () const;
 
         public:
             /**
-             *  Note a nullptr value is rendered as an empty DOM node, but then read back (GetValue) as an empty string.
-             *      @todo CONSIDER IF THIS MAKES SENSE
              */
-            nonvirtual void SetValue (const VariantValue& v);
+            nonvirtual void SetValue (const String& v);
 
         public:
             /**
@@ -108,66 +123,54 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-            // returns string value of attribute, and "" if doesn't exist (or empty - so not distinguishable this way)
-
-            &&& todo redo this API so returns OPTIONAL and nullopt if missing
+            // returns string value of attribute, and nullopt if doesn't exist
              */
-            nonvirtual String GetAttribute (const String& attrName) const;
+            nonvirtual optional<String> GetAttribute (const String& attrName) const;
 
         public:
             /**
+            * seems very special purpose. See if actually used any maybe lose this... --LGP 2023-12-16
              */
-            nonvirtual optional<Ptr> GetFirstAncestorNodeWithAttribute (const String& attrName) const;
+            nonvirtual Ptr GetFirstAncestorNodeWithAttribute (const String& attrName) const;
 
         public:
             /**
             // if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
              */
-            nonvirtual Ptr InsertChild (const String& name, optional<Ptr> afterNode);
-            nonvirtual Ptr InsertChild (const String& name, const String& ns, optional<Ptr> afterNode);
+            nonvirtual Ptr InsertChild (const String& name, const Ptr& afterNode);
+            nonvirtual Ptr InsertChild (const String& name, const optional<URI>& ns, const Ptr& afterNode);
 
         public:
             /**
              */
-            nonvirtual Ptr  AppendChild (const String& name);
-            nonvirtual void AppendChild (const String& name, const VariantValue& v);
-            nonvirtual void AppendChild (const String& name, const String& ns, const VariantValue& v);
+            nonvirtual Ptr  AppendChild (const String& name, const optional<URI>& ns = nullopt);
+            nonvirtual void AppendChild (const String& name, const optional<URI>& ns, const String& v);
 
         public:
             /**
              */
-            // Node 'n' COULD come from other XMLDoc - so be careful how its inserted
-            // NB: NODE CLONED/COPIED - NOT INSERTED BY REFERENCE!
-            // if afterNode == nullopt, then PREPEND!
-            nonvirtual Ptr InsertNode (const Ptr& n, const optional<Ptr>& afterNode, bool inheritNamespaceFromInsertionPoint = true);
-            // Node 'n' COULD come from other XMLDoc - so be careful how its appended
-            // NB: NODE CLONED/COPIED - NOT INSERTED BY REFERENCE!
-        public:
-            /**
-             */
-            nonvirtual Ptr AppendNode (const Ptr& n, bool inheritNamespaceFromInsertionPoint = true);
+            nonvirtual void AppendChildIfNotEmpty (const String& name, const optional<URI>& ns, const String& v);
 
         public:
             /**
-             */
-            nonvirtual void AppendChildIfNotEmpty (const String& name, const VariantValue& v);
-            nonvirtual void AppendChildIfNotEmpty (const String& name, const String& ns, const VariantValue& v);
-
-        public:
-            /**
-            * @todo CLARIFY - THINK DELETES UNDERLYINHG NODE - LEAVES THIS PTR == nullptr (or should)
+             *  \req *this != nullptr
+             *  \ens *this == nullptr
              */
             nonvirtual void DeleteNode ();
 
         public:
             /**
+             * creates a new (empty) node with same name (and namespace) as orig
+             * 
+             *  \note Queer API - why do I have this??? --LGP 2023-12-16
              */
-            nonvirtual Ptr ReplaceNode (); // creates a new (empty) node with same name (and namespace) as orig
+            nonvirtual Ptr ReplaceNode ();
 
         public:
             /**
+             *  Can return nullptr
              */
-            nonvirtual optional<Ptr> GetParentNode () const;
+            nonvirtual Ptr GetParentNode () const;
 
         public:
             /**
@@ -178,7 +181,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
             // can return a NULL Node. Only examines this node's children
              */
-            nonvirtual optional<Ptr> GetChildNodeByID (const String& id) const;
+            nonvirtual Ptr GetChildNodeByID (const String& id) const;
 
         private:
             shared_ptr<IRep> fRep_;
@@ -195,27 +198,23 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual ~IRep () = default;
 
         public:
-            virtual Type                GetNodeType () const                                                                         = 0;
-            virtual optional<URI>       GetNamespace () const                                                                        = 0;
-            virtual String              GetName () const                                                                             = 0;
-            virtual void                SetName (const String& name)                                                                 = 0;
-            virtual VariantValue        GetValue () const                                                                            = 0;
-            virtual void                SetValue (const VariantValue& v)                                                             = 0;
-            virtual void                SetAttribute (const String& attrName, const String& v)                                       = 0;
-            virtual bool                HasAttribute (const String& attrName, const String* value) const                             = 0;
-            virtual String              GetAttribute (const String& attrName) const                                                  = 0;
-            virtual optional<Node::Ptr> GetFirstAncestorNodeWithAttribute (const String& attrName) const                             = 0;
-            virtual Ptr                 InsertChild (const String& name, const String* ns, optional<Ptr> afterNode)                  = 0;
-            virtual Ptr                 AppendChild (const String& name)                                                             = 0;
-            virtual void                AppendChild (const String& name, const String* ns, const VariantValue& v)                    = 0;
-            virtual void                AppendChildIfNotEmpty (const String& name, const String* ns, const VariantValue& v)          = 0;
-            virtual Ptr           InsertNode (const Ptr& n, const optional<Ptr>& afterNode, bool inheritNamespaceFromInsertionPoint) = 0;
-            virtual Ptr           AppendNode (const Ptr& n, bool inheritNamespaceFromInsertionPoint)                                 = 0;
-            virtual void          DeleteNode ()                                                                                      = 0;
-            virtual Ptr           ReplaceNode ()                                                                                     = 0;
-            virtual optional<Ptr> GetParentNode () const                                                                             = 0;
-            virtual Iterable<Ptr> GetChildren () const                                                                               = 0;
-            virtual optional<Ptr> GetChildNodeByID (const String& id) const                                                          = 0;
+            virtual Type             GetNodeType () const                                                            = 0;
+            virtual optional<URI>    GetNamespace () const                                                           = 0;
+            virtual String           GetName () const                                                                = 0;
+            virtual void             SetName (const String& name)                                                    = 0;
+            virtual String           GetValue () const                                                               = 0;
+            virtual void             SetValue (const String& v)                                                      = 0;
+            virtual void             SetAttribute (const String& attrName, const String& v)                          = 0;
+            virtual bool             HasAttribute (const String& attrName, const String* value) const                = 0;
+            virtual optional<String> GetAttribute (const String& attrName) const                                     = 0;
+            virtual Ptr              GetFirstAncestorNodeWithAttribute (const String& attrName) const                = 0;
+            virtual Ptr              InsertChild (const String& name, const optional<URI>& ns, const Ptr& afterNode) = 0;
+            virtual Ptr              AppendChild (const String& name, const optional<URI>& ns)                       = 0;
+            virtual void             DeleteNode ()                                                                   = 0;
+            virtual Ptr              ReplaceNode ()                                                                  = 0;
+            virtual Ptr              GetParentNode () const                                                          = 0;
+            virtual Iterable<Ptr>    GetChildren () const                                                            = 0;
+            virtual Ptr              GetChildNodeByID (const String& id) const                                       = 0;
 
             // @todo see if I can lose GetInteralRep, and do with dynamic_cast - better/more portable to diff impls...
             virtual void* GetInternalTRep () = 0;
@@ -234,6 +233,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         struct IRep;
 
         /**
+         *  \brief Document::Ptr is create with Document::New, and is a smart pointer to a DOM document object.
+         * 
+         *  \note nullptr is allowed for Ptr
          * 
          *   \note the document object does NOT have an intrinsically associated schema object. We considered/started with such a design.
          *         but then the trouble was, what if you wanted two (say a short and long format - schema). Or what if sometimes you wanted to read
@@ -250,15 +252,29 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              */
-            Ptr ();
+            Ptr (nullptr_t);
             Ptr (const shared_ptr<IRep>& rep);
-            Ptr (const Ptr& from)           = default;
+            Ptr (const Ptr& from) = default;
+
+        public:
             Ptr& operator= (const Ptr& rhs) = default;
-            ~Ptr ()                         = default;
+
+        public:
+            ~Ptr () = default;
+
+        public:
+            /**
+             */
+            bool operator== (const Ptr&) const = default;
 
         public:
             /**
             // IO routines - Serialize the document DOM
+
+
+            @todo fix to look at existing XML OUTPUT code - formatting.
+
+            Look at STREAMS code.
          */
             nonvirtual void WritePrettyPrinted (ostream& out) const;
             /**
@@ -280,24 +296,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             * \brief always returns Node of eElement type, or throws on failure
+             * \brief always returns Node of eElement or return nullptr if none
              */
             nonvirtual Node::Ptr GetRootElement () const;
 
         public:
             /**
-            *   @todo document - invistigate what this does? If there already is one (replace?) or erorr?
-             */
-            nonvirtual Node::Ptr CreateDocumentElement (const String& name, const optional<URI>& ns = nullopt);
-
-        public:
-            /**
-            *   @todo document - invistigate what this does? look at impl - maybe delete API? What if goes cross documents????
-         */
-            nonvirtual void SetRootElement (const Node::Ptr& newRoot);
-
-        public:
-            /**
+            * @@todo  - what happens if we rename this operator-> - IO think chaining works nicely then. maybe use that trick thoguhotu Stroika if it works here.
              */
             nonvirtual shared_ptr<IRep> GetRep () const;
 
@@ -308,13 +313,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         /**
          *  Create a Document object and return a smart pointer (Ptr) to it.
          * 
-         *  Use the optionally provided stream to deserialize the document from (or create an empty one).
+         *  Use the optionally provided stream to deserialize the document from (or create an empty one with a single root documentElement given by name/ns args).
          * 
          *  \note String in overload is trivial wrapper on Streams::TextToByteReader{}, in case you want adjust paramters.
          * 
          * @todo add overload takign String 'in' and parse using Streams::TextToByteReader
          */
-        Ptr New ();
+        Ptr New (const String& documentElementName, const optional<URI>& ns);
         Ptr New (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr);
         Ptr New (const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr);
 
@@ -323,13 +328,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         struct IRep {
             virtual ~IRep ()                                                                                        = default;
             virtual void                Read (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema) = 0;
-            virtual void                SetRootElement (const Node::Ptr& newRoot)                                   = 0;
-            virtual Node::Ptr           CreateDocumentElement (const String& name, const optional<URI>& ns)         = 0;
             virtual void                WritePrettyPrinted (ostream& out) const                                     = 0;
             virtual void                WriteAsIs (ostream& out) const                                              = 0;
             virtual Iterable<Node::Ptr> GetChildren () const                                                        = 0;
             virtual void                Validate (const Schema::Ptr& schema) const                                  = 0;
-            //    virtual NamespaceDefinitionsList GetNamespaceDefinitions () const                       = 0;
         };
     }
 
