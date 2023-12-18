@@ -12,11 +12,18 @@
 #include "Stroika/Foundation/IO/Network/URI.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
 
-#include "DOM.h"
+#include "Common.h"
+#include "Namespace.h"
 
 /**
  *  \file
  */
+
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
+namespace Stroika::Foundation::DataExchange::XML::DOM {
+    class Ptr;
+}
+#endif
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
 namespace Stroika::Foundation::DataExchange::XML {
@@ -89,15 +96,20 @@ namespace Stroika::Foundation::DataExchange::XML {
         public:
             //   nonvirtual BLOB GetSchemaData () const;    // get as date or DOM maybe better
 
+        public:
+            /**
+             *  The schema can be best thoguht of as a set of rules (for validating) described by a text file (the .xsd file).
+             *  This method can return that as a BLOB (for now default encoded), a String (for easy viewing/display), or as a DOM object.
+             * 
+             *  Each of these conversions may take specific parameters, not yet specified / allowed here. The reason for the template
+             *  is to allow for the clean notation of refering to all of them as schema.As<waht-i-want> (...optional but usually omitted params);
+             */
+            template <typename AS_T>
+            AS_T As ()
+                requires (same_as<AS_T, String> or same_as<AS_T, XML::DOM::Ptr> or same_as<AS_T, Memory::BLOB>);
+
         private:
             shared_ptr<IRep> fRep_;
-        };
-
-        /**
-         */
-        enum class Provider {
-            eXerces,
-            eDefault = eXerces
         };
 
         /**

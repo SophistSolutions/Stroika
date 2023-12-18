@@ -7,19 +7,13 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Execution/Exceptions.h"
-#include "../../Execution/ProgressMonitor.h"
 #include "../../Streams/InputStream.h"
 
 #include "../BadFormatException.h"
 #include "../VariantValue.h"
 
 #include "Namespace.h"
-
-#if qStroika_Foundation_DataExchange_XML_SupportSchema
-namespace Stroika::Foundation::DataExchange::XML::Schema {
-    class Ptr;
-}
-#endif
+#include "Schema.h"
 
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
 namespace Stroika::Foundation::DataExchange::XML::DOM {
@@ -51,16 +45,19 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         };
 
         /**
-         *  \brief Node::Ptr is a (never null) smart pointer to a Node::IRep
+         *  \brief Node::Ptr is a smart pointer to a Node::IRep
          * 
          *  \note Before Stroika v3.0d5 this was simply called "Node", and now Node::Ptr
          * 
          *   Note - Nodes are not created directly, but either via Node::Ptr methods, or Document::Ptr methods (because nodes are always associated with some document).
+         * 
+         * 
+         * 
+         * &&& todo add == nullptr_t and to bool conversion to check for null and then note REQ cannog call any mthods like GetName() if == nullptr
          */
         class Ptr {
         public:
             /**
-             *  \req not nullptr
              */
             Ptr (const shared_ptr<IRep>& from);
 
@@ -72,7 +69,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              */
-            nonvirtual String GetNamespace () const;
+            nonvirtual optional<URI> GetNamespace () const;
 
         public:
             /**
@@ -199,7 +196,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             virtual Type                GetNodeType () const                                                                         = 0;
-            virtual String              GetNamespace () const                                                                        = 0;
+            virtual optional<URI>       GetNamespace () const                                                                        = 0;
             virtual String              GetName () const                                                                             = 0;
             virtual void                SetName (const String& name)                                                                 = 0;
             virtual VariantValue        GetValue () const                                                                            = 0;
@@ -224,6 +221,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual void* GetInternalTRep () = 0;
 
         protected:
+            // todo see if I can lose this or better doucment the point
             inline static shared_ptr<IRep> GetRep4Node (Ptr n)
             {
                 // @todo - see if this needed/why
@@ -236,17 +234,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         struct IRep;
 
         /**
-        * 
-        * todo consider how schema associated with doc means?? one meaning:
-        *       Allow READ or WRITE to use ANY schema (or none) to validate, and just has assocaited schema be default for thiese?)
-        *   tthats not well thoguth out but a gbeeingg.
-        * 
-        *   idea is - might have quick and full schemas and use one sometimes andother other sometimes.
-        * 
-        * 
-        * UNSURE IF WE WANT TO KEEP SCHEMA ASSOCIATED. MAKES CONCEPT more complex. passing no schema to validate/read/write emthods COULD mean 
-        *   use default or could mean use none (both make sense). Probbaly best/most flexible to NOT have associauted schema. Then caller can pass 
-        * a schema to WRITE or READ oeprations, and its clearly valiating iwth that schema then, and not otherwise.
+         * 
+         *   \note the document object does NOT have an intrinsically associated schema object. We considered/started with such a design.
+         *         but then the trouble was, what if you wanted two (say a short and long format - schema). Or what if sometimes you wanted to read
+         *         with no schema (validation) and sometimes with validation? It just added alot of ambiguity (in how to interpret optional/nullptr as meaning
+         *         default or none).
+         * 
+         *        These matters could have been resolved, but in the end it seems maximally flexible, and super clear, to just not associate the schema
+         *       with the document, and just specify in as an argument to read (New) or Write (serialize) etc.
+         * 
+         * 
+         * todo add better nullptr_t interop - static bool convert etc...
          */
         class Ptr {
         public:
@@ -260,11 +258,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             */
-            nonvirtual Schema::Ptr GetSchema () const;
-
-        public:
-            /**
             // IO routines - Serialize the document DOM
          */
             nonvirtual void WritePrettyPrinted (ostream& out) const;
@@ -274,9 +267,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-         */
-            nonvirtual void Validate () const; // throws BadFormatException exception on failure; uses current associated schema
-                                               // nonvirtual void Validate (const Schema* schema) const; // ''; but uses PROVIDED schema
+             *  throws BadFormatException exception on failure
+             */
+            nonvirtual void Validate (const Schema::Ptr& schema) const;
 
         public:
             /**
@@ -295,17 +288,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
             *   @todo document - invistigate what this does? If there already is one (replace?) or erorr?
              */
-            nonvirtual Node::Ptr CreateDocumentElement (const String& name);
+            nonvirtual Node::Ptr CreateDocumentElement (const String& name, const optional<URI>& ns = nullopt);
 
         public:
             /**
             *   @todo document - invistigate what this does? look at impl - maybe delete API? What if goes cross documents????
          */
             nonvirtual void SetRootElement (const Node::Ptr& newRoot);
-
-            // bad api - redo (NEW - but is even needed? - as can use TextTobyteReader)
-        public:
-            nonvirtual void LoadXML (const String& xml); // 'xml' contains data to be parsed and to replace the current XML document
 
         public:
             /**
@@ -320,33 +309,27 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          *  Create a Document object and return a smart pointer (Ptr) to it.
          * 
          *  Use the optionally provided stream to deserialize the document from (or create an empty one).
+         * 
+         *  \note String in overload is trivial wrapper on Streams::TextToByteReader{}, in case you want adjust paramters.
+         * 
+         * @todo add overload takign String 'in' and parse using Streams::TextToByteReader
          */
         Ptr New ();
-        Ptr New (const Schema::Ptr& schema);
-        Ptr New (const Streams::InputStream<byte>::Ptr& in);
-        Ptr New (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema);
+        Ptr New (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr);
+        Ptr New (const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr);
 
         /**
          */
         struct IRep {
-            virtual ~IRep ()                             = default;
-            virtual const Schema::Ptr GetSchema () const = 0;
-            //
-            // If this function is passed a nullptr exceptionResult - it will throw on bad validation.
-            // If it is passed a non-nullptr exceptionResult - then it will map BadFormatException to being ignored, but filling in this
-            // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
-            // failing the read (for http://bugzilla/show_bug.cgi?id=513).
-            //
-            virtual void                Read (const Streams::InputStream<byte>::Ptr& in, shared_ptr<BadFormatException>* exceptionResult,
-                                              Execution::ProgressMonitor::Updater progressCallback) = 0;
-            virtual void                SetRootElement (const Node::Ptr& newRoot)                   = 0;
-            virtual Node::Ptr           CreateDocumentElement (const String& name)                  = 0;
-            virtual void                LoadXML (const String& xml)                                 = 0;
-            virtual void                WritePrettyPrinted (ostream& out) const                     = 0;
-            virtual void                WriteAsIs (ostream& out) const                              = 0;
-            virtual Iterable<Node::Ptr> GetChildren () const                                        = 0;
-            virtual void                Validate () const                                           = 0;
-            virtual NamespaceDefinitionsList GetNamespaceDefinitions () const                       = 0;
+            virtual ~IRep ()                                                                                        = default;
+            virtual void                Read (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema) = 0;
+            virtual void                SetRootElement (const Node::Ptr& newRoot)                                   = 0;
+            virtual Node::Ptr           CreateDocumentElement (const String& name, const optional<URI>& ns)         = 0;
+            virtual void                WritePrettyPrinted (ostream& out) const                                     = 0;
+            virtual void                WriteAsIs (ostream& out) const                                              = 0;
+            virtual Iterable<Node::Ptr> GetChildren () const                                                        = 0;
+            virtual void                Validate (const Schema::Ptr& schema) const                                  = 0;
+            //    virtual NamespaceDefinitionsList GetNamespaceDefinitions () const                       = 0;
         };
     }
 

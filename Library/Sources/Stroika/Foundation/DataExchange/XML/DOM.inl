@@ -19,7 +19,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
      ********************************************************************************
      */
     inline Node::Ptr::Ptr (const shared_ptr<IRep>& from)
-        : fRep_{(RequireExpression (from != nullptr), from)}
+        : fRep_{from}
     {
     }
     inline Node::Type Node::Ptr::GetNodeType () const
@@ -27,7 +27,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         AssertNotNull (fRep_);
         return fRep_->GetNodeType ();
     }
-    inline String Node::Ptr::GetNamespace () const
+    inline optional<URI> Node::Ptr::GetNamespace () const
     {
         AssertNotNull (fRep_);
         return fRep_->GetNamespace ();
@@ -190,21 +190,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         static const auto kException_ = Execution::RuntimeErrorException{"No root element"};
         Execution::Throw (kException_);
     }
-    inline void Document::Ptr::Validate () const
+    inline void Document::Ptr::Validate (const Schema::Ptr& schema) const
     {
-        fRep_->Validate ();
+        fRep_->Validate (schema);
     }
-    inline Node::Ptr Document::Ptr::CreateDocumentElement (const String& name)
+    inline Node::Ptr Document::Ptr::CreateDocumentElement (const String& name, const optional<URI>& ns)
     {
-        return fRep_->CreateDocumentElement (name);
+        return fRep_->CreateDocumentElement (name, ns);
     }
     inline void Document::Ptr::SetRootElement (const Node::Ptr& newRoot)
     {
         return fRep_->SetRootElement (newRoot);
-    }
-    inline void Document::Ptr::LoadXML (const String& xml)
-    {
-        fRep_->LoadXML (xml);
     }
 
 }

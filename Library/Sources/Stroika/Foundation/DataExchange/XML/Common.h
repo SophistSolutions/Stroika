@@ -74,6 +74,13 @@ namespace Stroika::Foundation::DataExchange::XML {
 #define qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations qDebug
 #endif
 
+    /**
+         */
+    enum class Provider {
+        eXerces,
+        eDefault = eXerces
+    };
+
     /*
      * Automatically manage initialization of dependent libraries by any code which includes this module
      */

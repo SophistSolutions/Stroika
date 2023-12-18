@@ -410,63 +410,6 @@ namespace {
     protected:
         Streams::InputStream<byte>::Ptr fSource;
     };
-
-    // my variations of StdIInputSrc with progresstracker callback
-    class BinaryInputStream_InputSource_WithProgress_ : public BinaryInputStream_InputSource_ {
-    protected:
-        class _InStrWithProg : public BinaryInputStream_InputSource_WithProgress_::_MyInputStrm {
-        public:
-            _InStrWithProg (Streams::InputStream<byte>::Ptr in, Execution::ProgressMonitor::Updater progressCallback)
-                : _MyInputStrm (in)
-                , fProgress (progressCallback, 0.0f, 1.0f)
-                , fTotalSize (0.0f)
-            {
-                Require (in.IsSeekable ());
-                streamoff start = in.GetOffset ();
-                in.Seek (Streams::Whence::eFromEnd, 0);
-                streamoff totalSize = in.GetOffset ();
-                Assert (start <= totalSize);
-                in.Seek (start);
-                fTotalSize = static_cast<float> (totalSize);
-            }
-
-        public:
-            virtual XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
-            {
-                float curOffset        = 0.0;
-                bool  doProgressBefore = (maxToRead > 10 * 1024); // only bother calling both before & after if large read
-                if (fTotalSize > 0.0f and doProgressBefore) {
-                    curOffset = static_cast<float> (_fSource.GetOffset ());
-                    fProgress.SetProgress (curOffset / fTotalSize);
-                }
-                XMLSize_t result = _MyInputStrm::readBytes (toFill, maxToRead);
-                if (fTotalSize > 0) {
-                    curOffset = static_cast<float> (_fSource.GetOffset ());
-                    fProgress.SetProgress (curOffset / fTotalSize);
-                }
-                return result;
-            }
-
-        private:
-            Execution::ProgressMonitor::Updater fProgress;
-            float                               fTotalSize;
-        };
-
-    public:
-        BinaryInputStream_InputSource_WithProgress_ (Streams::InputStream<byte>::Ptr in,
-                                                     Execution::ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr)
-            : BinaryInputStream_InputSource_{in, bufId}
-            , fProgressCallback{progressCallback}
-        {
-        }
-        virtual BinInputStream* makeStream () const override
-        {
-            return new (getMemoryManager ()) _InStrWithProg{fSource, fProgressCallback};
-        }
-
-    private:
-        Execution::ProgressMonitor::Updater fProgressCallback;
-    };
 }
 
 class MyMaybeSchemaDOMParser_ {
@@ -520,8 +463,7 @@ namespace {
 
     class XercesDocRep_ : public DataExchange::XML::DOM::Document::IRep {
     public:
-        XercesDocRep_ (const Schema::Ptr& schema)
-            : fSchema{schema}
+        XercesDocRep_ ()
         {
             [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
             START_LIB_EXCEPTION_MAPPER
@@ -532,7 +474,6 @@ namespace {
             END_LIB_EXCEPTION_MAPPER
         }
         XercesDocRep_ (const XercesDocRep_& from)
-            : fSchema{from.fSchema}
         {
             START_LIB_EXCEPTION_MAPPER
             {
@@ -544,19 +485,13 @@ namespace {
             EnsureNotNull (fXMLDoc);
         }
 
-        virtual const Schema::Ptr GetSchema () const override
-        {
-            return fSchema;
-        }
-
         //
         // If this function is passed a nullptr exceptionResult - it will throw on bad validation.
         // If it is passed a non-nullptr exceptionResult - then it will map BadFormatException to being ignored, but filling in this
         // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
         // failing the read (for http://bugzilla/show_bug.cgi?id=513).
         //
-        virtual void Read (const Streams::InputStream<byte>::Ptr& in, shared_ptr<BadFormatException>* exceptionResult,
-                           Execution::ProgressMonitor::Updater progressCallback) override
+        virtual void Read (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema) override
         {
             TraceContextBumper ctx{"XercesDocRep_::Read"};
             AssertNotNull (fXMLDoc);
@@ -564,49 +499,21 @@ namespace {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_}; // write context cuz reading from stream, but writing to 'this'
             START_LIB_EXCEPTION_MAPPER
             {
-                MyMaybeSchemaDOMParser_ myDOMParser{fSchema};
-                {
-                    try {
-                        myDOMParser.fParser->parse (BinaryInputStream_InputSource_WithProgress_{
-                            in, Execution::ProgressMonitor::Updater (progressCallback, 0.1f, 0.8f), u"XMLDB"});
-                    }
-                    catch (const BadFormatException& vf) {
-                        // Support  http://bugzilla/show_bug.cgi?id=513  and allowing partially valid inputs (like bad ccrs)
-                        if (exceptionResult == nullptr) {
-                            ReThrow ();
-                            throw;
-                        }
-                        else {
-                            DbgTrace ("Validation failure passed by through Read () function argument");
-                            *exceptionResult = make_shared<BadFormatException> (vf);
-                            // and ignore - fall through to completed parse.
-                        }
-                    }
-                    goto CompletedParse;
-                }
-
-                {
-                    u16string xmlText = Streams::TextReader::New (in).ReadAll ().As<u16string> ();
-                    MemBufInputSource memBufIS (reinterpret_cast<const XMLByte*> (xmlText.c_str ()), xmlText.length () * sizeof (XMLCh), u"XMLDB");
-                    memBufIS.setEncoding (XMLUni::fgUTF16LEncodingString2);
-                    myDOMParser.fParser->parse (memBufIS);
-                }
-
-            CompletedParse:
+                MyMaybeSchemaDOMParser_ myDOMParser{schema};
+                myDOMParser.fParser->parse (BinaryInputStream_InputSource_{in, u"XMLDB"});
                 fXMLDoc.reset ();
                 fXMLDoc = T_XMLDOMDocumentSmartPtr{myDOMParser.fParser->adoptDocument ()};
                 fXMLDoc->setXmlStandalone (true);
                 fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
             }
             END_LIB_EXCEPTION_MAPPER
-            progressCallback.SetProgress (1.0f);
         }
         virtual void SetRootElement (const Node::Ptr& newRoot) override
         {
             TraceContextBumper                              ctx{"XercesDocRep_::SetRootElement"};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             AssertNotNull (fXMLDoc);
-            Node::Ptr replacementRoot = CreateDocumentElement (newRoot.GetName ());
+            Node::Ptr replacementRoot = CreateDocumentElement (newRoot.GetName (), newRoot.GetNamespace ());
             // next copy all children
             bool addedChildElts = false;
             for (Node::Ptr c : newRoot.GetChildren ()) {
@@ -628,7 +535,7 @@ namespace {
                 }
             }
         }
-        virtual Node::Ptr CreateDocumentElement (const String& name) override
+        virtual Node::Ptr CreateDocumentElement (const String& name, const optional<URI>& ns) override
         {
             TraceContextBumper ctx{"XercesDocRep_Rep::CreateDocumentElement"};
 #if qDebug
@@ -638,10 +545,9 @@ namespace {
             AssertNotNull (fXMLDoc);
             START_LIB_EXCEPTION_MAPPER
             {
-                optional<URI> ns = fSchema.GetTargetNamespace ();
-                DOMElement*   n  = ns == nullopt
-                                       ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
-                                       : fXMLDoc->createElementNS (ns->As<String> ().As<u16string> ().c_str (), name.As<u16string> ().c_str ());
+                DOMElement* n = ns == nullopt
+                                    ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
+                                    : fXMLDoc->createElementNS (ns->As<String> ().As<u16string> ().c_str (), name.As<u16string> ().c_str ());
                 AssertNotNull (n);
                 DOMElement* oldRoot = fXMLDoc->getDocumentElement ();
                 if (oldRoot == nullptr) {
@@ -673,6 +579,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
+#if 0
         virtual void LoadXML (const String& xml) override
         {
             TraceContextBumper                             ctx{"XercesDocRep_::LoadXML"};
@@ -691,6 +598,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
+#endif
         virtual void WritePrettyPrinted (ostream& out) const override
         {
             TraceContextBumper                             ctx{"XercesDocRep_::WritePrettyPrinted"};
@@ -731,18 +639,15 @@ namespace {
                 });
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual void Validate () const override
+        virtual void Validate (const Schema::Ptr& schema) const override
         {
-            RequireNotNull (fSchema);
             TraceContextBumper                             ctx{"XercesDocRep_::Validate"};
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            RequireNotNull (schema);
             START_LIB_EXCEPTION_MAPPER
             {
-                if (fSchema == nullptr) {
-                    return;
-                }
                 try {
-                    DbgTrace (L"Validating against target namespace '%s'", Characters::ToString (fSchema.GetTargetNamespace ()).c_str ());
+                    DbgTrace (L"Validating against target namespace '%s'", Characters::ToString (schema.GetTargetNamespace ()).c_str ());
                     // As this CAN be expensive - especially if we need to externalize the file, and re-parse it!!! - just shortcut by
                     // checking the top-level DOM-node and assure that has the right namespace. At least quickie first check that works when
                     // reading files (doesnt help in pre-save check, of course)
@@ -751,10 +656,10 @@ namespace {
                         Execution::Throw (BadFormatException (L"No document", 0, 0, 0));
                     }
                     optional<URI> docURI = docNode->getNamespaceURI () == nullptr ? optional<URI>{} : docNode->getNamespaceURI ();
-                    if (docURI != fSchema.GetTargetNamespace ()) {
+                    if (docURI != schema.GetTargetNamespace ()) {
                         Execution::Throw (BadFormatException (Format (L"Wrong document namespace (found '%s' and expected '%s')",
                                                                       Characters::ToString (docURI).c_str (),
-                                                                      Characters::ToString (fSchema.GetTargetNamespace ()).c_str ()),
+                                                                      Characters::ToString (schema.GetTargetNamespace ()).c_str ()),
                                                               0, 0, 0));
                     }
 
@@ -774,7 +679,7 @@ namespace {
                         MemBufInputSource readReadSrc{destination.getRawBuffer (), destination.getLen (), u"tmp"};
                         readReadSrc.setEncoding (XMLUni::fgUTF8EncodingString);
 
-                        shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (fSchema.GetRep ());
+                        shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
                         {
                             AssertNotNull (accessSchema); // for now only rep supported
                             shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (
@@ -799,9 +704,7 @@ namespace {
                             WritePrettyPrinted (out);
                         }
                         try {
-                            if (fSchema != nullptr) {
-                                ValidateFile (tmpFileName, fSchema);
-                            }
+                            ValidateFile (tmpFileName, schema);
                         }
                         catch (const BadFormatException& vf) {
                             String   tmpFileNameStr = IO::FileSystem::FromPath (tmpFileName);
@@ -831,45 +734,31 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
+#if 0
         virtual NamespaceDefinitionsList GetNamespaceDefinitions () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertNotImplemented ();
+            return NamespaceDefinitionsList{}; // unclear what this means - could get from root element??? n:ns = ....
+#if 0
             if (fSchema == nullptr) {
                 return NamespaceDefinitionsList{};
             }
             else {
                 return fSchema.GetNamespaceDefinitions ();
             }
+#endif
         }
+#endif
         T_XMLDOMDocumentSmartPtr                                       fXMLDoc;
-        Schema::Ptr                                                    fSchema;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 }
 
-Schema::Ptr Document::Ptr::GetSchema () const
-{
-    return fRep_->GetSchema ();
-}
-
-Document::Ptr Document::New ()
-{
-    return Ptr{make_shared<XercesDocRep_> (nullptr)};
-}
-Document::Ptr Document::New (const Schema::Ptr& schema)
-{
-    return Ptr{make_shared<XercesDocRep_> (schema)};
-}
-Document::Ptr Document::New (const Streams::InputStream<byte>::Ptr& in)
-{
-    Ptr p = New ();
-    p.GetRep ()->Read (in, nullptr, nullptr);
-    return p;
-}
 Document::Ptr Document::New (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema)
 {
-    Ptr p = New (schema);
-    p.GetRep ()->Read (in, nullptr, nullptr);
+    Ptr p{make_shared<XercesDocRep_> ()};
+    p.GetRep ()->Read (in, schema);
     return p;
 }
 
@@ -913,14 +802,14 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER
         }
-        virtual String GetNamespace () const override
+        virtual optional<URI> GetNamespace () const override
         {
             AssertNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
             START_LIB_EXCEPTION_MAPPER
             {
-                AssertNotNull (fNode_->getNamespaceURI ());
-                return fNode_->getNamespaceURI ();
+                const XMLCh* n = fNode_->getNamespaceURI ();
+                return n == nullptr ? optional<URI>{} : URI{xercesString2String (n)};
             }
             END_LIB_EXCEPTION_MAPPER
         }
@@ -1247,13 +1136,6 @@ namespace {
             void* docData = doc->getUserData (kXerces2XMLDBDocumentKey_);
             AssertNotNull (docData);
             return *reinterpret_cast<XercesDocRep_*> (docData);
-        }
-
-    private:
-        nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions_ () const
-        {
-            AssertNotNull (fNode_);
-            return GetAssociatedDoc_ ().GetNamespaceDefinitions ();
         }
 
     private:
