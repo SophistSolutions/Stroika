@@ -19,7 +19,7 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  */
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::TextToByteReader {
 
     using Characters::Character;
 
@@ -39,20 +39,12 @@ namespace Stroika::Foundation::Streams {
      * 
      *      @todo this also should take Iterable<Character> and therefore String...
      */
-    class TextToByteReader : public InputStream<byte> {
-    public:
-        TextToByteReader ()                        = delete;
-        TextToByteReader (const TextToByteReader&) = delete;
+    using Ptr = InputStream<byte>::Ptr;
 
-    public:
-        using Ptr = InputStream<byte>::Ptr;
-
-    public:
-        static Ptr New (InputStream<Character>::Ptr srcStream);
-
-    private:
-        class Rep_;
-    };
+    /**
+         */
+    Ptr New (const InputStream<Character>::Ptr& srcStream);
+    Ptr New (const Traversal::Iterable<Character>& srcText);
 
 }
 
