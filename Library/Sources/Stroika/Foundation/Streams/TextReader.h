@@ -141,7 +141,6 @@ namespace Stroika::Foundation::Streams {
         class UnseekableBinaryStreamRep_;
         class BaseSeekingBinaryStreamRep_;
         class CachingSeekableBinaryStreamRep_;
-        class IterableAdapterStreamRep_;
 
     private:
         using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<Character, TextReader, InputStream<Character>::_IRep>;

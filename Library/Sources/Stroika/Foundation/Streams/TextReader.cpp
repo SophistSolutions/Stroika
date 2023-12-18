@@ -12,6 +12,8 @@
 #include "../Memory/InlineBuffer.h"
 #include "../Memory/StackBuffer.h"
 
+#include "IterableToInputStream.h"
+
 #include "TextReader.h"
 
 using namespace Stroika::Foundation;
@@ -421,153 +423,6 @@ private:
     // @todo for larger streams, a different data structure than InlineBuffer would be appropriate - E.G. ChunkedArray! probably best.
 };
 
-// Simply iterate over the 'iterable' of characacters, but allow seekability (by saving original iteration start)
-class TextReader::IterableAdapterStreamRep_ final : public InputStream<Character>::_IRep {
-public:
-    IterableAdapterStreamRep_ (const Traversal::Iterable<Character>& src)
-        : fSource_{src}
-        , fSrcIter_{fSource_.begin ()}
-    {
-    }
-
-private:
-    bool fIsOpen_{true};
-
-protected:
-    virtual bool IsSeekable () const override
-    {
-        return true;
-    }
-    virtual void CloseRead () override
-    {
-        Require (IsOpenRead ());
-        fIsOpen_ = false;
-    }
-    virtual bool IsOpenRead () const override
-    {
-        return fIsOpen_;
-    }
-    virtual size_t Read (Character* intoStart, Character* intoEnd) override
-    {
-        Require (intoEnd - intoStart >= 1);
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        Require (IsOpenRead ());
-        Character* outI = intoStart;
-        if (fPutBack_) {
-            *outI     = *fPutBack_;
-            fPutBack_ = nullopt;
-            ++outI;
-            // fOffset_ doesn't take into account putback
-        }
-        for (; fSrcIter_ != fSource_.end () and outI != intoEnd; ++fSrcIter_, ++outI) {
-            *outI = *fSrcIter_;
-            ++fOffset_;
-        }
-        if (outI > intoStart) {
-            fPrevCharCached_ = *(outI - 1);
-        }
-        else {
-            fPrevCharCached_ = nullopt;
-        }
-        return outI - intoStart;
-    }
-    virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
-    {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-        Require (IsOpenRead ());
-        if (intoStart == nullptr) {
-            // Don't read (so don't update fOffset_) - just see how much available
-            Traversal::Iterator<Character> srcIt = fSrcIter_;
-            size_t                         cnt{};
-            if (fPutBack_) {
-                ++cnt;
-            }
-            for (; srcIt != fSource_.end (); ++srcIt, ++cnt)
-                ;
-            return cnt;
-        }
-        else {
-            return Read (intoStart, intoEnd); // safe because implemtation of Read () in this type of stream doesn't block
-        }
-    }
-    virtual SeekOffsetType GetReadOffset () const override
-    {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        Require (IsOpenRead ());
-        if (fPutBack_) {
-            Assert (fOffset_ >= 1);
-            return fOffset_ - 1;
-        }
-        return fOffset_;
-    }
-    virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
-    {
-        Require (IsOpenRead ());
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        size_t                                          sourceLen = fSource_.size ();
-        SeekOffsetType                                  newOffset{};
-        switch (whence) {
-            case Whence::eFromStart: {
-                if (offset < 0) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
-                }
-                if (static_cast<SeekOffsetType> (offset) > sourceLen) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
-                }
-                newOffset = static_cast<SeekOffsetType> (offset);
-            } break;
-            case Whence::eFromCurrent: {
-                Streams::SignedSeekOffsetType tmpOffset = fOffset_ + offset;
-                if (tmpOffset < 0) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
-                }
-                if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
-                }
-                newOffset = static_cast<SeekOffsetType> (tmpOffset);
-            } break;
-            case Whence::eFromEnd: {
-                Streams::SignedSeekOffsetType tmpOffset = fSource_.size () + offset;
-                if (tmpOffset < 0) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
-                }
-                if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
-                }
-                newOffset = static_cast<SeekOffsetType> (tmpOffset);
-            } break;
-        }
-
-        if (newOffset == fOffset_ - 1 and fPrevCharCached_) {
-            fPutBack_        = fPrevCharCached_;
-            fPrevCharCached_ = nullopt;
-            return GetReadOffset ();
-        }
-        else if (newOffset < fOffset_) {
-            fSrcIter_ = fSource_.begin ();
-            fOffset_  = 0;
-        }
-        while (fOffset_ < newOffset) {
-            if (fSrcIter_.Done ()) {
-                AssertNotReached (); // because we checked within maxlen above
-                //Execution::Throw (Execution::RuntimeErrorException {"Seek past end of input"sv}); // @todo clarify - docuemnt - not sure if/how to handle this
-            }
-            ++fSrcIter_;
-            ++fOffset_;
-        }
-        return fOffset_;
-    }
-
-private:
-    Traversal::Iterable<Character> fSource_;
-    Traversal::Iterator<Character> fSrcIter_;
-    size_t                         fOffset_{};
-    optional<Character> fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
-    optional<Character>                                            fPutBack_{};
-    [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
-};
-
 /*
  ********************************************************************************
  ******************************* Streams::TextReader ****************************
@@ -635,7 +490,7 @@ auto TextReader::New (const InputStream<byte>::Ptr& src, const Characters::CodeC
 
 auto TextReader::New (const Traversal::Iterable<Character>& src) -> Ptr
 {
-    Ptr p{make_shared<IterableAdapterStreamRep_> (src)};
+    Ptr p = IterableToInputStream::New<Character> (src);
     Ensure (p.IsSeekable ());
     return p;
 }

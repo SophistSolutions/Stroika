@@ -22,7 +22,7 @@
  *
  *  TODO:
  *      @todo   Consider making GetOffsetToEndOfStream () a virtual part of rep so it can work with the locks
- *              and be safely atomic (atomic stuff only an lssue for 'Synchronized' stream and could probably just
+ *              and be safely atomic (atomic stuff only an issue for 'Synchronized' stream and could probably just
  *              make both calls inside ITS Synchronized lock?).
  *
  *      @todo   Consider making LineEnd format (LF,CR,CRLF, or Auto) an optional param to ReadLine().
@@ -175,18 +175,15 @@ namespace Stroika::Foundation::Streams {
     public:
         /**
          *  defaults to null (empty ())
+         *
+         * _SharedIRep rep is the underlying shared input Stream object.
+         *
+         *  \req rep != nullptr (use nullptr_t constructor)
          */
         Ptr () = default;
         Ptr (nullptr_t);
         Ptr (const Ptr&)     = default;
         Ptr (Ptr&&) noexcept = default;
-
-    protected:
-        /**
-         * _SharedIRep rep is the underlying shared input Stream object.
-         *
-         *  \req rep != nullptr (use nullptr_t constructor)
-         */
         explicit Ptr (const _SharedIRep& rep);
 
     public:

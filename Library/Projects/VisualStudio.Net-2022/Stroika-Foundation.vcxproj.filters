@@ -2154,6 +2154,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.h">
       <Filter>Sources\DataExchange\XML\Providers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\IterableToInputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3558,6 +3561,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\Makefile">
       <Filter>Sources\DataExchange\XML\Providers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\IterableToInputStream.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
