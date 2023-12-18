@@ -35,6 +35,18 @@ namespace Stroika::Foundation::Debug {
      *          auto&   mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
      *      \endcode
      * 
+     * 
+     *  \par Example Usage
+     *      \code
+     *              virtual bool Equals (const IRep* rhs) const override
+     *              {
+     *                  RequireNotNull (rhs);
+     *                  RequireMember (rhs, MyIterRep_);
+     *                  const MyIterRep_* rrhs = Debug::UncheckedDynamicCast<const MyIterRep_*> (rhs);
+     *                  return fData_.data () == rrhs->fData_.data () and fIdx_ == rrhs->fIdx_;
+     *              }
+     *      \endcode
+     *              
      *  \see https://stackoverflow.com/questions/28002/regular-cast-vs-static-cast-vs-dynamic-cast
      * 
      *  \note this does NOT work (should be checked somemhow/assert/type info @todo) - with virtual inheritance.
