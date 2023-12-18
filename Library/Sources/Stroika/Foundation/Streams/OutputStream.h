@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Streams {
          *        may still be buffered. Call @Flush () to get it pushed out.
          *
          *  \req start <= end, and if one is nullptr, both mustbe nullptr { for overload taking start/end }
-         *  \req cStr != nullptr { for loverload taking c_str }
+         *  \req cStr != nullptr { for overload taking 'C' string }
          *
          *  \req IsOpen ()
          */
