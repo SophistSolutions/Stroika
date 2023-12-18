@@ -19,8 +19,8 @@
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/MemoryAllocator.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
-#include "Stroika/Foundation/Streams/TextToByteReader.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/TextToByteReader.h"
 #include "Stroika/Foundation/Traversal/Generator.h"
 
 #include "Schema.h"
