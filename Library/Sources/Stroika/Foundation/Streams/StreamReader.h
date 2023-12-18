@@ -16,14 +16,20 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
- *  TODO:
  */
 
 namespace Stroika::Foundation::Streams {
 
     /**
-     *  \brief StreamReader is an unnecessary class for using the Streams library, but it is easy to use, similar to InputStream<T>::Ptr, and significantly more performant
+     *  \brief StreamReader is an non-essential Stream utility, adding simplicity of use for a common use case, and significant performance boost.
+     * 
+     * \see also https://learn.microsoft.com/en-us/dotnet/api/system.io.streamreader?view=net-8.0 - similar idea, except there you specify conversion from
+     *      binary stream.
+     *
+     *  StreamReader is an unnecessary class for using the Streams library, but it is easy to use, similar to InputStream<T>::Ptr, and significantly more performant
+     * 
+     *  TODO:
+     *      \todo consider if should take templated parameter indicating buffer size
      */
     template <typename ELEMENT_TYPE>
     struct StreamReader {
@@ -38,7 +44,7 @@ namespace Stroika::Foundation::Streams {
          *        StreamReader, or grave disorder may result. StreamReader assumes its the only one seeking and reading
          *        through the input stream.
          * 
-         *  \note At destruction, StreamReader automatically calls SyncrhonizeToUnderlyingStream
+         *  \note At destruction, StreamReader automatically calls SynchronizeToUnderlyingStream
          * 
          *  \req underlyingReadFromStreamAdopted.Seekable ();
          */
@@ -86,18 +92,18 @@ namespace Stroika::Foundation::Streams {
     public:
         /**
          *  If you must use the underlying stream along-side StreamReader, you can use
-         *  SyncrhonizeToUnderlyingStream and SyncrhonizeFromUnderlyingStream to allow each class to update
+         *  SynchronizeToUnderlyingStream and SynchronizeFromUnderlyingStream to allow each class to update
          *  each other.
          */
-        nonvirtual void SyncrhonizeToUnderlyingStream ();
+        nonvirtual void SynchronizeToUnderlyingStream ();
 
     public:
         /**
          *  If you must use the underlying stream along-side StreamReader, you can use
-         *  SyncrhonizeToUnderlyingStream and SyncrhonizeFromUnderlyingStream to allow each class to update
+         *  SynchronizeToUnderlyingStream and SynchronizeFromUnderlyingStream to allow each class to update
          *  each other.
          */
-        nonvirtual void SyncrhonizeFromUnderlyingStream ();
+        nonvirtual void SynchronizeFromUnderlyingStream ();
 
     public:
         nonvirtual bool IsAtEOF ();

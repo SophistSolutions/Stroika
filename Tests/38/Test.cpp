@@ -42,17 +42,17 @@ namespace {
         Debug::TraceContextBumper        ctx{"RegressionTest2_"};
         Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
         // quickie about to test..
-        ProcessRunner pr (L"echo hi mom");
-        String        out = pr.Run (L"");
-        EXPECT_TRUE (out.Trim () == L"hi mom");
+        ProcessRunner pr{"echo hi mom"};
+        String        out = pr.Run ("");
+        EXPECT_TRUE (out.Trim () == "hi mom");
     }
     void RegressionTest3_Pipe_ ()
     {
         Debug::TraceContextBumper        ctx{"RegressionTest3_Pipe_"};
         Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
-        ProcessRunner                    pr1 (L"echo hi mom");
+        ProcessRunner                    pr1{"echo hi mom"};
         Streams::MemoryStream<byte>::Ptr pipe = Streams::MemoryStream<byte>::New ();
-        ProcessRunner                    pr2 (L"cat");
+        ProcessRunner                    pr2{"cat"};
         pr1.SetStdOut (pipe);
         pr2.SetStdIn (pipe);
 
@@ -64,7 +64,7 @@ namespace {
 
         String out = String::FromUTF8 (pr2Out.As<string> ());
 
-        EXPECT_TRUE (out.Trim () == L"hi mom");
+        EXPECT_TRUE (out.Trim () == "hi mom");
     }
     void RegressionTest4_DocSample_ ()
     {
@@ -74,7 +74,7 @@ namespace {
         Memory::BLOB                     kData_{Memory::BLOB::FromRaw ("this is a test")};
         Streams::MemoryStream<byte>::Ptr processStdIn  = Streams::MemoryStream<byte>::New (kData_);
         Streams::MemoryStream<byte>::Ptr processStdOut = Streams::MemoryStream<byte>::New ();
-        ProcessRunner                    pr (L"cat", processStdIn, processStdOut);
+        ProcessRunner                    pr{"cat", processStdIn, processStdOut};
         pr.Run ();
         EXPECT_TRUE (processStdOut.ReadAll () == kData_);
     }
@@ -98,7 +98,7 @@ namespace {
                 Memory::BLOB                     testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
                 Streams::MemoryStream<byte>::Ptr myStdIn  = Streams::MemoryStream<byte>::New (testBLOB);
                 Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
-                ProcessRunner                    pr (L"cat", myStdIn, myStdOut);
+                ProcessRunner                    pr{"cat", myStdIn, myStdOut};
                 pr.Run ();
                 EXPECT_TRUE (myStdOut.ReadAll () == testBLOB);
             }
@@ -124,7 +124,7 @@ namespace {
                 Streams::SharedMemoryStream<byte>::Ptr myStdIn =
                     Streams::SharedMemoryStream<byte>::New (); // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
                 Streams::SharedMemoryStream<byte>::Ptr myStdOut = Streams::SharedMemoryStream<byte>::New ();
-                ProcessRunner                          pr (L"cat", myStdIn, myStdOut);
+                ProcessRunner                          pr{"cat", myStdIn, myStdOut};
                 ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
                 Execution::Sleep (1);
                 EXPECT_TRUE (not myStdOut.ReadNonBlocking ().has_value ()); // sb no data available, but NOT EOF
@@ -152,7 +152,7 @@ void RegressionTes7_FaledRun_ ()
 {
     Debug::TraceContextBumper ctx{"RegressionTes7_FaledRun_"};
     try {
-        ProcessRunner pr (L"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//");
+        ProcessRunner pr{"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//"};
         pr.Run ();
         EXPECT_TRUE (false);
     }

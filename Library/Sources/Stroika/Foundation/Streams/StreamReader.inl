@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Streams {
     StreamReader<ELEMENT_TYPE>::~StreamReader ()
     {
         // @todo perhaps CTOR flag to control if we do this or not
-        IgnoreExceptionsForCall (this->SyncrhonizeToUnderlyingStream ())
+        IgnoreExceptionsForCall (this->SynchronizeToUnderlyingStream ())
     }
     template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::Read () -> optional<ElementType>
@@ -203,12 +203,12 @@ namespace Stroika::Foundation::Streams {
         return elementsRead;
     }
     template <typename ELEMENT_TYPE>
-    inline void StreamReader<ELEMENT_TYPE>::SyncrhonizeToUnderlyingStream ()
+    inline void StreamReader<ELEMENT_TYPE>::SynchronizeToUnderlyingStream ()
     {
         fStrm_.Seek (GetOffset ());
     }
     template <typename ELEMENT_TYPE>
-    inline void StreamReader<ELEMENT_TYPE>::SyncrhonizeFromUnderlyingStream ()
+    inline void StreamReader<ELEMENT_TYPE>::SynchronizeFromUnderlyingStream ()
     {
         fOffset_ = fStrm_.GetOffset ();
     }

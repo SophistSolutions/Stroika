@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Streams {
                     size_t       curWriteOffset = fWriteCursor_ - fData_.begin ();
                     const size_t kChunkSize_    = 128; // WAG: @todo tune number...
                     Containers::Support::ReserveTweaks::Reserve4AddN (fData_, roomRequired - roomLeft, kChunkSize_);
-                    fData_.resize (curWriteOffset + roomRequired);
+                    fData_.resize (curWriteOffset + roomRequired);      // fixup cursors after any possible realloc of fData_
                     fReadCursor_  = fData_.begin () + curReadOffset;
                     fWriteCursor_ = fData_.begin () + curWriteOffset;
                     Assert (fWriteCursor_ < fData_.end ());

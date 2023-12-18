@@ -28,6 +28,11 @@
 namespace Stroika::Foundation::Streams {
 
     /**
+    * 
+    * 
+    * @todo REPALCE ITERATOR APIS WITH SPAN APSI
+    * 
+    * 
      *  \brief  ExternallyOwnedMemoryInputStream takes a (memory contiguous) sequence of ELEMENT_TYPE objects and exposes it as a InputStream<ELEMENT_TYPE>
      *
      *  ExternallyOwnedMemoryInputStream is a subtype of InputStream<ELEMENT_TYPE> but the

@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Streams {
          *  For the constructor taking const InputStream<Character>::Ptr& src, the seekability mimics that of the original source.
          *  Constructors taking a BLOB, the resulting stream will be seekable..
          *
-         *  But when you specify it expliticly, the given value will be used
+         *  But when you specify it explicitly, the given value will be used.
          *
          *  \note Depending on the underlying source (e.g. binary stream) - maintaining seekability may be expensive in terms
          *        of memory usage.

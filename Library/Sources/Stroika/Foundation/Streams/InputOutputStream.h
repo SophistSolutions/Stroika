@@ -29,10 +29,10 @@ namespace Stroika::Foundation::Streams {
      *
      *      Stroika used to have two kinds of input output streams - BinaryTiedStream, and BinaryInputOutputStream.
      *      However, that distinction was abandoned in v2.0a97, since there appeared to be no reason to capture this distinction
-     *      (we may want to revisit, but thats the plan for now - LGP 2017-01-28)
+     *      (we may want to revisit, but that's the plan for now - LGP 2017-01-28)
      *
      *      An InputOutputStream<> could be either one of these two cases - where writes to one side appear on reads
-     *      of the othe rside (such as @see MemoryStream), or where they are unrelated, such as with
+     *      of the other side (such as @see MemoryStream), or where they are unrelated, such as with
      *      @see SocketStream.
      */
     template <typename ELEMENT_TYPE>

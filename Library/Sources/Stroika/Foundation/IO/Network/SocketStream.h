@@ -24,7 +24,7 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  A SocketStream wraps a a socket as a InputOutputStream - two separate but related streams.
      *
-     *  The only real conneciton is that they share a common socket, and if it is closed,
+     *  The only real connection is that they share a common socket, and if it is closed,
      *  then the whole SocketStream will stop working.
      *
      *      \note   SocketStream aggregates its owned ConnectionOrientedStreamSocket, so that a Close () on SocketStream
@@ -44,13 +44,13 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  To copy a ExternallyOwnedMemoryInputStream, use ExternallyOwnedMemoryInputStream<T>::Ptr
+         *  To copy a SocketStream, use SocketStream<T>::Ptr
          *
          *  \par Example Usage
          *      \code
          *           ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
          *           SocketStream::Ptr                   socketStream = SocketStream::New (connectionSocket);
-         *           InputStream<byte>::Ptr              in  = BufferedInputStream<byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
+         *           InputStream<byte>::Ptr              in  = BufferedInputStream<byte>::New (socketStream);  // not important, but a good idea, to avoid excessiveos read/write calls
          *           OutputStream<byte>::Ptr             out = BufferedOutputStream<byte>::New (socketStream); // more important so we don't write multiple packets
          *      \endcode
          */
@@ -71,7 +71,7 @@ namespace Stroika::Foundation::IO::Network {
     };
 
     /**
-     *  Ptr is a copyable smart pointer to a ExternallyOwnedMemoryInputStream.
+     *  Ptr is a copyable smart pointer to an underlying stream-rep.
      *
      *  TODO:
      *      @todo add method to retrieve underlying socket
