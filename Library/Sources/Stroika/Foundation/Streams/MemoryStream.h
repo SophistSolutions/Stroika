@@ -13,7 +13,6 @@
 #include "../Memory/BLOB.h"
 
 #include "InputOutputStream.h"
-#include "InternallySynchronizedInputOutputStream.h"
 
 /*
  *  \file
@@ -21,18 +20,19 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *      @todo   This would be a good candidate class to rewrite using new Sequence_ChunkedArray
- *              class (when I implement it) based on Led chunked arrays).
+ *              class (when I implement it) based on Led chunked arrays). But not if allowing access
+ *              as a span (???)
+ * 
+ *      @todo   Probably rewrite using InlineBuffer<> class
  *
  *      @todo   There should be some way to generically write vector<T> As<vector<T>>::Memory...(); For now I need
  *              multiple explicit template specializations.
- *
- *      @todo   https://stroika.atlassian.net/browse/STK-608 - probably be made more efficent in sync form - using direct mutex
  */
 
 namespace Stroika::Foundation ::Streams {
 
     /**
-     *  \brief  Simplest to use InputOutputStream; MemoryStream can be written to, and then the raw of data retrieved.
+     *  \brief  Simplest InputOutputStream; MemoryStream can be written to, and then the raw of data retrieved.
      *
      *  MemoryStream is Seekable.
      *
@@ -40,11 +40,13 @@ namespace Stroika::Foundation ::Streams {
      *  attempts to seek or write more than will fit in RAM will fail (with an exception).
      *
      *  Data written to the memory stream can then be read from the memory stream.
+     * 
+     *  Reads and writes maybe intermixed, but beware to carefully manage (the separate) input/output seek positions.
      *
      *  \note   NB: This class COULD have been called MemoryInputOutputStream.
      *
      *  \note   MemoryStream is NOT suitable for synchronized reading and writing between two threads (producer / consumer pattern).
-     *          Reads return EOF instead of blocking (plus the lack of internal syncrhonization).
+     *          Reads return EOF instead of blocking (plus the lack of internal synchronization).
      *
      *          @see SharedMemoryStream
      *
@@ -72,6 +74,8 @@ namespace Stroika::Foundation ::Streams {
 
     public:
         /**
+         *  \brief Create a new MemoryStream, and return a Ptr to it. If args provided, they are passed to Write() before returning the resulting memory stream.
+         * 
          *  \par Example Usage
          *      \code
          *          Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
@@ -81,26 +85,19 @@ namespace Stroika::Foundation ::Streams {
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
          */
-        static Ptr New (Execution::InternallySynchronized internallySynchronized = Execution::eNotKnownInternallySynchronized);
-        static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        static Ptr New (const Memory::BLOB& blob)
-            requires (is_same_v<ELEMENT_TYPE, byte>);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob)
+        static Ptr New ();
+        static Ptr New (span<const ELEMENT_TYPE> copyFrom);
+        static Ptr New (const Memory::BLOB& copyFrom)
             requires (is_same_v<ELEMENT_TYPE, byte>);
 
     private:
         class Rep_;
 
-    protected:
-        /**
-         *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
-         */
-        static Ptr _mkPtr (const shared_ptr<Rep_>& s);
-
-    private:
-        using InternalSyncRep_ =
-            InternallySynchronizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream<ELEMENT_TYPE>, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
+    public:
+        [[deprecated ("Since Stroika v3.0d5 use span interface")]] static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
+        {
+            return make_shared<Rep_> (start, end);
+        }
     };
 
     /**
@@ -122,11 +119,8 @@ namespace Stroika::Foundation ::Streams {
          *          string xxx = out.As<string> ();
          *      \endcode
          */
-        Ptr () = delete; // 95% of time would be a bug - init with nullptr
-        // allow no-arg CTOR when we've converted - not bad - just bad now cuz prev semantics
-        Ptr (nullptr_t)
-        {
-        }
+        Ptr () = default;
+        Ptr (nullptr_t);
         Ptr (const Ptr& from) = default;
 
     protected:

@@ -36,11 +36,6 @@ namespace Stroika::Foundation::Streams {
             , fWriteCursor_{fData_.begin ()}
         {
         }
-        Rep_ (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-            : Rep_{}
-        {
-            Write (start, end);
-        }
         Rep_ (const Rep_&)                       = delete;
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
@@ -83,7 +78,7 @@ namespace Stroika::Foundation::Streams {
                 copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
                 fReadCursor_ = fReadCursor_ + nCopied;
             }
-            return nCopied; // this can be zero on EOF
+            return nCopied; // this can be zero iff EOF
         }
         virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
@@ -97,6 +92,7 @@ namespace Stroika::Foundation::Streams {
             Require (start != nullptr or start == end);
             Require (end != nullptr or start == end);
             Require (IsOpenWrite ());
+            // @todo - rewrite so does in one copy - no idea why this code does multiple copies! IF it makes sense DOCUMENT why...--LGP 2023-12-18
             if (start != end) {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 size_t                                                 roomLeft     = fData_.end () - fWriteCursor_;
@@ -106,7 +102,7 @@ namespace Stroika::Foundation::Streams {
                     size_t       curWriteOffset = fWriteCursor_ - fData_.begin ();
                     const size_t kChunkSize_    = 128; // WAG: @todo tune number...
                     Containers::Support::ReserveTweaks::Reserve4AddN (fData_, roomRequired - roomLeft, kChunkSize_);
-                    fData_.resize (curWriteOffset + roomRequired);      // fixup cursors after any possible realloc of fData_
+                    fData_.resize (curWriteOffset + roomRequired); // fixup cursors after any possible realloc of fData_
                     fReadCursor_  = fData_.begin () + curReadOffset;
                     fWriteCursor_ = fData_.begin () + curWriteOffset;
                     Assert (fWriteCursor_ < fData_.end ());
@@ -245,67 +241,24 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized) -> Ptr
+    inline auto MemoryStream<ELEMENT_TYPE>::New () -> Ptr
     {
-        switch (internallySynchronized) {
-            case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New ();
-            case Execution::eNotKnownInternallySynchronized:
-                return make_shared<Rep_> ();
-            default:
-                RequireNotReached ();
-                return make_shared<Rep_> ();
-        }
+        return make_shared<Rep_> ();
     }
     template <typename ELEMENT_TYPE>
-    inline auto MemoryStream<ELEMENT_TYPE>::New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+    inline auto MemoryStream<ELEMENT_TYPE>::New (span<const ELEMENT_TYPE> copyFrom) -> Ptr
     {
-        return make_shared<Rep_> (start, end);
+        Ptr r = make_shared<Rep_> ();
+        r.Write (copyFrom);
+        return r;
     }
     template <typename ELEMENT_TYPE>
-    inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start,
-                                                 const ELEMENT_TYPE* end) -> Ptr
-    {
-        switch (internallySynchronized) {
-            case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New (start, end);
-            case Execution::eNotKnownInternallySynchronized:
-                return New (start, end);
-            default:
-                RequireNotReached ();
-                return New (start, end);
-        }
-    }
-    template <typename ELEMENT_TYPE>
-    inline auto MemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& blob) -> Ptr
+    inline auto MemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& copyFrom) -> Ptr
         requires (is_same_v<ELEMENT_TYPE, byte>)
     {
-        return New (blob.begin (), blob.end ());
-    }
-    template <typename ELEMENT_TYPE>
-    inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob) -> Ptr
-        requires (is_same_v<ELEMENT_TYPE, byte>)
-    {
-        switch (internallySynchronized) {
-            case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New (New (blob));
-            case Execution::eNotKnownInternallySynchronized:
-                return New (blob);
-            default:
-                RequireNotReached ();
-                return nullptr;
-        }
-    }
-
-    /*
-     ********************************************************************************
-     ********************************** MemoryStream ********************************
-     ********************************************************************************
-     */
-    template <typename ELEMENT_TYPE>
-    inline auto MemoryStream<ELEMENT_TYPE>::_mkPtr (const shared_ptr<Rep_>& s) -> Ptr
-    {
-        return Ptr{s};
+        Ptr r = make_shared<Rep_> ();
+        r.Write (copyFrom);
+        return r;
     }
 
     /*
@@ -313,6 +266,11 @@ namespace Stroika::Foundation::Streams {
      *********************** MemoryStream<ELEMENT_TYPE>::Ptr ************************
      ********************************************************************************
      */
+    template <typename ELEMENT_TYPE>
+    inline MemoryStream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t)
+        : inherited{nullptr}
+    {
+    }
     template <typename ELEMENT_TYPE>
     inline MemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
         : inherited{from}

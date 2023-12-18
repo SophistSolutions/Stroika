@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Execution/Thread.h"
+#include "Stroika/Foundation/Memory/Span.h"
 #include "Stroika/Foundation/Streams/Copy.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/OutputStream.h"
@@ -33,14 +34,13 @@ namespace {
         void TestBasicConstruction_ ()
         {
             {
-                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New (nullptr, nullptr);
+                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
                 EXPECT_TRUE (s != nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
             }
             {
                 const char              kData[] = "1";
-                MemoryStream<byte>::Ptr s       = MemoryStream<byte>::New (reinterpret_cast<const byte*> (std::begin (kData)),
-                                                                           reinterpret_cast<const byte*> (std::end (kData)));
+                MemoryStream<byte>::Ptr s       = MemoryStream<byte>::New (Memory::SpanReInterpretCast<const byte> (span{kData}));
                 EXPECT_TRUE (s != nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
                 byte result[100] = {byte{0}};

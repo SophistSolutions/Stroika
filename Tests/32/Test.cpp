@@ -973,7 +973,7 @@ namespace Test_08_ReadEmptyStreamShouldFail_ {
     {
         Debug::TraceContextBumper ctx{"Test_08_ReadEmptyStreamShouldFail_::DoAll_"};
         try {
-            VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (Streams::MemoryStream<byte>::New (nullptr, nullptr));
+            VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (Streams::MemoryStream<byte>::New ());
             EXPECT_TRUE (false);
         }
         catch (const DataExchange::BadFormatException&) {
