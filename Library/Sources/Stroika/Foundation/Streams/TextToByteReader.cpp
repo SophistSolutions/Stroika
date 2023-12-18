@@ -111,5 +111,5 @@ protected:
 
 auto TextToByteReader::New (InputStream<Character>::Ptr srcStream) -> Ptr
 {
-    return _mkPtr (make_shared<Rep_> (srcStream));
+    return Ptr{make_shared<Rep_> (srcStream)};
 }

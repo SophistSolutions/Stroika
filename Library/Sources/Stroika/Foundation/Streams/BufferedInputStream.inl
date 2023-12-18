@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto BufferedInputStream<ELEMENT_TYPE>::New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn) -> Ptr
     {
-        return InputStream<ELEMENT_TYPE>::_mkPtr (make_shared<Rep_> (realIn));
+        return typename InputStream<ELEMENT_TYPE>::Ptr{make_shared<Rep_> (realIn)};
     }
     template <typename ELEMENT_TYPE>
     inline auto BufferedInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized              internallySynchronized,
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Streams {
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return _mkPtr (InternalSyncRep_::New (realIn));
+                return Ptr{InternalSyncRep_::New (realIn)};
             case Execution::eNotKnownInternallySynchronized:
                 return New (realIn);
             default:

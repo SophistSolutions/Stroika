@@ -251,12 +251,12 @@ private:
 
 auto FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable) -> Ptr
 {
-    return _mkPtr (Memory::MakeSharedPtr<Rep_> (fileName, seekable));
+    return Ptr{Memory::MakeSharedPtr<Rep_> (fileName, seekable)};
 }
 
 auto FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable) -> Ptr
 {
-    return _mkPtr (Memory::MakeSharedPtr<Rep_> (fd, adoptFDPolicy, seekable));
+    return Ptr{Memory::MakeSharedPtr<Rep_> (fd, adoptFDPolicy, seekable)};
 }
 
 auto FileInputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, SeekableFlag seekable) -> Ptr

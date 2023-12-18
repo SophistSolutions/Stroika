@@ -370,7 +370,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
  */
 auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<byte>::Ptr& realIn) -> Ptr
 {
-    return _mkPtr (make_shared<Rep_> (cryptoParams, direction, realIn));
+    return Ptr{make_shared<Rep_> (cryptoParams, direction, realIn)};
 }
 
 auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,

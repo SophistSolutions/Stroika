@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
     {
-        return inherited::_mkPtr (make_shared<Rep_> (start, end));
+        return Ptr{make_shared<Rep_> (start, end)};
     }
     template <typename ELEMENT_TYPE>
     template <random_access_iterator ELEMENT_ITERATOR>

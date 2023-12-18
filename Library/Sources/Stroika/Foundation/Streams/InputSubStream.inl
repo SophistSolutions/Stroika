@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Streams {
     inline auto InputSubStream<ELEMENT_TYPE>::New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn,
                                                    const optional<SeekOffsetType>& start, const Memory::optional<SeekOffsetType>& end) -> Ptr
     {
-        return InputStream<ELEMENT_TYPE>::_mkPtr (make_shared<Rep_> (realIn, start, end));
+        return Ptr{make_shared<Rep_> (realIn, start, end)};
     }
 
 }

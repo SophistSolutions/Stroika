@@ -135,12 +135,6 @@ namespace Stroika::Foundation::IO::FileSystem {
     private:
         class Rep_;
 
-    protected:
-        /**
-         *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
-         */
-        static Ptr _mkPtr (const shared_ptr<Rep_>& s);
-
     private:
         using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<byte, FileInputStream, FileInputStream::Rep_>;
     };
@@ -161,8 +155,6 @@ namespace Stroika::Foundation::IO::FileSystem {
          */
         Ptr ()                = delete;
         Ptr (const Ptr& from) = default;
-
-    protected:
         Ptr (const shared_ptr<Rep_>& from);
 
     public:

@@ -139,15 +139,6 @@ namespace Stroika::Foundation::Streams {
 
     public:
         class _IRep;
-
-    protected:
-        using _SharedIRep = shared_ptr<_IRep>;
-
-    protected:
-        /**
-         *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
-         */
-        static Ptr _mkPtr (const _SharedIRep& s);
     };
 
     /**
@@ -169,14 +160,11 @@ namespace Stroika::Foundation::Streams {
     protected:
         using AssertExternallySynchronizedMutex = typename inherited::AssertExternallySynchronizedMutex;
 
-    protected:
-        using _SharedIRep = shared_ptr<_IRep>;
-
     public:
         /**
          *  defaults to null (empty ())
          *
-         * _SharedIRep rep is the underlying shared input Stream object.
+         * shared_ptr<_IRep> rep is the underlying shared input Stream object.
          *
          *  \req rep != nullptr (use nullptr_t constructor)
          */
@@ -184,7 +172,7 @@ namespace Stroika::Foundation::Streams {
         Ptr (nullptr_t);
         Ptr (const Ptr&)     = default;
         Ptr (Ptr&&) noexcept = default;
-        explicit Ptr (const _SharedIRep& rep);
+        explicit Ptr (const shared_ptr<_IRep>& rep);
 
     public:
         /**
@@ -491,7 +479,7 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual _SharedIRep _GetSharedRep () const;
+        nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
 
     protected:
         /**

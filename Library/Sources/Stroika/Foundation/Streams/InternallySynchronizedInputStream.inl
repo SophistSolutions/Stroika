@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Streams {
     template <typename... ARGS>
     inline auto InternallySynchronizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (ARGS&&... args) -> Ptr
     {
-        return inherited::_mkPtr (make_shared<Rep_> (forward<ARGS> (args)...));
+        return Ptr{make_shared<Rep_> (forward<ARGS> (args)...)};
     }
 
 }

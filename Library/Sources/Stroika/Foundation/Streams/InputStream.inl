@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline InputStream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep)
+    inline InputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<_IRep>& rep)
         : inherited{rep}
     {
         RequireNotNull (rep);
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Streams {
         return _GetRepConstRef ().IsOpenRead ();
     }
     template <typename ELEMENT_TYPE>
-    inline auto InputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
+    inline auto InputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> shared_ptr<_IRep>
     {
         return Debug::UncheckedDynamicPointerCast<_IRep> (inherited::_GetSharedRep ());
     }
@@ -378,17 +378,6 @@ namespace Stroika::Foundation::Streams {
             readCursor += eltsReadThisTime;
         }
         return elementsRead;
-    }
-
-    /*
-     ********************************************************************************
-     *************************** InputStream<ELEMENT_TYPE> **************************
-     ********************************************************************************
-     */
-    template <typename ELEMENT_TYPE>
-    inline auto InputStream<ELEMENT_TYPE>::_mkPtr (const _SharedIRep& s) -> Ptr
-    {
-        return Ptr{s};
     }
 
 }
