@@ -88,7 +88,7 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
          */
         // if we have a content-length, read that many bytes.
         if (optional<uint64_t> cl = headers ().contentLength ()) {
-            fBodyInputStream_ = InputSubStream<byte>::New (fInputStream_, {}, fInputStream_.GetOffset () + static_cast<size_t> (*cl));
+            fBodyInputStream_ = InputSubStream::New<byte> (fInputStream_, {}, fInputStream_.GetOffset () + static_cast<size_t> (*cl));
         }
         else {
             /*

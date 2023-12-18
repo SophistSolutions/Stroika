@@ -21,7 +21,7 @@
  *
  */
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::InputSubStream {
 
     /**
      *  @brief  InputSubStream is an InputStream<ELEMENT_TYPE>::Ptr which provides buffered access.
@@ -33,16 +33,9 @@ namespace Stroika::Foundation::Streams {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
     template <typename ELEMENT_TYPE>
-    class InputSubStream : public InputStream<ELEMENT_TYPE> {
-    public:
-        InputSubStream ()                      = delete;
-        InputSubStream (const InputSubStream&) = delete;
+    using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
 
-    public:
-        using typename InputStream<ELEMENT_TYPE>::Ptr;
-
-    public:
-        /**
+    /**
          *  start and end are offsets in the real underlying stream which map to 0, and if specified, end-start (which is this streams ends);
          *  start defaults (if Missing) to the current offset, and end defaults to the actual end of the underlying stream.
          *
@@ -56,12 +49,9 @@ namespace Stroika::Foundation::Streams {
          *          CallExpectingBinaryInputStreamPtr (InputSubStream<byte>::New (fromStream, 0, contentLength))
          *      \endcode
          */
-        static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start,
-                        const optional<SeekOffsetType>& end);
-
-    private:
-        class Rep_;
-    };
+    template <typename ELEMENT_TYPE>
+    auto New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
+        -> Ptr<ELEMENT_TYPE>;
 
 }
 
