@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \note Do NOT use the InputStream<ElementType>::Ptr passed in at the same time as its being used by the
          *        StreamReader, or grave disorder may result. StreamReader assumes its the only one seeking and reading
-         *        through the input stream.
+         *        through the input stream. See SynchronizeToUnderlyingStream ().
          * 
          *  \note At destruction, StreamReader automatically calls SynchronizeToUnderlyingStream
          * 
