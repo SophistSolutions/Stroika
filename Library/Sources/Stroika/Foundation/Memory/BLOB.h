@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  \par Example Usage
          *      \code
-         *           BLOB    b1  =   BLOB{ 0x29, 0x14, 0x4a, };
+         *           BLOB    b1  =   BLOB{ 0x29, 0x14, 0x4a };
          *      \endcode
          * 
          *  \see also FromHex, FromRaw (constructor like static functions with special names to make treatment more clear)
@@ -417,6 +417,9 @@ namespace Stroika::Foundation::Memory {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         shared_ptr<_IRep>                                              fRep_;
     };
+
+    // @todo make this work
+    //static_assert (convertible_to<BLOB, span<byte>>);
 
     /**
      * This abstract interface defines the behavior of a BLOB.
