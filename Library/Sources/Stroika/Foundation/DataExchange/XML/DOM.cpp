@@ -19,6 +19,7 @@
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/MemoryAllocator.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/TextToByteReader.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 #include "Stroika/Foundation/Traversal/Generator.h"
 
@@ -728,8 +729,7 @@ Document::Ptr Document::New (const Streams::InputStream<byte>::Ptr& in, const Sc
 
 Document::Ptr Document::New (const String& in, const Schema::Ptr& schema)
 {
-    //    @todo add overload takign String 'in' and parse using Streams::TextToByteReader
-    return Ptr{nullptr};
+    return New (Streams::TextToByteReader::New (in), schema);
 }
 
 /////////////////////////
