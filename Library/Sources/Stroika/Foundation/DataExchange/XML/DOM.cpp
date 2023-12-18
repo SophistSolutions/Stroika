@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Configuration/StroikaVersion.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
+#include "Stroika/Foundation/Debug/Cast.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
@@ -854,8 +855,7 @@ namespace {
                 START_LIB_EXCEPTION_MAPPER
                 {
                     if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
-                        AssertMember (fNode_, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                        T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (fNode_);
+                        T_DOMElement* elt = Debug::UncheckedDynamicCast<T_DOMElement*> (fNode_);
                         if (elt->hasAttribute (attrName.As<u16string> ().c_str ())) {
                             if (value != nullptr) {
                                 const XMLCh* s = elt->getAttribute (attrName.As<u16string> ().c_str ());
@@ -875,8 +875,7 @@ namespace {
                 START_LIB_EXCEPTION_MAPPER
                 {
                     if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
-                        AssertMember (fNode_, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                        T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (fNode_);
+                        T_DOMElement* elt = Debug::UncheckedDynamicCast<T_DOMElement*> (fNode_);
                         const XMLCh*  s   = elt->getAttribute (attrName.As<u16string> ().c_str ());
                         AssertNotNull (s);
                         if (*s != '\0') {
