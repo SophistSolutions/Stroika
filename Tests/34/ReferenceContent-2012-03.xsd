@@ -1,0 +1,963 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/" xmlns:rc="http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/" targetNamespace="http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>
+			 Copyright(c) Records For Living, Inc. 2004-2016.  All rights reserved
+		</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ReferenceContentData">
+		<xs:annotation>
+			<xs:documentation>A collection of details about reference concepts.
+
+Note that in order to support 'separate compilation' - different file sources to be combined into one - nearly all fields maybe omitted.
+
+Also - to both support a simplified coding for information sources, and allow the flexability of coding nearly anything as being from one particular set of sources, a single file may contain multiple ContentDetails records with the same concept primary key.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Header">
+					<xs:annotation>
+						<xs:documentation>
+								For now, this is all optional (backward compatability as of 2006-02-01). We should require at least one source, and probably a defaultsource.
+								The DefaultSource is what is applied implicitly to all data in the file if it has no SourceReference attribute.
+							</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="SourceDefinitions" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SourceDefinition" type="SourceDefinitionType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="FileSource" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Source used to describe/display the file itself (e.g. in picker dialogs selecting if the file is to be used). This source implicitly applies to ALL concepts included in the file.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="idref" type="xs:NCName" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Concepts">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ConceptDetails" type="ConceptDetailsType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Relationships" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Relationship" type="RelationshipType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="BLOBs" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>A list of binary-large-objects, such as images, etc. These can be referernced by IDREF above (initially just from ThumbnailIcon, but soon also from inside special documentation elements (as part of &lt;img&gt;s)).</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BLOB" type="BLOBType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+		<!--
+					***********************************************
+					Referential Integrity checking.
+					***********************************************
+		-->
+		<xs:key name="BLOBKey_Valid">
+			<xs:annotation>
+				<xs:documentation>Check that each blob ID is unique, and this key definition allows other keyrefs to be declared as pointing to one of these</xs:documentation>
+			</xs:annotation>
+			<xs:selector xpath="rc:BLOBs/rc:BLOB"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<xs:keyref name="BLOBKeyRef_Valid" refer="BLOBKey_Valid">
+			<xs:annotation>
+				<xs:documentation>Check that each thumbnail refers to a valid blob ID</xs:documentation>
+			</xs:annotation>
+			<xs:selector xpath="rc:Header/rc:SourceDefinitions/rc:SourceDefinition/rc:ThumbnailIcon"/>
+			<xs:field xpath="@idref"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:simpleType name="CommutativeRelationshipKindType">
+		<xs:annotation>
+			<xs:documentation>Declares which relationship kinds are commutative</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="RelationshipKindType">
+			<xs:enumeration value="RelatedTo"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ConceptCategoryType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AcquiredAbnormality">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T020 (Acquired Abnormality) [A1.2.2.2]. An abnormal structure, or one that is abnormal in size or location, found in or deriving from a previously normal structure. Acquired abnormalities are distinguished from diseases even though they may result in pathological functioning (e.g., "hernias incarcerate").</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Activity">
+				<xs:annotation>
+					<xs:documentation>An activity here refers to a regular, human activity which has some health-status relevance, like smoking, jogging, etc.This is not the same as T052 UMLS Activity.					
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Allergen">
+				<xs:annotation>
+					<xs:documentation>An Allergen is something a person might be allergic to.Currently it includes medications, and some common food allergens, and a handful of others. This is NOT well-sourced (as of 2010-12-06).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AminoAcidOrPeptideOrProtein">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T116 (Amino Acid, Peptide, or Protein) [A1.4.1.2.1.7]. Amino acids and chains of amino acids connected by peptide linkages. When the concept is both an enzyme and a protein, this type and the type 'Enzyme' will be assigned.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AnatomicalAbnormality">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T190 (Anatomical Abnormality) [A1.2.2]. An abnormal structure, or one that is abnormal in size or location. Use this type if the abnormality in question can be either an acquired or congenital abnormality. Neoplasms are not included here. These are given the type 'Neoplastic Process'. If an anatomical abnormality has a pathologic manifestation, then it will additionally be given the type 'Disease or Syndrome', e.g., "Diabetic Cataract" will be double-typed for this reason.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AnatomicalStructure">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T017 (Anatomical Structure) [A1.2]. A normal or pathological part of the anatomy or structural organization of an organism. Few concepts will be assigned to this broad type.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Animal">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T008 [A1.1.3.1]. An organism with eukaryotic cells, and lacking stiff cell walls, plastids and photosynthetic pigments.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Antibiotic">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T195 [A1.4.1.1.1.1]. A pharmacologically active compound produced by growing microorganisms which kill or inhibit growth of other microorganisms.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Bacterium">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T007[A1.1.2]. A small, typically one-celled, prokaryotic micro-organism.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BloodType">
+				<xs:annotation>
+					<xs:documentation>Category of blood, e.g. A+, O-, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BodyLocationOrRegion">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T029 (Body Location or Region) [A2.1.5.2]. An area, subdivision, or region of the body demarcated for the purpose of topographical description.When assigning this type, consider whether 'Body Part, Organ, or Organ Component' might be the correct choice.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BodyPartOrganOrOrganComponent">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T023 (Body Part, Organ, or Organ Component) [A1.2.3.1]. A collection of cells and tissues which are localized to a specific area or combine and carry out one or more specialized functions of an organism. This ranges from gross structures to small components of complex organs. These structures are relatively localized in comparison to tissues.When assigning this type, consider whether 'Body Location or Region' might be the correct choice
+</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Carbohydrate">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T118 [A1.4.1.2.1.8]. A generic term that includes monosaccharides, oligosaccharides, and polysaccharides as well as substances derived from monosaccharides by reduction of the carbonyl group (alditols), by oxidation of one or more terminal group to carboxylic acids, or by replacement of one or more hydroxy groups by a hydrogen atom, an amino group, a thiol group or similar heteroatomic groups. It also includes derivatives of these compounds. Included here are sugar phosphates. Excluded are glycolipids and glycoproteins. Glycoproteins should only be typed as 'Amino Acid, Peptide, or Protein'. Sugar phosphates should only be typed as 'Carbohydrate'. Glycolipids should only be typed as 'Lipid'.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Cell">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T025 [A1.2.3.3]. The fundamental structural and functional unit of living organisms.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CellComponent">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T026 [A1.2.3.4]. A part of a cell or the intercellular matrix, generally visible by light microscopy.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CellOrMolecularDysfunction">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T049 (Cell or Molecular Dysfunction) [B2.2.1.2.2]. A pathologic function inherent to cells, parts of cells, or molecules.This is not intended to be a repository for diseases whose molecular basis has been established.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ClinicalDrug">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T200 (Clinical Drug) [A1.3.3] A pharmaceutical preparation as produced by the manufacturer. The name usually includes the substance, its strength, and the form, but may include the substance and only one of the other two items.Do not double type with Pharmacologic Substance, Antibiotic, or other chemical semantic types.
+</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Color">
+				<xs:annotation>
+					<xs:documentation>This concept is for any color.
+</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CommunicationKind">
+				<xs:annotation>
+					<xs:documentation>Means of communication between two people (e.g. email, phone, etc).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Condition">
+				<xs:annotation>
+					<xs:documentation>This is currently an amalgam of semantic types which indicate some kind of health problem. It does NOT include symtoms. This type MAYBE removed  before  we ship v3.((TBD))</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CongenitalAbnormality">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T019 (Congenital Abnormality) [A1.2.2.1]. An abnormal structure, or one that is abnormal in size or location, present at birth or evolving over time as a result of a defect in embryogenesis. If the congenital abnormality involves multiple defects then the type 'Disease or Syndrome' will also be assigned.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DateFilterType">
+				<xs:annotation>
+					<xs:documentation>This type is used  internally by HealthFrameWorks to filter (subset) data by date.
+</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DiagnosticProcedure">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T060 (Diagnostic Procedure) [B1.3.1.2]. A procedure, method, or technique used to determine the nature or identity of a disease or disorder. This excludes procedures which are primarily carried out on specimens in a laboratory.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DiseaseOrSyndrome">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T047 (Disease or Syndrome) [B2.2.1.2.1] A condition which alters or interferes with a normal process, state, or activity of an organism. It is usually characterized by the abnormal functioning of one or more of the host's systems, parts, or organs. Included here is a complex of symptoms descriptive of a disorder.||Any specific disease or syndrome that is modified by such modifiers as "acute", "prolonged", etc. will also be assigned to this type. If an anatomic abnormality has a pathologic manifestation, then it will be given this type as well as a type from the 'Anatomical Abnormality' hierarchy, e.g., "Diabetic Cataract" will be double-typed for this reason.
+</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EducationLevel">
+				<xs:annotation>
+					<xs:documentation>High School graduate, college graduate, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EmergencyContactRelationship">
+				<xs:annotation>
+					<xs:documentation>Relationships between people which are common for emergency contacts.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EmploymentStatus">
+				<xs:annotation>
+					<xs:documentation>Concepts which are a status for employment, such as retired, unemployed, or employed.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EnvironmentalAllergen">
+				<xs:annotation>
+					<xs:documentation>This is a subtype of 'Allergen' - but restricted to those which are environmental in nature (something one would encounter in their environment, such as dust mites)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ExpenseType">
+				<xs:annotation>
+					<xs:documentation>This is a type (category) of expense - used by healthcare consumers to track their expenses. Examples include: co-pay, insurance premium, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ExternalPersonID">
+				<xs:annotation>
+					<xs:documentation>E.g. Social Security Number</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EyeColor">
+				<xs:annotation>
+					<xs:documentation>A subtype of 'Colors' - but restricted to those which are typical for human eyes.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FamilyRelationship">
+				<xs:annotation>
+					<xs:documentation>This refers to relationships between people in the same family. For example, parent, sibling, etc. This generally avoids names (like brother) which are the same as a more general concept (sibling) - but implying gender (because we typically separately record those genders).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Finding">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T033 [A2.2]. That which is discovered by direct observation or measurement of an organism attribute or condition, including the clinical history of the patient. The history of the presence of a disease is a 'Finding' and is distinguished from the disease itself. Only in rare circumstances will findings be double-typed with either 'Pathologic Function' or 'Anatomical Abnormality'. Most findings will be assigned the types 'Laboratory or Test Result' or 'Sign or Symptom'. Only those findings that relate to patient history or to the determination of a state will be assigned the type 'Finding'.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Food">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T168 [A1.4.3] Any substance generally containing nutrients, such as carbohydrates, proteins, and fats, that can be ingested by a living organism and metabolized into energy and body tissue. Some foods are naturally occurring, others are either partially or entirely made by humans. Food additives, food preservatives, and food dyes should be given the type 'Chemical Viewed Functionally'; "Diet Coke" would be assigned this type.
+</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Fungus">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T004 [A1.1.3.2]. A eukaryotic organism characterized by the absence of chlorophyll and the presence of a rigid cell wall. Included here are both slime molds and true fungi such as yeasts, molds, mildews, and mushrooms.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Gender">
+				<xs:annotation>
+					<xs:documentation>Male or Female</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HairColor">
+				<xs:annotation>
+					<xs:documentation>A subtype of 'Color'. A typical, natural color for human hair.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HealthStatus">
+				<xs:annotation>
+					<xs:documentation>Overall health status summary value - like 'excellent', or 'fair'.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HospitalizationVisitType">
+				<xs:annotation>
+					<xs:documentation>HospitalizationVisitType is a subtype of VisitType - but one which involves a trip to a hospital.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Immunization">
+				<xs:annotation>
+					<xs:documentation>A substance which can be given to a person  with the intent of stimulating an immune response, aimed at preventing subsequent infections by more viable agents.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IndividualProviderRole">
+				<xs:annotation>
+					<xs:documentation>This is for a healthcare provider role - applying to a person (as opposed to an organization).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="InjuryOrPoisoning">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T037 (Injury or Poisoning) [B2.3]. A traumatic wound, injury, or poisoning caused by an external agent or force. An `Injury or Poisoning' is distinguished from a 'Disease or Syndrome' that may be a result of prolonged exposure to toxic materials.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="InsuranceDeductibleKind">
+				<xs:annotation>
+					<xs:documentation>Insurance policies have different kinds of deductibles. For example, some apply to ALL expenses, while others  only apply to medications.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="InsurancePolicyKind">
+				<xs:annotation>
+					<xs:documentation>This is a categorization of differnt types of insurance polciies. Differnt types of policies have differing rules about how to apply deductibles, co-pays etc. Examples include Medicare Part A, and POS (Point of Service).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LaboratoryProcedure">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T059 (Laboratory Procedure) [B1.3.1.1]. A procedure, method, or technique used to determine the composition, quantity, or concentration of a specimen, and which is carried out in a clinical laboratory. Included here are procedures which measure the times and rates of reactions.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Lipid">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T119 [A1.4.1.2.1.9]. An inclusive group of fat or fat-derived substances that are soluble in nonpolar solvents related to fatty acid esters, fatty alcohols, sterols, waxes, etc. Included in this group are the saponifiable lipids such as glycerides (fats and oils), essential (volatile) oils, and phospholipids. Phospholipids should not also be typed with 'Organophosphorus Compound'. Fatty acids are composed of a chain of alkyl groups containing from 4-22 carbon atoms (usually even-numbered) and characterized by a terminal carboxyl group.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MaritalStatus">
+				<xs:annotation>
+					<xs:documentation>Married, Divorced, etc.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MeasurementType">
+				<xs:annotation>
+					<xs:documentation>
+					This concept refers to a measurement - whether done by the patient or doctors, etc. Plus this includes the type 'Laboratory or Test Result'.
+					
+					From UMLS (Laboratory or Test Result):
+					UMLS Semantic Type T034 (Laboratory or Test Result) [A2.2.1]. The outcome of a specific test to measure an attribute or to determine the presence, absence, or degree of a condition.||Laboratory or test results are considered inherently quantitative and, thus, are not assigned the additional type 'Quantitative Concept'.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MedicalDevice">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T074 (Medical Device). A manufactured object used primarily in the diagnosis, treatment, or prevention of physiologic or anatomic disorders.||A medical device may be used for research purposes, but since its primary use is for routine medical care, it is distinguished from a 'Research Device' which is used primarily for research purposes.
+</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MedicationFrequency">
+				<xs:annotation>
+					<xs:documentation>This refers to how often one should consume their medication (for example, daily, or every 4 hours).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MedicationRoute">
+				<xs:annotation>
+					<xs:documentation>Medication Route  is a way of getting a medication into the body. It is losely based on the HL7 medication routes.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Medication">
+				<xs:annotation>
+					<xs:documentation>A medication is a drug (either prescription or over-the-counter) - typically one listed by RxNorm.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MentalOrBehavioralDysfunction">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T048 (Mental or Behavioral Dysfunction) [B2.2.1.2.1.1]. A clinically significant dysfunction whose major manifestation is behavioral or psychological. These dysfunctions may have identified or presumed biological etiologies or manifestations.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NaturalLanguage">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T171 (Language) [A2.5]. The system of communication used by a particular nation or people.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NeoplasticProcess">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T191 (Neoplastic Process) [B2.2.1.2.1.2]. A new and abnormal growth of tissue in which the growth is uncontrolled and progressive. The growths may be malignant or benign. All neoplasms are assigned to this type. Do not also assign a type from the 'Anatomical Abnormality' hierarchy.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ObjectRelationship">
+				<xs:annotation>
+					<xs:documentation>These are the relationships between objects in some data model (not relationships between concepts in this ontology). "Related-To", and "Aggregates" are two typical example relationships between concepts. Don't confuse ObjectRelationship with the type 'RelationshipKindType'</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ObjectRelationshipCommutative">
+				<xs:annotation>
+					<xs:documentation>ObjectRelationshipCommutative is a subtype of ObjectRelationship - documenting which relationships are commutative</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OrganicChemical">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T109 (Organic Chemical) [A1.4.1.2.1]. The general class of carbon-containing compounds, usually based on carbon chains or rings, and also containing hydrogen (hydrocarbons), with or without nitrogen, oxygen, or other elements in which the bonding between elements is generally covalent.||Salts of organic chemicals (such as Calcium Acetate) would be considered organic chemicals and should not also receive the type 'Inorganic Chemical'</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Organism">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T001 [A1.1]. Generally, a living individual, including all plants and animals.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OrganizationProviderRole">
+				<xs:annotation>
+					<xs:documentation>This refers to concepts which are healthcare organizaitons, such as HMOs, or pharmacies.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PathologicFunction">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T046 (Pathologic Function) [B2.2.1.2]. A disordered process, activity, or state of the organism as a whole, of a body system or systems, or of multiple organs or tissues. Included here are normal responses to a negative stimulus as well as patholologic conditions or states that are less specific than a disease. Pathologic functions frequently have systemic effects. If the process is specific, for example to a site or substance, then 'Disease or Syndrome' will be assigned and not 'Pathologic Function'. For example, "cerebral anoxia", "brain edema", and "milk hypersensitivity" will all be assigned to 'Disease or Syndrome' only.
+</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PersonNamePrefix">
+				<xs:annotation>
+					<xs:documentation>Standard name prefix, like Mr., Mrs. etc</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PersonNameSuffix">
+				<xs:annotation>
+					<xs:documentation>Standard name suffix, like Jr., Sr. etc</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PharmacologicSubstance">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T121 (Pharmacologic Substance) [A1.4.1.1.1]. A substance used in the treatment or prevention of pathologic disorders. This includes substances that occur naturally in the body and are administered therapeutically.||If a substance is both endogenous and typically used as a drug, then this type and the type 'Biologically Active Substance' or one of its children are assigned. Body substances that are used therapeutically such as whole blood preparation, NOS would only receive the type 'Body Substance'. Substances used in the diagnosis or analysis of normal and abnormal body functions should be given the type 'Indicator, Reagent, or Diagnostic Aid'.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PhoneKind">
+				<xs:annotation>
+					<xs:documentation>Type of phone number, such as mobile, home, business.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PhysicianProviderRole">
+				<xs:annotation>
+					<xs:documentation>PhysicianProviderRole is a subcategory of IndividualProviderRole - where the role is for a medical doctor.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Plant">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T002 [A1.1.3.3]. An organism having cellulose cell walls, growing by synthesis of inorganic substances, generally distinguished by the presence of chlorophyll, and lacking the power of locomotion. Plant parts are included here as well.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Race">
+				<xs:annotation>
+					<xs:documentation>Any of the traditional divisions of humankind, the commonest being the Caucasian, Mongoloid, and Negro, characterized by supposedly distinctive and universal physical characteristics: no longer in technical use.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Religion">
+				<xs:annotation>
+					<xs:documentation>A set of beliefs concerning the cause, nature, and purpose of the universe, esp. when considered as the creation of a superhuman agency or agencies, usually involving devotional and ritual observances, and often containing a moral code governing the conduct of human affairs.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SignOrSymptom">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T184 (|Sign or Symptom) [A2.2.2]. An observable manifestation of a disease or condition based on clinical judgment, or a manifestation of a disease or condition which is experienced by the patient and reported as a subjective observation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Steroid">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T110 [A1.4.1.2.1.9.1]. One of a group of polycyclic, 17-carbon-atom, fused-ring compounds occurring both in natural and synthetic forms. Included here are naturally occurring and synthetic steroids, bufanolides, cardanolides, homosteroids, norsteroids, and secosteroids.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Test">
+				<xs:annotation>
+					<xs:documentation>DiagnosticProcedure, LaboratoryProcedure, or other 'home' based procedure (like measuring weight). A test is merely a collection of measurements.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TestMeasurementFlag-Ranged">
+				<xs:annotation>
+					<xs:documentation>This type is conclusion about whether a result is in proper range or not. It includes such possible values as:
+						Abnormal Low, 
+						Abnormal High, 
+						Within Normal Limits, 
+						Critical Low
+						Critical High.
+						
+						See also http://www.labtestsonline.org/inc/reports/SampleReport.html
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TestMeasurementFlag-PassFail">
+				<xs:annotation>
+					<xs:documentation>This type is conclusion about whether a result passed or failed.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TherapeuticOrPreventiveProcedure">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T061 (Therapeutic or Preventive Procedure) [B1.3.1.3]. A procedure, method, or technique designed to prevent a disease or a disorder, or to improve physical function, or used in the process of treating a disease or injury. In earlier versions of HealthFrameWorks - this was (essentially the same thing) as 'Treatment'.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Tissue">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T024 (Tissue) [A1.2.3.2]. An aggregation of similarly specialized cells and the associated intercellular substance. Tissues are relatively non-localized in comparison to body parts, organs or organ components.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Unit">
+				<xs:annotation>
+					<xs:documentation>Units are nouns - things - usually counted by numbers. Most involve SI-prefixes. For example, Liters, Pounds, and Meters would all be units.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UnitSubset">
+				<xs:annotation>
+					<xs:documentation>UnitSubsets  provide a way to categorize units. Each one has its own special meaning. One example would be FtRangeLengthSubset: which would include all length UNITS which are reasonable to use  for something whose length is around a foot (e.g. inch, cm, foot, meter).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Virus">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T005 [A1.1.4]. An organism consisting of a core of a single nucleic acid enclosed in a protective coat of protein. A virus may replicate only inside a host living cell. A virus exhibits some but not all of the usual characteristics of living things.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VisitType">
+				<xs:annotation>
+					<xs:documentation>A VisitType refers to the KIND of visit - when a person visits a doctor or other healthcare provider.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Vitamin">
+				<xs:annotation>
+					<xs:documentation>UMLS Semantic Type T127 [A1.4.1.1.3.4]. A substance, usually an organic chemical complex, present in natural products or made synthetically, which is essential in the diet of man or other higher animals. Included here are vitamin precursors, provitamins, and vitamin supplements.Essential amino acids are not assigned to this type. They will be assigned to the type 'Amino Acid, Peptide, or Protein'. This can be used with 'Pharmacologic Substance' if the compound is being administered therapeutically or if the source has it classified as therapeutic (i.e., N'ICE Sugarless Vitamin C Drops).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CodeKindType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="UMLS"/>
+			<xs:enumeration value="HF"/>
+			<xs:enumeration value="USER"/>
+			<xs:enumeration value="ATC">
+				<xs:annotation>
+					<xs:documentation>Anatomical Therapeutic Chemical (ATC) Classification System</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CCS-Diagnosis-MultiLevel">
+				<xs:annotation>
+					<xs:documentation>Clinical Classifications Software (CCS) Multi-Level Diagnosis code</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CCS-Diagnosis-SingleLevel">
+				<xs:annotation>
+					<xs:documentation>Clinical Classifications Software (CCS) Single-Level Diagnosis code</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CCS-Procedure-MultiLevel">
+				<xs:annotation>
+					<xs:documentation>Clinical Classifications Software (CCS) Multi-Level Procedure code</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CCS-Procedure-SingleLevel">
+				<xs:annotation>
+					<xs:documentation>Clinical Classifications Software (CCS) Single-Level Procedure code</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CDT">
+				<xs:annotation>
+					<xs:documentation>Current Dental Terminology (CDT) code</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CPT">
+				<xs:annotation>
+					<xs:documentation>Current Procedural Terminology (CPT) code</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DRG"/>
+			<xs:enumeration value="HCPCS">
+				<xs:annotation>
+					<xs:documentation>Healthcare Common Procedure Coding System (HCPCS)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ICD9-CM">
+				<xs:annotation>
+					<xs:documentation>"The International Classification of Diseases, 9th Revision, Clinical Modification" (ICD-9-CM), Sixth Edition. This code set includes both treatments, and conditions. Really, it could be best considered two independent code sets (Classification of Diseases and Classification of Procedures)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ICD10-CM"/>
+			<xs:enumeration value="ICD10-PCS"/>
+			<xs:enumeration value="LOINC"/>
+			<xs:enumeration value="NDC"/>
+			<xs:enumeration value="RXNORM"/>
+			<xs:enumeration value="SNOMED_CT"/>
+			<!--  -->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DocumentationKindType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="LongText"/>
+			<xs:enumeration value="ShortText"/>
+			<xs:enumeration value="LongHTML"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PriorityType">
+		<xs:annotation>
+			<xs:documentation>This is a number from 0 .. 10 (eleven possible values). 0 means that the associated item (concept or term) is obsolete, and shouldn't be used. Its provided only for backward compatility support, reading old files.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RelationshipKindType">
+		<xs:annotation>
+			<xs:documentation>RelationshipKindType refers to relationships between Concepts in an ontology described with this XML definition.
+			    See CommutativeRelationshipKind to find out which relationships are commutative.
+				If you have a generic concept, like cancer, and have a sub-category, like breast cancer, then say 'breast cancer' SubcategoryOf 'cancer'.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="RelatedTo"/>
+			<xs:enumeration value="UsedBy"/>
+			<xs:enumeration value="UsedFor"/>
+			<xs:enumeration value="BrandNameOf"/>
+			<xs:enumeration value="InstanceOf"/>
+			<xs:enumeration value="SubcategoryOf"/>
+			<xs:enumeration value="MayTreat"/>
+			<xs:enumeration value="MayPrevent"/>
+			<xs:enumeration value="ContraindicatedFor"/>
+			<xs:enumeration value="PhysiologicEffectOf"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StatType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MeanChargesInDollars"/>
+			<xs:enumeration value="PercentDied"/>
+			<xs:enumeration value="NumberOfDischargesForYear"/>
+			<xs:enumeration value="PercentOfTotalDischarges"/>
+			<xs:enumeration value="MeanLengthOfStayInDays"/>
+			<xs:enumeration value="PercentMales"/>
+			<xs:enumeration value="MeanAge"/>
+			<xs:enumeration value="TotalSpentForJusisdiction">
+				<xs:annotation>
+					<xs:documentation>Total charge over entire location/jurisdiction. This should be roughly equal to MeanChargesInDollars * NumberOfDischargesForYear, but sometimes it doesn't match (and sometimes some values might not be present).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="BLOBType">
+		<xs:simpleContent>
+			<xs:extension base="xs:base64Binary">
+				<xs:attribute name="id" type="xs:NCName" use="required"/>
+				<xs:attribute name="mimeType" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="CodeType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="Type" type="CodeKindType" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="ConceptDetailsType">
+		<xs:sequence>
+			<xs:element name="PrimaryKey" type="PrimaryKeyType">
+				<xs:annotation>
+					<xs:documentation>A unique key to identify the concept about which the rest of the content element applies.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Priority" type="PriorityType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Concepts of prirotiy zero are obsolete. If the proority is omitted, the default is either inferered from other sources, or if there are no other sources, 5</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Sources" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>These source records are pointers to 'SourceDefinition' elements from the header. They define where the information for the given concept comes from. NB all source elements implicilty come from the documents 'FileSource'. If that element is present in the file - its id is always implicitly included in this list.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Source" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="idref" type="xs:string"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Codes" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Code" type="CodeType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Categories" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Category" type="ConceptCategoryType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Terms" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Terms are strings associated with a given concept: the string to display for that concept.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Term" type="TermType" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>A 'Term' is the string associated with a given concept. Its the string to display for that concept.
+
+Each Term can have a priority.
+
+Each Term may be an abbreviation.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Documentations" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Documentation" type="DocumentationType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="StatisticalData" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="StatisticalDataForLocation" type="StatisticalDataForLocationType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Links" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>URL Web Links for additional information about the given concept</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Link" type="LinkType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Panel" type="PanelType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>A Panel is a collection of measurements (along with labels etc) - to which are all logically related and grouped toegether.
+
+A Panel is a combination of a list of measurements, along with simple formatting information about how to group/display them.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DocumentationType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="Priority" type="PriorityType" use="optional"/>
+				<xs:attribute name="Kind" type="DocumentationKindType" use="required"/>
+				<xs:attribute name="Language" type="xs:language" use="optional" default="en"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="LinkType">
+		<xs:sequence>
+			<xs:element name="Title" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="Language" type="xs:language" use="optional" default="en"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="URL" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PanelType">
+		<xs:annotation>
+			<xs:documentation>There is zero-or one of these per 'test' concept.
+				Each contains a list of items, or a single ItemRef - the conceptID to look at for the REAL PanelItem data (note - PanelRefs MUST be within this file - as they maybe processed at compilation time).			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="ItemRef" type="PrimaryKeyType">
+					<xs:annotation>
+						<xs:documentation>ItemRef means that the panel items for this concept are copied from (all) the matching primary keys defined in the primary key paramter Panel from this file. I does NOT attempt to copy values from another file.
+
+It would be desirable to use XSD keyref here, but since there is no strict key, (a coencept can occur mor ethan once) - there is no obvious way how.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Items">
+					<xs:annotation>
+						<xs:documentation>Typically a single test measurement, with an optional label. The meeasurement typically has a set of units associated with it.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Item" type="PanelItemType" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PanelItemType">
+		<xs:sequence>
+			<xs:element name="RowNumber" type="xs:nonNegativeInteger">
+				<xs:annotation>
+					<xs:documentation>Row#s start with 1, and sequence non-decreasingly (e.g. 1,1,2,2,3,4,5)	</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Name" type="PrimaryKeyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This is the concept for the measurement in the panel. This CAN be omitted on items which are purely labels.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Label" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Label is typically a string used to describe the particular measurement in an item.
+
+It can be omitted if the name is simply the primary display string based on the Name field.
+
+The @spanWidth can be specified to be the CSS width attribute of the label, and the spanLeftMargin can be used to override the spanLeftMargin.
+
+The text value of Label can include a small amount of valid xhtml, such as &lt;b&gt;, and &lt;sub&gt;.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="spanWidth" type="xs:string" use="optional"/>
+							<xs:attribute name="spanLeftMargin" type="xs:string" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="UnitSet" type="PrimaryKeyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This can be either a concept of type Unit (such as lbs) or a UnitSubset (such as LbsRangeWeightSubset).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PrimaryKeyType">
+		<xs:complexContent>
+			<xs:extension base="CodeType"/>
+		</xs:complexContent>
+		<!--
+		Add - restruction (using pattern match) that code type is correct - # with CodeKindType=HF or UMLS
+		-->
+	</xs:complexType>
+	<xs:complexType name="RelationshipType">
+		<xs:sequence>
+			<xs:element name="L1" type="PrimaryKeyType">
+				<xs:annotation>
+					<xs:documentation>A unique key to identify the first concept in the relationship
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RelationshipKind" type="RelationshipKindType"/>
+			<xs:element name="L2" type="PrimaryKeyType">
+				<xs:annotation>
+					<xs:documentation>A unique key to identify the second concept in the relationship</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="StatisticalDatumType">
+		<xs:sequence>
+			<xs:element name="StatType" type="StatType"/>
+			<xs:element name="StatValue" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="StatisticalDataForLocationType">
+		<xs:sequence>
+			<xs:element name="Location" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ForZipCode" type="xs:string" minOccurs="0"/>
+						<xs:element name="ForState" type="xs:string" minOccurs="0"/>
+						<xs:element name="ForCountry" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Datum" type="StatisticalDatumType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SourceDefinitionType">
+		<xs:annotation>
+			<xs:documentation>The id attribute is required, and must be globally unique. If you change anything, including the version, or whatever, be sure to change the id (guid).</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="OrganizationName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The name of the organization which publishes the infromation source.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ProductName" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The canonical, version independent product name for a particular data source. 
+
+For example, the UMLS product name is "Unified Medical Language System®; (UMLS®)"</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="VersionIndependentUMLSSourceID" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Version" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="URL" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Copyright" minOccurs="0" maxOccurs="unbounded">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ThumbnailIcon" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This icon image should be roughly 1/2 inch square (typically 64 pixels by 64 pixels).</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="idref" type="xs:NCName" use="required"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:NCName" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="TermType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="Priority" type="PriorityType" use="optional" default="0"/>
+				<xs:attribute name="Language" type="xs:language" use="optional" default="en"/>
+				<xs:attribute name="Abbreviation" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>Defaults to false. If provided and true, then this term is an abbreviation for the aggregating concept.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>

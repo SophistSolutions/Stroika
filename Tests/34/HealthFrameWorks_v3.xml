@@ -1,0 +1,5774 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright(c) Records For Living, Inc. 2004-2016.  All rights reserved
+-->
+<ReferenceContentData xmlns="http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Header>
+		<SourceDefinitions>
+			<SourceDefinition id="ID-746C902F-E5FB-40f2-B74C-EB6D364C8092">
+				<OrganizationName>Records For Living, Inc.</OrganizationName>
+				<ProductName>HealthFrameWorks</ProductName>
+				<Version>v3</Version>
+				<URL>http://www.HealthFrameWorks.com</URL>
+				<ThumbnailIcon idref="ID-42EED309-E7EB-4166-B814-7AFC9B695C06"/>
+			</SourceDefinition>
+		</SourceDefinitions>
+		<FileSource idref="ID-746C902F-E5FB-40f2-B74C-EB6D364C8092"/>
+	</Header>
+	<!--
+		Next HF codes to use (UNUSED):
+			245
+			.... and so on 	
+	 -->
+	<Concepts>
+		<!--
+	No concept category
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000213</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>AcquiredAbnormality</Category>
+				<Category>Activity</Category>
+				<Category>Allergen</Category>
+				<Category>AminoAcidOrPeptideOrProtein</Category>
+				<Category>AnatomicalAbnormality</Category>
+				<Category>AnatomicalStructure</Category>
+				<Category>Animal</Category>
+				<Category>Antibiotic</Category>
+				<Category>Bacterium</Category>
+				<Category>BloodType</Category>
+				<Category>BodyLocationOrRegion</Category>
+				<Category>BodyPartOrganOrOrganComponent</Category>
+				<Category>Carbohydrate</Category>
+				<Category>Cell</Category>
+				<Category>CellOrMolecularDysfunction</Category>
+				<Category>ClinicalDrug</Category>
+				<Category>Color</Category>
+				<Category>CommunicationKind</Category>
+				<Category>Condition</Category>
+				<Category>CongenitalAbnormality</Category>
+				<Category>DateFilterType</Category>
+				<Category>DiagnosticProcedure</Category>
+				<Category>DiseaseOrSyndrome</Category>
+				<Category>EducationLevel</Category>
+				<Category>EmergencyContactRelationship</Category>
+				<Category>EmploymentStatus</Category>
+				<Category>EnvironmentalAllergen</Category>
+				<Category>ExpenseType</Category>
+				<Category>ExternalPersonID</Category>
+				<Category>EyeColor</Category>
+				<Category>FamilyRelationship</Category>
+				<Category>Finding</Category>
+				<Category>Food</Category>
+				<Category>Fungus</Category>
+				<Category>Gender</Category>
+				<Category>HairColor</Category>
+				<Category>HealthStatus</Category>
+				<Category>HospitalizationVisitType</Category>
+				<Category>Immunization</Category>
+				<Category>IndividualProviderRole</Category>
+				<Category>InjuryOrPoisoning</Category>
+				<Category>InsuranceDeductibleKind</Category>
+				<Category>InsurancePolicyKind</Category>
+				<Category>LaboratoryProcedure</Category>
+				<Category>Lipid</Category>
+				<Category>MaritalStatus</Category>
+				<Category>MeasurementType</Category>
+				<Category>MedicalDevice</Category>
+				<Category>MedicationFrequency</Category>
+				<Category>MedicationRoute</Category>
+				<Category>Medication</Category>
+				<Category>MentalOrBehavioralDysfunction</Category>
+				<Category>NaturalLanguage</Category>
+				<Category>NeoplasticProcess</Category>
+				<Category>ObjectRelationship</Category>
+				<Category>ObjectRelationshipCommutative</Category>
+				<Category>OrganicChemical</Category>
+				<Category>Organism</Category>
+				<Category>OrganizationProviderRole</Category>
+				<Category>PathologicFunction</Category>
+				<Category>PersonNamePrefix</Category>
+				<Category>PersonNameSuffix</Category>
+				<Category>PharmacologicSubstance</Category>
+				<Category>PhoneKind</Category>
+				<Category>PhysicianProviderRole</Category>
+				<Category>Plant</Category>
+				<Category>Race</Category>
+				<Category>Religion</Category>
+				<Category>Steroid</Category>
+				<Category>SignOrSymptom</Category>
+				<Category>Test</Category>
+				<Category>TestMeasurementFlag-Ranged</Category>
+				<Category>TestMeasurementFlag-PassFail</Category>
+				<Category>TherapeuticOrPreventiveProcedure</Category>
+				<Category>Unit</Category>
+				<Category>UnitSubset</Category>
+				<Category>Virus</Category>
+				<Category>VisitType</Category>
+				<Category>Vitamin</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Other</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	Activity
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1547289</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Activity</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Tobacco - Chewed</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0038076</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Activity</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Squash</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0851172</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Activity</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Cricket</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--
+				I'm surprised this isn't in UMLS 2005AC!
+			-->
+			<PrimaryKey Type="HF">H0000124</PrimaryKey>
+			<Categories>
+				<Category>Activity</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Aerobic Excercise</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Baseball-->
+			<PrimaryKey Type="UMLS">C0004795</PrimaryKey>
+			<Categories>
+				<Category>Activity</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Baseball</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Basketball-->
+			<PrimaryKey Type="UMLS">C0004818</PrimaryKey>
+			<Categories>
+				<Category>Activity</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Basketball</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1547812</PrimaryKey>
+			<Categories>
+				<Category>Activity</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Recreational Drug Use</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	Allergen
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0013710</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Allergen</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Eggs</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0949399</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Allergen</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Peanuts</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0043137</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Allergen</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Wheat</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0998367</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Allergen</Category>
+				<Category>EnvironmentalAllergen</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Dust Mites</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0440454</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Allergen</Category>
+				<Category>EnvironmentalAllergen</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Animal Dander</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	BloodType
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0457313</PrimaryKey>
+			<Categories>
+				<Category>BloodType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">A+</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0457316</PrimaryKey>
+			<Categories>
+				<Category>BloodType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">A-</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0457314</PrimaryKey>
+			<Categories>
+				<Category>BloodType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">B+</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0457317</PrimaryKey>
+			<Categories>
+				<Category>BloodType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">B-</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0457315</PrimaryKey>
+			<Categories>
+				<Category>BloodType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">AB+</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0457318</PrimaryKey>
+			<Categories>
+				<Category>BloodType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">AB-</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0457311</PrimaryKey>
+			<Categories>
+				<Category>BloodType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">O+</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0457312</PrimaryKey>
+			<Categories>
+				<Category>BloodType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">O-</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	CommunicationKind
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1553519</PrimaryKey>
+			<Categories>
+				<Category>CommunicationKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">EMail</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1547564</PrimaryKey>
+			<Categories>
+				<Category>CommunicationKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">In Person</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1547563</PrimaryKey>
+			<Categories>
+				<Category>CommunicationKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">FAX</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1547567</PrimaryKey>
+			<Categories>
+				<Category>CommunicationKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Phone</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">1547565</PrimaryKey>
+			<Categories>
+				<Category>CommunicationKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Paper Mail</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	Conditions
+-->
+		<ConceptDetails>
+			<!--Pregnancy-->
+			<PrimaryKey Type="UMLS">C0032961</PrimaryKey>
+			<Codes>
+				<!--LGP added 2006-08-21 in response to comments from Dr Waldren
+	email in AAFP list around 2006-08-15 - about IHE profile - with pregnancy
+	example - and then I looked up code on 
+	http://icd9cm.chrisendres.com/index.php?action=child&recordid=10247
+-->
+				<Code Type="ICD9-CM">V22</Code>
+			</Codes>
+			<Links>
+				<Link>
+					<Title>Pregnancy.org</Title>
+					<URL>http://www.pregnancy.org/</URL>
+				</Link>
+			</Links>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Amyotrophic Lateral Sclerosis (ALS) -->
+			<PrimaryKey Type="UMLS">C0002736</PrimaryKey>
+			<Links>
+				<Link>
+					<Title>ALS Therapy Development Foundation</Title>
+					<URL>http://www.als.net/</URL>
+				</Link>
+			</Links>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Fibromyalgia-->
+			<PrimaryKey Type="UMLS">C0016053</PrimaryKey>
+			<Links>
+				<Link>
+					<Title>National Fibromyalgia Association</Title>
+					<URL>http://www.fmaware.org/</URL>
+				</Link>
+				<Link>
+					<Title>Fibromyalgia Network</Title>
+					<URL>http://www.fmnetnews.com/</URL>
+				</Link>
+			</Links>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Diabetes-->
+			<PrimaryKey Type="UMLS">C0011847</PrimaryKey>
+			<Categories>
+				<Category>Condition</Category>
+			</Categories>
+			<Links>
+				<Link>
+					<Title>American Diabetes Association</Title>
+					<URL>http://www.diabetes.org/</URL>
+				</Link>
+				<Link>
+					<Title>National Diabetes Information Clearinghouse</Title>
+					<URL>http://diabetes.niddk.nih.gov/</URL>
+				</Link>
+				<Link>
+					<Title>Joslin Diabetes Center</Title>
+					<URL>http://www.joslinresearch.org</URL>
+				</Link>
+			</Links>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0178316</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Condition</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Broken Arm</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0178317</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Condition</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Broken Leg</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	DateFilterType
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000186</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>DateFilterType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Any</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000187</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>DateFilterType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Last 30 Days</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000188</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>DateFilterType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Last 6 Months</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000189</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>DateFilterType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Last Year</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000190</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>DateFilterType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Last 2 Years</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000191</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>DateFilterType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Specified Date Range</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	EmergencyContactRelationship
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0682323</PrimaryKey>
+			<Categories>
+				<Category>EmergencyContactRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Partner</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000125</PrimaryKey>
+			<Categories>
+				<Category>EmergencyContactRelationship</Category>
+				<Category>FamilyRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">In-law</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">A parent of one's spouse (e.g. mother-in-law or father-in-law).</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<!--
+	EmploymentStatus
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0035345</PrimaryKey>
+			<Categories>
+				<Category>EmploymentStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Retired</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0041674</PrimaryKey>
+			<Categories>
+				<Category>EmploymentStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Unemployed</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1546911</PrimaryKey>
+			<Categories>
+				<Category>EmploymentStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Student</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Homemaker-->
+			<PrimaryKey Type="UMLS">C0555052</PrimaryKey>
+			<Categories>
+				<Category>EmploymentStatus</Category>
+			</Categories>
+			<Documentations>
+				<Documentation Kind="LongText">One who manages a household, especially as one's main daily activity.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<!--
+	EyeColor
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1260957</PrimaryKey>
+			<Categories>
+				<Category>EyeColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Blue</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0678579</PrimaryKey>
+			<Categories>
+				<Category>EyeColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Brown</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0332583</PrimaryKey>
+			<Categories>
+				<Category>EyeColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Green</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000109</PrimaryKey>
+			<Categories>
+				<Category>EyeColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Hazel</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1269776</PrimaryKey>
+			<Categories>
+				<Category>EyeColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Gray</Term>
+				<Term>Grey</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	ExpenseType
+-->
+		<ConceptDetails>
+			<!--Insurance Premium-->
+			<PrimaryKey Type="UMLS">C0680870</PrimaryKey>
+			<Categories>
+				<Category>ExpenseType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Premium</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1555680</PrimaryKey>
+			<Categories>
+				<Category>ExpenseType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Co-Pay</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="LongText">A copayment or copay payment is one where the insured pays a fixed dollar amount (e.g. $5, or $10) each time a particular medical service is used. Copay provisions are frequently found in medical plans offered by health maintenance organizations (HMOs) where a nominal copayment is applied to each office visit and to each prescription that is filled.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1699049</PrimaryKey>
+			<Categories>
+				<Category>ExpenseType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Co-Insurance</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="LongText">Coinsurance, sometimes called "percentage participation," requires the insured to share in the cost of medical care. Under an 80/20 coinsurance provision, the medical expense plan pays 80 percent of eligible medical charges above any deductible. The insured is required to pay the remaining 20 percent. Other coinsurance arrangements, e.g., 70/30 or 90/10, are sometimes used. In the event of large or catastrophic medical expenses, an insured might suffer severe financial hardship due to the operation of the coinsurance clause. To compensate for this possibility, many major medical expense plans contain a coinsurance cap, or stop-loss limit. This provision places a limit on the insured's out-of-pocket costs in a given year arising from the operation of the coinsurance clause. The size of the coinsurance cap generally ranges from $2,000 to $3,000, depending on the plan, although limits as low as $1,000 are sometimes used. Once the coinsurance cap has been reached, all eligible e
+xpenses above this amount are paid in full, up to the plan's overall limit of coverage.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1611291</PrimaryKey>
+			<Categories>
+				<Category>ExpenseType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Deductible</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000143</PrimaryKey>
+			<Categories>
+				<Category>ExpenseType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Mileage</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="LongText">Patient incurred mileage expense (in miles) for travel for medical purposes.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<!--
+	FamilyRelationship
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0680063</PrimaryKey>
+			<Categories>
+				<Category>FamilyRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Child</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000105</PrimaryKey>
+			<Categories>
+				<Category>FamilyRelationship</Category>
+				<Category>EmergencyContactRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Maternal Grandparent</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">A parent on one's mother.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000106</PrimaryKey>
+			<Categories>
+				<Category>EmergencyContactRelationship</Category>
+				<Category>FamilyRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Paternal Grandparent</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">A parent on one's father.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000108</PrimaryKey>
+			<Categories>
+				<Category>FamilyRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Aunt/Uncle</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">A sibling of a parent. If female, an aunt, and if male, called an uncle.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0030551</PrimaryKey>
+			<Categories>
+				<Category>FamilyRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Parent</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0037047</PrimaryKey>
+			<Categories>
+				<Category>FamilyRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Sibling</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0162409</PrimaryKey>
+			<Categories>
+				<Category>FamilyRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Spouse</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1551998</PrimaryKey>
+			<Categories>
+				<Category>FamilyRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Niece/Nephew</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0041432</PrimaryKey>
+			<Categories>
+				<Category>FamilyRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Identical Twin</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0041429</PrimaryKey>
+			<Categories>
+				<Category>FamilyRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Fraternal Twin</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	Genders
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0024554</PrimaryKey>
+			<Categories>
+				<Category>Gender</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Male</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0015780</PrimaryKey>
+			<Categories>
+				<Category>Gender</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Female</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	HairColor
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439541</PrimaryKey>
+			<Categories>
+				<Category>HairColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Black</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0239801</PrimaryKey>
+			<Categories>
+				<Category>HairColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Blond</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0678579</PrimaryKey>
+			<Categories>
+				<Category>HairColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Brown</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1269776</PrimaryKey>
+			<Categories>
+				<Category>HairColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Gray</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000107</PrimaryKey>
+			<Categories>
+				<Category>HairColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Light Blond</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1260956</PrimaryKey>
+			<Categories>
+				<Category>HairColor</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Red</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	HealthStatus
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1277246</PrimaryKey>
+			<Categories>
+				<Category>HealthStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Excellent</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1277245</PrimaryKey>
+			<Categories>
+				<Category>HealthStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Good</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1277247</PrimaryKey>
+			<Categories>
+				<Category>HealthStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Fair</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1277249</PrimaryKey>
+			<Categories>
+				<Category>HealthStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Very Poor</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1277248</PrimaryKey>
+			<Categories>
+				<Category>HealthStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Poor</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1549464</PrimaryKey>
+			<Categories>
+				<Category>HealthStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Deceased</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	HospitalizationVisitType
+-->
+		<ConceptDetails>
+			<!--Acute Care-->
+			<PrimaryKey Type="UMLS">C0679878</PrimaryKey>
+			<Categories>
+				<Category>HospitalizationVisitType</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Care Of Intensive Care Unit Patient-->
+			<PrimaryKey Type="UMLS">C0010337</PrimaryKey>
+			<Categories>
+				<Category>HospitalizationVisitType</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Emergency Health Services-->
+			<PrimaryKey Type="UMLS">C0086208</PrimaryKey>
+			<Categories>
+				<Category>HospitalizationVisitType</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Hospitalization-->
+			<PrimaryKey Type="UMLS">C0019993</PrimaryKey>
+			<Categories>
+				<Category>HospitalizationVisitType</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--This WAS in UMLS2006, but is now omitted. Not sure what to replace with - so leave mapped here for now -LGP 2010-12-06 -->
+			<PrimaryKey Type="UMLS">C0700067</PrimaryKey>
+			<Categories>
+				<Category>HospitalizationVisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Labor And Delivery Admission</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Long Term Hospitalization-->
+			<PrimaryKey Type="UMLS">C0598609</PrimaryKey>
+			<Categories>
+				<Category>HospitalizationVisitType</Category>
+			</Categories>
+		</ConceptDetails>
+		<!--
+	Immunization
+-->
+		<ConceptDetails>
+			<!-- change default term so looks better in immunizations popup-->
+			<PrimaryKey Type="UMLS">C0062527</PrimaryKey>
+			<Priority>7</Priority>
+			<Terms>
+				<Term Priority="9">Hepatitis B Vaccine</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1314123</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Tetanus, Diphtheria Toxoids and acellular Pertussis Vaccine (TDaP)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0012551</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Diptheria Vaccine</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0170300</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Hepatitis A Vaccine</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0062086</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Haemophillus Influenzae Type B (HIB) Vaccine</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0535644</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Diphtheria-Tetanus-Acellular Pertussis (DTaP) Vaccine</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="LongText">Combined vaccines consisting of DIPHTHERIA TOXOID; TETANUS TOXOID; and an acellular form of PERTUSSIS VACCINE. At least five different purified antigens of B. pertussis have been used in various combinations in these vaccines.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0058773</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Diphtheria-Tetanus (DT) Vaccine</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- [C2054267]  Td vaccine seven years of age and above  
+			      because of thread http://community.recordsforliving.com/forums/thread/1686.aspx
+			       and changed name in HFV3.xml 
+			       here.
+			      Imperfect mapping, but best I can do
+			-->
+			<PrimaryKey Type="UMLS">C2054267</PrimaryKey>
+			<Priority>6</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Tetanus-Diphtheria Vaccine (Td)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0065828</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Measles-Mumps-Rubella (MMR) Vaccine</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0032374</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Polio Vaccine</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0032375</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Polio Vaccine (OPV)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0718003</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Immunization</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Polio Vaccine (IPV)</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	IndividualProviderRole
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0011369</PrimaryKey>
+			<Categories>
+				<Category>IndividualProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Dental Hygienist</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0018676</PrimaryKey>
+			<Categories>
+				<Category>IndividualProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Head Nurse</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000104</PrimaryKey>
+			<Categories>
+				<Category>IndividualProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Doula</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">A woman who assists another woman during labor and provides support to her, the infant, and the family after childbirth.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Clinical Immunologist -->
+			<PrimaryKey Type="UMLS">C0334896</PrimaryKey>
+			<Terms>
+				<Term>Allergist</Term>
+				<Term>Clinical Allergist</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0279538</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+				<Category>IndividualProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Plastic Surgeon</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0582175</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+				<Category>IndividualProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Surgeon</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1704292</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+				<Category>IndividualProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Opthamaligist</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	InsuranceDeductibleKind
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000207</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>InsuranceDeductibleKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Simple Deductible</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">This is an all encompasing type of deductible.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000208</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>InsuranceDeductibleKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Medication Deductible</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">This type of deductible applies only to medications.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000209</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>InsuranceDeductibleKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">In-Network Services</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">This type of deductible applies only to expenses which occur with entites that have the 'In-Network' relationship (H0000185) to the insurance policy). Note this in-network property is combined transitively with the is-member-of relationship for organizations, so you can make a doctor a member of an organization, and make the organization in-network, and then the doctor visit is treated as in-network.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000210</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>InsuranceDeductibleKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Out-of-Network Services</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">This type of deductible applies only to expenses which are not in-network.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000211</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>InsuranceDeductibleKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Any-Services</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">This expense should apply to any deductible type.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<!--
+	InsurancePolicyKind
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0079817</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Medicare Part A (Hospital)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0079818</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Medicare Part B</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1955953</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Medicare Part D</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- this was "Medicare Choice" but apparently that maps to Medicare Part C in UMLS...-LGP 2010-12-13 -->
+			<PrimaryKey Type="UMLS">C0600580</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Medicare+Choice</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000192</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">FECA</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000193</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Group</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000194</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">MCO</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000195</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">MSO</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000196</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">POS (Point of Service)</Term>
+				<Term Priority="8" Abbreviation="true">POS</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000197</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">SCHIP</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000198</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Secure Horizons</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000199</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Self-Insuring TPA</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- WARNING - there is a UMLS concept with this name, but its a differnet cocnept - a vitamin -->
+			<PrimaryKey Type="HF">H0000200</PrimaryKey>
+			<Categories>
+				<Category>InsurancePolicyKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Tricare</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	MaritalStatus
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0555047</PrimaryKey>
+			<Categories>
+				<Category>MaritalStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Married</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0086170</PrimaryKey>
+			<Categories>
+				<Category>MaritalStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Divorced</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0206275</PrimaryKey>
+			<Categories>
+				<Category>MaritalStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Widowed</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1549111</PrimaryKey>
+			<Categories>
+				<Category>MaritalStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Partnered</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--add alias so matches in reading some old docs that are uncoded-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0087136</PrimaryKey>
+			<Categories>
+				<Category>MaritalStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="3">Single</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	Medical Device
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0180105</PrimaryKey>
+			<Priority>7</Priority>
+			<Categories>
+				<Category>MedicalDevice</Category>
+			</Categories>
+			<Terms>
+				<Term Abbreviation="true" Priority="6">CPAP</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">Devices designed to apply continuous positive airway pressure during both inspiration and expiration while the patient is performing spontaneous breathing. Continuous positive airway pressure (CPAP) units typically consist of a pressurized circuit including a threshold resistor, such as an underwater seal, a weighted ball, or a spring-loaded valve. A threshold resistor is a device that exerts a predictable, quantifiable, and constant force at the expiratory limb, creating a threshold pressure that must be exceeded to allow flow through the valve. The units also include a high-flow gas source and a mask to deliver the pressurized air to the patient; many devices include a manometer. CPAP units usually maintain a baseline airway pressure of 5 to 20 cm of H20 throughout the whole respiratory cycle; the devices require a gas flow greater than the patient inspiratory flow to maintain the desired positive airway pressure. These units are intended to provide noninvasive positive pressure breathing assistance therapy through a mask (either nasal or oronasal), a mouthpiece, or lipseal; they are frequently used to treat central sleep or obstructive apnea disorders. They are not intended for continuous breathing support.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0462900</PrimaryKey>
+			<Categories>
+				<Category>MedicalDevice</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Blood Glucose Testing Strips</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0917953</PrimaryKey>
+			<Categories>
+				<Category>MedicalDevice</Category>
+			</Categories>
+			<Terms>
+				<!-- this name added for better sort order - see
+					http://community.recordsforliving.com/forums/thread/99.aspx
+				-->
+				<Term Priority="10">Blood Glucose Monitor, Home</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	Medication
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0286036</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Medication</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Prevacid</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	MedicationFrequency
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0332173</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Daily</Term>
+				<Term Abbreviation="true">QD</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0585361</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">2 x Daily</Term>
+				<Term Abbreviation="true">BID</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0556984</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">3 x Daily</Term>
+				<Term Abbreviation="true">TID</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1550736</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">4 x Daily</Term>
+				<Term Abbreviation="true">QID</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0585323</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Every 3 Hours</Term>
+				<Term Abbreviation="true">Q3H</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0585324</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Every 4 Hours</Term>
+				<Term Abbreviation="true">Q4H</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0585329</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Every Morning</Term>
+				<Term Abbreviation="true">QAM</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0585330</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Every Evening</Term>
+				<Term Abbreviation="true">QPM</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1275563</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">At Bedtime</Term>
+				<Term Abbreviation="true">QHS</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0558288</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">As Needed</Term>
+				<Term Abbreviation="true">PRN</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1550738</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Before Meals</Term>
+				<Term Abbreviation="true">AC</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1550739</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">After Meals</Term>
+				<Term Abbreviation="true">PC</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000103</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">With Meals</Term>
+				<Term Abbreviation="true">CC</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- WAS H0000144 in HFv2 -->
+			<!--Weekly-->
+			<PrimaryKey Type="UMLS">C0332174</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Abbreviation="true">QW</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1550741</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Before Lunch</Term>
+				<Term Abbreviation="true">ACT</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1550742</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Before Dinner</Term>
+				<Term Abbreviation="true">ACV</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1550744</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">After Lunch</Term>
+				<Term Abbreviation="true">PCD</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1550743</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">After Breakfast</Term>
+				<Term Abbreviation="true">PCM</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1549040</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Before Breakfast</Term>
+				<Term Abbreviation="true">ACM</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- Quite unclear how this differs from C1550745 -->
+			<PrimaryKey Type="UMLS">C1550748</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Between Dinner and the Hour of Sleep</Term>
+				<Term Abbreviation="true">ICV</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1879671</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">After Dinner</Term>
+				<Term Abbreviation="true">PCV</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1550740</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Between Meals</Term>
+				<Term Abbreviation="true">IC</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Between Breakfast And Lunch-->
+			<PrimaryKey Type="UMLS">C1550746</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Abbreviation="true">ICM</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--On Waking-->
+			<PrimaryKey Type="UMLS">C0585034</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationFrequency</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">On Waking</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	MedicationRoute
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0205531</PrimaryKey>
+			<!-- NOTES:
+				UMLS Concept [C0205531]  Oral route is a DUP of this concept and should be combined!
+				UMLS Concept [C1527415]  ""
+			-->
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Oral</Term>
+				<Term Abbreviation="true">PO</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- UMLS Concept C0021492: Intramuscular Injection Similar but not quite same -->
+			<!-- UMLS Concept: C0442117 -->
+			<!-- UMLS Concept: C1556154 -->
+			<PrimaryKey Type="UMLS">C0442117</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intramuscular</Term>
+				<Term Abbreviation="true">IM</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- C1522726 -->
+			<PrimaryKey Type="UMLS">C0205520</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intravenous</Term>
+				<Term Abbreviation="true">IV</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1522168</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Topical</Term>
+				<Term Abbreviation="true">TOP</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0521134</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">External Use</Term>
+				<Term>Apply Externally</Term>
+				<Term Abbreviation="true" Priority="7">EXT</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true" Priority="5">AP</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- UMLS Concept: C0001564  -->
+			<!-- UMLS Concept: C0205536 -->
+			<!-- UMLS Concept: C1527425 -->
+			<PrimaryKey Type="UMLS">C0001564</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Rectal</Term>
+				<Term Abbreviation="true">PR</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- UMLS Concept: C0205537  -->
+			<!-- UMLS Concept: C1522570  -->
+			<PrimaryKey Type="UMLS">C0205537</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Vaginal</Term>
+				<Term Abbreviation="true" Priority="7">PV</Term>
+				<Term Abbreviation="true" Priority="4">VG</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- C1522438 -->
+			<PrimaryKey Type="UMLS">C0205523</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Subcutaneous</Term>
+				<Term Abbreviation="true">SC</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0001565</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Sublingual</Term>
+				<Term Abbreviation="true">SL</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0592511</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Epidural</Term>
+				<Term Abbreviation="true" Priority="4">EP</Term>
+				<Term Abbreviation="true" Priority="7">EPI</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0205535</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Inhalation/MDI</Term>
+				<Term Abbreviation="true">INH</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000102</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Inhalation/Nebulizer</Term>
+				<Term>Nebulization</Term>
+				<Term Abbreviation="true">NEB</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- WAS SET AS C0442118-->
+			<PrimaryKey Type="UMLS">C1522019</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intranasal</Term>
+				<Term>Intranasally</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true">IN</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0677897</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intrathecal</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1522188</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Buccal</Term>
+				<Term Abbreviation="true">B</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- UMLS Concept: C1522187  -->
+			<!-- UMLS Concept: C1699960  -->
+			<PrimaryKey Type="UMLS">C1522187</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Dental</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true">DT</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- WAS: H0000145 in HFv2 -->
+			<PrimaryKey Type="HF">C1549523</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Gastronomy Tube</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true">GTT</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+			<PrimaryKey Type="UMLS">C0694630</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Endotracheal Tube</Term>
+				<Term Abbreviation="true">ET</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+			<PrimaryKey Type="HF">H0000147</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Genitourinary Irrigant</Term>
+				<Term Abbreviation="true">GU</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1522223</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intraocular</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true">IO</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1561451</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intraarterial</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true">IA</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- MERGE UMLS: C1522205 -->
+			<!-- MERGE UMLS: C1701165 -->
+			<PrimaryKey Type="UMLS">C1522205</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intrabursal</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true">IB</Term>
+				<Term Priority="5">Intrabursal Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- UMLS Concept: C1522207  -->
+			<!-- UMLS Concept: C0595452  -->
+			<PrimaryKey Type="UMLS">C0595452</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intracardiac</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true">IC</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0595446</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intracervical</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true">ICV</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- was C1522475 -->
+			<PrimaryKey Type="UMLS">C0205524</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intradermal</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true">ID</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0694752</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intrahepatic Artery</Term>
+				<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+				<Term Abbreviation="true">IHA</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- WAS: H0000148 in HFv2 -->
+			<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+			<PrimaryKey Type="HF">C0694633</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Immerse Body Part</Term>
+				<Term Abbreviation="true">IMR</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--MERGE UMLS: C0442120 -->
+			<!--MERGE UMLS: C1701741 -->
+			<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+			<PrimaryKey Type="UMLS">C0442120</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intraperitoneal</Term>
+				<Term Abbreviation="true">IP</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+			<PrimaryKey Type="UMLS">C0694754</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intrasynovial</Term>
+				<Term Abbreviation="true">IS</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+			<PrimaryKey Type="UMLS">C0700111</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Tracheotomy</Term>
+				<Term Abbreviation="true">TRA</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+			<PrimaryKey Type="UMLS">C1553241</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Ventimask</Term>
+				<Term Abbreviation="true">VM</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+			<PrimaryKey Type="UMLS">C0521138</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Urethral</Term>
+				<Term Abbreviation="true">UR</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--source http://www.odh.ohio.gov/ASSETS/026CA7B657A0440991A6F155DB97EB39/ctmr.pdf -->
+			<!-- couldn't find Wound UMLS code for Wound Route of Administration. Could use any WOUND
+			but might cause confiusion and will be easier to merge out HF code to UMLS code later
+			in upgrade when I find the right code.
+			-->
+			<PrimaryKey Type="HF">H0000150</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Wound</Term>
+				<Term Abbreviation="true">WND</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0031001</PrimaryKey>
+			<Priority>7</Priority>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Perfusion</Term>
+			</Terms>
+		</ConceptDetails>
+		<!-- Low priority MedicationRoutes - but fix horrid spelling -->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1698907</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="5">Amniotic Fluid Sac Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1698727</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="5">Body Surface Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1698336</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="6">Buccal Mucosa Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1522201</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Extracorporeal Circulation Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1700674</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Intra-Corpus-Cavernosum Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1700254</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Vitreous Humour Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1701362</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Urinary Bladder Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1699291</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Urinary Tract Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1701329</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Soft Tissue Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+KILL THIS DATA ONCE WEVE TESTED A BIT		
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1700811</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Skin Route</Term>
+			</Terms>
+		</ConceptDetails>
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1701811</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Sinus Unspecified Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1700808</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Respiratory Tract Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1700805</PrimaryKey>
+			<Categories>
+				<Category>MedicationRoute</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8">Paranasal Sinuses Route</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	MeasurementType
+-->
+		<ConceptDetails>
+			<!--Platelet mean volume Result-->
+			<PrimaryKey Type="UMLS">C0344388</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Platelet mean volume finding</Term>
+				<Term Abbreviation="true">MPV</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--White Blood Cell Count Laboratory Result-->
+			<PrimaryKey Type="UMLS">C0427512</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>WBC - White blood cell count</Term>
+				<Term Abbreviation="true">WBC</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0487985</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Height</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0231832</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Respiration Rate</Term>
+				<Term>Respiratory Rate</Term>
+			</Terms>
+			<Documentations/>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0023822</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">HDL Cholesterol</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0023824</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">LDL Cholesterol</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0005903</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Temperature</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0428880</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">BP (Systolic)</Term>
+				<Term>BP Systolic</Term>
+				<Term>Systolic</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0428883</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">BP (Diastolic)</Term>
+				<Term>BP Diastolic</Term>
+				<Term>Diastolic</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000110</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">OD Sphere</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000111</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">OD Cylinder</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000112</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">OD Axis</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000113</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">OD Prism</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000114</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">OD Add</Term>
+				<Term>OD Base</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000115</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">OS Sphere</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000116</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">OS Cylinder</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000117</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">OS Axis</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000118</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">OS Prism</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000119</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">OS Add</Term>
+				<Term>OS Base</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1261502</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Mean Corpuscular Hemoglobin</Term>
+				<Term Abbreviation="true">MCH</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1277704</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Mean Cell Hemoglobin Concentration</Term>
+				<Term Abbreviation="true">MCHC</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1254752</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Whole Blood Absolute Eosinophil Count</Term>
+				<Term>Absolute Eosinophils</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0948762</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Absolute Neutrophil Count</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1255150</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Absolute Lymphocyte Count</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1255407</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Absolute Basophil Count</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1255418</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Absolute Monocyte Test</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1318432</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Basophil Percent</Term>
+				<Term>Basophil percent differential count</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1287267</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Platelet Count</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1304746</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">RDW - Red Blood Cell Distribution Width</Term>
+				<Term Abbreviation="true">RDW</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--was already a Test, but in http://community.recordsforliving.com/forums/thread/122.aspx
+			   got request to make it also a measurementtype.
+			   Same request was for aliases.
+			   	-LGP 2006-03-23
+			-->
+			<!--Tri-iodothyronine measurement-->
+			<PrimaryKey Type="UMLS">C0202237</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>T3, Total Measurement</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--was already a Test, but in http://community.recordsforliving.com/forums/thread/122.aspx
+			   got request to make it also a measurementtype.
+			   Same request was for aliases.
+			   	-LGP 2006-03-23
+			-->
+			<!--Thyroxine Measurement-->
+			<PrimaryKey Type="UMLS">C0202231</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>T4 Measurement</Term>
+				<Term>T4 - Thyroxine Level</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Pulse Rate-->
+			<PrimaryKey Type="UMLS">C0232117</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Pulse</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000126</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (Before Breakfast)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000151</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (After Breakfast)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000127</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (Before Lunch)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000152</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (After Lunch)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000128</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (Before Supper)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000153</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (After Supper)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000129</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (Bedtime)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000137</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (Night)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000138</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (Before Breakfast) Note</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000139</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (Before Lunch) Note</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000140</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (Before Supper) Note</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000141</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (Bedtime) Note</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000142</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (Night) Note</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000154</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (After Breakfast) Note</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000155</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (After Lunch) Note</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000156</PrimaryKey>
+			<Categories>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Glucose (After Supper) Note</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000244</PrimaryKey>
+			<Categories>
+				<Category>Finding</Category>
+				<Category>MeasurementType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Blood Type</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	Natural Language
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0682398</PrimaryKey>
+			<Categories>
+				<Category>NaturalLanguage</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Mandarin</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0682397</PrimaryKey>
+			<Categories>
+				<Category>NaturalLanguage</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Cantonese</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	ObjectRelationship
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">1522149</PrimaryKey>
+			<Categories>
+				<Category>ObjectRelationship</Category>
+				<Category>ObjectRelationshipCommutative</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Related to</Term>
+				<Term>Related</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0332621</PrimaryKey>
+			<Categories>
+				<Category>ObjectRelationship</Category>
+			</Categories>
+			<Terms>
+				<!-- 
+				Aggregates is a better term, but Contains will be less confusing
+				to the typical users in the UI for relationships. I thought about
+				remapping the concept name (here). But decided its better to just
+				remap in the one place where I currently think its confusing.
+				 		-LGP 2011-12-17
+				-->
+				<Term Priority="10">Aggregates</Term>
+				<Term Priority="8">Contains</Term>
+				<Term>Aggregation</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">This link relationship between a data object and an associated other object. The first object in the relationship can be considered the parent, and the second object the child. The parent 'owns' or aggregates the child. This means the lifetime of the child is controlled by the parent. When the parent object is deleted, the child should also be automatically, implicity deleted.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000157</PrimaryKey>
+			<Categories>
+				<Category>ObjectRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Extension Aggregates</Term>
+				<Term>Extension Aggregation</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">This link relationship between a data object and an associated attachment is used as a extension mechanism. The relationship implies aggregation. If changes to the base object are signficant, the aggregated object MAY be deleted (or not). It is up to the definer of any extension elements to assure the integrity of the extended data and its continued reasonableness associated with the parent object.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000184</PrimaryKey>
+			<Categories>
+				<Category>ObjectRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Has Sign or Symptom</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">The first (left-hand-side) problem has the second (right-hand side) as a sign or symptom. Both references are to problems, and the first is usually a condition, and the second should always be a sign or symptom.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000185</PrimaryKey>
+			<Categories>
+				<Category>ObjectRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">In-Network</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">The first (left-hand-side) concept (typically a contact - person or organization) - is considered in-network with respect to the insurance policy (second argument).</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- NOTE SEE OTHER OCCURANCE OF THIS CONCEPT ID -->
+			<PrimaryKey Type="UMLS">C1320308</PrimaryKey>
+			<!--Emergency Contact -->
+			<Categories>
+				<Category>ObjectRelationship</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000227</PrimaryKey>
+			<Categories>
+				<Category>ObjectRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Visit With</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">The left side of the relationship is a visit, and it takes place with contact on the right side of the relationship.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000232</PrimaryKey>
+			<Categories>
+				<Category>ObjectRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Has Carrier</Term>
+				<Term Priority="8">Insurance Policy Has Carrier</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">The left side of the relationship is an insurance policy, with insurance carrier on the right side of the relationship.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<!--
+	OrganizationProviderRole
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000101</PrimaryKey>
+			<Categories>
+				<Category>OrganizationProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Independent Provider</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0018720</PrimaryKey>
+			<Categories>
+				<Category>OrganizationProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">HMO</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0019994</PrimaryKey>
+			<Categories>
+				<Category>OrganizationProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Hospital</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0031322</PrimaryKey>
+			<Categories>
+				<Category>OrganizationProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Pharmacy</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0022877</PrimaryKey>
+			<Categories>
+				<Category>OrganizationProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Laboratory</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">Facilities equipped to carry out investigative procedures.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0442592</PrimaryKey>
+			<Categories>
+				<Category>OrganizationProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Clinic</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">A healthcare facility which administers services to individuals who do not require hospitalization or institutionalization.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<!--
+	PersonNamePrefix
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C2347167</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNamePrefix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">Mr.</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C2349206</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNamePrefix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Miss</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C2349188</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNamePrefix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">Mrs.</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C2349943</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNamePrefix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">Ms.</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C2348314</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNamePrefix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">Dr.</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	PersonNameSuffix
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000204</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNameSuffix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">Esq.</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000205</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNameSuffix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">Jr.</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000206</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNameSuffix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">Sr.</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000228</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNameSuffix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">D.M.D.</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000229</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNameSuffix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">D.D.S.</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000230</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNameSuffix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">M.D.</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000231</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PersonNameSuffix</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9" Abbreviation="true">Ph.D.</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	PhoneKind
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000201</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PhoneKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Pager</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000202</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PhoneKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Home</Term>
+				<Term Priority="4">Home Phone Number</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000203</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PhoneKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Work</Term>
+				<Term Priority="4">Work Phone Number</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1549619</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PhoneKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">FAX</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1136359</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>PhoneKind</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Mobile</Term>
+				<Term Priority="8">Mobile Phone</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	PhysicianProviderRole
+-->
+		<ConceptDetails>
+			<!--Cardiologist -->
+			<PrimaryKey Type="UMLS">C0175906</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Clinical Immunologist -->
+			<PrimaryKey Type="UMLS">C0334896</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Dentist -->
+			<PrimaryKey Type="UMLS">C0011441</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Dermatologist -->
+			<PrimaryKey Type="UMLS">C0259831</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Endocrinologist -->
+			<PrimaryKey Type="UMLS">C0259863</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Endodontist -->
+			<PrimaryKey Type="UMLS">C0259864</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Gastroenterologist -->
+			<PrimaryKey Type="UMLS">C0259901</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--General Practiioner -->
+			<PrimaryKey Type="UMLS">C0017319</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Geriatric Specailiist -->
+			<PrimaryKey Type="UMLS">C0586872</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Gynachologst -->
+			<PrimaryKey Type="UMLS">C0237419</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Intern -->
+			<PrimaryKey Type="UMLS">C1144859</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Nephrologist(y) -->
+			<PrimaryKey Type="UMLS">C0027712</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Neurologist -->
+			<PrimaryKey Type="UMLS">C0237426</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Neurosurgeon -->
+			<PrimaryKey Type="UMLS">C0237427</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Obstrics and Gynology -->
+			<PrimaryKey Type="UMLS">C1274104</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Opthamalic Surgeon -->
+			<PrimaryKey Type="UMLS">C0260073</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Optometrist -->
+			<PrimaryKey Type="UMLS">C0029146</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Oral Surgeon -->
+			<PrimaryKey Type="UMLS">C0260272</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Orthodontist -->
+			<PrimaryKey Type="UMLS">C0260083</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--orthopedic surgeon -->
+			<PrimaryKey Type="UMLS">C0029355</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--otolarngolists -->
+			<PrimaryKey Type="UMLS">C0260087</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--parasitologist -->
+			<PrimaryKey Type="UMLS">C0260095</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Pediatrician -->
+			<PrimaryKey Type="UMLS">C0237433</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Pediatrician</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Periodontist -->
+			<PrimaryKey Type="UMLS">C0260115</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Podiatrist -->
+			<PrimaryKey Type="UMLS">C0260145</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Psychiatrist -->
+			<PrimaryKey Type="UMLS">C0033872</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Radiologist -->
+			<PrimaryKey Type="UMLS">C0260194</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Urologist -->
+			<PrimaryKey Type="UMLS">C0260314</PrimaryKey>
+			<Categories>
+				<Category>PhysicianProviderRole</Category>
+			</Categories>
+		</ConceptDetails>
+		<!--
+	Race
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0007457</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Race</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Caucasian (White)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0014845</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>Race</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Eskimo</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0002460</PrimaryKey>
+			<Categories>
+				<Category>Race</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Native American</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0078988</PrimaryKey>
+			<Categories>
+				<Category>Race</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Asian</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0086409</PrimaryKey>
+			<Categories>
+				<Category>Race</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Hispanic</Term>
+				<Term>Latino</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1331005</PrimaryKey>
+			<Categories>
+				<Category>Race</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Caribbean Native</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0242191</PrimaryKey>
+			<Categories>
+				<Category>Race</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Pacific-Islander</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	Religion
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0344345</PrimaryKey>
+			<Categories>
+				<Category>Religion</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Atheism</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0344347</PrimaryKey>
+			<Categories>
+				<Category>Religion</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Agnosticism</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0006343</PrimaryKey>
+			<Categories>
+				<Category>Religion</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Buddhism</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0019550</PrimaryKey>
+			<Categories>
+				<Category>Religion</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Hinduism</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0007444</PrimaryKey>
+			<Categories>
+				<Category>Religion</Category>
+			</Categories>
+			<Terms>
+				<Term>Catholic</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0022126</PrimaryKey>
+			<Categories>
+				<Category>Religion</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Islam</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0337696</PrimaryKey>
+			<Categories>
+				<Category>Religion</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Sikhism</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	Tests
+-->
+		<ConceptDetails>
+			<!--Dental Examination-->
+			<PrimaryKey Type="UMLS">C0750862</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>DiagnosticProcedure</Category>
+				<Category>Test</Category>
+			</Categories>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0519824</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Blood Electrolytes Panel</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0883087</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Gestational Glucose Tolerance Panel</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0032976</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Pregnancy Test</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0024671</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Mammogram</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0919654</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Prostate Examination</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0199850</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Breast Examination</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--
+				Alias added due to SPR#219
+			-->
+			<PrimaryKey Type="UMLS">C0373638</PrimaryKey>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Glycated Hemoglobin Test</Term>
+				<Term>HbA1C Test</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1370084</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term>Blood Pressure</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Vital Signs -->
+			<PrimaryKey Type="UMLS">C0518766</PrimaryKey>
+			<Priority>9</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Panel>
+				<Items>
+					<!--
+						{1,			MeasurementTypeEnumSet::kHeight,			wstring (),					UnitTypeEnumSet::kFtRangeLengthSubset			},
+						{1,			MeasurementTypeEnumSet::kWeight,			wstring (),					UnitTypeEnumSet::kLbsRangeWeightSubset			},
+						{2,			MeasurementTypeEnumSet::kTemperature,		wstring (),					UnitTypeEnumSet::kTempSubset					},
+						{2,			MeasurementTypeEnumSet::kPO2,				L"Blood O<sub>2</sub>",		UnitTypeEnumSet::kPercent						},
+						{3,			MeasurementTypeEnumSet::kRespiration,		wstring (),					UnitTypeEnumSet::kPerTimeSubset					},
+						{3,			MeasurementTypeEnumSet::kPulse,				wstring (),					UnitTypeEnumSet::kPerTimeSubset					},
+						{4,			MeasurementTypeEnumSet::kBP_Systolic,		wstring (),					UnitTypeEnumSet::kMMHG							},
+						{4,			MeasurementTypeEnumSet::kBP_Diastolic,		wstring (),					UnitTypeEnumSet::kMMHG							},
+					-->
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0487985</Name>
+						<UnitSet Type="HF">H0000130</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0005910</Name>
+						<UnitSet Type="HF">H0000131</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C0005903</Name>
+						<UnitSet Type="HF">H0000134</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C1318112</Name>
+						<Label>Blood O&lt;sub&gt;2&lt;/sub&gt;</Label>
+						<UnitSet Type="UMLS">C0439165</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>3</RowNumber>
+						<Name Type="UMLS">C0231832</Name>
+						<UnitSet Type="HF">H0000135</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>3</RowNumber>
+						<Name Type="UMLS">C0232117</Name>
+						<UnitSet Type="HF">H0000135</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>4</RowNumber>
+						<Name Type="UMLS">C0428880</Name>
+						<UnitSet Type="UMLS">C0439475</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>4</RowNumber>
+						<Name Type="UMLS">C0428883</Name>
+						<UnitSet Type="UMLS">C0439475</UnitSet>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--PROSTATE CANCER SCREENING; PROSTATE SPECIFIC ANTIGEN TEST (PSA) -->
+			<PrimaryKey Type="UMLS">C0812710</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Panel>
+				<!-- http://www.homehealthtesting.com/drugtestinstructions/PSA-test-results.pdf -->
+				<Items>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0428540</Name>
+						<UnitSet Type="HF">H0000212</UnitSet>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Prostate specific antigen measurement  -->
+			<PrimaryKey Type="UMLS">C0201544</PrimaryKey>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Panel>
+				<ItemRef Type="UMLS">C0812710</ItemRef>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Comprehensive Metabolic Panel-->
+			<PrimaryKey Type="UMLS">C0519825</PrimaryKey>
+			<Priority>9</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Panel>
+				<Items>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0005802</Name>
+						<Label spanWidth='1.8in'>Glucose</Label>
+						<UnitSet Type="UMLS">C0439269</UnitSet>
+						<!--mg/dl-->
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C1304892</Name>
+						<Label spanWidth='1.8in'>Calcium</Label>
+						<UnitSet Type="UMLS">C0439269</UnitSet>
+						<!--mg/dl-->
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C0201838</Name>
+						<Label spanWidth='1.8in'>Albumin</Label>
+						<UnitSet Type="UMLS">C0439267</UnitSet>
+						<!--g/dL-->
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C1261360</Name>
+						<Label spanWidth='1.8in'>Total Protein</Label>
+						<UnitSet Type="UMLS">C0439267</UnitSet>
+						<!--g/dL-->
+					</Item>
+					<Item>
+						<RowNumber>3</RowNumber>
+						<Name Type="UMLS">C1261541</Name>
+						<Label spanWidth='1.8in'>Sodium</Label>
+						<UnitSet Type="UMLS">C0439375</UnitSet>
+						<!--MEQ/L-->
+					</Item>
+					<Item>
+						<RowNumber>3</RowNumber>
+						<Name Type="UMLS">C1261540</Name>
+						<Label spanWidth='1.8in'>Potassium</Label>
+						<UnitSet Type="UMLS">C0439375</UnitSet>
+						<!--MEQ/L-->
+					</Item>
+					<Item>
+						<RowNumber>4</RowNumber>
+						<Name Type="UMLS">C1261542</Name>
+						<Label spanWidth='1.8in'>C0&lt;sub&gt;2&lt;/sub&gt;</Label>
+						<UnitSet Type="UMLS">C0439375</UnitSet>
+						<!--MEQ/L-->
+					</Item>
+					<Item>
+						<RowNumber>4</RowNumber>
+						<Name Type="UMLS">C0729818</Name>
+						<Label spanWidth='1.8in'>Chloride</Label>
+						<UnitSet Type="UMLS">C0439375</UnitSet>
+						<!--MEQ/L-->
+					</Item>
+					<Item>
+						<RowNumber>5</RowNumber>
+						<Name Type="UMLS">C0005845</Name>
+						<Label spanWidth='1.8in'>BUN (Blood Urea Nitrogen)</Label>
+						<UnitSet Type="UMLS">C0439269</UnitSet>
+						<!--mg/dl-->
+					</Item>
+					<Item>
+						<RowNumber>5</RowNumber>
+						<Name Type="UMLS">C0201975</Name>
+						<Label spanWidth='1.8in'>Creatinine</Label>
+						<UnitSet Type="UMLS">C0439269</UnitSet>
+						<!--mg/dl-->
+					</Item>
+					<Item>
+						<RowNumber>6</RowNumber>
+						<Name Type="UMLS">C0201850</Name>
+						<Label spanWidth='1.8in'>ALP</Label>
+						<UnitSet Type="UMLS">C0439339</UnitSet>
+						<!--U/L-->
+					</Item>
+					<Item>
+						<RowNumber>6</RowNumber>
+						<Name Type="UMLS">C0201836</Name>
+						<Label spanWidth='1.8in'>ALT (SGPT)</Label>
+						<UnitSet Type="UMLS">C0439339</UnitSet>
+						<!--U/L-->
+					</Item>
+					<Item>
+						<RowNumber>7</RowNumber>
+						<Name Type="UMLS">C0201899</Name>
+						<Label spanWidth='1.8in'>AST (SGOT)</Label>
+						<UnitSet Type="UMLS">C0439339</UnitSet>
+						<!--U/L-->
+					</Item>
+					<Item>
+						<RowNumber>7</RowNumber>
+						<Name Type="UMLS">C0344395</Name>
+						<Label spanWidth='1.8in'>Bilirubin</Label>
+						<UnitSet Type="UMLS">C0439208</UnitSet>
+						<!--g-->
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Iron Panel -->
+			<PrimaryKey Type="UMLS">C3484182</PrimaryKey>
+			<Priority>9</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Panel>
+				<Items>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0036810</Name>
+						<Label spanWidth='3.0in'>Serum Iron Level</Label>
+						<UnitSet Type="UMLS">C0439271</UnitSet>
+						<!--&#181;g/dL-->
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C0036835</Name>
+						<Label spanWidth='3.0in'>Serum Total Iron-Binding Capacity</Label>
+						<UnitSet Type="UMLS">C0439271</UnitSet>
+						<!--&#181;g/dL-->
+					</Item>
+					<Item>
+						<RowNumber>3</RowNumber>
+						<Name Type="UMLS">C1277709</Name>
+						<Label spanWidth='3.0in'>Transferrin Saturation</Label>
+						<UnitSet Type="UMLS">C0439165</UnitSet>
+						<!--%-->
+					</Item>
+					<Item>
+						<RowNumber>4</RowNumber>
+						<Name Type="UMLS">C0427406</Name>
+						<Label spanWidth='3.0in'>Serum Ferritin Level</Label>
+						<UnitSet Type="HF">H0000212</UnitSet>
+						<!--ng/mL-->
+					</Item>
+					<Item>
+						<RowNumber>5</RowNumber>
+						<Name Type="UMLS">C0369540</Name>
+						<Label spanWidth='3.0in'>Iron Binding Capacity (Unsaturated)</Label>
+						<UnitSet Type="UMLS">C0439279</UnitSet>
+						<!--mmol/L-->
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--HeightPanel -->
+			<PrimaryKey Type="UMLS">C0489786</PrimaryKey>
+			<Priority>9</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Panel>
+				<Items>
+					<!--
+						{1,			MeasurementTypeEnumSet::kHeight,				wstring (),					UnitTypeEnumSet::kFtRangeLengthSubset			},
+					-->
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0487985</Name>
+						<UnitSet Type="HF">H0000130</UnitSet>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--kWeightPanelItems_ -->
+			<PrimaryKey Type="UMLS">C0005910</PrimaryKey>
+			<Priority>9</Priority>
+			<Categories>
+				<Category>MeasurementType</Category>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<!-- In HFv2 we used to make "Weight" the primary name. We MAY want to go back to that,
+					but for now - this SHOULD be OK too...
+				-->
+				<Term Priority="7">Weight</Term>
+			</Terms>
+			<Panel>
+				<Items>
+					<!--
+						{1,			MeasurementTypeEnumSet::kWeight,				wstring (),					UnitTypeEnumSet::kLbsRangeWeightSubset			},
+					-->
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0005910</Name>
+						<UnitSet Type="HF">H0000131</UnitSet>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--kHeightAndWeightPanelItems_ -->
+			<PrimaryKey Type="UMLS">C0424638</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term>Height &amp; Weight</Term>
+				<Term Priority="10">Height and Weight</Term>
+			</Terms>
+			<Panel>
+				<Items>
+					<!--
+						{1,			MeasurementTypeEnumSet::kHeight,				wstring (),					UnitTypeEnumSet::kFtRangeLengthSubset			},
+						{1,			MeasurementTypeEnumSet::kWeight,				wstring (),					UnitTypeEnumSet::kLbsRangeWeightSubset			},
+					-->
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0487985</Name>
+						<UnitSet Type="HF">H0000130</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0005910</Name>
+						<UnitSet Type="HF">H0000131</UnitSet>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--kGeneralEyeExamPanelItems_ -->
+			<PrimaryKey Type="UMLS">C0200149</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">General Eye Examination</Term>
+			</Terms>
+			<Links>
+				<Link>
+					<Title>Your Eyeglasses Prescription</Title>
+					<URL>http://www.eyetopics.com/articles/40/1/Your-Eyeglasses-Prescription</URL>
+				</Link>
+				<Link>
+					<Title>Wikipedia - Eyeglass Prescription</Title>
+					<URL>http://en.wikipedia.org/wiki/Eyeglass_prescription</URL>
+				</Link>
+			</Links>
+			<Panel>
+				<Items>
+					<!--
+						{1,			Enumeration(),							SpanHlper (L"<b>OD&nbsp;(Right)</b>"),	Enumeration ()			},
+						{1,			Enumeration(Concept::eHF_KeyKind, 110),		L"Sphere",						Enumeration ()			},
+						{1,			Enumeration(Concept::eHF_KeyKind, 111),		L"Cylinder",						Enumeration ()			},
+						{1,			Enumeration(Concept::eHF_KeyKind, 112),		L"Axis",							Enumeration ()			},
+						{1,			Enumeration(Concept::eHF_KeyKind, 113),		L"Prism",							Enumeration ()			},
+						{1,			Enumeration(Concept::eHF_KeyKind, 114),		L"Add",							Enumeration ()			},
+				
+						{2,			Enumeration(),							SpanHlper (L"<b>OS&nbsp;(Left)</b>"),	Enumeration ()			},
+						{2,			Enumeration(Concept::eHF_KeyKind, 115),		L"Sphere",						Enumeration ()			},
+						{2,			Enumeration(Concept::eHF_KeyKind, 116),		L"Cylinder",						Enumeration ()			},
+						{2,			Enumeration(Concept::eHF_KeyKind, 117),		L"Axis",							Enumeration ()			},
+						{2,			Enumeration(Concept::eHF_KeyKind, 118),		L"Prism",							Enumeration ()			},
+						{2,			Enumeration(Concept::eHF_KeyKind, 119),		L"Add",							Enumeration ()			},
+					-->
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Label>&lt;b&gt;OD&amp;nbsp;(Right)&lt;/b&gt;</Label>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="HF">H0000110</Name>
+						<Label>Sphere</Label>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="HF">H0000111</Name>
+						<Label>Cylinder</Label>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="HF">H0000112</Name>
+						<Label>Axis</Label>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="HF">H0000113</Name>
+						<Label>Prism</Label>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="HF">H0000114</Name>
+						<Label>Add</Label>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Label>&lt;b&gt;OS&amp;nbsp;(Left)&lt;/b&gt;</Label>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="HF">H0000115</Name>
+						<Label>Sphere</Label>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="HF">H0000116</Name>
+						<Label>Cylinder</Label>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="HF">H0000117</Name>
+						<Label>Axis</Label>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="HF">H0000118</Name>
+						<Label>Prism</Label>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="HF">H0000119</Name>
+						<Label>Add</Label>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--kBloodElectrolytesPanelItems_ -->
+			<PrimaryKey Type="UMLS">C0519824</PrimaryKey>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Panel>
+				<Items>
+					<!--
+						{1,		MeasurementTypeEnumSet::kCO2,				SpanHlper (L"Carbon Dioxide (CO<sub>2</sub>)", L"1.4in"),		UnitTypeEnumSet::kMEQPerL			},
+						{1,		MeasurementTypeEnumSet::kSerumCL,			SpanHlper (L"Serum Chloride (Cl)", L"1.4in"),				UnitTypeEnumSet::kMEQPerL			},
+						{2,		MeasurementTypeEnumSet::kSerumK,			SpanHlper (L"Serum Potassium (K)", L"1.4in"),				UnitTypeEnumSet::kMEQPerL			},
+						{2,		MeasurementTypeEnumSet::kSerumNA,			SpanHlper (L"Serum Sodium (Na)", L"1.4in"),					UnitTypeEnumSet::kMEQPerL			},
+					-->
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0007012</Name>
+						<Label spanWidth='1.4in'>Carbon Dioxide (CO&lt;sub&gt;2&lt;/sub&gt;)</Label>
+						<UnitSet Type="UMLS">C0439375</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0036787</Name>
+						<Label spanWidth='1.4in'>Serum Chloride (Cl)</Label>
+						<UnitSet Type="UMLS">C0439375</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C0302353</Name>
+						<Label spanWidth='1.4in'>Serum Potassium (K)</Label>
+						<UnitSet Type="UMLS">C0439375</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C0523891</Name>
+						<Label spanWidth='1.4in'>Serum Sodium (Na)</Label>
+						<UnitSet Type="UMLS">C0439375</UnitSet>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0200382</PrimaryKey>
+			<Priority>9</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Blood Lipids Panel</Term>
+				<Term Priority="5">Cholesterol Panel</Term>
+			</Terms>
+			<Panel>
+				<Items>
+					<!--
+						{1,		MeasurementTypeEnumSet::kCholesterol_HDL,			wstring (),		UnitTypeEnumSet::kSmallWeightOrAmtPerVolumeSubset			},
+						{1,		MeasurementTypeEnumSet::kCholesterol_LDL,			wstring (),		UnitTypeEnumSet::kSmallWeightOrAmtPerVolumeSubset			},
+						{2,		MeasurementTypeEnumSet::kCholesterol_Total,			wstring (),		UnitTypeEnumSet::kSmallWeightOrAmtPerVolumeSubset			},
+						{2,		MeasurementTypeEnumSet::kTriglycerides,				wstring (),		UnitTypeEnumSet::kSmallWeightOrAmtPerVolumeSubset			},
+					-->
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0023822</Name>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0023824</Name>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C0543421</Name>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C0041004</Name>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--kBloodPressurePanel -->
+			<PrimaryKey Type="UMLS">C1370084</PrimaryKey>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Panel>
+				<Items>
+					<!--
+						{1,			MeasurementTypeEnumSet::kBP_Systolic,		wstring (),					UnitTypeEnumSet::kMMHG						},
+						{1,			MeasurementTypeEnumSet::kBP_Diastolic,		wstring (),					UnitTypeEnumSet::kMMHG						},
+						{2,			MeasurementTypeEnumSet::kPulse,				wstring (),					UnitTypeEnumSet::kPerTimeSubset					},
+					-->
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0428880</Name>
+						<UnitSet Type="UMLS">C0439475</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0428883</Name>
+						<UnitSet Type="UMLS">C0439475</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C0232117</Name>
+						<UnitSet Type="HF">H0000135</UnitSet>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--kGlucoseTolerancePanel -->
+			<PrimaryKey Type="UMLS">C0017741</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Panel>
+				<Items>
+					<!--
+						{1,			MeasurementTypeEnumSet::kBloodGlucose,		wstring (),					UnitTypeEnumSet::kSmallWeightOrAmtPerVolumeSubset						},
+					-->
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0005802</Name>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--kGestationalGlucoseTolerancePanel -->
+			<PrimaryKey Type="UMLS">C0883087</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Panel>
+				<ItemRef Type="UMLS">C0017741</ItemRef>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--kHemogramNPlateletsPanel -->
+			<PrimaryKey Type="UMLS">C1989007</PrimaryKey>
+			<Priority>9</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Hemogram &amp; Platelets Panel</Term>
+			</Terms>
+			<Links>
+				<Link>
+					<Title>LabTestsOnline.org</Title>
+					<URL>http://www.labtestsonline.org/understanding/analytes/cbc/sample.html</URL>
+				</Link>
+			</Links>
+			<Panel>
+				<Items>
+					<!--
+						{1,		MeasurementTypeEnumSet::kWhiteBloodCellCount,		SpanHlper (L"White Blood Cell Count", L"1.4in", L"0"),	UnitTypeEnumSet::kThousandPerMCL		},
+						{1,		MeasurementTypeEnumSet::kRedBloodCellCount,			SpanHlper (L"Red Blood Cell Count", L"1.4in", L"0"),		UnitTypeEnumSet::kMillionsPerMCL		},
+						{2,		MeasurementTypeEnumSet::kHemoglobin,				wstring (),											UnitTypeEnumSet::kGPerDL				},
+						{2,		MeasurementTypeEnumSet::kHematocrit,				wstring (),											UnitTypeEnumSet::kPercent				},
+						{3,		Enumeration (Concept::eUMLS_KeyKind, 524587),		L"MCV",												Enumeration (Concept::eUMLS_KeyKind, 475213)	},
+						{3,		Enumeration (Concept::eUMLS_KeyKind, 1304746),		L"RDW",												UnitTypeEnumSet::kPercent				},
+						{4,		Enumeration (Concept::eUMLS_KeyKind, 1261502),		L"MCH",												Enumeration (Concept::eUMLS_KeyKind, 439213)	},
+						{4,		Enumeration (Concept::eUMLS_KeyKind, 1277704),		L"MCHC",												UnitTypeEnumSet::kPercent				},
+						{5,		Enumeration (Concept::eUMLS_KeyKind, 344388),		L"MPV",									UnitTypeEnumSet::kThousandPerMCL		},
+						{5,		Enumeration (Concept::eUMLS_KeyKind, 1287267),		L"Platelet Count",									UnitTypeEnumSet::kThousandPerMCL		},
+						{6,		Enumeration (Concept::eUMLS_KeyKind, 948762),		L"Absolute Neutrophils",								UnitTypeEnumSet::kCellsPerMCL			},
+						{6,		Enumeration (Concept::eUMLS_KeyKind, 27950),			L"Neutrophils",										UnitTypeEnumSet::kPercent				},
+						{7,		Enumeration (Concept::eUMLS_KeyKind, 1255150),		L"Absolute Lymphocytes",								UnitTypeEnumSet::kCellsPerMCL			},
+						{7,		Enumeration (Concept::eUMLS_KeyKind, 24264),			L"Lymphocytes",										UnitTypeEnumSet::kPercent				},
+						{8,		Enumeration (Concept::eUMLS_KeyKind, 1255418),		L"Absolute Monocytes",									UnitTypeEnumSet::kCellsPerMCL			},
+						{8,		Enumeration (Concept::eUMLS_KeyKind, 26473),			L"Monocytes",											UnitTypeEnumSet::kPercent				},
+						{9,		Enumeration (Concept::eUMLS_KeyKind, 1254752),		L"Absolute Eosinophils",								UnitTypeEnumSet::kCellsPerMCL			},
+						{9,		Enumeration (Concept::eUMLS_KeyKind, 14467),			L"Eosinophils",										UnitTypeEnumSet::kPercent				},
+						{10,		Enumeration (Concept::eUMLS_KeyKind, 1255407),		L"Absolute Basophils",									UnitTypeEnumSet::kCellsPerMCL			},
+						{10,		Enumeration (Concept::eUMLS_KeyKind, 1318432),		L"Basophils",											UnitTypeEnumSet::kPercent				},
+					-->
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0427512</Name>
+						<Label spanWidth='1.4in' spanLeftMargin='0'>White Blood Cell Count</Label>
+						<UnitSet Type="HF">H0000121</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="UMLS">C0014772</Name>
+						<Label spanWidth='1.4in' spanLeftMargin='0'>Red Blood Cell Count</Label>
+						<UnitSet Type="HF">H0000122</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C0019046</Name>
+						<UnitSet Type="UMLS">C0439267</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="UMLS">C0518014</Name>
+						<UnitSet Type="UMLS">C0439165</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>3</RowNumber>
+						<Name Type="UMLS">C0524587</Name>
+						<Label>MCV</Label>
+						<UnitSet Type="UMLS">C0475213</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>3</RowNumber>
+						<Name Type="UMLS">C1304746</Name>
+						<Label>RDW</Label>
+						<UnitSet Type="UMLS">C0439165</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>4</RowNumber>
+						<Name Type="UMLS">C1261502</Name>
+						<Label>MCH</Label>
+						<UnitSet Type="UMLS">C0439213</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>4</RowNumber>
+						<Name Type="UMLS">C1277704</Name>
+						<Label>MCHC</Label>
+						<UnitSet Type="UMLS">C0439165</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>5</RowNumber>
+						<Name Type="UMLS">C0344388</Name>
+						<Label>MPV</Label>
+						<UnitSet Type="UMLS">C0475213</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>5</RowNumber>
+						<Name Type="UMLS">C1287267</Name>
+						<Label>Platelet Count</Label>
+						<UnitSet Type="HF">H0000121</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>6</RowNumber>
+						<Name Type="UMLS">C0948762</Name>
+						<Label>Absolute Neutrophils</Label>
+						<UnitSet Type="UMLS">C0439378</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>6</RowNumber>
+						<Name Type="UMLS">C0027950</Name>
+						<Label>Neutrophils</Label>
+						<UnitSet Type="UMLS">C0439165</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>7</RowNumber>
+						<Name Type="UMLS">C1255150</Name>
+						<Label>Absolute Lymphocytes</Label>
+						<UnitSet Type="UMLS">C0439378</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>7</RowNumber>
+						<Name Type="UMLS">C0024264</Name>
+						<Label>Lymphocytes</Label>
+						<UnitSet Type="UMLS">C0439165</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>8</RowNumber>
+						<Name Type="UMLS">C1255418</Name>
+						<Label>Absolute Monocytes</Label>
+						<UnitSet Type="UMLS">C0439378</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>8</RowNumber>
+						<Name Type="UMLS">C0026473</Name>
+						<Label>Monocytes</Label>
+						<UnitSet Type="UMLS">C0439165</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>9</RowNumber>
+						<Name Type="UMLS">C1254752</Name>
+						<Label>Absolute Eosinophils</Label>
+						<UnitSet Type="UMLS">C0439378</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>9</RowNumber>
+						<Name Type="UMLS">C0014467</Name>
+						<Label>Eosinophils</Label>
+						<UnitSet Type="UMLS">C0439165</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>10</RowNumber>
+						<Name Type="UMLS">C1255407</Name>
+						<Label>Absolute Basophils</Label>
+						<UnitSet Type="UMLS">C0439378</UnitSet>
+					</Item>
+					<Item>
+						<RowNumber>10</RowNumber>
+						<Name Type="UMLS">C1318432</Name>
+						<Label>Basophils</Label>
+						<UnitSet Type="UMLS">C0439165</UnitSet>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0009555</PrimaryKey>
+			<Priority>9</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Complete Blood Count</Term>
+				<Term>CBC</Term>
+				<Term>CBC (Complete Blood Count)</Term>
+				<Term>CBC with differential</Term>
+				<Term>Hematology Panel</Term>
+			</Terms>
+			<Links>
+				<Link>
+					<Title>LabTestsOnline.org</Title>
+					<URL>http://www.labtestsonline.org/understanding/analytes/cbc/test.html</URL>
+				</Link>
+			</Links>
+			<Panel>
+				<!-- not 100% sure this is the same, but at least quite close -->
+				<ItemRef Type="UMLS">C1989007</ItemRef>
+			</Panel>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000136</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<Category>Test</Category>
+			</Categories>
+			<Terms>
+				<!-- major test for diabetics -->
+				<Term Priority="10">Blood Glucose Daily Measurements</Term>
+				<Term>Diabetic Glucose Daily Measurements</Term>
+			</Terms>
+			<Panel>
+				<Items>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Label spanWidth='1.2in'>[Before Breakfast]</Label>
+					</Item>
+					<Item>
+						<RowNumber>1</RowNumber>
+						<Name Type="HF">H0000126</Name>
+						<Label spanWidth='1.0in'>Blood Glucose</Label>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<!--HACK CODE IN GetPanelMeasurementLabel and GetPanelMeasurementDataFieldsHTML to re-interpret this -->
+						<RowNumber>1</RowNumber>
+						<Name Type="HF">H0000138</Name>
+						<Label>Note</Label>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Label spanWidth='1.2in'>[After Breakfast]</Label>
+					</Item>
+					<Item>
+						<RowNumber>2</RowNumber>
+						<Name Type="HF">H0000151</Name>
+						<Label spanWidth='1.0in'>Blood Glucose</Label>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<!--HACK CODE IN GetPanelMeasurementLabel and GetPanelMeasurementDataFieldsHTML to re-interpret this -->
+						<RowNumber>2</RowNumber>
+						<Name Type="HF">H0000154</Name>
+						<Label>Note</Label>
+					</Item>
+					<Item>
+						<RowNumber>3</RowNumber>
+						<Label spanWidth='1.2in'>[Before Lunch]</Label>
+					</Item>
+					<Item>
+						<RowNumber>3</RowNumber>
+						<Name Type="HF">H0000127</Name>
+						<Label spanWidth='1.0in'>Blood Glucose</Label>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<!--HACK CODE IN GetPanelMeasurementLabel and GetPanelMeasurementDataFieldsHTML to re-interpret this -->
+						<RowNumber>3</RowNumber>
+						<Name Type="HF">H0000139</Name>
+						<Label>Note</Label>
+					</Item>
+					<Item>
+						<RowNumber>4</RowNumber>
+						<Label spanWidth='1.2in'>[After Lunch]</Label>
+					</Item>
+					<Item>
+						<RowNumber>4</RowNumber>
+						<Name Type="HF">H0000152</Name>
+						<Label spanWidth='1.0in'>Blood Glucose</Label>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<!--HACK CODE IN GetPanelMeasurementLabel and GetPanelMeasurementDataFieldsHTML to re-interpret this -->
+						<RowNumber>4</RowNumber>
+						<Name Type="HF">H0000155</Name>
+						<Label>Note</Label>
+					</Item>
+					<Item>
+						<RowNumber>5</RowNumber>
+						<Label spanWidth='1.2in'>[Before Supper]</Label>
+					</Item>
+					<Item>
+						<RowNumber>5</RowNumber>
+						<Name Type="HF">H0000128</Name>
+						<Label spanWidth='1.0in'>Blood Glucose</Label>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<!--HACK CODE IN GetPanelMeasurementLabel and GetPanelMeasurementDataFieldsHTML to re-interpret this -->
+						<RowNumber>5</RowNumber>
+						<Name Type="HF">H0000140</Name>
+						<Label>Note</Label>
+					</Item>
+					<Item>
+						<RowNumber>6</RowNumber>
+						<Label spanWidth='1.2in'>[After Supper]</Label>
+					</Item>
+					<Item>
+						<RowNumber>6</RowNumber>
+						<Name Type="HF">H0000153</Name>
+						<Label spanWidth='1.0in'>Blood Glucose</Label>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<!--HACK CODE IN GetPanelMeasurementLabel and GetPanelMeasurementDataFieldsHTML to re-interpret this -->
+						<RowNumber>6</RowNumber>
+						<Name Type="HF">H0000156</Name>
+						<Label>Note</Label>
+					</Item>
+					<Item>
+						<RowNumber>7</RowNumber>
+						<Label spanWidth='1.2in'>[Bedtime]</Label>
+					</Item>
+					<Item>
+						<RowNumber>7</RowNumber>
+						<Name Type="HF">H0000129</Name>
+						<Label spanWidth='1.0in'>Blood Glucose</Label>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<!--HACK CODE IN GetPanelMeasurementLabel and GetPanelMeasurementDataFieldsHTML to re-interpret this -->
+						<RowNumber>7</RowNumber>
+						<Name Type="HF">H0000141</Name>
+						<Label>Note</Label>
+					</Item>
+					<Item>
+						<RowNumber>8</RowNumber>
+						<Label spanWidth='1.2in'>[Night]</Label>
+					</Item>
+					<Item>
+						<RowNumber>8</RowNumber>
+						<Name Type="HF">H0000137</Name>
+						<Label spanWidth='1.0in'>Blood Glucose</Label>
+						<UnitSet Type="HF">H0000133</UnitSet>
+					</Item>
+					<Item>
+						<!--HACK CODE IN GetPanelMeasurementLabel and GetPanelMeasurementDataFieldsHTML to re-interpret this -->
+						<RowNumber>8</RowNumber>
+						<Name Type="HF">H0000142</Name>
+						<Label>Note</Label>
+					</Item>
+				</Items>
+			</Panel>
+		</ConceptDetails>
+		<!--
+	TestMeasurementFlag-PassFail
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000219</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>TestMeasurementFlag-PassFail</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Passed</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000220</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>TestMeasurementFlag-PassFail</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Failed</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	TestMeasurementFlag-Ranged
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000214</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>TestMeasurementFlag-Ranged</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Abnormal Low</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000215</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>TestMeasurementFlag-Ranged</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Abnormal High</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000216</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>TestMeasurementFlag-Ranged</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Within Normal Limits</Term>
+				<Term Priority="7" Abbreviation="true">WNL</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000217</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>TestMeasurementFlag-Ranged</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Critical Low</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000218</PrimaryKey>
+			<Priority>5</Priority>
+			<Categories>
+				<Category>TestMeasurementFlag-Ranged</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Critical High</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	VisitType
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0008952</PrimaryKey>
+			<Categories>
+				<Category>VisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Clinic Visit</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0010337</PrimaryKey>
+			<Categories>
+				<Category>VisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Intensive Care Unit Visit</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0025127</PrimaryKey>
+			<Categories>
+				<Category>VisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Indigenous Medicine</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C2910477</PrimaryKey>
+			<Categories>
+				<Category>VisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Dental Checkup and Cleaning</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0011331</PrimaryKey>
+			<Categories>
+				<Category>VisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Dental Procedure</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0589121</PrimaryKey>
+			<Categories>
+				<Category>VisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Follow-Up Visit</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1444717</PrimaryKey>
+			<Categories>
+				<Category>VisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Well Child Visit</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C1561959</PrimaryKey>
+			<Categories>
+				<Category>VisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Labor And Delivery Admission</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0474134</PrimaryKey>
+			<Categories>
+				<Category>VisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Advice/Health Education</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0020043</PrimaryKey>
+			<Categories>
+				<Category>VisitType</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">Home Visit</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	Units
+	
+	For many of these - make the primary name be the abbrev. Though this may not
+	be technically correct, it works well for various UI and XML IO purposes.
+	Can correct that - and handle better POST 2.0 - LGP 2006-02-15
+-->
+		<ConceptDetails>
+			<!-- beats/minute-->
+			<PrimaryKey Type="UMLS">C0439385</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">beats/minute</Term>
+				<Term>bpm</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439165</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">%</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--Milligram-->
+			<PrimaryKey Type="UMLS">C0439210</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">mg</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439271</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">&#181;g/dL</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439219</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">lbs</Term>
+				<Term>lb</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439218</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">oz</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439209</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">kg</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0347981</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">ft</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439204</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">in</Term>
+				<Term>inch</Term>
+				<Term>inches</Term>
+				<Term>inch(es)</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0475210</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">cm</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439200</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">mm</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439475</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">mm HG</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439237</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">&#176;C</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0456628</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">&#176;F</Term>
+				<!--risky - name maybe matches too often - so may need to lose this alias and special
+case match in reading CCRs - LGP 2006-04-22
+
+REMOVED 2013-02-17
+				<Term>F</Term>
+-->
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0565930</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">per second</Term>
+				<Term>/second</Term>
+				<Term>/sec</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0702093</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">per minute</Term>
+				<Term>/minute</Term>
+				<Term>/min</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439375</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">MEQ/L</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439208</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="8" Abbreviation="true">g</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439269</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">mg/dl</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439267</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">g/dL</Term>
+				<Term>gram/deciliter</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439294</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">g/L</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439378</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">cells/&#181;L</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000121</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Thou/&#181;L</Term>
+				<Term>Thou/MCL</Term>
+				<Term>k/uL</Term>
+				<Term>10^3/uL</Term>
+				<Term>10^3/&#181;L</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000122</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Mill/&#181;L</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439279</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">mmol/L</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439300</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">&#181;mol/L</Term>
+				<Term>umol/L</Term>
+				<Term>Micromole/liter</Term>
+				<Term>micromolar</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439339</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">U/L</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0475213</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">fL</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439213</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">pg</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0456680</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">mm/h</Term>
+				<Term>Millimeter/hour</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439270</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">&#181;g/L</Term>
+				<Term>ug/L</Term>
+				<Term>Microgram/Liter</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439284</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">pmol/L</Term>
+				<Term>Picomole/Liter</Term>
+				<Term>Oicomolar</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439282</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">nmol/L</Term>
+				<Term>Nanomole/Liter</Term>
+				<Term>Nanomolar</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439342</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">mU/L</Term>
+				<Term>MilliUnit/Liter</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439211</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">&#181;g</Term>
+				<Term>mcg</Term>
+				<Term>Microgram</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439393</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">L/min</Term>
+				<Term>Liter/Minute</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- ng/mL-->
+			<PrimaryKey Type="HF">H0000212</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="9">ng/mL</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439228</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">day</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439230</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">week</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439505</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">per day</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439231</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">month</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0439227</PrimaryKey>
+			<Categories>
+				<Category>Unit</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">hour</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+	UnitsSubsets
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000130</PrimaryKey>
+			<Categories>
+				<Category>UnitSubset</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">FtRangeLengthSubset</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000131</PrimaryKey>
+			<Categories>
+				<Category>UnitSubset</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">LbsRangeWeightSubset</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000132</PrimaryKey>
+			<Categories>
+				<Category>UnitSubset</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">SmallCntPerVolumeSubset</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000133</PrimaryKey>
+			<Categories>
+				<Category>UnitSubset</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">SmallWeightOrAmtPerVolumeSubset</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000134</PrimaryKey>
+			<Categories>
+				<Category>UnitSubset</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">TempSubset</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000135</PrimaryKey>
+			<Categories>
+				<Category>UnitSubset</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">PerTimeSubset</Term>
+			</Terms>
+		</ConceptDetails>
+		<!-- SEE o	http://bugzilla/show_bug.cgi?id=410 - and FIX -->
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0680022</PrimaryKey>
+			<Categories>
+				<Category>ObjectRelationship</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="10">Member</Term>
+			</Terms>
+		</ConceptDetails>
+		<!-- 
+	FilterTypes 
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000159</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Objects Of This Type Hidden</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000160</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Show Active Only</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000161</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Hide Living Will</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000162</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Hide Organ Donor Information</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000221</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<!--
+				This is applied to a heterogenous list of contacts (people and orgs etc). It allows
+				selecting a SUBSET (e.g. just doctors). The subset selected is given by the
+				args to this exclusion policy. Those values are ORED together
+				, kCFEP_Caregivers
+				, kCFEP_Doctors
+				, kCFEP_EmergencyContacts
+				, kCFEP_FamilyMembers
+				, kCFEP_HealthcareProviders
+				, kCFEP_Individuals
+				, kCFEP_Organizations
+			-->
+			<Terms>
+				<Term Priority="10">Contact Filter Exclusion Policy</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!-- NOTE SEE OTHER OCCURANCE OF THIS CONCEPT ID -->
+			<PrimaryKey Type="UMLS">C1320308</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<!--
+				Arg to H0000221
+			-->
+			<Terms>
+				<Term Priority="10">Emergency Contact</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000223</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<!--
+				Arg to H0000221
+			-->
+			<Terms>
+				<Term Priority="10">Family Members</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000224</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<!--
+				Arg to H0000221
+			-->
+			<Terms>
+				<Term Priority="10">Healthcare Providers</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000225</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<!--
+				Arg to H0000221
+			-->
+			<Terms>
+				<Term Priority="10">Individuals</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000226</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<!--
+				Arg to H0000221
+			-->
+			<Terms>
+				<Term Priority="10">Organizations</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="UMLS">C0021672</PrimaryKey>
+			<Priority>8</Priority>
+			<Categories>
+				<!--Once we add a concoent categoory for FilterType - we can remove this from this file, and
+just include it from UMLSDataExtractor.cpp kForceIncludeConcepts
+-->
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<!--
+				Arg to H0000221
+			-->
+			<Terms>
+				<Term Priority="10">Insurance</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000234</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<!--
+				This is applied to a heterogenous list of contacts (people and orgs etc). It allows
+				selecting a SUBSET (e.g. just doctors). The subset selected is given by the
+				args to this exclusion policy. Those values are ORED together
+				, kPFEP_SignsOrSymptomsOnly
+				, kPFEP_ConditionsOnly
+			-->
+			<Terms>
+				<Term Priority="10">Problem Filter Exclusion Policy</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000235</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<!--
+				Arg to H0000234
+			-->
+			<Terms>
+				<Term Priority="9">Signs or Symptoms Only</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000236</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<!--
+				Arg to H0000234
+			-->
+			<Terms>
+				<Term Priority="9">Conditions Only</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+OBSOLETE - NEVER SHIPPED - 2012-05-26
+<ConceptDetails>
+	<PrimaryKey Type="HF">H0000237</PrimaryKey>
+	<Categories>
+		//may add category at some point, but its filter utility categories
+		//<Category>FilterType</Category>
+	</Categories>
+	//Arg to H0000234
+	<Terms>
+		<Term Priority="9">Conditions and Free Symptoms</Term>
+	</Terms>
+</ConceptDetails>
+-->
+		<!--
+OBSOLETE - NEVER SHIPPED - 2012-05-26
+<ConceptDetails>
+	<PrimaryKey Type="HF">H0000239</PrimaryKey>
+	<Categories>
+		// may add category at some point, but its filter utility categories
+		//<Category>FilterType</Category>
+	</Categories>
+	//Arg to H0000234
+	<Terms>
+		<Term Priority="9">Free Symptoms Only</Term>
+	</Terms>
+</ConceptDetails>
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000240</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="9">Include Only Tests Containing These Measurements Exclusion Policy</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000241</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="9">Disabled Exclusion Policy</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000242</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="9">Hide Contained Problems</Term>
+				<Term Priority="8">Hide Contained Problems Exclusion Policy</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000243</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>FilterType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="9">Prescribed By</Term>
+				<Term Priority="8">Prescribed By Exclusion Policy</Term>
+			</Terms>
+		</ConceptDetails>
+		<!-- 
+	CustomizationTypes
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000163</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>CustomizationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Other Information Displayed</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000164</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>CustomizationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Show Colored Rows in Tables</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000165</PrimaryKey>
+			<Priority>0</Priority>
+			<Categories>
+				 may add category at some point, but its filter utility categories
+				<Category>CustomizationType</Category>
+				OBSOLETE as of 2012-10-14
+			</Categories>
+			<Terms>
+				<Term Priority="1">Show Value Under Mouse</Term>
+			</Terms>
+		</ConceptDetails>
+		-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000166</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>CustomizationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Show Grid</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000167</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>CustomizationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Show Compact Lists</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000168</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>CustomizationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Show Empty Immunization Lists</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000179</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>CustomizationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Show Favorites</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000180</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>CustomizationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Group By</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000181</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>CustomizationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Upcoming Events Date Range</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000182</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>CustomizationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Show As Graph</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000183</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>CustomizationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Measurment Shown</Term>
+			</Terms>
+		</ConceptDetails>
+		<!-- 
+	SortSpecificationType
+-->
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000169</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Date</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000170</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Type</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000171</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Name</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000172</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Active</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000173</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Prescription</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000174</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Contact Name</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000175</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Role</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000176</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Degree of Relatedness</Term>
+			</Terms>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000177</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Family Member Relationship</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">First degree of relatedness, then printname of relationship, then birthdate</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000178</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Active Healthcare Provider</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">The default sort-scheme for healthcare provider contacts</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000233</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Emergency Contacts Ordering</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="ShortText">Sort contacts by the Health-Record specified emergency contact ordering.</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<PrimaryKey Type="HF">H0000238</PrimaryKey>
+			<Categories>
+				<!-- may add category at some point, but its filter utility categories -->
+				<!--<Category>SortSpecificationType</Category>-->
+			</Categories>
+			<Terms>
+				<Term Priority="10">Kind</Term>
+			</Terms>
+		</ConceptDetails>
+		<!--
+		******************************** MOVED REFERENCE CONTENT from OLD REFERENCE CONTENT *******************************
+		-->
+		<ConceptDetails>
+			<!--
+			MOVED REFERENCE CONTENT from UMLS 2005AC.xml
+			-->
+			<PrimaryKey Type="UMLS">C1553424</PrimaryKey>
+			<Categories>
+				<Category>EmploymentStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="1">Full-Time</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="LongText">Employment in which the employee is expected to work at least a standard work week (defined by the US Bureau of Labor Statistics as 35-44 hours per week)</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--
+			MOVED REFERENCE CONTENT from UMLS 2005AC.xml
+			-->
+			<PrimaryKey Type="UMLS">C1553425</PrimaryKey>
+			<Categories>
+				<Category>EmploymentStatus</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="1">Part-Time</Term>
+			</Terms>
+			<Documentations>
+				<Documentation Kind="LongText">Employment in which the employee is expected to work less than a standard work week (defined by the US Bureau of Labor Statistics as 35-44 hours per week)</Documentation>
+			</Documentations>
+		</ConceptDetails>
+		<ConceptDetails>
+			<!--
+			MOVED REFERENCE CONTENT from UMLS 2014AB.xml
+			-->
+			<PrimaryKey Type="UMLS">C0062527</PrimaryKey>
+			<Codes>
+				<Code Type="RXNORM">RX10026746</Code>
+			</Codes>
+			<Categories>
+				<Category>Allergen</Category>
+				<Category>Immunization</Category>
+				<Category>Medication</Category>
+				<Category>PharmacologicSubstance</Category>
+			</Categories>
+			<Terms>
+				<Term Priority="1">Hepatitis B Vaccine</Term>
+			</Terms>
+		</ConceptDetails>
+	</Concepts>
+	<!--
+	Relationships
+-->
+	<Relationships>
+		<Relationship>
+			<L1 Type="UMLS">C0032374</L1>
+			<!--Polio Vaccines-->
+			<RelationshipKind>MayTreat</RelationshipKind>
+			<L2 Type="UMLS">C0032371</L2>
+			<!--POLIOMYELTIS-->
+		</Relationship>
+		<Relationship>
+			<L1 Type="UMLS">C0032375</L1>
+			<!--Polio Vaccine (OPV)-->
+			<RelationshipKind>MayTreat</RelationshipKind>
+			<L2 Type="UMLS">C0032371</L2>
+			<!--POLIOMYELTIS-->
+		</Relationship>
+		<Relationship>
+			<L1 Type="UMLS">C0718003</L1>
+			<!--Polio Vaccine (IPV)-->
+			<RelationshipKind>MayTreat</RelationshipKind>
+			<L2 Type="UMLS">C0032371</L2>
+			<!--POLIOMYELTIS-->
+		</Relationship>
+		<Relationship>
+			<L1 Type="UMLS">C0032375</L1>
+			<!--Polio Vaccine (OPV)-->
+			<RelationshipKind>SubcategoryOf</RelationshipKind>
+			<L2 Type="UMLS">C0032374</L2>
+			<!--Polio Vaccines-->
+		</Relationship>
+		<Relationship>
+			<L1 Type="UMLS">C0718003</L1>
+			<!--Polio Vaccine (IPV)-->
+			<RelationshipKind>SubcategoryOf</RelationshipKind>
+			<L2 Type="UMLS">C0032374</L2>
+			<!--Polio Vaccines-->
+		</Relationship>
+	</Relationships>
+	<BLOBs>
+		<BLOB id="ID-42EED309-E7EB-4166-B814-7AFC9B695C06" mimeType="image/gif">
+			R0lGODlhQABAAPcAAAAAAIAAAACAAICAAAAAgIAAgACAgICAgMDAwP8AAAD/
+			AP//AAAA//8A/wD//////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			AAAAMwAAZgAAmQAAzAAA/wAzAAAzMwAzZgAzmQAzzAAz/wBmAABmMwBmZgBm
+			mQBmzABm/wCZAACZMwCZZgCZmQCZzACZ/wDMAADMMwDMZgDMmQDMzADM/wD/
+			AAD/MwD/ZgD/mQD/zAD//zMAADMAMzMAZjMAmTMAzDMA/zMzADMzMzMzZjMz
+			mTMzzDMz/zNmADNmMzNmZjNmmTNmzDNm/zOZADOZMzOZZjOZmTOZzDOZ/zPM
+			ADPMMzPMZjPMmTPMzDPM/zP/ADP/MzP/ZjP/mTP/zDP//2YAAGYAM2YAZmYA
+			mWYAzGYA/2YzAGYzM2YzZmYzmWYzzGYz/2ZmAGZmM2ZmZmZmmWZmzGZm/2aZ
+			AGaZM2aZZmaZmWaZzGaZ/2bMAGbMM2bMZmbMmWbMzGbM/2b/AGb/M2b/Zmb/
+			mWb/zGb//5kAAJkAM5kAZpkAmZkAzJkA/5kzAJkzM5kzZpkzmZkzzJkz/5lm
+			AJlmM5lmZplmmZlmzJlm/5mZAJmZM5mZZpmZmZmZzJmZ/5nMAJnMM5nMZpnM
+			mZnMzJnM/5n/AJn/M5n/Zpn/mZn/zJn//8wAAMwAM8wAZswAmcwAzMwA/8wz
+			AMwzM8wzZswzmcwzzMwz/8xmAMxmM8xmZsxmmcxmzMxm/8yZAMyZM8yZZsyZ
+			mcyZzMyZ/8zMAMzMM8zMZszMmczMzMzM/8z/AMz/M8z/Zsz/mcz/zMz///8A
+			AP8AM/8AZv8Amf8AzP8A//8zAP8zM/8zZv8zmf8zzP8z//9mAP9mM/9mZv9m
+			mf9mzP9m//+ZAP+ZM/+ZZv+Zmf+ZzP+Z///MAP/MM//MZv/Mmf/MzP/M////
+			AP//M///Zv//mf//zP///yH5BAEAABAALAAAAABAAEAAAAj/AP8JzCfwH8GB
+			BQ8aTMgQocOFDxVKbPiPGrWKGC9qzMhxo8eOID+KDLlR4EWCF00uTIkRZcGT
+			GFW6lBmzJcmM+TTmrLiTWs+fOoPyFOqTKNCKFlmOXBqyKdOnHaFKdUp1qkar
+			VbNiXerxaNGhYL+K9QrUItmrFl9ydLmRrc2PbmF61PZFG9yoWvNatfjqi9+0
+			XPUKfsrXr2G7TrsaXWwXsMXGiwsb9qsDcM+kardmnDaNnzRXnJ/Snew3yxfA
+			eLcmnSatletEsGPDBu2YWl/SX7JkqXFapGaN01wLbyU7dpnjX1wlvU1a927e
+			NxcPXR2NlXDrxMnEJmNYh+FWt71T/3ZOo0YNs2iVrgUZLVqra8Lhw340qH4Z
+			3F/u43au+3zB1IlRM0177g1HHGz11YffgvzphppHUlk0IIEGypbgIAvi12BK
+			cSGFU1ASEtheK9hhmKAXCU4mHmne8dfbh0ilpZJI/ohY4DUX5qhghpM598V/
+			iSVmY4Gn6Jgjj829SBhV0tjo2ilFJnjKNEpp4wqSpXFYlWJIDQgNgdZBaUp9
+			ypFEWXdo5vajdEmp51F71xAIH5TLDKLNf2z5g59+zY0Ul28COvnkKa08GOM0
+			sPHJYxaERBiSNk2KKByUWqKFaKKKMpiFVopZROCXBbYyZacCJprIfSuqaJhu
+			r4R1mYwdTf8YzT6huuZmRf4Ul2mGps0YXUbUREqhcNOsdGhxiWC56qZLijTk
+			cJlJiCx+tmmYhaMgghrNl66xIg2IAmYX24riIXXmeFm8MlZ6mVVEK5w3Fpvn
+			a48gmOlLuJXB6noQRvWsa1RuJlxsGJLmmLWvdHhVSP+2UqxKrb2WyI6GVYrw
+			lh9SIyK3AKPk6cAoTjbIg9Scmxur68Z4q8YE0kosR6Gm6NcgQGq0377NAttw
+			wBpFPPGOI0Mo4M3XKuyhs4I6bCw1xF34xcgIXXVlcw4G2Km2HLPC807B1Ydi
+			0BkzJ14WLujmKru+UvNuNHG6do28HPljJTYspY0N0YT4yhZmEO7//FtSRGeR
+			CsZISwpwu4RRo82u/CEO7IM5sdwexw6jdJbKAmaqA38Jn60y4iKurfRW/ux6
+			ctWJ+zbkiFTWhvlqp1qLM+Edre6eNBVpw9nuvLPmyqnIEf1j2lFBbhHWYF6n
+			vLiwaXccEGl+QYODXIqFWdprxwlnfNwTV+98wK9hGJ9VO763oZ6ubmCFyJq+
+			qrp6LWX7+hIjKDOPlW5pvOTbDtutcGWIzdcKZrKKVc8r16tdy/z3noERjGL4
+			UUTN4hcVYa0PSlEyUoag9pujdaRGIzIQBo0EQcOUiSGqMR5PmoQdEonqFGPy
+			2okKpgNFqGspl7MerO6iECD58Ic+JEiHWob4uA4acTDAQuIRjcg3z6XsiTmM
+			IlESuEQlxg99ruNbFrfYpi568YttSgVX0BKj14HxjGg8oxjFGDkwitEZ1Hhj
+			HKkBRznakY5zrCMe1xhHZ/BxjX6coxgDAgA7
+		</BLOB>
+	</BLOBs>
+</ReferenceContentData>

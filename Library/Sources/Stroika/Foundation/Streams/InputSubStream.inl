@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
      */
     template <typename ELEMENT_TYPE>
     inline auto New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start,
-                                   const optional<SeekOffsetType>& end) -> Ptr<ELEMENT_TYPE>
+                     const optional<SeekOffsetType>& end) -> Ptr<ELEMENT_TYPE>
     {
         class Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
         public:

@@ -14,8 +14,8 @@
 #include "Stroika/Foundation/Containers/SortedMapping.h"
 #include "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include "Stroika/Foundation/DataExchange/XML/DOM.h"
-#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/DataExchange/XML/SAXReader.h"
+#include "Stroika/Foundation/DataExchange/XML/Schema.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
@@ -30,6 +30,10 @@ namespace Resources_ {
 #include "Tests/34/personal.xml.embed"
         constexpr
 #include "Tests/34/personal.xsd.embed"
+        constexpr
+#include "Tests/34/HealthFrameWorks_v3.xml.embed"
+        constexpr
+#include "Tests/34/ReferenceContent-2012-03.xsd.embed"
 }
 
 using std::byte;
@@ -1325,6 +1329,8 @@ namespace {
     {
         const Memory::BLOB kPersonalXML_ = Memory::BLOB::Attach (Resources_::personal_xml);
         const Memory::BLOB kPersonalXSD_ = Memory::BLOB::Attach (Resources_::personal_xsd);
+        const Memory::BLOB kHealthFrameWorks_v3_xml = Memory::BLOB::Attach (Resources_::HealthFrameWorks_v3_xml);
+        const Memory::BLOB kReferenceContent_2012_03_xsd = Memory::BLOB::Attach (Resources_::ReferenceContent_2012_03_xsd);
 
         {
             DOM::Document::Ptr d = DOM::Document::New (kPersonalXML_.As<Streams::InputStream<byte>::Ptr> ());
@@ -1339,7 +1345,16 @@ namespace {
             stringstream       ss;
             d.WritePrettyPrinted (ss);
             // this line I THINK crashes on MacOS under github actions, but not on my machine?? TESTING to viery  thats the issue
-           // DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
+            // DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
+        }
+        {
+
+            Schema::Ptr schema = XML::Schema::New (IO::Network::URI{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"},  kReferenceContent_2012_03_xsd);
+            DOM::Document::Ptr d      = DOM::Document::New (kHealthFrameWorks_v3_xml.As<Streams::InputStream<byte>::Ptr> (), schema);
+            stringstream       ss;
+            d.WritePrettyPrinted (ss);
+            // this line I THINK crashes on MacOS under github actions, but not on my machine?? TESTING to viery  thats the issue
+           //  DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
         }
     }
 }
