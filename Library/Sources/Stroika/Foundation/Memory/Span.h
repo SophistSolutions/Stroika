@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Memory {
     /**
      * \brief return true iff intersection of the two spans is non-empty (contains any bytes)
      * 
-     *  Note this is similar to Range::Intersects, except for the buiness about openness/closedness and details at the edge conditions
+     *  Note this is similar to Range::Intersects, except for the business about openness/closedness and details at the edge conditions
      * 
      *  The only known use for this is assertions in CopySpanData that the spans don't overlap (memcpy vs memmove)
      */
@@ -87,8 +87,8 @@ namespace Stroika::Foundation::Memory {
      * 
      *  This requirement of the same size in bytes means sizeof FROM_T must evently divide sizeof TO_T
      */
-    template <typename TO_T, typename FROM_T>
-    constexpr std::span<TO_T> SpanReInterpretCast (span<FROM_T> src)
+    template <typename TO_T, typename FROM_T, size_t FROM_EXTENT>
+    constexpr std::span<TO_T> SpanReInterpretCast (span<FROM_T, FROM_EXTENT> src)
         requires (sizeof (FROM_T) % sizeof (TO_T) == 0);
 
     /*
