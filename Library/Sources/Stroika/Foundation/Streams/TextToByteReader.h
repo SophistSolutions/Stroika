@@ -10,7 +10,6 @@
 
 #include "InputStream.h"
 
-
 /**
  *  \file
  *
