@@ -94,7 +94,7 @@ namespace {
             }
             Memory::BLOB schemaData = targetNamespaceData;
             AssertNotNull (XMLPlatformUtils::fgMemoryManager);
-            XMLGrammarPoolImpl* grammarPool = new (XMLPlatformUtils::fgMemoryManager) XMLGrammarPoolImpl (XMLPlatformUtils::fgMemoryManager);
+            XMLGrammarPoolImpl* grammarPool = new (XMLPlatformUtils::fgMemoryManager) XMLGrammarPoolImpl{XMLPlatformUtils::fgMemoryManager};
             try {
                 Require (not schemaData.empty ()); // checked above
                 MemBufInputSource mis{reinterpret_cast<const XMLByte*> (schemaData.begin ()), schemaData.GetSize (),
@@ -106,7 +106,7 @@ namespace {
                 //      shared_ptr<SAX2XMLReader>   reader = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, grammarPool));
                 //
                 shared_ptr<SAX2XMLReaderImpl> reader = shared_ptr<SAX2XMLReaderImpl> (
-                    new (XMLPlatformUtils::fgMemoryManager) SAX2XMLReaderImpl (XMLPlatformUtils::fgMemoryManager, grammarPool));
+                    new (XMLPlatformUtils::fgMemoryManager) SAX2XMLReaderImpl{XMLPlatformUtils::fgMemoryManager, grammarPool});
                 reader->setXMLEntityResolver (&mySchemaResolver);
 
                 SetupCommonParserFeatures (*reader, true);
