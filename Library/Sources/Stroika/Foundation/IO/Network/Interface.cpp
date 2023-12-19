@@ -308,7 +308,7 @@ namespace {
                  *             0         0         0         0         0         0      1500         0
                  */
                 ProcessRunner                    pr{"route get default"sv};
-                Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
+                Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
                 pr.SetStdOut (useStdOut);
                 pr.Run ();
                 DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':'}};

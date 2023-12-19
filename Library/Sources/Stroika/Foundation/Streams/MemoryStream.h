@@ -18,21 +18,15 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- *      @todo   This would be a good candidate class to rewrite using new Sequence_ChunkedArray
- *              class (when I implement it) based on Led chunked arrays). But not if allowing access
- *              as a span (???)
- * 
- *      @todo   Probably rewrite using InlineBuffer<> class
- *
- *      @todo   There should be some way to generically write vector<T> As<vector<T>>::Memory...(); For now I need
- *              multiple explicit template specializations.
  */
 
-namespace Stroika::Foundation ::Streams {
+namespace Stroika::Foundation ::Streams::MemoryStream {
+
+    template <typename ELEMENT_TYPE>
+    class Ptr;
 
     /**
-     *  \brief  Simplest InputOutputStream; MemoryStream can be written to, and then the raw of data retrieved.
+     *  \brief  Create the Simplest InputOutputStream; MemoryStream can be written to, and then the raw data retrieved.
      *
      *  MemoryStream is Seekable.
      *
@@ -44,69 +38,60 @@ namespace Stroika::Foundation ::Streams {
      *  Reads and writes maybe intermixed, but beware to carefully manage (the separate) input/output seek positions.
      *
      *  \note   NB: This class COULD have been called MemoryInputOutputStream.
+     * 
+     *  \note   Despite the somewhat 'low-level' sounding name, this can be used with arbitrary C++ objects (not just POD), so it respects copy-constructors etc.
      *
      *  \note   MemoryStream is NOT suitable for synchronized reading and writing between two threads (producer / consumer pattern).
      *          Reads return EOF instead of blocking (plus the lack of internal synchronization).
      *
-     *          @see SharedMemoryStream
+     *          @see SharedMemoryStream for that purpose.
      *
      *  @see ExternallyOwnedMemoryInputStream
      *
      *  \par Example Usage
      *      \code
      *          BLOB                    blob    =   ReadRaw ();
-     *          optional<VariantValue>  r       =   reader.Read (MemoryStream<byte>::New (blob));
+     *          optional<VariantValue>  r       =   reader.Read (MemoryStream::New<byte> (blob));
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
+     *
+     *  \par Example Usage
+     *      \code
+     *          Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
+     *          DataExchange::Variant::JSON::Writer{}.Write (v, out);
+     *          string xxx = out.As<string> ();
+     *      \endcode
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
+     * 
+     *  TODO:
+     *      @todo   The Rep_ would be a good candidate class to rewrite using new Sequence_ChunkedArray
+     *              class (when I implement it) based on Led chunked arrays). But not if allowing access
+     *              as a span (???)
+     * 
+     *      @todo   Probably rewrite using InlineBuffer<> class
      */
     template <typename ELEMENT_TYPE>
-    class MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
-    public:
-        /**
-         *  'MemoryStream' is a quasi-namespace: use Ptr or New () members.
-         */
-        MemoryStream ()                    = delete;
-        MemoryStream (const MemoryStream&) = delete;
+    Ptr<ELEMENT_TYPE> New ();
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (span<const ELEMENT_TYPE> copyFrom);
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (const Memory::BLOB& copyFrom)
+        requires (is_same_v<ELEMENT_TYPE, byte>);
 
-    public:
-        class Ptr;
-
-    public:
-        /**
-         *  \brief Create a new MemoryStream, and return a Ptr to it. If args provided, they are passed to Write() before returning the resulting memory stream.
-         * 
-         *  \par Example Usage
-         *      \code
-         *          Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
-         *          DataExchange::Variant::JSON::Writer{}.Write (v, out);
-         *          string xxx = out.As<string> ();
-         *      \endcode
-         *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
-         */
-        static Ptr New ();
-        static Ptr New (span<const ELEMENT_TYPE> copyFrom);
-        static Ptr New (const Memory::BLOB& copyFrom)
-            requires (is_same_v<ELEMENT_TYPE, byte>);
-
-    private:
+    namespace Private_ {
+        template <typename ELEMENT_TYPE>
         class Rep_;
-
-    public:
-        [[deprecated ("Since Stroika v3.0d5 use span interface")]] static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-        {
-            return make_shared<Rep_> (start, end);
-        }
-    };
+    }
 
     /**
-     *  Ptr is a copyable smart pointer to a MemoryStream.
+     *  Ptr is a smart pointer to a MemoryStream shared 'Rep' object.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      */
     template <typename ELEMENT_TYPE>
-    class MemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+    class Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
     private:
         using inherited = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
 
@@ -114,7 +99,7 @@ namespace Stroika::Foundation ::Streams {
         /**
          *  \par Example Usage
          *      \code
-         *          Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
+         *          Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
          *          DataExchange::Variant::JSON::Writer{}.Write (v, out);
          *          string xxx = out.As<string> ();
          *      \endcode
@@ -122,9 +107,7 @@ namespace Stroika::Foundation ::Streams {
         Ptr () = default;
         Ptr (nullptr_t);
         Ptr (const Ptr& from) = default;
-
-    protected:
-        Ptr (const shared_ptr<Rep_>& from);
+        Ptr (const shared_ptr<Private_::Rep_<ELEMENT_TYPE>>& from);
 
     public:
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
@@ -144,40 +127,27 @@ namespace Stroika::Foundation ::Streams {
          *      o   String
          */
         template <typename T>
-        nonvirtual T As () const;
+        nonvirtual T As () const
+            requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and (same_as<T, Memory::BLOB> or same_as<T, string>)) or
+                      (same_as<ELEMENT_TYPE, Characters::Character> and (same_as<T, Characters::String>)));
+
+    private:
+        Memory::BLOB       AsBLOB_ () const;
+        string             Asstring_ () const;
+        Characters::String AsString_ () const;
 
     private:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const Rep_& GetRepConstRef_ () const;
+        nonvirtual const Private_::Rep_<ELEMENT_TYPE>& GetRepConstRef_ () const;
 
     private:
         /**
          * \req *this != nullptr
          */
-        nonvirtual Rep_& GetRepRWRef_ () const;
-
-    private:
-        friend class MemoryStream;
+        nonvirtual Private_::Rep_<ELEMENT_TYPE>& GetRepRWRef_ () const;
     };
-
-    template <>
-    template <>
-    Memory::BLOB MemoryStream<byte>::Ptr::As () const;
-    template <>
-    template <>
-    string MemoryStream<byte>::Ptr::As () const;
-    template <>
-    template <>
-    vector<byte> MemoryStream<byte>::Ptr::As () const;
-
-    template <>
-    template <>
-    Characters::String MemoryStream<Characters::Character>::Ptr::As () const;
-    template <>
-    template <>
-    vector<Characters::Character> MemoryStream<Characters::Character>::Ptr::As () const;
 
 }
 

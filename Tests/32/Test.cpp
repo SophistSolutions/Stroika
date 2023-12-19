@@ -555,7 +555,7 @@ namespace {
         namespace Test_01_BasicWriterTests_ {
             void CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
             {
-                Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
+                Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, out);
                 string x = out.As<string> ();
                 // not quite true, but almost: EXPECT_TRUE (out.As<string> () == expected);
@@ -755,7 +755,7 @@ namespace Test_04_CheckStringQuoting_ {
     {
         string encodedRep;
         {
-            Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
+            Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
             DataExchange::Variant::JSON::Writer{}.Write (v, out);
             encodedRep = out.As<string> ();
         }
@@ -839,22 +839,22 @@ namespace Test_05_ParseRegressionTest_1_ {
 
             string jsonExampleWithUpdatedMaxFilesReference;
             {
-                Streams::MemoryStream<byte>::Ptr tmpStrm = Streams::MemoryStream<byte>::New ();
+                Streams::MemoryStream::Ptr<byte> tmpStrm = Streams::MemoryStream::New<byte> ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
                 jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
             }
             {
                 // Verify change of locale has no effect on results
                 locale                           prevLocale = locale::global (locale{"C"});
-                Streams::MemoryStream<byte>::Ptr tmpStrm    = Streams::MemoryStream<byte>::New ();
+                Streams::MemoryStream::Ptr<byte> tmpStrm    = Streams::MemoryStream::New<byte> ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
                 EXPECT_TRUE (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                 locale::global (prevLocale);
             }
             {
                 // Verify change of locale has no effect on results
-                Configuration::ScopedUseLocale   tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
-                Streams::MemoryStream<byte>::Ptr tmpStrm = Streams::MemoryStream<byte>::New ();
+                Configuration::ScopedUseLocale   tmpLocale{Configuration::FindNamedLocale ("en", "us")};
+                Streams::MemoryStream::Ptr<byte> tmpStrm = Streams::MemoryStream::New<byte> ();
                 DataExchange::Variant::JSON::Writer{}.Write (v, tmpStrm);
                 EXPECT_TRUE (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
             }
@@ -973,7 +973,7 @@ namespace Test_08_ReadEmptyStreamShouldFail_ {
     {
         Debug::TraceContextBumper ctx{"Test_08_ReadEmptyStreamShouldFail_::DoAll_"};
         try {
-            VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (Streams::MemoryStream<byte>::New ());
+            VariantValue vOut = DataExchange::Variant::JSON::Reader{}.Read (Streams::MemoryStream::New<byte> ());
             EXPECT_TRUE (false);
         }
         catch (const DataExchange::BadFormatException&) {
@@ -988,7 +988,7 @@ namespace Test_09_ReadWriteNANShouldNotFail_ {
     {
         string encodedRep;
         {
-            Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
+            Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
             DataExchange::Variant::JSON::Writer{}.Write (v, out);
             encodedRep = out.As<string> ();
         }
@@ -1037,7 +1037,7 @@ namespace {
                 {
                     DataExchange::Variant::XML::Writer w;
                     VariantValue                       v   = VariantValue{44905.3};
-                    Streams::MemoryStream<byte>::Ptr   out = Streams::MemoryStream<byte>::New ();
+                    Streams::MemoryStream::Ptr<byte>   out = Streams::MemoryStream::New<byte> ();
                     w.Write (v, out);
                     string x = out.As<string> ();
                 }
@@ -1046,7 +1046,7 @@ namespace {
                     map<wstring, VariantValue>         mv;
                     mv[L"MaxFiles"]                      = VariantValue{405};
                     VariantValue                     v   = VariantValue{mv};
-                    Streams::MemoryStream<byte>::Ptr out = Streams::MemoryStream<byte>::New ();
+                    Streams::MemoryStream::Ptr<byte> out = Streams::MemoryStream::New<byte> ();
                     w.Write (v, out);
                     string x = out.As<string> ();
                 }
@@ -1191,7 +1191,7 @@ namespace {
         {
             using namespace Private_;
             {
-                Streams::MemoryStream<byte>::Ptr memStream = Streams::MemoryStream<byte>::New ();
+                Streams::MemoryStream::Ptr<byte> memStream = Streams::MemoryStream::New<byte> ();
                 WriteJSON_ (memStream);
                 ReadJSON_ (memStream);
                 WriteJSON_ (memStream);

@@ -3,14 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include <algorithm>
-
-#include "../Debug/Cast.h"
-#include "../Execution/Common.h"
-#include "../Execution/Throw.h"
-#include "../Memory/BlockAllocated.h"
-#include "../Traversal/Iterator.h"
-
 #include "MemoryStream.h"
 
 using std::byte;
@@ -23,46 +15,27 @@ using Characters::String;
 
 /*
  ********************************************************************************
- ***************************** Streams::MemoryStream ****************************
+ ************************ Streams::MemoryStream::Ptr ****************************
  ********************************************************************************
  */
 template <>
-template <>
-Memory::BLOB MemoryStream<byte>::Ptr::As () const
+Memory::BLOB MemoryStream::Ptr<byte>::AsBLOB_ () const
 {
+    using Rep_      = MemoryStream::Private_::Rep_<byte>;
     const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
     return rep.AsVector ();
 }
-
 template <>
-template <>
-Memory::BLOB MemoryStream<uint8_t>::Ptr::As () const
+string MemoryStream::Ptr<byte>::Asstring_ () const
 {
-    const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
-    return rep.AsVector ();
-}
-
-template <>
-template <>
-string MemoryStream<byte>::Ptr::As () const
-{
+    using Rep_      = MemoryStream::Private_::Rep_<byte>;
     const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
     return rep.AsString ();
 }
-
 template <>
-template <>
-string MemoryStream<uint8_t>::Ptr::As () const
+Characters::String MemoryStream::Ptr<Characters::Character>::AsString_ () const
 {
-    AssertMember (&_GetRepConstRef (), Rep_);
-    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
-    return rep.AsString ();
-}
-
-template <>
-template <>
-Characters::String MemoryStream<Characters::Character>::Ptr::As () const
-{
+    using Rep_ = MemoryStream::Private_::Rep_<Characters::Character>;
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
     auto        tmp = rep.AsVector ();

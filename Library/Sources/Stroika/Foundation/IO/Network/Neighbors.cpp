@@ -52,7 +52,7 @@ namespace {
 #elif qPlatform_Windows
         ProcessRunner pr{includePurgedEntries ? "arp -av"sv : "arp -a"sv}; // -a means 'BSD-style output', -v verbose(show invalid items)
 #endif
-        Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
         pr.SetStdOut (useStdOut);
         pr.Run ();
         String out;

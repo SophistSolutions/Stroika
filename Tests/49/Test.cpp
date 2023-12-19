@@ -34,13 +34,13 @@ namespace {
         void TestBasicConstruction_ ()
         {
             {
-                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
+                MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
                 EXPECT_TRUE (s != nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
             }
             {
                 const char              kData[] = "1";
-                MemoryStream<byte>::Ptr s       = MemoryStream<byte>::New (Memory::SpanReInterpretCast<const byte> (span{kData}));
+                MemoryStream::Ptr<byte> s       = MemoryStream::New<byte> (Memory::SpanReInterpretCast<const byte> (span{kData}));
                 EXPECT_TRUE (s != nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
                 byte result[100] = {byte{0}};
@@ -63,12 +63,12 @@ namespace {
         void TestBasicConstruction_ ()
         {
             {
-                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
+                MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
                 EXPECT_TRUE (s != nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
             }
             {
-                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
+                MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
                 EXPECT_TRUE (s != nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
 
@@ -94,14 +94,14 @@ namespace {
         void TestBasicConstruction_ ()
         {
             {
-                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
+                MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
                 EXPECT_TRUE (s != nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
                 EXPECT_TRUE (static_cast<InputStream<byte>::Ptr> (s).IsSeekable ());
                 EXPECT_TRUE (static_cast<OutputStream<byte>::Ptr> (s).IsSeekable ());
             }
             {
-                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
+                MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
                 EXPECT_TRUE (s != nullptr);
 
                 const uint8_t kData_[] = {3, 53, 43, 23, 3};
@@ -111,7 +111,7 @@ namespace {
                 EXPECT_TRUE (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
             {
-                MemoryStream<byte>::Ptr s = MemoryStream<byte>::New ();
+                MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
                 EXPECT_TRUE (s.GetReadOffset () == 0);
                 EXPECT_TRUE (s.GetWriteOffset () == 0);
                 const uint8_t kData_[] = {3, 53, 43, 23, 3};
@@ -163,7 +163,7 @@ namespace {
             using Characters::String;
             void T1_ ()
             {
-                MemoryStream<Character>::Ptr out = MemoryStream<Character>::New ();
+                MemoryStream::Ptr<Character> out = MemoryStream::New<Character> ();
                 out << L"abc";
                 EXPECT_TRUE (out.As<String> () == L"abc");
                 out << L"123";
@@ -171,7 +171,7 @@ namespace {
             }
             void T2_ ()
             {
-                MemoryStream<Character>::Ptr out = MemoryStream<Character>::New ();
+                MemoryStream::Ptr<Character> out = MemoryStream::New<Character> ();
                 out << L"abc";
                 EXPECT_TRUE (out.As<String> () == L"abc");
                 out << L"123";
@@ -279,11 +279,11 @@ namespace {
             {
                 using Characters::Character;
                 using Characters::String;
-                MemoryStream<Character>::Ptr in = MemoryStream<Character>::New ();
+                MemoryStream::Ptr<Character> in = MemoryStream::New<Character> ();
                 in << L"abc";
                 EXPECT_TRUE (in.As<String> () == L"abc");
 
-                MemoryStream<Character>::Ptr out = MemoryStream<Character>::New ();
+                MemoryStream::Ptr<Character> out = MemoryStream::New<Character> ();
                 Streams::CopyAll<Character> (in, out);
                 EXPECT_TRUE (out.As<String> () == L"abc");
             }

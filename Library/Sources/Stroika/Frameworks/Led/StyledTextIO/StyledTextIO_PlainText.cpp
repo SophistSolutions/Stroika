@@ -100,7 +100,7 @@ void StyledTextIOWriter_PlainText::Write ()
 #endif
         bytesRead = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, Memory::NEltsOf (buf2));
 #if qWideCharacters
-        Streams::MemoryStream<byte>::Ptr memStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> memStream = Streams::MemoryStream::New<byte> ();
         Streams::TextWriter::New (memStream, Characters::CodeCvt<>{static_cast<CodePage> (CP_ACP)}).Write (buf2, buf2 + bytesRead);
         auto b = memStream.As<Memory::BLOB> ();
         write (b.data (), b.size ());

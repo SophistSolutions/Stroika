@@ -72,7 +72,7 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     Require (not headLine.Contains ("\n"));
     Require (not headLine.Contains ("\r"));
     Require (headLine.StartsWith ("NOTIFY") or (headLine == "HTTP/1.1 200 OK"));
-    Streams::MemoryStream<byte>::Ptr out     = Streams::MemoryStream<byte>::New ();
+    Streams::MemoryStream::Ptr<byte> out     = Streams::MemoryStream::New<byte> ();
     Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
 
     //// SUPER ROUGH FIRST DRAFT

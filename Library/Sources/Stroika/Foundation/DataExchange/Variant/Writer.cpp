@@ -24,14 +24,14 @@ using Streams::iostream::OutputStreamFromStdOStream;
  */
 Memory::BLOB Variant::Writer::_WriteAsBLOBHelper (const function<void (Streams::OutputStream<byte>::Ptr)>& f)
 {
-    Streams::MemoryStream<byte>::Ptr buf = Streams::MemoryStream<byte>::New ();
+    Streams::MemoryStream::Ptr<byte> buf = Streams::MemoryStream::New<byte> ();
     f (buf);
     return buf.As<Memory::BLOB> ();
 }
 
 String Variant::Writer::_WriteAsStringHelper (const function<void (Streams::OutputStream<Characters::Character>::Ptr)>& f)
 {
-    Streams::MemoryStream<Characters::Character>::Ptr buf = Streams::MemoryStream<Characters::Character>::New ();
+    Streams::MemoryStream::Ptr<Characters::Character> buf = Streams::MemoryStream::New<Characters::Character> ();
     f (buf);
     return buf.As<String> ();
 }

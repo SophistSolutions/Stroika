@@ -134,7 +134,7 @@ namespace {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -202,7 +202,7 @@ namespace {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -259,7 +259,7 @@ namespace {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -327,7 +327,7 @@ namespace {
             // at this point - we should have VariantValue object with "Enabled" field.
             // This can then be serialized using
 
-            Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+            Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
             Variant::JSON::Writer{}.Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
@@ -357,7 +357,7 @@ namespace {
             // at this point - we should have VariantValue object with "Enabled" field.
             // This can then be serialized using
 
-            Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+            Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
             Variant::JSON::Writer{}.Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
@@ -417,7 +417,7 @@ namespace {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -458,7 +458,7 @@ namespace {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -544,7 +544,7 @@ namespace {
         tmp.fTuple2_   = tuple<int, String>{4, L"test4"};
         VariantValue v = mapper.FromObject (tmp);
 
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -595,7 +595,7 @@ namespace {
         tmp.fVV2       = 345;
         VariantValue v = mapper.FromObject (tmp);
 
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         // THEN deserialized, and mapped back to C++ object form
@@ -671,7 +671,7 @@ namespace {
 
         VariantValue v = mapper.FromObject (tmp);
 
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -738,7 +738,7 @@ namespace {
             RGBColor     tmp = RGBColor{255, 255, 255};
             VariantValue v   = mapper.FromObject (tmp);
 
-            Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+            Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
             Variant::JSON::Writer{}.Write (v, tmpStream);
 
             // THEN deserialized, and mapped back to C++ object form
@@ -797,7 +797,7 @@ namespace {
             // at this point - we should have VariantValue object with "Enabled" field.
             // This can then be serialized using
 
-            Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+            Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
             Variant::JSON::Writer{}.Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {

@@ -520,8 +520,8 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
     Streams::InputStream<byte>::Ptr                 oldStdIn  = GetStdIn ();
     Streams::OutputStream<byte>::Ptr                oldStdOut = GetStdOut ();
     try {
-        Streams::MemoryStream<byte>::Ptr useStdIn  = Streams::MemoryStream<byte>::New ();
-        Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> useStdIn  = Streams::MemoryStream::New<byte> ();
+        Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
 
         // Prefill stream
         // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM

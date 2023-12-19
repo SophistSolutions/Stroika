@@ -1131,7 +1131,7 @@ namespace {
             constexpr size_t                 kThreadCnt_Idx_{7};
             constexpr size_t                 kColCountIncludingCmd_{9};
             ProcessRunner                    pr{"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\""sv};
-            Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
+            Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
             pr.SetStdOut (useStdOut);
             pr.Run ();
             String                   out;

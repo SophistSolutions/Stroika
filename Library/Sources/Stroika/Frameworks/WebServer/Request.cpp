@@ -102,7 +102,7 @@ Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
              *
              *  For now - EMPTY is a better failure mode than reading everything and hanging...
              */
-            fBodyInputStream_ = MemoryStream<byte>::New ();
+            fBodyInputStream_ = MemoryStream::New<byte> ();
         }
         // @todo See https://stroika.atlassian.net/browse/STK-758 - zip compression support
     }

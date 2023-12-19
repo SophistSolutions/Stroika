@@ -32,7 +32,7 @@ namespace {
     void RegressionTest1_ ()
     {
         Debug::TraceContextBumper        ctx{"RegressionTest1_"};
-        Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
         // quickie about to test..
         ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
         pr.Run ();
@@ -40,7 +40,7 @@ namespace {
     void RegressionTest2_ ()
     {
         Debug::TraceContextBumper        ctx{"RegressionTest2_"};
-        Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
         // quickie about to test..
         ProcessRunner pr{"echo hi mom"};
         String        out = pr.Run ("");
@@ -49,14 +49,14 @@ namespace {
     void RegressionTest3_Pipe_ ()
     {
         Debug::TraceContextBumper        ctx{"RegressionTest3_Pipe_"};
-        Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
         ProcessRunner                    pr1{"echo hi mom"};
-        Streams::MemoryStream<byte>::Ptr pipe = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> pipe = Streams::MemoryStream::New<byte> ();
         ProcessRunner                    pr2{"cat"};
         pr1.SetStdOut (pipe);
         pr2.SetStdIn (pipe);
 
-        Streams::MemoryStream<byte>::Ptr pr2Out = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> pr2Out = Streams::MemoryStream::New<byte> ();
         pr2.SetStdOut (pr2Out);
 
         pr1.Run ();
@@ -72,8 +72,8 @@ namespace {
         // cat doesn't exist on windows (without cygwin or some such) - but the regression test code depends on that anyhow
         // so this should be OK for now... -- LGP 2017-06-31
         Memory::BLOB                     kData_{Memory::BLOB::FromRaw ("this is a test")};
-        Streams::MemoryStream<byte>::Ptr processStdIn  = Streams::MemoryStream<byte>::New (kData_);
-        Streams::MemoryStream<byte>::Ptr processStdOut = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> processStdIn  = Streams::MemoryStream::New<byte> (kData_);
+        Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
         ProcessRunner                    pr{"cat", processStdIn, processStdOut};
         pr.Run ();
         EXPECT_TRUE (processStdOut.ReadAll () == kData_);
@@ -96,8 +96,8 @@ namespace {
                  *  @see https://stroika.atlassian.net/browse/STK-713 if you see hang here
                  */
                 Memory::BLOB                     testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
-                Streams::MemoryStream<byte>::Ptr myStdIn  = Streams::MemoryStream<byte>::New (testBLOB);
-                Streams::MemoryStream<byte>::Ptr myStdOut = Streams::MemoryStream<byte>::New ();
+                Streams::MemoryStream::Ptr<byte> myStdIn  = Streams::MemoryStream::New<byte> (testBLOB);
+                Streams::MemoryStream::Ptr<byte> myStdOut = Streams::MemoryStream::New<byte> ();
                 ProcessRunner                    pr{"cat", myStdIn, myStdOut};
                 pr.Run ();
                 EXPECT_TRUE (myStdOut.ReadAll () == testBLOB);

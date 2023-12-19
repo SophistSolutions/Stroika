@@ -2732,7 +2732,7 @@ public:
         const char*                      password = nullptr;
         int                              err      = unzOpenCurrentFilePassword (fZipFile_, password);
         [[maybe_unused]] auto&&          cleanup  = Execution::Finally ([this] () noexcept { unzCloseCurrentFile_ (fZipFile_); });
-        Streams::MemoryStream<byte>::Ptr tmpBuf   = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpBuf   = Streams::MemoryStream::New<byte> ();
         do {
             byte buf[10 * 1024];
             err = unzReadCurrentFile_ (fZipFile_, buf, static_cast<unsigned int> (Memory::NEltsOf (buf)));

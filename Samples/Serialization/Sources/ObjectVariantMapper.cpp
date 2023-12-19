@@ -61,7 +61,7 @@ namespace {
 
         // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we chose JSON here)
         // And dump the results into a temporary memory-based stream
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         // THEN deserialize, and map back to C++ object form
@@ -128,7 +128,7 @@ namespace {
         DbgTrace (L"v = %s", Characters::ToString (v).c_str ());
 
         // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we selected JSON)
-        Streams::MemoryStream<byte>::Ptr tmpStream = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> tmpStream = Streams::MemoryStream::New<byte> ();
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         // You can persist these to file if you wish
@@ -184,7 +184,7 @@ namespace {
 
             // Serialize using any serialization writer defined in Stroika::Foundation::DataExchange::Variant (we chose JSON here)
             // And dump the results into a temporary memory-based stream
-            Streams::MemoryStream<Character>::Ptr tmpStream = Streams::MemoryStream<Character>::New ();
+            Streams::MemoryStream::Ptr<Character> tmpStream = Streams::MemoryStream::New<Character> ();
             Variant::JSON::Writer{}.Write (vv, tmpStream);
             DbgTrace (L"rendered as JSON: = %s", tmpStream.As<String> ().ReplaceAll ("\n"sv, ""sv).c_str ());
         };

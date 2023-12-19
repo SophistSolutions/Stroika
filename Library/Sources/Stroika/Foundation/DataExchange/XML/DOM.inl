@@ -160,7 +160,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline String Document::Ptr::Write (const SerializationOptions& options) const
     {
         // @todo need a better Streams DESIGN here - were we can write and produce the string directly...
-        Streams::MemoryStream<byte>::Ptr bufferedOutput = Streams::MemoryStream<byte>::New ();
+        Streams::MemoryStream::Ptr<byte> bufferedOutput = Streams::MemoryStream::New<byte> ();
         fRep_->Write (bufferedOutput, options);
         return Streams::TextReader::New (bufferedOutput).ReadAll ();
     }

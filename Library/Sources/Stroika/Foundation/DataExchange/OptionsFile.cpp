@@ -207,7 +207,7 @@ optional<VariantValue> OptionsFile::Read ()
 {
     Debug::TraceContextBumper ctx{"OptionsFile::Read"};
     try {
-        optional<VariantValue> r = fReader_.Read (MemoryStream<byte>::New (ReadRaw ()));
+        optional<VariantValue> r = fReader_.Read (MemoryStream::New<byte> (ReadRaw ()));
         if (r.has_value ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"present: upgrading module %s", fModuleName_.c_str ());
@@ -230,7 +230,7 @@ template <>
 void OptionsFile::Write (const VariantValue& optionsObject)
 {
     Debug::TraceContextBumper ctx{"OptionsFile::Write"};
-    MemoryStream<byte>::Ptr   tmp = MemoryStream<byte>::New ();
+    MemoryStream::Ptr<byte>   tmp = MemoryStream::New<byte> ();
     fWriter_.Write (optionsObject, tmp);
     WriteRaw (tmp.As<BLOB> ());
 }

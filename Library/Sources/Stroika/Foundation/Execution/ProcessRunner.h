@@ -128,8 +128,8 @@ namespace Stroika::Foundation::Execution {
         *
         *      \code
         *          Memory::BLOB                     kData_{ Memory::BLOB::FromRaw ("this is a test")  };
-        *          Streams::MemoryStream<byte>::Ptr processStdIn = Streams::MemoryStream<byte> { kData_ };
-        *          Streams::MemoryStream<byte>::Ptr processStdOut = Streams::MemoryStream<byte> {};
+        *          Streams::MemoryStream::Ptr<byte> processStdIn = Streams::MemoryStream::New<byte> (kData_ );
+        *          Streams::MemoryStream::Ptr<byte> processStdOut = Streams::MemoryStream::New<byte> ();
         *          ProcessRunner                    pr{"cat", processStdIn, processStdOut};
         *          pr.Run ();
         *          EXPECT_TRUE (processStdOut.ReadAll () == kData_);

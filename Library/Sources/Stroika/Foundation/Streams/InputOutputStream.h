@@ -51,6 +51,7 @@ namespace Stroika::Foundation::Streams {
         class Ptr;
 
     protected:
+    public: // @todo must change name so no prefix _
         class _IRep;
 
     protected:

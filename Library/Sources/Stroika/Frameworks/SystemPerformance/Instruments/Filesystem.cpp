@@ -430,7 +430,7 @@ namespace {
         {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
             ProcessRunner                                                 pr{"/bin/df -k -P"sv};
-            Streams::MemoryStream<byte>::Ptr                              useStdOut = Streams::MemoryStream<byte>::New ();
+            Streams::MemoryStream::Ptr<byte>                              useStdOut = Streams::MemoryStream::New<byte> ();
             pr.SetStdOut (useStdOut);
             std::exception_ptr runException;
             try {
@@ -492,7 +492,7 @@ namespace {
             //  NEW NOTE - I THINK ITS IN THERE.... RE-EXAMINE proc/filesystems proc/partitions, and http://en.wikipedia.org/wiki/Procfs
             //      -- LGP 2014-08-01
             ProcessRunner                    pr{includeFSTypes ? "/bin/df -k -T"sv : "/bin/df -k"sv};
-            Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
+            Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
             pr.SetStdOut (useStdOut);
             std::exception_ptr runException;
             try {

@@ -1095,7 +1095,7 @@ namespace {
         Memory::BLOB doWrite_ (const ScanDetails_& scan)
         {
             using namespace DataExchange;
-            Streams::MemoryStream<byte>::Ptr out      = Streams::MemoryStream<byte>::New ();
+            Streams::MemoryStream::Ptr<byte> out      = Streams::MemoryStream::New<byte> ();
             static const ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
             Variant::JSON::Writer ().Write (kMapper_.FromObject (scan), out);
             return out.As<Memory::BLOB> ();
@@ -1397,9 +1397,9 @@ namespace {
         Tester (L"wstringstream << test", Test_OperatorINSERT_ostream_<wstring>, L"wstring", Test_OperatorINSERT_ostream_<String>,
                 L"Charactes::String", 6000, 1.4, &failedTests);
         Tester (L"String::substr()", Test_StringSubStr_<wstring>, L"wstring", Test_StringSubStr_<String>, L"Charactes::String", 2700000, 1.7, &failedTests);
-        struct MemStreamOfChars_ : public MemoryStream<Characters::Character>::Ptr {
+        struct MemStreamOfChars_ : public MemoryStream::Ptr<Characters::Character> {
             MemStreamOfChars_ ()
-                : Ptr{MemoryStream<Characters::Character>::New ()}
+                : Ptr{MemoryStream::New<Characters::Character> ()}
             {
             }
         };
