@@ -24,7 +24,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     /**
      */
     struct SerializationOptions {
-        bool                     fPrettyPrint{false};
+        bool                   fPrettyPrint{false};
         optional<unsigned int> fIndent{};
     };
 

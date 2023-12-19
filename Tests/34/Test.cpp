@@ -1354,6 +1354,9 @@ namespace {
             DOM::Document::Ptr d = DOM::Document::New (kHealthFrameWorks_v3_xml.As<Streams::InputStream<byte>::Ptr> (), schema);
             stringstream       ss;
             d.WritePrettyPrinted (ss);
+
+            String tmp = d.Write ();
+            DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
             // this line I THINK crashes on MacOS under github actions, but not on my machine?? TESTING to viery  thats the issue
             //DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
         }
