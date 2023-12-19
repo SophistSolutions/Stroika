@@ -1,0 +1,6 @@
+274c274,276
+<     memcpy(newMap, toExpand->fMap, oldCap * sizeof(PrefMapElem));
+---
+>     if (oldCap != 0) {
+>         memcpy(newMap, toExpand->fMap, oldCap * sizeof(PrefMapElem));
+>     }

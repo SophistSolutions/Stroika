@@ -190,6 +190,7 @@ endif
 		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Xerces ${VERSION} - Patching ... ";\
 		patch -p0 $@/src/xercesc/internal/ElemStack.cpp Patches/SilenceSanitizerWarningAboutMemcpyNullPtr.PATCH >> $@/PATCHING.OUT;\
 		patch -p0 $@/tests/src/Char16Test/Char16Test.cpp Patches/Char16Test_IOSTREAMCHANGE.PATCH >> $@/PATCHING.OUT;\
+		patch -p0 $@/src/xercesc/validators/schema/NamespaceScope.cpp Patches/SilenceSanitizerWarningAboutMemCpyNullPtr2.PATCH >> $@/PATCHING.OUT;\
 	fi
 
 
