@@ -22,6 +22,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     using Traversal::Iterable;
 
     /**
+     *  \note - some serializers (xerces) may ignore fIndent
      */
     struct SerializationOptions {
         bool                   fPrettyPrint{false};
@@ -105,7 +106,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  This is the value between the brackets <a>text</a>. Note that <a></a> is the same as <a/> - the empty string.
              * 
-             *      \note before Stroika v3.0d5, the value API was VariantValue but that was always maningless, and just treated as a String.
+             *      \note before Stroika v3.0d5, the value API was VariantValue but that was always meaningless, and just treated as a String.
              *
              *      \note the 'String' value maybe implemented in XML in a variety of ways (entities, CDATA, etc).
              */
@@ -274,22 +275,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              */
             bool operator== (const Ptr&) const = default;
-
-#if 1
-        public:
-            /**
-            // IO routines - Serialize the document DOM
-
-
-            @todo fix to look at existing XML OUTPUT code - formatting.
-
-            Look at STREAMS code.
-         */
-            nonvirtual void WritePrettyPrinted (ostream& out) const;
-            /**
-         */
-            nonvirtual void WriteAsIs (ostream& out) const;
-#endif
 
         public:
             /**

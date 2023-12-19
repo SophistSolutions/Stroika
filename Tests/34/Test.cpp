@@ -1333,32 +1333,22 @@ namespace {
         const Memory::BLOB kReferenceContent_2012_03_xsd = Memory::BLOB::Attach (Resources_::ReferenceContent_2012_03_xsd);
 
         {
-            DOM::Document::Ptr d = DOM::Document::New (kPersonalXML_.As<Streams::InputStream<byte>::Ptr> ());
-            stringstream       ss;
-            d.WritePrettyPrinted (ss);
-            // this line I THINK crashes on MacOS under github actions, but not on my machine?? TESTING to viery  thats the issue
-            //DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
+            DOM::Document::Ptr d   = DOM::Document::New (kPersonalXML_.As<Streams::InputStream<byte>::Ptr> ());
+            String             tmp = d.Write ();
+            DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         }
         {
             Schema::Ptr        personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
             DOM::Document::Ptr d              = DOM::Document::New (kPersonalXML_.As<Streams::InputStream<byte>::Ptr> (), personalSchema);
-            stringstream       ss;
-            d.WritePrettyPrinted (ss);
-            // this line I THINK crashes on MacOS under github actions, but not on my machine?? TESTING to viery  thats the issue
-          // DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
+            String             tmp            = d.Write ();
+            DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         }
         {
-
             Schema::Ptr schema = XML::Schema::New (IO::Network::URI{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"},
                                                    kReferenceContent_2012_03_xsd);
-            DOM::Document::Ptr d = DOM::Document::New (kHealthFrameWorks_v3_xml.As<Streams::InputStream<byte>::Ptr> (), schema);
-            stringstream       ss;
-            d.WritePrettyPrinted (ss);
-
-            String tmp = d.Write ();
+            DOM::Document::Ptr d   = DOM::Document::New (kHealthFrameWorks_v3_xml.As<Streams::InputStream<byte>::Ptr> (), schema);
+            String             tmp = d.Write ();
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
-            // this line I THINK crashes on MacOS under github actions, but not on my machine?? TESTING to viery  thats the issue
-            //DbgTrace (L"s=%s", Characters::ToString (String::FromUTF8 (ss.str ())).c_str ());
         }
     }
 }

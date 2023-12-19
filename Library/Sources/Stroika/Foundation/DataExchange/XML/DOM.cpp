@@ -12,6 +12,7 @@
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/TemporaryFile.h"
+#include "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Memory/MemoryAllocator.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
@@ -40,7 +41,6 @@ using namespace Stroika::Foundation::DataExchange::XML;
 #if qHasFeature_Xerces
 using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
 #endif
-
 
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
 
@@ -160,6 +160,7 @@ namespace {
                     p_->release ();
                 p_ = p;
             }
+
         private:
             TYPE* p_;
         };
@@ -343,6 +344,7 @@ namespace {
                 }
                 return fCachedMainListLen;
             }
+
         private:
             T_DOMNode*     fParentNode{nullptr};
             T_DOMNode*     fCurNode_{nullptr};
@@ -708,6 +710,7 @@ namespace {
             {
                 return new (getMemoryManager ()) _MyInputStrm (fSource);
             }
+
         protected:
             Streams::InputStream<byte>::Ptr fSource;
         };
@@ -930,11 +933,7 @@ namespace {
                             //
                             filesystem::path tmpFileName = IO::FileSystem::AppTempFileManager::sThe.GetTempFile ("FAILED_VALIDATION_.xml");
                             DbgTrace (L"Error validating - so writing out temporary file = '%s'", Characters::ToString (tmpFileName).c_str ());
-                            {
-                                ofstream out{tmpFileName, ios_base::out | ios_base::binary};
-                                Write (Streams::iostream::OutputStreamFromStdOStream<byte>::New (out),
-                                       SerializationOptions{.fPrettyPrint = true, .fIndent = 4});
-                            }
+                            Write (IO::FileSystem::FileOutputStream::New (tmpFileName), SerializationOptions{.fPrettyPrint = true, .fIndent = 4});
                             try {
                                 ValidateFile (tmpFileName, schema);
                             }

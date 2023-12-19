@@ -12,7 +12,6 @@
 
 #include "../../Streams/MemoryStream.h"
 #include "../../Streams/TextReader.h"
-#include "../../Streams/iostream/OutputStreamFromStdOStream.h"
 
 #if qHasFeature_Xerces
 namespace Stroika::Foundation::DataExchange::XML::DOM {
@@ -154,16 +153,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return fRep_;
     }
-#if 1
-    inline void Document::Ptr::WritePrettyPrinted (ostream& out) const
-    {
-        Write (Streams::iostream::OutputStreamFromStdOStream<byte>::New (out), SerializationOptions{.fPrettyPrint = true, .fIndent = 4u});
-    }
-    inline void Document::Ptr::WriteAsIs (ostream& out) const
-    {
-        Write (Streams::iostream::OutputStreamFromStdOStream<byte>::New (out), SerializationOptions{.fPrettyPrint = false});
-    }
-#endif
     inline void Document::Ptr::Write (const Streams::OutputStream<byte>::Ptr& to, const SerializationOptions& options) const
     {
         fRep_->Write (to, options);
