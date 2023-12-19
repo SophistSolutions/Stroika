@@ -51,7 +51,7 @@ namespace {
      *  Short lifetime. Don't save these iterator objects. Just use them to enumerate a collection and then let them
      *  go. They (could) become invalid after a call to update the database.
      */
-    class SubNodeIterator {
+    class SubNodeIterator_ {
     public:
         class Rep {
         public:
@@ -64,7 +64,7 @@ namespace {
             virtual Node::Ptr Current () const   = 0;
             virtual size_t    GetLength () const = 0;
         };
-        explicit SubNodeIterator (const shared_ptr<Rep>& from)
+        explicit SubNodeIterator_ (const shared_ptr<Rep>& from)
             : fRep{from}
         {
         }
@@ -165,17 +165,17 @@ namespace {
             TYPE* p_;
         };
 
-        constexpr XMLCh    kDOMImplFeatureDeclaration[] = u"Core";
         DOMImplementation& GetDOMIMPL_ ()
         {
+            static constexpr XMLCh kDOMImplFeatureDeclaration_[] = u"Core";
             // safe to save in a static var? -- LGP 2007-05-20
             // from perusing implementation - this appears safe to cache and re-use in differnt threads
-            static DOMImplementation* impl = DOMImplementationRegistry::getDOMImplementation (kDOMImplFeatureDeclaration);
+            static DOMImplementation* impl = DOMImplementationRegistry::getDOMImplementation (kDOMImplFeatureDeclaration_);
             AssertNotNull (impl);
             return *impl;
         }
 
-        constexpr bool qDumpXMLOnValidationError = qDebug;
+        constexpr bool qDumpXMLOnValidationError_ = qDebug;
 
         // Simple 'roughly analagous' type wrappers - start with 'T_'
         using T_DOMNode                = XERCES_CPP_NAMESPACE::DOMNode;
@@ -297,7 +297,7 @@ namespace {
         Node::Ptr  WrapImpl_ (T_DOMNode* n);
         T_DOMNode* GetInternalRep_ (Node::IRep* anr);
 
-        class SubNodeIteratorOver_SiblingList_Rep_ : public SubNodeIterator::Rep,
+        class SubNodeIteratorOver_SiblingList_Rep_ : public SubNodeIterator_::Rep,
                                                      Memory::UseBlockAllocationIfAppropriate<SubNodeIteratorOver_SiblingList_Rep_> {
         public:
             // Called iterates over CHILDREN of given parentNode
@@ -441,15 +441,15 @@ namespace {
                     DOMElement* element = dynamic_cast<DOMElement*> (fNode_);
                     ThrowIfNull (element);
                     /*
-                 * For reasons that elude maybe (maybe because it was standard for XML early on)
-                 * all my attributes are free of namespaces. So why use setAttributeNS? Because otherwise
-                 * the XQilla code fails to match on the attribute names at all in its XPath stuff.
-                 * Considered copying the namespace from the parent element (fNode_->getNamespaceURI()),
-                 * but XQilla didnt like that either (maybe then I needed M: on xpath).
-                 * A differnt subclass object of DOMAttrNode is created - one that doesnt have a getLocalName,
-                 * or something like that. Anyhow - this appears to do the right thing for now...
-                 *      -- LGP 2007-06-13
-                 */
+                     * For reasons that elude maybe (maybe because it was standard for XML early on)
+                     * all my attributes are free of namespaces. So why use setAttributeNS? Because otherwise
+                     * the XQilla code fails to match on the attribute names at all in its XPath stuff.
+                     * Considered copying the namespace from the parent element (fNode_->getNamespaceURI()),
+                     * but XQilla didnt like that either (maybe then I needed M: on xpath).
+                     * A differnt subclass object of DOMAttrNode is created - one that doesnt have a getLocalName,
+                     * or something like that. Anyhow - this appears to do the right thing for now...
+                     *      -- LGP 2007-06-13
+                     */
                     element->setAttributeNS (nullptr, attrName.As<u16string> ().c_str (), v.As<u16string> ().c_str ());
                 }
                 END_LIB_EXCEPTION_MAPPER
@@ -614,7 +614,7 @@ namespace {
                 START_LIB_EXCEPTION_MAPPER
                 {
                     return Traversal::CreateGenerator<Node::Ptr> (
-                        [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node::Ptr> {
+                        [sni = SubNodeIterator_{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node::Ptr> {
                             if (sni.IsAtEnd ()) {
                                 return optional<Node::Ptr>{};
                             }
@@ -840,7 +840,6 @@ namespace {
                          *      -- LGP 2009-05-15
                          *
                          *          oldRoot->release ();
-                         *
                          */
                     }
                     Assert (fXMLDoc->getDocumentElement () == n);
@@ -864,7 +863,7 @@ namespace {
                 AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
                 AssertNotNull (fXMLDoc);
                 START_LIB_EXCEPTION_MAPPER
-                return Traversal::CreateGenerator<Node::Ptr> ([sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (
+                return Traversal::CreateGenerator<Node::Ptr> ([sni = SubNodeIterator_{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (
                                                                    fXMLDoc.get ())}] () mutable -> optional<Node::Ptr> {
                     if (sni.IsAtEnd ()) {
                         return optional<Node::Ptr>{};
@@ -888,15 +887,15 @@ namespace {
                         // checking the top-level DOM-node and assure that has the right namespace. At least quickie first check that works when
                         // reading files (doesnt help in pre-save check, of course)
                         T_DOMNode* docNode = fXMLDoc->getDocumentElement ();
-                        if (docNode == nullptr) {
-                            Execution::Throw (BadFormatException (L"No document", 0, 0, 0));
+                        if (docNode == nullptr) [[unlikely]] {
+                            Execution::Throw (BadFormatException{"No document", 0, 0, 0});
                         }
                         optional<URI> docURI = docNode->getNamespaceURI () == nullptr ? optional<URI>{} : docNode->getNamespaceURI ();
                         if (docURI != schema.GetTargetNamespace ()) {
-                            Execution::Throw (BadFormatException (Format (L"Wrong document namespace (found '%s' and expected '%s')",
-                                                                          Characters::ToString (docURI).c_str (),
-                                                                          Characters::ToString (schema.GetTargetNamespace ()).c_str ()),
-                                                                  0, 0, 0));
+                            Execution::Throw (BadFormatException{Format (L"Wrong document namespace (found '%s' and expected '%s')",
+                                                                         Characters::ToString (docURI).c_str (),
+                                                                         Characters::ToString (schema.GetTargetNamespace ()).c_str ()),
+                                                                 0, 0, 0});
                         }
 
                         // EXTERNALIZE, AND THEN RE-PARSE USING CACHED SAX PARSER WTIH LOADED GRAMMAR
@@ -926,7 +925,7 @@ namespace {
                         }
                     }
                     catch (...) {
-                        if constexpr (qDumpXMLOnValidationError) {
+                        if constexpr (qDumpXMLOnValidationError_) {
                             // Generate temp file (each with differnet names), and write out the bad XML.
                             // Then - re-validate (with line#s) - and print the results of the validation to ANOTHER
                             // temporary file
