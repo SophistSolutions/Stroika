@@ -8,6 +8,7 @@
 
 #include "../../Execution/Exceptions.h"
 #include "../../Streams/InputStream.h"
+#include "../../Streams/OutputStream.h"
 
 #include "../BadFormatException.h"
 
@@ -19,6 +20,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     using DataExchange::BadFormatException;
     using Traversal::Iterable;
+
+    /**
+     */
+    struct SerializationOptions {
+        bool                     fPrettyPrint{false};
+        optional<unsigned int> fIndent{};
+    };
 
     /**
      * NB: A Node can be EITHER an ELEMENT or an ATTRIBUTE (mostly). Nodes are 'internal' to a Document, and are always somehow contained in some document).
@@ -267,6 +275,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              */
             bool operator== (const Ptr&) const = default;
 
+#if 1
         public:
             /**
             // IO routines - Serialize the document DOM
@@ -280,6 +289,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
          */
             nonvirtual void WriteAsIs (ostream& out) const;
+#endif
+
+        public:
+            /**
+             */
+            nonvirtual void   Write (const Streams::OutputStream<byte>::Ptr& to, const SerializationOptions& options = {}) const;
+            nonvirtual String Write (const SerializationOptions& options = {}) const;
 
         public:
             /**
@@ -328,10 +344,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         struct IRep {
             virtual ~IRep ()                                                                                        = default;
             virtual void                Read (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema) = 0;
-            virtual void                WritePrettyPrinted (ostream& out) const                                     = 0;
-            virtual void                WriteAsIs (ostream& out) const                                              = 0;
-            virtual Iterable<Node::Ptr> GetChildren () const                                                        = 0;
-            virtual void                Validate (const Schema::Ptr& schema) const                                  = 0;
+            virtual void                Write (const Streams::OutputStream<byte>::Ptr& to, const SerializationOptions& options) const = 0;
+            virtual Iterable<Node::Ptr> GetChildren () const                                                                          = 0;
+            virtual void                Validate (const Schema::Ptr& schema) const                                                    = 0;
         };
     }
 

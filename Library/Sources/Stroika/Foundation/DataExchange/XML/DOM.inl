@@ -10,6 +10,10 @@
  ********************************************************************************
  */
 
+#include "../../Streams/MemoryStream.h"
+#include "../../Streams/TextReader.h"
+#include "../../Streams/iostream/OutputStreamFromStdOStream.h"
+
 #if qHasFeature_Xerces
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 
@@ -150,19 +154,26 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return fRep_;
     }
+#if 1
     inline void Document::Ptr::WritePrettyPrinted (ostream& out) const
     {
-        /*
-     * Write pretty printed XML - where we generate the whitespace around nodes - ignoring any text fragments - except in leaf nodes.
-     */
-        fRep_->WritePrettyPrinted (out);
+        Write (Streams::iostream::OutputStreamFromStdOStream<byte>::New (out), SerializationOptions{.fPrettyPrint = true, .fIndent = 4u});
     }
     inline void Document::Ptr::WriteAsIs (ostream& out) const
     {
-        /*
-     * Write - respecting all the little #text fragment nodes throughout the XML node tree
-     */
-        fRep_->WriteAsIs (out);
+        Write (Streams::iostream::OutputStreamFromStdOStream<byte>::New (out), SerializationOptions{.fPrettyPrint = false});
+    }
+#endif
+    inline void Document::Ptr::Write (const Streams::OutputStream<byte>::Ptr& to, const SerializationOptions& options) const
+    {
+        fRep_->Write (to, options);
+    }
+    inline String Document::Ptr::Write (const SerializationOptions& options) const
+    {
+        // @todo need a better Streams DESIGN here - were we can write and produce the string directly...
+        Streams::MemoryStream<byte>::Ptr bufferedOutput = Streams::MemoryStream<byte>::New ();
+        fRep_->Write (bufferedOutput, options);
+        return Streams::TextReader::New (bufferedOutput).ReadAll ();
     }
     inline Iterable<Node::Ptr> Document::Ptr::GetChildren () const
     {

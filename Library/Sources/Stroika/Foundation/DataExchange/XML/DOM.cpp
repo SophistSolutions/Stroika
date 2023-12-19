@@ -251,6 +251,38 @@ namespace {
         Assert (doc->getXmlStandalone ());
         writer->write (doc, theOutputDesc);
     }
+    void DoWrite2Stream_ (T_XMLDOMDocument* doc, const Streams::OutputStream<byte>::Ptr& to, const SerializationOptions& options)
+    {
+        AutoRelease<DOMLSOutput> theOutputDesc = GetDOMIMPL_ ().createLSOutput ();
+        theOutputDesc->setEncoding (XMLUni::fgUTF8EncodingString);
+        AutoRelease<DOMLSSerializer> writer = GetDOMIMPL_ ().createLSSerializer ();
+        DOMConfiguration*            dc     = writer->getDomConfig ();
+        dc->setParameter (XMLUni::fgDOMWRTFormatPrettyPrint, options.fPrettyPrint);
+        dc->setParameter (XMLUni::fgDOMWRTBOM, true);
+
+        class myOutputter : public XMLFormatTarget {
+        public:
+            Streams::OutputStream<byte>::Ptr fOut;
+            myOutputter (const Streams::OutputStream<byte>::Ptr& to)
+                : fOut{to}
+            {
+            }
+            virtual void writeChars (const XMLByte* const toWrite, const XMLSize_t count, [[maybe_unused]] XMLFormatter* const formatter) override
+            {
+                fOut.Write (span<const byte>{reinterpret_cast<const byte*> (toWrite), count});
+                //                fOut.write (reinterpret_cast<const char*> (toWrite), sizeof (XMLByte) * count);
+            }
+            virtual void flush () override
+            {
+                fOut.Flush ();
+            }
+        };
+        myOutputter dest{to};
+        theOutputDesc->setByteStream (&dest);
+        Assert (doc->getXmlStandalone ());
+        writer->write (doc, theOutputDesc);
+    }
+
     string DoWrite2UTF8String (T_XMLDOMDocument* doc, bool prettyPrint)
     {
         stringstream resultBuf{ios_base::in | ios_base::out | ios_base::binary};
@@ -574,6 +606,8 @@ namespace {
             END_LIB_EXCEPTION_MAPPER
         }
 #endif
+
+#if 0
         virtual void WritePrettyPrinted (ostream& out) const override
         {
             TraceContextBumper                             ctx{"XercesDocRep_::WritePrettyPrinted"};
@@ -595,6 +629,18 @@ namespace {
             START_LIB_EXCEPTION_MAPPER
             {
                 DoWrite2Stream_ (fXMLDoc.get (), out, false);
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+#endif
+        virtual void Write (const Streams::OutputStream<byte>::Ptr& to, const SerializationOptions& options) const override
+        {
+            TraceContextBumper                             ctx{"XercesDocRep_::Write"};
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertNotNull (fXMLDoc);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                DoWrite2Stream_ (fXMLDoc.get (), to, options);
             }
             END_LIB_EXCEPTION_MAPPER
         }
@@ -676,7 +722,8 @@ namespace {
                         DbgTrace (L"Error validating - so writing out temporary file = '%s'", Characters::ToString (tmpFileName).c_str ());
                         {
                             ofstream out{tmpFileName, ios_base::out | ios_base::binary};
-                            WritePrettyPrinted (out);
+                            Write (Streams::iostream::OutputStreamFromStdOStream<byte>::New (out),
+                                   SerializationOptions{.fPrettyPrint = true, .fIndent = 4});
                         }
                         try {
                             ValidateFile (tmpFileName, schema);

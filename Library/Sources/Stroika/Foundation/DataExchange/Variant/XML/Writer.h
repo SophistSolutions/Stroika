@@ -59,7 +59,7 @@ namespace Stroika::Foundation::DataExchange::Variant::XML {
         class Rep_;
 
     public:
-        Writer (const SerializationConfiguration& config = SerializationConfiguration ());
+        Writer (const SerializationConfiguration& config = SerializationConfiguration{});
 
     public:
         nonvirtual SerializationConfiguration GetConfiguration () const;
