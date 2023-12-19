@@ -385,7 +385,322 @@ namespace {
     };
 }
 namespace {
+    class XercesDocRep_;
     Node::Ptr WrapImpl_ (T_DOMNode* n);
+    T_DOMNode* GetInternalRep_ (Node::IRep* anr);
+    class MyNodeRep_ : public Node::IRep, Memory::UseBlockAllocationIfAppropriate<MyNodeRep_> {
+    public:
+        MyNodeRep_ (DOMNode* n)
+            : fNode_{n}
+        {
+            RequireNotNull (n);
+        }
+        virtual Node::Type GetNodeType () const override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                switch (fNode_->getNodeType ()) {
+                    case DOMNode::ELEMENT_NODE:
+                        return Node::eElementNT;
+                    case DOMNode::ATTRIBUTE_NODE:
+                        return Node::eAttributeNT;
+                    case DOMNode::TEXT_NODE:
+                        return Node::eTextNT;
+                    case DOMNode::COMMENT_NODE:
+                        return Node::eCommentNT;
+                    default:
+                        return Node::eOtherNT;
+                }
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual optional<URI> GetNamespace () const override
+        {
+            AssertNotNull (fNode_);
+            Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                const XMLCh* n = fNode_->getNamespaceURI ();
+                return n == nullptr ? optional<URI>{} : URI{xercesString2String (n)};
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual String GetName () const override
+        {
+            AssertNotNull (fNode_);
+            Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                AssertNotNull (fNode_->getNodeName ());
+                return fNode_->getNodeName ();
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual void SetName (const String& name) override
+        {
+            AssertNotNull (fNode_);
+#if qDebug
+            Require (ValidNewNodeName_ (name));
+#endif
+            START_LIB_EXCEPTION_MAPPER
+            {
+                T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
+                AssertNotNull (doc);
+                fNode_ = doc->renameNode (fNode_, fNode_->getNamespaceURI (), name.As<u16string> ().c_str ());
+                AssertNotNull (fNode_);
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual String GetValue () const override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                return GetTextForDOMNode_ (fNode_);
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual void SetValue (const String& v) override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                fNode_->setTextContent (v.empty () ? nullptr : v.As<u16string> ().c_str ());
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual void SetAttribute (const String& attrName, const String& v) override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                DOMElement* element = dynamic_cast<DOMElement*> (fNode_);
+                ThrowIfNull (element);
+                /*
+                 * For reasons that elude maybe (maybe because it was standard for XML early on)
+                 * all my attributes are free of namespaces. So why use setAttributeNS? Because otherwise
+                 * the XQilla code fails to match on the attribute names at all in its XPath stuff.
+                 * Considered copying the namespace from the parent element (fNode_->getNamespaceURI()),
+                 * but XQilla didnt like that either (maybe then I needed M: on xpath).
+                 * A differnt subclass object of DOMAttrNode is created - one that doesnt have a getLocalName,
+                 * or something like that. Anyhow - this appears to do the right thing for now...
+                 *      -- LGP 2007-06-13
+                 */
+                element->setAttributeNS (nullptr, attrName.As<u16string> ().c_str (), v.As<u16string> ().c_str ());
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual bool HasAttribute (const String& attrName, const String* value) const override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
+                    T_DOMElement* elt = Debug::UncheckedDynamicCast<T_DOMElement*> (fNode_);
+                    if (elt->hasAttribute (attrName.As<u16string> ().c_str ())) {
+                        if (value != nullptr) {
+                            const XMLCh* s = elt->getAttribute (attrName.As<u16string> ().c_str ());
+                            AssertNotNull (s);
+                            return CString::Equals (s, value->As<u16string> ().c_str ());
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual optional<String> GetAttribute (const String& attrName) const override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
+                    T_DOMElement* elt = Debug::UncheckedDynamicCast<T_DOMElement*> (fNode_);
+                    const XMLCh*  s   = elt->getAttribute (attrName.As<u16string> ().c_str ());
+                    AssertNotNull (s);
+                    if (*s != '\0') {
+                        return s;
+                    }
+                }
+                return nullopt;
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual Node::Ptr GetFirstAncestorNodeWithAttribute (const String& attrName) const override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                for (T_DOMNode* p = fNode_; p != nullptr; p = p->getParentNode ()) {
+                    if (p->getNodeType () == DOMNode::ELEMENT_NODE) {
+                        AssertMember (p, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
+                        const T_DOMElement* elt = reinterpret_cast<const T_DOMElement*> (p);
+                        if (elt->hasAttribute (attrName.As<u16string> ().c_str ())) {
+                            return WrapImpl_ (p);
+                        }
+                    }
+                }
+                return nullptr;
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual Node::Ptr InsertChild (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
+        {
+#if qDebug
+            Require (ValidNewNodeName_ (name));
+#endif
+            START_LIB_EXCEPTION_MAPPER
+            {
+                T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
+                // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
+                T_DOMNode* child = doc->createElementNS ((ns == nullopt) ? fNode_->getNamespaceURI () : ns->As<String> ().As<u16string> ().c_str (),
+                                                         name.As<u16string> ().c_str ());
+                T_DOMNode* refChildNode = nullptr;
+                if (afterNode == nullptr) {
+                    // this means PREPEND.
+                    // If there is a first element, then insert before it. If no elements, then append is the same thing.
+                    refChildNode = fNode_->getFirstChild ();
+                }
+                else {
+                    refChildNode = GetInternalRep_ (GetRep4Node (afterNode).get ())->getNextSibling ();
+                }
+                T_DOMNode* childx = fNode_->insertBefore (child, refChildNode);
+                ThrowIfNull (childx);
+                return WrapImpl_ (childx);
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual Node::Ptr AppendChild (const String& name, const optional<URI>& ns) override
+        {
+#if qDebug
+            Require (ValidNewNodeName_ (name));
+#endif
+            START_LIB_EXCEPTION_MAPPER
+            {
+                T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
+                T_DOMNode*        child{};
+                if (ns) {
+                    u16string namespaceURI = ns->As<String> ().As<u16string> ();
+                    child                  = doc->createElementNS (namespaceURI.c_str (), name.As<u16string> ().c_str ());
+                }
+                else {
+                    const XMLCh* namespaceURI = fNode_->getNamespaceURI ();
+                    child                     = doc->createElementNS (namespaceURI, name.As<u16string> ().c_str ());
+                }
+                T_DOMNode* childx = fNode_->appendChild (child);
+                ThrowIfNull (childx);
+                return WrapImpl_ (childx);
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual void DeleteNode () override
+        {
+            START_LIB_EXCEPTION_MAPPER
+            {
+                T_DOMNode* selNode = fNode_;
+                ThrowIfNull (selNode);
+                T_DOMNode* parentNode = selNode->getParentNode ();
+                if (parentNode == nullptr) {
+                    // This happens if the selected node is an attribute
+                    if (fNode_ != nullptr) {
+                        const XMLCh* ln = selNode->getNodeName ();
+                        AssertNotNull (ln);
+                        DOMElement* de = dynamic_cast<DOMElement*> (fNode_);
+                        de->removeAttribute (ln);
+                    }
+                }
+                else {
+                    (void)parentNode->removeChild (selNode);
+                }
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual Node::Ptr ReplaceNode () override
+        {
+            RequireNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
+                ThrowIfNull (doc);
+                T_DOMNode* selNode = fNode_;
+                ThrowIfNull (selNode); // perhaps this should be an assertion?
+                T_DOMNode* parentNode = selNode->getParentNode ();
+                ThrowIfNull (parentNode);
+                DOMElement* n = doc->createElementNS (selNode->getNamespaceURI (), selNode->getNodeName ());
+                (void)parentNode->replaceChild (n, selNode);
+                return WrapImpl_ (n);
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual Node::Ptr GetParentNode () const override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                auto p = fNode_->getParentNode ();
+                return p == nullptr ? nullptr : WrapImpl_ (p);
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual Iterable<Node::Ptr> GetChildren () const override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                return Traversal::CreateGenerator<Node::Ptr> (
+                    [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node::Ptr> {
+                        if (sni.IsAtEnd ()) {
+                            return optional<Node::Ptr>{};
+                        }
+                        Node::Ptr r = *sni;
+                        ++sni;
+                        return r;
+                    });
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual Node::Ptr GetChildNodeByID (const String& id) const override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER
+            {
+                for (T_DOMNode* i = fNode_->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
+                    if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
+                        AssertMember (i, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
+                        T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (i);
+                        const XMLCh*  s   = elt->getAttribute (u"id");
+                        AssertNotNull (s);
+                        if (CString::Equals (s, id.As<u16string> ().c_str ())) {
+                            return WrapImpl_ (i);
+                        }
+                    }
+                }
+                return nullptr;
+            }
+            END_LIB_EXCEPTION_MAPPER
+        }
+        virtual void* GetInternalTRep () override
+        {
+            return fNode_;
+        }
+
+    private:
+        nonvirtual XercesDocRep_& GetAssociatedDoc_ () const
+        {
+            AssertNotNull (fNode_);
+            T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
+            AssertNotNull (doc);
+            void* docData = doc->getUserData (kXerces2XMLDBDocumentKey_);
+            AssertNotNull (docData);
+            return *reinterpret_cast<XercesDocRep_*> (docData);
+        }
+
+    private:
+        // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
+        DOMNode* fNode_;
+    };
 }
 
 namespace {
@@ -793,320 +1108,6 @@ namespace {
 namespace {
     inline Node::Ptr WrapImpl_ (T_DOMNode* n)
     {
-        class MyNodeRep_ : public Node::IRep, Memory::UseBlockAllocationIfAppropriate<MyNodeRep_> {
-        public:
-            MyNodeRep_ (DOMNode* n)
-                : fNode_{n}
-            {
-                RequireNotNull (n);
-            }
-            virtual Node::Type GetNodeType () const override
-            {
-                AssertNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    switch (fNode_->getNodeType ()) {
-                        case DOMNode::ELEMENT_NODE:
-                            return Node::eElementNT;
-                        case DOMNode::ATTRIBUTE_NODE:
-                            return Node::eAttributeNT;
-                        case DOMNode::TEXT_NODE:
-                            return Node::eTextNT;
-                        case DOMNode::COMMENT_NODE:
-                            return Node::eCommentNT;
-                        default:
-                            return Node::eOtherNT;
-                    }
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual optional<URI> GetNamespace () const override
-            {
-                AssertNotNull (fNode_);
-                Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    const XMLCh* n = fNode_->getNamespaceURI ();
-                    return n == nullptr ? optional<URI>{} : URI{xercesString2String (n)};
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual String GetName () const override
-            {
-                AssertNotNull (fNode_);
-                Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    AssertNotNull (fNode_->getNodeName ());
-                    return fNode_->getNodeName ();
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual void SetName (const String& name) override
-            {
-                AssertNotNull (fNode_);
-#if qDebug
-                Require (ValidNewNodeName_ (name));
-#endif
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
-                    AssertNotNull (doc);
-                    fNode_ = doc->renameNode (fNode_, fNode_->getNamespaceURI (), name.As<u16string> ().c_str ());
-                    AssertNotNull (fNode_);
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual String GetValue () const override
-            {
-                AssertNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    return GetTextForDOMNode_ (fNode_);
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual void SetValue (const String& v) override
-            {
-                AssertNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    fNode_->setTextContent (v.empty () ? nullptr : v.As<u16string> ().c_str ());
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual void SetAttribute (const String& attrName, const String& v) override
-            {
-                AssertNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    DOMElement* element = dynamic_cast<DOMElement*> (fNode_);
-                    ThrowIfNull (element);
-                    /*
-                 * For reasons that elude maybe (maybe because it was standard for XML early on)
-                 * all my attributes are free of namespaces. So why use setAttributeNS? Because otherwise
-                 * the XQilla code fails to match on the attribute names at all in its XPath stuff.
-                 * Considered copying the namespace from the parent element (fNode_->getNamespaceURI()),
-                 * but XQilla didnt like that either (maybe then I needed M: on xpath).
-                 * A differnt subclass object of DOMAttrNode is created - one that doesnt have a getLocalName,
-                 * or something like that. Anyhow - this appears to do the right thing for now...
-                 *      -- LGP 2007-06-13
-                 */
-                    element->setAttributeNS (nullptr, attrName.As<u16string> ().c_str (), v.As<u16string> ().c_str ());
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual bool HasAttribute (const String& attrName, const String* value) const override
-            {
-                AssertNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
-                        T_DOMElement* elt = Debug::UncheckedDynamicCast<T_DOMElement*> (fNode_);
-                        if (elt->hasAttribute (attrName.As<u16string> ().c_str ())) {
-                            if (value != nullptr) {
-                                const XMLCh* s = elt->getAttribute (attrName.As<u16string> ().c_str ());
-                                AssertNotNull (s);
-                                return CString::Equals (s, value->As<u16string> ().c_str ());
-                            }
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual optional<String> GetAttribute (const String& attrName) const override
-            {
-                AssertNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
-                        T_DOMElement* elt = Debug::UncheckedDynamicCast<T_DOMElement*> (fNode_);
-                        const XMLCh*  s   = elt->getAttribute (attrName.As<u16string> ().c_str ());
-                        AssertNotNull (s);
-                        if (*s != '\0') {
-                            return s;
-                        }
-                    }
-                    return nullopt;
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual Node::Ptr GetFirstAncestorNodeWithAttribute (const String& attrName) const override
-            {
-                AssertNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    for (T_DOMNode* p = fNode_; p != nullptr; p = p->getParentNode ()) {
-                        if (p->getNodeType () == DOMNode::ELEMENT_NODE) {
-                            AssertMember (p, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                            const T_DOMElement* elt = reinterpret_cast<const T_DOMElement*> (p);
-                            if (elt->hasAttribute (attrName.As<u16string> ().c_str ())) {
-                                return WrapImpl_ (p);
-                            }
-                        }
-                    }
-                    return nullptr;
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual Node::Ptr InsertChild (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
-            {
-#if qDebug
-                Require (ValidNewNodeName_ (name));
-#endif
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
-                    // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
-                    T_DOMNode* child =
-                        doc->createElementNS ((ns == nullopt) ? fNode_->getNamespaceURI () : ns->As<String> ().As<u16string> ().c_str (),
-                                              name.As<u16string> ().c_str ());
-                    T_DOMNode* refChildNode = nullptr;
-                    if (afterNode == nullptr) {
-                        // this means PREPEND.
-                        // If there is a first element, then insert before it. If no elements, then append is the same thing.
-                        refChildNode = fNode_->getFirstChild ();
-                    }
-                    else {
-                        refChildNode = GetInternalRep_ (GetRep4Node (afterNode).get ())->getNextSibling ();
-                    }
-                    T_DOMNode* childx = fNode_->insertBefore (child, refChildNode);
-                    ThrowIfNull (childx);
-                    return WrapImpl_ (childx);
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual Node::Ptr AppendChild (const String& name, const optional<URI>& ns) override
-            {
-#if qDebug
-                Require (ValidNewNodeName_ (name));
-#endif
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
-                    T_DOMNode*        child{};
-                    if (ns) {
-                        u16string namespaceURI = ns->As<String> ().As<u16string> ();
-                        child                  = doc->createElementNS (namespaceURI.c_str (), name.As<u16string> ().c_str ());
-                    }
-                    else {
-                        const XMLCh* namespaceURI = fNode_->getNamespaceURI ();
-                        child                     = doc->createElementNS (namespaceURI, name.As<u16string> ().c_str ());
-                    }
-                    T_DOMNode* childx = fNode_->appendChild (child);
-                    ThrowIfNull (childx);
-                    return WrapImpl_ (childx);
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual void DeleteNode () override
-            {
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    T_DOMNode* selNode = fNode_;
-                    ThrowIfNull (selNode);
-                    T_DOMNode* parentNode = selNode->getParentNode ();
-                    if (parentNode == nullptr) {
-                        // This happens if the selected node is an attribute
-                        if (fNode_ != nullptr) {
-                            const XMLCh* ln = selNode->getNodeName ();
-                            AssertNotNull (ln);
-                            DOMElement* de = dynamic_cast<DOMElement*> (fNode_);
-                            de->removeAttribute (ln);
-                        }
-                    }
-                    else {
-                        (void)parentNode->removeChild (selNode);
-                    }
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual Node::Ptr ReplaceNode () override
-            {
-                RequireNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
-                    ThrowIfNull (doc);
-                    T_DOMNode* selNode = fNode_;
-                    ThrowIfNull (selNode); // perhaps this should be an assertion?
-                    T_DOMNode* parentNode = selNode->getParentNode ();
-                    ThrowIfNull (parentNode);
-                    DOMElement* n = doc->createElementNS (selNode->getNamespaceURI (), selNode->getNodeName ());
-                    (void)parentNode->replaceChild (n, selNode);
-                    return WrapImpl_ (n);
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual Node::Ptr GetParentNode () const override
-            {
-                AssertNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    auto p = fNode_->getParentNode ();
-                    return p == nullptr ? nullptr : WrapImpl_ (p);
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual Iterable<Node::Ptr> GetChildren () const override
-            {
-                AssertNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    return Traversal::CreateGenerator<Node::Ptr> (
-                        [sni = SubNodeIterator{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node::Ptr> {
-                            if (sni.IsAtEnd ()) {
-                                return optional<Node::Ptr>{};
-                            }
-                            Node::Ptr r = *sni;
-                            ++sni;
-                            return r;
-                        });
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual Node::Ptr GetChildNodeByID (const String& id) const override
-            {
-                AssertNotNull (fNode_);
-                START_LIB_EXCEPTION_MAPPER
-                {
-                    for (T_DOMNode* i = fNode_->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
-                        if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
-                            AssertMember (i, T_DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                            T_DOMElement* elt = reinterpret_cast<T_DOMElement*> (i);
-                            const XMLCh*  s   = elt->getAttribute (u"id");
-                            AssertNotNull (s);
-                            if (CString::Equals (s, id.As<u16string> ().c_str ())) {
-                                return WrapImpl_ (i);
-                            }
-                        }
-                    }
-                    return nullptr;
-                }
-                END_LIB_EXCEPTION_MAPPER
-            }
-            virtual void* GetInternalTRep () override
-            {
-                return fNode_;
-            }
-
-        private:
-            nonvirtual XercesDocRep_& GetAssociatedDoc_ () const
-            {
-                AssertNotNull (fNode_);
-                T_XMLDOMDocument* doc = fNode_->getOwnerDocument ();
-                AssertNotNull (doc);
-                void* docData = doc->getUserData (kXerces2XMLDBDocumentKey_);
-                AssertNotNull (docData);
-                return *reinterpret_cast<XercesDocRep_*> (docData);
-            }
-
-        private:
-            // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
-            DOMNode* fNode_;
-        };
         RequireNotNull (n);
         return Node::Ptr{make_shared<MyNodeRep_> (n)};
     }
