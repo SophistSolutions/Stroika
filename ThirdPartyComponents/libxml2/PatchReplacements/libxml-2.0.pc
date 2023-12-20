@@ -1,11 +1,11 @@
 prefix=${pcfiledir}/../..
 exec_prefix=${prefix}
 libdir=${prefix}/lib
-includedir=${prefix}/include
+includedir=${prefix}/include/libxml2
 modules=1
 
 Name: libXML
 Version: 2.12.3
 Description: libXML library version2.
 Libs: -LIBPATH:${libdir} libxml2.lib
-Cflags: -I${includedir}/libxml2 
+#Cflags: -I${includedir}/libxml2 
