@@ -33,11 +33,6 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 , fWriteCursor_{fData_.begin ()}
             {
             }
-            Rep_ (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-                : Rep_{}
-            {
-                Write (start, end);
-            }
             Rep_ (const Rep_&)                       = delete;
             ~Rep_ ()                                 = default;
             nonvirtual Rep_& operator= (const Rep_&) = delete;
@@ -261,35 +256,26 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
      ********************** SharedMemoryStream<ELEMENT_TYPE> ************************
      ********************************************************************************
      */
-    //DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wattributes\"")
     template <typename ELEMENT_TYPE>
-    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized) -> Ptr<ELEMENT_TYPE>
+    inline auto New () -> Ptr<ELEMENT_TYPE>
     {
-        // always return internally synchronized rep
         return make_shared<Private_::Rep_<ELEMENT_TYPE>> ();
     }
-    //DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wattributes\"")
     template <typename ELEMENT_TYPE>
-    inline auto New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr<ELEMENT_TYPE>
-    {
-        return make_shared<Private_::Rep_<ELEMENT_TYPE>> (start, end);
-    }
-    template <typename ELEMENT_TYPE>
-    inline auto New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr<ELEMENT_TYPE>
-    {
-        return New (start, end);
-    }
-    template <typename ELEMENT_TYPE>
-    inline auto New (const Memory::BLOB& blob) -> Ptr<ELEMENT_TYPE>
+    inline auto New (const span<const byte>& copyFrom) -> Ptr<ELEMENT_TYPE>
         requires (same_as<ELEMENT_TYPE, byte>)
     {
-        return New (blob.begin (), blob.end ());
+        auto p = New<ELEMENT_TYPE> ();
+        p.Write (copyFrom);
+        return p;
     }
     template <typename ELEMENT_TYPE>
-    inline auto New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob) -> Ptr<ELEMENT_TYPE>
+    inline auto New (const Memory::BLOB& copyFrom) -> Ptr<ELEMENT_TYPE>
         requires (same_as<ELEMENT_TYPE, byte>)
     {
-        return New (blob.begin (), blob.end ());
+        auto p = New<ELEMENT_TYPE> ();
+        p.Write (copyFrom);
+        return p;
     }
 
     /*
@@ -334,6 +320,14 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             auto tmp = GetRepConstRef_ ().AsVector ();
             return String{span{tmp}};
         }
+    }
+
+    /// deprecated
+    template <typename ELEMENT_TYPE>
+    [[deprecated ("Since Stroika v3.0d5 - use span overload")]] inline auto New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
+        -> Ptr<ELEMENT_TYPE>
+    {
+        return make_shared<Private_::Rep_<ELEMENT_TYPE>> (start, end);
     }
 
 }

@@ -73,16 +73,11 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized = Execution::eInternallySynchronized);
+    Ptr<ELEMENT_TYPE> New ();
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+    Ptr<ELEMENT_TYPE> New (span<const ELEMENT_TYPE> copyFrom);
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-    template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (const Memory::BLOB& blob)
-        requires (same_as<ELEMENT_TYPE, byte>);
-    template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob)
+    Ptr<ELEMENT_TYPE> New (const Memory::BLOB& copyFrom)
         requires (same_as<ELEMENT_TYPE, byte>);
 
     namespace Private_ {
