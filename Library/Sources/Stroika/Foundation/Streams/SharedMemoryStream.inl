@@ -291,12 +291,12 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::GetRepConstRef_ () const -> const Private_::Rep_<ELEMENT_TYPE>&
     {
-        return *Debug::UncheckedDynamicCast<const Private_::Rep_*> (&inherited::_GetRepConstRef ());
+        return *Debug::UncheckedDynamicCast<const Private_::Rep_<ELEMENT_TYPE>*> (&inherited::_GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::GetRepRWRef_ () const -> Private_::Rep_<ELEMENT_TYPE>&
     {
-        return *Debug::UncheckedDynamicCast<Private_::Rep_*> (&inherited::_GetRepRWRef ());
+        return *Debug::UncheckedDynamicCast<Private_::Rep_<ELEMENT_TYPE>*> (&inherited::_GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     template <typename T>
