@@ -1443,7 +1443,7 @@ namespace {
             L"Collection<string> basics",
             [] () { Test_CollectionVectorAdditionsAndCopies_<vector<string>> ([] (vector<string>* c) { c->push_back (string{}); }); }, L"vector<string>",
             [] () { Test_CollectionVectorAdditionsAndCopies_<Collection<string>> ([] (Collection<string>* c) { c->Add (string{}); }); },
-            L"Collection<string>", 9600, 0.79, &failedTests);
+            L"Collection<string>", 9600, 0.85, &failedTests);
         {
             // In Stroika 2.1b15, we changed the default Collection factory to use Collection_stdmultiset. This is probably a good choice,
             // but is a small pessimization so include original Collection_stdforward_list for comparison (maybe orig was something else but this works).
