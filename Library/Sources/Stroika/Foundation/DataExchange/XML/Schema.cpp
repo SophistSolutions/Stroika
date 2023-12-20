@@ -51,11 +51,11 @@ namespace {
         }
         virtual InputSource* resolveEntity (XMLResourceIdentifier* resourceIdentifier) override
         {
+            // @todo consider exposting this API outside the module, and/or providing option to wget missing namespaces, or have option for where to fetch from?
             TraceContextBumper ctx{"XMLDB::{}::MySchemaResolver_::resolveEntity"};
             RequireNotNull (resourceIdentifier);
             // Treat namespaces and publicids as higher-priority matchers
             for (auto i = fSourceComponents.begin (); i != fSourceComponents.end (); ++i) {
-
                 if (resourceIdentifier->getNameSpace () != nullptr and i->fNamespace and resourceIdentifier->getNameSpace () == i->fNamespace) {
                     return mkMemInputSrc_ (i->fBLOB);
                 }
@@ -86,10 +86,15 @@ namespace {
     private:
         static InputSource* mkMemInputSrc_ (const Memory::BLOB& schemaData)
         {
-            // copy RAM to C++ array - freed by MemBufInputSource - adopt flag....
-            XMLByte* useBuf = new XMLByte[schemaData.GetSize ()];
-            memcpy (useBuf, schemaData.begin (), schemaData.GetSize ());
-            return new MemBufInputSource{useBuf, schemaData.GetSize (), "", true};
+            if (schemaData.empty ()) [[unlikely]] {
+                // not sure this is useful case? Should assert/throw?
+                return new MemBufInputSource{nullptr, 0, "", true};
+            }
+            else {
+                XMLByte* useBuf = new XMLByte[schemaData.GetSize ()];
+                memcpy (useBuf, schemaData.begin (), schemaData.GetSize ());
+                return new MemBufInputSource{useBuf, schemaData.GetSize (), "", true};
+            }
         }
     };
 
@@ -146,7 +151,7 @@ namespace {
 
         virtual optional<URI> GetTargetNamespace () const override
         {
-            return fTargetNamespace;
+            return fTargetNamespace;    // should get from READING the schema itself! I THINK --LGP 2023-12-18
         }
         virtual NamespaceDefinitionsList GetNamespaceDefinitions () const override
         {
