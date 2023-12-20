@@ -121,9 +121,9 @@ namespace {
             void SingleProcessLargeDataSend_ ()
             {
                 Assert (k1MB_.size () == 1024 * 1024);
-                Streams::SharedMemoryStream<byte>::Ptr myStdIn =
-                    Streams::SharedMemoryStream<byte>::New (); // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
-                Streams::SharedMemoryStream<byte>::Ptr myStdOut = Streams::SharedMemoryStream<byte>::New ();
+                Streams::SharedMemoryStream::Ptr<byte> myStdIn =
+                    Streams::SharedMemoryStream::New<byte> (); // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
+                Streams::SharedMemoryStream::Ptr<byte> myStdOut = Streams::SharedMemoryStream::New<byte> ();
                 ProcessRunner                          pr{"cat", myStdIn, myStdOut};
                 ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
                 Execution::Sleep (1);

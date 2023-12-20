@@ -36,19 +36,19 @@ namespace Stroika::Foundation::Streams::InputSubStream {
     using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
 
     /**
-         *  start and end are offsets in the real underlying stream which map to 0, and if specified, end-start (which is this streams ends);
-         *  start defaults (if Missing) to the current offset, and end defaults to the actual end of the underlying stream.
-         *
-         *  \par Example Usage
-         *      \code
-         *          InputStream<byte>::Ptr in = InputSubStream<byte>::New (fromStream, 0, contentLength);
-         *      \endcode
-         *
-         *  \par Example Usage
-         *      \code
-         *          CallExpectingBinaryInputStreamPtr (InputSubStream<byte>::New (fromStream, 0, contentLength))
-         *      \endcode
-         */
+     *  start and end are offsets in the real underlying stream which map to 0, and if specified, end-start (which is this streams ends);
+     *  start defaults (if Missing) to the current offset (not necessarily zero for that stream), and end defaults to the actual end of the underlying stream.
+     *
+     *  \par Example Usage
+     *      \code
+     *          InputStream<byte>::Ptr in = InputSubStream<byte>::New (fromStream, 0, contentLength);
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          CallExpectingBinaryInputStreamPtr (InputSubStream<byte>::New (fromStream, 0, contentLength))
+     *      \endcode
+     */
     template <typename ELEMENT_TYPE>
     auto New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
         -> Ptr<ELEMENT_TYPE>;

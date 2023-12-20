@@ -51,7 +51,6 @@ namespace {
 }
 #endif
 
-
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
 
 using namespace Stroika::Foundation::DataExchange::XML::DOM;

@@ -28,7 +28,6 @@ using namespace Stroika::Foundation::DataExchange::XML::Schema;
 
 using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
 
-
 #if qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
 namespace {
     inline std::u16string clang_string_BWA_ (const char16_t* a, const char16_t* b)
@@ -37,7 +36,6 @@ namespace {
     }
 }
 #endif
-
 
 namespace {
     struct MySchemaResolver_ : public XMLEntityResolver {
@@ -151,7 +149,7 @@ namespace {
 
         virtual optional<URI> GetTargetNamespace () const override
         {
-            return fTargetNamespace;    // should get from READING the schema itself! I THINK --LGP 2023-12-18
+            return fTargetNamespace; // should get from READING the schema itself! I THINK --LGP 2023-12-18
         }
         virtual NamespaceDefinitionsList GetNamespaceDefinitions () const override
         {

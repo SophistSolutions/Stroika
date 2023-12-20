@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 switch (whence) {
                     case Whence::eFromStart: {
                         if (offset < 0) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kSeekException_);
                         }
                         SeekOffsetType uOffset = static_cast<SeekOffsetType> (offset);
                         if (uOffset > fData_.size ()) [[unlikely]] {
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                         Streams::SeekOffsetType       curOffset = fReadCursor_ - fData_.begin ();
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kSeekException_);
                         }
                         SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                         if (uNewOffset > fData_.size ()) [[unlikely]] {
@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                     case Whence::eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
                         if (newOffset < 0) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kSeekException_);
                         }
                         SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                         if (uNewOffset > fData_.size ()) [[unlikely]] {
@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 switch (whence) {
                     case Whence::eFromStart: {
                         if (offset < 0) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kSeekException_);
                         }
                         if (static_cast<SeekOffsetType> (offset) > fData_.size ()) [[unlikely]] {
                             Execution::Throw (EOFException::kThe);
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                         Streams::SeekOffsetType       curOffset = fWriteCursor_ - fData_.begin ();
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kSeekException_);
                         }
                         if (static_cast<size_t> (newOffset) > fData_.size ()) [[unlikely]] {
                             Execution::Throw (EOFException::kThe);
@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                     case Whence::eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
                         if (newOffset < 0) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kSeekException_);
                         }
                         if (static_cast<size_t> (newOffset) > fData_.size ()) [[unlikely]] {
                             Execution::Throw (EOFException::kThe);
@@ -226,6 +226,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             // Or Stroika chunked array code
 
         private:
+            static inline const auto                                       kSeekException_ = range_error{"seek"};
             vector<ElementType>                                            fData_;
             typename vector<ElementType>::iterator                         fReadCursor_;
             typename vector<ElementType>::iterator                         fWriteCursor_;

@@ -241,7 +241,7 @@ namespace {
             void T1_ ()
             {
                 using namespace Execution;
-                SharedMemoryStream<unsigned int>::Ptr pipe = SharedMemoryStream<unsigned int>::New ();
+                SharedMemoryStream::Ptr<unsigned int> pipe = SharedMemoryStream::New<unsigned int> ();
                 unsigned                              sum{};
                 static constexpr unsigned int         kStartWith{1};
                 static constexpr unsigned int         kUpToInclusive_{1000};

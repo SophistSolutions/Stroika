@@ -24,10 +24,13 @@
  *            provide option for SharedMemoryStream so not seekable - less memory
  */
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::SharedMemoryStream {
+
+    template <typename ELEMENT_TYPE>
+    class Ptr;
 
     /**
-     *  \brief  SharedMemoryStream<> is an InputOutputStream<> like MemoryStream<> but supporting concurrency
+     *  \brief  SharedMemoryStream<> is an InputOutputStream<> like MemoryStream<> but supporting concurrency ; like an in memory structured pipe
      *
      *  SharedMemoryStream is Seekable.
      *
@@ -46,7 +49,7 @@ namespace Stroika::Foundation::Streams {
      *
      *  \par Example Usage
      *      \code
-     *           SharedMemoryStream<unsigned int>::Ptr pipe = SharedMemoryStream<unsigned int>::New ();
+     *           SharedMemoryStream::Ptr<unsigned int> pipe = SharedMemoryStream::New<unsigned int> ();
      *           unsigned                              sum{};
      *           static constexpr unsigned int         kStartWith{1};
      *           static constexpr unsigned int         kUpToInclusive_{1000};
@@ -68,35 +71,24 @@ namespace Stroika::Foundation::Streams {
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
-     *
      */
     template <typename ELEMENT_TYPE>
-    class SharedMemoryStream : public InputOutputStream<ELEMENT_TYPE> {
-    public:
-        /**
-         *  'SharedMemoryStream' is a quasi-namespace: use Ptr or New () members.
-         */
-        SharedMemoryStream ()                          = delete;
-        SharedMemoryStream (const SharedMemoryStream&) = delete;
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized = Execution::eInternallySynchronized);
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (const Memory::BLOB& blob)
+        requires (same_as<ELEMENT_TYPE, byte>);
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob)
+        requires (same_as<ELEMENT_TYPE, byte>);
 
-    public:
-        class Ptr;
-
-    public:
-        /**
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
-         */
-        static Ptr New (Execution::InternallySynchronized internallySynchronized = Execution::eInternallySynchronized);
-        static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        static Ptr New (const Memory::BLOB& blob)
-            requires (same_as<ELEMENT_TYPE, byte>);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob)
-            requires (same_as<ELEMENT_TYPE, byte>);
-
-    private:
+    namespace Private_ {
+        template <typename ELEMENT_TYPE>
         class Rep_;
-    };
+    }
 
     /**
      *  Ptr is a copyable smart pointer to a SharedMemoryStream.
@@ -104,7 +96,7 @@ namespace Stroika::Foundation::Streams {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      */
     template <typename ELEMENT_TYPE>
-    class SharedMemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+    class Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
     private:
         using inherited = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
 
@@ -113,9 +105,7 @@ namespace Stroika::Foundation::Streams {
         */
         Ptr ()                = default;
         Ptr (const Ptr& from) = default;
-
-    private:
-        Ptr (const shared_ptr<Rep_>& from);
+        Ptr (const shared_ptr<Private_::Rep_<ELEMENT_TYPE>>& from);
 
     public:
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
@@ -135,40 +125,25 @@ namespace Stroika::Foundation::Streams {
          *      o   String
          */
         template <typename T>
-        nonvirtual T As () const;
+        nonvirtual T As () const
+            requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and (same_as<T, Memory::BLOB> or same_as<T, string>)) or
+                      (same_as<ELEMENT_TYPE, Characters::Character> and (same_as<T, Characters::String>)));
 
     private:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const Rep_& GetRepConstRef_ () const;
+        nonvirtual const Private_::Rep_<ELEMENT_TYPE>& GetRepConstRef_ () const;
 
     private:
         /**
          * \req *this != nullptr
          */
-        nonvirtual Rep_& GetRepRWRef_ () const;
+        nonvirtual Private_::Rep_<ELEMENT_TYPE>& GetRepRWRef_ () const;
 
     private:
         friend class SharedMemoryStream;
     };
-
-    template <>
-    template <>
-    Memory::BLOB SharedMemoryStream<byte>::Ptr::As () const;
-    template <>
-    template <>
-    string SharedMemoryStream<byte>::Ptr::As () const;
-    template <>
-    template <>
-    vector<byte> SharedMemoryStream<byte>::Ptr::As () const;
-
-    template <>
-    template <>
-    Characters::String SharedMemoryStream<Characters::Character>::Ptr::As () const;
-    template <>
-    template <>
-    vector<Characters::Character> SharedMemoryStream<Characters::Character>::Ptr::As () const;
 
 }
 

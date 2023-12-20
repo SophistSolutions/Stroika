@@ -1199,7 +1199,7 @@ namespace {
                 EXPECT_TRUE (memStream.IsAtEOF ()); // mem-stream is at EOF because we checked - it reads/advances read pointer
             }
             {
-                Streams::SharedMemoryStream<byte>::Ptr sharedMemStream = Streams::SharedMemoryStream<byte>::New ();
+                Streams::SharedMemoryStream::Ptr<byte> sharedMemStream = Streams::SharedMemoryStream::New<byte> ();
                 WriteJSON_ (sharedMemStream);
                 ReadJSON_ (sharedMemStream);
                 WriteJSON_ (sharedMemStream);
