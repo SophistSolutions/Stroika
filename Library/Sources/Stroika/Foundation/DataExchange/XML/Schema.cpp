@@ -28,6 +28,17 @@ using namespace Stroika::Foundation::DataExchange::XML::Schema;
 
 using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
 
+
+#if qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
+namespace {
+    inline std::u16string clang_string_BWA_ (const char16_t* a, const char16_t* b)
+    {
+        return {a, b};
+    }
+}
+#endif
+
+
 namespace {
     struct MySchemaResolver_ : public XMLEntityResolver {
     private:

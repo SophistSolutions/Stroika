@@ -42,6 +42,16 @@ using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
 #endif
 
+#if qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
+namespace {
+    inline std::u16string clang_string_BWA_ (const char16_t* a, const char16_t* b)
+    {
+        return {a, b};
+    }
+}
+#endif
+
+
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
 
 using namespace Stroika::Foundation::DataExchange::XML::DOM;
