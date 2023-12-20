@@ -23,7 +23,8 @@ QUICK_BUILD ?= 1
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
-VERSION=3.1.4
+VERSION=3.2.0
+#VERSION=3.1.4
 #VERSION=3.1.3
 #VERSION=3.1.2
 #VERSION=3.1.1
@@ -31,7 +32,6 @@ VERSION=3.1.4
 
 BASENAME=openssl-$(VERSION)
 EXTRACTED_DIRNAME=$(BASENAME)
-
 
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
