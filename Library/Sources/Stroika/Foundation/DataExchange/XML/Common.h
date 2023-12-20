@@ -50,7 +50,7 @@ namespace Stroika::Foundation::DataExchange::XML {
  *  As of Stroika v3.0d4, we only support XML Schema if Xerces is builtin (could use libxml2 as well in the future).
  */
 #ifndef qStroika_Foundation_DataExchange_XML_SupportSchema
-#define qStroika_Foundation_DataExchange_XML_SupportSchema qHasFeature_Xerces
+#define qStroika_Foundation_DataExchange_XML_SupportSchema qHasFeature_Xerces or qFeature_HasFeature_libxml2
 #endif
 
 /**
@@ -79,7 +79,14 @@ namespace Stroika::Foundation::DataExchange::XML {
     
     */
     enum class Provider {
+#if qHasFeature_Xerces
         eXerces,
+#endif
+#if qHasFeature_libxml2
+        eLibXml2,
+#endif
+
+        // @todo think out
         eDefault = eXerces
     };
 

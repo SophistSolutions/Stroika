@@ -1350,6 +1350,12 @@ namespace {
             String             tmp = d.Write ();
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         }
+
+#if qFeature_HasFeature_libxml2
+        {
+            // play with limxml2
+        }
+#endif
     }
 }
 #endif

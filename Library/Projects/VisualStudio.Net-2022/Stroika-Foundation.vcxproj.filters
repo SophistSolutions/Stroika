@@ -822,6 +822,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.cpp">
       <Filter>Sources\DataExchange\XML\Providers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\LibXML2.cpp">
+      <Filter>Sources\DataExchange\XML\Providers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2153,6 +2156,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\IterableToInputStream.h">
       <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\LibXML2.h">
+      <Filter>Sources\DataExchange\XML\Providers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

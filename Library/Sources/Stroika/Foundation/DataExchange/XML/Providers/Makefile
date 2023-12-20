@@ -20,5 +20,8 @@ Objs	=	\
 ifneq ($(qFeatureFlag_Xerces), no)
 Objs +=	$(ObjDir)Xerces${OBJ_SUFFIX}
 endif
+ifneq ($(qFeatureFlag_libxml2), no)
+Objs +=	$(ObjDir)LibXML2${OBJ_SUFFIX}
+endif
 
 all:	$(Objs)
