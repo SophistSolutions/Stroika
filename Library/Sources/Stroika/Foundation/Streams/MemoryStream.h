@@ -132,11 +132,6 @@ namespace Stroika::Foundation ::Streams::MemoryStream {
                       (same_as<ELEMENT_TYPE, Characters::Character> and (same_as<T, Characters::String>)));
 
     private:
-        Memory::BLOB       AsBLOB_ () const;
-        string             Asstring_ () const;
-        Characters::String AsString_ () const;
-
-    private:
         /**
          * \req *this != nullptr
          */

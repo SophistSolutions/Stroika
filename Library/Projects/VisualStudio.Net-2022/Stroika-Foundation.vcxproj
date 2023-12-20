@@ -258,7 +258,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.cpp" />

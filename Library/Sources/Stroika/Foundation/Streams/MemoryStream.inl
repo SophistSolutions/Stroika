@@ -289,29 +289,27 @@ namespace Stroika::Foundation::Streams::MemoryStream {
         using Rep_ = typename MemoryStream::Private_::Rep_<ELEMENT_TYPE>;
         return *Debug::UncheckedDynamicCast<Rep_*> (&inherited::_GetRepRWRef ());
     }
-    template <>
-    Memory::BLOB Ptr<byte>::AsBLOB_ () const;
-    template <>
-    string Ptr<byte>::Asstring_ () const;
-    template <>
-    Characters::String Ptr<Characters::Character>::AsString_ () const;
     template <typename ELEMENT_TYPE>
     template <typename T>
     inline T Ptr<ELEMENT_TYPE>::As () const
         requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and (same_as<T, Memory::BLOB> or same_as<T, string>)) or
                   (same_as<ELEMENT_TYPE, Characters::Character> and (same_as<T, Characters::String>)))
     {
+        using Characters::Character;
+        using Characters::String;
+        using Memory::BLOB;
         if constexpr (same_as<T, vector<ELEMENT_TYPE>>) {
             return GetRepConstRef_ ().AsVector ();
         }
         else if constexpr (same_as<T, Memory::BLOB>) {
-            return AsBLOB_ ();
+            return GetRepConstRef_ ().AsVector ();
         }
         else if constexpr (same_as<T, string>) {
-            return Asstring_ ();
+            return GetRepConstRef_ ().AsString ();
         }
-        else if constexpr (same_as<T, Characters::String>) {
-            return AsString_ ();
+        else if constexpr (same_as<T, String>) {
+            auto tmp = GetRepConstRef_ ().AsVector ();
+            return String{span{tmp}};
         }
     }
 
