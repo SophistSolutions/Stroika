@@ -85,7 +85,7 @@ my $VSVARS_VCToolsInstallDir=undef;
 
 my @useExtraCDefines;
 my @useExtraMakeDefines;
-my @packageConfigLinkLines;
+my @packageCfgNames;
 
 my @CPPFLAGS = qw ();
 my @CPPFLAGS2Remove = qw ();
@@ -541,15 +541,9 @@ sub     FillDefaultLibDependencies_
 		}
 
 		if ($FEATUREFLAG_libxml2 ne $LIBFEATUREFLAG_No) {
-			# if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-			# 	# TEST IF HACK NEEDED/FIXES ISSUE WITH BUILD UNDER DOCKER ON CYGWIN for Debug-x86
-			# 	# --define-variable=pcfiledir=c:/Sandbox...
-			# 	my $wpath = trim (`cygpath -a --mixed \"$thisScriptDir/Builds/$configurationName/ThirdPartyComponents/lib/pkgconfig\"`);		# c:/foo as opposed to c:\foo
-			# 	push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --define-variable=pcfiledir=$wpath --static --libs libxml-2.0");
-			# }
-			# else {
-				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs libxml-2.0");
-			# }
+			# Though included in packageconfig support, in a queer place, and if we count on it, intellisense/vscode wont know right directories
+			push @INCLUDES_PATH, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/libxml2`) . "/";
+			push (@packageCfgNames, "libxml-2.0");
 		}
 
 		#	$ pkg-config --static --libs openssl
@@ -560,7 +554,7 @@ sub     FillDefaultLibDependencies_
 				#???dont thnik needed cuz of pragma comment link...
 			}
 			else {
-				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs openssl");
+				push (@packageCfgNames, "openssl");
 			}
 		}
 
@@ -573,7 +567,7 @@ sub     FillDefaultLibDependencies_
 				#???dont thnik needed cuz of pragma comment link...
 			}
 			else {
-				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs libcurl");
+				push (@packageCfgNames, "libcurl");
 			}
 		}
 
@@ -594,7 +588,7 @@ sub     FillDefaultLibDependencies_
 				}
 			}
 			else {
-				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs zlib");
+				push (@packageCfgNames, "zlib");
 				#PortablyAddLibToLibDependencies_("z");
 			}
 		}
@@ -604,7 +598,7 @@ sub     FillDefaultLibDependencies_
 			# }
 			# else {
 				### @todo lets see if thsi works on windows
-				push (@packageConfigLinkLines, "PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs gtest");
+				push (@packageCfgNames, "gtest");
 				#PortablyAddLibToLibDependencies_("z");
 			# }
 		}
@@ -2660,11 +2654,11 @@ sub	WriteConfigFile_
 		}
 	print (OUT "    </ExtraMakeDefines>\n");
 
-	print (OUT "    <PkgConfigLinkLineAppendages>\n");
-		foreach my $var (@packageConfigLinkLines) {
-			print (OUT "       <PkgConfigLinkLineAppendage>$var</PkgConfigLinkLineAppendage>\n");
+	print (OUT "    <PkgConfigNames>");
+		foreach my $var (@packageCfgNames) {
+			print (OUT " $var");
 		}
-	print (OUT "    </PkgConfigLinkLineAppendages>\n");
+	print (OUT "    </PkgConfigNames>\n");
 
 
 	

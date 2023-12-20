@@ -12,7 +12,6 @@ my $configurationFiles	=	GetThisScriptDir() . "/../ConfigurationFiles";
 my $masterXMLConfigFile	=	"";
 
 my @useExtraMakeDefines;
-my @packageConfigLinkLines;
 
 #
 # BUILD iff LIBFEATUREFLAG_BuildOnly OR LIBFEATUREFLAG_UseStaticTPP
@@ -292,17 +291,12 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			push (@useExtraMakeDefines, $pps);
 		}
-		my $pps = ReadValue_($line, "<PkgConfigLinkLineAppendage>");
+		my $pps = ReadValue_($line, "<PkgConfigNames>");
 		if (defined $pps) {
-			push (@packageConfigLinkLines, $pps);
+			$configuration {'PkgConfigNames'} = $pps;
 		}
-		print (OUT "    </PkgConfigLinkLineAppendages>\n");
-
-
-
 	}
 	$configuration {'ExtraMakeDefines'} = \@useExtraMakeDefines;
-	$configuration {'PackageConfigLinkLines'} = \@packageConfigLinkLines;
 }
 
 
@@ -333,7 +327,6 @@ sub	GetConfigurationParameter {
 	if ($lastReadConfig ne $configName) {
 		@useExtraMakeDefines = ();
 		@useExtraMakeDefines = ();
-		@packageConfigLinkLines = ();
 		%configuration = ();
 
 		$masterXMLConfigFile	=	"$configurationFiles/$configName.xml";
@@ -348,9 +341,6 @@ sub	GetConfigurationParameter {
 	# language  choice!
 	if ($paramName eq "ExtraMakeDefines") {
 		return @useExtraMakeDefines;
-	}
-	if ($paramName eq "PackageConfigLinkLines") {
-		return @packageConfigLinkLines;
 	}
 	
 	my $result = $configuration{$paramName};

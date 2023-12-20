@@ -45,7 +45,7 @@ my $BUILD_TOOLS_ROOT=undef;
 
 
 my @useExtraMakeDefines;
-my @packageConfigLinkLines;
+my $PkgConfigNames;
 
 #
 # BUILD iff LIBFEATUREFLAG_BuildOnly OR LIBFEATUREFLAG_UseStaticTPP
@@ -190,9 +190,7 @@ sub	ReadConfiguration_
 		push (@useExtraMakeDefines, $mdef);
 	}
 
-	foreach $mdef (GetConfigurationParameter($activeConfiguration, "PackageConfigLinkLines")) {
-		push (@packageConfigLinkLines, $mdef);
-	}
+	$PkgConfigNames = GetConfigurationParameter($activeConfiguration, "PkgConfigNames");
 
 	#print "PROJECTPLATFORMSUBDIR = $PROJECTPLATFORMSUBDIR\n";
 }
@@ -335,12 +333,12 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "LinkerArgs_LibDependencies=$LinkerArgs_LibDependencies\n");
 
 	print (OUT "\n\n");
-	print (OUT "# Extra dynamically computed link lines\n");
-	foreach $var (@packageConfigLinkLines)
-	{
+	print (OUT "# Extra dynamically computed link(cppflags) lines\n");
+	if (not ($PkgConfigNames eq "")) {
 		# Use `` so this is only evaluated when linking, not other times when the Configuration.mk file is loaded
-		#print (OUT "LinkerArgs_LibDependencies += \$(shell $var)\n");
-		print (OUT "LinkerArgs_LibDependencies += `$var`\n");
+		print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs $PkgConfigNames`\n");
+		# Do likewise --cflags-only-I for CPPFLAGS
+		print (OUT "#CPPFLAGS += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags-only-I $PkgConfigNames`\n");
 	}
 
 
