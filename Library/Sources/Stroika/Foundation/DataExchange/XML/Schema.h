@@ -25,13 +25,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 }
 #endif
 
-#if qStroika_Foundation_DataExchange_XML_SupportSchema
 namespace Stroika::Foundation::DataExchange::XML {
 
     using Containers::Sequence;
     using IO::Network::URI;
     using Memory::BLOB;
 
+#if qStroika_Foundation_DataExchange_XML_SupportSchema
     namespace Schema {
 
         /**
@@ -120,13 +120,14 @@ namespace Stroika::Foundation::DataExchange::XML {
                  const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});
 
     }
+#endif
 
+#if qStroika_Foundation_DataExchange_XML_SupportSchema
     /**
      */
     void ValidateFile (const filesystem::path& externalFileName, const Schema::Ptr& schema); // throws BadFormatException exception on error
-
-};
 #endif
+};
 
 /*
  ********************************************************************************

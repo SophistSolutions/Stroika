@@ -8,6 +8,8 @@
 
 #include <memory>
 
+#include "../../Configuration/Enumeration.h"
+
 /**
  *  \file
  *
@@ -86,8 +88,13 @@ namespace Stroika::Foundation::DataExchange::XML {
         eLibXml2,
 #endif
 
-        // @todo think out
-        eDefault = eXerces
+#if qHasFeature_Xerces and qHasFeature_libxml2
+        Stroika_Define_Enum_Bounds (eXerces, eLibXml2)
+#elif qHasFeature_Xerces
+        Stroika_Define_Enum_Bounds (eXerces, eXerces)
+#elif qHasFeature_libxml2
+        Stroika_Define_Enum_Bounds (eLibXml2, eLibXml2)
+#endif
     };
 
     /*

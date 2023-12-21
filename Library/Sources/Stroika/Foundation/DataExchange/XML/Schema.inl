@@ -48,7 +48,12 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
     inline Ptr New (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
                     const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
     {
-        return New (Provider::eDefault, targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
+#if qHasFeature_Xerces
+        constexpr Provider kDefaultProvider_ = Provider::eXerces;
+#elif qHasFeature_libxml2
+        constexpr Provider kDefaultProvider_ = Provider::eLibXml2;
+#endif
+        return New (kDefaultProvider_, targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
     }
 
 }
