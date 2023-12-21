@@ -196,28 +196,60 @@ namespace {
     namespace LibXMLImpl_ {
         using namespace XML::Providers::LibXML2;
 
-        // based in part on https://gist.github.com/cooldaemon/106870
         struct SAXReader_ {
+            using Name = StructuredStreamEvents::Name;
             xmlSAXHandler                      flibXMLSaxHndler_{};
             StructuredStreamEvents::IConsumer& fCallback_;
             SAXReader_ (StructuredStreamEvents::IConsumer& callback)
                 : fCallback_{callback}
             {
-                flibXMLSaxHndler_.initialized    = XML_SAX2_MAGIC;
-                flibXMLSaxHndler_.startElementNs = [] (void* ctx, const xmlChar* localname, const xmlChar* prefix, const xmlChar* URI,
-                                                       int nb_namespaces, const xmlChar** namespaces, int nb_attributes, int nb_defaulted,
-                                                       const xmlChar** attributes) {
+                flibXMLSaxHndler_.initialized   = XML_SAX2_MAGIC;
+                flibXMLSaxHndler_.startDocument = [] (void* ctx) {
                     SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
-                    // map to call to fCallback_ but must munge data
+                    Assert (thisReader->flibXMLSaxHndler_.initialized == XML_SAX2_MAGIC); // assure ctx ptr passed through properly
+                    thisReader->fCallback_.StartDocument ();
                 };
-                flibXMLSaxHndler_.endElementNs = [] (void* ctx, const xmlChar* localname, const xmlChar* prefix, const xmlChar* URI) {
+                flibXMLSaxHndler_.endDocument = [] (void* ctx) {
                     SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
-                    // map to call to fCallback_ but must munge data
+                    Assert (thisReader->flibXMLSaxHndler_.initialized == XML_SAX2_MAGIC); // assure ctx ptr passed through properly
+                    thisReader->fCallback_.EndDocument ();
+                };
+                flibXMLSaxHndler_.startElementNs = [] (void* ctx, const xmlChar* localname, [[maybe_unused]] const xmlChar* prefix,
+                                                       const xmlChar* URI, int nb_namespaces, const xmlChar** namespaces, int nb_attributes,
+                                                       int nb_defaulted, const xmlChar** attributes) {
+                    SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
+                    Assert (thisReader->flibXMLSaxHndler_.initialized == XML_SAX2_MAGIC); // assure ctx ptr passed through properly
+                    Mapping<Name, String> attrs;
+                    if (attributes != nullptr) {
+                        // Crazy way to decode attribute arguments - I would have never guessed --
+                        // https://stackoverflow.com/questions/2075894/how-to-get-the-name-and-value-of-attributes-from-xml-when-using-libxml2-sax-pars
+                        auto ai = attributes;
+                        for (int i = 0; i < nb_attributes; i++) {
+                            attrs.Add (libXMLString2String (ai[0]), libXMLString2String (ai[3], ai[4] - ai[3]));
+                            ai += 5;
+                        }
+                    }
+                    if (URI == nullptr) {
+                        thisReader->fCallback_.StartElement (Name{libXMLString2String (localname)}, attrs);
+                    }
+                    else {
+                        thisReader->fCallback_.StartElement (Name{libXMLString2String (URI), libXMLString2String (localname)}, attrs);
+                    }
+                };
+                flibXMLSaxHndler_.endElementNs = [] (void* ctx, const xmlChar* localname, [[maybe_unused]] const xmlChar* prefix, const xmlChar* URI) {
+                    SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
+                    if (URI == nullptr) {
+                        thisReader->fCallback_.EndElement (Name{libXMLString2String (localname)});
+                    }
+                    else {
+                        thisReader->fCallback_.EndElement (Name{libXMLString2String (URI), libXMLString2String (localname)});
+                    }
                 };
                 ;
                 flibXMLSaxHndler_.characters = [] (void* ctx, const xmlChar* ch, int len) {
                     SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
-                    // map to call to fCallback_ but must munge data
+                    // unclear how this handles 'continuations' and partial characters - may need a more sophisticated approach
+                    thisReader->fCallback_.TextInsideElement (String::FromUTF8 (span{reinterpret_cast<const char*> (ch), static_cast<size_t> (len)}));
                 };
             }
             SAXReader_ (const SAXReader_&) = delete;
@@ -267,18 +299,15 @@ void XML::SAXParse (Provider saxProvider, [[maybe_unused]] const Streams::InputS
     if (saxProvider == Provider::eLibXml2) {
         using namespace LibXMLImpl_;
         SAXReader_              handler{callback};
-        xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, nullptr, nullptr, 0, nullptr);
+        xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
-        char                    buf[1024];
-/// while reading bytes from buffer,
-#if 0
-        while ((res = fread (chars, 1, sizeof (chars), f)) > 0) {
-            if (xmlParseChunk (ctxt, chars, res, 0)) {
-                xmlParserError (ctxt, "xmlParseChunk");
-                return 1;
+        byte                    buf[1024];
+        while (auto n = in.Read (begin (buf), end (buf))) {
+            if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
+                xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but trnaslate to throw
+                                                        // return 1;
             }
         }
-#endif
         xmlParseChunk (ctxt, nullptr, 0, 1);
         return;
     }

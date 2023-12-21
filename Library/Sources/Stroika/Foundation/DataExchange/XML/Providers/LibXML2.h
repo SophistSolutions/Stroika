@@ -14,7 +14,7 @@ static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libx
 #include <libxml/parser.h>
 #include <libxml/xmlschemas.h>
 
-//#include "../../../Characters/String.h"
+#include "../../../Characters/String.h"
 
 // @todo understand why cannot #include on windoze!!!
 //#include "../DOM.h"
@@ -32,6 +32,15 @@ namespace Stroika::Foundation::Characters {
  */
 
 namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
+
+    inline String libXMLString2String (const xmlChar* s, int len)
+    {
+        return String{span{reinterpret_cast<const char*> (s), static_cast<size_t> (len)}};
+    }
+    inline String libXMLString2String (const xmlChar* t)
+    {
+        return String::FromUTF8 (reinterpret_cast<const char*> (t));
+    }
 
 }
 

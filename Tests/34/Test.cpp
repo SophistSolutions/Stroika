@@ -134,6 +134,7 @@ namespace {
             virtual void StartElement (const StructuredStreamEvents::Name&                                   name,
                                        [[maybe_unused]] const Mapping<StructuredStreamEvents::Name, String>& attributes) override
             {
+                //DbgTrace (L"attr=%s", Characters::ToString (attributes).c_str ());
                 fEltDepthCount++;
                 fEltStack.push_back (Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
             }
@@ -150,6 +151,7 @@ namespace {
         WriteTextStream_ (newDocXML, tmpStrm);
         MyCallback myCallback;
         XML::SAXParse (InputStreamFromStdIStream<byte>::New (tmpStrm), myCallback);
+        //        XML::SAXParse (XML::Provider::eLibXml2, InputStreamFromStdIStream<byte>::New (tmpStrm), myCallback);
     }
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER2)
     {
