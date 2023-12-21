@@ -21,6 +21,7 @@
 using std::byte;
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Frameworks::Led;
 
 using Stroika::Foundation::Characters::CodePagePrettyNameMapper;
@@ -400,7 +401,6 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 #if qWideCharacters
                 using Characters::CodeCvt;
                 using Characters::String;
-                using Streams::TextReader;
                 Memory::BLOB rawBytesBLOB{span { reinterpret_cast<const byte*> (rawBytes), nRawBytes }};
 
                 String x              = suggestedCodePage ? TextReader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
