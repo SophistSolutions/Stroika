@@ -59,6 +59,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Streams;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
@@ -67,7 +68,6 @@ using namespace Stroika::Frameworks::SystemPerformance::Instruments;
 using std::byte;
 
 using IO::FileSystem::FileInputStream;
-using Streams::TextReader;
 using Time::DurationSeconds;
 using Time::TimePointSeconds;
 

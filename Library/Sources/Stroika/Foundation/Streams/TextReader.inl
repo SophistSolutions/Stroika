@@ -9,35 +9,102 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "InternallySynchronizedInputStream.h"
 
-namespace Stroika::Foundation::Streams {
-
-    /*
-     ********************************************************************************
-     *********************************** TextReader::Ptr ****************************
-     ********************************************************************************
-     */
-    inline TextReader::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
-        : inherited{from}
-    {
-    }
-    inline TextReader::Ptr::Ptr (const InputStream<Character>::Ptr& from)
-        : inherited{from}
-    {
-    }
+namespace Stroika::Foundation::Streams::TextReader {
 
     /*
      ********************************************************************************
-     *********************************** TextReader *********************************
+     ***************************** TextReader::New **********************************
      ********************************************************************************
      */
-    inline auto TextReader::New (const InputStream<byte>::Ptr& src) -> Ptr
+    inline auto New (const InputStream<byte>::Ptr& src) -> Ptr
     {
         return New (src, src.GetSeekability ());
     }
-    inline auto TextReader::New (const InputStream<Character>::Ptr& src) -> Ptr
+    inline auto New (const InputStream<Character>::Ptr& src) -> Ptr
     {
         return src;
+    }
+
+    /////////////// ***************** DEPRECATED BELOW /////////////////
+    [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] inline Ptr
+    New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& src, const optional<Characters::String>& charset = nullopt)
+    {
+        auto codeCvt = charset ? Characters::CodeCvt<>{Characters::Charset{*charset}} : Characters::CodeCvt<>{};
+        switch (internallySynchronized) {
+            case Execution::eInternallySynchronized:
+                AssertNotImplemented ();
+                //return InternalSyncRep_::New ();
+                return New (src, codeCvt);
+            case Execution::eNotKnownInternallySynchronized:
+                return New (src, codeCvt);
+            default:
+                RequireNotReached ();
+                return New (src, codeCvt);
+        }
+    }
+    [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] inline Ptr
+    New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
+         SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed)
+    {
+        switch (internallySynchronized) {
+            case Execution::eInternallySynchronized:
+                AssertNotImplemented ();
+                //return InternalSyncRep_::New ();
+                return New (src, seekable);
+            case Execution::eNotKnownInternallySynchronized:
+                return New (src, seekable, readAhead);
+            default:
+                RequireNotReached ();
+                return New (src, seekable, readAhead);
+        }
+    }
+    [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] inline Ptr
+    New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
+         const optional<Characters::String>& charset, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed)
+    {
+        auto codeCvt = charset ? Characters::CodeCvt<>{Characters::Charset{*charset}} : Characters::CodeCvt<>{};
+        switch (internallySynchronized) {
+            case Execution::eInternallySynchronized:
+                AssertNotImplemented ();
+                //return InternalSyncRep_::New ();
+                return New (src, codeCvt, seekable, readAhead);
+            case Execution::eNotKnownInternallySynchronized:
+                return New (src, codeCvt, seekable, readAhead);
+            default:
+                RequireNotReached ();
+                return New (src, codeCvt, seekable, readAhead);
+        }
+    }
+    [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] inline Ptr
+    New (Execution::InternallySynchronized internallySynchronized, const Traversal::Iterable<Character>& src)
+    {
+        switch (internallySynchronized) {
+            case Execution::eInternallySynchronized:
+                AssertNotImplemented ();
+                return New (src);
+            case Execution::eNotKnownInternallySynchronized:
+                return New (src);
+            default:
+                RequireNotReached ();
+                return New (src);
+        }
+    }
+    [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] inline auto
+    New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src) -> Ptr
+    {
+        switch (internallySynchronized) {
+            case Execution::eInternallySynchronized:
+                AssertNotImplemented ();
+                //return InternalSyncRep_::New ();
+                return src;
+            case Execution::eNotKnownInternallySynchronized:
+                return src;
+            default:
+                RequireNotReached ();
+                return src;
+        }
     }
 
 }

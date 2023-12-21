@@ -41,6 +41,7 @@ using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Streams;
 
 using namespace Stroika::Frameworks;
 
@@ -180,7 +181,6 @@ namespace {
                 {
                     using Memory::byte;
                     using Streams::InputStream;
-                    using Streams::TextReader;
                     EXPECT_TRUE (reader.GetData ("sample_zip/TODO.txt").size () == 243);
                     EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
                     EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
@@ -371,7 +371,6 @@ namespace {
                                                                                      "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
                 {
                     using Streams::InputStream;
-                    using Streams::TextReader;
                     EXPECT_TRUE (reader.GetData ("sample_zip/TODO.txt").size () == 243);
                     EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
                     EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);

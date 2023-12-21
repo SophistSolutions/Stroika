@@ -51,13 +51,13 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Streams;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
 
 using Characters::String2Int;
 using IO::FileSystem::FileInputStream;
-using Streams::TextReader;
 
 using Instruments::Filesystem::BlockDeviceKind;
 using Instruments::Filesystem::DiskInfoType;

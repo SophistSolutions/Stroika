@@ -16,8 +16,11 @@
 
 #include "TextReader.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Streams;
+using namespace Stroika::Foundation::Streams::TextReader;
 
 using Characters::String;
 using Debug::AssertExternallySynchronizedMutex;
@@ -27,177 +30,82 @@ using Memory::StackBuffer;
 namespace {
     const auto kReadPartialCharacterAtEndOfBinaryStreamException_ =
         Execution::RuntimeErrorException{"TextReader read partial character at end of binary input stream"sv};
-}
 
-class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep {
-public:
-    FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& charConverter)
-        : _fSource{src}
-        , _fCharConverter{charConverter}
-    {
-    }
-
-protected:
-    /*
-     *  In Read (Character* intoStart, Character* intoEnd) override,
-     *  if we have converted at least one character, but have leftover bytes read,
-     *  we must somehow backup binary read amount for next time - save 'multibyte' state
-     *
-     *  Two strategies: 
-     *      o   SEEK source back: quick/easiy buy maybe impossible (if source not seekable)
-     *      o   OR track 'extra stuff to prepend to next read' - and use that on next read.
-     * 
-     *  We COULD use the 'seek' approach by creating a wrapper class that introduced seekability so
-     *  we could assume it. But that would be costly - because it over-generalizes what we need. We need just very
-     *  limited seekability, and that is best captured by the second approach. And little point in two implementations
-     *  so just go with the second - since it will always work, and work fairly well (downside is a bit of extra code complexity here)
-     */
-    struct _ReadAheadCache {
-        SeekOffsetType fFrom; // save offset cuz cache only valid on reads from this offset (if subclass allowed seek)
-        InlineBuffer<byte, 8> fData; // @todo UPDATE DOCS - AND LOGIC - CAN BE MORE THAN ONE CHARACTERS WORTH DUE TO READ NON BLOCKING WITH nullptr args!!!
-    };
-    optional<_ReadAheadCache> _fReadAheadCache;
-
-protected:
-    virtual bool IsSeekable () const override
-    {
-        return false; // but subclasses may implement seekability
-    }
-    virtual void CloseRead () override
-    {
-        Require (IsOpenRead ());
-        _fSource.Close ();
-        Assert (_fSource == nullptr);
-    }
-    virtual bool IsOpenRead () const override
-    {
-        return _fSource != nullptr;
-    }
-
-    virtual size_t Read (Character* intoStart, Character* intoEnd) override
-    {
-        Require ((intoStart == intoEnd) or (intoStart != nullptr));
-        Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-        Require (IsOpenRead ());
-
-        /*
-         *  Try to minimize # of calls to underlying fSource binary stream per call this this Read () - efficiency.
-         *
-         *  Only need to read one character, and once we have that much, don't block on more from upstream binary stream.
-         *
-         *  But always just return at least 1 char if we can, so if partial, and no full chars read, keep reading.
-         *
-         *  Since number of Characters filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
-         */
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+    class FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep {
+    public:
+        FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& charConverter)
+            : _fSource{src}
+            , _fCharConverter{charConverter}
         {
-            size_t readAtMostCharacters = size_t (intoEnd - intoStart); // must read at least one character, and no more than (intoEnd - intoStart)
-            StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, readAtMostCharacters};
-            if (_fReadAheadCache and _fReadAheadCache->fFrom == this->_fOffset) {
-                // If _fReadAheadCache present, may contain enuf bytes for a full character, so don't do another
-                // blocking read as it MAY not be necessary, and if it is, will be caught in existing logic for 'again' not enuf data
-                inBuf = span<byte>{_fReadAheadCache->fData};
-            }
-            else {
-                inBuf.ShrinkTo (_fSource.Read (begin (inBuf), end (inBuf)));
-            }
-        again:
-            span<const byte> binarySrcSpan{inBuf};
-            span<Character>  targetBuf{intoStart, intoEnd};
-            Assert (_fCharConverter.ComputeTargetCharacterBufferSize (inBuf.size ()) <= targetBuf.size ()); // just because _fCharConverter will require this
-            span<Character> convertedCharacters = _fCharConverter.Bytes2Characters (&binarySrcSpan, targetBuf);
-            if (binarySrcSpan.empty ()) {
-                // then we got data - already copied into intoStart (part of target span) - so just return the number of characters read
-                Assert (convertedCharacters.size () <= targetBuf.size ());
-                _fOffset += convertedCharacters.size ();
-                return convertedCharacters.size ();
-            }
-            else if (convertedCharacters.empty ()) {
-                // We have zero convertedCharacters, so apparently not enough bytes read. Read one more, and try again.
-                byte b;
-                if (_fSource.Read (&b, &b + 1) == 1) {
-                    inBuf.push_back (b);
-                    goto again;
-                }
-                else {
-                    // if we read EOF, and have a partial character read, thats an error - so throw
-                    Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
-                }
-            }
-            else {
-                Assert (not binarySrcSpan.empty () and not convertedCharacters.empty ());
-                Assert (convertedCharacters.size () <= targetBuf.size ());
-                _fOffset += convertedCharacters.size (); // complete the read
-                // Save the extra bytes for next time (with the offset where those bytes come from)
-                _fReadAheadCache.emplace (_ReadAheadCache{.fFrom = _fOffset, .fData = binarySrcSpan});
-                return convertedCharacters.size ();
-            }
         }
-        return 0;
-    }
 
-    virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
-    {
-        /// @todo hANDLE intoStart==nullptr case!!!
-        Require ((intoStart == intoEnd) or (intoStart != nullptr));
-        Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-        Require (IsOpenRead ());
-        // Plan:
-        //      o   ReadNonBlocking upstream (or grab from _fReadAheadCache)
-        //      o   decode and see if at least one character
-        //      o   if need more data to decode, try 'again' and grab more bytes.
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+    protected:
+        /*
+         *  In Read (Character* intoStart, Character* intoEnd) override,
+         *  if we have converted at least one character, but have leftover bytes read,
+         *  we must somehow backup binary read amount for next time - save 'multibyte' state
+         *
+         *  Two strategies: 
+         *      o   SEEK source back: quick/easiy buy maybe impossible (if source not seekable)
+         *      o   OR track 'extra stuff to prepend to next read' - and use that on next read.
+         * 
+         *  We COULD use the 'seek' approach by creating a wrapper class that introduced seekability so
+         *  we could assume it. But that would be costly - because it over-generalizes what we need. We need just very
+         *  limited seekability, and that is best captured by the second approach. And little point in two implementations
+         *  so just go with the second - since it will always work, and work fairly well (downside is a bit of extra code complexity here)
+         */
+        struct _ReadAheadCache {
+            SeekOffsetType fFrom; // save offset cuz cache only valid on reads from this offset (if subclass allowed seek)
+            InlineBuffer<byte, 8> fData; // @todo UPDATE DOCS - AND LOGIC - CAN BE MORE THAN ONE CHARACTERS WORTH DUE TO READ NON BLOCKING WITH nullptr args!!!
+        };
+        optional<_ReadAheadCache> _fReadAheadCache;
+
+    protected:
+        virtual bool IsSeekable () const override
         {
-            size_t readAtMostCharacters = size_t (intoEnd - intoStart); // must read at least one character, and no more than (intoEnd - intoStart)
-            StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, readAtMostCharacters};
+            return false; // but subclasses may implement seekability
+        }
+        virtual void CloseRead () override
+        {
+            Require (IsOpenRead ());
+            _fSource.Close ();
+            Assert (_fSource == nullptr);
+        }
+        virtual bool IsOpenRead () const override
+        {
+            return _fSource != nullptr;
+        }
+
+        virtual size_t Read (Character* intoStart, Character* intoEnd) override
+        {
+            Require ((intoStart == intoEnd) or (intoStart != nullptr));
+            Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+            Require (IsOpenRead ());
+
+            /*
+             *  Try to minimize # of calls to underlying fSource binary stream per call this this Read () - efficiency.
+             *
+             *  Only need to read one character, and once we have that much, don't block on more from upstream binary stream.
+             *
+             *  But always just return at least 1 char if we can, so if partial, and no full chars read, keep reading.
+             *
+             *  Since number of Characters filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
+             */
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             {
-                bool atEOF = false;
+                size_t readAtMostCharacters = size_t (intoEnd - intoStart); // must read at least one character, and no more than (intoEnd - intoStart)
+                StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, readAtMostCharacters};
                 if (_fReadAheadCache and _fReadAheadCache->fFrom == this->_fOffset) {
+                    // If _fReadAheadCache present, may contain enuf bytes for a full character, so don't do another
+                    // blocking read as it MAY not be necessary, and if it is, will be caught in existing logic for 'again' not enuf data
                     inBuf = span<byte>{_fReadAheadCache->fData};
-                    // ReadNonBlocking probably needed, but may not be. But since non blocking, its harmless, so try it
-                    if (readAtMostCharacters > inBuf.size ()) {
-                        StackBuffer<byte> buf{Memory::eUninitialized, readAtMostCharacters - inBuf.size ()};
-                        if (auto o = _fSource.ReadNonBlocking (begin (buf), end (buf))) {
-                            atEOF = *o == 0;
-                            inBuf.push_back (span{buf.data (), *o});
-                        }
-                    }
                 }
                 else {
-                    if (auto o = _fSource.ReadNonBlocking (begin (inBuf), end (inBuf))) {
-                        atEOF = *o == 0;
-                        inBuf.ShrinkTo (*o);
-                    }
+                    inBuf.ShrinkTo (_fSource.Read (begin (inBuf), end (inBuf)));
                 }
-                if (atEOF) {
-                    if (inBuf.size () != 0) {
-                        Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
-                    }
-                    return 0;
-                }
-            }
-        again:
-            span<const byte> binarySrcSpan{inBuf};
-            if (intoStart == nullptr) {
-                // tricky case. Must possibly do several binary reads til we have enuf for a character, and then return
-                // one for that case, but must save away the read bits (_fReadAheadCache).
-                auto cs = _fCharConverter.Bytes2Characters (binarySrcSpan);
-                if (cs == 0) {
-                    byte b{};
-                    if (auto o = _fSource.ReadNonBlocking (&b, &b + 1)) {
-                        inBuf.push_back (b);
-                        goto again;
-                    }
-                    else {
-                        // (re-)save _fReadAheadCache and return null cuz no character ready yet
-                        _fReadAheadCache.emplace (_ReadAheadCache{.fFrom = _fOffset, .fData = binarySrcSpan});
-                        return nullopt;
-                    }
-                }
-                return cs;
-            }
-            else {
-                span<Character> targetBuf{intoStart, intoEnd};
+            again:
+                span<const byte> binarySrcSpan{inBuf};
+                span<Character>  targetBuf{intoStart, intoEnd};
                 Assert (_fCharConverter.ComputeTargetCharacterBufferSize (inBuf.size ()) <= targetBuf.size ()); // just because _fCharConverter will require this
                 span<Character> convertedCharacters = _fCharConverter.Bytes2Characters (&binarySrcSpan, targetBuf);
                 if (binarySrcSpan.empty ()) {
@@ -209,18 +117,13 @@ protected:
                 else if (convertedCharacters.empty ()) {
                     // We have zero convertedCharacters, so apparently not enough bytes read. Read one more, and try again.
                     byte b;
-                    if (auto o = _fSource.ReadNonBlocking (&b, &b + 1)) {
-                        if (*o == 1) {
-                            inBuf.push_back (b);
-                            goto again;
-                        }
-                        else {
-                            // if we read EOF, and have a partial character read, thats an error - so throw
-                            Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
-                        }
+                    if (_fSource.Read (&b, &b + 1) == 1) {
+                        inBuf.push_back (b);
+                        goto again;
                     }
                     else {
-                        return nullopt; // need more bytes, not at EOF, and bytes not ready
+                        // if we read EOF, and have a partial character read, thats an error - so throw
+                        Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
                     }
                 }
                 else {
@@ -232,200 +135,300 @@ protected:
                     return convertedCharacters.size ();
                 }
             }
-        }
-    }
-
-    virtual SeekOffsetType GetReadOffset () const override
-    {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        Require (IsOpenRead ());
-        return _fOffset;
-    }
-
-    virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
-    {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        Require (IsOpenRead ());
-        AssertNotReached (); // not seekable
-        return _fOffset;
-    }
-
-protected:
-    InputStream<byte>::Ptr                                         _fSource;
-    const Characters::CodeCvt<Character>                           _fCharConverter;
-    SeekOffsetType                                                 _fOffset{0};
-    [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
-};
-
-class TextReader::UnseekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
-    using inherited = FromBinaryStreamBaseRep_;
-
-public:
-    UnseekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<char32_t>& charConverter)
-        : inherited{src, charConverter}
-    {
-    }
-};
-
-/*
- *  Note this CAN be used with either a seekable or unseekable byte stream.
- *  But this always produces a SEEKABLE TextStream, so can be used to produce
- *  a seekable TextStream from a non-seekable binary stream.
- * 
- *  But note - it does this at the cost of KEEPING a copy of the entire stream in memory.
- */
-class TextReader::CachingSeekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
-    using inherited = FromBinaryStreamBaseRep_;
-
-public:
-    CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<char32_t>& charConverter, ReadAhead readAhead)
-        : FromBinaryStreamBaseRep_{src, charConverter}
-        , fReadAheadAllowed_{readAhead == ReadAhead::eReadAheadAllowed}
-    {
-    }
-
-protected:
-    virtual bool IsSeekable () const override
-    {
-        return true;
-    }
-    virtual size_t Read (Character* intoStart, Character* intoEnd) override
-    {
-        Require ((intoStart == intoEnd) or (intoStart != nullptr));
-        Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        Require (IsOpenRead ());
-
-        // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
-        // and not say 'eof'
-        if (_fOffset < fCache_.size ()) {
-            // return data from cache
-            size_t nToRead     = intoEnd - intoStart;
-            size_t nInBufAvail = fCache_.size () - static_cast<size_t> (_fOffset);
-            nToRead            = min (nToRead, nInBufAvail);
-            Assert (nToRead > 0);
-            for (size_t i = 0; i < nToRead; ++i) {
-                intoStart[i] = fCache_[i + static_cast<size_t> (_fOffset)];
-            }
-            _fOffset += nToRead;
-            return nToRead;
+            return 0;
         }
 
-        // if not already cached, add to cache, and then return the data
-        SeekOffsetType origOffset       = _fOffset;
-        auto           pushIntoCacheBuf = [origOffset, this] (Character* bufStart, Character* bufEnd) {
-            size_t n            = bufEnd - bufStart;
-            size_t newCacheSize = static_cast<size_t> (origOffset + n);
-            Assert (fCache_.size () == static_cast<size_t> (origOffset));
-            Assert (newCacheSize > fCache_.size ());
-            Containers::Support::ReserveTweaks::Reserve4AddN (fCache_, n);
-            fCache_.resize_uninitialized (newCacheSize);
-            for (size_t i = 0; i < n; ++i) {
-                fCache_[i + static_cast<size_t> (origOffset)] = bufStart[i];
-            }
-        };
-        // if not a cache hit, use inherited Read (), and fill the cache.
-        // If the calling read big enough, re-use that buffer.
-        constexpr size_t kMinCachedReadSize_{512};
-        if (intoEnd - intoStart >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
-            size_t n = inherited::Read (intoStart, intoEnd);
-            if (n != 0) {
-                if (origOffset + n > numeric_limits<size_t>::max ()) [[unlikely]] {
-                    // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
-                    Execution::Throw (range_error{"seek past max size for size_t"});
+        virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
+        {
+            /// @todo hANDLE intoStart==nullptr case!!!
+            Require ((intoStart == intoEnd) or (intoStart != nullptr));
+            Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+            Require (IsOpenRead ());
+            // Plan:
+            //      o   ReadNonBlocking upstream (or grab from _fReadAheadCache)
+            //      o   decode and see if at least one character
+            //      o   if need more data to decode, try 'again' and grab more bytes.
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            {
+                size_t readAtMostCharacters = size_t (intoEnd - intoStart); // must read at least one character, and no more than (intoEnd - intoStart)
+                StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, readAtMostCharacters};
+                {
+                    bool atEOF = false;
+                    if (_fReadAheadCache and _fReadAheadCache->fFrom == this->_fOffset) {
+                        inBuf = span<byte>{_fReadAheadCache->fData};
+                        // ReadNonBlocking probably needed, but may not be. But since non blocking, its harmless, so try it
+                        if (readAtMostCharacters > inBuf.size ()) {
+                            StackBuffer<byte> buf{Memory::eUninitialized, readAtMostCharacters - inBuf.size ()};
+                            if (auto o = _fSource.ReadNonBlocking (begin (buf), end (buf))) {
+                                atEOF = *o == 0;
+                                inBuf.push_back (span{buf.data (), *o});
+                            }
+                        }
+                    }
+                    else {
+                        if (auto o = _fSource.ReadNonBlocking (begin (inBuf), end (inBuf))) {
+                            atEOF = *o == 0;
+                            inBuf.ShrinkTo (*o);
+                        }
+                    }
+                    if (atEOF) {
+                        if (inBuf.size () != 0) {
+                            Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
+                        }
+                        return 0;
+                    }
                 }
-                pushIntoCacheBuf (intoStart, intoStart + n);
+            again:
+                span<const byte> binarySrcSpan{inBuf};
+                if (intoStart == nullptr) {
+                    // tricky case. Must possibly do several binary reads til we have enuf for a character, and then return
+                    // one for that case, but must save away the read bits (_fReadAheadCache).
+                    auto cs = _fCharConverter.Bytes2Characters (binarySrcSpan);
+                    if (cs == 0) {
+                        byte b{};
+                        if (auto o = _fSource.ReadNonBlocking (&b, &b + 1)) {
+                            inBuf.push_back (b);
+                            goto again;
+                        }
+                        else {
+                            // (re-)save _fReadAheadCache and return null cuz no character ready yet
+                            _fReadAheadCache.emplace (_ReadAheadCache{.fFrom = _fOffset, .fData = binarySrcSpan});
+                            return nullopt;
+                        }
+                    }
+                    return cs;
+                }
+                else {
+                    span<Character> targetBuf{intoStart, intoEnd};
+                    Assert (_fCharConverter.ComputeTargetCharacterBufferSize (inBuf.size ()) <= targetBuf.size ()); // just because _fCharConverter will require this
+                    span<Character> convertedCharacters = _fCharConverter.Bytes2Characters (&binarySrcSpan, targetBuf);
+                    if (binarySrcSpan.empty ()) {
+                        // then we got data - already copied into intoStart (part of target span) - so just return the number of characters read
+                        Assert (convertedCharacters.size () <= targetBuf.size ());
+                        _fOffset += convertedCharacters.size ();
+                        return convertedCharacters.size ();
+                    }
+                    else if (convertedCharacters.empty ()) {
+                        // We have zero convertedCharacters, so apparently not enough bytes read. Read one more, and try again.
+                        byte b;
+                        if (auto o = _fSource.ReadNonBlocking (&b, &b + 1)) {
+                            if (*o == 1) {
+                                inBuf.push_back (b);
+                                goto again;
+                            }
+                            else {
+                                // if we read EOF, and have a partial character read, thats an error - so throw
+                                Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
+                            }
+                        }
+                        else {
+                            return nullopt; // need more bytes, not at EOF, and bytes not ready
+                        }
+                    }
+                    else {
+                        Assert (not binarySrcSpan.empty () and not convertedCharacters.empty ());
+                        Assert (convertedCharacters.size () <= targetBuf.size ());
+                        _fOffset += convertedCharacters.size (); // complete the read
+                        // Save the extra bytes for next time (with the offset where those bytes come from)
+                        _fReadAheadCache.emplace (_ReadAheadCache{.fFrom = _fOffset, .fData = binarySrcSpan});
+                        return convertedCharacters.size ();
+                    }
+                }
             }
-            return n;
         }
-        else {
-            // if argument buffer not big enough, read into a temporary buffer
-            constexpr size_t kUseCacheSize_ = 8 * kMinCachedReadSize_;
-            Character        buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
-            size_t n = inherited::Read (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf)));
-            if (n != 0) {
-                if (origOffset + n > numeric_limits<size_t>::max ()) [[unlikely]] {
-                    // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
-                    Execution::Throw (range_error{"seek past max size for size_t"});
-                }
-                pushIntoCacheBuf (std::begin (buf), std::begin (buf) + n);
-                n = intoEnd - intoStart;
-                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"");
-                (void)::memcpy (intoStart, std::begin (buf), n * sizeof (Character));
-                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"");
-                _fOffset = origOffset + n;
-            }
-            return n;
+
+        virtual SeekOffsetType GetReadOffset () const override
+        {
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            Require (IsOpenRead ());
+            return _fOffset;
         }
-    }
-    virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
-    {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        Require (IsOpenRead ());
-        switch (whence) {
-            case Whence::eFromStart: {
-                if (offset < 0) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
+
+        virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
+        {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            Require (IsOpenRead ());
+            AssertNotReached (); // not seekable
+            return _fOffset;
+        }
+
+    protected:
+        InputStream<byte>::Ptr                                         _fSource;
+        const Characters::CodeCvt<Character>                           _fCharConverter;
+        SeekOffsetType                                                 _fOffset{0};
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+    };
+
+    class UnseekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
+        using inherited = FromBinaryStreamBaseRep_;
+
+    public:
+        UnseekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<char32_t>& charConverter)
+            : inherited{src, charConverter}
+        {
+        }
+    };
+
+    /*
+     *  Note this CAN be used with either a seekable or unseekable byte stream.
+     *  But this always produces a SEEKABLE TextStream, so can be used to produce
+     *  a seekable TextStream from a non-seekable binary stream.
+     * 
+     *  But note - it does this at the cost of KEEPING a copy of the entire stream in memory.
+     */
+    class CachingSeekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
+        using inherited = FromBinaryStreamBaseRep_;
+
+    public:
+        CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<char32_t>& charConverter, ReadAhead readAhead)
+            : FromBinaryStreamBaseRep_{src, charConverter}
+            , fReadAheadAllowed_{readAhead == ReadAhead::eReadAheadAllowed}
+        {
+        }
+
+    protected:
+        virtual bool IsSeekable () const override
+        {
+            return true;
+        }
+        virtual size_t Read (Character* intoStart, Character* intoEnd) override
+        {
+            Require ((intoStart == intoEnd) or (intoStart != nullptr));
+            Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            Require (IsOpenRead ());
+
+            // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
+            // and not say 'eof'
+            if (_fOffset < fCache_.size ()) {
+                // return data from cache
+                size_t nToRead     = intoEnd - intoStart;
+                size_t nInBufAvail = fCache_.size () - static_cast<size_t> (_fOffset);
+                nToRead            = min (nToRead, nInBufAvail);
+                Assert (nToRead > 0);
+                for (size_t i = 0; i < nToRead; ++i) {
+                    intoStart[i] = fCache_[i + static_cast<size_t> (_fOffset)];
                 }
-                SeekTo_ (static_cast<SeekOffsetType> (offset));
-            } break;
-            case Whence::eFromCurrent: {
-                Streams::SeekOffsetType       curOffset = _fOffset;
-                Streams::SignedSeekOffsetType newOffset = curOffset + offset;
-                if (newOffset < 0) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
+                _fOffset += nToRead;
+                return nToRead;
+            }
+
+            // if not already cached, add to cache, and then return the data
+            SeekOffsetType origOffset       = _fOffset;
+            auto           pushIntoCacheBuf = [origOffset, this] (Character* bufStart, Character* bufEnd) {
+                size_t n            = bufEnd - bufStart;
+                size_t newCacheSize = static_cast<size_t> (origOffset + n);
+                Assert (fCache_.size () == static_cast<size_t> (origOffset));
+                Assert (newCacheSize > fCache_.size ());
+                Containers::Support::ReserveTweaks::Reserve4AddN (fCache_, n);
+                fCache_.resize_uninitialized (newCacheSize);
+                for (size_t i = 0; i < n; ++i) {
+                    fCache_[i + static_cast<size_t> (origOffset)] = bufStart[i];
                 }
-                SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
-                SeekTo_ (static_cast<size_t> (uNewOffset));
-            } break;
-            case Whence::eFromEnd: {
+            };
+            // if not a cache hit, use inherited Read (), and fill the cache.
+            // If the calling read big enough, re-use that buffer.
+            constexpr size_t kMinCachedReadSize_{512};
+            if (intoEnd - intoStart >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
+                size_t n = inherited::Read (intoStart, intoEnd);
+                if (n != 0) {
+                    if (origOffset + n > numeric_limits<size_t>::max ()) [[unlikely]] {
+                        // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
+                        Execution::Throw (range_error{"seek past max size for size_t"});
+                    }
+                    pushIntoCacheBuf (intoStart, intoStart + n);
+                }
+                return n;
+            }
+            else {
+                // if argument buffer not big enough, read into a temporary buffer
+                constexpr size_t kUseCacheSize_ = 8 * kMinCachedReadSize_;
+                Character        buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
+                size_t n = inherited::Read (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf)));
+                if (n != 0) {
+                    if (origOffset + n > numeric_limits<size_t>::max ()) [[unlikely]] {
+                        // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
+                        Execution::Throw (range_error{"seek past max size for size_t"});
+                    }
+                    pushIntoCacheBuf (std::begin (buf), std::begin (buf) + n);
+                    n = intoEnd - intoStart;
+                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"");
+                    (void)::memcpy (intoStart, std::begin (buf), n * sizeof (Character));
+                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"");
+                    _fOffset = origOffset + n;
+                }
+                return n;
+            }
+        }
+        virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
+        {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            Require (IsOpenRead ());
+            switch (whence) {
+                case Whence::eFromStart: {
+                    if (offset < 0) [[unlikely]] {
+                        Execution::Throw (range_error{"seek"});
+                    }
+                    SeekTo_ (static_cast<SeekOffsetType> (offset));
+                } break;
+                case Whence::eFromCurrent: {
+                    Streams::SeekOffsetType       curOffset = _fOffset;
+                    Streams::SignedSeekOffsetType newOffset = curOffset + offset;
+                    if (newOffset < 0) [[unlikely]] {
+                        Execution::Throw (range_error{"seek"});
+                    }
+                    SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
+                    SeekTo_ (static_cast<size_t> (uNewOffset));
+                } break;
+                case Whence::eFromEnd: {
+                    Character c;
+                    while (Read (&c, &c + 1) == 1) {
+                        break; // read til EOF
+                    }
+                    SeekTo_ (_fOffset + offset);
+                } break;
+            }
+            return _fOffset;
+        }
+
+    private:
+        void SeekFowardTo_ (SeekOffsetType offset)
+        {
+            // easy - keep reading
+            while (_fOffset < offset) {
                 Character c;
-                while (Read (&c, &c + 1) == 1) {
-                    break; // read til EOF
+                if (Read (&c, &c + 1) == 0) [[unlikely]] {
+                    Execution::Throw (range_error{"seek"});
                 }
-                SeekTo_ (_fOffset + offset);
-            } break;
-        }
-        return _fOffset;
-    }
-
-private:
-    void SeekFowardTo_ (SeekOffsetType offset)
-    {
-        // easy - keep reading
-        while (_fOffset < offset) {
-            Character c;
-            if (Read (&c, &c + 1) == 0) [[unlikely]] {
-                Execution::Throw (range_error{"seek"});
             }
+            Ensure (_fOffset == offset);
         }
-        Ensure (_fOffset == offset);
-    }
-    void SeekBackwardTo_ (SeekOffsetType offset)
-    {
-        _fOffset = offset;
-        // no need to adjust seekpos of base FromBinaryStreamBaseRep_ readpos, because that is always left at end of cache
-    }
-    void SeekTo_ (SeekOffsetType offset)
-    {
-        if (offset > _fOffset) {
-            SeekFowardTo_ (offset);
+        void SeekBackwardTo_ (SeekOffsetType offset)
+        {
+            _fOffset = offset;
+            // no need to adjust seekpos of base FromBinaryStreamBaseRep_ readpos, because that is always left at end of cache
         }
-        else if (offset < _fOffset) {
-            SeekBackwardTo_ (offset);
+        void SeekTo_ (SeekOffsetType offset)
+        {
+            if (offset > _fOffset) {
+                SeekFowardTo_ (offset);
+            }
+            else if (offset < _fOffset) {
+                SeekBackwardTo_ (offset);
+            }
+            Ensure (_fOffset == offset);
         }
-        Ensure (_fOffset == offset);
-    }
 
-private:
-    bool fReadAheadAllowed_{false};
-    InlineBuffer<Character> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
-    // @todo for larger streams, a different data structure than InlineBuffer would be appropriate - E.G. ChunkedArray! probably best.
-};
+    private:
+        bool fReadAheadAllowed_{false};
+        InlineBuffer<Character> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
+        // @todo for larger streams, a different data structure than InlineBuffer would be appropriate - E.G. ChunkedArray! probably best.
+    };
+}
 
 /*
  ********************************************************************************
- ******************************* Streams::TextReader ****************************
+ ************************** Streams::TextReader::New ****************************
  ********************************************************************************
  */
 auto TextReader::New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags) -> Ptr
@@ -494,89 +497,3 @@ auto TextReader::New (const Traversal::Iterable<Character>& src) -> Ptr
     Ensure (p.IsSeekable ());
     return p;
 }
-
-/////////////// ***************** DEPRECATED BELOW /////////////////
-DISABLE_COMPILER_MSC_WARNING_START (4996); // DEPRECATED
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src) -> Ptr
-{
-    switch (internallySynchronized) {
-        case Execution::eInternallySynchronized:
-            AssertNotImplemented ();
-            //return InternalSyncRep_::New ();
-            return src;
-        case Execution::eNotKnownInternallySynchronized:
-            return src;
-        default:
-            RequireNotReached ();
-            return src;
-    }
-}
-
-auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& src, const optional<Characters::String>& charset) -> Ptr
-{
-    auto codeCvt = charset ? Characters::CodeCvt<>{Characters::Charset{*charset}} : Characters::CodeCvt<>{};
-    switch (internallySynchronized) {
-        case Execution::eInternallySynchronized:
-            AssertNotImplemented ();
-            //return InternalSyncRep_::New ();
-            return New (src, codeCvt);
-        case Execution::eNotKnownInternallySynchronized:
-            return New (src, codeCvt);
-        default:
-            RequireNotReached ();
-            return New (src, codeCvt);
-    }
-}
-
-auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, SeekableFlag seekable,
-                      ReadAhead readAhead) -> Ptr
-{
-    switch (internallySynchronized) {
-        case Execution::eInternallySynchronized:
-            AssertNotImplemented ();
-            //return InternalSyncRep_::New ();
-            return New (src, seekable);
-        case Execution::eNotKnownInternallySynchronized:
-            return New (src, seekable, readAhead);
-        default:
-            RequireNotReached ();
-            return New (src, seekable, readAhead);
-    }
-}
-
-auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
-                      const optional<Characters::String>& charset, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
-{
-    auto codeCvt = charset ? Characters::CodeCvt<>{Characters::Charset{*charset}} : Characters::CodeCvt<>{};
-    switch (internallySynchronized) {
-        case Execution::eInternallySynchronized:
-            AssertNotImplemented ();
-            //return InternalSyncRep_::New ();
-            return New (src, codeCvt, seekable, readAhead);
-        case Execution::eNotKnownInternallySynchronized:
-            return New (src, codeCvt, seekable, readAhead);
-        default:
-            RequireNotReached ();
-            return New (src, codeCvt, seekable, readAhead);
-    }
-}
-
-auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const Traversal::Iterable<Character>& src) -> Ptr
-{
-    switch (internallySynchronized) {
-        case Execution::eInternallySynchronized:
-            AssertNotImplemented ();
-            //return InternalSyncRep_::New ();
-            return New (src);
-        case Execution::eNotKnownInternallySynchronized:
-            return New (src);
-        default:
-            RequireNotReached ();
-            return New (src);
-    }
-}
-DISABLE_COMPILER_MSC_WARNING_END (4996); // DEPRECATED
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");

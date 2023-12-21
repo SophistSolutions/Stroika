@@ -12,7 +12,6 @@
 #include "../Characters/UTFConvert.h"
 
 #include "InputStream.h"
-#include "InternallySynchronizedInputStream.h"
 
 /**
  *  \file
@@ -38,7 +37,9 @@ namespace Stroika::Foundation::Memory {
 namespace Stroika::Foundation::Streams {
 
     using Characters::Character;
+}
 
+namespace Stroika::Foundation::Streams::TextReader {
     /**
      *  \brief TextReader is an InputStream of Character, usually constructted wrapping some binary object or binary stream
      *
@@ -67,49 +68,39 @@ namespace Stroika::Foundation::Streams {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class TextReader : public InputStream<Character> {
-    public:
-        TextReader ()                  = delete;
-        TextReader (const TextReader&) = delete;
+    using Ptr = InputStream<Character>::Ptr;
 
-    public:
-        class Ptr;
+    /**
+        * This flag controls whether the TextReader instance will try to read-ahead (typically in order to cache). This is generally
+        * a good thing, but for some stream uses, its important to not read ahead - e.g. in the underlying binary stream contains multiple objects and we
+        * are just reading one).
+        *
+        *  \note eReadAheadAllowed doesn't mean the underlying class actually WILL read ahead, only that it is permitted to.
+        */
+    enum class ReadAhead {
+        eReadAheadNever,
+        eReadAheadAllowed,
+    };
+    static constexpr ReadAhead eReadAheadNever   = ReadAhead::eReadAheadNever;
+    static constexpr ReadAhead eReadAheadAllowed = ReadAhead::eReadAheadAllowed;
 
-    public:
-        /**
-         * This flag controls whether the TextReader instance will try to read-ahead (typically in order to cache). This is generally
-         * a good thing, but for some stream uses, its important to not read ahead - e.g. in the underlying binary stream contains multiple objects and we
-         * are just reading one).
-         *
-         *  \note eReadAheadAllowed doesn't mean the underlying class actually WILL read ahead, only that it is permitted to.
+    /**
+        * @todo DOCUMENT - NEED EXAMPLE - WHY???
+        */
+    static const Characters::UTFCodeConverter<Character> kDefaultUTFCoodeCoverter;
+
+    /**
          */
-        enum class ReadAhead {
-            eReadAheadNever,
-            eReadAheadAllowed,
-        };
-        static constexpr ReadAhead eReadAheadNever   = ReadAhead::eReadAheadNever;
-        static constexpr ReadAhead eReadAheadAllowed = ReadAhead::eReadAheadAllowed;
+    enum class AutomaticCodeCvtFlags {
+        eReadBOMAndIfNotPresentUseUTF8,
+        eReadBOMAndIfNotPresentUseCurrentLocale,
 
-    public:
-        /**
-         * @todo DOCUMENT - NEED EXAMPLE - WHY???
-         */
-        static const Characters::UTFCodeConverter<Character> kDefaultUTFCoodeCoverter;
+        eDEFAULT = eReadBOMAndIfNotPresentUseCurrentLocale
+    };
+    static constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseUTF8 = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
+    static constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseCurrentLocale = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale;
 
-    public:
-        /**
-         */
-        enum class AutomaticCodeCvtFlags {
-            eReadBOMAndIfNotPresentUseUTF8,
-            eReadBOMAndIfNotPresentUseCurrentLocale,
-
-            eDEFAULT = eReadBOMAndIfNotPresentUseCurrentLocale
-        };
-        static constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseUTF8 = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
-        static constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseCurrentLocale = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale;
-
-    public:
-        /**
+    /**
          *  Seekable defaults to the same value as that of the underlying stream wrapped.
          *  For the constructor taking const InputStream<Character>::Ptr& src, the seekability mimics that of the original source.
          *  Constructors taking a BLOB, the resulting stream will be seekable..
@@ -126,69 +117,15 @@ namespace Stroika::Foundation::Streams {
          *          }
          *      \endcode
          */
-        static Ptr New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags = AutomaticCodeCvtFlags::eDEFAULT);
-        static Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter);
-        static Ptr New (const InputStream<byte>::Ptr& src);
-        static Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (const InputStream<byte>::Ptr& src, AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter,
-                        SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (const InputStream<Character>::Ptr& src);
-        static Ptr New (const Traversal::Iterable<Character>& src);
-
-    private:
-        class FromBinaryStreamBaseRep_;
-        class UnseekableBinaryStreamRep_;
-        class BaseSeekingBinaryStreamRep_;
-        class CachingSeekableBinaryStreamRep_;
-
-    private:
-        using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<Character, TextReader, InputStream<Character>::_IRep>;
-
-    public:
-        [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
-        New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& src, const optional<Characters::String>& charset = nullopt);
-        [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
-        New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
-             SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
-        [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
-        New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset,
-             SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src);
-        [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
-        New (Execution::InternallySynchronized internallySynchronized, const Traversal::Iterable<Character>& src);
-    };
-
-    /**
-     *  Ptr is a copyable smart pointer to a TextReader object.
-     */
-    class TextReader::Ptr : public InputStream<Character>::Ptr {
-    private:
-        using inherited = typename InputStream<Character>::Ptr;
-
-    public:
-        /**
-         *
-         *  \par Example Usage
-         *      \code
-         *          for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
-         *              DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
-         *          }
-         *      \endcode
-         */
-        Ptr ()                = default;
-        Ptr (const Ptr& from) = default;
-        Ptr (const InputStream<Character>::Ptr& from);
-
-    protected:
-        Ptr (const shared_ptr<InputStream<Character>::_IRep>& from);
-
-    public:
-        nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-    private:
-        friend class TextReader;
-    };
+    Ptr New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags = AutomaticCodeCvtFlags::eDEFAULT);
+    Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter);
+    Ptr New (const InputStream<byte>::Ptr& src);
+    Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead = eReadAheadAllowed);
+    Ptr New (const InputStream<byte>::Ptr& src, AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead = eReadAheadAllowed);
+    Ptr New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable,
+             ReadAhead readAhead = eReadAheadAllowed);
+    Ptr New (const InputStream<Character>::Ptr& src);
+    Ptr New (const Traversal::Iterable<Character>& src);
 
 }
 
