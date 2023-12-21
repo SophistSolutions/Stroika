@@ -295,6 +295,14 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         *  EXPERIMENMT MAKING THIS NON-EXPLICIT conversion operator. Makes a bunch of other code simpler, and it makes sense.
+         *  Trouble is - will it cause ambiguity later, and need to be removed. No obvious way to tell but testing a bit..
+         * --LGP 2023-12-21
+        */
+        /*explicit*/ operator Streams::InputStream<byte>::Ptr () const;
+
+    public:
+        /**
          *  Return a BLOB made by concatenating this BLOB count times.
          */
         nonvirtual BLOB Repeat (unsigned int count) const;

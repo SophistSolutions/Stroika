@@ -245,6 +245,10 @@ namespace Stroika::Foundation::Memory {
             return *(reinterpret_cast<const T*> (begin ()));
         }
     }
+    inline BLOB::operator Streams::InputStream<byte>::Ptr () const
+    {
+        return As<Streams::InputStream<byte>::Ptr> ();
+    }
     inline byte BLOB::operator[] (const size_t i) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
