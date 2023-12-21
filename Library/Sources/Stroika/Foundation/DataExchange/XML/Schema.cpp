@@ -39,12 +39,9 @@ namespace {
 using namespace Stroika::Foundation::DataExchange::XML::Schema;
 
 #if qHasFeature_Xerces
-using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
-#endif
-
-#if qHasFeature_Xerces
 namespace {
     namespace XercesImpl_ {
+        using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
         struct MySchemaResolver_ : public XMLEntityResolver {
         private:
             Sequence<Schema::SourceComponent> fSourceComponents;
@@ -178,6 +175,7 @@ namespace {
 #if qHasFeature_libxml2
 namespace {
     namespace LibXML2Impl_ {
+        using namespace XML::Providers::LibXML2;
         struct SchemaRep_ : Schema::IRep {
             SchemaRep_ (const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
                         const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
@@ -255,6 +253,7 @@ void DataExchange::XML::ValidateFile (const filesystem::path& externalFileName, 
 #if qHasFeature_Xerces
     START_LIB_EXCEPTION_MAPPER
     {
+        using namespace XercesImpl_;
         shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
         shared_ptr<SAX2XMLReader>    parser       = shared_ptr<SAX2XMLReader> (
             XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ()));

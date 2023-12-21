@@ -181,7 +181,6 @@ namespace {
             vector<String> fEltStack;
         };
         MyCallback myCallback;
-       // XML::SAXParse (kHealthFrameWorks_v3_xml.As<Streams::InputStream<byte>::Ptr> (), myCallback);
         XML::SAXParse (kHealthFrameWorks_v3_xml, myCallback);
     }
 }
