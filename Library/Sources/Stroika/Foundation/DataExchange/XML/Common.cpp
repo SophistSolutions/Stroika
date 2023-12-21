@@ -23,7 +23,15 @@ using namespace Stroika::Foundation::Debug;
 #include "Providers/Xerces.h"
 
 using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
+#endif
 
+#if qHasFeature_libxml2
+#include "Providers/LibXML2.h"
+
+using namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2;
+#endif
+
+#if qHasFeature_Xerces
 namespace {
     /*
      *  A helpful class to isolete Xerces (etc) memory management calls. Could be the basis
@@ -119,9 +127,49 @@ struct DependencyLibraryInitializer::LibXerces {
 #endif
     }
 };
-
-DependencyLibraryInitializer::DependencyLibraryInitializer ()
-    : fXERCES{make_shared<LibXerces> ()}
-{
-}
 #endif
+
+#if qHasFeature_libxml2
+
+/*
+ ********************************************************************************
+ **************************** DependencyLibraryInitializer **********************
+ ********************************************************************************
+ */
+struct DependencyLibraryInitializer::LibXML2 {
+    MyXercesMemMgr_* fUseXercesMemoryManager;
+    LibXML2 ()
+    {
+        LIBXML_TEST_VERSION;
+    }
+    ~LibXML2 ()
+    {
+        TraceContextBumper ctx{"~LibXML2"};
+        xmlCleanupParser ();
+#if qDebug
+        xmlMemoryDump ();
+#endif
+    }
+};
+#endif
+
+void DependencyLibraryInitializer::UsingProvider_ (Provider p)
+{
+    // check outside of lock cuz once set, not unset, and then lock if needed
+#if qHasFeature_Xerces
+    if (p == Provider::eXerces and not fXERCES) [[unlikely]] {
+        [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
+        if (not fXERCES) {
+            fXERCES = make_shared<LibXerces> ();
+        }
+    }
+#endif
+#if qHasFeature_libxml2
+    if (p == Provider::eLibXml2 and not fLibXML2) [[unlikely]] {
+        [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
+        if (not fLibXML2) {
+            fLibXML2 = make_shared<LibXML2> ();
+        }
+    }
+#endif
+}

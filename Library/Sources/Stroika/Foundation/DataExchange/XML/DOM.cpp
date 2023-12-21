@@ -999,6 +999,7 @@ namespace {
  */
 Document::Ptr Document::New (const String& documentElementName, const optional<URI>& ns)
 {
+    DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
     using namespace XercesImpl_;
     auto p = make_shared<XercesDocRep_> ();
     p->CreateDocumentElement (documentElementName, ns); // @todo change this to CTOR arg overload - not method
@@ -1007,6 +1008,7 @@ Document::Ptr Document::New (const String& documentElementName, const optional<U
 
 Document::Ptr Document::New (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema)
 {
+    DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
     using namespace XercesImpl_;
     Ptr p{make_shared<XercesDocRep_> ()};
     p.GetRep ()->Read (in, schema);

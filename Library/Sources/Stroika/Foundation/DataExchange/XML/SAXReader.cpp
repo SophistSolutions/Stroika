@@ -205,6 +205,7 @@ void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, 
                     const Schema::Ptr& schema, [[maybe_unused]] ProgressMonitor::Updater progress)
 {
 #if qHasFeature_Xerces
+    DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
     SAX2PrintHandlers_           handler{callback};
     shared_ptr<SAX2XMLReader>    parser;
     shared_ptr<IXercesSchemaRep> accessSchema;

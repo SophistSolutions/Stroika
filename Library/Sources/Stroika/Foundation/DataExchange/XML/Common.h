@@ -28,19 +28,6 @@ namespace Stroika::Foundation::DataExchange::XML {
 
     using namespace std;
 
-#if 0
-#if __has_include(<xercesc/dom/DOM.hpp>)
-    constexpr bool kHasXerces = true;
-#else
-    constexpr bool kHasXerces  = false;
-#endif
-#if __has_include(<libxml2/libxml/xmlversion.h>)
-    constexpr bool kHasLibXML2 = true;
-#else
-    constexpr bool kHasLibXML2 = false;
-#endif
-#endif
-
 /**
  *  As of Stroika v3.0d4, we only support XML DOM if Xerces is builtin (could use libxml2 as well in the future).
  */
@@ -100,14 +87,47 @@ namespace Stroika::Foundation::DataExchange::XML {
     /*
      * Automatically manage initialization of dependent libraries by any code which includes this module
      */
-#if qHasFeature_Xerces
+#if qHasFeature_Xerces or qHasFeature_libxml2
     struct DependencyLibraryInitializer {
+    private:
+        mutex fMutex_;
+#if qHasFeature_Xerces
         struct LibXerces;
         shared_ptr<LibXerces> fXERCES;
-        DependencyLibraryInitializer ();
-        static const DependencyLibraryInitializer sThe;
+#endif
+#if qHasFeature_libxml2
+        struct LibXML2;
+        shared_ptr<LibXML2> fLibXML2;
+#endif
+    public:
+        DependencyLibraryInitializer ()                              = default;
+        DependencyLibraryInitializer (DependencyLibraryInitializer&) = delete;
+        ~DependencyLibraryInitializer ()                             = default;
+
+    public:
+        void UsingProvider (Provider p)
+        {
+            // check outside of lock cuz once set, not unset, and then lock if needed
+            // this can false positive because no lock but we recheck inside UsingProvider_
+#if qHasFeature_Xerces
+            if (p == Provider::eXerces and not fXERCES) [[unlikely]] {
+                UsingProvider_ (p);
+            }
+#endif
+#if qHasFeature_libxml2
+            if (p == Provider::eLibXml2 and not fLibXML2) [[unlikely]] {
+                UsingProvider_ (p);
+            }
+#endif
+        }
+
+    private:
+        void UsingProvider_ (Provider p);
+
+    public:
+        static DependencyLibraryInitializer sThe;
     };
-    inline const DependencyLibraryInitializer DependencyLibraryInitializer::sThe;
+    inline DependencyLibraryInitializer DependencyLibraryInitializer::sThe;
 #endif
 
     // Expose private details for regression testing

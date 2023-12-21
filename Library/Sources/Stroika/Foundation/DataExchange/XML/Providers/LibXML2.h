@@ -8,6 +8,7 @@
 
 static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libxml2 not set");
 
+#include "../Common.h"
 //include libxml2 stuff here
 
 #include <libxml/parser.h>

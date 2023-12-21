@@ -232,11 +232,13 @@ Schema::Ptr Schema::New ([[maybe_unused]] Provider p, const optional<URI>& targe
 {
 #if qHasFeature_Xerces
     if (p == Provider::eXerces) {
+        DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
         return Ptr{make_shared<XercesImpl_::SchemaRep_> (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions)};
     }
 #endif
 #if qHasFeature_libxml2
     if (p == Provider::eLibXml2) {
+        DependencyLibraryInitializer::sThe.UsingProvider (Provider::eLibXml2);
         return Ptr{make_shared<LibXML2Impl_::SchemaRep_> (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions)};
     }
 #endif
