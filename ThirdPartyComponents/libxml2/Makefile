@@ -130,11 +130,9 @@ endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "libxml2 ${libxml2_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
-ifneq (${MAYBED_},)
 	# LINKER appears to fail under docker/Debug-x86 when using symbolic link here for not well understood reasons, so use copy - Appears JUST a cygwin issue maybe just under docker? --LGP 2023-12-15
 	#ln -s "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2.lib
 	cp "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2.lib
-endif
 	@#existing produced .pc file bad in several ways for windows, and want to try to use pkg-config so hopefully this hack adequate
 	@cp PatchReplacements/libxml-2.0.pc "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/
 else
