@@ -1351,9 +1351,39 @@ namespace {
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         }
 
-#if qFeature_HasFeature_libxml2
+#if qHasFeature_libxml2
         {
             // play with limxml2
+            Schema::Ptr schema = XML::Schema::New (XML::Provider::eLibXml2,
+                                                   IO::Network::URI{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"},
+                                                   kReferenceContent_2012_03_xsd);
+            class MyCallback : public StructuredStreamEvents::IConsumer {
+            public:
+                virtual void StartDocument () override
+                {
+                    fEltDepthCount = 0;
+                }
+                virtual void EndDocument () override
+                {
+                    EXPECT_TRUE (fEltDepthCount == 0);
+                }
+                virtual void StartElement (const StructuredStreamEvents::Name&                                   name,
+                                           [[maybe_unused]] const Mapping<StructuredStreamEvents::Name, String>& attributes) override
+                {
+                    fEltDepthCount++;
+                    fEltStack.push_back (Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
+                }
+                virtual void EndElement (const StructuredStreamEvents::Name& name) override
+                {
+                    EXPECT_TRUE (fEltStack.back () == Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
+                    fEltStack.pop_back ();
+                    fEltDepthCount--;
+                }
+                unsigned int   fEltDepthCount;
+                vector<String> fEltStack;
+            };
+            MyCallback myCallback;
+            XML::SAXParse (kHealthFrameWorks_v3_xml.As<Streams::InputStream<byte>::Ptr> (), myCallback);
         }
 #endif
     }
