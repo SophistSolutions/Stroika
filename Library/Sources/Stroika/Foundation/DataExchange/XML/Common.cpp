@@ -31,6 +31,9 @@ using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
 using namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2;
 #endif
 
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
+CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_libxml2, qHasFeature_libxml2);
+
 #if qHasFeature_Xerces
 namespace {
     /*
@@ -156,20 +159,22 @@ struct DependencyLibraryInitializer::LibXML2 {
 void DependencyLibraryInitializer::UsingProvider_ (Provider p)
 {
     // check outside of lock cuz once set, not unset, and then lock if needed
+    switch (p) {
 #if qHasFeature_Xerces
-    if (p == Provider::eXerces and not fXERCES) [[unlikely]] {
-        [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
-        if (not fXERCES) {
-            fXERCES = make_shared<LibXerces> ();
-        }
-    }
+        case Provider::eXerces: {
+            [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
+            if (not fXERCES) {
+                fXERCES = make_shared<LibXerces> ();
+            }
+        } break;
 #endif
 #if qHasFeature_libxml2
-    if (p == Provider::eLibXml2 and not fLibXML2) [[unlikely]] {
-        [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
-        if (not fLibXML2) {
-            fLibXML2 = make_shared<LibXML2> ();
-        }
-    }
+        case Provider::eLibXml2: {
+            [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
+            if (not fLibXML2) {
+                fLibXML2 = make_shared<LibXML2> ();
+            }
+        } break;
 #endif
+    }
 }

@@ -35,9 +35,10 @@ using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
-CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
 #if qHasFeature_Xerces
 namespace {
+    namespace XercesImpl_ {
+    
     // These SHOULD be part of xerces! Perhaps someday post them?
     class StdIStream_InputSource_ : public InputSource {
     protected:
@@ -139,16 +140,6 @@ namespace {
     private:
         ProgressMonitor::Updater fProgressCallback_;
     };
-}
-#endif
-
-/*
- ********************************************************************************
- ************************************* SAXParse *********************************
- ********************************************************************************
- */
-#if qHasFeature_Xerces
-namespace {
     class SAX2PrintHandlers_ : public DefaultHandler {
     private:
         StructuredStreamEvents::IConsumer& fCallback_;
@@ -195,40 +186,45 @@ namespace {
             fCallback_.TextInsideElement (xercesString2String (chars, chars + length));
         }
     };
+    }
 }
-
 #endif
 
-#if qStroika_Foundation_DataExchange_XML_SupportParsing
+/*
+ ********************************************************************************
+ ************************************* SAXParse *********************************
+ ********************************************************************************
+ */
 
-void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, [[maybe_unused]] StructuredStreamEvents::IConsumer& callback,
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
+void XML::SAXParse (Provider saxProvider, [[maybe_unused]] const Streams::InputStream<byte>::Ptr& in,
+                    [[maybe_unused]] StructuredStreamEvents::IConsumer& callback,
                     const Schema::Ptr& schema, [[maybe_unused]] ProgressMonitor::Updater progress)
 {
 #if qHasFeature_Xerces
-    DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
-    SAX2PrintHandlers_           handler{callback};
-    shared_ptr<SAX2XMLReader>    parser;
-    shared_ptr<IXercesSchemaRep> accessSchema;
-    if (schema != nullptr) {
+    if (saxProvider == Provider::eXerces) {
+        DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
+        using namespace XercesImpl_;
+        SAX2PrintHandlers_           handler{callback};
+        shared_ptr<SAX2XMLReader>    parser;
+        shared_ptr<IXercesSchemaRep> accessSchema;
+        if (schema != nullptr) {
         accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
-    }
-    if (accessSchema) {
+        }
+        if (accessSchema) {
         parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ()));
-    }
-    else {
+        }
+        else {
         parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
+        }
+        SetupCommonParserFeatures (*parser, accessSchema != nullptr);
+        parser->setContentHandler (&handler);
+        Map2StroikaExceptionsErrorReporter mErrorReproter_;
+        parser->setErrorHandler (&mErrorReproter_);
+        constexpr XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
+        parser->parse (StdIStream_InputSourceWithProgress_{in, ProgressMonitor::Updater{progress, 0.1f, 0.9f}, kBufID});
     }
-    SetupCommonParserFeatures (*parser, accessSchema != nullptr);
-    parser->setContentHandler (&handler);
-    Map2StroikaExceptionsErrorReporter mErrorReproter_;
-    parser->setErrorHandler (&mErrorReproter_);
-    constexpr XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
-    parser->parse (StdIStream_InputSourceWithProgress_{in, ProgressMonitor::Updater{progress, 0.1f, 0.9f}, kBufID});
 #endif
 }
 
-void XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, const Schema::Ptr& schema, ProgressMonitor::Updater progress)
-{
-    SAXParse (in.As<Streams::InputStream<byte>::Ptr> (), callback, schema, progress);
-}
 #endif

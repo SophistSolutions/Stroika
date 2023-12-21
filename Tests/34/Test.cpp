@@ -181,7 +181,8 @@ namespace {
             vector<String> fEltStack;
         };
         MyCallback myCallback;
-        XML::SAXParse (kHealthFrameWorks_v3_xml.As<Streams::InputStream<byte>::Ptr> (), myCallback);
+       // XML::SAXParse (kHealthFrameWorks_v3_xml.As<Streams::InputStream<byte>::Ptr> (), myCallback);
+        XML::SAXParse (kHealthFrameWorks_v3_xml, myCallback);
     }
 }
 
@@ -252,7 +253,7 @@ namespace {
             EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
             EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
             EXPECT_TRUE (*calendar[0].withWhom.middleName == "Up");
-            EXPECT_TRUE ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
+            EXPECT_TRUE ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year{2005}, Time::June, Time::DayOfMonth{1}}));
             EXPECT_TRUE (calendar[1].withWhom.firstName == "Fred");
             EXPECT_TRUE (calendar[1].withWhom.lastName == "Down");
         }
@@ -1382,10 +1383,6 @@ namespace {
             String             tmp = d.Write ();
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         }
-        {
-
-        }
-
 #if qHasFeature_libxml2
         {
             // play with limxml2

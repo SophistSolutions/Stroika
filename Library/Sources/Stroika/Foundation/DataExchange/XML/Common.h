@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "../../Configuration/Enumeration.h"
+#include "../../Debug/CompileTimeFlagChecker.h"
 
 /**
  *  \file
@@ -135,7 +136,8 @@ namespace Stroika::Foundation::DataExchange::XML {
         size_t GetNetAllocationCount ();
         size_t GetNetAllocatedByteCount ();
     }
-
 }
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qHasFeature_libxml2, qHasFeature_libxml2);
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Common_h_*/

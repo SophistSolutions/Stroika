@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
     [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
     New (Execution::InternallySynchronized internallySynchronized, const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
     [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
-    New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Character>::Ptr& src);
+                New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Character>::Ptr& src);
     inline auto New (const OutputStream<byte>::Ptr& src, Format format) -> Ptr
     {
         using Characters::UnicodeExternalEncodings;
@@ -209,8 +209,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
         Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
         return src;
     }
-    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized,
-                                 const OutputStream<byte>::Ptr& src, Format format) -> Ptr
+    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized, const OutputStream<byte>::Ptr& src, Format format) -> Ptr
     {
         Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
         return New (src, format);
