@@ -215,7 +215,6 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
              */
             using Characters::String2Int;
             using IO::FileSystem::FileInputStream;
-            using Streams::TextReader;
             for (const String& line : TextReader::New (FileInputStream::New (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
                 Sequence<String> t = line.Tokenize ();
                 if (t.size () >= 2) {
@@ -274,7 +273,6 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
     {
         using Characters::String2Int;
         using IO::FileSystem::FileInputStream;
-        using Streams::TextReader;
         static const filesystem::path kProcCPUInfoFileName_{"/proc/cpuinfo"sv};
         /*
          * Example 1:

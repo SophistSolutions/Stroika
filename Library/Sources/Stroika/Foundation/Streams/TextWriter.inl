@@ -188,14 +188,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
     New (Execution::InternallySynchronized internallySynchronized, const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
     [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
     New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Character>::Ptr& src);
-    DISABLE_COMPILER_MSC_WARNING_END (4996); // DEPRECATED
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-
-    DISABLE_COMPILER_MSC_WARNING_START (4996); // DEPRECATED
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    inline auto TextWriter::New (const OutputStream<byte>::Ptr& src, Format format) -> Ptr
+    inline auto New (const OutputStream<byte>::Ptr& src, Format format) -> Ptr
     {
         using Characters::UnicodeExternalEncodings;
         switch (format) {
@@ -211,16 +204,16 @@ namespace Stroika::Foundation::Streams::TextWriter {
                 return Ptr{};
         }
     }
-    inline auto TextWriter::New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized, const OutputStream<Character>::Ptr& src) -> Ptr
+    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized, const OutputStream<Character>::Ptr& src) -> Ptr
     {
         Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
         return src;
     }
-    inline auto TextWriter::New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized,
+    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized,
                                  const OutputStream<byte>::Ptr& src, Format format) -> Ptr
     {
         Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
-        return TextWriter::New (src, format);
+        return New (src, format);
     }
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");

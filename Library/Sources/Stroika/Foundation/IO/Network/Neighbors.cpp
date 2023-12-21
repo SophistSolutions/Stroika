@@ -26,6 +26,7 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::Streams;
 
 using Neighbor = NeighborsMonitor::Neighbor;
 
@@ -139,7 +140,6 @@ namespace {
         Collection<Neighbor> result;
         using Characters::String2Int;
         using IO::FileSystem::FileInputStream;
-        using Streams::TextReader;
         DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
         static const filesystem::path                          kProcFileName_{"/proc/net/arp"sv};
         /*
