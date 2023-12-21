@@ -114,10 +114,10 @@ namespace Stroika::Foundation::DataExchange::XML {
          * 
          *  @todo consider why we have targetNamespace as argument to New () -since it can be and should be parsted out of the document!
          */
-        Ptr        New (Provider p, const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
+        Ptr New (Provider p, const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
                  const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});
         Ptr New (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
-                        const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});
+                 const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});
 
     }
 
