@@ -544,6 +544,7 @@ sub     FillDefaultLibDependencies_
 			# Though included in packageconfig support, in a queer place, and if we count on it, intellisense/vscode wont know right directories
 			push @INCLUDES_PATH, trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/libxml2`) . "/";
 			push (@packageCfgNames, "libxml-2.0");
+			push @CPPFLAGS, '-DLIBXML_STATIC';	# cannot use pkg-config for this because then wouldn't be seen in .vscode etc
 		}
 
 		#	$ pkg-config --static --libs openssl
