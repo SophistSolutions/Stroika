@@ -18,7 +18,7 @@ include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for things like CMA
 endif
 
 #
-# CHECK FOR UPDATED VERSIONS http://zlib.net/
+# CHECK FOR UPDATED VERSIONS https://github.com/GNOME/libxml2/tags
 #
 libxml2_VERSION_=2.12.3
 
@@ -44,9 +44,12 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
 MAYBED_=d
+# https://cmake.org/cmake/help/v3.15/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
+CMAKE_ARGS+=	-DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDebug"
 else
 CMAKE_BUILD_TYPE_=Release
 MAYBED_=
+CMAKE_ARGS+=	-DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded"
 endif
 endif
 
@@ -69,17 +72,25 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 CMAKE_ARGS+=	-D LIBXML2_WITH_ICONV="OFF"
 
 # @todo fix so we can use eventually if we've added that feature
+CMAKE_ARGS+=	-D LIBXML2_WITH_ZLIB="OFF"
 CMAKE_ARGS+=	-D LIBXML2_WITH_LZMA="OFF"
 CMAKE_ARGS+=	-D LIBXML2_WITH_PYTHON="OFF"
+
+
+
+# Sometimes helpful to debug
+CMAKE_XTRA_BLD_FLAGS_=
+#CMAKE_XTRA_BLD_FLAGS_ += --verbose
+
+#Sometimes helpful to debug
+#CMAKE_ARGS+=	--trace
 
 ifeq ($(qFeatureFlag_ZLib), no)
 CMAKE_ARGS+=	-D LIBXML2_WITH_ZLIB="OFF"
 endif
 
-# needed on unix to get static libs built
-ifneq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+# needed on to get static libs built
 CMAKE_ARGS+=	-D BUILD_SHARED_LIBS="OFF"
-endif
 all:
 ifeq (${CONFIGURATION},)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
@@ -112,7 +123,7 @@ endif
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "libxml2 ${libxml2_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}"  --build . --config=${CMAKE_BUILD_TYPE_}  > BUILD-OUT.txt 2>&1
+	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}"   --build . --config=${CMAKE_BUILD_TYPE_} ${CMAKE_XTRA_BLD_FLAGS_}  > BUILD-OUT.txt 2>&1
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}"  --build .  > BUILD-OUT.txt 2>&1
 endif
@@ -122,7 +133,7 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 ifneq (${MAYBED_},)
 	# LINKER appears to fail under docker/Debug-x86 when using symbolic link here for not well understood reasons, so use copy - Appears JUST a cygwin issue maybe just under docker? --LGP 2023-12-15
 	#ln -s "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2.lib
-	cp "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2.lib
+	cp "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2.lib
 endif
 	@#existing produced .pc file bad in several ways for windows, and want to try to use pkg-config so hopefully this hack adequate
 	@cp PatchReplacements/libxml-2.0.pc "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/
