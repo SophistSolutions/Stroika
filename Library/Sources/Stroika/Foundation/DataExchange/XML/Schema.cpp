@@ -188,8 +188,8 @@ namespace {
                 if (targetNamespace) {
                     fSourceComponents.push_back (SourceComponent{.fBLOB = targetNamespaceData, .fNamespace = *targetNamespace});
                 }
-                xmlSchemaParserCtxt* schemaParseContext =
-                    xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (targetNamespaceData.data ()), static_cast<int> (targetNamespaceData.size ()));
+                xmlSchemaParserCtxt* schemaParseContext = xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (targetNamespaceData.data ()),
+                                                                                     static_cast<int> (targetNamespaceData.size ()));
                 fCompiledSchema = xmlSchemaParse (schemaParseContext);
                 xmlSchemaFreeParserCtxt (schemaParseContext);
             }
