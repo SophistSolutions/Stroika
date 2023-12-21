@@ -1386,7 +1386,7 @@ namespace {
 
         }
 
-#if qHasFeature_libxml2 && 0
+#if qHasFeature_libxml2
         {
             // play with limxml2
             Schema::Ptr schema = XML::Schema::New (XML::Provider::eLibXml2,
