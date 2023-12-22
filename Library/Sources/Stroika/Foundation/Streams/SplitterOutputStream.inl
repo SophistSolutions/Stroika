@@ -101,15 +101,14 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
         return make_shared<Rep_> (realOut1, realOut2);
     }
     template <typename ELEMENT_TYPE>
-    inline auto New (Execution::InternallySynchronized               internallySynchronized,
-                                                         const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1,
-                         const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2) -> Ptr < ELEMENT_TYPE>
+    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1,
+                     const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2) -> Ptr<ELEMENT_TYPE>
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 //NYI - must redo - return InternalSyncRep_::New (realOut1, realOut2);
             case Execution::eNotKnownInternallySynchronized:
-                return New (realOut1, realOut2);
+                return New<ELEMENT_TYPE> (realOut1, realOut2);
             default:
                 RequireNotReached ();
                 return nullptr;

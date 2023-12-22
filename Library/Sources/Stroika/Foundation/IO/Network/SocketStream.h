@@ -50,8 +50,8 @@ namespace Stroika::Foundation::IO::Network {
          *      \code
          *           ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
          *           SocketStream::Ptr                   socketStream = SocketStream::New (connectionSocket);
-         *           InputStream<byte>::Ptr              in  = BufferedInputStream<byte>::New (socketStream);  // not important, but a good idea, to avoid excessiveos read/write calls
-         *           OutputStream<byte>::Ptr             out = BufferedOutputStream<byte>::New (socketStream); // more important so we don't write multiple packets
+         *           InputStream<byte>::Ptr              in  = BufferedInputStream::New<byte> (socketStream);  // not important, but a good idea, to avoid excessiveos read/write calls
+         *           OutputStream<byte>::Ptr             out = BufferedOutputStream::New<byte> (socketStream); // more important so we don't write multiple packets
          *      \endcode
          */
         static Ptr New (Execution::InternallySynchronized internallySynchronized, const ConnectionOrientedStreamSocket::Ptr& sd);

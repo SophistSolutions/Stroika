@@ -144,12 +144,12 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
         // note, because its not LEGAL to dereference end (and visual studio checks) - even though we dont REALLY dereference and use value -
         // just compute start and add end-start
         if constexpr (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>) {
-            return New (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (start)),
-                        reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (start) + (end - start)));
+            return New<ELEMENT_TYPE> (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (start)),
+                                      reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (start) + (end - start)));
         }
         else {
-            return New (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)),
-                        static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)));
+            return New<ELEMENT_TYPE> (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)),
+                                      static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)));
         }
     }
     template <typename ELEMENT_TYPE>
@@ -157,17 +157,17 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                AssertNotImplemented ();//tmphack disable --LGP 2023-12-22
-             //   return InternalSyncRep_::New (start, end);
+                AssertNotImplemented (); //tmphack disable --LGP 2023-12-22
+                                         //   return InternalSyncRep_::New (start, end);
             case Execution::eNotKnownInternallySynchronized:
-                return New (start, end);
+                return New<ELEMENT_TYPE> (start, end);
             default:
                 RequireNotReached ();
                 return nullptr;
         }
     }
     template <typename ELEMENT_TYPE, random_access_iterator ELEMENT_ITERATOR>
-    inline auto New (Execution::InternallySynchronized internallySynchronized, ELEMENT_ITERATOR start, ELEMENT_ITERATOR end) -> Ptr < ELEMENT_TYPE>
+    inline auto New (Execution::InternallySynchronized internallySynchronized, ELEMENT_ITERATOR start, ELEMENT_ITERATOR end) -> Ptr<ELEMENT_TYPE>
         requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
                  (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>)
     {
@@ -176,17 +176,17 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
                 AssertNotImplemented (); //tmphack disable --LGP 2023-12-22
                 //return InternalSyncRep_::New (start, end);
             case Execution::eNotKnownInternallySynchronized:
-                return New (start, end);
+                return New<ELEMENT_TYPE> (start, end);
             default:
                 RequireNotReached ();
                 return nullptr;
         }
     }
     template <typename ELEMENT_TYPE>
-        auto New (const uint8_t* start, const uint8_t* end) -> Ptr < ELEMENT_TYPE>
+    auto New (const uint8_t* start, const uint8_t* end) -> Ptr<ELEMENT_TYPE>
         requires is_same_v<ELEMENT_TYPE, byte>
     {
-        return New (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
+        return New<ELEMENT_TYPE> (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
     }
 
 }

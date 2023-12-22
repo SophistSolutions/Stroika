@@ -295,7 +295,7 @@ InputStream<byte>::Ptr FileInputStream::New (const filesystem::path& fileName, S
     InputStream<byte>::Ptr in = FileInputStream::New (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
-            return Streams::BufferedInputStream<byte>::New (in);
+            return Streams::BufferedInputStream::New<byte> (in);
         case eUnbuffered:
             return in;
         default:
@@ -312,7 +312,7 @@ InputStream<byte>::Ptr FileInputStream::New (FileDescriptorType fd, AdoptFDPolic
     InputStream<byte>::Ptr in = FileInputStream::New (fd, adoptFDPolicy, seekable);
     switch (bufferFlag) {
         case eBuffered:
-            return Streams::BufferedInputStream<byte>::New (in);
+            return Streams::BufferedInputStream::New<byte> (in);
         case eUnbuffered:
             return in;
         default:

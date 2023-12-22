@@ -30,7 +30,7 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sycn form - using direct mutex
  */
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::BufferedInputStream {
 
     /**
      *  @brief  BufferedInputStream is an InputStream<ELEMENT_TYPE>::Ptr which provides buffered access.
@@ -40,36 +40,32 @@ namespace Stroika::Foundation::Streams {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
     template <typename ELEMENT_TYPE>
-    class BufferedInputStream : public InputStream<ELEMENT_TYPE> {
-    public:
-        BufferedInputStream ()                           = delete;
-        BufferedInputStream (const BufferedInputStream&) = delete;
+    using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
 
-    public:
-        using typename InputStream<ELEMENT_TYPE>::Ptr;
-
-    public:
-        /**
+    /**
          *  \par Example Usage
          *      \code
-         *          InputStream<byte>::Ptr in = BufferedInputStream<byte>::New (fromStream);
+         *          InputStream<byte>::Ptr in = BufferedInputStream::New<byte> (fromStream);
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<byte>::New (fromStream))
+         *          CallExpectingBinaryInputStreamPtr (BufferedInputStream::New<byte> (fromStream))
          *      \endcode
          */
-        static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
 
-    private:
-        class Rep_;
+    template <typename ELEMENT_TYPE>
+    class Rep_;
 
-    private:
+#if 0
+    template < typename ELEMENT_TYPE>
         using InternalSyncRep_ =
             InternallySynchronizedInputStream<ELEMENT_TYPE, Streams::BufferedInputStream<ELEMENT_TYPE>, typename BufferedInputStream<ELEMENT_TYPE>::Rep_>;
-    };
+#endif
 
 }
 

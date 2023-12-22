@@ -12,7 +12,7 @@
 
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::BufferedInputStream {
 
     /*
      ********************************************************************************
@@ -20,11 +20,10 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class BufferedInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
+    class Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
     public:
         Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
-            : InputStream<ELEMENT_TYPE>::_IRep{}
-            , fRealIn_{realIn}
+            : fRealIn_{realIn}
         {
         }
         virtual bool IsSeekable () const override
@@ -77,19 +76,21 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto BufferedInputStream<ELEMENT_TYPE>::New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn) -> Ptr
+    inline auto New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn) -> Ptr<ELEMENT_TYPE>
     {
-        return typename InputStream<ELEMENT_TYPE>::Ptr{make_shared<Rep_> (realIn)};
+        return typename InputStream<ELEMENT_TYPE>::Ptr{make_shared<Rep_<ELEMENT_TYPE>> (realIn)};
     }
     template <typename ELEMENT_TYPE>
-    inline auto BufferedInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized              internallySynchronized,
-                                                        const typename InputStream<ELEMENT_TYPE>::Ptr& realIn) -> Ptr
+    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
+        -> Ptr<ELEMENT_TYPE>
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return Ptr{InternalSyncRep_::New (realIn)};
+                AssertNotImplemented ();
+                //tmphack
+                //                return Ptr{InternalSyncRep_::New (realIn)};
             case Execution::eNotKnownInternallySynchronized:
-                return New (realIn);
+                return New<ELEMENT_TYPE> (realIn);
             default:
                 RequireNotReached ();
                 return nullptr;

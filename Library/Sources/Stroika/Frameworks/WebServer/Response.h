@@ -302,7 +302,7 @@ namespace Stroika::Frameworks::WebServer {
         bool  fAutoComputeContentLength_{true};
 #endif
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
-        Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
+        Streams::BufferedOutputStream::Ptr<byte> fUseOutStream_;
         Characters::CodePage                     fCodePage_{Characters::WellKnownCodePages::kUTF8};
         vector<byte>                             fBodyBytes_{};
         optional<ETagDigester_>                  fETagDigester_; // dual use - if present, then flag for autoComputeETag mode as well

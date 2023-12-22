@@ -137,24 +137,21 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-     Ptr<ELEMENT_TYPE>
-    New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
-                                                 const typename OutputStream<ELEMENT_TYPE>::Ptr&      logInput,
-                                                 const typename OutputStream<ELEMENT_TYPE>::Ptr&      logOutput)
+    Ptr<ELEMENT_TYPE> New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+                           const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
     {
         return _mkPtr (make_shared<Rep_> (realStream, logInput, logOutput));
     }
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (
-        Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
-        const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+                           const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 AssertNotImplemented (); //tmphack disable...
-               // return InternalSyncRep_::New (realStream, logInput, logOutput);
+                                         // return InternalSyncRep_::New (realStream, logInput, logOutput);
             case Execution::eNotKnownInternallySynchronized:
-                return New (realStream, logInput, logOutput);
+                return New<ELEMENT_TYPE> (realStream, logInput, logOutput);
             default:
                 RequireNotReached ();
                 return nullptr;

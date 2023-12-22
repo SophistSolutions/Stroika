@@ -25,30 +25,29 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
     template <typename ELEMENT_TYPE>
     /**
          */
-        using Ptr= typename InputOutputStream<ELEMENT_TYPE>::Ptr;
+    using Ptr = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
 
-        /**
+    /**
          *  \par Example Usage
          *      \code
          *      \endcode
          */
-        template <typename ELEMENT_TYPE>
+    template <typename ELEMENT_TYPE>
     Ptr<ELEMENT_TYPE> New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
-                        const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
-        template <typename ELEMENT_TYPE>
-        Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
-                        const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
+                           const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+                           const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
 
-        template <typename ELEMENT_TYPE>
-        class Rep_;
+    template <typename ELEMENT_TYPE>
+    class Rep_;
 
-        #if 0
+#if 0
         // tmp disable til we can fix --LGP2 2023-12-22
         template <typename ELEMENT_TYPE>
         using InternalSyncRep_ =
             InternallySynchronizedInputOutputStream<ELEMENT_TYPE, Streams::LoggingInputOutputStream<ELEMENT_TYPE>, typename LoggingInputOutputStream<ELEMENT_TYPE>::Rep_>;
-        #endif
-
+#endif
 
 }
 

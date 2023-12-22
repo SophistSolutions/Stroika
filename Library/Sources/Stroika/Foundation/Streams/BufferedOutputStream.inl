@@ -13,7 +13,7 @@
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Debug/Cast.h"
 
-namespace Stroika::Foundation ::Streams {
+namespace Stroika::Foundation::Streams::BufferedOutputStream {
 
     /*
      ********************************************************************************
@@ -21,7 +21,7 @@ namespace Stroika::Foundation ::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
+    class Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
         static constexpr size_t kMinBufSize_{1 * 1024};
         static constexpr size_t kDefaultBufSize_{16 * 1024};
 
@@ -177,19 +177,20 @@ namespace Stroika::Foundation ::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto BufferedOutputStream<ELEMENT_TYPE>::New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr
+    inline auto New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr<ELEMENT_TYPE>
     {
-        return make_shared<Rep_> (realOut);
+        return make_shared<Rep_<ELEMENT_TYPE>> (realOut);
     }
     template <typename ELEMENT_TYPE>
-    inline auto BufferedOutputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized               internallySynchronized,
-                                                         const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr
+    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut)
+        -> Ptr<ELEMENT_TYPE>
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New (realOut);
+                AssertNotImplemented (); //tmphack disable
+                //return InternalSyncRep_::New (realOut);
             case Execution::eNotKnownInternallySynchronized:
-                return New (realOut);
+                return New<ELEMENT_TYPE> (realOut);
             default:
                 RequireNotReached ();
                 return nullptr;
@@ -202,22 +203,22 @@ namespace Stroika::Foundation ::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline BufferedOutputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
+    inline Ptr<ELEMENT_TYPE>::Ptr (const shared_ptr<Rep_<ELEMENT_TYPE>>& from)
         : inherited{from}
     {
     }
     template <typename ELEMENT_TYPE>
-    void BufferedOutputStream<ELEMENT_TYPE>::Ptr::Abort ()
+    void Ptr<ELEMENT_TYPE>::Abort ()
     {
-        auto  rep = this->_GetSharedRep ();
-        Rep_* r   = Debug::UncheckedDynamicCast<Rep_*> (rep.get ());
+        auto                rep = this->_GetSharedRep ();
+        Rep_<ELEMENT_TYPE>* r   = Debug::UncheckedDynamicCast<Rep_<ELEMENT_TYPE>*> (rep.get ());
         AssertNotNull (r);
         r->Abort ();
     }
     template <typename ELEMENT_TYPE>
-    inline typename BufferedOutputStream<ELEMENT_TYPE>::_SharedIRep BufferedOutputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const
+    inline shared_ptr<Rep_<ELEMENT_TYPE>> Ptr<ELEMENT_TYPE>::_GetSharedRep () const
     {
-        return Debug::UncheckedDynamicPointerCast<Rep_> (inherited::_GetSharedRep ());
+        return Debug::UncheckedDynamicPointerCast<Rep_<ELEMENT_TYPE>> (inherited::_GetSharedRep ());
     }
 
 }

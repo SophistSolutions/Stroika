@@ -22,7 +22,7 @@ namespace Stroika::Foundation::IO::FileSystem {
     inline Streams::OutputStream<byte>::Ptr FileOutputStream::New (const filesystem::path& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {
-            return Streams::BufferedOutputStream<byte>::New (FileOutputStream::New (fileName, flushFlag));
+            return Streams::BufferedOutputStream::New<byte> (FileOutputStream::New (fileName, flushFlag));
         }
         else {
             return FileOutputStream::New (fileName, flushFlag);
@@ -32,7 +32,7 @@ namespace Stroika::Foundation::IO::FileSystem {
                                                                    FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {
-            return Streams::BufferedOutputStream<byte>::New (FileOutputStream::New (fileName, appendFlag, flushFlag));
+            return Streams::BufferedOutputStream::New<byte> (FileOutputStream::New (fileName, appendFlag, flushFlag));
         }
         else {
             return FileOutputStream::New (fileName, appendFlag, flushFlag);
@@ -42,7 +42,7 @@ namespace Stroika::Foundation::IO::FileSystem {
                                                                    SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {
-            return Streams::BufferedOutputStream<byte>::New (FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag));
+            return Streams::BufferedOutputStream::New<byte> (FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag));
         }
         else {
             return FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag);
