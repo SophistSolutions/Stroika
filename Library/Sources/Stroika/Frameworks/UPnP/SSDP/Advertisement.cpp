@@ -119,7 +119,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
     RequireNotNull (advertisement);
     *advertisement = Advertisement{};
 
-    TextReader::Ptr in = TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (b.begin (), b.end ()));
+    TextReader::Ptr in = TextReader::New (ExternallyOwnedMemoryInputStream::New<byte> (b.begin (), b.end ()));
 
     *headLine = in.ReadLine ().Trim ();
     while (true) {

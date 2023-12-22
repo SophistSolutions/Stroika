@@ -85,12 +85,12 @@ namespace Stroika::Foundation::Streams::TextReader {
     static constexpr ReadAhead eReadAheadAllowed = ReadAhead::eReadAheadAllowed;
 
     /**
-        * @todo DOCUMENT - NEED EXAMPLE - WHY???
-        */
+     * @todo DOCUMENT - NEED EXAMPLE - WHY???
+     */
     static const Characters::UTFCodeConverter<Character> kDefaultUTFCoodeCoverter;
 
     /**
-         */
+     */
     enum class AutomaticCodeCvtFlags {
         eReadBOMAndIfNotPresentUseUTF8,
         eReadBOMAndIfNotPresentUseCurrentLocale,
@@ -101,22 +101,22 @@ namespace Stroika::Foundation::Streams::TextReader {
     static constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseCurrentLocale = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale;
 
     /**
-         *  Seekable defaults to the same value as that of the underlying stream wrapped.
-         *  For the constructor taking const InputStream<Character>::Ptr& src, the seekability mimics that of the original source.
-         *  Constructors taking a BLOB, the resulting stream will be seekable..
-         *
-         *  But when you specify it explicitly, the given value will be used.
-         *
-         *  \note Depending on the underlying source (e.g. binary stream) - maintaining seekability may be expensive in terms
-         *        of memory usage.
-         *
-         *  \par Example Usage
-         *      \code
-         *          for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
-         *              DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
-         *          }
-         *      \endcode
-         */
+     *  Seekable defaults to the same value as that of the underlying stream wrapped.
+     *  For the constructor taking const InputStream<Character>::Ptr& src, the seekability mimics that of the original source.
+     *  Constructors taking a BLOB, the resulting stream will be seekable..
+     *
+     *  But when you specify it explicitly, the given value will be used.
+     *
+     *  \note Depending on the underlying source (e.g. binary stream) - maintaining seekability may be expensive in terms
+     *        of memory usage.
+     *
+     *  \par Example Usage
+     *      \code
+     *          for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+     *              DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
+     *          }
+     *      \endcode
+     */
     Ptr New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags = AutomaticCodeCvtFlags::eDEFAULT);
     Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter);
     Ptr New (const InputStream<byte>::Ptr& src);

@@ -12,7 +12,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
 
     /*
      ********************************************************************************
@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
+    class Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
     public:
         Rep_ ()            = delete;
         Rep_ (const Rep_&) = delete;
@@ -132,13 +132,12 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+    inline auto New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr<ELEMENT_TYPE>
     {
-        return Ptr{make_shared<Rep_> (start, end)};
+        return Ptr<ELEMENT_TYPE>{make_shared<Rep_<ELEMENT_TYPE>> (start, end)};
     }
-    template <typename ELEMENT_TYPE>
-    template <random_access_iterator ELEMENT_ITERATOR>
-    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (ELEMENT_ITERATOR start, ELEMENT_ITERATOR end) -> Ptr
+    template <typename ELEMENT_TYPE, random_access_iterator ELEMENT_ITERATOR>
+    inline auto New (ELEMENT_ITERATOR start, ELEMENT_ITERATOR end) -> Ptr<ELEMENT_TYPE>
         requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
                  (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>)
     {
@@ -154,12 +153,12 @@ namespace Stroika::Foundation::Streams {
         }
     }
     template <typename ELEMENT_TYPE>
-    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized,
-                                                                     const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+    inline auto New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr<ELEMENT_TYPE>
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New (start, end);
+                AssertNotImplemented ();//tmphack disable --LGP 2023-12-22
+             //   return InternalSyncRep_::New (start, end);
             case Execution::eNotKnownInternallySynchronized:
                 return New (start, end);
             default:
@@ -167,16 +166,15 @@ namespace Stroika::Foundation::Streams {
                 return nullptr;
         }
     }
-    template <typename ELEMENT_TYPE>
-    template <random_access_iterator ELEMENT_ITERATOR>
-    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized,
-                                                                     ELEMENT_ITERATOR start, ELEMENT_ITERATOR end) -> Ptr
+    template <typename ELEMENT_TYPE, random_access_iterator ELEMENT_ITERATOR>
+    inline auto New (Execution::InternallySynchronized internallySynchronized, ELEMENT_ITERATOR start, ELEMENT_ITERATOR end) -> Ptr < ELEMENT_TYPE>
         requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
                  (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>)
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New (start, end);
+                AssertNotImplemented (); //tmphack disable --LGP 2023-12-22
+                //return InternalSyncRep_::New (start, end);
             case Execution::eNotKnownInternallySynchronized:
                 return New (start, end);
             default:
@@ -185,7 +183,7 @@ namespace Stroika::Foundation::Streams {
         }
     }
     template <typename ELEMENT_TYPE>
-    auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (const uint8_t* start, const uint8_t* end) -> Ptr
+        auto New (const uint8_t* start, const uint8_t* end) -> Ptr < ELEMENT_TYPE>
         requires is_same_v<ELEMENT_TYPE, byte>
     {
         return New (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));

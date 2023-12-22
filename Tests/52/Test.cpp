@@ -1102,11 +1102,11 @@ namespace {
         }
         void DoRunPerfTest ()
         {
-            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
-            EXPECT_TRUE (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
+            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream::New<byte> (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
+            EXPECT_TRUE (sd.fAuxData.ContainsKey ("Sample-Pressure"));
             EXPECT_TRUE (sd.fScanID == 5856);
             Memory::BLOB b   = doWrite_ (sd);
-            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (b), end (b)));
+            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream::New<byte> (begin (b), end (b)));
             EXPECT_TRUE (sd2.fScanID == sd.fScanID);
             EXPECT_TRUE (sd2.fAuxData == sd.fAuxData);
             EXPECT_TRUE (sd2.fRawSpectrum == sd.fRawSpectrum); // @todo - FIX - this test should pass!
@@ -1232,7 +1232,7 @@ namespace {
             using namespace Streams;
             Variant::JSON::Reader reader{Variant::JSON::ReaderOptions{.fPreferredAlgorithm = Variant::JSON::ReaderOptions::eStroikaNative}};
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
-                VariantValue output{reader.Read (ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end (p)))};
+                VariantValue output{reader.Read (ExternallyOwnedMemoryInputStream::New<byte> (begin (p), end (p)))};
             }
         }
         void DoStroikaJSONParse_ (const string& p, unsigned int nTimes)
@@ -1241,7 +1241,7 @@ namespace {
             using namespace Streams;
             Variant::JSON::Reader reader{Variant::JSON::ReaderOptions{}};
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
-                VariantValue output{reader.Read (ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end (p)))};
+                VariantValue output{reader.Read (ExternallyOwnedMemoryInputStream::New<byte> (begin (p), end (p)))};
             }
         }
         void DoJSONParse_ (const filesystem::path& p, unsigned int nTimes,

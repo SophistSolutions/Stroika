@@ -174,7 +174,7 @@ namespace {
                     0x05, 0x5d, 0x00, 0x10, 0x00, 0x00, 0x0c, 0x81, 0x9b, 0x0a, 0x01, 0xa0, 0xee, 0xa0, 0x06, 0x00, 0x00};
                 Assert (sizeof (ksample_zip_7z_) == 2157);
 #if qHasFeature_LZMA
-                Archive::_7z::Reader reader (Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
+                Archive::_7z::Reader reader (Streams::ExternallyOwnedMemoryInputStream::New<byte> (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
                 EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp",
                                                                                      L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 
@@ -365,7 +365,7 @@ namespace {
                     0x00, 0x00, 0x4f, 0x09, 0x00, 0x00, 0x00, 0x00};
                 Assert (sizeof (ksample_zip_) == 2948);
 #if qHasFeature_ZLib
-                Archive::Zip::Reader reader{Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (ksample_zip_), end (ksample_zip_))};
+                Archive::Zip::Reader reader{Streams::ExternallyOwnedMemoryInputStream::New<byte> (begin (ksample_zip_), end (ksample_zip_))};
 
                 EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
                                                                                      "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
@@ -826,7 +826,7 @@ namespace Test_05_ParseRegressionTest_1_ {
                                            "        }"
                                            "    }"
                                            "}";
-            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (
+            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedMemoryInputStream::New<byte> (
                 reinterpret_cast<const byte*> (std::begin (kJSONExample_)),
                 reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             map<wstring, VariantValue> mv = v.As<map<wstring, VariantValue>> ();
@@ -901,7 +901,7 @@ namespace Test_05_ParseRegressionTest_3_ {
                                            "        \"PrintName\" : \"{Default Backup Directory}\""
                                            "    }"
                                            "}";
-            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (
+            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedMemoryInputStream::New<byte> (
                 reinterpret_cast<const byte*> (std::begin (kJSONExample_)),
                 reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> ();

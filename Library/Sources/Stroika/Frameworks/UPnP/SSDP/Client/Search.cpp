@@ -141,7 +141,7 @@ public:
                     Assert (nBytesRead <= Memory::NEltsOf (buf));
                     using namespace Streams;
                     ReadPacketAndNotifyCallbacks_ (
-                        TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
+                        TextReader::New (ExternallyOwnedMemoryInputStream::New<byte> (std::begin (buf), std::begin (buf) + nBytesRead)));
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();

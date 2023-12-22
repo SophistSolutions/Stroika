@@ -16,7 +16,7 @@
  *
  */
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::SplitterOutputStream {
 
     /**
      *  A SplitterOutputStream wraps 2 output Streams,and duplicates all writes across the two.
@@ -25,35 +25,32 @@ namespace Stroika::Foundation::Streams {
      *
      *      \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    template <typename ELEMENT_TYPE>
-    class SplitterOutputStream : public OutputStream<ELEMENT_TYPE> {
-    public:
-        SplitterOutputStream ()                            = delete;
-        SplitterOutputStream (const SplitterOutputStream&) = delete;
-
-    public:
         /**
          *  There are no special methods to SplitterOutputStreamPtr, so we just re-use the baseclass Ptr smart pointer.
          */
-        using typename OutputStream<ELEMENT_TYPE>::Ptr;
+    template <typename ELEMENT_TYPE>
+        using Ptr = typename OutputStream<ELEMENT_TYPE>::Ptr;
 
-    public:
         /**
          *  \par Example Usage
          *      \code
          *      \endcode
          */
-        static Ptr New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1,
+        template <typename ELEMENT_TYPE>
+        Ptr < ELEMENT_TYPE> New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
+        template <typename ELEMENT_TYPE>
+            Ptr < ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1,
                         const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
 
-    private:
+        template <typename ELEMENT_TYPE>
         class Rep_;
 
-    private:
+        // @todo must reimplmenet intenrallysync
+        #if 0
+        template <typename ELEMENT_TYPE>
         using InternalSyncRep_ =
             InternallySynchronizedOutputStream<ELEMENT_TYPE, Streams::SplitterOutputStream<ELEMENT_TYPE>, typename SplitterOutputStream<ELEMENT_TYPE>::Rep_>;
-    };
+        #endif
 
 }
 

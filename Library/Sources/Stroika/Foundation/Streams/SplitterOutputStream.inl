@@ -12,7 +12,7 @@
 
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::SplitterOutputStream {
 
     /*
      ********************************************************************************
@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class SplitterOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
+    class Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
     public:
         Rep_ (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2)
             : OutputStream<ELEMENT_TYPE>::_IRep{}
@@ -95,19 +95,19 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto SplitterOutputStream<ELEMENT_TYPE>::New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1,
-                                                         const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2) -> Ptr
+    inline auto New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2)
+        -> Ptr<ELEMENT_TYPE>
     {
         return make_shared<Rep_> (realOut1, realOut2);
     }
     template <typename ELEMENT_TYPE>
-    inline auto SplitterOutputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized               internallySynchronized,
+    inline auto New (Execution::InternallySynchronized               internallySynchronized,
                                                          const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1,
-                                                         const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2) -> Ptr
+                         const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2) -> Ptr < ELEMENT_TYPE>
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New (realOut1, realOut2);
+                //NYI - must redo - return InternalSyncRep_::New (realOut1, realOut2);
             case Execution::eNotKnownInternallySynchronized:
                 return New (realOut1, realOut2);
             default:

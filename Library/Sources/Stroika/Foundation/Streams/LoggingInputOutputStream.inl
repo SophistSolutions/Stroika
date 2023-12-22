@@ -10,7 +10,7 @@
 ********************************************************************************
 */
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
 
     /*
      ********************************************************************************
@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class LoggingInputOutputStream<ELEMENT_TYPE>::Rep_ final : public InputOutputStream<ELEMENT_TYPE>::_IRep {
+    class Rep_ final : public InputOutputStream<ELEMENT_TYPE>::_IRep {
     public:
         Rep_ (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput,
               const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
@@ -58,13 +58,13 @@ namespace Stroika::Foundation::Streams {
             // @todo - perhaps should seek the fLogInput_ stream? But not clear by how much
             return result;
         }
-        virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) override
+        virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             size_t result = fRealStream_.Read (intoStart, intoEnd);
             fLogInput_.Write (intoStart, intoStart + result);
             return result;
         }
-        virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
+        virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             // note - in rep, intoStart==nullptr allowed, but not allowed in call to smart ptr public API
             Require (((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1));
@@ -137,21 +137,22 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    typename LoggingInputOutputStream<ELEMENT_TYPE>::Ptr
-    LoggingInputOutputStream<ELEMENT_TYPE>::New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+     Ptr<ELEMENT_TYPE>
+    New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
                                                  const typename OutputStream<ELEMENT_TYPE>::Ptr&      logInput,
                                                  const typename OutputStream<ELEMENT_TYPE>::Ptr&      logOutput)
     {
         return _mkPtr (make_shared<Rep_> (realStream, logInput, logOutput));
     }
     template <typename ELEMENT_TYPE>
-    typename LoggingInputOutputStream<ELEMENT_TYPE>::Ptr LoggingInputOutputStream<ELEMENT_TYPE>::New (
+    Ptr<ELEMENT_TYPE> New (
         Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
         const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New (realStream, logInput, logOutput);
+                AssertNotImplemented (); //tmphack disable...
+               // return InternalSyncRep_::New (realStream, logInput, logOutput);
             case Execution::eNotKnownInternallySynchronized:
                 return New (realStream, logInput, logOutput);
             default:

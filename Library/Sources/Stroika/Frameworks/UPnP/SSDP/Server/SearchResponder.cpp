@@ -188,7 +188,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                         size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
                         Assert (nBytesRead <= Memory::NEltsOf (buf));
                         using namespace Streams;
-                        ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead)),
+                        ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream::New<byte> (begin (buf), begin (buf) + nBytesRead)),
                                                 advertisements, s, from);
                     }
                 }

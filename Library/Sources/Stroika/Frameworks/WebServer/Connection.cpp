@@ -22,7 +22,6 @@
 #include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
 #include "../../Foundation/Streams/LoggingInputOutputStream.h"
-#include "../../Foundation/Streams/SplitterOutputStream.h"
 #include "../../Foundation/Time/DateTime.h"
 
 #include "Connection.h"

@@ -25,7 +25,7 @@
  *              EOF, or special 'CLOSED'? Or ASSERT ERROR? DECIDE AND DOCUMENT AND DO.
  */
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
 
     /**
     * 
@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Streams {
      *  \brief  ExternallyOwnedMemoryInputStream takes a (memory contiguous) sequence of ELEMENT_TYPE objects and exposes it as a InputStream<ELEMENT_TYPE>
      *
      *  ExternallyOwnedMemoryInputStream is a subtype of InputStream<ELEMENT_TYPE> but the
-     *  creator must gaurantee, so long as the memory pointed to in the argument has a
+     *  creator must guarantee, so long as the memory pointed to in the argument has a
      *      o   lifetime > lifetime of the ExternallyOwnedMemoryInputStream object,
      *      o   and data never changes value
      *
@@ -52,22 +52,11 @@ namespace Stroika::Foundation::Streams {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    template <typename ELEMENT_TYPE>
-    class ExternallyOwnedMemoryInputStream : public InputStream<ELEMENT_TYPE> {
-
-    private:
-        using inherited = InputStream<ELEMENT_TYPE>;
-
-    public:
-        ExternallyOwnedMemoryInputStream ()                                        = delete;
-        ExternallyOwnedMemoryInputStream (const ExternallyOwnedMemoryInputStream&) = delete;
-
-    public:
         /**
          */
-        using typename inherited::Ptr;
+    template <typename ELEMENT_TYPE>
+        using Ptr = InputStream<ELEMENT_TYPE>::Ptr;
 
-    public:
         /**
          *  \note   The CTOR with random_access_iterator ELEMENT_ITERATOR is safe because you can (always take diff between two
          *          random access iterators and (for now convert to pointers, but that may not be safe????).
@@ -76,12 +65,12 @@ namespace Stroika::Foundation::Streams {
          *
          *  \par Example Usage
          *      \code
-         *          InputStream<byte>::Ptr in = ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead);
+         *          InputStream<byte>::Ptr in = ExternallyOwnedMemoryInputStream::New<byte> (begin (buf), begin (buf) + nBytesRead);
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead))
+         *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream::New<byte> (begin (buf), begin (buf) + nBytesRead))
          *      \endcode
          * 
          *  \note Though generally for these constructors, the pointer types of the arguments must match ELEMENT_TYPE, we have a
@@ -91,26 +80,30 @@ namespace Stroika::Foundation::Streams {
          *              allow iterator/pointer of uint8_t
          *              allow iterator/pointer of char
          */
-        static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        template <random_access_iterator ELEMENT_ITERATOR>
-        static Ptr New (ELEMENT_ITERATOR start, ELEMENT_ITERATOR end)
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+    template <typename ELEMENT_TYPE, random_access_iterator ELEMENT_ITERATOR>
+    Ptr<ELEMENT_TYPE> New (ELEMENT_ITERATOR start, ELEMENT_ITERATOR end)
             requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
                      (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        template <random_access_iterator ELEMENT_ITERATOR>
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, ELEMENT_ITERATOR start, ELEMENT_ITERATOR end)
+    template <typename ELEMENT_TYPE>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+    template <typename ELEMENT_TYPE, random_access_iterator ELEMENT_ITERATOR>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, ELEMENT_ITERATOR start, ELEMENT_ITERATOR end)
             requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
                      (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>);
-        static Ptr New (const uint8_t* start, const uint8_t* end)
+    template <typename ELEMENT_TYPE>
+     Ptr<ELEMENT_TYPE> New (const uint8_t* start, const uint8_t* end)
             requires is_same_v<ELEMENT_TYPE, byte>;
 
-    private:
-        class Rep_;
+    template <typename ELEMENT_TYPE>
+    class Rep_;
 
-    private:
-        using InternalSyncRep_ = InternallySynchronizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>,
+#if 0
+    template < typename ELEMENT_TYPE>
+       using InternalSyncRep_ = InternallySynchronizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>,
                                                                    typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_>;
-    };
+   #endif
 
 }
 
