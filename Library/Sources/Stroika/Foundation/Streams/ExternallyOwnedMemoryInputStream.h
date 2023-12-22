@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
     /**
          */
     template <typename ELEMENT_TYPE>
-    using Ptr = InputStream<ELEMENT_TYPE>::Ptr;
+    using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
 
     /**
          *  \note   The CTOR with random_access_iterator ELEMENT_ITERATOR is safe because you can (always take diff between two
