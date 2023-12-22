@@ -127,12 +127,12 @@ else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 else
 	@tar xf ${ZIPPED_SOURCES_FILE_} --no-same-owner --directory $@ --strip-components=1
 endif
-# ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-# 	@if [ "$@" != "ORIGs" ] ; then \
-# 		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "GoogleTest ${VERSION} - Patching ... ";\
-# 		patch -p0 $@/googletest/cmake/gtest.pc.in Patches/Patch-PKGConfig4Windoze.patch >> $@/PATCHING.OUT;\
-# 	fi
-# endif
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+	@if [ "$@" != "ORIGs" ] ; then \
+		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "GoogleTest ${VERSION} - Patching ... ";\
+		patch -p0 $@/googletest/cmake/gtest.pc.in Patches/Patch-PKGConfig4Windoze.patch >> $@/PATCHING.OUT;\
+	fi
+endif
 
 check-prerequisite-tools:
 	@#nothing
