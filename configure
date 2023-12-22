@@ -538,7 +538,9 @@ sub     FillDefaultLibDependencies_
 			else {
 				PortablyAddLibToLibDependencies_("xerces-c");
 			}
-		}
+			push @CPPFLAGS, '-DXML_LIBRARY=1';				# cannot use pkg-config for this because then wouldn't be seen in .vscode etc
+			push @CPPFLAGS, '-DXERCES_STATIC_LIBRARY=1';	# ""
+ 		}
 
 		if ($FEATUREFLAG_libxml2 ne $LIBFEATUREFLAG_No) {
 			# Though included in packageconfig support, in a queer place, and if we count on it, intellisense/vscode wont know right directories

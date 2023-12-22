@@ -335,8 +335,14 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n\n");
 	print (OUT "# Extra dynamically computed link(cppflags) lines\n");
 	if (not ($PkgConfigNames eq "")) {
+		my $extraPkgConfigArgs = "";
+		# This msvc-syntax hack FIXES libxml2, but BREAKS GoogleTest, that already generates in the right format for windows.
+		# Not sure if I want to go with patching .pc files, or this trick. Must see what others do - so leave this out for now--LGP 2023-12-21
+		# if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
+		# 	$extraPkgConfigArgs = " --msvc-syntax";
+		# }
 		# Use `` so this is only evaluated when linking, not other times when the Configuration.mk file is loaded
-		print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --static --libs $PkgConfigNames`\n");
+		print (OUT "LinkerArgs_LibDependencies += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config $extraPkgConfigArgs --static --libs $PkgConfigNames`\n");
 		# Do likewise --cflags-only-I for CPPFLAGS
 		print (OUT "#CPPFLAGS += `PKG_CONFIG_PATH=\$(shell realpath --canonicalize-missing \${StroikaRoot}Builds/\$(CONFIGURATION)/ThirdPartyComponents/lib/pkgconfig) pkg-config --cflags-only-I $PkgConfigNames`\n");
 	}

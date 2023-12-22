@@ -8,9 +8,9 @@
 
 static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerces not set");
 
-// Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
-#define XML_LIBRARY 1
-#define XERCES_STATIC_LIBRARY 1
+// // Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
+// #define XML_LIBRARY 1
+// #define XERCES_STATIC_LIBRARY 1
 
 // avoid namespace conflict with some Xerces code
 #undef Assert

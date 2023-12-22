@@ -54,12 +54,18 @@ endif
 endif
 
 OUTPUT_LIB_=libxml2${LIB_SUFFIX}
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+OUTPUT_LIB_=libxml2s${MAYBED_}${LIB_SUFFIX}
+endif
 
 PRODUCED_OUTPUT_ARTIFACTS_=	\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/${OUTPUT_LIB_}		\
-	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libxml-2.0.pc	\
-	${PER_CONFIGURATION_BUILDS_DIR_}include/libxml2/libxml/SAX.h	\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/${OUTPUT_LIB_}				\
+	${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/libxml-2.0.pc		\
+	${PER_CONFIGURATION_BUILDS_DIR_}include/libxml2/libxml/SAX.h
 
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+PRODUCED_OUTPUT_ARTIFACTS_ += ${PER_CONFIGURATION_BUILDS_DIR_}lib/xml2${LIB_SUFFIX}
+endif
 
 # For some reason, comes out as share by default for zlib
 # CMAKE_ARGS+=	-D INSTALL_PKGCONFIG_DIR="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig)"
@@ -70,6 +76,7 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 # CMAKE_ARGS+=	-D CMAKE_SKIP_RPATH="YES"
 # endif
 CMAKE_ARGS+=	-D LIBXML2_WITH_ICONV="OFF"
+CMAKE_ARGS+=	-D LIBXML2_WITH_HTTP="OFF"
 
 # @todo fix so we can use eventually if we've added that feature
 CMAKE_ARGS+=	-D LIBXML2_WITH_ZLIB="OFF"
@@ -130,9 +137,8 @@ endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "libxml2 ${libxml2_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
-	# LINKER appears to fail under docker/Debug-x86 when using symbolic link here for not well understood reasons, so use copy - Appears JUST a cygwin issue maybe just under docker? --LGP 2023-12-15
-	#ln -s "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2.lib
-	cp "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2.lib
+	@# Match what .pc file generates with --msvc pkg-config option with symbolic link to avoid having to patch .pc file
+	@ln -s -f "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
 	@#existing produced .pc file bad in several ways for windows, and want to try to use pkg-config so hopefully this hack adequate
 	@cp PatchReplacements/libxml-2.0.pc "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/
 else
@@ -156,13 +162,6 @@ else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 else
 	@tar xf ${ZIPPED_SOURCES_FILE_} --no-same-owner --directory $@ --strip-components=1
 endif
-# ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-# 	@#Experimenting with simplifying builds to use pkg-config, but alas the default .pc file that comes out of libxml2 doesn't work for windoze?  (maybe submit a patch?)
-# 	@if [ "$@" != "ORIGs" ] ; then \
-# 		$(StroikaRoot)ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "libxml2 ${VERSION} - Patching $@... ";\
-# 		patch  -d $@ < Patches/Patch-PKGConfig4Windoze.patch >> $@/PATCHING.OUT;\
-# 	fi
-# endif
 
 check-prerequisite-tools:
 	@#nothing

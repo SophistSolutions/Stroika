@@ -30,3 +30,12 @@ using namespace Providers::LibXML2;
  *************** Provider::Xerces::Map2StroikaExceptionsErrorReporter ***********
  ********************************************************************************
  */
+
+String Providers::LibXML2::libXMLString2String (const xmlChar* s, int len)
+{
+    return String{span{reinterpret_cast<const char*> (s), static_cast<size_t> (len)}};
+}
+String Providers::LibXML2::libXMLString2String (const xmlChar* t)
+{
+    return String::FromUTF8 (reinterpret_cast<const char*> (t));
+}
