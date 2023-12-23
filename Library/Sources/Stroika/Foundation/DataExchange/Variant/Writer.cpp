@@ -15,8 +15,6 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
-using Streams::iostream::OutputStreamFromStdOStream;
-
 /*
  ********************************************************************************
  ******************************* Variant::Writer ********************************
@@ -38,12 +36,12 @@ String Variant::Writer::_WriteAsStringHelper (const function<void (Streams::Outp
 
 Streams::OutputStream<byte>::Ptr Variant::Writer::_WrapBinaryOutput (ostream& out)
 {
-    return OutputStreamFromStdOStream<byte>::New (out);
+    return Streams::iostream::OutputStreamFromStdOStream::New<byte> (out);
 }
 
 Streams::OutputStream<Characters::Character>::Ptr Variant::Writer::_WrapTextOutput (wostream& out)
 {
-    return OutputStreamFromStdOStream<Characters::Character>::New (out);
+    return Streams::iostream::OutputStreamFromStdOStream::New<Characters::Character> (out);
 }
 
 Memory::BLOB Variant::Writer::WriteAsBLOB (const VariantValue& v)

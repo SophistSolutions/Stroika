@@ -140,9 +140,9 @@ namespace {
         void T1_ ()
         {
             {
-                stringstream                                  s;
-                OutputStreamFromStdOStream<Memory::byte>::Ptr so       = OutputStreamFromStdOStream<Memory::byte>::New (s);
-                const char                                    kData_[] = "ddasdf3294234";
+                stringstream                          s;
+                OutputStreamFromStdOStream::Ptr<byte> so       = OutputStreamFromStdOStream::New<byte> (s);
+                const char                            kData_[] = "ddasdf3294234";
                 so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
                 EXPECT_TRUE (s.str () == kData_);
             }

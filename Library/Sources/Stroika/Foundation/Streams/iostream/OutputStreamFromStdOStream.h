@@ -16,112 +16,84 @@
 /**
  *  \file
  *
+ *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *
  * TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-606 - Implement StdIStreamFromInputStream and StdOStreamFromOutputStream classes
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sync form - using direct mutex
  */
 
-namespace Stroika::Foundation::Streams::iostream {
+namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
 
-    namespace OutputStreamFromStdOStreamSupport {
-        template <typename ELEMENT_TYPE>
-        struct TraitsType {
-            using IStreamType = basic_ostream<ELEMENT_TYPE>;
-        };
-        template <>
-        struct TraitsType<byte> {
-            using OStreamType = ostream;
-        };
-        template <>
-        struct TraitsType<Characters::Character> {
-            using OStreamType = wostream;
-        };
-    }
+#if 0
+    template <typename ELEMENT_TYPE>
+    struct TraitsType {
+        using OStreamType = basic_ostream<ELEMENT_TYPE>;
+    };
+    template <>
+    struct TraitsType<byte> {
+        using OStreamType = ostream;
+    };
+    template <>
+    struct TraitsType<Characters::Character> {
+        using OStreamType = wostream;
+    };
+#endif
+
+    template <typename ELEMENT_TYPE>
+    using Ptr = typename OutputStream<ELEMENT_TYPE>::Ptr;
 
     /**
      *  OutputStreamFromStdOStream wraps an argument std::ostream or std::wostream or std::basic_ostream<> as a Stroika OutputStream object
      *
      *      \note   OutputStreamFromStdOStream ::Close () does not call close on the owned basic_ostream, because there is no such stdC++ method (though filestream has one)
      */
-    template <typename ELEMENT_TYPE, typename TRAITS = OutputStreamFromStdOStreamSupport::TraitsType<ELEMENT_TYPE>>
-    class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
-    public:
-        using OStreamType = typename TRAITS::OStreamType;
+    //   class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
+    //  public:
+    //     using OStreamType = typename TRAITS::OStreamType;
 
-    public:
-        OutputStreamFromStdOStream ()                                  = delete;
-        OutputStreamFromStdOStream (const OutputStreamFromStdOStream&) = delete;
+    /**
+     *  Default seekability should be determined automatically, but for now, I cannot figure out how...
+     *
+     *  \par Example Usage
+     *      \code
+     *          stringstream                                  s;
+     *          OutputStreamFromStdOStream<byte>::Ptr so = OutputStreamFromStdOStream<byte>::New (s);
+     *          const char                                    kData_[] = "ddasdf3294234";
+     *          so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
+     *          EXPECT_TRUE (s.str () == kData_);
+     *      \endcode
+     *
+     *  \note   The lifetime of the underlying created (shared_ptr) Stream must be <= the lifetime of the argument std::ostream
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
+     *              It is also up to the caller to assure no references to or calls to that ostream
+     *              be made from another thread. However, no data is cached in this class - it just
+     *              delegates, so calls CAN be made the the underlying ostream - so long as not
+     *              concurrently.
+     *
+     *              If you pass in eInternallySynchronized, the internal rep is internally synchronized, but you still must assure
+     *              no other threads access the OStreamType object.
+     */
+    template <typename ELEMENT_TYPE, typename BASIC_OSTREAM_ELEMENT_TYPE, typename BASIC_OSTREAM_TRAITS_TYPE>
+    Ptr<ELEMENT_TYPE> New (basic_ostream<BASIC_OSTREAM_ELEMENT_TYPE, BASIC_OSTREAM_TRAITS_TYPE>& originalStream)
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_OSTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_OSTREAM_ELEMENT_TYPE, wchar_t>));
+    template <typename ELEMENT_TYPE, typename BASIC_OSTREAM_ELEMENT_TYPE, typename BASIC_OSTREAM_TRAITS_TYPE>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized                                     internallySynchronized,
+                           basic_ostream<BASIC_OSTREAM_ELEMENT_TYPE, BASIC_OSTREAM_TRAITS_TYPE>& originalStream)
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_OSTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_OSTREAM_ELEMENT_TYPE, wchar_t>));
 
-    public:
-        class Ptr;
+    template <typename ELEMENT_TYPE, typename BASIC_OSTREAM_ELEMENT_TYPE, typename BASIC_OSTREAM_TRAITS_TYPE>
+    class Rep_;
 
-    public:
-        /**
-         *  Default seekability should be determined automatically, but for now, I cannot figure out how...
-         *
-         *  \par Example Usage
-         *      \code
-         *          stringstream                                  s;
-         *          OutputStreamFromStdOStream<byte>::Ptr so = OutputStreamFromStdOStream<byte>::New (s);
-         *          const char                                    kData_[] = "ddasdf3294234";
-         *          so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
-         *          EXPECT_TRUE (s.str () == kData_);
-         *      \endcode
-         *
-         *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::ostream
-         *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
-         *              It is also up to the caller to assure no references to or calls to that ostream
-         *              be made from another thread. However, no data is cached in this class - it just
-         *              delegates, so calls CAN be made the the underlying ostream - so long as not
-         *              concurrently.
-         *
-         *              If you pass in eInternallySynchronized, the internal rep is internally synchronized, but you still must assure
-         *              no other threads access the OStreamType object.
-         */
-        static Ptr New (OStreamType& originalStream);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, OStreamType& originalStream);
-
-    private:
-        class Rep_;
-
+#if 0
     private:
         using InternalSyncRep_ = InternallySynchronizedOutputStream<ELEMENT_TYPE, OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>,
                                                                     typename OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_>;
-    };
-
-    /**
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
-     */
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    class OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Ptr : public OutputStream<ELEMENT_TYPE>::Ptr {
-    private:
-        using inherited = typename OutputStream<ELEMENT_TYPE>::Ptr;
-
-    public:
-        /**
-         *  \par Example Usage
-         *      \code
-         *          stringstream                                  s;
-         *          OutputStreamFromStdOStream<byte>::Ptr so = OutputStreamFromStdOStream<byte>::New (s);
-         *          const char                                    kData_[] = "ddasdf3294234";
-         *          so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
-         *          EXPECT_TRUE (s.str () == kData_);
-         *      \endcode
-         */
-        Ptr ()                = default;
-        Ptr (const Ptr& from) = default;
-
-    protected:
-        Ptr (const shared_ptr<Rep_>& from);
-
-    public:
-        nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-    private:
-        friend class OutputStreamFromStdOStream;
-    };
+#endif
 
 }
 

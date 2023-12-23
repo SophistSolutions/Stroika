@@ -120,7 +120,7 @@ private:
 private:
     nonvirtual void ProcessFile_ (istream& in, ostream& out)
     {
-        wstring orig = Streams::TextReader::New (Streams::iostream::InputStreamFromStdIStream<std::byte>::New (in)).ReadAll ().As<wstring> ();
+        wstring orig = Streams::TextReader::New (Streams::iostream::InputStreamFromStdIStream::New<std::byte> (in)).ReadAll ().As<wstring> ();
 
         out << "/*Auto-Generated C++ file from the Source HTML file '" << String::FromSDKString (fInputFile).AsNarrowSDKString () << "'*/" << endl;
         out << "void    " << String::FromSDKString (fFormGeneratorName).AsNarrowSDKString () << " ()" << endl;

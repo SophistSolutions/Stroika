@@ -14,24 +14,21 @@
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
 
-namespace Stroika::Foundation::Streams::iostream {
+namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
 
     /*
      ********************************************************************************
      *************** OutputStreamFromStdOStream<ELEMENT_TYPE>::Rep_ *****************
      ********************************************************************************
      */
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    class OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
-    private:
-        using OStreamType = typename TRAITS::OStreamType;
-
+    template <typename ELEMENT_TYPE, typename BASIC_OSTREAM_ELEMENT_TYPE, typename BASIC_OSTREAM_TRAITS_TYPE>
+    class Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
     private:
         bool fOpen_{true};
 
     public:
-        Rep_ (OStreamType& originalStream)
-            : fOriginalStream_{originalStream}
+        Rep_ (basic_ostream<BASIC_OSTREAM_ELEMENT_TYPE, BASIC_OSTREAM_TRAITS_TYPE>& originalStream)
+            : fOriginalStreamRef_{originalStream}
         {
         }
 
@@ -58,7 +55,7 @@ namespace Stroika::Foundation::Streams::iostream {
             // instead of tellg () - avoids issue with EOF where fail bit set???
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
-            return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::out);
+            return fOriginalStreamRef_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::out);
         }
         virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
         {
@@ -66,16 +63,16 @@ namespace Stroika::Foundation::Streams::iostream {
             Require (IsOpenWrite ());
             switch (whence) {
                 case Whence::eFromStart:
-                    fOriginalStream_.seekp (offset, ios::beg);
+                    fOriginalStreamRef_.seekp (offset, ios::beg);
                     break;
                 case Whence::eFromCurrent:
-                    fOriginalStream_.seekp (offset, ios::cur);
+                    fOriginalStreamRef_.seekp (offset, ios::cur);
                     break;
                 case Whence::eFromEnd:
-                    fOriginalStream_.seekp (offset, ios::end);
+                    fOriginalStreamRef_.seekp (offset, ios::end);
                     break;
             }
-            return fOriginalStream_.tellp ();
+            return fOriginalStreamRef_.tellp ();
         }
         virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
         {
@@ -85,9 +82,9 @@ namespace Stroika::Foundation::Streams::iostream {
 
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
 
-            using StreamElementType = typename OStreamType::char_type;
-            fOriginalStream_.write (reinterpret_cast<const StreamElementType*> (start), end - start);
-            if (fOriginalStream_.fail ()) [[unlikely]] {
+            using StreamElementType = BASIC_OSTREAM_ELEMENT_TYPE;
+            fOriginalStreamRef_.write (reinterpret_cast<const StreamElementType*> (start), end - start);
+            if (fOriginalStreamRef_.fail ()) [[unlikely]] {
                 static const Execution::RuntimeErrorException kException_{"Failed to write from ostream"sv};
                 Execution::Throw (kException_);
             }
@@ -96,16 +93,16 @@ namespace Stroika::Foundation::Streams::iostream {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenWrite ());
-            fOriginalStream_.flush ();
-            if (fOriginalStream_.fail ()) [[unlikely]] {
+            fOriginalStreamRef_.flush ();
+            if (fOriginalStreamRef_.fail ()) [[unlikely]] {
                 static const Execution::RuntimeErrorException kException_{"Failed to flush ostream"sv};
                 Execution::Throw (kException_);
             }
         }
 
     private:
-        OStreamType&                                                   fOriginalStream_;
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        basic_ostream<BASIC_OSTREAM_ELEMENT_TYPE, BASIC_OSTREAM_TRAITS_TYPE>& fOriginalStreamRef_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex        fThisAssertExternallySynchronized_;
     };
 
     /*
@@ -113,35 +110,29 @@ namespace Stroika::Foundation::Streams::iostream {
      ********************* OutputStreamFromStdOStream<ELEMENT_TYPE> *****************
      ********************************************************************************
      */
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::New (OStreamType& originalStream) -> Ptr
+    template <typename ELEMENT_TYPE, typename BASIC_OSTREAM_ELEMENT_TYPE, typename BASIC_OSTREAM_TRAITS_TYPE>
+    inline auto New (basic_ostream<BASIC_OSTREAM_ELEMENT_TYPE, BASIC_OSTREAM_TRAITS_TYPE>& originalStream) -> Ptr<ELEMENT_TYPE>
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_OSTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_OSTREAM_ELEMENT_TYPE, wchar_t>))
     {
-        return make_shared<Rep_> (originalStream);
+        return Ptr<ELEMENT_TYPE>{make_shared<Rep_<ELEMENT_TYPE, BASIC_OSTREAM_ELEMENT_TYPE, BASIC_OSTREAM_TRAITS_TYPE>> (originalStream)};
     }
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySynchronized internallySynchronized,
-                                                                       OStreamType&                      originalStream) -> Ptr
+    template <typename ELEMENT_TYPE, typename BASIC_OSTREAM_ELEMENT_TYPE, typename BASIC_OSTREAM_TRAITS_TYPE>
+    inline auto New (Execution::InternallySynchronized                                     internallySynchronized,
+                     basic_ostream<BASIC_OSTREAM_ELEMENT_TYPE, BASIC_OSTREAM_TRAITS_TYPE>& originalStream) -> Ptr<ELEMENT_TYPE>
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_OSTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_OSTREAM_ELEMENT_TYPE, wchar_t>))
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New (originalStream);
+                AssertNotImplemented ();
+                //tmphack                return InternalSyncRep_::New (originalStream);
             case Execution::eNotKnownInternallySynchronized:
-                return New (originalStream);
+                return New<ELEMENT_TYPE> (originalStream);
             default:
                 RequireNotReached ();
                 return nullptr;
         }
-    }
-
-    /*
-     ********************************************************************************
-     *********** OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Ptr **************
-     ********************************************************************************
-     */
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    inline OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-        : inherited (from)
-    {
     }
 
 }

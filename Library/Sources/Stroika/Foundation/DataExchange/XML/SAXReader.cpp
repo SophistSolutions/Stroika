@@ -215,8 +215,8 @@ namespace {
                     thisReader->fCallback_.EndDocument ();
                 };
                 flibXMLSaxHndler_.startElementNs = [] (void* ctx, const xmlChar* localname, [[maybe_unused]] const xmlChar* prefix,
-                                                       const xmlChar* URI, int nb_namespaces, const xmlChar** namespaces, int nb_attributes,
-                                                       int nb_defaulted, const xmlChar** attributes) {
+                                                       const xmlChar* URI, [[maybe_unused]] int nb_namespaces, const xmlChar** namespaces,
+                                                       int nb_attributes, [[maybe_unused]] int nb_defaulted, const xmlChar** attributes) {
                     SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
                     Assert (thisReader->flibXMLSaxHndler_.initialized == XML_SAX2_MAGIC); // assure ctx ptr passed through properly
                     Mapping<Name, String> attrs;
@@ -225,7 +225,7 @@ namespace {
                         // https://stackoverflow.com/questions/2075894/how-to-get-the-name-and-value-of-attributes-from-xml-when-using-libxml2-sax-pars
                         auto ai = attributes;
                         for (int i = 0; i < nb_attributes; i++) {
-                            attrs.Add (libXMLString2String (ai[0]), libXMLString2String (ai[3], ai[4] - ai[3]));
+                            attrs.Add (libXMLString2String (ai[0]), libXMLString2String (ai[3], static_cast<int> (ai[4] - ai[3])));
                             ai += 5;
                         }
                     }

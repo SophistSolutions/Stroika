@@ -54,7 +54,6 @@ using Containers::SortedMapping;
 using Debug::TraceContextBumper;
 using Streams::InputStream;
 
-
 #if qHasFeature_GoogleTest
 namespace {
     //
