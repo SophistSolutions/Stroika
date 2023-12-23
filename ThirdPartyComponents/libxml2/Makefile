@@ -138,7 +138,12 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
 	@# Match what .pc file generates with --msvc pkg-config option with symbolic link to avoid having to patch .pc file
+ifeq ($(DETECTED_HOST_OS),Cygwin)
+	@#cygwin seems to (sometimes) generate junction instead of symbolic link?
+	@cp "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
+else
 	@ln -s -f "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/libxml2s${MAYBED_}.lib "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/xml2.lib
+endif
 	@#existing produced .pc file bad in several ways for windows, and want to try to use pkg-config so hopefully this hack adequate
 	@cp PatchReplacements/libxml-2.0.pc "${PER_CONFIGURATION_BUILDS_DIR_}"/lib/pkgconfig/
 else
