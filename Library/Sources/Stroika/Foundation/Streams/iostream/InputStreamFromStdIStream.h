@@ -25,22 +25,23 @@
  *
  */
 
-namespace Stroika::Foundation::Streams::iostream {
+namespace Stroika::Foundation::Streams::iostream ::InputStreamFromStdIStream {
 
-    namespace InputStreamFromStdIStreamSupport {
-        template <typename ELEMENT_TYPE>
-        struct TraitsType {
-            using IStreamType = basic_istream<ELEMENT_TYPE>;
-        };
-        template <>
-        struct TraitsType<byte> {
-            using IStreamType = istream;
-        };
-        template <>
-        struct TraitsType<Characters::Character> {
-            using IStreamType = wistream;
-        };
-    }
+    template <typename ELEMENT_TYPE>
+    struct TraitsType {
+        using IStreamType = basic_istream<ELEMENT_TYPE>;
+    };
+    template <>
+    struct TraitsType<byte> {
+        using IStreamType = istream;
+    };
+    template <>
+    struct TraitsType<Characters::Character> {
+        using IStreamType = wistream;
+    };
+
+    template <typename ELEMENT_TYPE>
+    using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
 
     /**
      *  InputStreamFromStdIStream wraps an argument std::istream or std::wistream or std::basic_istream<> as a Stroika InputStream object
@@ -49,40 +50,27 @@ namespace Stroika::Foundation::Streams::iostream {
      *      \code
      *          stringstream tmpStrm;
      *          tmpStrm << "some xml";
-     *          XML::SAXParse (InputStreamFromStdIStream<byte>::New (tmpStrm), MyCallback{});
+     *          XML::SAXParse (InputStreamFromStdIStream::New<byte> (tmpStrm), MyCallback{});
      *      \endcode
      *
      *      \note   InputStreamFromStdIStream ::Close () does not call close on the owned basic_istream, because there is no such stdC++ method (though filestream has one)
      */
-    template <typename ELEMENT_TYPE, typename TRAITS = InputStreamFromStdIStreamSupport::TraitsType<ELEMENT_TYPE>>
-    class InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE> {
-    public:
-        using IStreamType = typename TRAITS::IStreamType;
 
-    public:
-        enum class SeekableFlag {
-            eSeekable,
-            eNotSeekable
-        };
-        static constexpr SeekableFlag eSeekable    = SeekableFlag::eSeekable;
-        static constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
+    enum class SeekableFlag {
+        eSeekable,
+        eNotSeekable
+    };
+    static constexpr SeekableFlag eSeekable    = SeekableFlag::eSeekable;
+    static constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
 
-    public:
-        InputStreamFromStdIStream ()                                 = delete;
-        InputStreamFromStdIStream (const InputStreamFromStdIStream&) = delete;
-
-    public:
-        class Ptr;
-
-    public:
-        /**
+    /**
          *
          *  Default seekability should be determined automatically, but for now, I cannot figure out how...
          *  \par Example Usage
          *      \code
          *          stringstream tmpStrm;
          *          WriteTextStream_ (newDocXML, tmpStrm);
-         *          return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+         *          return InputStreamFromStdIStream::New<byte>(tmpStrm).ReadAll ();
          *      \endcode
          *
          *  \par Example Usage
@@ -90,7 +78,7 @@ namespace Stroika::Foundation::Streams::iostream {
          *          stringstream tmpStrm;
          *          WriteTextStream_ (newDocXML, tmpStrm);
          *          MyCallback myCallback;
-         *          XML::SAXParse (InputStreamFromStdIStream<byte>::New (tmpStrm), myCallback);
+         *          XML::SAXParse (InputStreamFromStdIStream::New<byte> (tmpStrm), myCallback);
          *      \endcode
          *
          *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::istream
@@ -104,48 +92,24 @@ namespace Stroika::Foundation::Streams::iostream {
          *              If you pass in eInternallySynchronized, the internal rep is internally synchronized, but you still must assure
          *              no other threads access the IStreamType object.
          */
-        static Ptr New (IStreamType& originalStream);
-        static Ptr New (IStreamType& originalStream, SeekableFlag seekable);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, IStreamType& originalStream);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, IStreamType& originalStream, SeekableFlag seekable);
+    template <typename ELEMENT_TYPE, typename TRAITS = TraitsType<ELEMENT_TYPE>>
+    Ptr<ELEMENT_TYPE> New (typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream);
+    template <typename ELEMENT_TYPE, typename TRAITS = TraitsType<ELEMENT_TYPE>>
+    Ptr<ELEMENT_TYPE> New (typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream, SeekableFlag seekable);
+    template <typename ELEMENT_TYPE, typename TRAITS = TraitsType<ELEMENT_TYPE>>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream);
+    template <typename ELEMENT_TYPE, typename TRAITS = TraitsType<ELEMENT_TYPE>>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized               internallySynchronized,
+                           typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream, SeekableFlag seekable);
 
-    private:
-        class Rep_;
-
+    template <typename ELEMENT_TYPE, typename TRAITS = TraitsType<ELEMENT_TYPE>>
+    class Rep_;
+#if 0
+        //tmphack disable
     private:
         using InternalSyncRep_ =
             InternallySynchronizedInputStream<ELEMENT_TYPE, InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>, typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_>;
-    };
-
-    /**
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
-     */
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    class InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr {
-    private:
-        using inherited = typename InputStream<ELEMENT_TYPE>::Ptr;
-
-    public:
-        /**
-         *  \par Example Usage
-         *      \code
-         *          stringstream tmpStrm;
-         *          WriteTextStream_ (newDocXML, tmpStrm);
-         *          return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
-         *      \endcode
-         */
-        Ptr ()                = default;
-        Ptr (const Ptr& from) = default;
-
-    protected:
-        Ptr (const shared_ptr<Rep_>& from);
-
-    public:
-        nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-    private:
-        friend class InputStreamFromStdIStream;
-    };
+#endif
 
 }
 

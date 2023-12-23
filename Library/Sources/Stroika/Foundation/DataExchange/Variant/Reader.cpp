@@ -11,10 +11,9 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Streams::iostream;
 
 using std::byte;
-
-using Streams::iostream::InputStreamFromStdIStream;
 
 /*
  ********************************************************************************
@@ -23,7 +22,7 @@ using Streams::iostream::InputStreamFromStdIStream;
  */
 Streams::InputStream<byte>::Ptr Variant::Reader::_ToByteReader (istream& in)
 {
-    return InputStreamFromStdIStream<byte>::New (in);
+    return InputStreamFromStdIStream::New<byte> (in);
 }
 
 Streams::InputStream<Characters::Character>::Ptr Variant::Reader::_ToCharacterReader (const Traversal::Iterable<Characters::Character>& in)
@@ -33,5 +32,5 @@ Streams::InputStream<Characters::Character>::Ptr Variant::Reader::_ToCharacterRe
 
 Streams::InputStream<Characters::Character>::Ptr Variant::Reader::_ToCharacterReader (wistream& in)
 {
-    return InputStreamFromStdIStream<Characters::Character>::New (in);
+    return InputStreamFromStdIStream::New<Characters::Character> (in);
 }

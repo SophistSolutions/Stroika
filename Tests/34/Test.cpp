@@ -43,6 +43,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
 using namespace Stroika::Foundation::DataExchange::XML;
+using namespace Streams::iostream;
 
 using namespace Stroika::Frameworks;
 
@@ -52,7 +53,7 @@ using Containers::Set;
 using Containers::SortedMapping;
 using Debug::TraceContextBumper;
 using Streams::InputStream;
-using Streams::iostream::InputStreamFromStdIStream;
+
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -150,8 +151,8 @@ namespace {
         stringstream tmpStrm;
         WriteTextStream_ (newDocXML, tmpStrm);
         MyCallback myCallback;
-        XML::SAXParse (InputStreamFromStdIStream<byte>::New (tmpStrm), myCallback);
-        //        XML::SAXParse (XML::Provider::eLibXml2, InputStreamFromStdIStream<byte>::New (tmpStrm), myCallback);
+        XML::SAXParse (InputStreamFromStdIStream::New<byte> (tmpStrm), myCallback);
+        //        XML::SAXParse (XML::Provider::eLibXml2, InputStreamFromStdIStream::New<byte> (tmpStrm), myCallback);
     }
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER2)
     {
@@ -223,7 +224,7 @@ namespace {
                                 L"</Calendar>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
 
         ObjectReader::Registry registry;
@@ -304,7 +305,7 @@ namespace {
                                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
 
         ObjectReader::Registry registry;
@@ -396,7 +397,7 @@ namespace {
                 L"</soapenv:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
 
         ObjectReader::Registry mapper;
@@ -440,7 +441,7 @@ namespace {
             ;
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream<byte>::Ptr{InputStreamFromStdIStream<byte>::New (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream::New<byte> (tmpStrm)}.ReadAll ();
         };
 
         ObjectReader::Registry mapper;
@@ -504,7 +505,7 @@ namespace {
                                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
 
         ObjectReader::Registry registry;
@@ -675,7 +676,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
 
         ObjectReader::Registry registry;
@@ -763,7 +764,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
         ObjectReader::Registry registry;
         registry.AddCommonType<AlarmType_> ();
@@ -867,7 +868,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
         struct SpectrumReader_ : public ObjectReader::IElementConsumer {
             SpectrumType_* fValuePtr_;
@@ -984,7 +985,7 @@ namespace {
                                 L"</Values>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
         TraceContextBumper     traceCtx{"T10_SAXObjectReader_NANValues_"};
         ObjectReader::Registry registry;
@@ -1094,7 +1095,7 @@ namespace {
                 L"</SOAP-ENV:Envelope>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
 
         static const ObjectReader::ReaderFromVoidStarFactory k_PerTunerFactorySettingsType_ReaderFactory_ =
@@ -1205,7 +1206,7 @@ namespace {
                                 L"</Values>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
         TraceContextBumper     traceCtx{"T12_RangeReader_"};
         ObjectReader::Registry registry;
@@ -1256,7 +1257,7 @@ namespace {
                                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
         ObjectReader::Registry registry;
         registry.AddCommonType<String> ();
@@ -1323,7 +1324,7 @@ namespace {
                                 L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
+            return InputStreamFromStdIStream::New<byte> (tmpStrm).ReadAll ();
         };
         ObjectReader::Registry registry;
         registry.AddCommonType<String> ();

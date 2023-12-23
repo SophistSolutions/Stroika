@@ -15,7 +15,7 @@
 #include "../../Execution/Exceptions.h"
 #include "../../Execution/Throw.h"
 
-namespace Stroika::Foundation::Streams::iostream {
+namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
 
     /*
      ********************************************************************************
@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Streams::iostream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename TRAITS>
-    class InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
+    class Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
     private:
         using IStreamType = typename TRAITS::IStreamType;
 
@@ -139,22 +139,23 @@ namespace Stroika::Foundation::Streams::iostream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (IStreamType& originalStream) -> Ptr
+    inline auto New (typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream) -> Ptr<ELEMENT_TYPE>
     {
-        return make_shared<Rep_> (originalStream);
+        return Ptr<ELEMENT_TYPE>{make_shared<Rep_<ELEMENT_TYPE>> (originalStream)};
     }
     template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (IStreamType& originalStream, SeekableFlag seekable) -> Ptr
+    inline auto New (typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream, SeekableFlag seekable) -> Ptr<ELEMENT_TYPE>
     {
-        return make_shared<Rep_> (originalStream, seekable);
+        return Ptr<ELEMENT_TYPE>{make_shared<Rep_<ELEMENT_TYPE>> (originalStream, seekable)};
     }
     template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySynchronized internallySynchronized, IStreamType& originalStream)
-        -> Ptr
+    inline auto New (Execution::InternallySynchronized internallySynchronized, typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream)
+        -> Ptr<ELEMENT_TYPE>
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New (originalStream);
+                AssertNotImplemented (); //revisiit asap
+                                         //                return InternalSyncRep_::New (originalStream);
             case Execution::eNotKnownInternallySynchronized:
                 return New (originalStream);
             default:
@@ -163,29 +164,19 @@ namespace Stroika::Foundation::Streams::iostream {
         }
     }
     template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySynchronized internallySynchronized,
-                                                                      IStreamType& originalStream, SeekableFlag seekable) -> Ptr
+    inline auto New (Execution::InternallySynchronized               internallySynchronized,
+                     typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream, SeekableFlag seekable) -> Ptr<ELEMENT_TYPE>
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                return InternalSyncRep_::New (originalStream, seekable);
+                AssertNotImplemented (); //revisiit asap
+                                         //                return InternalSyncRep_::New (originalStream, seekable);
             case Execution::eNotKnownInternallySynchronized:
                 return New (originalStream, seekable);
             default:
                 RequireNotReached ();
                 return nullptr;
         }
-    }
-
-    /*
-     ********************************************************************************
-     *********** InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr ***************
-     ********************************************************************************
-     */
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    inline InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-        : inherited{from}
-    {
     }
 
 }
