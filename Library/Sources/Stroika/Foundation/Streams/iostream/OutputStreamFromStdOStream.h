@@ -20,26 +20,9 @@
  *
  * TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-606 - Implement StdIStreamFromInputStream and StdOStreamFromOutputStream classes
- *
- *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sync form - using direct mutex
  */
 
 namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
-
-#if 0
-    template <typename ELEMENT_TYPE>
-    struct TraitsType {
-        using OStreamType = basic_ostream<ELEMENT_TYPE>;
-    };
-    template <>
-    struct TraitsType<byte> {
-        using OStreamType = ostream;
-    };
-    template <>
-    struct TraitsType<Characters::Character> {
-        using OStreamType = wostream;
-    };
-#endif
 
     template <typename ELEMENT_TYPE>
     using Ptr = typename OutputStream<ELEMENT_TYPE>::Ptr;

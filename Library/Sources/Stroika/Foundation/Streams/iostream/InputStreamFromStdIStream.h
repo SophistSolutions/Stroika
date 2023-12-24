@@ -23,24 +23,9 @@
  *
  *      @todo   Better handle failbit / eofbit etc. Not correct, but maybe OK for now... Not sure right answer.
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sync form - using direct mutex
- *
  */
 
 namespace Stroika::Foundation::Streams::iostream ::InputStreamFromStdIStream {
-
-    template <typename ELEMENT_TYPE>
-    struct TraitsType {
-        using IStreamType = basic_istream<ELEMENT_TYPE>;
-    };
-    template <>
-    struct TraitsType<byte> {
-        using IStreamType = istream;
-    };
-    template <>
-    struct TraitsType<Characters::Character> {
-        using IStreamType = wistream;
-    };
 
     template <typename ELEMENT_TYPE>
     using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
@@ -94,17 +79,27 @@ namespace Stroika::Foundation::Streams::iostream ::InputStreamFromStdIStream {
          *              If you pass in eInternallySynchronized, the internal rep is internally synchronized, but you still must assure
          *              no other threads access the IStreamType object.
          */
-    template <typename ELEMENT_TYPE, typename TRAITS = TraitsType<ELEMENT_TYPE>>
-    Ptr<ELEMENT_TYPE> New (typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream);
-    template <typename ELEMENT_TYPE, typename TRAITS = TraitsType<ELEMENT_TYPE>>
-    Ptr<ELEMENT_TYPE> New (typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream, SeekableFlag seekable);
-    template <typename ELEMENT_TYPE, typename TRAITS = TraitsType<ELEMENT_TYPE>>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream);
-    template <typename ELEMENT_TYPE, typename TRAITS = TraitsType<ELEMENT_TYPE>>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized               internallySynchronized,
-                           typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream, SeekableFlag seekable);
+    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
+    Ptr<ELEMENT_TYPE> New (basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream)
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, wchar_t>));
+    ;
+    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
+    Ptr<ELEMENT_TYPE> New (basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream, SeekableFlag seekable)
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, wchar_t>));
+    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized                                     internallySynchronized,
+                           basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream)
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, wchar_t>));
+    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized                                     internallySynchronized,
+                           basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream, SeekableFlag seekable)
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, wchar_t>));
 
-    template <typename ELEMENT_TYPE, typename TRAITS = TraitsType<ELEMENT_TYPE>>
+    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
     class Rep_;
 #if 0
         //tmphack disable

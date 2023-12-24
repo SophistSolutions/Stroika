@@ -22,29 +22,18 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
      **************** InputStreamFromStdIStream<ELEMENT_TYPE>::Rep_ *****************
      ********************************************************************************
      */
-    template <typename ELEMENT_TYPE, typename TRAITS>
+    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
     class Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
-    private:
-        using IStreamType = typename TRAITS::IStreamType;
-
-    private:
-        static SeekableFlag DefaultSeekable_ (IStreamType& /*originalStream*/)
-        {
-            // SB something like lseek(fd, CURRENT, 0) not an error, but that doesn't work wtih seekg() on
-            // MSVC2k13. Not sure of a good portable, and yet non-destructive way...
-            return eSeekable;
-        }
-
     private:
         bool fOpen_{true};
 
     public:
-        Rep_ (IStreamType& originalStream)
-            : Rep_{originalStream, DefaultSeekable_ (originalStream)}
+        Rep_ (basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream)
+            : Rep_{originalStream, eSeekable}
         {
         }
-        Rep_ (IStreamType& originalStream, SeekableFlag seekable)
-            : fOriginalStream_{originalStream}
+        Rep_ (basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream, SeekableFlag seekable)
+            : fOriginalStreamRef_{originalStream}
             , fSeekable_{seekable}
         {
         }
@@ -72,16 +61,16 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
 
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
-            if (fOriginalStream_.eof ()) {
+            if (fOriginalStreamRef_.eof ()) {
                 return 0;
             }
             size_t maxToRead        = intoEnd - intoStart;
-            using StreamElementType = typename IStreamType::char_type;
-            fOriginalStream_.read (reinterpret_cast<StreamElementType*> (intoStart), maxToRead);
-            size_t n = static_cast<size_t> (fOriginalStream_.gcount ()); // cast safe cuz amount asked to read was also size_t
+            using StreamElementType = BASIC_ISTREAM_ELEMENT_TYPE;
+            fOriginalStreamRef_.read (reinterpret_cast<StreamElementType*> (intoStart), maxToRead);
+            size_t n = static_cast<size_t> (fOriginalStreamRef_.gcount ()); // cast safe cuz amount asked to read was also size_t
 
             // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
-            if (not fOriginalStream_.eof () and fOriginalStream_.fail ()) [[unlikely]] {
+            if (not fOriginalStreamRef_.eof () and fOriginalStreamRef_.fail ()) [[unlikely]] {
                 static const Execution::RuntimeErrorException kException_{"Failed to read from istream"sv};
                 Execution::Throw (kException_);
             }
@@ -91,7 +80,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
         {
             Require (IsOpenRead ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            streamsize                                             sz = fOriginalStream_.rdbuf ()->in_avail ();
+            streamsize                                             sz = fOriginalStreamRef_.rdbuf ()->in_avail ();
             // http://en.cppreference.com/w/cpp/io/basic_streambuf/in_avail
             if (sz == 0) {
                 return {};
@@ -106,7 +95,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             // instead of tellg () - avoids issue with EOF where fail bit set???
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
-            return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
+            return fOriginalStreamRef_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
@@ -114,23 +103,23 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             Require (IsOpenRead ());
             switch (whence) {
                 case Whence::eFromStart:
-                    fOriginalStream_.seekg (offset, ios::beg);
+                    fOriginalStreamRef_.seekg (offset, ios::beg);
                     break;
                 case Whence::eFromCurrent:
-                    fOriginalStream_.seekg (offset, ios::cur);
+                    fOriginalStreamRef_.seekg (offset, ios::cur);
                     break;
                 case Whence::eFromEnd:
-                    fOriginalStream_.seekg (offset, ios::end);
+                    fOriginalStreamRef_.seekg (offset, ios::end);
                     break;
             }
             // instead of tellg () - avoids issue with EOF where fail bit set???
-            return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
+            return fOriginalStreamRef_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
         }
 
     private:
-        IStreamType&                                                   fOriginalStream_;
-        SeekableFlag                                                   fSeekable_;
-        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& fOriginalStreamRef_;
+        SeekableFlag                                                          fSeekable_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex        fThisAssertExternallySynchronized_;
     };
 
     /*
@@ -138,41 +127,49 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
      ********************* InputStreamFromStdIStream<ELEMENT_TYPE> ******************
      ********************************************************************************
      */
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto New (typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream) -> Ptr<ELEMENT_TYPE>
+    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
+    inline auto New (basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream) -> Ptr<ELEMENT_TYPE>
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, wchar_t>))
     {
-        return Ptr<ELEMENT_TYPE>{make_shared<Rep_<ELEMENT_TYPE>> (originalStream)};
+        return Ptr<ELEMENT_TYPE>{make_shared<Rep_<ELEMENT_TYPE, BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>> (originalStream)};
     }
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto New (typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream, SeekableFlag seekable) -> Ptr<ELEMENT_TYPE>
+    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
+    inline auto New (basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream, SeekableFlag seekable) -> Ptr<ELEMENT_TYPE>
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, wchar_t>))
     {
-        return Ptr<ELEMENT_TYPE>{make_shared<Rep_<ELEMENT_TYPE>> (originalStream, seekable)};
+        return Ptr<ELEMENT_TYPE>{make_shared<Rep_<ELEMENT_TYPE, BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>> (originalStream, seekable)};
     }
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto New (Execution::InternallySynchronized internallySynchronized, typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream)
-        -> Ptr<ELEMENT_TYPE>
+    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
+    inline auto New (Execution::InternallySynchronized                                     internallySynchronized,
+                     basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream) -> Ptr<ELEMENT_TYPE>
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, wchar_t>))
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 AssertNotImplemented (); //revisiit asap
                                          //                return InternalSyncRep_::New (originalStream);
             case Execution::eNotKnownInternallySynchronized:
-                return New (originalStream);
+                return New<ELEMENT_TYPE> (originalStream);
             default:
                 RequireNotReached ();
                 return nullptr;
         }
     }
-    template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto New (Execution::InternallySynchronized               internallySynchronized,
-                     typename TraitsType<ELEMENT_TYPE>::IStreamType& originalStream, SeekableFlag seekable) -> Ptr<ELEMENT_TYPE>
+    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
+    inline auto New (Execution::InternallySynchronized internallySynchronized,
+                     basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream, SeekableFlag seekable) -> Ptr<ELEMENT_TYPE>
+        requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, wchar_t>))
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
                 AssertNotImplemented (); //revisiit asap
                                          //                return InternalSyncRep_::New (originalStream, seekable);
             case Execution::eNotKnownInternallySynchronized:
-                return New (originalStream, seekable);
+                return New<ELEMENT_TYPE> (originalStream, seekable);
             default:
                 RequireNotReached ();
                 return nullptr;
