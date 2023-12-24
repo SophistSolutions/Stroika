@@ -139,7 +139,6 @@ namespace {
 #endif
         Collection<Neighbor> result;
         using Characters::String2Int;
-        using IO::FileSystem::FileInputStream;
         DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
         static const filesystem::path                          kProcFileName_{"/proc/net/arp"sv};
         /*
@@ -151,7 +150,7 @@ namespace {
         */
         bool readFirstLine = false;
         // Note - /procfs files always unseekable
-        for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
+        for (const Sequence<String>& line : reader.ReadMatrix (IO::FileSystem::FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"in ProcNetArp_ capture_ line=%s", Characters::ToString (line).c_str ());
 #endif

@@ -214,7 +214,6 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
              *      "The first number is the total number of seconds the system has been up"
              */
             using Characters::String2Int;
-            using IO::FileSystem::FileInputStream;
             for (const String& line : TextReader::New (FileInputStream::New (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
                 Sequence<String> t = line.Tokenize ();
                 if (t.size () >= 2) {
@@ -272,7 +271,6 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 #if qPlatform_Linux
     {
         using Characters::String2Int;
-        using IO::FileSystem::FileInputStream;
         static const filesystem::path kProcCPUInfoFileName_{"/proc/cpuinfo"sv};
         /*
          * Example 1:
@@ -359,7 +357,8 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         optional<unsigned int> currentProcessorID;
         optional<String>       currentModelName;
         optional<unsigned int> currentSocketID;
-        for (const String& line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+        for (const String& line :
+             TextReader::New (IO::FileSystem::FileInputStream::New (kProcCPUInfoFileName_, IO::FileSystem::FileInputStream::eNotSeekable)).ReadLines ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
 #endif

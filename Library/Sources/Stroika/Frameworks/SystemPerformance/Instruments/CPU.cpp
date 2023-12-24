@@ -202,11 +202,10 @@ namespace {
         {
             POSIXSysTimeCaptureContext_ result{};
             using Characters::FloatConversion::ToFloat;
-            using IO::FileSystem::FileInputStream;
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             static const filesystem::path                          kFileName_{"/proc/stat"sv};
             // Note - /procfs files always unseekable
-            for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
+            for (const Sequence<String>& line : reader.ReadMatrix (IO::FileSystem::FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
