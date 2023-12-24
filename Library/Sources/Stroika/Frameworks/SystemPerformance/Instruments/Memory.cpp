@@ -31,7 +31,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
-using namespace Stroika::Foundation:: IO::FileSystem;
+using namespace Stroika::Foundation::IO::FileSystem;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;

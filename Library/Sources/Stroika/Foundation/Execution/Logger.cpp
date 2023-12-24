@@ -29,7 +29,7 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Execution;
- using namespace  IO::FileSystem;
+using namespace IO::FileSystem;
 
 using Characters::SDKString;
 using Containers::Mapping;
@@ -438,7 +438,7 @@ void Logger::StreamAppender::Log (Priority logLevel, const String& message)
  ********************************************************************************
  */
 struct Logger::FileAppender::Rep_ {
-   public:
+public:
     Rep_ (const filesystem::path& fileName, bool truncateOnOpen)
         : fOut_ (StreamAppender (FileOutputStream::New (fileName, truncateOnOpen ? FileOutputStream::eStartFromStart : FileOutputStream::eAppend)))
     {

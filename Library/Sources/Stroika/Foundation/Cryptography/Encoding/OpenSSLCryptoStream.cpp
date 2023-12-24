@@ -12,6 +12,8 @@
 #include "../../Debug/Assertions.h"
 #include "../../Execution/Common.h"
 #include "../../Memory/StackBuffer.h"
+#include "../../Streams/InternallySynchronizedInputStream.h"
+#include "../../Streams/InternallySynchronizedOutputStream.h"
 
 #include "OpenSSLCryptoStream.h"
 
@@ -105,205 +107,208 @@ namespace {
     };
 }
 
-class OpenSSLInputStream::Rep_ : public InputStream<byte>::_IRep, private InOutStrmCommon_ {
-private:
-    static constexpr size_t kInBufSize_ = 10 * 1024;
+namespace {
 
-public:
-    Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<byte>::Ptr& realIn)
-        : InOutStrmCommon_{cryptoParams, d}
-        , fRealIn_{realIn}
-    {
-    }
-    virtual bool IsSeekable () const override
-    {
-        return false;
-    }
-    virtual void CloseRead () override
-    {
-        Require (IsOpenRead ());
-        fRealIn_.Close ();
-        Assert (fRealIn_ == nullptr);
-        Ensure (not IsOpenRead ());
-    }
-    virtual bool IsOpenRead () const override
-    {
-        return fRealIn_ != nullptr;
-    }
-    virtual SeekOffsetType GetReadOffset () const override
-    {
-        RequireNotReached ();
-        Require (IsOpenRead ());
-        return 0;
-    }
-    virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
-    {
-        RequireNotReached ();
-        Require (IsOpenRead ());
-        return 0;
-    }
-    virtual size_t Read (byte* intoStart, byte* intoEnd) override
-    {
-        /*
+    class OpenSSLInputStreamRep_ : public InputStream<byte>::_IRep, private InOutStrmCommon_ {
+    private:
+        static constexpr size_t kInBufSize_ = 10 * 1024;
+
+    public:
+        OpenSSLInputStreamRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<byte>::Ptr& realIn)
+            : InOutStrmCommon_{cryptoParams, d}
+            , fRealIn_{realIn}
+        {
+        }
+        virtual bool IsSeekable () const override
+        {
+            return false;
+        }
+        virtual void CloseRead () override
+        {
+            Require (IsOpenRead ());
+            fRealIn_.Close ();
+            Assert (fRealIn_ == nullptr);
+            Ensure (not IsOpenRead ());
+        }
+        virtual bool IsOpenRead () const override
+        {
+            return fRealIn_ != nullptr;
+        }
+        virtual SeekOffsetType GetReadOffset () const override
+        {
+            RequireNotReached ();
+            Require (IsOpenRead ());
+            return 0;
+        }
+        virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
+        {
+            RequireNotReached ();
+            Require (IsOpenRead ());
+            return 0;
+        }
+        virtual size_t Read (byte* intoStart, byte* intoEnd) override
+        {
+            /*
          *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
          *  If none to read there - pull from fRealIn_ src, and push those through the cipher.
          *  and use that to re-populate fOutBuf_.
          */
-        Require (intoStart < intoEnd);
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-        Require (IsOpenRead ());
-        if (fOutBufStart_ == fOutBufEnd_) {
-            /*
+            Require (intoStart < intoEnd);
+            [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+            Require (IsOpenRead ());
+            if (fOutBufStart_ == fOutBufEnd_) {
+                /*
              *  Then pull from 'real in' stream until we have reach EOF there, or until we have some bytes to output
              *  on our own.
              */
-            byte toDecryptBuf[kInBufSize_];
-        Again:
-            size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
-            if (n2Decrypt == 0) {
-                size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
-                Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
-                fOutBufStart_ = fOutBuf_.begin ();
-                fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
-            }
-            else {
-                fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
-                size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
-                Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
-                if (nBytesInOutBuf == 0) {
-                    // This can happen with block ciphers - we put stuff in, and get nothing out. But we cannot return EOF
-                    // yet, so try again...
-                    goto Again;
-                }
-                else {
+                byte toDecryptBuf[kInBufSize_];
+            Again:
+                size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
+                if (n2Decrypt == 0) {
+                    size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
+                    Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
                     fOutBufStart_ = fOutBuf_.begin ();
                     fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
                 }
-            }
-        }
-        if (fOutBufStart_ < fOutBufEnd_) {
-            size_t n2Copy = min (fOutBufEnd_ - fOutBufStart_, intoEnd - intoStart);
-            (void)::memcpy (intoStart, fOutBufStart_, n2Copy);
-            fOutBufStart_ += n2Copy;
-            return n2Copy;
-        }
-        return 0; // EOF
-    }
-    virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
-    {
-        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-        Require (IsOpenRead ());
-        // advance fOutBufStart_ if possible, and then we know if there is upstream data, and can use _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
-        if (fOutBufStart_ == fOutBufEnd_) {
-            byte toDecryptBuf[kInBufSize_];
-        Again:
-            optional<size_t> n2Decrypt = fRealIn_.ReadNonBlocking (begin (toDecryptBuf), end (toDecryptBuf));
-            if (not n2Decrypt.has_value ()) {
-                // if no known data upstream, we cannot say if this is EOF
-                return {};
-            }
-            else if (n2Decrypt == 0u) {
-                size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
-                Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
-                fOutBufStart_ = fOutBuf_.begin ();
-                fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
-            }
-            else {
-                fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
-                size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + *n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
-                Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
-                if (nBytesInOutBuf == 0) {
-                    // This can happen with block ciphers - we put stuff in, and get nothing out. But we cannot return EOF
-                    // yet, so try again...
-                    goto Again;
-                }
                 else {
+                    fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
+                    size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
+                    Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
+                    if (nBytesInOutBuf == 0) {
+                        // This can happen with block ciphers - we put stuff in, and get nothing out. But we cannot return EOF
+                        // yet, so try again...
+                        goto Again;
+                    }
+                    else {
+                        fOutBufStart_ = fOutBuf_.begin ();
+                        fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
+                    }
+                }
+            }
+            if (fOutBufStart_ < fOutBufEnd_) {
+                size_t n2Copy = min (fOutBufEnd_ - fOutBufStart_, intoEnd - intoStart);
+                (void)::memcpy (intoStart, fOutBufStart_, n2Copy);
+                fOutBufStart_ += n2Copy;
+                return n2Copy;
+            }
+            return 0; // EOF
+        }
+        virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
+        {
+            Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+            [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+            Require (IsOpenRead ());
+            // advance fOutBufStart_ if possible, and then we know if there is upstream data, and can use _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
+            if (fOutBufStart_ == fOutBufEnd_) {
+                byte toDecryptBuf[kInBufSize_];
+            Again:
+                optional<size_t> n2Decrypt = fRealIn_.ReadNonBlocking (begin (toDecryptBuf), end (toDecryptBuf));
+                if (not n2Decrypt.has_value ()) {
+                    // if no known data upstream, we cannot say if this is EOF
+                    return {};
+                }
+                else if (n2Decrypt == 0u) {
+                    size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
+                    Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
                     fOutBufStart_ = fOutBuf_.begin ();
                     fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
                 }
+                else {
+                    fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
+                    size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + *n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
+                    Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
+                    if (nBytesInOutBuf == 0) {
+                        // This can happen with block ciphers - we put stuff in, and get nothing out. But we cannot return EOF
+                        // yet, so try again...
+                        goto Again;
+                    }
+                    else {
+                        fOutBufStart_ = fOutBuf_.begin ();
+                        fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
+                    }
+                }
+            }
+            return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fOutBufEnd_ - fOutBufStart_);
+        }
+
+    private:
+        mutable recursive_mutex                                        fCriticalSection_;
+        Memory::InlineBuffer<byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_{_GetMinOutBufSize (kInBufSize_)};
+        byte*                                                          fOutBufStart_{nullptr};
+        byte*                                                          fOutBufEnd_{nullptr};
+        InputStream<byte>::Ptr                                         fRealIn_;
+    };
+
+    class OpenSSLOutputStreamRep_ : public OutputStream<byte>::_IRep, private InOutStrmCommon_ {
+    public:
+        OpenSSLOutputStreamRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<byte>::Ptr& realOut)
+            : InOutStrmCommon_{cryptoParams, d}
+            , fRealOut_{realOut}
+        {
+        }
+        virtual ~OpenSSLOutputStreamRep_ ()
+        {
+            // no need for critical section because at most one thread can be running DTOR at a time, and no other methods can be running
+            try {
+                Flush ();
+            }
+            catch (...) {
+                // not great to do in DTOR, because we must drop exceptions on the floor!
             }
         }
-        return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fOutBufEnd_ - fOutBufStart_);
-    }
-
-private:
-    mutable recursive_mutex                                        fCriticalSection_;
-    Memory::InlineBuffer<byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_{_GetMinOutBufSize (kInBufSize_)};
-    byte*                                                          fOutBufStart_{nullptr};
-    byte*                                                          fOutBufEnd_{nullptr};
-    InputStream<byte>::Ptr                                         fRealIn_;
-};
-
-class OpenSSLOutputStream::Rep_ : public OutputStream<byte>::_IRep, private InOutStrmCommon_ {
-public:
-    Rep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<byte>::Ptr& realOut)
-        : InOutStrmCommon_{cryptoParams, d}
-        , fRealOut_{realOut}
-    {
-    }
-    virtual ~Rep_ ()
-    {
-        // no need for critical section because at most one thread can be running DTOR at a time, and no other methods can be running
-        try {
-            Flush ();
+        virtual bool IsSeekable () const override
+        {
+            return false;
         }
-        catch (...) {
-            // not great to do in DTOR, because we must drop exceptions on the floor!
+        virtual void CloseWrite () override
+        {
+            Require (IsOpenWrite ());
+            fRealOut_.Close ();
+            Assert (fRealOut_ == nullptr);
+            Ensure (not IsOpenWrite ());
         }
-    }
-    virtual bool IsSeekable () const override
-    {
-        return false;
-    }
-    virtual void CloseWrite () override
-    {
-        Require (IsOpenWrite ());
-        fRealOut_.Close ();
-        Assert (fRealOut_ == nullptr);
-        Ensure (not IsOpenWrite ());
-    }
-    virtual bool IsOpenWrite () const override
-    {
-        return fRealOut_ != nullptr;
-    }
-    virtual SeekOffsetType GetWriteOffset () const override
-    {
-        RequireNotReached ();
-        Require (IsOpenWrite ());
-        return 0;
-    }
-    virtual SeekOffsetType SeekWrite (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
-    {
-        RequireNotReached ();
-        Require (IsOpenWrite ());
-        return 0;
-    }
-    // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
-    // Writes always succeed fully or throw.
-    virtual void Write (const byte* start, const byte* end) override
-    {
-        Require (start < end); // for OutputStream<byte> - this function requires non-empty write
-        Require (IsOpenWrite ());
-        StackBuffer<byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf{Memory::eUninitialized, _GetMinOutBufSize (end - start)};
-        [[maybe_unused]] auto&&                        critSec        = lock_guard{fCriticalSection_};
-        size_t                                         nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
-        Assert (nBytesEncypted <= outBuf.GetSize ());
-        fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);
-    }
-    virtual void Flush () override
-    {
-        Require (IsOpenWrite ());
-        byte   outBuf[EVP_MAX_BLOCK_LENGTH];
-        size_t nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
-        Assert (nBytesInOutBuf < sizeof (outBuf));
-        fRealOut_.Write (begin (outBuf), begin (outBuf) + nBytesInOutBuf);
-    }
+        virtual bool IsOpenWrite () const override
+        {
+            return fRealOut_ != nullptr;
+        }
+        virtual SeekOffsetType GetWriteOffset () const override
+        {
+            RequireNotReached ();
+            Require (IsOpenWrite ());
+            return 0;
+        }
+        virtual SeekOffsetType SeekWrite (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
+        {
+            RequireNotReached ();
+            Require (IsOpenWrite ());
+            return 0;
+        }
+        // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
+        // Writes always succeed fully or throw.
+        virtual void Write (const byte* start, const byte* end) override
+        {
+            Require (start < end); // for OutputStream<byte> - this function requires non-empty write
+            Require (IsOpenWrite ());
+            StackBuffer<byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf{Memory::eUninitialized, _GetMinOutBufSize (end - start)};
+            [[maybe_unused]] auto&&                        critSec        = lock_guard{fCriticalSection_};
+            size_t                                         nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
+            Assert (nBytesEncypted <= outBuf.GetSize ());
+            fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);
+        }
+        virtual void Flush () override
+        {
+            Require (IsOpenWrite ());
+            byte   outBuf[EVP_MAX_BLOCK_LENGTH];
+            size_t nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
+            Assert (nBytesInOutBuf < sizeof (outBuf));
+            fRealOut_.Write (begin (outBuf), begin (outBuf) + nBytesInOutBuf);
+        }
 
-private:
-    mutable recursive_mutex fCriticalSection_;
-    OutputStream<byte>::Ptr fRealOut_;
-};
+    private:
+        mutable recursive_mutex fCriticalSection_;
+        OutputStream<byte>::Ptr fRealOut_;
+    };
+}
 
 /*
  ********************************************************************************
@@ -368,18 +373,18 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<byte>::Ptr& realIn) -> Ptr
+auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<byte>::Ptr& realIn)
+    -> Streams::InputStream<byte>::Ptr
 {
-    return Ptr{make_shared<Rep_> (cryptoParams, direction, realIn)};
+    return Streams::InputStream<byte>::Ptr{make_shared<OpenSSLInputStreamRep_> (cryptoParams, direction, realIn)};
 }
 
 auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
-                              Direction direction, const InputStream<byte>::Ptr& realIn) -> Ptr
+                              Direction direction, const InputStream<byte>::Ptr& realIn) -> Streams::InputStream<byte>::Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            AssertNotImplemented (); //
-                                     //            return InternalSyncRep_::New (cryptoParams, direction, realIn);
+            return Streams::InternallySynchronizedInputStream::New<OpenSSLInputStreamRep_> (cryptoParams, direction, realIn);
         case Execution::eNotKnownInternallySynchronized:
             return New (cryptoParams, direction, realIn);
         default:
@@ -393,19 +398,18 @@ auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchr
  ******************* Cryptography::OpenSSLOutputStream **************************
  ********************************************************************************
  */
-auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<byte>::Ptr& realOut) -> Ptr
+auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<byte>::Ptr& realOut)
+    -> Streams::OutputStream<byte>::Ptr
 {
-    return Ptr{make_shared<Rep_> (cryptoParams, direction, realOut)};
+    return Streams::OutputStream<byte>::Ptr{make_shared<OpenSSLOutputStreamRep_> (cryptoParams, direction, realOut)};
 }
 
 auto OpenSSLOutputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
-                               Direction direction, const OutputStream<byte>::Ptr& realOut) -> Ptr
+                               Direction direction, const OutputStream<byte>::Ptr& realOut) -> Streams::OutputStream<byte>::Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            AssertNotImplemented ();
-
-            //return InternalSyncRep_::New (cryptoParams, direction, realOut);
+            return Streams::InternallySynchronizedOutputStream::New<OpenSSLOutputStreamRep_> (cryptoParams, direction, realOut);
         case Execution::eNotKnownInternallySynchronized:
             return New (cryptoParams, direction, realOut);
         default:

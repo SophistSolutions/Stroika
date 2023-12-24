@@ -16,8 +16,6 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 #include "../../Memory/BLOB.h"
 #include "../../Memory/Common.h"
 #include "../../Streams/InputStream.h"
-#include "../../Streams/InternallySynchronizedInputStream.h"
-#include "../../Streams/InternallySynchronizedOutputStream.h"
 #include "../../Streams/OutputStream.h"
 
 #include "../OpenSSL/CipherAlgorithm.h"
@@ -104,26 +102,12 @@ namespace Stroika::Foundation::Cryptography::Encoding {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class OpenSSLInputStream : public Streams::InputStream<byte> {
-    public:
-        OpenSSLInputStream ()                          = delete;
-        OpenSSLInputStream (const OpenSSLInputStream&) = delete;
-
-    public:
-        using typename InputStream<byte>::Ptr;
-
-    public:
+    namespace OpenSSLInputStream {
         /**
          */
-        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<byte>::Ptr& realIn);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
-                        Direction direction, const Streams::InputStream<byte>::Ptr& realIn);
-
-    private:
-        class Rep_;
-
-    private:
-        //    using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
+        Streams::InputStream<byte>::Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<byte>::Ptr& realIn);
+        Streams::InputStream<byte>::Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
+                                             Direction direction, const Streams::InputStream<byte>::Ptr& realIn);
     };
 
     /**
@@ -142,26 +126,15 @@ namespace Stroika::Foundation::Cryptography::Encoding {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class OpenSSLOutputStream : public Streams::OutputStream<byte> {
-    public:
-        OpenSSLOutputStream ()                           = delete;
-        OpenSSLOutputStream (const OpenSSLOutputStream&) = delete;
+    namespace OpenSSLOutputStream {
 
-    public:
-        using typename OutputStream<byte>::Ptr;
-
-    public:
         /**
          */
-        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<byte>::Ptr& realOut);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
-                        Direction direction, const Streams::OutputStream<byte>::Ptr& realOut);
+        Streams::OutputStream<byte>::Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction,
+                                              const Streams::OutputStream<byte>::Ptr& realOut);
+        Streams::OutputStream<byte>::Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
+                                              Direction direction, const Streams::OutputStream<byte>::Ptr& realOut);
 
-    private:
-        class Rep_;
-
-    private:
-        //   using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
     };
 #endif
 
