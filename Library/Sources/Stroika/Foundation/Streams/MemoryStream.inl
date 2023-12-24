@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
 
     namespace Private_ {
         template <typename ELEMENT_TYPE>
-        class Rep_ : public InputOutputStream<ELEMENT_TYPE>::_IRep {
+        class Rep_ : public InputOutputStream::_IRep<ELEMENT_TYPE> {
         public:
             using ElementType = ELEMENT_TYPE;
 

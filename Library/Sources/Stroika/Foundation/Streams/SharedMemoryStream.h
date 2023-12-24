@@ -91,9 +91,9 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      */
     template <typename ELEMENT_TYPE>
-    class Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+    class Ptr : public InputOutputStream::Ptr<ELEMENT_TYPE> {
     private:
-        using inherited = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
+        using inherited = typename InputOutputStream::Ptr<ELEMENT_TYPE>;
 
     public:
         /**

@@ -24,19 +24,19 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
 
     template <typename ELEMENT_TYPE>
     /**
-         */
-    using Ptr = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
+     */
+    using Ptr = typename InputOutputStream::Ptr<ELEMENT_TYPE>;
 
     /**
-         *  \par Example Usage
-         *      \code
-         *      \endcode
-         */
+     *  \par Example Usage
+     *      \code
+     *      \endcode
+     */
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+    Ptr<ELEMENT_TYPE> New (const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream,
                            const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream,
                            const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
 
     template <typename ELEMENT_TYPE>

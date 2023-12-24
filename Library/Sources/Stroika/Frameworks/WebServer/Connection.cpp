@@ -48,7 +48,7 @@ using IO::Network::HTTP::KeepAlive;
  ******************** WebServer::Connection::MyMessage_ *************************
  ********************************************************************************
  */
-Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream,
+Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream::Ptr<byte>& socketStream,
                                     const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse)
     : Message{Request{socketStream}, Response{socket, socketStream, defaultResponseHeaders}, socket.GetPeerAddress ()}
     , fMsgHeaderInTextStream{HTTP::MessageStartTextInputStreamBinaryAdapter::New (rwRequest ().GetInputStream ())}

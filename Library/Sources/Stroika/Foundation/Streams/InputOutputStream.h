@@ -19,7 +19,14 @@
  *
  */
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::InputOutputStream {
+
+    template <typename ELEMENT_TYPE>
+    class Ptr;
+
+    // @todo must change name so no prefix _
+    template <typename ELEMENT_TYPE>
+    class _IRep;
 
     /**
      *  \note   Design Note:
@@ -35,34 +42,6 @@ namespace Stroika::Foundation::Streams {
      *      of the other side (such as @see MemoryStream), or where they are unrelated, such as with
      *      @see SocketStream.
      */
-    template <typename ELEMENT_TYPE>
-    class InputOutputStream : public InputStream<ELEMENT_TYPE>, public OutputStream<ELEMENT_TYPE> {
-    protected:
-        /**
-         *  'InputOutputStream' is a quasi-namespace:  use Ptr or New () members.
-         */
-        InputOutputStream ()                         = delete;
-        InputOutputStream (const InputOutputStream&) = delete;
-
-    public:
-        using ElementType = typename Stream<ELEMENT_TYPE>::ElementType;
-
-    public:
-        class Ptr;
-
-    protected:
-    public: // @todo must change name so no prefix _
-        class _IRep;
-
-    protected:
-        using _SharedIRep = shared_ptr<_IRep>;
-
-    protected:
-        /**
-         *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
-         */
-        static Ptr _mkPtr (const _SharedIRep& s);
-    };
 
     /**
      *  \brief  InputOutputStream is single stream object that acts much as a InputStream::Ptr and an OutputStream::Ptr.
@@ -86,13 +65,7 @@ namespace Stroika::Foundation::Streams {
      *      o   only operator== (nullptr_t) is supported
      */
     template <typename ELEMENT_TYPE>
-    class InputOutputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr, public OutputStream<ELEMENT_TYPE>::Ptr {
-    protected:
-        using _IRep = typename InputOutputStream<ELEMENT_TYPE>::_IRep;
-
-    protected:
-        using _SharedIRep = typename InputOutputStream<ELEMENT_TYPE>::_SharedIRep;
-
+    class Ptr : public InputStream<ELEMENT_TYPE>::Ptr, public OutputStream<ELEMENT_TYPE>::Ptr {
     public:
         /**
          *  defaults to null (aka empty ())
@@ -106,7 +79,7 @@ namespace Stroika::Foundation::Streams {
          *
          *  \req rep != nullptr (use nullptr_t constructor)
          */
-        Ptr (const _SharedIRep& rep);
+        Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep);
 
     public:
         /**
@@ -195,26 +168,26 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual _SharedIRep _GetSharedRep () const;
+        nonvirtual shared_ptr<_IRep<ELEMENT_TYPE>> _GetSharedRep () const;
 
     protected:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const _IRep& _GetRepConstRef () const;
+        nonvirtual const _IRep<ELEMENT_TYPE>& _GetRepConstRef () const;
 
     protected:
         /**
          * \req *this != nullptr
          */
-        nonvirtual _IRep& _GetRepRWRef () const;
+        nonvirtual _IRep<ELEMENT_TYPE>& _GetRepRWRef () const;
     };
 
     /**
      *
      */
     template <typename ELEMENT_TYPE>
-    class InputOutputStream<ELEMENT_TYPE>::_IRep : public InputStream<ELEMENT_TYPE>::_IRep, public OutputStream<ELEMENT_TYPE>::_IRep {
+    class _IRep : public InputStream<ELEMENT_TYPE>::_IRep, public OutputStream<ELEMENT_TYPE>::_IRep {
     public:
         using ElementType = ELEMENT_TYPE;
 

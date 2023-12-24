@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::Network::SocketStream {
      *            SocketStream::Ptr                   inOut = SocketStream::New (connectionSocket);
      *      \endcode
      */
-    using Ptr = Streams::InputOutputStream<byte>::Ptr;
+    using Ptr = Streams::InputOutputStream::Ptr<byte>;
     /**
      *  A SocketStream wraps a a socket as a InputOutputStream - two separate but related streams.
      *
@@ -44,16 +44,16 @@ namespace Stroika::Foundation::IO::Network::SocketStream {
      */
 
     /**
-         *  To copy a SocketStream, use SocketStream<T>::Ptr
-         *
-         *  \par Example Usage
-         *      \code
-         *           ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
-         *           SocketStream::Ptr                   socketStream = SocketStream::New (connectionSocket);
-         *           InputStream<byte>::Ptr              in  = BufferedInputStream::New<byte> (socketStream);  // not important, but a good idea, to avoid excessiveos read/write calls
-         *           OutputStream<byte>::Ptr             out = BufferedOutputStream::New<byte> (socketStream); // more important so we don't write multiple packets
-         *      \endcode
-         */
+     *  To copy a SocketStream, use SocketStream<T>::Ptr
+     *
+     *  \par Example Usage
+     *      \code
+     *           ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
+     *           SocketStream::Ptr                   socketStream = SocketStream::New (connectionSocket);
+     *           InputStream<byte>::Ptr              in  = BufferedInputStream::New<byte> (socketStream);  // not important, but a good idea, to avoid excessiveos read/write calls
+     *           OutputStream<byte>::Ptr             out = BufferedOutputStream::New<byte> (socketStream); // more important so we don't write multiple packets
+     *      \endcode
+     */
     Ptr New (Execution::InternallySynchronized internallySynchronized, const ConnectionOrientedStreamSocket::Ptr& sd);
     Ptr New (const ConnectionOrientedStreamSocket::Ptr& sd);
 

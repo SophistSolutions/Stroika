@@ -24,13 +24,13 @@ using namespace Stroika::Foundation::IO::Network;
  ********************* IO::Network::SocketStream::Rep_ **************************
  ********************************************************************************
  */
-class SocketStream::Rep_ : public InputOutputStream<byte>::_IRep {
+class SocketStream::Rep_ : public InputOutputStream::_IRep<byte> {
 public:
     bool           fOpenForRead_{true};
     bool           fOpenForWrite_{true};
     SeekOffsetType fReadSeekOffset_{};
     Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd)
-        : InputOutputStream<byte>::_IRep{}
+        : InputOutputStream::_IRep<byte>{}
         , fSD_{sd}
     {
     }

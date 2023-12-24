@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
     template <typename BASE_REP_TYPE, typename... ARGS>
-    typename InputOutputStream<typename BASE_REP_TYPE::ElementType>::Ptr New (ARGS&&... args);
+    typename InputOutputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (ARGS&&... args);
 
 }
 

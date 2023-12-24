@@ -18,11 +18,11 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class Rep_ final : public InputOutputStream<ELEMENT_TYPE>::_IRep {
+    class Rep_ final : public InputOutputStream::_IRep<ELEMENT_TYPE> {
     public:
-        Rep_ (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput,
+        Rep_ (const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput,
               const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
-            : InputOutputStream<ELEMENT_TYPE>::_IRep{}
+            : InputOutputStream::_IRep<ELEMENT_TYPE>{}
             , fRealStream_{realStream}
             , fLogInput_{logInput}
             , fLogOutput_{logOutput}
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
         }
 
     private:
-        typename InputOutputStream<ELEMENT_TYPE>::Ptr                  fRealStream_;
+        typename InputOutputStream::Ptr<ELEMENT_TYPE>                  fRealStream_;
         typename OutputStream<ELEMENT_TYPE>::Ptr                       fLogInput_;
         typename OutputStream<ELEMENT_TYPE>::Ptr                       fLogOutput_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
@@ -137,13 +137,13 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+    Ptr<ELEMENT_TYPE> New (const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream,
                            const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
     {
         return _mkPtr (make_shared<Rep_> (realStream, logInput, logOutput));
     }
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream,
                            const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
     {
         switch (internallySynchronized) {

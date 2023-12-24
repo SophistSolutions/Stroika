@@ -145,7 +145,7 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         struct MyMessage_ : Message {
-            MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream,
+            MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream::Ptr<byte>& socketStream,
                         const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse);
 
             // Only valid until the end of a successful ReadHeaders
@@ -170,7 +170,7 @@ namespace Stroika::Frameworks::WebServer {
         optional<Headers>                     fDefaultGETResponseHeaders_;
         optional<bool>                        fAutoComputeETagResponse_;
         ConnectionOrientedStreamSocket::Ptr   fSocket_;
-        Streams::InputOutputStream<byte>::Ptr fSocketStream_;
+        Streams::InputOutputStream::Ptr<byte> fSocketStream_;
         Time::TimePointSeconds                fConnectionStartedAt_{};
         unique_ptr<MyMessage_>                fMessage_; // always there, but ptr so it can be replaced
         optional<HTTP::KeepAlive>             fRemaining_;
