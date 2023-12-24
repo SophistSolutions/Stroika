@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Cryptography::Encoding {
         class Rep_;
 
     private:
-        using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
+        //    using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
     };
 
     /**
@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Cryptography::Encoding {
         class Rep_;
 
     private:
-        using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
+        //   using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
     };
 #endif
 

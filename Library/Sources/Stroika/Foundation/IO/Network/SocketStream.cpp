@@ -134,9 +134,7 @@ auto SocketStream::New (Execution::InternallySynchronized internallySynchronized
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            AssertNotImplemented ();
-            //
-            // @todo fix soon - return InternalSyncRep_::New (sd);
+            return InternallySynchronizedInputOutputStream::New<Rep_> (sd);
         case Execution::eNotKnownInternallySynchronized:
             return New (sd);
         default:

@@ -157,7 +157,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         class Rep_;
 
     private:
-        using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<byte, FileOutputStream, FileOutputStream::Rep_>;
+        //        using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<byte, FileOutputStream, FileOutputStream::Rep_>;
     };
 
     /**

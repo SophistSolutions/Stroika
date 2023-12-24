@@ -134,9 +134,6 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     private:
         class Rep_;
-
-    private:
-        using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<byte, FileInputStream, FileInputStream::Rep_>;
     };
 
     /**

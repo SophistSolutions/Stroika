@@ -22,40 +22,21 @@
  *
  */
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
 
     /**
+     *
+     *  \note   Uses mutex, not recursive_mutex internally, so be carefully about mutual recursion calls in UNSYNC_REP.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          Streams::InputStream<byte>::Ptr syncStream = Streams::InternallySynchronizedInputStream<byte>::New (otherInputStreamToBeSharedAcrossThread);
+     *      \endcode
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
-    template <typename ELEMENT_TYPE, typename BASE_CLASS = InputStream<ELEMENT_TYPE>, typename BASE_REP_TYPE = typename BASE_CLASS::_IRep>
-    class InternallySynchronizedInputStream : public BASE_CLASS {
-    private:
-        using inherited = BASE_CLASS;
-
-    public:
-        /**
-         *  'InternallySynchronizedInputStream' is a quasi-namespace: use Ptr or New () members.
-         */
-        InternallySynchronizedInputStream ()                                         = delete;
-        InternallySynchronizedInputStream (const InternallySynchronizedInputStream&) = delete;
-
-    public:
-        using typename inherited::Ptr;
-
-    public:
-        /**
-         *  \par Example Usage
-         *      \code
-         *          Streams::InputStream<byte>::Ptr syncStream = Streams::InternallySynchronizedInputStream<byte>::New (otherInputStreamToBeSharedAcrossThread);
-         *      \endcode
-         *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
-         */
-        template <typename... ARGS>
-        static Ptr New (ARGS&&... args);
-
-    private:
-        class Rep_;
-    };
+    template <typename BASE_REP_TYPE, typename... ARGS>
+    typename InputStream<typename BASE_REP_TYPE::ElementType>::Ptr New (ARGS&&... args);
 
 }
 
