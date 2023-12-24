@@ -41,6 +41,7 @@ using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
+using namespace Stroika::Foundation::IO::FileSystem::FileInputStream;
 
 using Streams::InputStream;
 using Streams::SeekOffsetType;
@@ -48,109 +49,108 @@ using Streams::SeekOffsetType;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-/*
- ********************************************************************************
- **************************** FileSystem::FileInputStream ***********************
- ********************************************************************************
- */
-class FileInputStream::Rep_ : public InputStream<byte>::_IRep, public Memory::UseBlockAllocationIfAppropriate<FileInputStream::Rep_> {
-public:
-    Rep_ ()            = delete;
-    Rep_ (const Rep_&) = delete;
-    Rep_ (const filesystem::path& fileName, SeekableFlag seekable)
-        : fFD_{-1}
-        , fSeekable_{seekable}
-        , fFileName_{fileName}
-    {
-        auto activity = LazyEvalActivity{
-            [&] () -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); }};
-        DeclareActivity currentActivity{&activity};
-#if qPlatform_Windows
-        errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
-        if (e != 0) {
-            FileSystem::Exception::ThrowPOSIXErrNo (e, fileName);
-        }
-        if (fFD_ == -1) {
-            FileSystem::Exception::ThrowSystemErrNo (fileName);
-        }
-#else
-        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.generic_string ().c_str (), O_RDONLY), fileName);
-#endif
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"opened fd: %d", fFD_);
-#endif
-    }
-    Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable)
-        : fFD_{fd}
-        , fSeekable_{seekable}
-        , fAdoptFDPolicy_{adoptFDPolicy}
-    {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"attached fd: %d", fFD_);
-#endif
-    }
-    ~Rep_ ()
-    {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{"FileInputStream::Rep_::~Rep_"};
-        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {
-            DbgTrace (L"closing %d", fFD_);
-        }
-#endif
-        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {
-#if qPlatform_Windows
-            ::_close (fFD_);
-#else
-            ::close (fFD_);
-#endif
-        }
-    }
-    nonvirtual Rep_& operator= (const Rep_&) = delete;
+namespace {
+    class Rep_ : public InputStream<byte>::_IRep /*, public Memory::UseBlockAllocationIfAppropriate<Rep_>*/ {       // @todo figure out why not working!!!
 
-    virtual bool IsSeekable () const override
-    {
-        return fSeekable_ == eSeekable;
-    }
-    virtual void CloseRead () override
-    {
-        Require (IsOpenRead ());
-        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
+
+
+    public:
+        Rep_ ()            = delete;
+        Rep_ (const Rep_&) = delete;
+        Rep_ (const filesystem::path& fileName, SeekableFlag seekable)
+            : fFD_{-1}
+            , fSeekable_{seekable}
+            , fFileName_{fileName}
+        {
+            auto activity = LazyEvalActivity{
+                [&] () -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); }};
+            DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
-            ::_close (fFD_);
+            errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
+            if (e != 0) {
+                FileSystem::Exception::ThrowPOSIXErrNo (e, fileName);
+            }
+            if (fFD_ == -1) {
+                FileSystem::Exception::ThrowSystemErrNo (fileName);
+            }
 #else
-            ::close (fFD_);
+            FileSystem::Exception::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.generic_string ().c_str (), O_RDONLY), fileName);
+#endif
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"opened fd: %d", fFD_);
 #endif
         }
-        fFD_ = -1;
-    }
-    virtual bool IsOpenRead () const override
-    {
-        return fFD_ >= 0;
-    }
-    virtual size_t Read (byte* intoStart, byte* intoEnd) override
-    {
-        RequireNotNull (intoStart);
-        RequireNotNull (intoEnd);
-        Require (intoStart < intoEnd);
-        size_t nRequested = intoEnd - intoStart;
+        Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable)
+            : fFD_{fd}
+            , fSeekable_{seekable}
+            , fAdoptFDPolicy_{adoptFDPolicy}
+        {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested)};
+            DbgTrace (L"attached fd: %d", fFD_);
 #endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        auto                                            readingFromFileActivity =
-            LazyEvalActivity{[&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); }};
-        DeclareActivity currentActivity{&readingFromFileActivity};
+        }
+        ~Rep_ ()
+        {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{"FileInputStream::Rep_::~Rep_"};
+            if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {
+                DbgTrace (L"closing %d", fFD_);
+            }
+#endif
+            if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {
 #if qPlatform_Windows
-        return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
+                ::_close (fFD_);
 #else
-        return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
+                ::close (fFD_);
 #endif
-    }
-    virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
-    {
-        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+            }
+        }
+        nonvirtual Rep_& operator= (const Rep_&) = delete;
+
+        virtual bool IsSeekable () const override
+        {
+            return fSeekable_ == eSeekable;
+        }
+        virtual void CloseRead () override
+        {
+            Require (IsOpenRead ());
+            if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
 #if qPlatform_Windows
-        /*
+                ::_close (fFD_);
+#else
+                ::close (fFD_);
+#endif
+            }
+            fFD_ = -1;
+        }
+        virtual bool IsOpenRead () const override
+        {
+            return fFD_ >= 0;
+        }
+        virtual size_t Read (byte* intoStart, byte* intoEnd) override
+        {
+            RequireNotNull (intoStart);
+            RequireNotNull (intoEnd);
+            Require (intoStart < intoEnd);
+            size_t nRequested = intoEnd - intoStart;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested)};
+#endif
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            auto                                            readingFromFileActivity = LazyEvalActivity{
+                [&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); }};
+            DeclareActivity currentActivity{&readingFromFileActivity};
+#if qPlatform_Windows
+            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
+#else
+            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
+#endif
+        }
+        virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
+        {
+            Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+#if qPlatform_Windows
+            /*
          *  For now, assume all FILE reads are already non-blocking. Not sure about this.
          *
          *  COULD use intptr_t _get_osfhandle (int fd);
@@ -166,89 +166,95 @@ public:
          *
          *  but windows doesn't appear to support fcntl()
          */
-        return Read (intoStart, intoEnd);
+            return Read (intoStart, intoEnd);
 #elif qPlatform_POSIX
-        pollfd pollData{fFD_, POLLIN, 0};
-        int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
-        Assert (pollResult >= 0);
-        if (pollResult == 0) {
-            return nullopt; // if no data available, return nullopt
-        }
-        else {
-            // we don't know how much is available, but at least one byte. If not actually reading, just return 1
-            if (intoStart == nullptr) {
-                return 1;
+            pollfd pollData{fFD_, POLLIN, 0};
+            int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
+            Assert (pollResult >= 0);
+            if (pollResult == 0) {
+                return nullopt; // if no data available, return nullopt
             }
             else {
-                // if there is data available, read as much as you can...
-                return Read (intoStart, intoEnd);
-            }
-        }
-#endif
-        return {};
-    }
-    virtual Streams::SeekOffsetType GetReadOffset () const override
-    {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-#if qPlatform_Windows
-        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
-#elif qPlatform_Linux
-        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
-#else
-        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
-#endif
-    }
-    virtual Streams::SeekOffsetType SeekRead (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
-    {
-        using namespace Streams;
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::SeekRead", L"whence: %d, offset: %lld", whence, static_cast<long long> (offset)};
-#endif
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        switch (whence) {
-            case Whence::eFromStart: {
-                if (offset < 0) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
+                // we don't know how much is available, but at least one byte. If not actually reading, just return 1
+                if (intoStart == nullptr) {
+                    return 1;
                 }
-#if qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
-#elif qPlatform_Linux
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
-#else
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
+                else {
+                    // if there is data available, read as much as you can...
+                    return Read (intoStart, intoEnd);
+                }
+            }
 #endif
-            } break;
-            case Whence::eFromCurrent: {
-#if qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
-#elif qPlatform_Linux
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
-#else
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
-#endif
-            } break;
-            case Whence::eFromEnd: {
-#if qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
-#elif qPlatform_Linux
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
-#else
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
-#endif
-            } break;
+            return {};
         }
-        RequireNotReached ();
-        return 0;
-    }
+        virtual Streams::SeekOffsetType GetReadOffset () const override
+        {
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+#if qPlatform_Windows
+            return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
+#elif qPlatform_Linux
+            return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
+#else
+            return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
+#endif
+        }
+        virtual Streams::SeekOffsetType SeekRead (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
+        {
+            using namespace Streams;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::SeekRead", L"whence: %d, offset: %lld", whence, static_cast<long long> (offset)};
+#endif
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            switch (whence) {
+                case Whence::eFromStart: {
+                    if (offset < 0) [[unlikely]] {
+                        Execution::Throw (range_error{"seek"});
+                    }
+#if qPlatform_Windows
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
+#elif qPlatform_Linux
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
+#endif
+                } break;
+                case Whence::eFromCurrent: {
+#if qPlatform_Windows
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
+#elif qPlatform_Linux
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
+#endif
+                } break;
+                case Whence::eFromEnd: {
+#if qPlatform_Windows
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
+#elif qPlatform_Linux
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
+#endif
+                } break;
+            }
+            RequireNotReached ();
+            return 0;
+        }
 
-private:
-    int                                                     fFD_;
-    SeekableFlag                                            fSeekable_;
-    AdoptFDPolicy                                           fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-    optional<filesystem::path>                              fFileName_;
-    [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
-};
+    private:
+        int                                                     fFD_;
+        SeekableFlag                                            fSeekable_;
+        AdoptFDPolicy                                           fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+        optional<filesystem::path>                              fFileName_;
+        [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+    };
+}
 
+/*
+ ********************************************************************************
+ **************************** FileSystem::FileInputStream ***********************
+ ********************************************************************************
+ */
 auto FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable) -> Ptr
 {
     return Ptr{Memory::MakeSharedPtr<Rep_> (fileName, seekable)};
@@ -263,12 +269,12 @@ auto FileInputStream::New (Execution::InternallySynchronized internallySynchroni
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            AssertNotImplemented (); //            return InternalSyncRep_::New (fileName, seekable);
+            return Streams::InternallySynchronizedInputStream::New<Rep_> (fileName, seekable);
         case Execution::eNotKnownInternallySynchronized:
             return New (fileName, seekable);
         default:
             RequireNotReached ();
-            return New (fileName, seekable);
+            return Ptr{};
     }
 }
 
@@ -277,7 +283,7 @@ auto FileInputStream::New (Execution::InternallySynchronized internallySynchroni
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            AssertNotImplemented (); //         return InternalSyncRep_::New (fd, adoptFDPolicy, seekable);
+            return Streams::InternallySynchronizedInputStream::New<Rep_> (fd, adoptFDPolicy, seekable);
         case Execution::eNotKnownInternallySynchronized:
             return New (fd, adoptFDPolicy, seekable);
         default:
@@ -319,14 +325,4 @@ InputStream<byte>::Ptr FileInputStream::New (FileDescriptorType fd, AdoptFDPolic
             AssertNotReached ();
             return in;
     }
-}
-
-/*
- ********************************************************************************
- ******************** IO::FileSystem::FileInputStream::Ptr **********************
- ********************************************************************************
- */
-IO::FileSystem::FileInputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
-    : inherited{from}
-{
 }

@@ -10,7 +10,6 @@
 
 #include "../../Characters/String.h"
 #include "../../Streams/InputStream.h"
-#include "../../Streams/InternallySynchronizedInputStream.h"
 
 #include "Common.h"
 
@@ -40,10 +39,12 @@
  *              for reads - if caller does lots of little reads.
  */
 
-namespace Stroika::Foundation::IO::FileSystem {
+namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
 
     using Characters::String;
+    using namespace FileStream;
 
+    using Ptr = Streams::InputStream<byte>::Ptr;
     /**
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
@@ -53,113 +54,68 @@ namespace Stroika::Foundation::IO::FileSystem {
      *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
      *          but then the results are 'on you.
      */
-    class FileInputStream : public Streams::InputStream<byte>, public FileStream {
-    public:
-        FileInputStream ()                       = delete;
-        FileInputStream (const FileInputStream&) = delete;
 
-    public:
-        /**
-         */
-        enum class BufferFlag {
-            eBuffered,
-            eUnbuffered,
+    /**
+     */
+    enum class BufferFlag {
+        eBuffered,
+        eUnbuffered,
 
-            Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
-        };
-
-    public:
-        /**
-         */
-        static constexpr BufferFlag eBuffered = BufferFlag::eBuffered;
-
-    public:
-        /**
-         */
-        static constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
-
-    public:
-        /**
-         */
-        static constexpr BufferFlag kBufferFlag_DEFAULT = BufferFlag::eBuffered;
-
-    public:
-        /**
-         */
-        using SeekableFlag = Streams::SeekableFlag;
-
-    public:
-        /**
-         */
-        static constexpr SeekableFlag eSeekable = SeekableFlag::eSeekable;
-
-    public:
-        /**
-         */
-        static constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
-
-    public:
-        /**
-         *  \note - prior to v2.1d27, this defaulted to unseekable, but for files, it makes way more sense to default to seekable, since
-         *        doing so typically costs nothing, and is pretty commonly useful.
-         */
-        static constexpr SeekableFlag kSeekableFlag_DEFAULT = SeekableFlag::eSeekable;
-
-    public:
-        class Ptr;
-
-    public:
-        /**
-         *  The static New method is like a constructor, but it constructs a smart pointer of some appropriate subtype defined by its parameters.
-         *
-         *  The New overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
-         *
-         *  \req fd is a valid file descriptor (for that overload)
-         *
-         *  \par Example Usage
-         *      \code
-         *          Ptr stream = FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable);
-         *      \endcode
-         */
-        static Ptr New (const filesystem::path& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
-        static Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
-        static Ptr                    New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName,
-                                           SeekableFlag seekable = kSeekableFlag_DEFAULT);
-        static Ptr                    New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd,
-                                           AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
-        static InputStream<byte>::Ptr New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
-        static InputStream<byte>::Ptr New (const filesystem::path& fileName, BufferFlag bufferFlag);
-        static InputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
-        static InputStream<byte>::Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
-
-    private:
-        class Rep_;
+        Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
     };
 
     /**
-     *  Ptr is a copyable smart pointer to a FileInputStream.
      */
-    class FileInputStream::Ptr : public Streams::InputStream<byte>::Ptr {
-    private:
-        using inherited = Streams::InputStream<byte>::Ptr;
+    constexpr BufferFlag eBuffered = BufferFlag::eBuffered;
 
-    public:
-        /**
-         *  \par Example Usage
-         *      \code
-         *          Memory::BLOB b = IO::FileSystem::FileInputStream::Ptr{ IO::FileSystem::FileInputStream (fileName) }.ReadAll ();
-         *      \endcode
-         */
-        Ptr ()                = delete;
-        Ptr (const Ptr& from) = default;
-        Ptr (const shared_ptr<Rep_>& from);
+    /**
+     */
+    constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 
-    public:
-        nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+    /**
+     */
+    constexpr BufferFlag kBufferFlag_DEFAULT = BufferFlag::eBuffered;
 
-    private:
-        friend class FileInputStream;
-    };
+    /**
+     */
+    using SeekableFlag = Streams::SeekableFlag;
+
+    /**
+     */
+    constexpr SeekableFlag eSeekable = SeekableFlag::eSeekable;
+
+    /**
+     */
+    constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
+
+    /**
+     *  \note - prior to v2.1d27, this defaulted to unseekable, but for files, it makes way more sense to default to seekable, since
+     *        doing so typically costs nothing, and is pretty commonly useful.
+     */
+    constexpr SeekableFlag kSeekableFlag_DEFAULT = SeekableFlag::eSeekable;
+
+    /**
+     *  The static New method is like a constructor, but it constructs a smart pointer of some appropriate subtype defined by its parameters.
+     *
+     *  The New overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
+     *
+     *  \req fd is a valid file descriptor (for that overload)
+     *
+     *  \par Example Usage
+     *      \code
+     *          Ptr stream = FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable);
+     *      \endcode
+     */
+    Ptr New (const filesystem::path& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+    Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+    Ptr New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+    Ptr                             New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd,
+                                         AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+    Streams::InputStream<byte>::Ptr New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
+    Streams::InputStream<byte>::Ptr New (const filesystem::path& fileName, BufferFlag bufferFlag);
+    Streams::InputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
+    Streams::InputStream<byte>::Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
+
 }
 
 /*

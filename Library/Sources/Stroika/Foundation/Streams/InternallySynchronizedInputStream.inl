@@ -14,7 +14,6 @@
 namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
 
     namespace Private_ {
-
         template <typename BASE_REP_TYPE>
         class Rep_ final : public BASE_REP_TYPE, public Memory::UseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE>> {
         public:

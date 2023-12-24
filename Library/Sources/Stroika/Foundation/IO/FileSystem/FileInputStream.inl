@@ -9,18 +9,18 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation::IO::FileSystem {
+namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
 
     /*
      ********************************************************************************
      ********************************** FileInputStream *****************************
      ********************************************************************************
      */
-    inline Streams::InputStream<byte>::Ptr FileInputStream::New (const filesystem::path& fileName, BufferFlag bufferFlag)
+    inline Streams::InputStream<byte>::Ptr New (const filesystem::path& fileName, BufferFlag bufferFlag)
     {
         return New (fileName, kSeekableFlag_DEFAULT, bufferFlag);
     }
-    inline Streams::InputStream<byte>::Ptr FileInputStream::New (FileDescriptorType fd, BufferFlag bufferFlag)
+    inline Streams::InputStream<byte>::Ptr New (FileDescriptorType fd, BufferFlag bufferFlag)
     {
         return New (fd, AdoptFDPolicy::eDEFAULT, SeekableFlag::eSeekable, bufferFlag);
     }

@@ -31,6 +31,7 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation:: IO::FileSystem;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
@@ -39,7 +40,6 @@ using Characters::Character;
 using Containers::Mapping;
 using Containers::Sequence;
 using Containers::Set;
-using IO::FileSystem::FileInputStream;
 
 using Instruments::Memory::Info;
 using Instruments::Memory::Options;

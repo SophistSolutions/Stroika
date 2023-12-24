@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation::IO::FileSystem {
+namespace Stroika::Foundation::IO::FileSystem::FileStream {
 }
 
 namespace Stroika::Foundation::Configuration {

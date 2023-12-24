@@ -67,7 +67,6 @@ using namespace Stroika::Frameworks::SystemPerformance::Instruments;
 
 using std::byte;
 
-using IO::FileSystem::FileInputStream;
 using Time::DurationSeconds;
 using Time::TimePointSeconds;
 

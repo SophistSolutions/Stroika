@@ -57,7 +57,6 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
 
 using Characters::String2Int;
-using IO::FileSystem::FileInputStream;
 
 using Instruments::Filesystem::BlockDeviceKind;
 using Instruments::Filesystem::DiskInfoType;

@@ -23,6 +23,7 @@
 #if qPlatform_Windows
 #include "../../Execution/Platform/Windows/Exception.h"
 #endif
+#include "../../Streams/InternallySynchronizedOutputStream.h"
 
 #include "Exception.h"
 
@@ -36,6 +37,7 @@ using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
+using namespace Stroika::Foundation::IO::FileSystem::FileOutputStream;
 
 using Execution::ThrowPOSIXErrNo;
 using Execution::ThrowPOSIXErrNoIfNegative;
@@ -45,204 +47,207 @@ using Execution::ThrowSystemErrNo;
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
+namespace {
+    class Rep_ : public Streams::OutputStream<byte>::_IRep /*, public Memory::UseBlockAllocationIfAppropriate<Rep_>*/ {
+    public:
+        Rep_ ()            = delete;
+        Rep_ (const Rep_&) = delete;
+        Rep_ (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
+            : fFD_{-1}
+            , fFlushFlag{flushFlag}
+            , fFileName_{fileName}
+        {
+            auto            activity = LazyEvalActivity ([&] () -> String {
+                return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ());
+            });
+            DeclareActivity currentActivity{&activity};
+#if qPlatform_Windows
+            int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
+            errno_t e = ::_wsopen_s (&fFD_, fileName.generic_wstring ().c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or,
+                                     _SH_DENYNO, _S_IREAD | _S_IWRITE);
+            if (e != 0) {
+                FileSystem::Exception::ThrowPOSIXErrNo (e, fileName);
+            }
+            if (fFD_ == -1) {
+                FileSystem::Exception::ThrowSystemErrNo (fileName);
+            }
+#else
+            int          appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
+            const mode_t kCreateMode_  = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+            FileSystem::Exception::ThrowPOSIXErrNoIfNegative (
+                fFD_ = ::open (fileName.generic_string ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_), fileName);
+#endif
+        }
+        Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
+            : fFD_{fd}
+            , fFlushFlag{flushFlag}
+            , fAdoptFDPolicy_{adoptFDPolicy}
+            , fSeekable_{seekableFlag == SeekableFlag::eSeekable}
+        {
+        }
+        ~Rep_ ()
+        {
+            IgnoreExceptionsForCall (Flush ()); // for fFlushFlag == FlushFlag::eToDisk
+            if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenWrite ()) {
+#if qPlatform_Windows
+                ::_close (fFD_);
+#else
+                ::close (fFD_);
+#endif
+            }
+        }
+        nonvirtual Rep_& operator= (const Rep_&) = delete;
+        virtual bool     IsSeekable () const override
+        {
+            return fSeekable_;
+        }
+        virtual void CloseWrite () override
+        {
+            Require (IsOpenWrite ());
+            if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
+#if qPlatform_Windows
+                ::_close (fFD_);
+#else
+                ::close (fFD_);
+#endif
+            }
+            fFD_ = -1;
+        }
+        virtual bool IsOpenWrite () const override
+        {
+            return fFD_ >= 0;
+        }
+        virtual void Write (const byte* start, const byte* end) override
+        {
+            Require (start != nullptr or start == end);
+            Require (end != nullptr or start == end);
+
+            if (start != end) [[likely]] {
+                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                auto                                            activity = LazyEvalActivity (
+                    [&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
+                DeclareActivity currentActivity{&activity};
+                const byte*     i = start;
+                while (i < end) {
+#if qPlatform_Windows
+                    int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
+#else
+                    int n = ThrowPOSIXErrNoIfNegative (write (fFD_, i, end - i));
+#endif
+                    Assert (n <= (end - i));
+                    i += n;
+                }
+            }
+        }
+        virtual void Flush () override
+        {
+            // normally nothing todo - write 'writes thru' (except if fFlushFlag)
+            if (fFlushFlag == FlushFlag::eToDisk) {
+                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                auto                                            activity = LazyEvalActivity (
+                    [&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
+                DeclareActivity currentActivity{&activity};
+#if qPlatform_POSIX
+                ThrowPOSIXErrNoIfNegative (::fsync (fFD_));
+#elif qPlatform_Windows
+                ThrowIfZeroGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
+#else
+                AssertNotImplemented ();
+#endif
+            }
+        }
+        virtual Streams::SeekOffsetType GetWriteOffset () const override
+        {
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+#if qPlatform_Linux
+            return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
+#elif qPlatform_Windows
+            return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
+#else
+            return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
+#endif
+        }
+        virtual Streams::SeekOffsetType SeekWrite (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
+        {
+            Require (fSeekable_);
+            using namespace Streams;
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            switch (whence) {
+                case Whence::eFromStart: {
+                    if (offset < 0) [[unlikely]] {
+                        Execution::Throw (range_error{"seek"});
+                    }
+#if qPlatform_Linux
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
+#elif qPlatform_Windows
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
+#endif
+                } break;
+                case Whence::eFromCurrent: {
+#if qPlatform_Linux
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
+#elif qPlatform_Windows
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
+#endif
+                } break;
+                case Whence::eFromEnd: {
+#if qPlatform_Linux
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
+#elif qPlatform_Windows
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
+#endif
+                } break;
+            }
+            RequireNotReached ();
+            return 0;
+        }
+
+    private:
+        int                                                     fFD_;
+        FlushFlag                                               fFlushFlag;
+        AdoptFDPolicy                                           fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+        bool                                                    fSeekable_{true};
+        optional<filesystem::path>                              fFileName_;
+        [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+    };
+}
+
 /*
  ********************************************************************************
  ************************* FileSystem::FileOutputStream *************************
  ********************************************************************************
  */
-class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep, public Memory::UseBlockAllocationIfAppropriate<FileOutputStream::Rep_> {
-public:
-    Rep_ ()            = delete;
-    Rep_ (const Rep_&) = delete;
-    Rep_ (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
-        : fFD_{-1}
-        , fFlushFlag{flushFlag}
-        , fFileName_{fileName}
-    {
-        auto activity = LazyEvalActivity (
-            [&] () -> String { return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ()); });
-        DeclareActivity currentActivity{&activity};
-#if qPlatform_Windows
-        int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
-        errno_t e = ::_wsopen_s (&fFD_, fileName.generic_wstring ().c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO,
-                                 _S_IREAD | _S_IWRITE);
-        if (e != 0) {
-            FileSystem::Exception::ThrowPOSIXErrNo (e, fileName);
-        }
-        if (fFD_ == -1) {
-            FileSystem::Exception::ThrowSystemErrNo (fileName);
-        }
-#else
-        int          appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
-        const mode_t kCreateMode_  = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (
-            fFD_ = ::open (fileName.generic_string ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_), fileName);
-#endif
-    }
-    Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
-        : fFD_{fd}
-        , fFlushFlag{flushFlag}
-        , fAdoptFDPolicy_{adoptFDPolicy}
-        , fSeekable_{seekableFlag == SeekableFlag::eSeekable}
-    {
-    }
-    ~Rep_ ()
-    {
-        IgnoreExceptionsForCall (Flush ()); // for fFlushFlag == FlushFlag::eToDisk
-        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenWrite ()) {
-#if qPlatform_Windows
-            ::_close (fFD_);
-#else
-            ::close (fFD_);
-#endif
-        }
-    }
-    nonvirtual Rep_& operator= (const Rep_&) = delete;
-    virtual bool     IsSeekable () const override
-    {
-        return fSeekable_;
-    }
-    virtual void CloseWrite () override
-    {
-        Require (IsOpenWrite ());
-        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
-#if qPlatform_Windows
-            ::_close (fFD_);
-#else
-            ::close (fFD_);
-#endif
-        }
-        fFD_ = -1;
-    }
-    virtual bool IsOpenWrite () const override
-    {
-        return fFD_ >= 0;
-    }
-    virtual void Write (const byte* start, const byte* end) override
-    {
-        Require (start != nullptr or start == end);
-        Require (end != nullptr or start == end);
-
-        if (start != end) [[likely]] {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            auto                                            activity = LazyEvalActivity (
-                [&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
-            DeclareActivity currentActivity{&activity};
-            const byte*     i = start;
-            while (i < end) {
-#if qPlatform_Windows
-                int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
-#else
-                int n = ThrowPOSIXErrNoIfNegative (write (fFD_, i, end - i));
-#endif
-                Assert (n <= (end - i));
-                i += n;
-            }
-        }
-    }
-    virtual void Flush () override
-    {
-        // normally nothing todo - write 'writes thru' (except if fFlushFlag)
-        if (fFlushFlag == FlushFlag::eToDisk) {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            auto                                            activity = LazyEvalActivity (
-                [&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
-            DeclareActivity currentActivity{&activity};
-#if qPlatform_POSIX
-            ThrowPOSIXErrNoIfNegative (::fsync (fFD_));
-#elif qPlatform_Windows
-            ThrowIfZeroGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (::_get_osfhandle (fFD_))));
-#else
-            AssertNotImplemented ();
-#endif
-        }
-    }
-    virtual Streams::SeekOffsetType GetWriteOffset () const override
-    {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-#if qPlatform_Linux
-        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
-#elif qPlatform_Windows
-        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
-#else
-        return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, 0, SEEK_CUR)));
-#endif
-    }
-    virtual Streams::SeekOffsetType SeekWrite (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
-    {
-        Require (fSeekable_);
-        using namespace Streams;
-        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        switch (whence) {
-            case Whence::eFromStart: {
-                if (offset < 0) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
-                }
-#if qPlatform_Linux
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
-#elif qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
-#else
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_SET)));
-#endif
-            } break;
-            case Whence::eFromCurrent: {
-#if qPlatform_Linux
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
-#elif qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
-#else
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_CUR)));
-#endif
-            } break;
-            case Whence::eFromEnd: {
-#if qPlatform_Linux
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
-#elif qPlatform_Windows
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
-#else
-                return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek (fFD_, offset, SEEK_END)));
-#endif
-            } break;
-        }
-        RequireNotReached ();
-        return 0;
-    }
-
-private:
-    int                                                     fFD_;
-    FlushFlag                                               fFlushFlag;
-    AdoptFDPolicy                                           fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-    bool                                                    fSeekable_{true};
-    optional<filesystem::path>                              fFileName_;
-    [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
-};
-
 auto FileOutputStream::New (const filesystem::path& fileName, FlushFlag flushFlag) -> Ptr
 {
-    return Memory::MakeSharedPtr<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag);
+    return Ptr{Memory::MakeSharedPtr<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag)};
 }
 
 auto FileOutputStream::New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
 {
-    return Memory::MakeSharedPtr<Rep_> (fileName, appendFlag, flushFlag);
+    return Ptr{Memory::MakeSharedPtr<Rep_> (fileName, appendFlag, flushFlag)};
 }
 
 auto FileOutputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag) -> Ptr
 {
-    return Memory::MakeSharedPtr<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag);
+    return Ptr{Memory::MakeSharedPtr<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag)};
 }
 
 auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, FlushFlag flushFlag) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            AssertNotReached (); //     return Streams::InternallySynchronizedOutputStream::New<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag);
+            return Streams::InternallySynchronizedOutputStream::New<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag);
         case Execution::eNotKnownInternallySynchronized:
             return New (fileName, AppendFlag::eDEFAULT, flushFlag);
         default:
             RequireNotReached ();
-            return New (fileName, AppendFlag::eDEFAULT, flushFlag);
+            return Ptr{};
     }
 }
 
@@ -251,12 +256,12 @@ auto FileOutputStream::New (Execution::InternallySynchronized internallySynchron
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            AssertNotReached (); //        return Streams::InternallySynchronizedOutputStream::New<Rep_> (fileName, appendFlag, flushFlag);
+            return Streams::InternallySynchronizedOutputStream::New<Rep_> (fileName, appendFlag, flushFlag);
         case Execution::eNotKnownInternallySynchronized:
             return New (fileName, appendFlag, flushFlag);
         default:
             RequireNotReached ();
-            return New (fileName, appendFlag, flushFlag);
+            return Ptr{};
     }
 }
 
@@ -265,21 +270,11 @@ auto FileOutputStream::New (Execution::InternallySynchronized internallySynchron
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            AssertNotReached (); //         return Streams::InternallySynchronizedOutputStream::New<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag);
+            return Streams::InternallySynchronizedOutputStream::New<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag);
         case Execution::eNotKnownInternallySynchronized:
             return New (fd, adoptFDPolicy, seekableFlag, flushFlag);
         default:
             RequireNotReached ();
-            return New (fd, adoptFDPolicy, seekableFlag, flushFlag);
+            return Ptr{};
     }
-}
-
-/*
- ********************************************************************************
- ******************** IO::FileSystem::FileOutputStream::Ptr *********************
- ********************************************************************************
- */
-IO::FileSystem::FileOutputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
-    : inherited{from}
-{
 }

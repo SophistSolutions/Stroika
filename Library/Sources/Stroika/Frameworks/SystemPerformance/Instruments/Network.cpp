@@ -47,7 +47,6 @@ using Characters::Character;
 using Containers::Mapping;
 using Containers::Sequence;
 using Containers::Set;
-using IO::FileSystem::FileInputStream;
 using Time::DurationSeconds;
 using Time::TimePointSeconds;
 
