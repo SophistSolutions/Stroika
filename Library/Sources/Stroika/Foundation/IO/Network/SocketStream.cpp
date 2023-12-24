@@ -127,28 +127,20 @@ private:
  */
 auto SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
 {
-    return make_shared<Rep_> (sd);
+    return Ptr{make_shared<Rep_> (sd)};
 }
 
 auto SocketStream::New (Execution::InternallySynchronized internallySynchronized, const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            return InternalSyncRep_::New (sd);
+            AssertNotImplemented ();
+            //
+            // @todo fix soon - return InternalSyncRep_::New (sd);
         case Execution::eNotKnownInternallySynchronized:
             return New (sd);
         default:
             RequireNotReached ();
             return nullptr;
     }
-}
-
-/*
- ********************************************************************************
- ******************** IO::Network::SocketStream::Ptr ****************************
- ********************************************************************************
- */
-SocketStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
-    : inherited{from}
-{
 }

@@ -101,8 +101,6 @@ namespace Stroika::Foundation::Streams {
         Ptr (nullptr_t);
         Ptr (const Ptr&) = default;
         Ptr (Ptr&&)      = default;
-
-    protected:
         /**
          * _SharedIRep rep is the underlying shared output Stream object.
          *

@@ -19,8 +19,16 @@
  *
  */
 
-namespace Stroika::Foundation::IO::Network {
+namespace Stroika::Foundation::IO::Network::SocketStream {
 
+    /**
+     *  \par Example Usage
+     *      \code
+     *            ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
+     *            SocketStream::Ptr                   inOut = SocketStream::New (connectionSocket);
+     *      \endcode
+     */
+    using Ptr = Streams::InputOutputStream<byte>::Ptr;
     /**
      *  A SocketStream wraps a a socket as a InputOutputStream - two separate but related streams.
      *
@@ -34,16 +42,8 @@ namespace Stroika::Foundation::IO::Network {
      *              If you call close on only one side of the input stream, Shutdown () will be used to shutdown
      *              just that end of the stream.
      */
-    class SocketStream : public Streams::InputOutputStream<byte> {
-    public:
-        SocketStream ()                    = delete;
-        SocketStream (const SocketStream&) = delete;
 
-    public:
-        class Ptr;
-
-    public:
-        /**
+    /**
          *  To copy a SocketStream, use SocketStream<T>::Ptr
          *
          *  \par Example Usage
@@ -54,54 +54,14 @@ namespace Stroika::Foundation::IO::Network {
          *           OutputStream<byte>::Ptr             out = BufferedOutputStream::New<byte> (socketStream); // more important so we don't write multiple packets
          *      \endcode
          */
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const ConnectionOrientedStreamSocket::Ptr& sd);
-        static Ptr New (const ConnectionOrientedStreamSocket::Ptr& sd);
+    Ptr New (Execution::InternallySynchronized internallySynchronized, const ConnectionOrientedStreamSocket::Ptr& sd);
+    Ptr New (const ConnectionOrientedStreamSocket::Ptr& sd);
 
-    private:
-        class Rep_;
+    class Rep_;
 
-    protected:
-        /**
-         *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
-         */
-        static Ptr _mkPtr (const shared_ptr<Rep_>& s);
-
-    private:
+#if 0
         using InternalSyncRep_ = Streams::InternallySynchronizedInputOutputStream<byte, SocketStream, SocketStream::Rep_>;
-    };
-
-    /**
-     *  Ptr is a copyable smart pointer to an underlying stream-rep.
-     *
-     *  TODO:
-     *      @todo add method to retrieve underlying socket
-     */
-    class SocketStream::Ptr : public InputOutputStream<byte>::Ptr {
-    private:
-        using inherited = InputOutputStream<byte>::Ptr;
-
-    public:
-        /**
-         *  \par Example Usage
-         *      \code
-         *            ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
-         *            SocketStream::Ptr                   inOut = SocketStream::New (connectionSocket);
-         *      \endcode
-         */
-        Ptr ()                = default;
-        Ptr (const Ptr& from) = default;
-        Ptr (nullptr_t);
-
-    protected:
-        Ptr (const shared_ptr<Rep_>& from);
-
-    public:
-        nonvirtual Ptr& operator= (Ptr&& rhs)      = default;
-        nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-    private:
-        friend class SocketStream;
-    };
+#endif
 
 }
 
