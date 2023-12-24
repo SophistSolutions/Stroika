@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
      *  Taken an existing binary output stream, and wrap it with decryption, so that stuff written
      *  to the returned output stream is decrypted before being passed to the argument output stream.
      */
-    Streams::OutputStream<byte>::Ptr AESDecoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<byte>::Ptr& out,
+    Streams::OutputStream::Ptr<byte> AESDecoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream::Ptr<byte>& out,
                                                  AESOptions options = AESOptions::eDEFAULT);
 #endif
 
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
      *  Taken an existing binary output stream, and wrap it with encpytion, so that stuff written
      *  to the returned output stream is encrpted before being passed to the argument output stream.
      */
-    Streams::OutputStream<byte>::Ptr AESEncoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<byte>::Ptr& out,
+    Streams::OutputStream::Ptr<byte> AESEncoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream::Ptr<byte>& out,
                                                  AESOptions options = AESOptions::eDEFAULT);
 #endif
 

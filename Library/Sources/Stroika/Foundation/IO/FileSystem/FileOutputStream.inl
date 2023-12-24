@@ -19,7 +19,7 @@ namespace Stroika::Foundation::IO::FileSystem::FileOutputStream {
      ******************************* FileOutputStream *******************************
      ********************************************************************************
      */
-    inline Streams::OutputStream<byte>::Ptr New (const filesystem::path& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
+    inline Streams::OutputStream::Ptr<byte> New (const filesystem::path& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {
             return Streams::BufferedOutputStream::New<byte> (FileOutputStream::New (fileName, flushFlag));
@@ -28,7 +28,7 @@ namespace Stroika::Foundation::IO::FileSystem::FileOutputStream {
             return New (fileName, flushFlag);
         }
     }
-    inline Streams::OutputStream<byte>::Ptr New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
+    inline Streams::OutputStream::Ptr<byte> New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {
             return Streams::BufferedOutputStream::New<byte> (New (fileName, appendFlag, flushFlag));
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::IO::FileSystem::FileOutputStream {
             return New (fileName, appendFlag, flushFlag);
         }
     }
-    inline Streams::OutputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag,
+    inline Streams::OutputStream::Ptr<byte> New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag,
                                                  FlushFlag flushFlag, BufferFlag bufferedFlag)
     {
         if (bufferedFlag == eBuffered) {

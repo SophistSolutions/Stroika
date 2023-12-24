@@ -42,8 +42,8 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
          *        able to overload on return type).
          */
         using inherited::Write;
-        nonvirtual void Write (const Profile& profile, const Streams::OutputStream<byte>::Ptr& out);
-        nonvirtual void Write (const Profile& profile, const Streams::OutputStream<Characters::Character>::Ptr& out);
+        nonvirtual void Write (const Profile& profile, const Streams::OutputStream::Ptr<byte>& out);
+        nonvirtual void Write (const Profile& profile, const Streams::OutputStream::Ptr<Characters::Character>& out);
         nonvirtual void Write (const Profile& profile, ostream& out);
         nonvirtual void Write (const Profile& profile, wostream& out);
 

@@ -395,7 +395,7 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  ********************************************************************************
  */
 ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in,
-                              const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
+                              const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
     : fCommandLine_{commandLine}
     , fExecutable_{}
     , fStdIn_{in}
@@ -405,7 +405,7 @@ ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStr
 }
 
 ProcessRunner::ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in,
-                              const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
+                              const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
     : fExecutable_{executable}
     , fArgs_{args}
     , fStdIn_{in}
@@ -461,25 +461,25 @@ void ProcessRunner::SetStdIn (const Memory::BLOB& in)
     fStdIn_ = in.As<Streams::InputStream<byte>::Ptr> ();
 }
 
-Streams::OutputStream<byte>::Ptr ProcessRunner::GetStdOut () const
+Streams::OutputStream::Ptr<byte> ProcessRunner::GetStdOut () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareWriteContext{fThisAssertExternallySynchronized_};
     return fStdOut_;
 }
 
-void ProcessRunner::SetStdOut (const Streams::OutputStream<byte>::Ptr& out)
+void ProcessRunner::SetStdOut (const Streams::OutputStream::Ptr<byte>& out)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     fStdOut_ = out;
 }
 
-Streams::OutputStream<byte>::Ptr ProcessRunner::GetStdErr () const
+Streams::OutputStream::Ptr<byte> ProcessRunner::GetStdErr () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     return fStdErr_;
 }
 
-void ProcessRunner::SetStdErr (const Streams::OutputStream<byte>::Ptr& err)
+void ProcessRunner::SetStdErr (const Streams::OutputStream::Ptr<byte>& err)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     fStdErr_ = err;
@@ -518,7 +518,7 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     Streams::InputStream<byte>::Ptr                 oldStdIn  = GetStdIn ();
-    Streams::OutputStream<byte>::Ptr                oldStdOut = GetStdOut ();
+    Streams::OutputStream::Ptr<byte>                oldStdOut = GetStdOut ();
     try {
         Streams::MemoryStream::Ptr<byte> useStdIn  = Streams::MemoryStream::New<byte> ();
         Streams::MemoryStream::Ptr<byte> useStdOut = Streams::MemoryStream::New<byte> ();
@@ -563,8 +563,8 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 namespace {
     void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
                                 Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress, const String& cmdLine,
-                                const SDKChar* currentDir, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out,
-                                const Streams::OutputStream<byte>::Ptr& err, const String& effectiveCmdLine)
+                                const SDKChar* currentDir, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream::Ptr<byte>& out,
+                                const Streams::OutputStream::Ptr<byte>& err, const String& effectiveCmdLine)
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
             L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.As<wstring> ().c_str (),
@@ -764,7 +764,7 @@ namespace {
             ThrowPOSIXErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
 
             // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
-            auto readALittleFromProcess = [&] (int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache,
+            auto readALittleFromProcess = [&] (int fd, const Streams::OutputStream::Ptr<byte>& stream, bool write2StdErrCache,
                                                bool* eof = nullptr, bool* maybeMoreData = nullptr) {
                 uint8_t buf[10 * 1024];
                 int     nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
@@ -817,13 +817,13 @@ namespace {
                     *maybeMoreData = (nBytesRead > 0) or (nBytesRead < 0 and errno == EINTR);
                 }
             };
-            auto readSoNotBlocking = [&] (int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache) {
+            auto readSoNotBlocking = [&] (int fd, const Streams::OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
                 bool maybeMoreData = true;
                 while (maybeMoreData) {
                     readALittleFromProcess (fd, stream, write2StdErrCache, nullptr, &maybeMoreData);
                 }
             };
-            auto readTilEOF = [&] (int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache) {
+            auto readTilEOF = [&] (int fd, const Streams::OutputStream::Ptr<byte>& stream, bool write2StdErrCache) {
                 Execution::WaitForIOReady waiter{fd};
                 bool                      eof = false;
                 while (not eof) {
@@ -922,8 +922,8 @@ namespace {
 namespace {
     void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                   ProgressMonitor::Updater progress, const String& cmdLine, const SDKChar* currentDir,
-                                  const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out,
-                                  const Streams::OutputStream<byte>::Ptr& err, const String& effectiveCmdLine)
+                                  const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream::Ptr<byte>& out,
+                                  const Streams::OutputStream::Ptr<byte>& err, const String& effectiveCmdLine)
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
             L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.As<wstring> ().c_str (),
@@ -1003,7 +1003,7 @@ namespace {
             AutoHANDLE_& useSTDERR = jStderr[1];
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
-            auto readAnyAvailableAndCopy2StreamWithoutBlocking = [] (HANDLE p, const Streams::OutputStream<byte>::Ptr& o) {
+            auto readAnyAvailableAndCopy2StreamWithoutBlocking = [] (HANDLE p, const Streams::OutputStream::Ptr<byte>& o) {
                 RequireNotNull (p);
                 byte buf[kReadBufSize_];
 #if qUsePeekNamedPipe_
@@ -1197,8 +1197,8 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
     String                                         cmdLine          = fCommandLine_.value_or (String{});
     optional<String>                               workingDir       = GetWorkingDirectory ();
     Streams::InputStream<byte>::Ptr                in               = GetStdIn ();
-    Streams::OutputStream<byte>::Ptr               out              = GetStdOut ();
-    Streams::OutputStream<byte>::Ptr               err              = GetStdErr ();
+    Streams::OutputStream::Ptr<byte>               out              = GetStdOut ();
+    Streams::OutputStream::Ptr<byte>               err              = GetStdErr ();
     String                                         effectiveCmdLine = GetEffectiveCmdLine_ ();
 
     return [processResult, runningPID, progress, cmdLine, workingDir, in, out, err, effectiveCmdLine] () {

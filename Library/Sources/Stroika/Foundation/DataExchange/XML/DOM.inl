@@ -153,7 +153,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return fRep_;
     }
-    inline void Document::Ptr::Write (const Streams::OutputStream<byte>::Ptr& to, const SerializationOptions& options) const
+    inline void Document::Ptr::Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const
     {
         fRep_->Write (to, options);
     }

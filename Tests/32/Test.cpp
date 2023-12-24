@@ -1174,7 +1174,7 @@ namespace {
     namespace Write2JSONSThenRead2JSONsWithSharedStream_ {
         namespace Private_ {
             static VariantValue kTestVariant_{Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"b", 99}}};
-            void WriteJSON_ (const Streams::OutputStream<byte>::Ptr& out)
+            void WriteJSON_ (const Streams::OutputStream::Ptr<byte>& out)
             {
                 using namespace DataExchange::Variant::JSON;
                 const Writer::Options kOptions_{false};

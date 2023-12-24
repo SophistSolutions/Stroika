@@ -37,15 +37,15 @@ public:
     {
         return ".ini"sv;
     }
-    virtual void Write (const VariantValue& v, const OutputStream<byte>::Ptr& out) override
+    virtual void Write (const VariantValue& v, const OutputStream::Ptr<byte>& out) override
     {
         Write (v, TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude));
     }
-    virtual void Write (const VariantValue& v, const OutputStream<Character>::Ptr& out) override
+    virtual void Write (const VariantValue& v, const OutputStream::Ptr<Character>& out) override
     {
         Write (Convert (v), out);
     }
-    nonvirtual void Write (const Profile& profile, const OutputStream<Characters::Character>::Ptr& out) const
+    nonvirtual void Write (const Profile& profile, const OutputStream::Ptr<Characters::Character>& out) const
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::Variant::INI::Writer::Rep_::Write"};
@@ -55,7 +55,7 @@ public:
             Write (sectionKVP.fKey, sectionKVP.fValue, out);
         }
     }
-    nonvirtual void Write (const optional<String>& sectionName, const Section& profile, const OutputStream<Characters::Character>::Ptr& out) const
+    nonvirtual void Write (const optional<String>& sectionName, const Section& profile, const OutputStream::Ptr<Characters::Character>& out) const
     {
         StringBuilder sb;
         if (sectionName) {
@@ -73,22 +73,22 @@ INI::Writer::Writer ()
 {
 }
 
-void INI::Writer::Write (const Profile& profile, const OutputStream<byte>::Ptr& out)
+void INI::Writer::Write (const Profile& profile, const OutputStream::Ptr<byte>& out)
 {
     return Write (profile, Streams::TextWriter::New (out));
 }
 
-void INI::Writer::Write (const Profile& profile, const OutputStream<Characters::Character>::Ptr& out)
+void INI::Writer::Write (const Profile& profile, const OutputStream::Ptr<Characters::Character>& out)
 {
     Debug::UncheckedDynamicCast<Rep_&> (_GetRep ()).Write (profile, out);
 }
 
 Memory::BLOB INI::Writer::WriteAsBLOB (const Profile& profile)
 {
-    return _WriteAsBLOBHelper ([&profile, this] (const OutputStream<byte>::Ptr& out) { Write (profile, out); });
+    return _WriteAsBLOBHelper ([&profile, this] (const OutputStream::Ptr<byte>& out) { Write (profile, out); });
 }
 
 String INI::Writer::WriteAsString (const Profile& profile)
 {
-    return _WriteAsStringHelper ([&profile, this] (const OutputStream<Characters::Character>::Ptr& out) { Write (profile, out); });
+    return _WriteAsStringHelper ([&profile, this] (const OutputStream::Ptr<Characters::Character>& out) { Write (profile, out); });
 }

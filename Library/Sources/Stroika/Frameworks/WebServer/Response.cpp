@@ -70,7 +70,7 @@ Response::Response (Response&& src)
     fETagDigester_ = move (src.fETagDigester_);
 }
 
-Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<HTTP::Headers>& initialHeaders)
+Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream::Ptr<byte>& outStream, const optional<HTTP::Headers>& initialHeaders)
     : inherited{initialHeaders}
     , autoComputeETag{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                           const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);

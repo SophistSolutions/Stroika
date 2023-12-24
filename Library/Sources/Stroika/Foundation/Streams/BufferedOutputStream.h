@@ -48,13 +48,13 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
     /**
          *  \par Example Usage
          *      \code
-         *          OutputStream<byte>::Ptr out = BufferedOutputStream::New<byte> (FileOutputStream (fileName, flushFlag));
+         *          OutputStream::Ptr<byte> out = BufferedOutputStream::New<byte> (FileOutputStream (fileName, flushFlag));
          *      \endcode
          */
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut);
+    Ptr<ELEMENT_TYPE> New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut);
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut);
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut);
 
     template <typename ELEMENT_TYPE>
     class Rep_;
@@ -69,8 +69,8 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
      *  Ptr is a copyable smart pointer to a BufferedOutputStream.
      */
     template <typename ELEMENT_TYPE>
-    class Ptr : public OutputStream<ELEMENT_TYPE>::Ptr {
-        using inherited = typename OutputStream<ELEMENT_TYPE>::Ptr;
+    class Ptr : public OutputStream::Ptr<ELEMENT_TYPE> {
+        using inherited = typename OutputStream::Ptr<ELEMENT_TYPE>;
 
     public:
         /**

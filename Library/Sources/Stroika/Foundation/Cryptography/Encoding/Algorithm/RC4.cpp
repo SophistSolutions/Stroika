@@ -64,7 +64,7 @@ BLOB Algorithm::EncodeRC4 (const Memory::BLOB& key, const BLOB& in)
  **************************** Algorithm::RC4Encoder *****************************
  ********************************************************************************
  */
-Streams::OutputStream<byte>::Ptr Algorithm::RC4Decoder (const Memory::BLOB& key, const Streams::OutputStream<byte>::Ptr& out)
+Streams::OutputStream::Ptr<byte> Algorithm::RC4Decoder (const Memory::BLOB& key, const Streams::OutputStream::Ptr<byte>& out)
 {
     return OpenSSLOutputStream::New (cvt_ (key), Direction::eDecrypt, out);
 }
@@ -76,7 +76,7 @@ Streams::OutputStream<byte>::Ptr Algorithm::RC4Decoder (const Memory::BLOB& key,
  ****************************** Algorithm::RC4Encoder ***************************
  ********************************************************************************
  */
-Streams::OutputStream<byte>::Ptr Algorithm::RC4Encoder (const Memory::BLOB& key, const Streams::OutputStream<byte>::Ptr& out)
+Streams::OutputStream::Ptr<byte> Algorithm::RC4Encoder (const Memory::BLOB& key, const Streams::OutputStream::Ptr<byte>& out)
 {
     return OpenSSLOutputStream::New (cvt_ (key), Direction::eEncrypt, out);
 }

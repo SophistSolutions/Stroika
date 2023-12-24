@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
          *  There are no special methods to SplitterOutputStreamPtr, so we just re-use the baseclass Ptr smart pointer.
          */
     template <typename ELEMENT_TYPE>
-    using Ptr = typename OutputStream<ELEMENT_TYPE>::Ptr;
+    using Ptr = typename OutputStream::Ptr<ELEMENT_TYPE>;
 
     /**
          *  \par Example Usage
@@ -37,10 +37,10 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
          *      \endcode
          */
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
+    Ptr<ELEMENT_TYPE> New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut1, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut2);
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1,
-                           const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut1,
+                           const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut2);
 
     template <typename ELEMENT_TYPE>
     class Rep_;

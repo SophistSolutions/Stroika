@@ -239,9 +239,9 @@ namespace {
         InputStream<byte>::Ptr                                         fRealIn_;
     };
 
-    class OpenSSLOutputStreamRep_ : public OutputStream<byte>::_IRep, private InOutStrmCommon_ {
+    class OpenSSLOutputStreamRep_ : public OutputStream::_IRep<byte>, private InOutStrmCommon_ {
     public:
-        OpenSSLOutputStreamRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream<byte>::Ptr& realOut)
+        OpenSSLOutputStreamRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream::Ptr<byte>& realOut)
             : InOutStrmCommon_{cryptoParams, d}
             , fRealOut_{realOut}
         {
@@ -306,7 +306,7 @@ namespace {
 
     private:
         mutable recursive_mutex fCriticalSection_;
-        OutputStream<byte>::Ptr fRealOut_;
+        OutputStream::Ptr<byte> fRealOut_;
     };
 }
 
@@ -398,14 +398,14 @@ auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchr
  ******************* Cryptography::OpenSSLOutputStream **************************
  ********************************************************************************
  */
-auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<byte>::Ptr& realOut)
-    -> Streams::OutputStream<byte>::Ptr
+auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream::Ptr<byte>& realOut)
+    -> Streams::OutputStream::Ptr<byte>
 {
-    return Streams::OutputStream<byte>::Ptr{make_shared<OpenSSLOutputStreamRep_> (cryptoParams, direction, realOut)};
+    return Streams::OutputStream::Ptr<byte>{make_shared<OpenSSLOutputStreamRep_> (cryptoParams, direction, realOut)};
 }
 
 auto OpenSSLOutputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
-                               Direction direction, const OutputStream<byte>::Ptr& realOut) -> Streams::OutputStream<byte>::Ptr
+                               Direction direction, const OutputStream::Ptr<byte>& realOut) -> Streams::OutputStream::Ptr<byte>
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:

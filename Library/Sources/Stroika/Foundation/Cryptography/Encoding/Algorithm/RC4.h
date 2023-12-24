@@ -41,13 +41,13 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
 #if qHasFeature_OpenSSL
     /**
      */
-    Streams::OutputStream<byte>::Ptr RC4Decoder (const Memory::BLOB& key, const Streams::OutputStream<byte>::Ptr& out);
+    Streams::OutputStream::Ptr<byte> RC4Decoder (const Memory::BLOB& key, const Streams::OutputStream::Ptr<byte>& out);
 #endif
 
 #if qHasFeature_OpenSSL
     /**
      */
-    Streams::OutputStream<byte>::Ptr RC4Encoder (const Memory::BLOB& key, const Streams::OutputStream<byte>::Ptr& out);
+    Streams::OutputStream::Ptr<byte> RC4Encoder (const Memory::BLOB& key, const Streams::OutputStream::Ptr<byte>& out);
 #endif
 
 }

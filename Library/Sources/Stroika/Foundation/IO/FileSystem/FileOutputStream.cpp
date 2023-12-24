@@ -48,7 +48,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
 namespace {
-    class Rep_ : public Streams::OutputStream<byte>::_IRep /*, public Memory::UseBlockAllocationIfAppropriate<Rep_>*/ {
+    class Rep_ : public Streams::OutputStream::_IRep<byte> /*, public Memory::UseBlockAllocationIfAppropriate<Rep_>*/ {
     public:
         Rep_ ()            = delete;
         Rep_ (const Rep_&) = delete;

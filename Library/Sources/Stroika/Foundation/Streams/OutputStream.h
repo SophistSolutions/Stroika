@@ -48,16 +48,16 @@ namespace Stroika::Foundation::Memory {
     class BLOB;
 }
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::OutputStream {
 
     /**
      *  \em Design Overview
      *
      *      o   @See Stream
-     *      o   @See OutputStream<ELEMENT_TYPE>::Ptr
+     *      o   @See OutputStream::Ptr<ELEMENT_TYPE>
      *
      *      o   InputStream::Ptr and OutputStream::Ptr may logically be mixed together to make an
-     *          input/output stream: @see InputOutputStream<ELEMENT_TYPE>::Ptr
+     *          input/output stream: @see InputOutputStream::Ptr<ELEMENT_TYPE>
      *
      *      o   One (potential) slight design flaw with this API, is that its not possible to have legal partial writes.
      *          But not supporting partial writes makes use much simpler (since callers don't need
@@ -74,37 +74,22 @@ namespace Stroika::Foundation::Streams {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
      */
+
     template <typename ELEMENT_TYPE>
-    class OutputStream : public Stream<ELEMENT_TYPE> {
-    protected:
-        /**
-         * 'OutputStream' is a quasi-namespace:  use Ptr or New () members.
-         */
-        OutputStream ()                    = delete;
-        OutputStream (const OutputStream&) = delete;
-
-    public:
-        using ElementType = typename Stream<ELEMENT_TYPE>::ElementType;
-
-    public:
-        class Ptr;
-
-    public:
-        class _IRep;
-    };
+    class _IRep;
 
     /**
      *  \brief  OutputStream<>::Ptr is Smart pointer to a stream-based sink of data.
      *
      * @see OutputStream<ELEMENT_TYPE>
      *
-     *  \note Since OutputStream<ELEMENT_TYPE>::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+     *  \note Since OutputStream::Ptr<ELEMENT_TYPE> is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
      *        the underlying thread object.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      */
     template <typename ELEMENT_TYPE>
-    class OutputStream<ELEMENT_TYPE>::Ptr : public Stream<ELEMENT_TYPE>::Ptr {
+    class Ptr : public Stream<ELEMENT_TYPE>::Ptr {
     private:
         using inherited = typename Stream<ELEMENT_TYPE>::Ptr;
 
@@ -119,7 +104,7 @@ namespace Stroika::Foundation::Streams {
         Ptr (nullptr_t);
         Ptr (const Ptr&) = default;
         Ptr (Ptr&&)      = default;
-        Ptr (const shared_ptr<_IRep>& rep);
+        Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep);
 
     public:
         /**
@@ -183,9 +168,9 @@ namespace Stroika::Foundation::Streams {
          *
          *  \req IsOpen ()
          */
-        nonvirtual void Write (const ElementType* start, const ElementType* end) const;
-        nonvirtual void Write (const ElementType& e) const;
-        nonvirtual void Write (span<const ElementType> s) const;
+        nonvirtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) const;
+        nonvirtual void Write (const ELEMENT_TYPE& e) const;
+        nonvirtual void Write (span<const ELEMENT_TYPE> s) const;
         nonvirtual void Write (const uint8_t* start, const uint8_t* end) const
             requires (is_same_v<ELEMENT_TYPE, byte>);
         nonvirtual void Write (const Memory::BLOB& blob) const
@@ -310,36 +295,33 @@ namespace Stroika::Foundation::Streams {
          *  \req IsOpen ()
          */
         template <typename T>
-        const typename OutputStream<ELEMENT_TYPE>::Ptr& operator<< (const T& write2TextStream) const
+        const typename OutputStream::Ptr<ELEMENT_TYPE>& operator<< (const T& write2TextStream) const
             requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
 
     protected:
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+        nonvirtual shared_ptr<_IRep<ELEMENT_TYPE>> _GetSharedRep () const;
 
     protected:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const _IRep& _GetRepConstRef () const;
+        nonvirtual const _IRep<ELEMENT_TYPE>& _GetRepConstRef () const;
 
     protected:
         /**
          * \req *this != nullptr
          */
-        nonvirtual _IRep& _GetRepRWRef () const;
-
-    private:
-        friend class OutputStream<ELEMENT_TYPE>;
+        nonvirtual _IRep<ELEMENT_TYPE>& _GetRepRWRef () const;
     };
 
     /**
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>
      */
     template <typename ELEMENT_TYPE>
-    class OutputStream<ELEMENT_TYPE>::_IRep : public Stream<ELEMENT_TYPE>::_IRep {
+    class _IRep : public Stream<ELEMENT_TYPE>::_IRep {
     public:
         using ElementType = ELEMENT_TYPE;
 
@@ -385,7 +367,7 @@ namespace Stroika::Foundation::Streams {
          *  \Note The meaning of Write () depends on the exact type of Stream you are referencing. The data
          *        may still be buffered. Call @Flush () to get it pushed out.
          */
-        virtual void Write (const ElementType* start, const ElementType* end) = 0;
+        virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) = 0;
 
     public:
         /**

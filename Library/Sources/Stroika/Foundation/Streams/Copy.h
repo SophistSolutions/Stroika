@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Streams {
      *  \note ***Cancelation Point*** (but may not always be cancelable - may cancel)
      */
     template <typename ELEMENT_TYPE>
-    void CopyAll (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream<ELEMENT_TYPE>::Ptr to, size_t bufferSize = 10 * 1024);
+    void CopyAll (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream::Ptr<ELEMENT_TYPE> to, size_t bufferSize = 10 * 1024);
 
     /**
      * @brief Copy the contents of stream 'from' to stream 'to', by reading ALL of from into memory at once, and then writing it to 'to' (fails if not enough memory to hold entire from stream in RAM)
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Streams {
      *  \note ***Cancelation Point*** (but may not always be cancelable - may cancel)
      */
     template <typename ELEMENT_TYPE>
-    void CopyAll_OneRead (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream<ELEMENT_TYPE>::Ptr to);
+    void CopyAll_OneRead (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream::Ptr<ELEMENT_TYPE> to);
 
     /**
      * @brief Copy the contents of stream 'from' to stream 'to', by reading a chunk at a time - tends to do multiple reads and writes - but works with arbitrarily large stream
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Streams {
      *  \note ***Cancelation Point*** (but may not always be cancelable - may cancel)
      */
     template <typename ELEMENT_TYPE>
-    void CopyAll_Buffered (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream<ELEMENT_TYPE>::Ptr to, size_t bufferSize = 10 * 1024);
+    void CopyAll_Buffered (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream::Ptr<ELEMENT_TYPE> to, size_t bufferSize = 10 * 1024);
 
 }
 

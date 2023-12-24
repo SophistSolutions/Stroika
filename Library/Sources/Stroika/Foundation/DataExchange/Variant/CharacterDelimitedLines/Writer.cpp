@@ -36,11 +36,11 @@ public:
     {
         return ".txt"sv;
     }
-    virtual void Write (const VariantValue& v, const OutputStream<byte>::Ptr& out) override
+    virtual void Write (const VariantValue& v, const OutputStream::Ptr<byte>& out) override
     {
         Write (v, TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude));
     }
-    virtual void Write (const VariantValue& v, const OutputStream<Character>::Ptr& out) override
+    virtual void Write (const VariantValue& v, const OutputStream::Ptr<Character>& out) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::Write"};
@@ -49,7 +49,7 @@ public:
             Write (line.As<Sequence<VariantValue>> ().Map<Iterable<String>> ([] (const VariantValue& i) { return i.As<String> (); }), out);
         }
     }
-    nonvirtual void Write (const Iterable<Sequence<String>>& m, const OutputStream<Characters::Character>::Ptr& out) const
+    nonvirtual void Write (const Iterable<Sequence<String>>& m, const OutputStream::Ptr<Characters::Character>& out) const
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::Write"};
@@ -58,7 +58,7 @@ public:
             Write (seq, out);
         }
     }
-    nonvirtual void Write (const Iterable<String>& line, const OutputStream<Characters::Character>::Ptr& out) const
+    nonvirtual void Write (const Iterable<String>& line, const OutputStream::Ptr<Characters::Character>& out) const
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::Write"};
@@ -85,22 +85,22 @@ CharacterDelimitedLines::Writer::Writer (const Options& options)
 {
 }
 
-void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream<byte>::Ptr& out)
+void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream::Ptr<byte>& out)
 {
     return Write (m, Streams::TextWriter::New (out));
 }
 
-void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream<Characters::Character>::Ptr& out)
+void CharacterDelimitedLines::Writer::Write (const Iterable<Sequence<String>>& m, const OutputStream::Ptr<Characters::Character>& out)
 {
     Debug::UncheckedDynamicCast<Rep_&> (_GetRep ()).Write (m, out);
 }
 
 Memory::BLOB CharacterDelimitedLines::Writer::WriteAsBLOB (const Iterable<Sequence<String>>& m)
 {
-    return _WriteAsBLOBHelper ([&m, this] (const OutputStream<byte>::Ptr& out) { Write (m, out); });
+    return _WriteAsBLOBHelper ([&m, this] (const OutputStream::Ptr<byte>& out) { Write (m, out); });
 }
 
 String CharacterDelimitedLines::Writer::WriteAsString (const Iterable<Sequence<String>>& m)
 {
-    return _WriteAsStringHelper ([&m, this] (const OutputStream<Characters::Character>::Ptr& out) { Write (m, out); });
+    return _WriteAsStringHelper ([&m, this] (const OutputStream::Ptr<Characters::Character>& out) { Write (m, out); });
 }

@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
     Memory::BLOB DecodeBase64 (const string& s);
     Memory::BLOB DecodeBase64 (const u8string& s);
     Memory::BLOB DecodeBase64 (const Characters::String& s);
-    void         DecodeBase64 (const string& s, const Streams::OutputStream<byte>::Ptr& out);
+    void         DecodeBase64 (const string& s, const Streams::OutputStream::Ptr<byte>& out);
 
     enum class LineBreak : uint8_t {
         eLF_LB,

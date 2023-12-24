@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    using Ptr = OutputStream<Character>::Ptr;
+    using Ptr = OutputStream::Ptr<Character>;
 
     /**
      * If TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
@@ -73,10 +73,10 @@ namespace Stroika::Foundation::Streams::TextWriter {
      *          textOut.Write ("Hello World\n");
      *      \endcode
      */
-    Ptr New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<>&& char2OutputConverter);
-    Ptr New (const OutputStream<byte>::Ptr& src, UnicodeExternalEncodings e = UnicodeExternalEncodings::eDefault,
+    Ptr New (const OutputStream::Ptr<byte>& src, Characters::CodeCvt<>&& char2OutputConverter);
+    Ptr New (const OutputStream::Ptr<byte>& src, UnicodeExternalEncodings e = UnicodeExternalEncodings::eDefault,
              ByteOrderMark bom = ByteOrderMark::eDontInclude);
-    Ptr New (const OutputStream<Character>::Ptr& src);
+    Ptr New (const OutputStream::Ptr<Character>& src);
 
 }
 

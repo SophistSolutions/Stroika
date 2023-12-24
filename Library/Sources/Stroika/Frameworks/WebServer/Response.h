@@ -71,7 +71,7 @@ namespace Stroika::Frameworks::WebServer {
         Response ()                = delete;
         Response (const Response&) = delete;
         Response (Response&& src);
-        Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream,
+        Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream::Ptr<byte>& outStream,
                   const optional<HTTP::Headers>& initialHeaders = nullopt);
 
     public:
@@ -301,7 +301,7 @@ namespace Stroika::Frameworks::WebServer {
         bool  fAborted_{false};
         bool  fAutoComputeContentLength_{true};
 #endif
-        Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
+        Streams::OutputStream::Ptr<byte>         fUnderlyingOutStream_;
         Streams::BufferedOutputStream::Ptr<byte> fUseOutStream_;
         Characters::CodePage                     fCodePage_{Characters::WellKnownCodePages::kUTF8};
         vector<byte>                             fBodyBytes_{};

@@ -365,7 +365,7 @@ namespace Stroika::Foundation::Common {
      *              Response ()                    = delete;
      *              Response (const Response&)     = delete;
      *              Response (Response&& src);
-     *              Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<InternetMediaType>& ct = nullopt);
+     *              Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream::Ptr<byte>& outStream, const optional<InternetMediaType>& ct = nullopt);
      *              ~Response () = default;
      *              nonvirtual Response& operator= (const Response&) = delete;
      *          public:

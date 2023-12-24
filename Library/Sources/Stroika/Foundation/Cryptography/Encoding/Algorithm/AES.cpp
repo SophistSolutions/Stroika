@@ -105,7 +105,7 @@ Memory::BLOB Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Memory:
  **************************** Algorithm::AESEncoder *****************************
  ********************************************************************************
  */
-Streams::OutputStream<byte>::Ptr Algorithm::AESDecoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<byte>::Ptr& out, AESOptions options)
+Streams::OutputStream::Ptr<byte> Algorithm::AESDecoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream::Ptr<byte>& out, AESOptions options)
 {
     return OpenSSLOutputStream::New (cvt_ (key, options), Direction::eDecrypt, out);
 }
@@ -117,7 +117,7 @@ Streams::OutputStream<byte>::Ptr Algorithm::AESDecoder (const OpenSSL::DerivedKe
  ****************************** Algorithm::AESEncoder ***************************
  ********************************************************************************
  */
-Streams::OutputStream<byte>::Ptr Algorithm::AESEncoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<byte>::Ptr& out, AESOptions options)
+Streams::OutputStream::Ptr<byte> Algorithm::AESEncoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream::Ptr<byte>& out, AESOptions options)
 {
     return OpenSSLOutputStream::New (cvt_ (key, options), Direction::eEncrypt, out);
 }

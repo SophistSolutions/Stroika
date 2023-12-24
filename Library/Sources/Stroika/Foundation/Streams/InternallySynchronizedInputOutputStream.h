@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
      *
      *  \par Example Usage
      *      \code
-     *          Streams::InputOutputStream<byte>::Ptr syncStream = Streams::InternallySynchronizedInputOutputStream::New<UNSYNC_REP> (otherInputOutputStreamToBeSharedAcrossThread);
+     *          Streams::InputOutputStream::Ptr<byte> syncStream = Streams::InternallySynchronizedInputOutputStream::New<UNSYNC_REP> (otherInputOutputStreamToBeSharedAcrossThread);
      *      \endcode
      *
      *  \note   Uses mutex, not recursive_mutex internally, so be carefully about mutual recursion calls in UNSYNC_REP.

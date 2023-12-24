@@ -83,12 +83,12 @@ namespace Stroika::Foundation::Streams {
      *
      *          Each of these approaches has some advantages and disadvantages. Just using Seek() is
      *          the simplest approach. IF all your streams support seeking, there is no reason for another
-     *          mechanism. But we don't want to alwys require seeking.
+     *          mechanism. But we don't want to always require seeking.
      *
      *          PutBack () is like Seek, but then the question is - do we support just a PutBack of
      *          one character? So only lookahead of one character? That deals with many cases, but not all.
      *          And how does it interact with Seek - if the stream happens to be seekable? And is the
-     *          PutBack buffer stored in the letter or envelope class? If in Letter, thats extra work
+     *          PutBack buffer stored in the letter or envelope class? If in Letter, that is extra work
      *          in every rep (barrier to providing your own stream subtypes). If in the envelope, it doesn't
      *          work intuitively if two variables have separate smart pointers to the same underlying stream.
      *          Reads and writes affect each other EXCPET for the putback buffer!

@@ -77,9 +77,9 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
      ********************************************************************************
      */
     template <typename BASE_REP_TYPE, typename... ARGS>
-    inline typename OutputStream<typename BASE_REP_TYPE::ElementType>::Ptr New (ARGS&&... args)
+    inline typename OutputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (ARGS&&... args)
     {
-        return typename OutputStream<typename BASE_REP_TYPE::ElementType>::Ptr{
+        return typename OutputStream::Ptr<typename BASE_REP_TYPE::ElementType>{
             Memory::MakeSharedPtr<Private_::Rep_<BASE_REP_TYPE>> (forward<ARGS> (args)...)};
     }
 

@@ -414,15 +414,15 @@ public:
     }
 
 private:
-    Synchronized<Streams::OutputStream<Characters::Character>::Ptr> fWriter_; // All Stroika-provided appenders must be internally synchronized - https://stroika.atlassian.net/browse/STK-610
+    Synchronized<Streams::OutputStream::Ptr<Characters::Character>> fWriter_; // All Stroika-provided appenders must be internally synchronized - https://stroika.atlassian.net/browse/STK-610
 };
 
-Logger::StreamAppender::StreamAppender (const Streams::OutputStream<byte>::Ptr& out)
+Logger::StreamAppender::StreamAppender (const Streams::OutputStream::Ptr<byte>& out)
     : fRep_ (make_shared<Rep_> (out))
 {
 }
 
-Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Characters::Character>::Ptr& out)
+Logger::StreamAppender::StreamAppender (const Streams::OutputStream::Ptr<Characters::Character>& out)
     : fRep_ (make_shared<Rep_> (out))
 {
 }

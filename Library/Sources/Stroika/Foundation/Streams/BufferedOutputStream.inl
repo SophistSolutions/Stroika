@@ -21,12 +21,12 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
+    class Rep_ : public OutputStream::_IRep<ELEMENT_TYPE> {
         static constexpr size_t kMinBufSize_{1 * 1024};
         static constexpr size_t kDefaultBufSize_{16 * 1024};
 
     public:
-        Rep_ (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut)
+        Rep_ (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut)
             : fRealOut_{realOut}
         {
             fBuffer_.reserve (kDefaultBufSize_);
@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
 
     private:
         vector<ELEMENT_TYPE>                                           fBuffer_{};
-        typename OutputStream<ELEMENT_TYPE>::Ptr                       fRealOut_{};
+        typename OutputStream::Ptr<ELEMENT_TYPE>                       fRealOut_{};
         bool                                                           fAborted_{false};
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
@@ -177,12 +177,12 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr<ELEMENT_TYPE>
+    inline auto New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut) -> Ptr<ELEMENT_TYPE>
     {
         return make_shared<Rep_<ELEMENT_TYPE>> (realOut);
     }
     template <typename ELEMENT_TYPE>
-    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut)
+    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut)
         -> Ptr<ELEMENT_TYPE>
     {
         switch (internallySynchronized) {
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
 
     /*
      ********************************************************************************
-     ****************** BufferedOutputStream<ELEMENT_TYPE>::Ptr *********************
+     ****************** BufferedOutputStream::Ptr<ELEMENT_TYPE> *********************
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>

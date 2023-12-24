@@ -49,14 +49,14 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
      *  @see @InputOutputStream<ELEMENT_TYPE>
      *
      *  \note   Design Note:
-     *      InputOutputStream<ELEMENT_TYPE>::Ptr inherits from InputStream<ELEMENT_TYPE>::Ptr and OutputStream<ELEMENT_TYPE>::Ptr,
+     *      InputOutputStream::Ptr<ELEMENT_TYPE> inherits from InputStream<ELEMENT_TYPE>::Ptr and OutputStream::Ptr<ELEMENT_TYPE>,
      *      so it has two copies of the shared_ptr, even though there is only one underlying 'rep' object.
      *
      *      It is required/guaranteed by the implementation that the 'input' and 'output' sides refer to the same underlying
      *      'rep'.
      *
      *  \note   Design Note:
-     *      InputOutputStream<ELEMENT_TYPE>::Ptr need not have the same value for IsSeekable () -
+     *      InputOutputStream::Ptr<ELEMENT_TYPE> need not have the same value for IsSeekable () -
      *      but if you call InputOutputStream<ELEMENT_TYPE>::IsSeekable () - that  method requires they both be the same.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
      *      o   only operator== (nullptr_t) is supported
      */
     template <typename ELEMENT_TYPE>
-    class Ptr : public InputStream<ELEMENT_TYPE>::Ptr, public OutputStream<ELEMENT_TYPE>::Ptr {
+    class Ptr : public InputStream<ELEMENT_TYPE>::Ptr, public OutputStream::Ptr<ELEMENT_TYPE> {
     public:
         /**
          *  defaults to null (aka empty ())
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
      *
      */
     template <typename ELEMENT_TYPE>
-    class _IRep : public InputStream<ELEMENT_TYPE>::_IRep, public OutputStream<ELEMENT_TYPE>::_IRep {
+    class _IRep : public InputStream<ELEMENT_TYPE>::_IRep, public OutputStream::_IRep<ELEMENT_TYPE> {
     public:
         using ElementType = ELEMENT_TYPE;
 

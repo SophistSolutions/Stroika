@@ -12,9 +12,9 @@
 namespace Stroika::Foundation::Streams::TextWriter {
 
     namespace Private_ {
-        class UnSeekable_CodeCvt_Rep_ : public OutputStream<Character>::_IRep {
+        class UnSeekable_CodeCvt_Rep_ : public OutputStream::_IRep<Character> {
         public:
-            UnSeekable_CodeCvt_Rep_ (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<Character>&& converter)
+            UnSeekable_CodeCvt_Rep_ (const OutputStream::Ptr<byte>& src, Characters::CodeCvt<Character>&& converter)
                 : _fSource{src}
                 , _fConverter{move (converter)}
             {
@@ -67,22 +67,22 @@ namespace Stroika::Foundation::Streams::TextWriter {
             }
 
         protected:
-            OutputStream<byte>::Ptr                                        _fSource;
+            OutputStream::Ptr<byte>                                        _fSource;
             Characters::CodeCvt<Character>                                 _fConverter;
             std::mbstate_t                                                 _fMBState_{};
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
 
         template <Characters ::IUNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
-        class UnSeekable_UTFConverter_Rep_ : public OutputStream<Character>::_IRep {
+        class UnSeekable_UTFConverter_Rep_ : public OutputStream::_IRep<Character> {
         public:
             template <typename CONVERTER>
-            UnSeekable_UTFConverter_Rep_ (const OutputStream<byte>::Ptr& src, CONVERTER&& converter)
+            UnSeekable_UTFConverter_Rep_ (const OutputStream::Ptr<byte>& src, CONVERTER&& converter)
                 : _fSource{src}
                 , _fConverter{forward<CONVERTER> (converter)}
             {
             }
-            UnSeekable_UTFConverter_Rep_ (const OutputStream<byte>::Ptr& src)
+            UnSeekable_UTFConverter_Rep_ (const OutputStream::Ptr<byte>& src)
                 : _fSource{src}
                 , _fConverter{Characters::UTFConvert::kThe}
             {
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
             }
 
         protected:
-            OutputStream<byte>::Ptr                                        _fSource;
+            OutputStream::Ptr<byte>                                        _fSource;
             Characters::UTFConvert                                         _fConverter;
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
@@ -147,15 +147,15 @@ namespace Stroika::Foundation::Streams::TextWriter {
      ****************************** TextWriter::New *********************************
      ********************************************************************************
      */
-    inline auto New (const OutputStream<Character>::Ptr& src) -> Ptr
+    inline auto New (const OutputStream::Ptr<Character>& src) -> Ptr
     {
         return src;
     }
-    inline Ptr New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<>&& char2OutputConverter)
+    inline Ptr New (const OutputStream::Ptr<byte>& src, Characters::CodeCvt<>&& char2OutputConverter)
     {
         return Ptr{make_shared<Private_::UnSeekable_CodeCvt_Rep_> (src, move (char2OutputConverter))};
     }
-    inline Ptr New (const OutputStream<byte>::Ptr& src, Characters::UnicodeExternalEncodings e, Characters::ByteOrderMark bom)
+    inline Ptr New (const OutputStream::Ptr<byte>& src, Characters::UnicodeExternalEncodings e, Characters::ByteOrderMark bom)
     {
         if (bom == Characters::ByteOrderMark::eInclude) {
             src.Write (Characters::GetByteOrderMark (e));
@@ -182,13 +182,13 @@ namespace Stroika::Foundation::Streams::TextWriter {
     enum class [[deprecated ("Since Stroka v3.0d1, use UnicodeExternalEncodings overload")]] Format : uint8_t{
         eUTF8WithBOM = 1, eUTF8WithoutBOM = 2, eUTF8 = eUTF8WithBOM, eWCharTWithBOM = 3, eWCharTWithoutBOM = 4, eWCharT = eWCharTWithBOM,
     };
-    [[deprecated ("Since Stroka v3.0d1, use UnicodeExternalEncodings overload")]] static Ptr New (const OutputStream<byte>::Ptr& src,
+    [[deprecated ("Since Stroka v3.0d1, use UnicodeExternalEncodings overload")]] static Ptr New (const OutputStream::Ptr<byte>& src,
                                                                                                   Format format); // to be deprecated soon
     [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
-    New (Execution::InternallySynchronized internallySynchronized, const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
+    New (Execution::InternallySynchronized internallySynchronized, const OutputStream::Ptr<byte>& src, Format format = Format::eUTF8);
     [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
-                New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Character>::Ptr& src);
-    inline auto New (const OutputStream<byte>::Ptr& src, Format format) -> Ptr
+                New (Execution::InternallySynchronized internallySynchronized, const OutputStream::Ptr<Character>& src);
+    inline auto New (const OutputStream::Ptr<byte>& src, Format format) -> Ptr
     {
         using Characters::UnicodeExternalEncodings;
         switch (format) {
@@ -204,12 +204,12 @@ namespace Stroika::Foundation::Streams::TextWriter {
                 return Ptr{};
         }
     }
-    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized, const OutputStream<Character>::Ptr& src) -> Ptr
+    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized, const OutputStream::Ptr<Character>& src) -> Ptr
     {
         Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
         return src;
     }
-    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized, const OutputStream<byte>::Ptr& src, Format format) -> Ptr
+    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized, const OutputStream::Ptr<byte>& src, Format format) -> Ptr
     {
         Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
         return New (src, format);

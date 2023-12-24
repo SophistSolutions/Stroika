@@ -227,7 +227,7 @@ namespace Stroika::Frameworks::Service {
          *  hosing the service. While others cause this process to become the process main process, and run until
          *  told to exit.
          */
-        nonvirtual void Run (const CommandArgs& args, const Streams::OutputStream<Characters::Character>::Ptr& out = nullptr);
+        nonvirtual void Run (const CommandArgs& args, const Streams::OutputStream::Ptr<Characters::Character>& out = nullptr);
 
     public:
         /**

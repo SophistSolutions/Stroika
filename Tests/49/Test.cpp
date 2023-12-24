@@ -98,7 +98,7 @@ namespace {
                 EXPECT_TRUE (s != nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
                 EXPECT_TRUE (static_cast<InputStream<byte>::Ptr> (s).IsSeekable ());
-                EXPECT_TRUE (static_cast<OutputStream<byte>::Ptr> (s).IsSeekable ());
+                EXPECT_TRUE (static_cast<OutputStream::Ptr<byte>> (s).IsSeekable ());
             }
             {
                 MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
@@ -122,8 +122,8 @@ namespace {
                 Verify (s.Read (std::begin (bArr), std::end (bArr)) == sizeof (kData_));
                 EXPECT_TRUE (s.GetReadOffset () == sizeof (kData_));
                 EXPECT_TRUE (s.GetWriteOffset () == sizeof (kData_));
-                EXPECT_TRUE (Memory::BLOB (std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()) ==
-                             Memory::BLOB (std::begin (kData_), std::end (kData_)));
+                EXPECT_TRUE ((Memory::BLOB{std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()} ==
+                              Memory::BLOB{std::begin (kData_), std::end (kData_)}));
             }
         }
 

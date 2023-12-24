@@ -20,10 +20,10 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
+    class Rep_ : public OutputStream::_IRep<ELEMENT_TYPE> {
     public:
-        Rep_ (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2)
-            : OutputStream<ELEMENT_TYPE>::_IRep{}
+        Rep_ (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut1, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut2)
+            : OutputStream::_IRep<ELEMENT_TYPE>{}
             , fRealOut1_{realOut1}
             , fRealOut2_{realOut2}
         {
@@ -84,8 +84,8 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
         }
 
     private:
-        typename OutputStream<ELEMENT_TYPE>::Ptr                       fRealOut1_;
-        typename OutputStream<ELEMENT_TYPE>::Ptr                       fRealOut2_;
+        typename OutputStream::Ptr<ELEMENT_TYPE>                       fRealOut1_;
+        typename OutputStream::Ptr<ELEMENT_TYPE>                       fRealOut2_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
@@ -95,14 +95,14 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2)
+    inline auto New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut1, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut2)
         -> Ptr<ELEMENT_TYPE>
     {
         return make_shared<Rep_> (realOut1, realOut2);
     }
     template <typename ELEMENT_TYPE>
-    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1,
-                     const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2) -> Ptr<ELEMENT_TYPE>
+    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut1,
+                     const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut2) -> Ptr<ELEMENT_TYPE>
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:

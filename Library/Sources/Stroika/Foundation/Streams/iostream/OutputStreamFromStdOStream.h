@@ -25,7 +25,7 @@
 namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
 
     template <typename ELEMENT_TYPE>
-    using Ptr = typename OutputStream<ELEMENT_TYPE>::Ptr;
+    using Ptr = typename OutputStream::Ptr<ELEMENT_TYPE>;
 
     /**
      *  OutputStreamFromStdOStream wraps an argument std::ostream or std::wostream or std::basic_ostream<> as a Stroika OutputStream object

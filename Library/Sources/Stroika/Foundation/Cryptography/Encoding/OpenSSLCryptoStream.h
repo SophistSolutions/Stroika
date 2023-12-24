@@ -130,10 +130,10 @@ namespace Stroika::Foundation::Cryptography::Encoding {
 
         /**
          */
-        Streams::OutputStream<byte>::Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction,
-                                              const Streams::OutputStream<byte>::Ptr& realOut);
-        Streams::OutputStream<byte>::Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
-                                              Direction direction, const Streams::OutputStream<byte>::Ptr& realOut);
+        Streams::OutputStream::Ptr<byte> New (const OpenSSLCryptoParams& cryptoParams, Direction direction,
+                                              const Streams::OutputStream::Ptr<byte>& realOut);
+        Streams::OutputStream::Ptr<byte> New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
+                                              Direction direction, const Streams::OutputStream::Ptr<byte>& realOut);
 
     };
 #endif

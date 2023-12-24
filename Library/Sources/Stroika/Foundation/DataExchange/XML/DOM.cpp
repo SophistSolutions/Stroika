@@ -206,7 +206,7 @@ namespace {
         }
 #endif
 
-        void DoWrite2Stream_ (T_XMLDOMDocument* doc, const Streams::OutputStream<byte>::Ptr& to, const SerializationOptions& options)
+        void DoWrite2Stream_ (T_XMLDOMDocument* doc, const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options)
         {
             AutoRelease_<DOMLSOutput> theOutputDesc = GetDOMIMPL_ ().createLSOutput ();
             theOutputDesc->setEncoding (XMLUni::fgUTF8EncodingString);
@@ -216,8 +216,8 @@ namespace {
             dc->setParameter (XMLUni::fgDOMWRTBOM, true);
             class myOutputter : public XMLFormatTarget {
             public:
-                Streams::OutputStream<byte>::Ptr fOut;
-                myOutputter (const Streams::OutputStream<byte>::Ptr& to)
+                Streams::OutputStream::Ptr<byte> fOut;
+                myOutputter (const Streams::OutputStream::Ptr<byte>& to)
                     : fOut{to}
                 {
                 }
@@ -856,7 +856,7 @@ namespace {
                 }
                 END_LIB_EXCEPTION_MAPPER
             }
-            virtual void Write (const Streams::OutputStream<byte>::Ptr& to, const SerializationOptions& options) const override
+            virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
             {
                 TraceContextBumper                             ctx{"XercesDocRep_::Write"};
                 AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};

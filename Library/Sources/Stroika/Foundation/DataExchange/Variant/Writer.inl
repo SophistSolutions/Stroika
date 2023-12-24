@@ -34,11 +34,11 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         return fRep_->GetDefaultFileSuffix ();
     }
-    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out)
+    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out)
     {
         fRep_->Write (v, out);
     }
-    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out)
+    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream::Ptr<Characters::Character>& out)
     {
         fRep_->Write (v, out);
     }
@@ -60,11 +60,11 @@ namespace Stroika::Foundation::DataExchange::Variant {
         EnsureNotNull (fRep_.cget ());
         return *fRep_.cget ();
     }
-    inline Streams::OutputStream<byte>::Ptr _WrapBinaryOutput (const Streams::OutputStream<byte>::Ptr& out)
+    inline Streams::OutputStream::Ptr<byte> _WrapBinaryOutput (const Streams::OutputStream::Ptr<byte>& out)
     {
         return out;
     }
-    inline Streams::OutputStream<Characters::Character>::Ptr _WrapTextOutput (const Streams::OutputStream<Characters::Character>::Ptr& out)
+    inline Streams::OutputStream::Ptr<Characters::Character> _WrapTextOutput (const Streams::OutputStream::Ptr<Characters::Character>& out)
     {
         return out;
     }

@@ -41,7 +41,7 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
 
     using namespace FileStream;
 
-    using Ptr = Streams::OutputStream<byte>::Ptr;
+    using Ptr = Streams::OutputStream::Ptr<byte>;
 
     /**
      *  This flag is used to configure if BinaryOutputStream::Flush will invoke the OS fsync() function
@@ -134,9 +134,9 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
              FlushFlag flushFlag = FlushFlag::eDEFAULT);
     Ptr New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT,
              SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-    Streams::OutputStream<byte>::Ptr New (const filesystem::path& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
-    Streams::OutputStream<byte>::Ptr New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
-    Streams::OutputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag,
+    Streams::OutputStream::Ptr<byte> New (const filesystem::path& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
+    Streams::OutputStream::Ptr<byte> New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
+    Streams::OutputStream::Ptr<byte> New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag,
                                           FlushFlag flushFlag, BufferFlag bufferedFlag);
 
 }

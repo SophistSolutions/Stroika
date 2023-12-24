@@ -59,8 +59,8 @@ namespace Stroika::Foundation::DataExchange::Variant {
          *  @see WriteAsBLOB
          *  @see WriteAsString
          */
-        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out);
-        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out);
+        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out);
+        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream::Ptr<Characters::Character>& out);
         nonvirtual void Write (const VariantValue& v, ostream& out);
         nonvirtual void Write (const VariantValue& v, wostream& out);
 
@@ -89,28 +89,28 @@ namespace Stroika::Foundation::DataExchange::Variant {
          *  Helper for subclasses to take various kinds of output targets, and convert them to Streams::OutputStream<byte>::
          *  used by the IRep_.
          */
-        static Streams::OutputStream<byte>::Ptr _WrapBinaryOutput (const Streams::OutputStream<byte>::Ptr& out);
-        static Streams::OutputStream<byte>::Ptr _WrapBinaryOutput (ostream& out);
+        static Streams::OutputStream::Ptr<byte> _WrapBinaryOutput (const Streams::OutputStream::Ptr<byte>& out);
+        static Streams::OutputStream::Ptr<byte> _WrapBinaryOutput (ostream& out);
 
     protected:
         /**
          *  Helper for subclasses to take various kinds of output targets, and convert them to Streams::OutputStream<byte>::
          *  used by the IRep_.
          */
-        static Streams::OutputStream<Characters::Character>::Ptr _WrapTextOutput (const Streams::OutputStream<Characters::Character>::Ptr& out);
-        static Streams::OutputStream<Characters::Character>::Ptr _WrapTextOutput (wostream& out);
+        static Streams::OutputStream::Ptr<Characters::Character> _WrapTextOutput (const Streams::OutputStream::Ptr<Characters::Character>& out);
+        static Streams::OutputStream::Ptr<Characters::Character> _WrapTextOutput (wostream& out);
 
     protected:
         /**
          *  Helper for subclasses to take binary-ostream writer and return a BLOB result.
          */
-        static Memory::BLOB _WriteAsBLOBHelper (const function<void (Streams::OutputStream<byte>::Ptr)>& f);
+        static Memory::BLOB _WriteAsBLOBHelper (const function<void (Streams::OutputStream::Ptr<byte>)>& f);
 
     protected:
         /**
          *  Helper for subclasses to take binary-ostream writer and return a String result.
          */
-        static String _WriteAsStringHelper (const function<void (Streams::OutputStream<Characters::Character>::Ptr)>& f);
+        static String _WriteAsStringHelper (const function<void (Streams::OutputStream::Ptr<Characters::Character>)>& f);
 
     private:
         struct _Rep_Cloner {
@@ -133,8 +133,8 @@ namespace Stroika::Foundation::DataExchange::Variant {
         virtual ~_IRep ()                                                                                                  = default;
         virtual _SharedPtrIRep Clone () const                                                                              = 0;
         virtual String         GetDefaultFileSuffix () const                                                               = 0;
-        virtual void           Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out)                  = 0;
-        virtual void           Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out) = 0;
+        virtual void           Write (const VariantValue& v, const Streams::OutputStream::Ptr<byte>& out)                  = 0;
+        virtual void           Write (const VariantValue& v, const Streams::OutputStream::Ptr<Characters::Character>& out) = 0;
     };
 
 }
