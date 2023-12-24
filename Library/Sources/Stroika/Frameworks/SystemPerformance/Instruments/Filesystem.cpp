@@ -412,7 +412,7 @@ namespace {
                     filesystem::path fn = *blockDeviceInfoPath / "queue/hw_sector_size";
                     try {
                         o = String2Int<uint32_t> (
-                            TextReader::New (FileInputStream::New (fn, IO::FileSystem::FileInputStream::eNotSeekable)).ReadAll ().Trim ());
+                            TextReader::New (IO::FileSystem::FileInputStream::New (fn, IO::FileSystem::FileInputStream::eNotSeekable)).ReadAll ().Trim ());
                         _fContext.rwget ().rwref ()->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                     }
                     catch (...) {
