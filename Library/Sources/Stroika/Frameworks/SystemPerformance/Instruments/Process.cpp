@@ -596,14 +596,15 @@ namespace {
                                                         const function<T (const Streams::InputStream<byte>::Ptr&)>& reader)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
-                IgnoreExceptionsExceptThreadAbortForCall (return reader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)));
+                IgnoreExceptionsExceptThreadAbortForCall (
+                    return reader (IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable)));
             }
             return nullopt;
         }
         static Sequence<String> ReadFileStrings_ (const filesystem::path& fullPath)
         {
             Sequence<String>                results;
-            Streams::InputStream<byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
+            Streams::InputStream<byte>::Ptr in = IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable);
             StringBuilder                   sb;
             for (optional<byte> b; (b = in.Read ()).has_value ();) {
                 if ((*b) == byte{0}) {
@@ -656,8 +657,8 @@ namespace {
                 }
             };
             if (IO::FileSystem::Default ().Access (fullPath2CmdLineFile)) {
-                IgnoreExceptionsExceptThreadAbortForCall (
-                    return ReadFileString_ (FileInputStream::New (fullPath2CmdLineFile, FileInputStream::eNotSeekable)));
+                IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (
+                    IO::FileSystem::FileInputStream::New (fullPath2CmdLineFile, IO::FileSystem::FileInputStream::eNotSeekable)));
             }
             return nullopt;
         }
@@ -839,7 +840,7 @@ namespace {
                                           L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
             StatFileInfo_                   result{};
-            Streams::InputStream<byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
+            Streams::InputStream<byte>::Ptr in = IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable);
             byte                            data[10 * 1024];
             size_t                          nBytes = in.ReadAll (begin (data), end (data));
             Assert (nBytes <= NEltsOf (data));
@@ -1008,7 +1009,8 @@ namespace {
             }
             ProcessType::TCPStats stats;
             bool                  didSkip = false;
-            for (const String& i : TextReader::New (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)).ReadLines ()) { // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
+            for (const String& i :
+                 TextReader::New (IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable)).ReadLines ()) { // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
                 if (not didSkip) {
                     didSkip = true;
                     continue;

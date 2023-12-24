@@ -283,7 +283,8 @@ namespace {
                  *        eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0
                  */
                 // Note - /procfs files always unseekable
-                for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
+                for (const Sequence<String>& line :
+                     reader.ReadMatrix (FileInputStream::New (kFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
                     if (line.size () >= 3 and line[0] == String::FromNarrowSDKString (name) and line[1] == "00000000"sv) {
                         //
                         int tmp[4]{};
@@ -404,7 +405,7 @@ namespace {
                     Debug::TraceContextSuppressor suppressTraceInThisBlock; // needlessly noisy on linux systems (due to frequent throw), and more heat than light
 #endif
                     try {
-                        auto         fs = FileInputStream::New (filesystem::path{"/sys/class/net"} / id, FileInputStream::eNotSeekable);
+                        auto fs = FileInputStream::New (filesystem::path{"/sys/class/net"} / id, IO::FileSystem::FileInputStream::eNotSeekable);
                         Memory::BLOB b  = fs.ReadAll ();
                         if (b.size () >= 1 and b[0] == static_cast<byte> ('1')) {
                             return true;

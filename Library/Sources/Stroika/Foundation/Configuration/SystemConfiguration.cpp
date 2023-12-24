@@ -214,7 +214,9 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
              *      "The first number is the total number of seconds the system has been up"
              */
             using Characters::String2Int;
-            for (const String& line : TextReader::New (FileInputStream::New (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+            for (const String& line :
+                 TextReader::New (IO::FileSystem::FileInputStream::New (kProcUptimeFileName_, IO::FileSystem::FileInputStream::eNotSeekable))
+                     .ReadLines ()) {
                 Sequence<String> t = line.Tokenize ();
                 if (t.size () >= 2) {
                     result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::FloatConversion::ToFloat<double> (t[0]));

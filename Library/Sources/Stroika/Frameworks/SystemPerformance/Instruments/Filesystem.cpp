@@ -411,7 +411,8 @@ namespace {
                 if (optional<filesystem::path> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName)) {
                     filesystem::path fn = *blockDeviceInfoPath / "queue/hw_sector_size";
                     try {
-                        o = String2Int<uint32_t> (TextReader::New (FileInputStream::New (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
+                        o = String2Int<uint32_t> (
+                            TextReader::New (FileInputStream::New (fn, IO::FileSystem::FileInputStream::eNotSeekable)).ReadAll ().Trim ());
                         _fContext.rwget ().rwref ()->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                     }
                     catch (...) {
@@ -551,7 +552,8 @@ namespace {
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             static const filesystem::path                          kProcMemInfoFileName_{"/proc/diskstats"sv};
             // Note - /procfs files always unseekable
-            for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
+            for (const Sequence<String>& line :
+                 reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Filesystem::ReadProcFS_diskstats_ linesize=%d, line[0]=%s", line.size (),
                           line.empty () ? L"" : line[0].c_str ());
@@ -584,8 +586,8 @@ namespace {
                     if (kAlsoReadQLen_) {
                         optional<filesystem::path> sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
                         if (sysBlockInfoPath) {
-                            for (const Sequence<String>& ll :
-                                 reader.ReadMatrix (FileInputStream::New (*sysBlockInfoPath / "stat", FileInputStream::eNotSeekable))) {
+                            for (const Sequence<String>& ll : reader.ReadMatrix (
+                                     FileInputStream::New (*sysBlockInfoPath / "stat", IO::FileSystem::FileInputStream::eNotSeekable))) {
                                 if (ll.size () >= 11) {
                                     weightedTimeInQSeconds = FloatConversion::ToFloat (ll[11 - 1]) / 1000.0; // we record in seconds, but the value in file in milliseconds
                                     break;
