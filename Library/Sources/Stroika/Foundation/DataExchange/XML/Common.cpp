@@ -21,13 +21,11 @@ using namespace Stroika::Foundation::Debug;
 
 #if qHasFeature_Xerces
 #include "Providers/Xerces.h"
-
 using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
 #endif
 
 #if qHasFeature_libxml2
 #include "Providers/LibXML2.h"
-
 using namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2;
 #endif
 
@@ -108,7 +106,7 @@ namespace {
 
 /*
  ********************************************************************************
- **************************** DependencyLibraryInitializer **********************
+ ******************** DependencyLibraryInitializer::LibXerces *******************
  ********************************************************************************
  */
 struct DependencyLibraryInitializer::LibXerces {
@@ -133,10 +131,9 @@ struct DependencyLibraryInitializer::LibXerces {
 #endif
 
 #if qHasFeature_libxml2
-
 /*
  ********************************************************************************
- **************************** DependencyLibraryInitializer **********************
+ ******************* DependencyLibraryInitializer::LibXML2 **********************
  ********************************************************************************
  */
 struct DependencyLibraryInitializer::LibXML2 {
@@ -156,6 +153,7 @@ struct DependencyLibraryInitializer::LibXML2 {
 };
 #endif
 
+#if qHasFeature_Xerces or qHasFeature_libxml2
 void DependencyLibraryInitializer::UsingProvider_ (Provider p)
 {
     // check outside of lock cuz once set, not unset, and then lock if needed
@@ -178,3 +176,4 @@ void DependencyLibraryInitializer::UsingProvider_ (Provider p)
 #endif
     }
 }
+#endif
