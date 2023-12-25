@@ -93,9 +93,6 @@ namespace Stroika::Foundation::Streams::OutputStream {
     private:
         using inherited = typename Streams::Ptr<ELEMENT_TYPE>;
 
-    protected:
-        using AssertExternallySynchronizedMutex = typename inherited::AssertExternallySynchronizedMutex;
-
     public:
         /**
          *  defaults to null (empty ())
@@ -321,7 +318,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>
      */
     template <typename ELEMENT_TYPE>
-    class _IRep : public Streams::_IRep<ELEMENT_TYPE> {
+    class _IRep : public Streams::IRep<ELEMENT_TYPE> {
     public:
         using ElementType = ELEMENT_TYPE;
 

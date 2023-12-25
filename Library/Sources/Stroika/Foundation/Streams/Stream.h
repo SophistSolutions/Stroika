@@ -17,9 +17,6 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- *  TODO:
- *      @todo https://stroika.atlassian.net/browse/STK-605 - Possibly add IsInternallySynchronized () method to Stream<>::Ptr and _IRep
  */
 
 namespace Stroika::Foundation::Streams {
@@ -66,7 +63,7 @@ namespace Stroika::Foundation::Streams {
     };
 
     template <typename ELEMENT_TYPE>
-    class _IRep;
+    class IRep;
 
     /**
      *  \em Design Overview
@@ -128,7 +125,7 @@ namespace Stroika::Foundation::Streams {
      *      o   Support operator==(nullptr_t) only
      */
     template <typename ELEMENT_TYPE>
-    class Ptr : protected Debug::AssertExternallySynchronizedMutex {
+    class Ptr {
     public:
         /**
          *  defaults to nullptr
@@ -137,7 +134,7 @@ namespace Stroika::Foundation::Streams {
         Ptr (const Ptr&) noexcept = default;
         Ptr (Ptr&&) noexcept      = default;
         Ptr (nullptr_t) noexcept;
-        Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep) noexcept;
+        Ptr (const shared_ptr<IRep<ELEMENT_TYPE>>& rep) noexcept;
 
     public:
         /**
@@ -167,23 +164,23 @@ namespace Stroika::Foundation::Streams {
          */
         nonvirtual explicit operator bool () const;
 
-    protected:
+    public:
         /**
-         *  \brief protected access to underlying stream smart pointer
+         *  \brief access to underlying stream smart pointer
          */
-        nonvirtual shared_ptr<_IRep<ELEMENT_TYPE>> _GetSharedRep () const;
+        nonvirtual shared_ptr<IRep<ELEMENT_TYPE>> GetSharedRep () const;
 
-    protected:
+    public:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const _IRep<ELEMENT_TYPE>& _GetRepConstRef () const;
+        nonvirtual const IRep<ELEMENT_TYPE>& GetRepConstRef () const;
 
-    protected:
+    public:
         /**
          * \req *this != nullptr
          */
-        nonvirtual _IRep<ELEMENT_TYPE>& _GetRepRWRef () const;
+        nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
 
     public:
         /**
@@ -197,17 +194,16 @@ namespace Stroika::Foundation::Streams {
         nonvirtual bool IsSeekable () const;
 
     public:
-        /**
-         * \brief   Returns SeekableFlag of the input stream rep.
-         *
-         *  Note - seekability cannot change over the lifetime of an object.
-         *
-         *  @see IsSeekable
-         */
-        nonvirtual SeekableFlag GetSeekability () const;
+        [[deprecated ("Since Stroika v3.0d5 use IsSeekable")]] SeekableFlag GetSeekability () const
+        {
+            return IsSeekable () ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
+        }
+
+    protected:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized; // refers to PTR not REP
 
     private:
-        shared_ptr<_IRep<ELEMENT_TYPE>> fRep_;
+        shared_ptr<IRep<ELEMENT_TYPE>> fRep_;
 
     private:
         bool fSeekable_{false};
@@ -217,19 +213,19 @@ namespace Stroika::Foundation::Streams {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>
      */
     template <typename ELEMENT_TYPE>
-    class _IRep {
+    class IRep {
     public:
         using ElementType = ELEMENT_TYPE;
 
     public:
-        _IRep ()             = default;
-        _IRep (const _IRep&) = delete;
+        IRep ()            = default;
+        IRep (const IRep&) = delete;
 
     public:
-        virtual ~_IRep () = default;
+        virtual ~IRep () = default;
 
     public:
-        nonvirtual _IRep& operator= (const _IRep&) = delete;
+        nonvirtual IRep& operator= (const IRep&) = delete;
 
     public:
         /**

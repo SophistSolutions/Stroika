@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Streams::TextReader {
      */
     inline auto New (const InputStream::Ptr<byte>& src) -> Ptr
     {
-        return New (src, src.GetSeekability ());
+        return New (src, src.IsSeekable () ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable);
     }
     inline auto New (const InputStream::Ptr<Character>& src) -> Ptr
     {

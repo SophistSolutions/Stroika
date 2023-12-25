@@ -448,13 +448,13 @@ auto TextReader::New (const Memory::BLOB& src, const Characters::CodeCvt<>& code
 auto TextReader::New (const InputStream::Ptr<byte>& src, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
     Ptr p = TextReader::New (src, Characters::UnicodeExternalEncodings::eUTF8, seekable, readAhead);
-    Ensure (p.GetSeekability () == seekable);
+    Ensure (src.IsSeekable () == (seekable == SeekableFlag::eSeekable));
     return p;
 }
 
 auto TextReader::New (const InputStream::Ptr<byte>& src, const AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead) -> Ptr
 {
-    Require (src.GetSeekability () == SeekableFlag::eSeekable);
+    Require (src.IsSeekable ());
     auto savedSeek = src.GetOffset ();
     using namespace Characters;
     CodeCvt<> codeConverter = [&] () {
@@ -487,7 +487,7 @@ auto TextReader::New (const InputStream::Ptr<byte>& src, const Characters::CodeC
 {
     Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)}
                                                   : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
-    Ensure (p.GetSeekability () == seekable);
+    Ensure (p.IsSeekable () == (seekable == SeekableFlag::eSeekable));
     return p;
 }
 

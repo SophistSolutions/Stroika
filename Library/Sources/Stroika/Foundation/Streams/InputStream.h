@@ -142,9 +142,6 @@ namespace Stroika::Foundation::Streams::InputStream {
     private:
         using inherited = typename Streams::Ptr<ELEMENT_TYPE>;
 
-    protected:
-        using AssertExternallySynchronizedMutex = typename inherited::AssertExternallySynchronizedMutex;
-
     public:
         using ElementType = ELEMENT_TYPE;
 
@@ -485,7 +482,7 @@ namespace Stroika::Foundation::Streams::InputStream {
      *
      */
     template <typename ELEMENT_TYPE>
-    class _IRep : public Streams::_IRep<ELEMENT_TYPE> {
+    class _IRep : public Streams::IRep<ELEMENT_TYPE> {
     public:
         using ElementType = ELEMENT_TYPE;
 
