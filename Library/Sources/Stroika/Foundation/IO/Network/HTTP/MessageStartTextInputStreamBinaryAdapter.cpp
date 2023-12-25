@@ -30,7 +30,7 @@ namespace {
 // http://stackoverflow.com/questions/4400678/http-header-should-use-what-character-encoding
 // but for now this seems and adequate hack
 
-class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream::IRep<Character>, protected Debug::AssertExternallySynchronizedMutex {
+class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream::IRep<Character> {
 public:
     Rep_ (const InputStream::Ptr<byte>& src)
         : fSource_{src}
@@ -102,8 +102,8 @@ public:
 public:
     nonvirtual Characters::String ToString (ToStringFormat format) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        StringBuilder                                  sb;
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        StringBuilder                                         sb;
         sb << "{"sv;
         sb << "Offset: "sv << Characters::Format (L"%d", fOffset_) << ", "sv;
         sb << "HighWaterMark: "sv << Characters::Format (L"%d", fBufferFilledUpValidBytes_) << ", "sv;
@@ -144,7 +144,7 @@ protected:
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         fSource_.Close ();
         Assert (fSource_ == nullptr);
     }
@@ -162,7 +162,7 @@ protected:
             return 0;
         }
         AssertNotNull (intoStart);
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Assert (fBufferFilledUpValidBytes_ >= fOffset_); // limitation/feature of current implemetnation
         if (fBufferFilledUpValidBytes_ == fOffset_) {
             size_t roomLeftInBuf = fAllDataReadBuf_.GetSize () - fBufferFilledUpValidBytes_;
@@ -206,7 +206,7 @@ protected:
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         // See if data already in fAllDataReadBuf_. If yes, then data available. If no, ReadNonBlocking () from upstream, and return that result.
         if (fOffset_ < fBufferFilledUpValidBytes_) {
             return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fBufferFilledUpValidBytes_ - fOffset_);
@@ -218,13 +218,13 @@ protected:
     }
     virtual SeekOffsetType GetReadOffset () const override
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         return fOffset_;
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
@@ -269,7 +269,8 @@ protected:
     }
 
 private:
-    InputStream::Ptr<byte> fSource_;
+    [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+    InputStream::Ptr<byte>                                         fSource_;
     Memory::InlineBuffer<byte> fAllDataReadBuf_; // OK cuz typically this will be very small (1k) and not really grow...but it can if we must
     size_t fOffset_;                             // text stream offset
     size_t fBufferFilledUpValidBytes_;           // nbytes of valid text in fAllDataReadBuf_
@@ -282,7 +283,7 @@ private:
  */
 MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryAdapter::New (const InputStream::Ptr<byte>& src)
 {
-    return Ptr (make_shared<Rep_> (src));
+    return Ptr{make_shared<Rep_> (src)};
 }
 
 /*
@@ -297,12 +298,10 @@ MessageStartTextInputStreamBinaryAdapter::Ptr::Ptr (const shared_ptr<InputStream
 
 bool MessageStartTextInputStreamBinaryAdapter::Ptr::AssureHeaderSectionAvailable ()
 {
-    AssertMember (&_GetRepRWRef (), Rep_);
-    return reinterpret_cast<Rep_*> (&_GetRepRWRef ())->AssureHeaderSectionAvailable ();
+    return Debug::UncheckedDynamicCast<Rep_&> (GetRepRWRef ()).AssureHeaderSectionAvailable ();
 }
 
 String MessageStartTextInputStreamBinaryAdapter::Ptr::ToString (ToStringFormat format) const
 {
-    AssertMember (&_GetRepConstRef (), Rep_);
-    return reinterpret_cast<const Rep_*> (&_GetRepConstRef ())->ToString (format);
+    return Debug::UncheckedDynamicCast<const Rep_&> (GetRepConstRef ()).ToString (format);
 }

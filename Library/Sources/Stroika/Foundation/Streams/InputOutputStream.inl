@@ -42,15 +42,15 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep<ELEMENT_TYPE>&
     {
-        Ensure (dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::_GetRepConstRef ()) ==
+        Ensure (dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::GetRepConstRef ()) ==
                 dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&OutputStream::Ptr<ELEMENT_TYPE>::_GetRepConstRef ()));
-        return *Debug::UncheckedDynamicCast<const _IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::_GetRepConstRef ());
+        return *Debug::UncheckedDynamicCast<const _IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep<ELEMENT_TYPE>&
     {
-        Ensure (&typename InputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef () == &OutputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef ());
-        return *Debug::UncheckedDynamicCast<_IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef ());
+        Ensure (&typename InputStream::Ptr<ELEMENT_TYPE>::GetRepRWRef () == &OutputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef ());
+        return *Debug::UncheckedDynamicCast<_IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     inline bool Ptr<ELEMENT_TYPE>::IsSeekable () const

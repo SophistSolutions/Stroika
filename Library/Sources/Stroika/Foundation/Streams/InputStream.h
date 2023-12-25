@@ -458,23 +458,23 @@ namespace Stroika::Foundation::Streams::InputStream {
         nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
         nonvirtual size_t       ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
 
-    protected:
+    public:
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual shared_ptr<IRep<ELEMENT_TYPE>> _GetSharedRep () const;
+        nonvirtual shared_ptr<IRep<ELEMENT_TYPE>> GetSharedRep () const;
 
-    protected:
+    public:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const IRep<ELEMENT_TYPE>& _GetRepConstRef () const;
+        nonvirtual const IRep<ELEMENT_TYPE>& GetRepConstRef () const;
 
-    protected:
+    public:
         /**
          * \req *this != nullptr
          */
-        nonvirtual IRep<ELEMENT_TYPE>& _GetRepRWRef () const;
+        nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
     };
 
     /**
