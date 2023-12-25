@@ -48,9 +48,9 @@ namespace Stroika::Foundation::Streams::InputStream {
     /**
      *  \em Design Overview
      *
-     *      o   @See Stream<T>::Ptr
+     *      o   @See Streams::Ptr<T>
      *
-     *      o   Nearly all read's on an InputStream<T>::Ptr are BLOCKING. If there is a desire to have a
+     *      o   Nearly all read's on an InputStream::Ptr<T> are BLOCKING. If there is a desire to have a
      *          non-blocking read, then call ReadNonBlocking (). All operations block except ReadNonBlocking ().
      *
      *      o   EOF is handled by a return value of zero. Once EOF is returned - any subsequent
@@ -65,8 +65,8 @@ namespace Stroika::Foundation::Streams::InputStream {
      *          a formatting effort (e.g. if the source is encrypted, and the stream is decrypting,
      *          then it might detect a format error and throw).
      *
-     *      o   InputStreamPtr and OutputStream may be logically be mixed together to make an
-     *          input/output stream: @see InputOutputStream<>
+     *      o   InputStream::Ptr and OutputStream may be logically be mixed together to make an
+     *          input/output stream: @see InputOutputStream
      *
      *      @see Stroika::Foundation::Streams::iostream for adapters to work with std::iostream.
      *

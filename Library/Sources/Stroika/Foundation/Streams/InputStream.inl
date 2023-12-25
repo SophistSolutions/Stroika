@@ -82,19 +82,12 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     inline auto InputStream::Ptr<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep<ELEMENT_TYPE>&
     {
-        EnsureMember (&inherited::GetRepConstRef (), _IRep<ELEMENT_TYPE>);
-        // reinterpret_cast faster than dynamic_cast - check equivilent
-        Assert (dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&inherited::GetRepConstRef ()) ==
-                reinterpret_cast<const _IRep<ELEMENT_TYPE>*> (&inherited::GetRepConstRef ()));
-        return *reinterpret_cast<const _IRep<ELEMENT_TYPE>*> (&inherited::GetRepConstRef ());
+        return Debug::UncheckedDynamicCast<const _IRep<ELEMENT_TYPE>&> (inherited::GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto InputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep<ELEMENT_TYPE>&
     {
-        EnsureMember (&inherited::GetRepRWRef (), _IRep<ELEMENT_TYPE>);
-        // reinterpret_cast faster than dynamic_cast - check equivilent
-        Assert (dynamic_cast<_IRep<ELEMENT_TYPE>*> (&inherited::GetRepRWRef ()) == reinterpret_cast<_IRep<ELEMENT_TYPE>*> (&inherited::GetRepRWRef ()));
-        return *reinterpret_cast<_IRep<ELEMENT_TYPE>*> (&inherited::GetRepRWRef ());
+        return Debug::UncheckedDynamicCast<_IRep<ELEMENT_TYPE>&> (inherited::GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType InputStream::Ptr<ELEMENT_TYPE>::GetOffset () const

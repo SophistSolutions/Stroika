@@ -38,25 +38,17 @@ namespace Stroika::Foundation::Streams::OutputStream {
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::_GetSharedRep () const -> shared_ptr<_IRep<ELEMENT_TYPE>>
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         return Debug::UncheckedDynamicPointerCast<_IRep<ELEMENT_TYPE>> (inherited::GetSharedRep ());
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep<ELEMENT_TYPE>&
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        // reinterpret_cast faster than dynamic_cast - check equivalent
-        Assert (dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&inherited::GetRepConstRef ()) ==
-                reinterpret_cast<const _IRep<ELEMENT_TYPE>*> (&inherited::GetRepConstRef ()));
-        return *reinterpret_cast<const _IRep<ELEMENT_TYPE>*> (&inherited::GetRepConstRef ());
+        return Debug::UncheckedDynamicCast<const _IRep<ELEMENT_TYPE>&> (inherited::GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep<ELEMENT_TYPE>&
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        // reinterpret_cast faster than dynamic_cast - check equivalent
-        Assert (dynamic_cast<_IRep<ELEMENT_TYPE>*> (&inherited::GetRepRWRef ()) == reinterpret_cast<_IRep<ELEMENT_TYPE>*> (&inherited::GetRepRWRef ()));
-        return *reinterpret_cast<_IRep<ELEMENT_TYPE>*> (&inherited::GetRepRWRef ());
+        return Debug::UncheckedDynamicCast<_IRep<ELEMENT_TYPE>&> (inherited::GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType Ptr<ELEMENT_TYPE>::GetOffset () const

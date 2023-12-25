@@ -61,6 +61,8 @@ namespace Stroika::Foundation::Debug {
      *  \req dynamic_pointer_cast<T> (arg) != nullptr
      * 
      *  \see UncheckedDynamicCast and dynamic_pointer_cast
+     * 
+     *  @todo CONSIDER USING SAME NAME - UncheckedDynamicCast - and overload. Done this way cuz std c++ does it that way, but not sure thats a good reason here.
      */
     template <typename T, typename T1>
     std::shared_ptr<T> UncheckedDynamicPointerCast (const std::shared_ptr<T1>& arg) noexcept;
