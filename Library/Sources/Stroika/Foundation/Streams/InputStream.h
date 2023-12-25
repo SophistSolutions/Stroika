@@ -21,10 +21,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   Consider making GetOffsetToEndOfStream () a virtual part of rep so it can work with the locks
- *              and be safely atomic (atomic stuff only an issue for 'Synchronized' stream and could probably just
- *              make both calls inside ITS Synchronized lock?).
- *
  *      @todo   Consider making LineEnd format (LF,CR,CRLF, or Auto) an optional param to ReadLine().
  *              Then it would ONLY require Seekable() for CRLF or Auto.
  *
@@ -217,23 +213,6 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  \note does NOT require IsSeekable () so always must be supported by rep
          */
         nonvirtual SeekOffsetType GetOffset () const;
-
-    public:
-        /**
-         * GetOffsetToEndOfStream () returns the the distance from the current offset position to the end of the stream.
-         *  This is equivalent to:
-         *      SeekOffsetType savedReadFrom = GetOffset ();
-         *      size_t  size =  Seek (Whence::eFromEnd, 0);
-         *      Seek (savedReadFrom);
-         *      return size - savedReadFrom;
-         *
-         *  \note   @todo Not sure how useful this is - I can find no calls to this in code base
-         *          Maybe for input stream to see how big a buffer to allocate to read? But even then
-         *          probably not a great strategy -- LGP 2017-06-16
-         *
-         *  \req IsSeekable ()
-         */
-        nonvirtual SeekOffsetType GetOffsetToEndOfStream () const;
 
     public:
         /**
@@ -475,6 +454,21 @@ namespace Stroika::Foundation::Streams::InputStream {
          * \req *this != nullptr
          */
         nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
+
+    public:
+        [[deprecated ("Since Strokka v3.0d5 deprecated since not widely used and very specific purpose and directly implementingable given "
+                      "apis")]] SeekOffsetType
+        GetOffsetToEndOfStream () const
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+            Require (IsOpen ());
+            SeekOffsetType savedReadFrom = GetOffset ();
+            SeekOffsetType size          = Seek (Whence::eFromEnd, 0);
+            Seek (Whence::eFromStart, savedReadFrom);
+            Assert (size >= savedReadFrom);
+            size -= savedReadFrom;
+            return size;
+        }
     };
 
     /**

@@ -6,6 +6,7 @@
 #include "../Containers/Support/ReserveTweaks.h"
 #include "../Debug/Trace.h"
 #include "../Memory/BLOB.h"
+#include "../Memory/StackBuffer.h"
 
 #include "InputStream.h"
 
@@ -35,27 +36,12 @@ Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
     Debug::TraceContextBumper ctx{L"InputStream::Ptr<byte>::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo)};
 #endif
     Require (upTo >= 1);
-    vector<byte> r; // @todo Consider using StackBuffer<>
-    if (IsSeekable ()) {
-        /*
-         * Avoid realloc's if not hard.
-         */
-        SeekOffsetType size = GetOffsetToEndOfStream ();
-        if (size >= numeric_limits<size_t>::max ()) [[unlikely]] {
-            Execution::Throw (bad_alloc{});
-        }
-        size_t sb = static_cast<size_t> (size);
-        sb        = min (sb, upTo);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Seekable case: expectedSize = %llu, reserving %llu", static_cast<unsigned long long> (size), static_cast<unsigned long long> (sb));
-#endif
-        r.reserve (sb);
-    }
+    Memory::StackBuffer<byte> r;
     for (size_t nEltsLeft = upTo; nEltsLeft != 0;) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("nEltsLeft=%llu", static_cast<unsigned long long> (nEltsLeft));
 #endif
-        byte  buf[64 * 1024];
+        byte  buf[64 * 1024];       // intentionally uninitialized
         byte* s = std::begin (buf);
         byte* e = std::end (buf);
         if (nEltsLeft < Memory::NEltsOf (buf)) {
@@ -72,10 +58,9 @@ Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
             // @todo???
             //      could also maintain linked list - std::list<> - of BLOBs, and then construct BLOB from
             //      list of BLOBs - that would be quite efficient too - maybe more
-            Containers::Support::ReserveTweaks::GetScaledUpCapacity4AddN (r, n, 32 * 1024); // grow exponentially, so not too many reallocs
             Assert (n <= nEltsLeft);
             nEltsLeft -= n;
-            r.insert (r.end (), s, s + n);
+            r.push_back (span{s, n});
         }
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

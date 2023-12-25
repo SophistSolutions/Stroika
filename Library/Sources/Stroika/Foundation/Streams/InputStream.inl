@@ -97,18 +97,6 @@ namespace Stroika::Foundation::Streams::InputStream {
         return GetRepConstRef ().GetReadOffset ();
     }
     template <typename ELEMENT_TYPE>
-    SeekOffsetType InputStream::Ptr<ELEMENT_TYPE>::GetOffsetToEndOfStream () const
-    {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
-        SeekOffsetType savedReadFrom = GetOffset ();
-        SeekOffsetType size          = Seek (Whence::eFromEnd, 0);
-        Seek (Whence::eFromStart, savedReadFrom);
-        Assert (size >= savedReadFrom);
-        size -= savedReadFrom;
-        return size;
-    }
-    template <typename ELEMENT_TYPE>
     inline SeekOffsetType InputStream::Ptr<ELEMENT_TYPE>::Seek (SeekOffsetType offset) const
     {
         Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));

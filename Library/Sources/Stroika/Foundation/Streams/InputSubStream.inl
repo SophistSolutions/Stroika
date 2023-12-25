@@ -97,7 +97,15 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                                 effectiveRealTarget = *fForcedEndInReal_;
                             }
                             else {
-                                effectiveRealTarget = fRealIn_.GetOffset () + fRealIn_.GetOffsetToEndOfStream () + offset;
+                                auto getOffsetToEndOfStream = [] (typename InputStream::Ptr<ELEMENT_TYPE> in) {
+                                    SeekOffsetType savedReadFrom = in.GetOffset ();
+                                    SeekOffsetType size          = in.Seek (Whence::eFromEnd, 0);
+                                    in.Seek (Whence::eFromStart, savedReadFrom);
+                                    Assert (size >= savedReadFrom);
+                                    size -= savedReadFrom;
+                                    return size;
+                                };
+                                effectiveRealTarget = fRealIn_.GetOffset () + getOffsetToEndOfStream (fRealIn_) + offset;
                             }
                             break;
                         default:
