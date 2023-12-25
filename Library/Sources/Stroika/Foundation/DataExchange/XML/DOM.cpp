@@ -682,7 +682,7 @@ namespace {
         protected:
             class _MyInputStrm : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
             public:
-                _MyInputStrm (const Streams::InputStream<byte>::Ptr& in)
+                _MyInputStrm (const Streams::InputStream::Ptr<byte>& in)
                     : _fSource{in}
                 {
                 }
@@ -706,11 +706,11 @@ namespace {
                 }
 
             protected:
-                Streams::InputStream<byte>::Ptr _fSource;
+                Streams::InputStream::Ptr<byte> _fSource;
             };
 
         public:
-            BinaryInputStream_InputSource_ (const Streams::InputStream<byte>::Ptr& in, const XMLCh* const bufId = nullptr)
+            BinaryInputStream_InputSource_ (const Streams::InputStream::Ptr<byte>& in, const XMLCh* const bufId = nullptr)
                 : InputSource{bufId}
                 , fSource{in}
             {
@@ -721,7 +721,7 @@ namespace {
             }
 
         protected:
-            Streams::InputStream<byte>::Ptr fSource;
+            Streams::InputStream::Ptr<byte> fSource;
         };
 
         class MyMaybeSchemaDOMParser_ {
@@ -796,7 +796,7 @@ namespace {
             // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
             // failing the read (for http://bugzilla/show_bug.cgi?id=513).
             //
-            virtual void Read (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema) override
+            virtual void Read (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema) override
             {
                 TraceContextBumper ctx{"XercesDocRep_::Read"};
                 AssertNotNull (fXMLDoc);
@@ -1006,7 +1006,7 @@ Document::Ptr Document::New (const String& documentElementName, const optional<U
     return Ptr{p};
 }
 
-Document::Ptr Document::New (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema)
+Document::Ptr Document::New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema)
 {
     DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
     using namespace XercesImpl_;

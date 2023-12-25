@@ -45,7 +45,7 @@ Request::Request (Request&& src)
     fBody_            = move (src.fBody_);
 }
 
-Request::Request (const Streams::InputStream<byte>::Ptr& inStream)
+Request::Request (const Streams::InputStream::Ptr<byte>& inStream)
     : keepAliveRequested{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::keepAliveRequested);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
@@ -74,7 +74,7 @@ Memory::BLOB Request::GetBody ()
     return *fBody_;
 }
 
-Streams::InputStream<byte>::Ptr Request::GetBodyStream ()
+Streams::InputStream::Ptr<byte> Request::GetBodyStream ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{"Request::GetBodyStream"};

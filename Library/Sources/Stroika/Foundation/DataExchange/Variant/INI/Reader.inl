@@ -16,11 +16,11 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
      ********************************** INI::Reader *********************************
      ********************************************************************************
      */
-    inline Profile Reader::ReadProfile (const Streams::InputStream<byte>::Ptr& in)
+    inline Profile Reader::ReadProfile (const Streams::InputStream::Ptr<byte>& in)
     {
         return Convert (Read (in));
     }
-    inline Profile Reader::ReadProfile (const Streams::InputStream<Characters::Character>::Ptr& in)
+    inline Profile Reader::ReadProfile (const Streams::InputStream::Ptr<Characters::Character>& in)
     {
         return Convert (Read (in));
     }

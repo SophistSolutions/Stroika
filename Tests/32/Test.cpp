@@ -179,15 +179,13 @@ namespace {
                                                                                      L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 
                 {
-                    using Memory::byte;
-                    using Streams::InputStream;
                     EXPECT_TRUE (reader.GetData ("sample_zip/TODO.txt").size () == 243);
                     EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
                     EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
                     EXPECT_TRUE (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
-                    EXPECT_TRUE (TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+                    EXPECT_TRUE (TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
                     EXPECT_TRUE (
-                        TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
+                        TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
                     try {
                         auto i = reader.GetData ("file-not-found");
                         EXPECT_TRUE (false);
@@ -370,16 +368,15 @@ namespace {
                 EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
                                                                                      "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
                 {
-                    using Streams::InputStream;
                     EXPECT_TRUE (reader.GetData ("sample_zip/TODO.txt").size () == 243);
                     EXPECT_TRUE (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
                     EXPECT_TRUE (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
                     EXPECT_TRUE (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
-                    EXPECT_TRUE (TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+                    EXPECT_TRUE (TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
                     EXPECT_TRUE (
-                        TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
+                        TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream::Ptr<byte>> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
                     try {
-                        auto i = reader.GetData (L"file-not-found");
+                        auto i = reader.GetData ("file-not-found");
                         EXPECT_TRUE (false);
                     }
                     catch (...) {
@@ -1180,7 +1177,7 @@ namespace {
                 const Writer::Options kOptions_{false};
                 Writer (kOptions_).Write (kTestVariant_, out);
             }
-            void ReadJSON_ (const Streams::InputStream<byte>::Ptr& in)
+            void ReadJSON_ (const Streams::InputStream::Ptr<byte>& in)
             {
                 using namespace DataExchange::Variant::JSON;
                 EXPECT_TRUE (kTestVariant_ == Reader{}.Read (in));

@@ -47,11 +47,11 @@ public:
     {
         return ".txt"sv;
     }
-    virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
+    virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
     {
         return Read (Streams::TextReader::New (in));
     }
-    virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
+    virtual VariantValue Read (const Streams::InputStream::Ptr<Character>& in) override
     {
         // @todo consider if this functional style is more clear than a nested for-loop. Was harder for me to
         // write this way, but that could be my inexpereince... --LGP 2022-12-04
@@ -59,7 +59,7 @@ public:
             return VariantValue{line.Map<Iterable<VariantValue>> ([] (const String& i) { return VariantValue{i}; })};
         })};
     }
-    nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const
+    nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream::Ptr<Character>& in) const
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::ReadMatrix"};
@@ -83,12 +83,12 @@ CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDelimiters)
 {
 }
 
-Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<byte>::Ptr& in) const
+Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream::Ptr<byte>& in) const
 {
     return ReadMatrix (Streams::TextReader::New (in));
 }
 
-Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const
+Iterable<Sequence<String>> CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream::Ptr<Character>& in) const
 {
     return Debug::UncheckedDynamicCast<const Rep_&> (_GetRep ()).ReadMatrix (in);
 }

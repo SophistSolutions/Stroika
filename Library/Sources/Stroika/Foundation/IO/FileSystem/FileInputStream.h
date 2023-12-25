@@ -44,7 +44,7 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
     using Characters::String;
     using namespace FileStream;
 
-    using Ptr = Streams::InputStream<byte>::Ptr;
+    using Ptr = Streams::InputStream::Ptr<byte>;
     /**
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
@@ -111,10 +111,10 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
     Ptr New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
     Ptr                             New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd,
                                          AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
-    Streams::InputStream<byte>::Ptr New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
-    Streams::InputStream<byte>::Ptr New (const filesystem::path& fileName, BufferFlag bufferFlag);
-    Streams::InputStream<byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
-    Streams::InputStream<byte>::Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
+    Streams::InputStream::Ptr<byte> New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
+    Streams::InputStream::Ptr<byte> New (const filesystem::path& fileName, BufferFlag bufferFlag);
+    Streams::InputStream::Ptr<byte> New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
+    Streams::InputStream::Ptr<byte> New (FileDescriptorType fd, BufferFlag bufferFlag);
 
 }
 

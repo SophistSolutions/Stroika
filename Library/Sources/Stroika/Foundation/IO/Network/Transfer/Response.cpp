@@ -22,6 +22,7 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
 using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Streams;
 
 /*
  ********************************************************************************
@@ -75,15 +76,15 @@ String Response::ToString () const
     return sb.str ();
 }
 
-InputStream<byte>::Ptr Response::GetDataBinaryInputStream () const
+InputStream::Ptr<byte> Response::GetDataBinaryInputStream () const
 {
     if (not fDataBinaryInputStream_.has_value ()) {
-        fDataBinaryInputStream_ = fData_.As<InputStream<byte>::Ptr> ();
+        fDataBinaryInputStream_ = fData_.As<InputStream::Ptr<byte>> ();
     }
     return *fDataBinaryInputStream_;
 }
 
-InputStream<Character>::Ptr Response::GetDataTextInputStream () const
+InputStream::Ptr<Character> Response::GetDataTextInputStream () const
 {
     if (not fDataTextInputStream_.has_value ()) {
         fDataTextInputStream_ = Streams::TextReader::New (GetDataBinaryInputStream (),

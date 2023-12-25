@@ -34,8 +34,8 @@ namespace Stroika::Foundation::Streams::TextToByteReader {
      * 
      *  WONT change this part of the API - just adding overloads, so OK to release as-is - 2023-07-10
      */
-    InputStream<byte>::Ptr New (const InputStream<Character>::Ptr& srcStream);
-    InputStream<byte>::Ptr New (const Traversal::Iterable<Character>& srcText);
+    InputStream::Ptr<byte> New (const InputStream::Ptr<Character>& srcStream);
+    InputStream::Ptr<byte> New (const Traversal::Iterable<Character>& srcText);
 
 }
 

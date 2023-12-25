@@ -39,7 +39,7 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 ********************************************************************************
 */
 namespace {
-    void ParsePacketAndRespond_ (Streams::InputStream<Character>::Ptr in, const Iterable<Advertisement>& advertisements,
+    void ParsePacketAndRespond_ (Streams::InputStream::Ptr<Character> in, const Iterable<Advertisement>& advertisements,
                                  ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo)
     {
         String firstLine = in.ReadLine ().Trim ();

@@ -18,11 +18,11 @@ namespace Stroika::Foundation::Streams::TextReader {
      ***************************** TextReader::New **********************************
      ********************************************************************************
      */
-    inline auto New (const InputStream<byte>::Ptr& src) -> Ptr
+    inline auto New (const InputStream::Ptr<byte>& src) -> Ptr
     {
         return New (src, src.GetSeekability ());
     }
-    inline auto New (const InputStream<Character>::Ptr& src) -> Ptr
+    inline auto New (const InputStream::Ptr<Character>& src) -> Ptr
     {
         return src;
     }
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Streams::TextReader {
         }
     }
     [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] inline Ptr
-    New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
+    New (Execution::InternallySynchronized internallySynchronized, const InputStream::Ptr<byte>& src,
          SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed)
     {
         switch (internallySynchronized) {
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Streams::TextReader {
         }
     }
     [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] inline Ptr
-    New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
+    New (Execution::InternallySynchronized internallySynchronized, const InputStream::Ptr<byte>& src,
          const optional<Characters::String>& charset, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed)
     {
         auto codeCvt = charset ? Characters::CodeCvt<>{Characters::Charset{*charset}} : Characters::CodeCvt<>{};
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Streams::TextReader {
         }
     }
     [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] inline auto
-    New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src) -> Ptr
+    New (Execution::InternallySynchronized internallySynchronized, const InputStream::Ptr<Character>& src) -> Ptr
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:

@@ -40,7 +40,10 @@ namespace Stroika::Foundation::Memory {
     class BLOB;
 }
 
-namespace Stroika::Foundation::Streams {
+namespace Stroika::Foundation::Streams::InputStream {
+
+    template <typename ELEMENT_TYPE>
+    class _IRep;
 
     /**
      *  \em Design Overview
@@ -122,24 +125,6 @@ namespace Stroika::Foundation::Streams {
      *        All subtypes of InputStream () must have the Read (and related Peek etc) methods implementation be a cancelation point so that those reads can be aborted.
      *        @todo think out Seek () - not sure about this - but probably
      */
-    template <typename ELEMENT_TYPE>
-    class InputStream : public Stream<ELEMENT_TYPE> {
-    protected:
-        /**
-         *  'InputStream' is a quasi-namespace: use Ptr or New () members.
-         */
-        InputStream ()                   = delete;
-        InputStream (const InputStream&) = delete;
-
-    public:
-        using ElementType = typename Stream<ELEMENT_TYPE>::ElementType;
-
-    public:
-        class Ptr;
-
-    public:
-        class _IRep;
-    };
 
     /**
      *  \brief  InputStream<>::Ptr is Smart pointer (with abstract Rep) class defining the interface to reading from
@@ -147,18 +132,21 @@ namespace Stroika::Foundation::Streams {
      *
      *  @see InputStream<ELEMENT_TYPE>
      *
-     *  \note Since InputStream<ELEMENT_TYPE>::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+     *  \note Since InputStream::Ptr<ELEMENT_TYPE> is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
      *        the underlying thread object.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      */
     template <typename ELEMENT_TYPE>
-    class InputStream<ELEMENT_TYPE>::Ptr : public Stream<ELEMENT_TYPE>::Ptr {
+    class Ptr : public Stream<ELEMENT_TYPE>::Ptr {
     private:
         using inherited = typename Stream<ELEMENT_TYPE>::Ptr;
 
     protected:
         using AssertExternallySynchronizedMutex = typename inherited::AssertExternallySynchronizedMutex;
+
+    public:
+        using ElementType = ELEMENT_TYPE;
 
     public:
         /**
@@ -170,7 +158,7 @@ namespace Stroika::Foundation::Streams {
         Ptr (nullptr_t);
         Ptr (const Ptr&)     = default;
         Ptr (Ptr&&) noexcept = default;
-        Ptr (const shared_ptr<_IRep>& rep);
+        Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep);
 
     public:
         /**
@@ -392,7 +380,7 @@ namespace Stroika::Foundation::Streams {
          *      if (n==sizeof(tmp)) {  return tmp; } else throw EOFException (...);
          *
          *  \note   If not enough bytes are available to return a POD_TYPE, EOFException will be thrown.
-         *  \note   Only defined on Binary Streams (InputStream<byte>::Ptr), but POD_TYPE can be any (is_pod) type.
+         *  \note   Only defined on Binary Streams (InputStream::Ptr<byte>), but POD_TYPE can be any (is_pod) type.
          *  \note   ReadRaw will read exactly the number of records requested, or throw an EOF exception.
          */
         template <typename POD_TYPE>
@@ -477,22 +465,19 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+        nonvirtual shared_ptr<_IRep<ELEMENT_TYPE>> _GetSharedRep () const;
 
     protected:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const _IRep& _GetRepConstRef () const;
+        nonvirtual const _IRep<ELEMENT_TYPE>& _GetRepConstRef () const;
 
     protected:
         /**
          * \req *this != nullptr
          */
-        nonvirtual _IRep& _GetRepRWRef () const;
-
-    private:
-        friend class InputStream<ELEMENT_TYPE>;
+        nonvirtual _IRep<ELEMENT_TYPE>& _GetRepRWRef () const;
     };
 
     /**
@@ -500,7 +485,7 @@ namespace Stroika::Foundation::Streams {
      *
      */
     template <typename ELEMENT_TYPE>
-    class InputStream<ELEMENT_TYPE>::_IRep : public Stream<ELEMENT_TYPE>::_IRep {
+    class _IRep : public Stream<ELEMENT_TYPE>::_IRep {
     public:
         using ElementType = ELEMENT_TYPE;
 

@@ -231,7 +231,7 @@ namespace Stroika::Foundation::Memory {
          *          o   pair<const uint8_t*, const uint8_t*>
          *          o   vector<byte>
          *          o   vector<uint8_t>
-         *          o   Streams::InputStream<byte>::Ptr
+         *          o   Streams::InputStream::Ptr<byte>
          *          o   string      (bytes as characters - note this MAY include NUL-bytes - https://stackoverflow.com/questions/2845769/can-a-stdstring-contain-embedded-nulls)
          *          o   any T where is_trivially_copyable
          * 
@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Memory {
                 or same_as<T,pair<const uint8_t*, const uint8_t*>>
                 or same_as<T,vector<byte>>
                 or same_as<T,vector<uint8_t>>
-                or same_as<T,Streams::InputStream<byte>::Ptr>
+                or same_as<T,Streams::InputStream::Ptr<byte>>
                 or same_as<T,string>
                 or is_trivially_copyable_v<T>
             )
@@ -299,7 +299,7 @@ namespace Stroika::Foundation::Memory {
          *  Trouble is - will it cause ambiguity later, and need to be removed. No obvious way to tell but testing a bit..
          * --LGP 2023-12-21
         */
-        /*explicit*/ operator Streams::InputStream<byte>::Ptr () const;
+        /*explicit*/ operator Streams::InputStream::Ptr<byte> () const;
 
     public:
         /**

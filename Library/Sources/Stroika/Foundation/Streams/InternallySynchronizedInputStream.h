@@ -30,13 +30,13 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
      * 
      *  \par Example Usage
      *      \code
-     *          Streams::InputStream<byte>::Ptr syncStream = Streams::InternallySynchronizedInputStream<byte>::New (otherInputStreamToBeSharedAcrossThread);
+     *          Streams::InputStream::Ptr<byte> syncStream = Streams::InternallySynchronizedInputStream::New<byte> (otherInputStreamToBeSharedAcrossThread);
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
     template <typename BASE_REP_TYPE, typename... ARGS>
-    typename InputStream<typename BASE_REP_TYPE::ElementType>::Ptr New (ARGS&&... args);
+    typename InputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (ARGS&&... args);
 
 }
 

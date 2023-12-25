@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
         eCRLF_LB,
         eAuto_LB = eCRLF_LB
     };
-    string EncodeBase64 (const Streams::InputStream<byte>::Ptr& from, LineBreak lb = LineBreak::eAuto_LB);
+    string EncodeBase64 (const Streams::InputStream::Ptr<byte>& from, LineBreak lb = LineBreak::eAuto_LB);
     string EncodeBase64 (const Memory::BLOB& from, LineBreak lb = LineBreak::eAuto_LB);
 
 }

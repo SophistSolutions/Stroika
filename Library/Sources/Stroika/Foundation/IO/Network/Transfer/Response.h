@@ -41,7 +41,6 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     using Containers::Mapping;
     using DataExchange::InternetMediaType;
     using Memory::BLOB;
-    using Streams::InputStream;
 
     /**
      *  DESIGN NOTES:
@@ -149,7 +148,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *          VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
          *      \endcode
          */
-        nonvirtual InputStream<byte>::Ptr GetDataBinaryInputStream () const;
+        nonvirtual Streams::InputStream::Ptr<byte> GetDataBinaryInputStream () const;
 
     public:
         /**
@@ -164,7 +163,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *          String answer = r.GetDataTextInputStream ().ReadAll ();
          *      \endcode
          */
-        nonvirtual InputStream<Characters::Character>::Ptr GetDataTextInputStream () const;
+        nonvirtual Streams::InputStream::Ptr<Characters::Character> GetDataTextInputStream () const;
 
     public:
         /**
@@ -202,12 +201,12 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual String ToString () const;
 
     private:
-        BLOB fData_;                                                      // usually empty, but provided for some methods like POST
-        mutable optional<InputStream<byte>::Ptr> fDataBinaryInputStream_; // store so subsequent calls to GetBinaryStream() returns same offset/pointer
-        mutable optional<InputStream<Characters::Character>::Ptr> fDataTextInputStream_;
-        Mapping<String, String>                                   fHeaders_;
-        HTTP::Status                                              fStatus_{};
-        optional<SSLResultInfo>                                   fServerEndpointSSLInfo_;
+        BLOB fData_;                                                               // usually empty, but provided for some methods like POST
+        mutable optional<Streams::InputStream::Ptr<byte>> fDataBinaryInputStream_; // store so subsequent calls to GetBinaryStream() returns same offset/pointer
+        mutable optional<Streams::InputStream::Ptr<Characters::Character>> fDataTextInputStream_;
+        Mapping<String, String>                                            fHeaders_;
+        HTTP::Status                                                       fStatus_{};
+        optional<SSLResultInfo>                                            fServerEndpointSSLInfo_;
     };
 }
 

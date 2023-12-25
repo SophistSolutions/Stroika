@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline void CopyAll (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream::Ptr<ELEMENT_TYPE> to, size_t bufferSize)
+    inline void CopyAll (typename InputStream::Ptr<ELEMENT_TYPE> from, typename OutputStream::Ptr<ELEMENT_TYPE> to, size_t bufferSize)
     {
         CopyAll_Buffered<ELEMENT_TYPE> (from, to, bufferSize);
     }
@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline void CopyAll_OneRead (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream::Ptr<ELEMENT_TYPE> to)
+    inline void CopyAll_OneRead (typename InputStream::Ptr<ELEMENT_TYPE> from, typename OutputStream::Ptr<ELEMENT_TYPE> to)
     {
         to.Write (from.ReadAll ());
     }
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    void CopyAll_Buffered (typename InputStream<ELEMENT_TYPE>::Ptr from, typename OutputStream::Ptr<ELEMENT_TYPE> to, size_t bufferSize)
+    void CopyAll_Buffered (typename InputStream::Ptr<ELEMENT_TYPE> from, typename OutputStream::Ptr<ELEMENT_TYPE> to, size_t bufferSize)
     {
         Memory::StackBuffer<ELEMENT_TYPE> buf;
         if constexpr (is_trivially_copyable_v<ELEMENT_TYPE>) {

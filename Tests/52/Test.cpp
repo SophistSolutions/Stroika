@@ -1073,19 +1073,19 @@ namespace {
             mapper.AddCommonType<SpectrumType> ();
             mapper.AddCommonType<PersistenceScanAuxDataType> ();
             mapper.AddClass<ScanDetails_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                {L"Scan-ID", StructFieldMetaInfo{&ScanDetails_::fScanID}},
-                {L"Scan-Start", StructFieldMetaInfo{&ScanDetails_::fScanStart}},
-                {L"Scan-End", StructFieldMetaInfo{&ScanDetails_::fScanEnd}},
-                {L"Scan-Kind", StructFieldMetaInfo{&ScanDetails_::fScanKind}},
-                {L"Scan-Label", StructFieldMetaInfo{&ScanDetails_::fScanLabel}},
-                {L"Raw-Spectrum", StructFieldMetaInfo{&ScanDetails_::fRawSpectrum}},
-                {L"Aux-Data", StructFieldMetaInfo{&ScanDetails_::fAuxData}},
-                {L"Background-ID", StructFieldMetaInfo{&ScanDetails_::fUseBackground}},
-                {L"Reference-ID", StructFieldMetaInfo{&ScanDetails_::fUseReference}},
+                {"Scan-ID"sv, StructFieldMetaInfo{&ScanDetails_::fScanID}},
+                {"Scan-Start"sv, StructFieldMetaInfo{&ScanDetails_::fScanStart}},
+                {"Scan-End"sv, StructFieldMetaInfo{&ScanDetails_::fScanEnd}},
+                {"Scan-Kind"sv, StructFieldMetaInfo{&ScanDetails_::fScanKind}},
+                {"Scan-Label"sv, StructFieldMetaInfo{&ScanDetails_::fScanLabel}},
+                {"Raw-Spectrum"sv, StructFieldMetaInfo{&ScanDetails_::fRawSpectrum}},
+                {"Aux-Data"sv, StructFieldMetaInfo{&ScanDetails_::fAuxData}},
+                {"Background-ID"sv, StructFieldMetaInfo{&ScanDetails_::fUseBackground}},
+                {"Reference-ID"sv, StructFieldMetaInfo{&ScanDetails_::fUseReference}},
             });
             return mapper;
         }
-        ScanDetails_ doRead_ (const InputStream<byte>::Ptr in)
+        ScanDetails_ doRead_ (const InputStream::Ptr<byte> in)
         {
             using namespace DataExchange;
             VariantValue                     o{Variant::JSON::Reader{}.Read (in)};

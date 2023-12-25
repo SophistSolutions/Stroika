@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
     struct SystemHashDigester {
         using ReturnType = size_t;
 
-        ReturnType operator() (const Streams::InputStream<byte>::Ptr& from) const;
+        ReturnType operator() (const Streams::InputStream::Ptr<byte>& from) const;
         ReturnType operator() (const byte* from, const byte* to) const;
         ReturnType operator() (const BLOB& from) const;
     };

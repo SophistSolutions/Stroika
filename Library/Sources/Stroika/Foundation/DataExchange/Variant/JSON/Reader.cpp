@@ -54,7 +54,7 @@ namespace {
 
     // use StreamReader to get buffering of input data (performance tweak), and a couple helper methods
     struct MyBufferedStreamReader_ : Streams::StreamReader<Character> {
-        MyBufferedStreamReader_ (const Streams::InputStream<ElementType>::Ptr& underlyingReadFromStreamAdopted)
+        MyBufferedStreamReader_ (const Streams::InputStream::Ptr<ElementType>& underlyingReadFromStreamAdopted)
             : StreamReader<Character>{underlyingReadFromStreamAdopted}
         {
         }
@@ -473,12 +473,12 @@ public:
         static const String kResult_ = ".json"sv;
         return kResult_;
     }
-    virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
+    virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
     {
         using namespace Streams;
         return Read (TextReader::New (in, SeekableFlag::eSeekable));
     }
-    virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) override
+    virtual VariantValue Read (const Streams::InputStream::Ptr<Characters::Character>& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::NativeRep_::Read"};
@@ -775,7 +775,7 @@ public:
         static const String kResult_ = ".json"sv;
         return kResult_;
     }
-    virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
+    virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::BoostRep_::Read"};
@@ -845,7 +845,7 @@ public:
             Execution::Throw (DataExchange::BadFormatException{Characters::ToString (current_exception ())});
         }
     }
-    virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) override
+    virtual VariantValue Read (const Streams::InputStream::Ptr<Characters::Character>& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::BoostRep_::Read"};
