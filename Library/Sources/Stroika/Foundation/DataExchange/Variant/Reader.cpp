@@ -20,17 +20,17 @@ using std::byte;
  ******************************* Variant::Reader ********************************
  ********************************************************************************
  */
-Streams::InputStream<byte>::Ptr Variant::Reader::_ToByteReader (istream& in)
+Streams::InputStream::Ptr<byte> Variant::Reader::_ToByteReader (istream& in)
 {
     return InputStreamFromStdIStream::New<byte> (in);
 }
 
-Streams::InputStream<Characters::Character>::Ptr Variant::Reader::_ToCharacterReader (const Traversal::Iterable<Characters::Character>& in)
+Streams::InputStream::Ptr<Characters::Character> Variant::Reader::_ToCharacterReader (const Traversal::Iterable<Characters::Character>& in)
 {
     return Streams::TextReader::New (in);
 }
 
-Streams::InputStream<Characters::Character>::Ptr Variant::Reader::_ToCharacterReader (wistream& in)
+Streams::InputStream::Ptr<Characters::Character> Variant::Reader::_ToCharacterReader (wistream& in)
 {
     return InputStreamFromStdIStream::New<Characters::Character> (in);
 }

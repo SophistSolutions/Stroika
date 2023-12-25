@@ -30,9 +30,9 @@ namespace {
 // http://stackoverflow.com/questions/4400678/http-header-should-use-what-character-encoding
 // but for now this seems and adequate hack
 
-class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedMutex {
+class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream::_IRep<Character>, protected Debug::AssertExternallySynchronizedMutex {
 public:
-    Rep_ (const InputStream<byte>::Ptr& src)
+    Rep_ (const InputStream::Ptr<byte>& src)
         : fSource_{src}
         , fAllDataReadBuf_{kDefaultBufSize_}
         , fOffset_{0}
@@ -269,7 +269,7 @@ protected:
     }
 
 private:
-    InputStream<byte>::Ptr fSource_;
+    InputStream::Ptr<byte> fSource_;
     Memory::InlineBuffer<byte> fAllDataReadBuf_; // OK cuz typically this will be very small (1k) and not really grow...but it can if we must
     size_t fOffset_;                             // text stream offset
     size_t fBufferFilledUpValidBytes_;           // nbytes of valid text in fAllDataReadBuf_
@@ -280,7 +280,7 @@ private:
  ********* IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter **********
  ********************************************************************************
  */
-MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryAdapter::New (const InputStream<byte>::Ptr& src)
+MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryAdapter::New (const InputStream::Ptr<byte>& src)
 {
     return Ptr (make_shared<Rep_> (src));
 }
@@ -290,7 +290,7 @@ MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryA
  ******** IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter::Ptr ******
  ********************************************************************************
  */
-MessageStartTextInputStreamBinaryAdapter::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
+MessageStartTextInputStreamBinaryAdapter::Ptr::Ptr (const shared_ptr<InputStream::_IRep<Character>>& from)
     : inherited{from}
 {
 }

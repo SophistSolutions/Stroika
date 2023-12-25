@@ -411,8 +411,9 @@ namespace {
                 if (optional<filesystem::path> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName)) {
                     filesystem::path fn = *blockDeviceInfoPath / "queue/hw_sector_size";
                     try {
-                        o = String2Int<uint32_t> (
-                            TextReader::New (IO::FileSystem::FileInputStream::New (fn, IO::FileSystem::FileInputStream::eNotSeekable)).ReadAll ().Trim ());
+                        o = String2Int<uint32_t> (TextReader::New (IO::FileSystem::FileInputStream::New (fn, IO::FileSystem::FileInputStream::eNotSeekable))
+                                                      .ReadAll ()
+                                                      .Trim ());
                         _fContext.rwget ().rwref ()->fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                     }
                     catch (...) {
@@ -553,7 +554,7 @@ namespace {
             static const filesystem::path                          kProcMemInfoFileName_{"/proc/diskstats"sv};
             // Note - /procfs files always unseekable
             for (const Sequence<String>& line :
-                 reader.ReadMatrix ( IO::FileSystem::FileInputStream::New (kProcMemInfoFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
+                 reader.ReadMatrix (IO::FileSystem::FileInputStream::New (kProcMemInfoFileName_, IO::FileSystem::FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Filesystem::ReadProcFS_diskstats_ linesize=%d, line[0]=%s", line.size (),
                           line.empty () ? L"" : line[0].c_str ());

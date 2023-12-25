@@ -61,8 +61,8 @@ namespace Stroika::Foundation::DataExchange::Variant {
     public:
         /**
          */
-        nonvirtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in);
-        nonvirtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in);
+        nonvirtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in);
+        nonvirtual VariantValue Read (const Streams::InputStream::Ptr<Characters::Character>& in);
         nonvirtual VariantValue Read (const Traversal::Iterable<Characters::Character>& in);
         nonvirtual VariantValue Read (const Memory::BLOB& in);
         nonvirtual VariantValue Read (istream& in);
@@ -76,18 +76,18 @@ namespace Stroika::Foundation::DataExchange::Variant {
         /**
          * \brief simple helper so subclasses can more easily provide varied Read overloads
          */
-        static Streams::InputStream<byte>::Ptr _ToByteReader (const Streams::InputStream<byte>::Ptr& in);
-        static Streams::InputStream<byte>::Ptr _ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in);
-        static Streams::InputStream<byte>::Ptr _ToByteReader (const Memory::BLOB& in);
-        static Streams::InputStream<byte>::Ptr _ToByteReader (istream& in);
+        static Streams::InputStream::Ptr<byte> _ToByteReader (const Streams::InputStream::Ptr<byte>& in);
+        static Streams::InputStream::Ptr<byte> _ToByteReader (const Streams::InputStream::Ptr<Characters::Character>& in);
+        static Streams::InputStream::Ptr<byte> _ToByteReader (const Memory::BLOB& in);
+        static Streams::InputStream::Ptr<byte> _ToByteReader (istream& in);
 
     protected:
         /**
          * \brief simple helper so subclasses can more easily provide varied Read overloads
          */
-        static Streams::InputStream<Characters::Character>::Ptr _ToCharacterReader (const Streams::InputStream<Characters::Character>::Ptr& in);
-        static Streams::InputStream<Characters::Character>::Ptr _ToCharacterReader (const Traversal::Iterable<Characters::Character>& in);
-        static Streams::InputStream<Characters::Character>::Ptr _ToCharacterReader (wistream& in);
+        static Streams::InputStream::Ptr<Characters::Character> _ToCharacterReader (const Streams::InputStream::Ptr<Characters::Character>& in);
+        static Streams::InputStream::Ptr<Characters::Character> _ToCharacterReader (const Traversal::Iterable<Characters::Character>& in);
+        static Streams::InputStream::Ptr<Characters::Character> _ToCharacterReader (wistream& in);
 
     protected:
         using _SharedPtrIRep = shared_ptr<_IRep>;
@@ -107,8 +107,8 @@ namespace Stroika::Foundation::DataExchange::Variant {
         virtual ~_IRep ()                                                                        = default;
         virtual _SharedPtrIRep Clone () const                                                    = 0;
         virtual String         GetDefaultFileSuffix () const                                     = 0;
-        virtual VariantValue   Read (const Streams::InputStream<byte>::Ptr& in)                  = 0;
-        virtual VariantValue   Read (const Streams::InputStream<Characters::Character>::Ptr& in) = 0;
+        virtual VariantValue   Read (const Streams::InputStream::Ptr<byte>& in)                  = 0;
+        virtual VariantValue   Read (const Streams::InputStream::Ptr<Characters::Character>& in) = 0;
     };
 
 }

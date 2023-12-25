@@ -13,7 +13,7 @@
  *
  */
 
-namespace Stroika::Foundation::IO::Network::HTTP {
+namespace Stroika::Foundation::IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter {
 
     /**
      * This can be used to create a readable stream of strings (readline) - which
@@ -25,7 +25,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      * only reads the minimal amount needed and will be placed at the right position when handed
      * to the next process to interpret.
      *
-     *  Though this InputStream<Character>::Ptr is seekable, it only supports seeking backwards over materials
+     *  Though this InputStream::Ptr<Character> is seekable, it only supports seeking backwards over materials
      *  already read. It never allows seeking past its last read point (throws not supported).
      *
      *  This adpater defines 0 seek offset as the point at which its constructed. And then you can seek to any locaiton
@@ -37,42 +37,40 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character> {
-    public:
-        class Ptr;
+    // class MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character> {
+    // public:
+    class Ptr;
 
-    public:
-        /**
+    //   public:
+    /**
         */
-        enum ToStringFormat {
-            eAsBytes,
-            eAsString,
+    enum ToStringFormat {
+        eAsBytes,
+        eAsString,
 
-            eDEFAULT = eAsString
-        };
-
-    public:
-        /**
-         */
-        static Ptr New (const Streams::InputStream<byte>::Ptr& src);
-
-    private:
-        class Rep_;
+        eDEFAULT = eAsString
     };
+
+    //  public:
+    /**
+         */
+    Ptr New (const Streams::InputStream::Ptr<byte>& src);
+
+    // private:
+    class Rep_;
+    //  };
 
     /**
      *  Ptr is a copyable smart pointer to a MessageStartTextInputStreamBinaryAdapter.
      */
-    class MessageStartTextInputStreamBinaryAdapter::Ptr : public Streams::InputStream<Characters::Character>::Ptr {
+    class Ptr : public Streams::InputStream::Ptr<Characters::Character> {
     private:
-        using inherited = typename InputStream<Characters::Character>::Ptr;
+        using inherited = typename Streams::InputStream::Ptr<Characters::Character>;
 
     public:
         Ptr ()           = default;
         Ptr (const Ptr&) = default;
-
-    protected:
-        Ptr (const shared_ptr<InputStream<Characters::Character>::_IRep>& from);
+        Ptr (const shared_ptr<Streams::InputStream::_IRep<Characters::Character>>& from);
 
     public:
         /*
@@ -90,9 +88,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  @see Characters::ToString ()
          */
         nonvirtual Characters::String ToString (ToStringFormat format = ToStringFormat::eDEFAULT) const;
-
-    private:
-        friend class MessageStartTextInputStreamBinaryAdapter;
     };
 
 }

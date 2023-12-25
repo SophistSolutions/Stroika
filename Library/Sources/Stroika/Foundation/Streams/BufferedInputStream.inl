@@ -20,9 +20,9 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
+    class Rep_ : public InputStream::_IRep<ELEMENT_TYPE> {
     public:
-        Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
+        Rep_ (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn)
             : fRealIn_{realIn}
         {
         }
@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
         }
 
     private:
-        typename InputStream<ELEMENT_TYPE>::Ptr                        fRealIn_;
+        typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 
@@ -76,12 +76,12 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn) -> Ptr<ELEMENT_TYPE>
+    inline auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn) -> Ptr<ELEMENT_TYPE>
     {
-        return typename InputStream<ELEMENT_TYPE>::Ptr{make_shared<Rep_<ELEMENT_TYPE>> (realIn)};
+        return typename InputStream::Ptr<ELEMENT_TYPE>{make_shared<Rep_<ELEMENT_TYPE>> (realIn)};
     }
     template <typename ELEMENT_TYPE>
-    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn)
+    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename InputStream::Ptr<ELEMENT_TYPE>& realIn)
         -> Ptr<ELEMENT_TYPE>
     {
         switch (internallySynchronized) {

@@ -25,9 +25,9 @@ namespace Stroika::Foundation::DataExchange::XML {
      *  @see ObjectReaderRegistry for examples of one way to use this
      */
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-    void SAXParse (Provider saxProvider, const Streams::InputStream<byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback,
+    void SAXParse (Provider saxProvider, const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
                    const Schema::Ptr& schema = nullptr, Execution::ProgressMonitor::Updater progress = nullptr);
-    void SAXParse (const Streams::InputStream<byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback,
+    void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
                    const Schema::Ptr& schema = nullptr, Execution::ProgressMonitor::Updater progress = nullptr);
 #endif
 

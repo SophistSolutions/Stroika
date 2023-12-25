@@ -436,7 +436,7 @@ namespace {
                         if (_fOptions.fProcessNameReadPolicy == Options::eAlways or
                             (_fOptions.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
                             processDetails.fProcessName =
-                                OptionallyReadIfFileExists_<String> (dir / "comm"sv, [] (const Streams::InputStream<byte>::Ptr& in) {
+                                OptionallyReadIfFileExists_<String> (dir / "comm"sv, [] (const Streams::InputStream::Ptr<byte>& in) {
                                     return TextReader::New (in).ReadAll ().Trim ();
                                 });
                         }
@@ -593,7 +593,7 @@ namespace {
         }
         template <typename T>
         static optional<T> OptionallyReadIfFileExists_ (const filesystem::path&                                     fullPath,
-                                                        const function<T (const Streams::InputStream<byte>::Ptr&)>& reader)
+                                                        const function<T (const Streams::InputStream::Ptr<byte>&)>& reader)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadAbortForCall (
@@ -603,9 +603,9 @@ namespace {
         }
         static Sequence<String> ReadFileStrings_ (const filesystem::path& fullPath)
         {
-            Sequence<String>                results;
-            Streams::InputStream<byte>::Ptr in = IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable);
-            StringBuilder                   sb;
+            Sequence<String> results;
+            Streams::InputStream::Ptr<byte> in = IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable);
+            StringBuilder sb;
             for (optional<byte> b; (b = in.Read ()).has_value ();) {
                 if ((*b) == byte{0}) {
                     results.Append (sb.As<String> ());
@@ -632,7 +632,7 @@ namespace {
         static optional<String> ReadCmdLineString_ (const filesystem::path& fullPath2CmdLineFile)
         {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
-            auto ReadFileString_ = [] (const Streams::InputStream<byte>::Ptr& in) -> String {
+            auto ReadFileString_ = [] (const Streams::InputStream::Ptr<byte>& in) -> String {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadCmdLineString_"};
 #endif
@@ -839,10 +839,10 @@ namespace {
             Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_",
                                           L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
-            StatFileInfo_                   result{};
-            Streams::InputStream<byte>::Ptr in = IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable);
-            byte                            data[10 * 1024];
-            size_t                          nBytes = in.ReadAll (begin (data), end (data));
+            StatFileInfo_ result{};
+            Streams::InputStream::Ptr<byte> in = IO::FileSystem::FileInputStream::New (fullPath, IO::FileSystem::FileInputStream::eNotSeekable);
+            byte   data[10 * 1024];
+            size_t nBytes = in.ReadAll (begin (data), end (data));
             Assert (nBytes <= NEltsOf (data));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("nBytes read = %d", nBytes);

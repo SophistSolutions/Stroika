@@ -28,7 +28,7 @@
 namespace Stroika::Foundation::Streams::iostream ::InputStreamFromStdIStream {
 
     template <typename ELEMENT_TYPE>
-    using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
+    using Ptr = typename InputStream::Ptr<ELEMENT_TYPE>;
 
     /**
      *  InputStreamFromStdIStream wraps an argument std::istream or std::wistream or std::basic_istream<> as a Stroika InputStream object

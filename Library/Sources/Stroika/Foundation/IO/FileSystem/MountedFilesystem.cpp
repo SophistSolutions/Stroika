@@ -103,7 +103,7 @@ namespace {
     /* 
      *  Something like this is used on many unix systems.
      */
-    KeyedCollection<MountedFilesystemType, filesystem::path> ReadMountInfo_MTabLikeFile_ (const Streams::InputStream<byte>::Ptr& readStream)
+    KeyedCollection<MountedFilesystemType, filesystem::path> ReadMountInfo_MTabLikeFile_ (const Streams::InputStream::Ptr<byte>& readStream)
     {
         /*
          *  I haven't found this clearly documented yet, but it appears that a filesystem can be over-mounted.
@@ -164,7 +164,7 @@ namespace {
         static bool sFirstTime_{true};
         if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
             sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, IO::FileSystem::FileInputStream::eNotSeekable));
-            sFirstTime_  = false;
+            sFirstTime_ = false;
         }
         return sLastResult_;
     }

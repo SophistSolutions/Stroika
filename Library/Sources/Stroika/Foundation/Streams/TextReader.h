@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Streams::TextReader {
      *  \note   This was called TextInputStreamBinaryAdapter
      *
      *  \note   This is similar to the .net TextReader (https://msdn.microsoft.com/en-us/library/system.io.textreader(v=vs.110).aspx) except that
-     *          much of the 'reading' API is baked into InputStream<Character>::Ptr.
+     *          much of the 'reading' API is baked into InputStream::Ptr<Character>.
      *
      *  \note   TextReader's are smart about not reading more than they need to from the source Stream (unless you make that stream buffered, in
      *          which case the buffering can cause it to read ahead)
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Streams::TextReader {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    using Ptr = InputStream<Character>::Ptr;
+    using Ptr = InputStream::Ptr<Character>;
 
     /**
         * This flag controls whether the TextReader instance will try to read-ahead (typically in order to cache). This is generally
@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Streams::TextReader {
 
     /**
      *  Seekable defaults to the same value as that of the underlying stream wrapped.
-     *  For the constructor taking const InputStream<Character>::Ptr& src, the seekability mimics that of the original source.
+     *  For the constructor taking const InputStream::Ptr<Character>& src, the seekability mimics that of the original source.
      *  Constructors taking a BLOB, the resulting stream will be seekable..
      *
      *  But when you specify it explicitly, the given value will be used.
@@ -119,12 +119,12 @@ namespace Stroika::Foundation::Streams::TextReader {
      */
     Ptr New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags = AutomaticCodeCvtFlags::eDEFAULT);
     Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter);
-    Ptr New (const InputStream<byte>::Ptr& src);
-    Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead = eReadAheadAllowed);
-    Ptr New (const InputStream<byte>::Ptr& src, AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead = eReadAheadAllowed);
-    Ptr New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable,
+    Ptr New (const InputStream::Ptr<byte>& src);
+    Ptr New (const InputStream::Ptr<byte>& src, SeekableFlag seekable, ReadAhead readAhead = eReadAheadAllowed);
+    Ptr New (const InputStream::Ptr<byte>& src, AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead = eReadAheadAllowed);
+    Ptr New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable,
              ReadAhead readAhead = eReadAheadAllowed);
-    Ptr New (const InputStream<Character>::Ptr& src);
+    Ptr New (const InputStream::Ptr<Character>& src);
     Ptr New (const Traversal::Iterable<Character>& src);
 
 }

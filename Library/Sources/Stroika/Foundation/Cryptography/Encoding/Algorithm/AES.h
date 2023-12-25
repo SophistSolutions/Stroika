@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
 #if qHasFeature_OpenSSL
     /**
      */
-    Streams::InputStream<byte>::Ptr DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<byte>::Ptr& in,
+    Streams::InputStream::Ptr<byte> DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream::Ptr<byte>& in,
                                                AESOptions options = AESOptions::eDEFAULT);
     Memory::BLOB DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
 #if qHasFeature_OpenSSL
     /**
      */
-    Streams::InputStream<byte>::Ptr EncodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<byte>::Ptr& in,
+    Streams::InputStream::Ptr<byte> EncodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream::Ptr<byte>& in,
                                                AESOptions options = AESOptions::eDEFAULT);
     Memory::BLOB EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif

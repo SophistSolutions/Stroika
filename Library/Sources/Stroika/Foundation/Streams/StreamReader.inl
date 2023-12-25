@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    StreamReader<ELEMENT_TYPE>::StreamReader (const typename Streams::InputStream<ElementType>::Ptr& underlyingReadFromStreamAdopted)
+    StreamReader<ELEMENT_TYPE>::StreamReader (const typename Streams::InputStream::Ptr<ElementType>& underlyingReadFromStreamAdopted)
         : fStrm_{underlyingReadFromStreamAdopted}
         , fOffset_{underlyingReadFromStreamAdopted.GetOffset ()}
     {

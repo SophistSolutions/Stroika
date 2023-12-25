@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-         *  \note Do NOT use the InputStream<ElementType>::Ptr passed in at the same time as its being used by the
+         *  \note Do NOT use the InputStream::Ptr<ElementType> passed in at the same time as its being used by the
          *        StreamReader, or grave disorder may result. StreamReader assumes its the only one seeking and reading
          *        through the input stream. See SynchronizeToUnderlyingStream ().
          * 
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Streams {
          * 
          *  \req underlyingReadFromStreamAdopted.Seekable ();
          */
-        StreamReader (const typename InputStream<ElementType>::Ptr& underlyingReadFromStreamAdopted);
+        StreamReader (const typename InputStream::Ptr<ElementType>& underlyingReadFromStreamAdopted);
         StreamReader ()                    = delete;
         StreamReader (const StreamReader&) = delete;
 
@@ -59,33 +59,33 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-         *  \brief Logically the same as InputStream<ELEMENT_TYPE>::Ptr::Read () but reading cached data
+         *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::Read () but reading cached data
          */
         nonvirtual optional<ElementType> Read ();
         nonvirtual size_t                Read (ElementType* intoStart, ElementType* intoEnd);
 
     public:
         /**
-         *  \brief Logically the same as InputStream<ELEMENT_TYPE>::Ptr::Peek () but reading cached data
+         *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::Peek () but reading cached data
          */
         nonvirtual optional<ElementType> Peek ();
 
     public:
         /**
-         *  \brief Logically the same as InputStream<ELEMENT_TYPE>::Ptr::GetOffset () - but without being 'synchronized' it maybe a different value than the underlying stream
+         *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::GetOffset () - but without being 'synchronized' it maybe a different value than the underlying stream
          */
         nonvirtual SeekOffsetType GetOffset () const;
 
     public:
         /**
-         *  \brief Logically the same as InputStream<ELEMENT_TYPE>::Ptr::Seek () - but without being 'synchronized' it maybe a different value than the underlying stream
+         *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::Seek () - but without being 'synchronized' it maybe a different value than the underlying stream
          */
         nonvirtual SeekOffsetType Seek (SeekOffsetType offset);
         nonvirtual SeekOffsetType Seek (Whence whence, SignedSeekOffsetType offset);
 
     public:
         /**
-         *  \brief Logically the same as InputStream<ELEMENT_TYPE>::Ptr::ReadAll ()
+         *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::ReadAll ()
          */
         nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd);
 
@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Streams {
         };
 
     private:
-        typename InputStream<ElementType>::Ptr fStrm_;
+        typename InputStream::Ptr<ElementType> fStrm_;
         SeekOffsetType                         fOffset_{0};
         SeekOffsetType                         fFarthestReadInUnderlyingStream_{0};
         CacheBlock_                            fCacheBlocks_[kCountPingPingBufs_];

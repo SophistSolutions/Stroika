@@ -24,7 +24,7 @@
 namespace Stroika::Foundation::Streams::InputSubStream {
 
     /**
-     *  @brief  InputSubStream is an InputStream<ELEMENT_TYPE>::Ptr which provides buffered access.
+     *  @brief  InputSubStream is an InputStream::Ptr<ELEMENT_TYPE> which provides buffered access.
      *          This is useful if calls to the underling stream source can be expensive. This class
      *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
      *
@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
     template <typename ELEMENT_TYPE>
-    using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
+    using Ptr = typename InputStream::Ptr<ELEMENT_TYPE>;
 
     /**
      *  start and end are offsets in the real underlying stream which map to 0, and if specified, end-start (which is this streams ends);
@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
      *
      *  \par Example Usage
      *      \code
-     *          InputStream<byte>::Ptr in = InputSubStream<byte>::New (fromStream, 0, contentLength);
+     *          InputStream::Ptr<byte> in = InputSubStream<byte>::New (fromStream, 0, contentLength);
      *      \endcode
      *
      *  \par Example Usage
@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
      *      \endcode
      */
     template <typename ELEMENT_TYPE>
-    auto New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
+    auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
         -> Ptr<ELEMENT_TYPE>;
 
 }

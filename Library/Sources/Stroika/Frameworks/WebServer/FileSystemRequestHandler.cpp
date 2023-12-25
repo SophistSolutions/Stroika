@@ -70,7 +70,7 @@ namespace {
 #endif
             try {
                 Response&              response = m->rwResponse ();
-                InputStream<byte>::Ptr in{FileInputStream::New (fn)};
+                InputStream::Ptr<byte> in{FileInputStream::New (fn)};
                 if (optional<InternetMediaType> oMediaType = InternetMediaTypeRegistry::Get ().GetAssociatedContentType (fn.extension ())) {
                     response.contentType = *oMediaType;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

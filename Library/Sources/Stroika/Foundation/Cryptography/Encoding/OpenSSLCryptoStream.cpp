@@ -109,12 +109,12 @@ namespace {
 
 namespace {
 
-    class OpenSSLInputStreamRep_ : public InputStream<byte>::_IRep, private InOutStrmCommon_ {
+    class OpenSSLInputStreamRep_ : public InputStream::_IRep<byte>, private InOutStrmCommon_ {
     private:
         static constexpr size_t kInBufSize_ = 10 * 1024;
 
     public:
-        OpenSSLInputStreamRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<byte>::Ptr& realIn)
+        OpenSSLInputStreamRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream::Ptr<byte>& realIn)
             : InOutStrmCommon_{cryptoParams, d}
             , fRealIn_{realIn}
         {
@@ -236,7 +236,7 @@ namespace {
         Memory::InlineBuffer<byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_{_GetMinOutBufSize (kInBufSize_)};
         byte*                                                          fOutBufStart_{nullptr};
         byte*                                                          fOutBufEnd_{nullptr};
-        InputStream<byte>::Ptr                                         fRealIn_;
+        InputStream::Ptr<byte>                                         fRealIn_;
     };
 
     class OpenSSLOutputStreamRep_ : public OutputStream::_IRep<byte>, private InOutStrmCommon_ {
@@ -373,14 +373,14 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<byte>::Ptr& realIn)
-    -> Streams::InputStream<byte>::Ptr
+auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream::Ptr<byte>& realIn)
+    -> Streams::InputStream::Ptr<byte>
 {
-    return Streams::InputStream<byte>::Ptr{make_shared<OpenSSLInputStreamRep_> (cryptoParams, direction, realIn)};
+    return Streams::InputStream::Ptr<byte>{make_shared<OpenSSLInputStreamRep_> (cryptoParams, direction, realIn)};
 }
 
 auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
-                              Direction direction, const InputStream<byte>::Ptr& realIn) -> Streams::InputStream<byte>::Ptr
+                              Direction direction, const InputStream::Ptr<byte>& realIn) -> Streams::InputStream::Ptr<byte>
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:

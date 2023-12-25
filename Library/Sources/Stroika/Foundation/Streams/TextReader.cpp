@@ -31,9 +31,9 @@ namespace {
     const auto kReadPartialCharacterAtEndOfBinaryStreamException_ =
         Execution::RuntimeErrorException{"TextReader read partial character at end of binary input stream"sv};
 
-    class FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep {
+    class FromBinaryStreamBaseRep_ : public InputStream::_IRep<Character> {
     public:
-        FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& charConverter)
+        FromBinaryStreamBaseRep_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& charConverter)
             : _fSource{src}
             , _fCharConverter{charConverter}
         {
@@ -253,7 +253,7 @@ namespace {
         }
 
     protected:
-        InputStream<byte>::Ptr                                         _fSource;
+        InputStream::Ptr<byte>                                         _fSource;
         const Characters::CodeCvt<Character>                           _fCharConverter;
         SeekOffsetType                                                 _fOffset{0};
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
@@ -263,7 +263,7 @@ namespace {
         using inherited = FromBinaryStreamBaseRep_;
 
     public:
-        UnseekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<char32_t>& charConverter)
+        UnseekableBinaryStreamRep_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<char32_t>& charConverter)
             : inherited{src, charConverter}
         {
         }
@@ -280,7 +280,7 @@ namespace {
         using inherited = FromBinaryStreamBaseRep_;
 
     public:
-        CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<char32_t>& charConverter, ReadAhead readAhead)
+        CachingSeekableBinaryStreamRep_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<char32_t>& charConverter, ReadAhead readAhead)
             : FromBinaryStreamBaseRep_{src, charConverter}
             , fReadAheadAllowed_{readAhead == ReadAhead::eReadAheadAllowed}
         {
@@ -433,26 +433,26 @@ namespace {
  */
 auto TextReader::New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags) -> Ptr
 {
-    Ptr p = TextReader::New (src.As<InputStream<byte>::Ptr> (), codeCvtFlags);
+    Ptr p = TextReader::New (src.As<InputStream::Ptr<byte>> (), codeCvtFlags);
     Ensure (p.IsSeekable ());
     return p;
 }
 
 auto TextReader::New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter) -> Ptr
 {
-    Ptr p = TextReader::New (src.As<InputStream<byte>::Ptr> (), codeConverter, SeekableFlag::eSeekable);
+    Ptr p = TextReader::New (src.As<InputStream::Ptr<byte>> (), codeConverter, SeekableFlag::eSeekable);
     Ensure (p.IsSeekable ());
     return p;
 }
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
+auto TextReader::New (const InputStream::Ptr<byte>& src, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
     Ptr p = TextReader::New (src, Characters::UnicodeExternalEncodings::eUTF8, seekable, readAhead);
     Ensure (p.GetSeekability () == seekable);
     return p;
 }
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, const AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead) -> Ptr
+auto TextReader::New (const InputStream::Ptr<byte>& src, const AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead) -> Ptr
 {
     Require (src.GetSeekability () == SeekableFlag::eSeekable);
     auto savedSeek = src.GetOffset ();
@@ -483,7 +483,7 @@ auto TextReader::New (const InputStream<byte>::Ptr& src, const AutomaticCodeCvtF
     return New (src, codeConverter, SeekableFlag::eSeekable, readAhead);
 }
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
+auto TextReader::New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
     Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)}
                                                   : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};

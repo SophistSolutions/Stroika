@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      ********************************************************************************
      */
     template <typename T>
-    size_t SystemHashDigester<T>::operator() (const Streams::InputStream<byte>::Ptr& from) const
+    size_t SystemHashDigester<T>::operator() (const Streams::InputStream::Ptr<byte>& from) const
     {
         Memory::BLOB b = from.ReadAll ();
         return this->operator() (b.begin (), b.end ());
