@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
 
     namespace Private_ {
         template <typename ELEMENT_TYPE>
-        class Rep_ : public InputOutputStream::_IRep<ELEMENT_TYPE> {
+        class Rep_ : public InputOutputStream::IRep<ELEMENT_TYPE> {
         public:
             using ElementType = ELEMENT_TYPE;
 
@@ -28,8 +28,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
 
         public:
             Rep_ ()
-                : fData_{}
-                , fReadCursor_{fData_.begin ()}
+                : fReadCursor_{fData_.begin ()}
                 , fWriteCursor_{fData_.begin ()}
             {
             }
@@ -243,8 +242,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
         private:
             static inline const auto kSeekException_ = range_error{"seek"};
             mutable recursive_mutex  fMutex_;
-            Execution::WaitableEvent fMoreDataWaiter_{}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
-            vector<ElementType>                    fData_;
+            Execution::WaitableEvent fMoreDataWaiter_{};            // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
+            vector<ElementType>                    fData_;          // Important data comes before cursors cuz of use in CTOR
             typename vector<ElementType>::iterator fReadCursor_;
             typename vector<ElementType>::iterator fWriteCursor_;
             bool                                   fClosedForWrites_{false};
