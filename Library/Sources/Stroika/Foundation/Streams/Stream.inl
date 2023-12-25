@@ -14,66 +14,66 @@ namespace Stroika::Foundation::Streams {
 
     /*
      ********************************************************************************
-     ************************* Stream<ELEMENT_TYPE>::Ptr ****************************
+     ********************************* Ptr<ELEMENT_TYPE> ****************************
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline Stream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep) noexcept
+    inline Ptr<ELEMENT_TYPE>::Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep) noexcept
         : fRep_{(RequireExpression (rep != nullptr), rep)}
         , fSeekable_{rep->IsSeekable ()}
     {
         RequireNotNull (rep);
     }
     template <typename ELEMENT_TYPE>
-    inline Stream<ELEMENT_TYPE>::Ptr::Ptr (nullptr_t) noexcept
+    inline Ptr<ELEMENT_TYPE>::Ptr (nullptr_t) noexcept
     {
     }
     template <typename ELEMENT_TYPE>
-    inline auto Stream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
+    inline auto Ptr<ELEMENT_TYPE>::_GetSharedRep () const -> shared_ptr<_IRep<ELEMENT_TYPE>>
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fRep_;
     }
     template <typename ELEMENT_TYPE>
-    inline auto Stream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
+    inline auto Ptr<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep<ELEMENT_TYPE>&
     {
         RequireNotNull (fRep_);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return *fRep_.get ();
     }
     template <typename ELEMENT_TYPE>
-    inline auto Stream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
+    inline auto Ptr<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep<ELEMENT_TYPE>&
     {
         RequireNotNull (fRep_);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return *fRep_.get ();
     }
     template <typename ELEMENT_TYPE>
-    inline bool Stream<ELEMENT_TYPE>::Ptr::IsSeekable () const
+    inline bool Ptr<ELEMENT_TYPE>::IsSeekable () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fSeekable_;
     }
     template <typename ELEMENT_TYPE>
-    inline SeekableFlag Stream<ELEMENT_TYPE>::Ptr::GetSeekability () const
+    inline SeekableFlag Ptr<ELEMENT_TYPE>::GetSeekability () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fSeekable_ ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
     }
     template <typename ELEMENT_TYPE>
-    inline void Stream<ELEMENT_TYPE>::Ptr::reset () noexcept
+    inline void Ptr<ELEMENT_TYPE>::reset () noexcept
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         fRep_.reset ();
     }
     template <typename ELEMENT_TYPE>
-    inline bool Stream<ELEMENT_TYPE>::Ptr::operator== (nullptr_t) const
+    inline bool Ptr<ELEMENT_TYPE>::operator== (nullptr_t) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fRep_.get () == nullptr;
     }
     template <typename ELEMENT_TYPE>
-    inline Stream<ELEMENT_TYPE>::Ptr::operator bool () const
+    inline Ptr<ELEMENT_TYPE>::operator bool () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fRep_.get () != nullptr;

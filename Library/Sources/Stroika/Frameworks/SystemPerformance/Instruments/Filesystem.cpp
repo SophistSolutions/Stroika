@@ -587,8 +587,8 @@ namespace {
                     if (kAlsoReadQLen_) {
                         optional<filesystem::path> sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
                         if (sysBlockInfoPath) {
-                            for (const Sequence<String>& ll : reader.ReadMatrix (
-                                    IO::FileSystem:: FileInputStream::New (*sysBlockInfoPath / "stat", IO::FileSystem::FileInputStream::eNotSeekable))) {
+                            for (const Sequence<String>& ll : reader.ReadMatrix (IO::FileSystem::FileInputStream::New (
+                                     *sysBlockInfoPath / "stat", IO::FileSystem::FileInputStream::eNotSeekable))) {
                                 if (ll.size () >= 11) {
                                     weightedTimeInQSeconds = FloatConversion::ToFloat (ll[11 - 1]) / 1000.0; // we record in seconds, but the value in file in milliseconds
                                     break;

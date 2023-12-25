@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
             Require (not realStream.IsSeekable () or (logInput.IsSeekable () and logOutput.IsSeekable ())); // since may need to delegate seeks
         }
 
-        // Stream<ELEMENT_TYPE>::_IRep
+        // Streams::_IRep<ELEMENT_TYPE>
     public:
         virtual bool IsSeekable () const override
         {

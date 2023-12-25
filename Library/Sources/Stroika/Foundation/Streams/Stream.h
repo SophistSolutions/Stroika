@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Streams {
      *  @see SignedSeekOffsetType.
      *
      *  \note   We use a 64-bit integer here, because streaming >4GB files is common, even in devices so tiny as a cellphone.
-     *          and no larger because its inconcievable to store that much data anytime soon.
+     *          and no larger because its inconceivable to store that much data anytime soon.
      */
     using SeekOffsetType = uint64_t;
 
@@ -65,12 +65,15 @@ namespace Stroika::Foundation::Streams {
         Stroika_Define_Enum_Bounds (eNotSeekable, eSeekable)
     };
 
+    template <typename ELEMENT_TYPE>
+    class _IRep;
+
     /**
      *  \em Design Overview
      *     o   A Streams is a sequence of data elements made available over time. These elements
      *         are typically 'Bytes' - or 'Characters' - but can be any copyable type.
      *
-     *     o   Streams are created, and then handled ONLY through smart pointers. Assigning Streams
+     *     o   Streams are created, and then handled ONLY through smart pointers (Ptr). Assigning Streams
      *         merely copies the 'smart pointer' to that same underlying stream. This means that offsets
      *         and underlying data, are all shared.
      *
@@ -80,12 +83,12 @@ namespace Stroika::Foundation::Streams {
      *     o   Seek Offsets are in elements of the kind of stream (e.g in Bytes for a Stream<byte>, and
      *         in Characters for a Stream<Character>).
      *
-     *     o   Two important subclasses of Stream<> are InputStreamPtr<> (for reading) and OutputStream<> for
+     *     o   Two important subclasses of Stream<> are InputStream::Ptr<> (for reading) and OutputStream::Ptr<> for
      *         writing. So that each can maintain its own intrinsic current offset (separate seek offset
      *         for reading and writing) in mixed (input/output) streams, the actual offset APIs and
      *         logic are in those subclasses.
      *
-     *     o   Stream APIs are intrinsically blocking (except see InputStreamPtr<> and InputStreamPtr<>::ReadNonBlocking()).
+     *     o   Stream APIs are intrinsically blocking (except see InputStream::Ptr<>::ReadNonBlocking()).
      *         This makes working with them much simpler, since code using Streams doesn't need to be written to handle
      *         both blocking and non-blocking behavior, and be surprised when a 'mode' is set on a stream making it non-blocking.
      *
@@ -95,12 +98,12 @@ namespace Stroika::Foundation::Streams {
      *             OutputStreamFromStdIStream, OutputStreamToStdIStream) classes.
      *
      *             o   Stroika Streams are much easier to create (just a few intuitive virtual methods
-     *                 to override.
+     *                 to override in the rep, whereas creating your own kind of basic_istream/ostream is much harder).
      *
-     *             o   Stroika streams are unrelated to formatting of text (@todo what other mechanism do we offer?)
+     *             o   Stroika streams are unrelated to formatting of text.
      *
      *             o   Stroika Streams are much easier to use and understand, with better internal error checking,
-     *                 (like thread safety), and simpler, more consistent naming for offets/seeking, and seekability.
+     *                 and simpler, more consistent naming for offets/seeking, and seekability.
      *
      *             o   Stroika supports non-seekable streams (needed for things like sockets, and certain special files, like
      *                 Linux procfs files).
@@ -111,38 +114,13 @@ namespace Stroika::Foundation::Streams {
      *             o   Stroika Streams are divided into 'Smart Pointer' objects (all you interact with) and the underlying Stream data (Rep).
      *                 Copying an iostream is generally not possible with STL, but with Stroika, it copies a reference (smart pointer) to the underlying
      *                 stream.
-     */
-    template <typename ELEMENT_TYPE>
-    class Stream {
-    public:
-        /**
-         *  'Stream' is a quasi-namespace.
-         */
-        Stream ()              = delete;
-        Stream (const Stream&) = delete;
-
-    public:
-        using ElementType = ELEMENT_TYPE;
-
-    public:
-        class Ptr;
-
-    public:
-        class _IRep;
-
-    protected:
-        using _SharedIRep = shared_ptr<_IRep>;
-    };
-
-    /**
-     *  \brief A Stream<ELEMENT_TYPE>::Ptr is a smart-pointer to a stream of elements of type T.
      *
-     *  Stream<T>::Ptr is seldom used directly. Much more commonly, you will want InputStream<T>::Ptr, or OutputStream<T>::Ptr.
+     *  \brief A Streams::Ptr<ELEMENT_TYPE> is a smart-pointer to a stream of elements of type T.
      *
-     *  \note Since Stream<ELEMENT_TYPE>::Ptr is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
+     *  Stream<T>::Ptr is seldom used directly. Much more commonly, you will want InputStream::Ptr<T>, or OutputStream::Ptr<T>.
+     *
+     *  \note Since Streams::Ptr<ELEMENT_TYPE> is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
      *        the underlying thread object.
-     *
-     *  @see Stream<ELEMENT_TYPE>
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      *
@@ -150,7 +128,7 @@ namespace Stroika::Foundation::Streams {
      *      o   Support operator==(nullptr_t) only
      */
     template <typename ELEMENT_TYPE>
-    class Stream<ELEMENT_TYPE>::Ptr : protected Debug::AssertExternallySynchronizedMutex {
+    class Ptr : protected Debug::AssertExternallySynchronizedMutex {
     public:
         /**
          *  defaults to nullptr
@@ -159,20 +137,13 @@ namespace Stroika::Foundation::Streams {
         Ptr (const Ptr&) noexcept = default;
         Ptr (Ptr&&) noexcept      = default;
         Ptr (nullptr_t) noexcept;
+        Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep) noexcept;
 
     public:
         /**
          */
         nonvirtual Ptr& operator= (const Ptr&)     = default;
         nonvirtual Ptr& operator= (Ptr&&) noexcept = default;
-
-    protected:
-        /**
-         * _SharedIRep rep is the underlying shared output Stream object.
-         *
-         *  \req rep != nullptr (use other constructor)
-         */
-        explicit Ptr (const _SharedIRep& rep) noexcept;
 
     public:
         /**
@@ -200,19 +171,19 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual _SharedIRep _GetSharedRep () const;
+        nonvirtual shared_ptr<_IRep<ELEMENT_TYPE>> _GetSharedRep () const;
 
     protected:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const _IRep& _GetRepConstRef () const;
+        nonvirtual const _IRep<ELEMENT_TYPE>& _GetRepConstRef () const;
 
     protected:
         /**
          * \req *this != nullptr
          */
-        nonvirtual _IRep& _GetRepRWRef () const;
+        nonvirtual _IRep<ELEMENT_TYPE>& _GetRepRWRef () const;
 
     public:
         /**
@@ -236,7 +207,7 @@ namespace Stroika::Foundation::Streams {
         nonvirtual SeekableFlag GetSeekability () const;
 
     private:
-        _SharedIRep fRep_;
+        shared_ptr<_IRep<ELEMENT_TYPE>> fRep_;
 
     private:
         bool fSeekable_{false};
@@ -246,7 +217,7 @@ namespace Stroika::Foundation::Streams {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>
      */
     template <typename ELEMENT_TYPE>
-    class Stream<ELEMENT_TYPE>::_IRep {
+    class _IRep {
     public:
         using ElementType = ELEMENT_TYPE;
 

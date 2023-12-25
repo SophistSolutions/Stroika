@@ -138,9 +138,9 @@ namespace Stroika::Foundation::Streams::InputStream {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
      */
     template <typename ELEMENT_TYPE>
-    class Ptr : public Stream<ELEMENT_TYPE>::Ptr {
+    class Ptr : public Streams::Ptr<ELEMENT_TYPE> {
     private:
-        using inherited = typename Stream<ELEMENT_TYPE>::Ptr;
+        using inherited = typename Streams::Ptr<ELEMENT_TYPE>;
 
     protected:
         using AssertExternallySynchronizedMutex = typename inherited::AssertExternallySynchronizedMutex;
@@ -485,7 +485,7 @@ namespace Stroika::Foundation::Streams::InputStream {
      *
      */
     template <typename ELEMENT_TYPE>
-    class _IRep : public Stream<ELEMENT_TYPE>::_IRep {
+    class _IRep : public Streams::_IRep<ELEMENT_TYPE> {
     public:
         using ElementType = ELEMENT_TYPE;
 
