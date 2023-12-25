@@ -20,13 +20,13 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     /*
      ********************************************************************************
-     *********************** InputStream::_IRep<ELEMENT_TYPE> ***********************
+     *********************** InputStream::IRep<ELEMENT_TYPE> ***********************
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    optional<size_t> InputStream::_IRep<ELEMENT_TYPE>::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart,
-                                                                                                                        ElementType* intoEnd,
-                                                                                                                        size_t elementsRemaining)
+    optional<size_t> InputStream::IRep<ELEMENT_TYPE>::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart,
+                                                                                                                       ElementType* intoEnd,
+                                                                                                                       size_t elementsRemaining)
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         if (intoStart == nullptr) {
@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Streams::InputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline InputStream::Ptr<ELEMENT_TYPE>::Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep)
+    inline InputStream::Ptr<ELEMENT_TYPE>::Ptr (const shared_ptr<IRep<ELEMENT_TYPE>>& rep)
         : inherited{rep}
     {
     }
@@ -75,19 +75,19 @@ namespace Stroika::Foundation::Streams::InputStream {
         return _GetRepConstRef ().IsOpenRead ();
     }
     template <typename ELEMENT_TYPE>
-    inline auto InputStream::Ptr<ELEMENT_TYPE>::_GetSharedRep () const -> shared_ptr<_IRep<ELEMENT_TYPE>>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::_GetSharedRep () const -> shared_ptr<IRep<ELEMENT_TYPE>>
     {
-        return Debug::UncheckedDynamicPointerCast<_IRep<ELEMENT_TYPE>> (inherited::GetSharedRep ());
+        return Debug::UncheckedDynamicPointerCast<IRep<ELEMENT_TYPE>> (inherited::GetSharedRep ());
     }
     template <typename ELEMENT_TYPE>
-    inline auto InputStream::Ptr<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep<ELEMENT_TYPE>&
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::_GetRepConstRef () const -> const IRep<ELEMENT_TYPE>&
     {
-        return Debug::UncheckedDynamicCast<const _IRep<ELEMENT_TYPE>&> (inherited::GetRepConstRef ());
+        return Debug::UncheckedDynamicCast<const IRep<ELEMENT_TYPE>&> (inherited::GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
-    inline auto InputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep<ELEMENT_TYPE>&
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef () const -> IRep<ELEMENT_TYPE>&
     {
-        return Debug::UncheckedDynamicCast<_IRep<ELEMENT_TYPE>&> (inherited::GetRepRWRef ());
+        return Debug::UncheckedDynamicCast<IRep<ELEMENT_TYPE>&> (inherited::GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType InputStream::Ptr<ELEMENT_TYPE>::GetOffset () const

@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class Rep_ : public InputStream::_IRep<ELEMENT_TYPE> {
+    class Rep_ : public InputStream::IRep<ELEMENT_TYPE> {
     public:
         Rep_ (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn)
             : fRealIn_{realIn}

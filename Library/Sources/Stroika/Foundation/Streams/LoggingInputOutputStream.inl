@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
             return fRealStream_.IsSeekable ();
         }
 
-        // InputStream::_IRep
+        // InputStream::IRep
     public:
         virtual void CloseRead () override
         {

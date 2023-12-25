@@ -31,7 +31,7 @@ namespace {
     const auto kReadPartialCharacterAtEndOfBinaryStreamException_ =
         Execution::RuntimeErrorException{"TextReader read partial character at end of binary input stream"sv};
 
-    class FromBinaryStreamBaseRep_ : public InputStream::_IRep<Character> {
+    class FromBinaryStreamBaseRep_ : public InputStream::IRep<Character> {
     public:
         FromBinaryStreamBaseRep_ (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& charConverter)
             : _fSource{src}

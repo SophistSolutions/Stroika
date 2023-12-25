@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Memory {
 namespace Stroika::Foundation::Streams::InputStream {
 
     template <typename ELEMENT_TYPE>
-    class _IRep;
+    class IRep;
 
     /**
      *  \em Design Overview
@@ -149,13 +149,13 @@ namespace Stroika::Foundation::Streams::InputStream {
         /**
          *  defaults to null (empty ())
          *
-         * shared_ptr<_IRep> rep is the underlying shared input Stream object.
+         * shared_ptr<IRep> rep is the underlying shared input Stream object.
          */
         Ptr () = default;
         Ptr (nullptr_t);
         Ptr (const Ptr&)     = default;
         Ptr (Ptr&&) noexcept = default;
-        Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep);
+        Ptr (const shared_ptr<IRep<ELEMENT_TYPE>>& rep);
 
     public:
         /**
@@ -462,19 +462,19 @@ namespace Stroika::Foundation::Streams::InputStream {
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual shared_ptr<_IRep<ELEMENT_TYPE>> _GetSharedRep () const;
+        nonvirtual shared_ptr<IRep<ELEMENT_TYPE>> _GetSharedRep () const;
 
     protected:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const _IRep<ELEMENT_TYPE>& _GetRepConstRef () const;
+        nonvirtual const IRep<ELEMENT_TYPE>& _GetRepConstRef () const;
 
     protected:
         /**
          * \req *this != nullptr
          */
-        nonvirtual _IRep<ELEMENT_TYPE>& _GetRepRWRef () const;
+        nonvirtual IRep<ELEMENT_TYPE>& _GetRepRWRef () const;
     };
 
     /**
@@ -482,19 +482,19 @@ namespace Stroika::Foundation::Streams::InputStream {
      *
      */
     template <typename ELEMENT_TYPE>
-    class _IRep : public Streams::IRep<ELEMENT_TYPE> {
+    class IRep : public Streams::IRep<ELEMENT_TYPE> {
     public:
         using ElementType = ELEMENT_TYPE;
 
     public:
-        _IRep ()             = default;
-        _IRep (const _IRep&) = delete;
+        IRep ()            = default;
+        IRep (const IRep&) = delete;
 
     public:
-        virtual ~_IRep () = default;
+        virtual ~IRep () = default;
 
     public:
-        nonvirtual _IRep& operator= (const _IRep&) = delete;
+        nonvirtual IRep& operator= (const IRep&) = delete;
 
     public:
         /**
@@ -563,10 +563,10 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     protected:
         /**
-         *  Implementers of _IRep where there is no 'non-blocking' mode supported (always the same as blocking) - can
+         *  Implementers of IRep where there is no 'non-blocking' mode supported (always the same as blocking) - can
          *  simply call this in the ReadNonBlocking () override.
          *
-         *  The only 'hitch' is that the _IRep subtype using this must know the number of elements available, and pass that in.
+         *  The only 'hitch' is that the IRep subtype using this must know the number of elements available, and pass that in.
          *  All that really matters is if this is 0 or 1, but best if you can pass in the actual value.
          */
         nonvirtual optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd,

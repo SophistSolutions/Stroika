@@ -70,7 +70,7 @@ namespace Stroika::Foundation::IO::Network::HTTP::MessageStartTextInputStreamBin
     public:
         Ptr ()           = default;
         Ptr (const Ptr&) = default;
-        Ptr (const shared_ptr<Streams::InputStream::_IRep<Characters::Character>>& from);
+        Ptr (const shared_ptr<Streams::InputStream::IRep<Characters::Character>>& from);
 
     public:
         /*

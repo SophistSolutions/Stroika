@@ -109,7 +109,7 @@ namespace {
 
 namespace {
 
-    class OpenSSLInputStreamRep_ : public InputStream::_IRep<byte>, private InOutStrmCommon_ {
+    class OpenSSLInputStreamRep_ : public InputStream::IRep<byte>, private InOutStrmCommon_ {
     private:
         static constexpr size_t kInBufSize_ = 10 * 1024;
 

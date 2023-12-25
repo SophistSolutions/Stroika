@@ -52,7 +52,7 @@ namespace {
     }
 
     struct MyCompressionStream_ : InputStream::Ptr<byte> {
-        struct BaseRep_ : public InputStream::_IRep<byte> {
+        struct BaseRep_ : public InputStream::IRep<byte> {
         private:
             static constexpr size_t CHUNK_ = 16384;
 

@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
     inline auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start,
                      const optional<SeekOffsetType>& end) -> Ptr<ELEMENT_TYPE>
     {
-        class Rep_ : public InputStream::_IRep<ELEMENT_TYPE> {
+        class Rep_ : public InputStream::IRep<ELEMENT_TYPE> {
         public:
             Rep_ (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
                 : fRealIn_{realIn}

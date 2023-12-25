@@ -30,7 +30,7 @@ namespace {
 // http://stackoverflow.com/questions/4400678/http-header-should-use-what-character-encoding
 // but for now this seems and adequate hack
 
-class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream::_IRep<Character>, protected Debug::AssertExternallySynchronizedMutex {
+class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream::IRep<Character>, protected Debug::AssertExternallySynchronizedMutex {
 public:
     Rep_ (const InputStream::Ptr<byte>& src)
         : fSource_{src}
@@ -290,7 +290,7 @@ MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryA
  ******** IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter::Ptr ******
  ********************************************************************************
  */
-MessageStartTextInputStreamBinaryAdapter::Ptr::Ptr (const shared_ptr<InputStream::_IRep<Character>>& from)
+MessageStartTextInputStreamBinaryAdapter::Ptr::Ptr (const shared_ptr<InputStream::IRep<Character>>& from)
     : inherited{from}
 {
 }

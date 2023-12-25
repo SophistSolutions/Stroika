@@ -203,7 +203,7 @@ namespace {
             : InputStream::Ptr<byte>{Memory::MakeSharedPtr<REP> (b)}
         {
         }
-        struct REP : InputStream::_IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<REP> {
+        struct REP : InputStream::IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<REP> {
             bool                                                    fIsOpenForRead_{true};
             [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
             REP (const BLOB& b)
