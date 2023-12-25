@@ -176,7 +176,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
          */
-        class Ptr : protected Debug::AssertExternallySynchronizedMutex {
+        class Ptr {
         public:
             /**
              *  Socket::Ptr maybe initialized with
@@ -379,6 +379,9 @@ namespace Stroika::Foundation::IO::Network {
              * \req fRep_ != nullptr
              */
             nonvirtual const _IRep& _cref () const;
+
+        protected:
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
 
         private:
             shared_ptr<_IRep> fRep_;

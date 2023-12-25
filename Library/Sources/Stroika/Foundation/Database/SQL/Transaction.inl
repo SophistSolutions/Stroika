@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Database::SQL {
         : _fRep{move (rep)}
     {
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-        this->SetAssertExternallySynchronizedMutexContext (_fRep->GetSharedContext ());
+        this->_fThisAssertExternallySynchronized.SetAssertExternallySynchronizedMutexContext (_fRep->_fThisAssertExternallySynchronized.GetSharedContext ());
 #endif
     }
     inline Transaction::~Transaction ()
@@ -41,19 +41,19 @@ namespace Stroika::Foundation::Database::SQL {
     }
     inline void Transaction::Rollback ()
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
         RequireNotNull (_fRep);
         _fRep->Rollback ();
     }
     inline void Transaction::Commit ()
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
         RequireNotNull (_fRep);
         _fRep->Commit ();
     }
     inline String Transaction::ToString () const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         RequireNotNull (_fRep);
         Characters::StringBuilder sb;
         sb << "{"sv;

@@ -33,17 +33,17 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline void ConnectionOrientedMasterSocket::Ptr::Listen (unsigned int backlog) const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         _ref ().Listen (backlog);
     }
     inline ConnectionOrientedStreamSocket::Ptr ConnectionOrientedMasterSocket::Ptr::Accept () const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         return _ref ().Accept ();
     }
     inline shared_ptr<ConnectionOrientedMasterSocket::_IRep> ConnectionOrientedMasterSocket::Ptr::_GetSharedRep () const
     {
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         return Debug::UncheckedDynamicPointerCast<ConnectionOrientedMasterSocket::_IRep> (inherited::_GetSharedRep ());
     }
     inline ConnectionOrientedMasterSocket::_IRep& ConnectionOrientedMasterSocket::Ptr::_ref () const

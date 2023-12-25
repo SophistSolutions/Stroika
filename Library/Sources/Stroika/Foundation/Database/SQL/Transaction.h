@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Database::SQL {
      *          }
      *      \endcode
      */
-    class [[nodiscard]] Transaction : protected Debug::AssertExternallySynchronizedMutex {
+    class [[nodiscard]] Transaction {
     public:
         class IRep;
 
@@ -98,7 +98,8 @@ namespace Stroika::Foundation::Database::SQL {
         nonvirtual String ToString () const;
 
     protected:
-        unique_ptr<IRep> _fRep;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
+        unique_ptr<IRep>                                               _fRep;
     };
 
     /**
@@ -108,7 +109,7 @@ namespace Stroika::Foundation::Database::SQL {
      *          But though each Statement can only be accessed from a single thread at a time, the underlying database may be
      *          threadsafe (even if accessed across processes).
      */
-    class Transaction::IRep : public Debug::AssertExternallySynchronizedMutex {
+    class Transaction::IRep {
     public:
         /**
          */
@@ -151,6 +152,9 @@ namespace Stroika::Foundation::Database::SQL {
          *  Mostly this reports eNone or something else. But extra status could be useful for logging.
          */
         virtual Disposition GetDisposition () const = 0;
+
+    protected:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
 
     private:
         friend class Transaction;
