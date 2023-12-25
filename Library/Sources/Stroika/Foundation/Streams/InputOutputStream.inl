@@ -36,20 +36,20 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
     inline auto Ptr<ELEMENT_TYPE>::_GetSharedRep () const -> shared_ptr<_IRep<ELEMENT_TYPE>>
     {
         Ensure (dynamic_pointer_cast<_IRep<ELEMENT_TYPE>> (InputStream::Ptr<ELEMENT_TYPE>::_GetSharedRep ()) ==
-                dynamic_pointer_cast<_IRep<ELEMENT_TYPE>> (OutputStream::Ptr<ELEMENT_TYPE>::_GetSharedRep ()));
-        return Debug::UncheckedDynamicPointerCast<_IRep<ELEMENT_TYPE>> (InputStream::Ptr<ELEMENT_TYPE>::_GetSharedRep ());
+                dynamic_pointer_cast<_IRep<ELEMENT_TYPE>> (OutputStream::Ptr<ELEMENT_TYPE>::GetSharedRep ()));
+        return Debug::UncheckedDynamicPointerCast<_IRep<ELEMENT_TYPE>> (InputStream::Ptr<ELEMENT_TYPE>::GetSharedRep ());
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep<ELEMENT_TYPE>&
     {
         Ensure (dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::GetRepConstRef ()) ==
-                dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&OutputStream::Ptr<ELEMENT_TYPE>::_GetRepConstRef ()));
+                dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&OutputStream::Ptr<ELEMENT_TYPE>::GetRepConstRef ()));
         return *Debug::UncheckedDynamicCast<const _IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep<ELEMENT_TYPE>&
     {
-        Ensure (&typename InputStream::Ptr<ELEMENT_TYPE>::GetRepRWRef () == &OutputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef ());
+        Ensure (&typename InputStream::Ptr<ELEMENT_TYPE>::GetRepRWRef () == &OutputStream::Ptr<ELEMENT_TYPE>::GetRepRWRef ());
         return *Debug::UncheckedDynamicCast<_IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>

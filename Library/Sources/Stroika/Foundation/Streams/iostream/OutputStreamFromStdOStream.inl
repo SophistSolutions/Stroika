@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename BASIC_OSTREAM_ELEMENT_TYPE, typename BASIC_OSTREAM_TRAITS_TYPE>
-    class Rep_ : public OutputStream::_IRep<ELEMENT_TYPE> {
+    class Rep_ : public OutputStream::IRep<ELEMENT_TYPE> {
     private:
         bool fOpen_{true};
 

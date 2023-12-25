@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
             }
         }
 
-        // OutputStream::_IRep
+        // OutputStream::IRep
     public:
         virtual void CloseWrite () override
         {

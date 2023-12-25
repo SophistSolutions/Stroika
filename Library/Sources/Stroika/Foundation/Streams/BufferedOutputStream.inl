@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class Rep_ : public OutputStream::_IRep<ELEMENT_TYPE> {
+    class Rep_ : public OutputStream::IRep<ELEMENT_TYPE> {
         static constexpr size_t kMinBufSize_{1 * 1024};
         static constexpr size_t kDefaultBufSize_{16 * 1024};
 
@@ -218,7 +218,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
     template <typename ELEMENT_TYPE>
     inline shared_ptr<Rep_<ELEMENT_TYPE>> Ptr<ELEMENT_TYPE>::_GetSharedRep () const
     {
-        return Debug::UncheckedDynamicPointerCast<Rep_<ELEMENT_TYPE>> (inherited::_GetSharedRep ());
+        return Debug::UncheckedDynamicPointerCast<Rep_<ELEMENT_TYPE>> (inherited::GetSharedRep ());
     }
 
 }

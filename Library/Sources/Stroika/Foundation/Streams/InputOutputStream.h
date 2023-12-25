@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
      *
      */
     template <typename ELEMENT_TYPE>
-    class _IRep : public InputStream::IRep<ELEMENT_TYPE>, public OutputStream::_IRep<ELEMENT_TYPE> {
+    class _IRep : public InputStream::IRep<ELEMENT_TYPE>, public OutputStream::IRep<ELEMENT_TYPE> {
     public:
         using ElementType = ELEMENT_TYPE;
 

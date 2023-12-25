@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
      */
 
     template <typename ELEMENT_TYPE>
-    class _IRep;
+    class IRep;
 
     /**
      *  \brief  OutputStream<>::Ptr is Smart pointer to a stream-based sink of data.
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
         Ptr (nullptr_t);
         Ptr (const Ptr&) = default;
         Ptr (Ptr&&)      = default;
-        Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep);
+        Ptr (const shared_ptr<IRep<ELEMENT_TYPE>>& rep);
 
     public:
         /**
@@ -125,7 +125,6 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *      size_t  size =  Seek (Whence::eFromEnd, 0);
          *      Seek (savedReadFrom);
          *      return size - savedReadFrom;
-         *(EXCPET MAYBE GUARANTEED ATOMIC????)
          *
          *  \note   @todo Not sure how useful this is - I can find no calls to this in code base
          *          Maybe for input stream to see how big a buffer to allocate to read? But even then
@@ -228,7 +227,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *  It is generally unneeded to ever call Close () - as streams are closed automatically when the final
          *  reference to them is released (smartptr).
          *
-         *  But - this can be handy - in that it allows for exception hanlding. Exceptions closing out an output stream - doing
+         *  But - this can be handy - in that it allows for exception handling. Exceptions closing out an output stream - doing
          *  final writes - cannot be reported if done by destroying objects (cannot throw from dtor) - so Close () assures
          *  a clean shutdown with exceptions being propagated during the cleanup.
          *
@@ -237,7 +236,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *        sounds hard its not: it naturally falls out of normal usage.
          *
          *        The rationale is just that I can think of no useful case where a caller might want to allow writing after close, and
-         *        have that transalted into an exception, and this choice is more performant (and could be reversed more easily
+         *        have that translated into an exception, and this choice is more performant (and could be reversed more easily
          *        than the opposite policy if I change my mind).
          *
          *  \note Close () - and IsOpen () are intentionally duplicated in InputStream () and OutputStream () classes. This is so
@@ -295,42 +294,42 @@ namespace Stroika::Foundation::Streams::OutputStream {
         const typename OutputStream::Ptr<ELEMENT_TYPE>& operator<< (const T& write2TextStream) const
             requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
 
-    protected:
+    public:
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual shared_ptr<_IRep<ELEMENT_TYPE>> _GetSharedRep () const;
+        nonvirtual shared_ptr<IRep<ELEMENT_TYPE>> GetSharedRep () const;
 
-    protected:
+    public:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const _IRep<ELEMENT_TYPE>& _GetRepConstRef () const;
+        nonvirtual const IRep<ELEMENT_TYPE>& GetRepConstRef () const;
 
-    protected:
+    public:
         /**
          * \req *this != nullptr
          */
-        nonvirtual _IRep<ELEMENT_TYPE>& _GetRepRWRef () const;
+        nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
     };
 
     /**
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>
      */
     template <typename ELEMENT_TYPE>
-    class _IRep : public Streams::IRep<ELEMENT_TYPE> {
+    class IRep : public Streams::IRep<ELEMENT_TYPE> {
     public:
         using ElementType = ELEMENT_TYPE;
 
     public:
-        _IRep ()             = default;
-        _IRep (const _IRep&) = delete;
+        IRep ()            = default;
+        IRep (const IRep&) = delete;
 
     public:
-        virtual ~_IRep () = default;
+        virtual ~IRep () = default;
 
     public:
-        nonvirtual _IRep& operator= (const _IRep&) = delete;
+        nonvirtual IRep& operator= (const IRep&) = delete;
 
     public:
         /**
@@ -362,7 +361,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *  Writes always succeed fully or throw (no partial writes so no return value of amount written).
          *
          *  \Note The meaning of Write () depends on the exact type of Stream you are referencing. The data
-         *        may still be buffered. Call @Flush () to get it pushed out.
+         *        may still be buffered. Call @Flush () to ensure it pushed out.
          */
         virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) = 0;
 

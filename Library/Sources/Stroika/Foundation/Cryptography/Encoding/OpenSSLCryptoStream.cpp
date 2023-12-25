@@ -239,7 +239,7 @@ namespace {
         InputStream::Ptr<byte>                                         fRealIn_;
     };
 
-    class OpenSSLOutputStreamRep_ : public OutputStream::_IRep<byte>, private InOutStrmCommon_ {
+    class OpenSSLOutputStreamRep_ : public OutputStream::IRep<byte>, private InOutStrmCommon_ {
     public:
         OpenSSLOutputStreamRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const OutputStream::Ptr<byte>& realOut)
             : InOutStrmCommon_{cryptoParams, d}

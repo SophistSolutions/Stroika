@@ -20,11 +20,10 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class Rep_ : public OutputStream::_IRep<ELEMENT_TYPE> {
+    class Rep_ : public OutputStream::IRep<ELEMENT_TYPE> {
     public:
         Rep_ (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut1, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut2)
-            : OutputStream::_IRep<ELEMENT_TYPE>{}
-            , fRealOut1_{realOut1}
+            : fRealOut1_{realOut1}
             , fRealOut2_{realOut2}
         {
         }

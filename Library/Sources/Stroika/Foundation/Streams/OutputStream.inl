@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline Ptr<ELEMENT_TYPE>::Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep)
+    inline Ptr<ELEMENT_TYPE>::Ptr (const shared_ptr<IRep<ELEMENT_TYPE>>& rep)
         : inherited{rep}
     {
     }
@@ -36,26 +36,26 @@ namespace Stroika::Foundation::Streams::OutputStream {
     {
     }
     template <typename ELEMENT_TYPE>
-    inline auto Ptr<ELEMENT_TYPE>::_GetSharedRep () const -> shared_ptr<_IRep<ELEMENT_TYPE>>
+    inline auto Ptr<ELEMENT_TYPE>::GetSharedRep () const -> shared_ptr<IRep<ELEMENT_TYPE>>
     {
-        return Debug::UncheckedDynamicPointerCast<_IRep<ELEMENT_TYPE>> (inherited::GetSharedRep ());
+        return Debug::UncheckedDynamicPointerCast<IRep<ELEMENT_TYPE>> (inherited::GetSharedRep ());
     }
     template <typename ELEMENT_TYPE>
-    inline auto Ptr<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep<ELEMENT_TYPE>&
+    inline auto Ptr<ELEMENT_TYPE>::GetRepConstRef () const -> const IRep<ELEMENT_TYPE>&
     {
-        return Debug::UncheckedDynamicCast<const _IRep<ELEMENT_TYPE>&> (inherited::GetRepConstRef ());
+        return Debug::UncheckedDynamicCast<const IRep<ELEMENT_TYPE>&> (inherited::GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
-    inline auto Ptr<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep<ELEMENT_TYPE>&
+    inline auto Ptr<ELEMENT_TYPE>::GetRepRWRef () const -> IRep<ELEMENT_TYPE>&
     {
-        return Debug::UncheckedDynamicCast<_IRep<ELEMENT_TYPE>&> (inherited::GetRepRWRef ());
+        return Debug::UncheckedDynamicCast<IRep<ELEMENT_TYPE>&> (inherited::GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType Ptr<ELEMENT_TYPE>::GetOffset () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
-        return _GetRepConstRef ().GetWriteOffset ();
+        return GetRepConstRef ().GetWriteOffset ();
     }
     template <typename ELEMENT_TYPE>
     SeekOffsetType Ptr<ELEMENT_TYPE>::GetOffsetToEndOfStream () const
@@ -75,14 +75,14 @@ namespace Stroika::Foundation::Streams::OutputStream {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
         Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));
-        return _GetRepRWRef ().SeekWrite (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
+        return GetRepRWRef ().SeekWrite (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
     }
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType Ptr<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
-        return _GetRepRWRef ().SeekWrite (whence, offset);
+        return GetRepRWRef ().SeekWrite (whence, offset);
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) const
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
         if (start != end) {
-            _GetRepRWRef ().Write (start, end);
+            GetRepRWRef ().Write (start, end);
         }
     }
     template <typename ELEMENT_TYPE>
@@ -203,14 +203,14 @@ namespace Stroika::Foundation::Streams::OutputStream {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
-        _GetRepRWRef ().CloseWrite ();
+        GetRepRWRef ().CloseWrite ();
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::Close (bool reset)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
-        _GetRepRWRef ().CloseWrite ();
+        GetRepRWRef ().CloseWrite ();
         if (reset) {
             this->reset ();
         }
@@ -219,13 +219,13 @@ namespace Stroika::Foundation::Streams::OutputStream {
     inline bool Ptr<ELEMENT_TYPE>::IsOpen () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        return _GetRepConstRef ().IsOpenWrite ();
+        return GetRepConstRef ().IsOpenWrite ();
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::Flush () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        _GetRepRWRef ().Flush ();
+        GetRepRWRef ().Flush ();
     }
     template <typename ELEMENT_TYPE>
     template <typename T>

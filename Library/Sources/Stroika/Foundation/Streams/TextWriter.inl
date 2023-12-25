@@ -12,7 +12,7 @@
 namespace Stroika::Foundation::Streams::TextWriter {
 
     namespace Private_ {
-        class UnSeekable_CodeCvt_Rep_ : public OutputStream::_IRep<Character> {
+        class UnSeekable_CodeCvt_Rep_ : public OutputStream::IRep<Character> {
         public:
             UnSeekable_CodeCvt_Rep_ (const OutputStream::Ptr<byte>& src, Characters::CodeCvt<Character>&& converter)
                 : _fSource{src}
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
         };
 
         template <Characters ::IUNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
-        class UnSeekable_UTFConverter_Rep_ : public OutputStream::_IRep<Character> {
+        class UnSeekable_UTFConverter_Rep_ : public OutputStream::IRep<Character> {
         public:
             template <typename CONVERTER>
             UnSeekable_UTFConverter_Rep_ (const OutputStream::Ptr<byte>& src, CONVERTER&& converter)
