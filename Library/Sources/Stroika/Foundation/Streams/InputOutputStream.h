@@ -24,9 +24,8 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
     template <typename ELEMENT_TYPE>
     class Ptr;
 
-    // @todo must change name so no prefix _
     template <typename ELEMENT_TYPE>
-    class _IRep;
+    class IRep;
 
     /**
      *  \note   Design Note:
@@ -79,7 +78,7 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
          *
          *  \req rep != nullptr (use nullptr_t constructor)
          */
-        Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep);
+        Ptr (const shared_ptr<IRep<ELEMENT_TYPE>>& rep);
 
     public:
         /**
@@ -164,39 +163,39 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
          */
         nonvirtual bool operator== (nullptr_t) const;
 
-    protected:
+    public:
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual shared_ptr<_IRep<ELEMENT_TYPE>> _GetSharedRep () const;
+        nonvirtual shared_ptr<IRep<ELEMENT_TYPE>> GetSharedRep () const;
 
-    protected:
+    public:
         /**
          * \req *this != nullptr
          */
-        nonvirtual const _IRep<ELEMENT_TYPE>& _GetRepConstRef () const;
+        nonvirtual const IRep<ELEMENT_TYPE>& GetRepConstRef () const;
 
-    protected:
+    public:
         /**
          * \req *this != nullptr
          */
-        nonvirtual _IRep<ELEMENT_TYPE>& _GetRepRWRef () const;
+        nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
     };
 
     /**
      *
      */
     template <typename ELEMENT_TYPE>
-    class _IRep : public InputStream::IRep<ELEMENT_TYPE>, public OutputStream::IRep<ELEMENT_TYPE> {
+    class IRep : public InputStream::IRep<ELEMENT_TYPE>, public OutputStream::IRep<ELEMENT_TYPE> {
     public:
         using ElementType = ELEMENT_TYPE;
 
     public:
-        _IRep ()             = default;
-        _IRep (const _IRep&) = delete;
+        IRep ()            = default;
+        IRep (const IRep&) = delete;
 
     public:
-        nonvirtual _IRep& operator= (const _IRep&) = delete;
+        nonvirtual IRep& operator= (const IRep&) = delete;
     };
 
 }

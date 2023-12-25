@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
 
     namespace Private_ {
         template <typename ELEMENT_TYPE>
-        class Rep_ : public InputOutputStream::_IRep<ELEMENT_TYPE> {
+        class Rep_ : public InputOutputStream::IRep<ELEMENT_TYPE> {
         public:
             using ElementType = ELEMENT_TYPE;
 
@@ -28,8 +28,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
 
         public:
             Rep_ ()
-                : fData_{}
-                , fReadCursor_{fData_.begin ()}
+                : fReadCursor_{fData_.begin ()}
                 , fWriteCursor_{fData_.begin ()}
             {
             }
@@ -226,8 +225,8 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             // Or Stroika chunked array code
 
         private:
-            static inline const auto                                       kSeekException_ = range_error{"seek"};
-            vector<ElementType>                                            fData_;
+            static inline const auto kSeekException_ = range_error{"seek"};
+            vector<ElementType>      fData_; // subtle, but important data declared before cursors for initialization CTOR sake
             typename vector<ElementType>::iterator                         fReadCursor_;
             typename vector<ElementType>::iterator                         fWriteCursor_;
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
@@ -282,13 +281,13 @@ namespace Stroika::Foundation::Streams::MemoryStream {
     inline auto Ptr<ELEMENT_TYPE>::GetRepConstRef_ () const -> const Private_::Rep_<ELEMENT_TYPE>&
     {
         using Rep_ = typename MemoryStream::Private_::Rep_<ELEMENT_TYPE>;
-        return *Debug::UncheckedDynamicCast<const Rep_*> (&inherited::_GetRepConstRef ());
+        return *Debug::UncheckedDynamicCast<const Rep_*> (&inherited::GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::GetRepRWRef_ () const -> Private_::Rep_<ELEMENT_TYPE>&
     {
         using Rep_ = typename MemoryStream::Private_::Rep_<ELEMENT_TYPE>;
-        return *Debug::UncheckedDynamicCast<Rep_*> (&inherited::_GetRepRWRef ());
+        return *Debug::UncheckedDynamicCast<Rep_*> (&inherited::GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     template <typename T>

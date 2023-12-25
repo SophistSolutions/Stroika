@@ -18,12 +18,11 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class Rep_ final : public InputOutputStream::_IRep<ELEMENT_TYPE> {
+    class Rep_ final : public InputOutputStream::IRep<ELEMENT_TYPE> {
     public:
         Rep_ (const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream, const typename OutputStream::Ptr<ELEMENT_TYPE>& logInput,
               const typename OutputStream::Ptr<ELEMENT_TYPE>& logOutput)
-            : InputOutputStream::_IRep<ELEMENT_TYPE>{}
-            , fRealStream_{realStream}
+            : fRealStream_{realStream}
             , fLogInput_{logInput}
             , fLogOutput_{logOutput}
         {

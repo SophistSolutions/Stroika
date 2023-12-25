@@ -24,14 +24,13 @@ using namespace Stroika::Foundation::IO::Network;
  ********************* IO::Network::SocketStream::Rep_ **************************
  ********************************************************************************
  */
-class SocketStream::Rep_ : public InputOutputStream::_IRep<byte> {
+class SocketStream::Rep_ : public InputOutputStream::IRep<byte> {
 public:
     bool           fOpenForRead_{true};
     bool           fOpenForWrite_{true};
     SeekOffsetType fReadSeekOffset_{};
     Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd)
-        : InputOutputStream::_IRep<byte>{}
-        , fSD_{sd}
+        : fSD_{sd}
     {
     }
     virtual bool IsSeekable () const override
