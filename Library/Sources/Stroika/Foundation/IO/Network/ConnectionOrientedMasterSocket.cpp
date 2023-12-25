@@ -32,7 +32,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s",
                                                                                          Characters::ToString ((int)backlog).c_str ())};
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
 #if qPlatform_POSIX
             Handle_ErrNoResultInterruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
 #elif qPlatform_Windows
@@ -43,7 +43,7 @@ namespace {
         }
         virtual ConnectionOrientedStreamSocket::Ptr Accept () override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
             sockaddr_storage                                peer{};
             socklen_t                                       sz = sizeof (peer);
 #if qPlatform_POSIX

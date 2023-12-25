@@ -26,6 +26,8 @@ using namespace Stroika::Foundation::IO::Network;
 
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
+using Debug::AssertExternallySynchronizedMutex;
+
 namespace {
     struct Rep_ : BackSocketImpl_<ConnectionlessSocket::_IRep> {
         using inherited = BackSocketImpl_<ConnectionlessSocket::_IRep>;
@@ -40,7 +42,7 @@ namespace {
                 Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::SendTo", L"end-start=%lld, sockAddr=%s",
                                                                static_cast<long long> (end - start), Characters::ToString (sockAddr).c_str ())};
 #endif
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             sockaddr_storage                                sa = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
             Handle_ErrNoResultInterruption ([this, &start, &end, &sa, &sockAddr] () -> int {
@@ -57,7 +59,7 @@ namespace {
         }
         virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSeconds timeout) override
         {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
 
             if constexpr (qPlatform_Windows) {
                 // TMPHACK for - https://stroika.atlassian.net/browse/STK-964
@@ -118,7 +120,7 @@ namespace {
             Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
                 L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (),
                 Characters::ToString (onInterface).c_str ())};
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
             Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4 or iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V6);
             auto                       activity = Execution::LazyEvalActivity{[&] () -> Characters::String {
                 return "joining multicast group "sv + Characters::ToString (iaddr) + L" on interface "sv + Characters::ToString (onInterface);
@@ -146,7 +148,7 @@ namespace {
             Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
                 L"IO::Network::Socket::LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (),
                 Characters::ToString (onInterface).c_str ())};
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
             switch (iaddr.GetAddressFamily ()) {
                 case InternetAddress::AddressFamily::V4: {
                     ::ip_mreq m{};
@@ -166,7 +168,7 @@ namespace {
         }
         virtual uint8_t GetMulticastTTL () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             switch (GetAddressFamily ()) {
                 case SocketAddress::INET: {
                     return getsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL);
@@ -183,7 +185,7 @@ namespace {
         {
             static constexpr Execution::Activity            kSettingMulticastTTL{"setting multicast TTL"sv};
             Execution::DeclareActivity                      activityDeclare{&kSettingMulticastTTL};
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             switch (GetAddressFamily ()) {
                 case SocketAddress::INET: {
                     setsockopt<uint8_t> (IPPROTO_IP, IP_MULTICAST_TTL, ttl);
@@ -215,7 +217,7 @@ namespace {
         }
         virtual bool GetMulticastLoopMode () const override
         {
-            AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+            AssertExternallySynchronizedMutex::ReadContext declareContext{this->fThisAssertExternallySynchronized};
             switch (GetAddressFamily ()) {
                 case SocketAddress::INET: {
                     return !!getsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP);
@@ -232,7 +234,7 @@ namespace {
         {
             static constexpr Execution::Activity            kSettingMulticastLoopMode{"setting multicast loop mode"sv};
             Execution::DeclareActivity                      activityDeclare{&kSettingMulticastLoopMode};
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+            AssertExternallySynchronizedMutex::WriteContext declareContext{this->fThisAssertExternallySynchronized};
             switch (GetAddressFamily ()) {
                 case SocketAddress::INET: {
                     setsockopt<char> (IPPROTO_IP, IP_MULTICAST_LOOP, loopMode);

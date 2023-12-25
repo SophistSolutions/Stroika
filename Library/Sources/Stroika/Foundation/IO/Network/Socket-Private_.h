@@ -96,8 +96,7 @@ namespace Stroika::Foundation::IO::Network {
         }
 
         template <typename BASE_REP>
-        // struct BackSocketImpl_ : public BASE {
-        struct BackSocketImpl_ : public BASE_REP, protected Debug::AssertExternallySynchronizedMutex {
+        struct BackSocketImpl_ : public BASE_REP {
             Socket::PlatformNativeHandle fSD_;
             BackSocketImpl_ (Socket::PlatformNativeHandle sd)
                 : fSD_{sd}
@@ -111,14 +110,14 @@ namespace Stroika::Foundation::IO::Network {
             }
             virtual Socket::PlatformNativeHandle Detach () override
             {
-                AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-                Socket::PlatformNativeHandle                    h = fSD_;
-                fSD_                                              = kINVALID_NATIVE_HANDLE_;
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
+                Socket::PlatformNativeHandle                           h = fSD_;
+                fSD_                                                     = kINVALID_NATIVE_HANDLE_;
                 return h;
             }
             virtual void Shutdown (Socket::ShutdownTarget shutdownTarget) override
             {
-                AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
                 Require (fSD_ != kINVALID_NATIVE_HANDLE_);
                 // Intentionally ignore shutdown results because in most cases there is nothing todo (maybe in some cases we should log?)
                 switch (shutdownTarget) {
@@ -150,7 +149,7 @@ namespace Stroika::Foundation::IO::Network {
             }
             virtual void Close () override
             {
-                AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
 #if qPlatform_POSIX
                     ::close (fSD_);
@@ -164,9 +163,9 @@ namespace Stroika::Foundation::IO::Network {
             }
             virtual optional<IO::Network::SocketAddress> GetLocalAddress () const override
             {
-                AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-                struct sockaddr_storage                        radr;
-                socklen_t                                      len = sizeof (radr);
+                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized};
+                struct sockaddr_storage                               radr;
+                socklen_t                                             len = sizeof (radr);
                 if (::getsockname (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
                     IO::Network::SocketAddress sa{radr};
                     return sa;
@@ -175,7 +174,7 @@ namespace Stroika::Foundation::IO::Network {
             }
             virtual SocketAddress::FamilyType GetAddressFamily () const override
             {
-                AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized};
 #if defined(SO_DOMAIN)
                 return getsockopt<SocketAddress::FamilyType> (SOL_SOCKET, SO_DOMAIN);
 #elif defined(SO_PROTOCOL)
@@ -201,12 +200,12 @@ namespace Stroika::Foundation::IO::Network {
             }
             virtual Socket::PlatformNativeHandle GetNativeSocket () const override
             {
-                AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized};
                 return fSD_;
             }
             virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const override
             {
-                AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized};
                 // According to http://linux.die.net/man/2/getsockopt cannot return EINTR, so no need to retry
                 RequireNotNull (optval);
 #if qPlatform_POSIX
@@ -220,15 +219,15 @@ namespace Stroika::Foundation::IO::Network {
             template <typename RESULT_TYPE>
             inline RESULT_TYPE getsockopt (int level, int optname) const
             {
-                AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-                RESULT_TYPE                                    r{};
-                socklen_t                                      roptlen = sizeof (r);
+                Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized};
+                RESULT_TYPE                                           r{};
+                socklen_t                                             roptlen = sizeof (r);
                 this->getsockopt (level, optname, &r, &roptlen);
                 return r;
             }
             virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen) override
             {
-                AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized};
                 // According to http://linux.die.net/man/2/setsockopt cannot return EINTR, so no need to retry
                 RequireNotNull (optval);
 #if qPlatform_POSIX
@@ -245,8 +244,8 @@ namespace Stroika::Foundation::IO::Network {
                 socklen_t optvallen = sizeof (arg);
                 this->setsockopt (level, optname, &arg, optvallen);
             }
+            [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized;
         };
-        //};
     }
 
 }

@@ -28,6 +28,8 @@ using namespace Stroika::Foundation::Streams;
 
 using namespace Stroika::Foundation::IO::Network::HTTP;
 
+using Debug::AssertExternallySynchronizedMutex;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -48,12 +50,12 @@ Request::Request (Request&& src)
 Request::Request ()
     : httpVersion{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
                       const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
-                      AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+                      Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                       return thisObj->fHTTPVersion_;
                   },
                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& versionOrVersionLabel) {
                       Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
-                      AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+                      AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                       static const String                             kLabeled_10_{"HTTP/1.0"sv};
                       static const String                             kLabeled_11_{"HTTP/1.1"sv};
                       auto versionStringComparer = String::EqualsComparer{Characters::eCaseInsensitive};
@@ -74,59 +76,59 @@ Request::Request ()
                   }}
     , httpMethod{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                      const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
-                     AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+                     Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                      return thisObj->fMethod_;
                  },
                  [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& method) {
                      Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
-                     AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+                     Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                      thisObj->fMethod_ = method;
                  }}
     , url{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+              Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
               return thisObj->fURL_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& url) {
               Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
-              AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+              Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
               thisObj->fURL_ = url;
           }}
     , headers{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {
         const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::headers);
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
         return thisObj->fHeaders_;
     }}
     , rwHeaders{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers& {
                     Request* thisObj = const_cast<Request*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders));
-                    AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj}; // not shared_lock cuz rw
+                    AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized}; // not shared_lock cuz rw
                     return thisObj->fHeaders_;
                 },
                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
                     Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
-                    AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+                    AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                     thisObj->fHeaders_ = newHeaders;
                 }}
     , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
         const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::contentType);
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
         return thisObj->fHeaders_.contentType ();
     }}
 {
 }
 
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-void Request::SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext)
+void Request::SetAssertExternallySynchronizedMutexContext (const shared_ptr<Debug::AssertExternallySynchronizedMutex::SharedContext>& sharedContext)
 {
-    AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext (sharedContext);
+    _fThisAssertExternallySynchronized.SetAssertExternallySynchronizedMutexContext (sharedContext);
     fHeaders_.SetAssertExternallySynchronizedMutexContext (sharedContext);
 }
 #endif
 
 String Request::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-    StringBuilder                                  sb;
+    Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{_fThisAssertExternallySynchronized};
+    StringBuilder                                         sb;
     sb << "{"sv;
     sb << "HTTPVersion: "sv << fHTTPVersion_ << ", "sv;
     sb << "Method: "sv << fMethod_ << ", "sv;

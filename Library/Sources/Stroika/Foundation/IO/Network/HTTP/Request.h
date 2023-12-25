@@ -26,12 +26,12 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     using DataExchange::InternetMediaType;
 
     /**
-     *  HTTP Request object that (shared by HTTP Client and HTTP Server apis).
+     *  HTTP Request object that (shared by HTTP Client and HTTP Server APIs).
      *  \note - @todo - KEY MISSING FEATURE is BODY and STREAM - which are just in the Frameworks/WebServer subclass
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    class Request : protected Debug::AssertExternallySynchronizedMutex {
+    class Request {
     public:
         /**
          */
@@ -49,7 +49,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          * 
          *  \see AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext
          */
-        nonvirtual void SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext);
+        nonvirtual void SetAssertExternallySynchronizedMutexContext (const shared_ptr<Debug::AssertExternallySynchronizedMutex::SharedContext>& sharedContext);
 #endif
 
     public:
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         /**
          *  Access the HTTP request body Content-Type, if any given
-         *  A short-hand, equivilent to fetching headers().contentType(), provided because this is such a commonly accessed part of Request.
+         *  A short-hand, equivalent to fetching headers().contentType(), provided because this is such a commonly accessed part of Request.
          */
         Common::ReadOnlyProperty<optional<InternetMediaType>> contentType;
 
@@ -102,6 +102,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  @see Characters::ToString ()
          */
         nonvirtual String ToString () const;
+
+    protected:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
 
     private:
         String  fHTTPVersion_;
