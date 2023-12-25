@@ -242,8 +242,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
         private:
             static inline const auto kSeekException_ = range_error{"seek"};
             mutable recursive_mutex  fMutex_;
-            Execution::WaitableEvent fMoreDataWaiter_{};            // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
-            vector<ElementType>                    fData_;          // Important data comes before cursors cuz of use in CTOR
+            Execution::WaitableEvent fMoreDataWaiter_{}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
+            vector<ElementType>                    fData_; // Important data comes before cursors cuz of use in CTOR
             typename vector<ElementType>::iterator fReadCursor_;
             typename vector<ElementType>::iterator fWriteCursor_;
             bool                                   fClosedForWrites_{false};
@@ -290,12 +290,12 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::GetRepConstRef_ () const -> const Private_::Rep_<ELEMENT_TYPE>&
     {
-        return *Debug::UncheckedDynamicCast<const Private_::Rep_<ELEMENT_TYPE>*> (&inherited::_GetRepConstRef ());
+        return *Debug::UncheckedDynamicCast<const Private_::Rep_<ELEMENT_TYPE>*> (&inherited::GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::GetRepRWRef_ () const -> Private_::Rep_<ELEMENT_TYPE>&
     {
-        return *Debug::UncheckedDynamicCast<Private_::Rep_<ELEMENT_TYPE>*> (&inherited::_GetRepRWRef ());
+        return *Debug::UncheckedDynamicCast<Private_::Rep_<ELEMENT_TYPE>*> (&inherited::GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     template <typename T>
