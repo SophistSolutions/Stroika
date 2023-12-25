@@ -43,7 +43,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
 using namespace Stroika::Foundation::DataExchange::XML;
-using namespace Stroika::Foundation::Streams;
 using namespace Streams::iostream;
 
 using namespace Stroika::Frameworks;
@@ -53,6 +52,7 @@ using Containers::Sequence;
 using Containers::Set;
 using Containers::SortedMapping;
 using Debug::TraceContextBumper;
+using Streams::InputStream;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -440,7 +440,7 @@ namespace {
             ;
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
-            return InputStream::Ptr<byte>{InputStreamFromStdIStream::New<byte> (tmpStrm)}.ReadAll ();
+            return InputStream<byte>::Ptr{InputStreamFromStdIStream::New<byte> (tmpStrm)}.ReadAll ();
         };
 
         ObjectReader::Registry mapper;
@@ -1367,20 +1367,20 @@ namespace {
         const Memory::BLOB kReferenceContent_2012_03_xsd = Memory::BLOB::Attach (Resources_::ReferenceContent_2012_03_xsd);
 
         {
-            DOM::Document::Ptr d   = DOM::Document::New (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> ());
+            DOM::Document::Ptr d   = DOM::Document::New (kPersonalXML_.As<Streams::InputStream<byte>::Ptr> ());
             String             tmp = d.Write ();
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         }
         {
             Schema::Ptr        personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
-            DOM::Document::Ptr d              = DOM::Document::New (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), personalSchema);
+            DOM::Document::Ptr d              = DOM::Document::New (kPersonalXML_.As<Streams::InputStream<byte>::Ptr> (), personalSchema);
             String             tmp            = d.Write ();
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         }
         {
             Schema::Ptr schema = XML::Schema::New (IO::Network::URI{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"},
                                                    kReferenceContent_2012_03_xsd);
-            DOM::Document::Ptr d   = DOM::Document::New (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), schema);
+            DOM::Document::Ptr d   = DOM::Document::New (kHealthFrameWorks_v3_xml.As<Streams::InputStream<byte>::Ptr> (), schema);
             String             tmp = d.Write ();
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         }

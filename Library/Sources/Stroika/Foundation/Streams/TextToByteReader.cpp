@@ -24,9 +24,9 @@ using Debug::AssertExternallySynchronizedMutex;
 using Memory::StackBuffer;
 
 namespace {
-    class Rep_ : public InputStream::_IRep<byte> {
+    class Rep_ : public InputStream<byte>::_IRep {
     public:
-        Rep_ (const InputStream::Ptr<Character>& src)
+        Rep_ (const InputStream<Character>::Ptr& src)
             : fSrc_{src}
         {
         }
@@ -105,7 +105,7 @@ namespace {
         }
 
     protected:
-        InputStream::Ptr<Character> fSrc_;
+        InputStream<Character>::Ptr fSrc_;
         byte                        fSrcBufferedRawBytes_[4]; // not used directly, but always through fSrcBufferedSpan_
         span<byte>                  fSrcBufferedSpan_;
         SeekOffsetType              _fOffset{0};
@@ -118,12 +118,12 @@ namespace {
  *********************** Streams::TextToByteReader::New *************************
  ********************************************************************************
  */
-auto TextToByteReader::New (const InputStream::Ptr<Character>& srcStream) -> InputStream::Ptr<byte>
+auto TextToByteReader::New (const InputStream<Character>::Ptr& srcStream) -> InputStream<byte>::Ptr
 {
-    return InputStream::Ptr<byte>{make_shared<Rep_> (srcStream)};
+    return InputStream<byte>::Ptr{make_shared<Rep_> (srcStream)};
 }
 
-auto TextToByteReader::New (const Traversal::Iterable<Character>& srcText) -> InputStream::Ptr<byte>
+auto TextToByteReader::New (const Traversal::Iterable<Character>& srcText) -> InputStream<byte>::Ptr
 {
     // @todo - Could make this more efficient (by combining into one object) - but for now KISS
     return New (IterableToInputStream::New<Character> (srcText));

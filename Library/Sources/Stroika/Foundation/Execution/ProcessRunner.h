@@ -142,17 +142,17 @@ namespace Stroika::Foundation::Execution {
         ProcessRunner (const ProcessRunner&) = delete;
 
     public:
-        ProcessRunner (const String& commandLine, const Streams::InputStream::Ptr<byte>& in = nullptr,
+        ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in = nullptr,
                        const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
-        ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
+        ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in = nullptr,
                        const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr);
 #if !qTargetPlatformSDKUseswchar_t && 0
-        ProcessRunner (const SDKString& commandLine, const Streams::InputStream::Ptr<byte>& in = nullptr,
+        ProcessRunner (const SDKString& commandLine, const Streams::InputStream<byte>::Ptr& in = nullptr,
                        const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr)
             : ProcessRunner (String::FromSDKString (commandLine), in, out, error)
         {
         }
-        ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, const Streams::InputStream::Ptr<byte>& in = nullptr,
+        ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, const Streams::InputStream<byte>::Ptr& in = nullptr,
                        const Streams::OutputStream::Ptr<byte>& out = nullptr, const Streams::OutputStream::Ptr<byte>& error = nullptr)
             : ProcessRunner (String::FromSDKString (executable), args, in, out, error)
         {
@@ -179,8 +179,8 @@ namespace Stroika::Foundation::Execution {
          *  Otherwise, the stream will be 'read' by the ProcessRunner and 'fed' downstream to
          *  the running subprocess.
          */
-        nonvirtual Streams::InputStream::Ptr<byte> GetStdIn () const;
-        nonvirtual void                            SetStdIn (const Streams::InputStream::Ptr<byte>& in);
+        nonvirtual Streams::InputStream<byte>::Ptr GetStdIn () const;
+        nonvirtual void                            SetStdIn (const Streams::InputStream<byte>::Ptr& in);
         nonvirtual void                            SetStdIn (const Memory::BLOB& in);
 
     public:
@@ -268,7 +268,7 @@ namespace Stroika::Foundation::Execution {
         optional<filesystem::path>                                     fExecutable_;
         Containers::Sequence<String>                                   fArgs_; // ignored if fExecutable empty
         optional<String>                                               fWorkingDirectory_;
-        Streams::InputStream::Ptr<byte>                                fStdIn_;
+        Streams::InputStream<byte>::Ptr                                fStdIn_;
         Streams::OutputStream::Ptr<byte>                               fStdOut_;
         Streams::OutputStream::Ptr<byte>                               fStdErr_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;

@@ -162,7 +162,7 @@ namespace {
         }
 
         SocketStream::Ptr socketStream = SocketStream::New (connectionSocket);
-        InputStream::Ptr<byte> in = BufferedInputStream::New<byte> (socketStream); // not important, but a good idea, to avoid excessive kernel calls
+        InputStream<byte>::Ptr in = BufferedInputStream::New<byte> (socketStream); // not important, but a good idea, to avoid excessive kernel calls
         OutputStream::Ptr<byte> out = BufferedOutputStream::New<byte> (socketStream); // critical so we don't write multiple packets - at least some apps assume whole thing comes in one packet
 
         auto checkedReadHelperPayload2Shorts = [] (const Memory::BLOB& requestPayload, uint16_t minSecondValue,

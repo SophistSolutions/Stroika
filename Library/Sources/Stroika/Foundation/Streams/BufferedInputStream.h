@@ -33,19 +33,19 @@
 namespace Stroika::Foundation::Streams::BufferedInputStream {
 
     /**
-     *  @brief  BufferedInputStream is an InputStream::Ptr<ELEMENT_TYPE> which provides buffered access.
+     *  @brief  BufferedInputStream is an InputStream<ELEMENT_TYPE>::Ptr which provides buffered access.
      *          This is useful if calls to the underling stream source can be expensive. This class
      *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
     template <typename ELEMENT_TYPE>
-    using Ptr = typename InputStream::Ptr<ELEMENT_TYPE>;
+    using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
 
     /**
          *  \par Example Usage
          *      \code
-         *          InputStream::Ptr<byte> in = BufferedInputStream::New<byte> (fromStream);
+         *          InputStream<byte>::Ptr in = BufferedInputStream::New<byte> (fromStream);
          *      \endcode
          *
          *  \par Example Usage
@@ -54,9 +54,9 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
          *      \endcode
          */
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn);
+    Ptr<ELEMENT_TYPE> New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
     template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputStream::Ptr<ELEMENT_TYPE>& realIn);
+    Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
 
     template <typename ELEMENT_TYPE>
     class Rep_;

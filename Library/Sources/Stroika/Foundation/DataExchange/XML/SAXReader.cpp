@@ -46,7 +46,7 @@ namespace {
         protected:
             class StdIStream_InputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
             public:
-                StdIStream_InputStream (InputStream::Ptr<byte> in)
+                StdIStream_InputStream (InputStream<byte>::Ptr in)
                     : fSource{in}
                 {
                 }
@@ -67,11 +67,11 @@ namespace {
                 }
 
             protected:
-                InputStream::Ptr<byte> fSource;
+                InputStream<byte>::Ptr fSource;
             };
 
         public:
-            StdIStream_InputSource_ (InputStream::Ptr<byte> in, const XMLCh* const bufId = nullptr)
+            StdIStream_InputSource_ (InputStream<byte>::Ptr in, const XMLCh* const bufId = nullptr)
                 : InputSource{bufId}
                 , fSource{in}
             {
@@ -82,7 +82,7 @@ namespace {
             }
 
         protected:
-            InputStream::Ptr<byte> fSource;
+            InputStream<byte>::Ptr fSource;
         };
 
         // my variations of StdIInputSrc with progresstracker callback
@@ -90,7 +90,7 @@ namespace {
         protected:
             class ISWithProg : public StdIStream_InputSource_::StdIStream_InputStream {
             public:
-                ISWithProg (const InputStream::Ptr<byte>& in, ProgressMonitor::Updater progressCallback)
+                ISWithProg (const InputStream<byte>::Ptr& in, ProgressMonitor::Updater progressCallback)
                     : StdIStream_InputStream{in}
                     , fProgress_{progressCallback, 0.0f, 1.0f}
                     , fTotalSize_{0.0f}
@@ -129,7 +129,7 @@ namespace {
             };
 
         public:
-            StdIStream_InputSourceWithProgress_ (InputStream::Ptr<byte> in, ProgressMonitor::Updater progressUpdater, const XMLCh* const bufId = nullptr)
+            StdIStream_InputSourceWithProgress_ (InputStream<byte>::Ptr in, ProgressMonitor::Updater progressUpdater, const XMLCh* const bufId = nullptr)
                 : StdIStream_InputSource_{in, bufId}
                 , fProgressCallback_{progressUpdater}
             {
@@ -265,7 +265,7 @@ namespace {
  */
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-void XML::SAXParse (Provider saxProvider, [[maybe_unused]] const Streams::InputStream::Ptr<byte>& in,
+void XML::SAXParse (Provider saxProvider, [[maybe_unused]] const Streams::InputStream<byte>::Ptr& in,
                     [[maybe_unused]] StructuredStreamEvents::IConsumer& callback, const Schema::Ptr& schema,
                     [[maybe_unused]] ProgressMonitor::Updater progress)
 {

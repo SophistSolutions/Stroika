@@ -27,14 +27,14 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
 #if qHasFeature_OpenSSL
     /**
      */
-    Streams::InputStream::Ptr<byte> DecodeRC4 (const Memory::BLOB& key, const Streams::InputStream::Ptr<byte>& in);
+    Streams::InputStream<byte>::Ptr DecodeRC4 (const Memory::BLOB& key, const Streams::InputStream<byte>::Ptr& in);
     Memory::BLOB                    DecodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
 #endif
 
 #if qHasFeature_OpenSSL
     /**
      */
-    Streams::InputStream::Ptr<byte> EncodeRC4 (const Memory::BLOB& key, const Streams::InputStream::Ptr<byte>& in);
+    Streams::InputStream<byte>::Ptr EncodeRC4 (const Memory::BLOB& key, const Streams::InputStream<byte>::Ptr& in);
     Memory::BLOB                    EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
 #endif
 

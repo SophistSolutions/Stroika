@@ -97,7 +97,7 @@ namespace {
                 MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
                 EXPECT_TRUE (s != nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
-                EXPECT_TRUE (static_cast<InputStream::Ptr<byte>> (s).IsSeekable ());
+                EXPECT_TRUE (static_cast<InputStream<byte>::Ptr> (s).IsSeekable ());
                 EXPECT_TRUE (static_cast<OutputStream::Ptr<byte>> (s).IsSeekable ());
             }
             {

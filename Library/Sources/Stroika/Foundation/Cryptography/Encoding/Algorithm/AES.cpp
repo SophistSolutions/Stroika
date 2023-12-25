@@ -73,13 +73,13 @@ namespace {
  ***************************** Algorithm::DecodeAES *****************************
  ********************************************************************************
  */
-Streams::InputStream::Ptr<byte> Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream::Ptr<byte>& in, AESOptions options)
+Streams::InputStream<byte>::Ptr Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<byte>::Ptr& in, AESOptions options)
 {
     return OpenSSLInputStream::New (cvt_ (key, options), Direction::eDecrypt, in);
 }
 Memory::BLOB Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options)
 {
-    return DecodeAES (key, in.As<Streams::InputStream::Ptr<byte>> (), options).ReadAll ();
+    return DecodeAES (key, in.As<Streams::InputStream<byte>::Ptr> (), options).ReadAll ();
 }
 #endif
 
@@ -89,13 +89,13 @@ Memory::BLOB Algorithm::DecodeAES (const OpenSSL::DerivedKey& key, const Memory:
  ****************************** Algorithm::EncodeAES ****************************
  ********************************************************************************
  */
-Streams::InputStream::Ptr<byte> Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream::Ptr<byte>& in, AESOptions options)
+Streams::InputStream<byte>::Ptr Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<byte>::Ptr& in, AESOptions options)
 {
     return OpenSSLInputStream::New (cvt_ (key, options), Direction::eEncrypt, in);
 }
 Memory::BLOB Algorithm::EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options)
 {
-    return EncodeAES (key, in.As<Streams::InputStream::Ptr<byte>> (), options).ReadAll ();
+    return EncodeAES (key, in.As<Streams::InputStream<byte>::Ptr> (), options).ReadAll ();
 }
 #endif
 

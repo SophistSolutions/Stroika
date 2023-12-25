@@ -318,17 +318,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          *  \note String in overload is trivial wrapper on Streams::TextToByteReader{}, in case you want adjust paramters.
          * 
-         * @todo add overload taking String 'in' and parse using Streams::TextToByteReader
+         * @todo add overload takign String 'in' and parse using Streams::TextToByteReader
          */
         Ptr New (const String& documentElementName, const optional<URI>& ns);
-        Ptr New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr);
+        Ptr New (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr);
         Ptr New (const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr);
 
         /**
          */
         struct IRep {
             virtual ~IRep ()                                                                                        = default;
-            virtual void                Read (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema) = 0;
+            virtual void                Read (const Streams::InputStream<byte>::Ptr& in, const Schema::Ptr& schema) = 0;
             virtual void                Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             virtual Iterable<Node::Ptr> GetChildren () const                                                                          = 0;
             virtual void                Validate (const Schema::Ptr& schema) const                                                    = 0;

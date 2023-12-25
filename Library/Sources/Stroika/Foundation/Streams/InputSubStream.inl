@@ -21,12 +21,12 @@ namespace Stroika::Foundation::Streams::InputSubStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start,
+    inline auto New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start,
                      const optional<SeekOffsetType>& end) -> Ptr<ELEMENT_TYPE>
     {
-        class Rep_ : public InputStream::_IRep<ELEMENT_TYPE> {
+        class Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
         public:
-            Rep_ (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
+            Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
                 : fRealIn_{realIn}
                 , fOffsetMine2Real_{start.value_or (realIn.GetOffset ())}
                 , fForcedEndInReal_{end}
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
             }
 
         private:
-            typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;
+            typename InputStream<ELEMENT_TYPE>::Ptr                        fRealIn_;
             SeekOffsetType                                                 fOffsetMine2Real_; // subtract from real offset to get our offset
             optional<SeekOffsetType>                                       fForcedEndInReal_;
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;

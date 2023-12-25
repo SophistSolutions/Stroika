@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
     /**
      */
     template <typename ELEMENT_TYPE>
-    using Ptr = typename InputStream::Ptr<ELEMENT_TYPE>;
+    using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
 
     /**
      *  Sometimes, convenient to take an object which is Iterable, and treat it as an InputStream<> (similar but not identical concepts).
@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
      * 
      *  \par Example Usage
      *      \code
-     *          InputStream::Ptr<Character> in = IterableToInputStream::New<Character> (String{"hi"});
+     *          InputStream<Character>::Ptr in = IterableToInputStream::New<Character> (String{"hi"});
      *      \endcode
      */
     template <typename ELEMENT_TYPE>

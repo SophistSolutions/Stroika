@@ -46,7 +46,7 @@ namespace Stroika::Frameworks::WebServer {
         Request ()               = delete;
         Request (const Request&) = delete;
         Request (Request&& src);
-        Request (const Streams::InputStream::Ptr<byte>& inStream);
+        Request (const Streams::InputStream<byte>::Ptr& inStream);
 
     public:
         nonvirtual Request& operator= (const Request&) = delete;
@@ -66,7 +66,7 @@ namespace Stroika::Frameworks::WebServer {
         /**
          *  @todo unclear if this SB const?
          */
-        nonvirtual Streams::InputStream::Ptr<byte> GetInputStream ();
+        nonvirtual Streams::InputStream<byte>::Ptr GetInputStream ();
 
     public:
         /**
@@ -76,7 +76,7 @@ namespace Stroika::Frameworks::WebServer {
          *
          *  \req This may ONLY be called after the headers have been set (read) -- TODO DOCUMENT HOW THIS CAN BE CHECKED AND VERIFIED - I THINK ANSWER RESIDES IN CONNECTION OBJECT
          */
-        nonvirtual Streams::InputStream::Ptr<byte> GetBodyStream ();
+        nonvirtual Streams::InputStream<byte>::Ptr GetBodyStream ();
 
     public:
         /**
@@ -85,8 +85,8 @@ namespace Stroika::Frameworks::WebServer {
         nonvirtual String ToString () const;
 
     private:
-        Streams::InputStream::Ptr<byte> fInputStream_;
-        Streams::InputStream::Ptr<byte> fBodyInputStream_;
+        Streams::InputStream<byte>::Ptr fInputStream_;
+        Streams::InputStream<byte>::Ptr fBodyInputStream_;
         optional<Memory::BLOB>          fBody_;
     };
 

@@ -105,9 +105,9 @@ namespace Stroika::Foundation::Cryptography::Encoding {
     namespace OpenSSLInputStream {
         /**
          */
-        Streams::InputStream::Ptr<byte> New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream::Ptr<byte>& realIn);
-        Streams::InputStream::Ptr<byte> New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
-                                             Direction direction, const Streams::InputStream::Ptr<byte>& realIn);
+        Streams::InputStream<byte>::Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<byte>::Ptr& realIn);
+        Streams::InputStream<byte>::Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
+                                             Direction direction, const Streams::InputStream<byte>::Ptr& realIn);
     };
 
     /**

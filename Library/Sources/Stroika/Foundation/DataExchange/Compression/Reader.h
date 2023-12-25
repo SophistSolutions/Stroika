@@ -22,8 +22,8 @@
 
 namespace Stroika::Foundation::DataExchange::Compression {
 
-    using namespace Streams;
     using Memory::BLOB;
+    using Streams::InputStream;
 
     /**
      *  Abstraction for Readers that map files or streams to collections of files, like zip files, tar files, etc.
@@ -42,11 +42,11 @@ namespace Stroika::Foundation::DataExchange::Compression {
         explicit Reader (const shared_ptr<_IRep>& rep);
 
     public:
-        nonvirtual InputStream::Ptr<byte> Compress (const InputStream::Ptr<byte>& src) const;
+        nonvirtual InputStream<byte>::Ptr Compress (const InputStream<byte>::Ptr& src) const;
         nonvirtual BLOB                   Compress (const BLOB& src) const;
 
     public:
-        nonvirtual InputStream::Ptr<byte> Decompress (const InputStream::Ptr<byte>& src) const;
+        nonvirtual InputStream<byte>::Ptr Decompress (const InputStream<byte>::Ptr& src) const;
         nonvirtual BLOB                   Decompress (const BLOB& src) const;
 
     protected:
@@ -64,10 +64,10 @@ namespace Stroika::Foundation::DataExchange::Compression {
         virtual ~_IRep () = default;
 
     public:
-        virtual InputStream::Ptr<byte> Compress (const InputStream::Ptr<byte>& src) const = 0;
+        virtual InputStream<byte>::Ptr Compress (const InputStream<byte>::Ptr& src) const = 0;
 
     public:
-        virtual InputStream::Ptr<byte> Decompress (const InputStream::Ptr<byte>& src) const = 0;
+        virtual InputStream<byte>::Ptr Decompress (const InputStream<byte>::Ptr& src) const = 0;
     };
 }
 

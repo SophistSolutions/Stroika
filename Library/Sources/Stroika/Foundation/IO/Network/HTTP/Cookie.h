@@ -104,7 +104,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  \req src.IsSeekable () for InputStream overload
          */
-        static Cookie Parse (Streams::InputStream::Ptr<Character> src);
+        static Cookie Parse (Streams::InputStream<Character>::Ptr src);
         static Cookie Parse (const String& src);
 
         /**

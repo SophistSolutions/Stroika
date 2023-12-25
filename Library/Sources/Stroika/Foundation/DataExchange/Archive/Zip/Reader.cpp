@@ -2510,11 +2510,11 @@ namespace {
 class Zip::Reader::Rep_ : public Reader::_IRep {
 private:
     struct MyISeekInStream : zlib_filefunc64_def {
-        Streams::InputStream::Ptr<byte> fInStream_;
+        Streams::InputStream<byte>::Ptr fInStream_;
 #if qDebug
         bool fOpened_{false};
 #endif
-        MyISeekInStream (const Streams::InputStream::Ptr<byte>& in)
+        MyISeekInStream (const Streams::InputStream<byte>::Ptr& in)
             : fInStream_{in}
         {
             this->zopen64_file = [] (voidpf opaqueStream, const void* /*filename*/, int /*mode*/) -> voidpf {
@@ -2599,7 +2599,7 @@ private:
     unzFile         fZipFile_;
 
 public:
-    Rep_ (const Streams::InputStream::Ptr<byte>& in)
+    Rep_ (const Streams::InputStream<byte>::Ptr& in)
         : fInSeekStream_ (in)
         , fZipFile_ (unzOpen2_64 ("", &fInSeekStream_))
     {
@@ -2749,7 +2749,7 @@ public:
     }
 };
 
-Zip::Reader::Reader (const Streams::InputStream::Ptr<byte>& in)
+Zip::Reader::Reader (const Streams::InputStream<byte>::Ptr& in)
     : DataExchange::Archive::Reader{make_shared<Rep_> (in)}
 {
 }

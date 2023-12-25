@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *    
      */
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
-    RETURN_TYPE ComputeDigest (const Streams::InputStream::Ptr<byte>& from);
+    RETURN_TYPE ComputeDigest (const Streams::InputStream<byte>::Ptr& from);
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
     RETURN_TYPE ComputeDigest (const byte* from, const byte* to);
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         nonvirtual void Write (const byte* from, const byte* to);
         nonvirtual void Write (span<const byte> from);
         nonvirtual void Write (const BLOB& from);
-        nonvirtual void Write (const Streams::InputStream::Ptr<byte>& from);
+        nonvirtual void Write (const Streams::InputStream<byte>::Ptr& from);
         template <typename TRIVIALLY_COPYABLE_T>
         nonvirtual void Write (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from)
             requires (is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>);
@@ -256,7 +256,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
          *  that can be quite efficiently turned into a BLOB, but its potentially a little more efficient for
          *  perhaps important cases.
          */
-        nonvirtual ReturnType operator() (const Streams::InputStream::Ptr<byte>& from) const;
+        nonvirtual ReturnType operator() (const Streams::InputStream<byte>::Ptr& from) const;
         nonvirtual ReturnType operator() (const byte* from, const byte* to) const;
         nonvirtual ReturnType operator() (span<const byte> from) const;
         nonvirtual ReturnType operator() (const BLOB& from) const;

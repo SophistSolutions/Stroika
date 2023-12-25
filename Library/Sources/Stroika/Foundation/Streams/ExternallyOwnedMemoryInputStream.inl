@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    class Rep_ : public InputStream::_IRep<ELEMENT_TYPE> {
+    class Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
     public:
         Rep_ ()            = delete;
         Rep_ (const Rep_&) = delete;

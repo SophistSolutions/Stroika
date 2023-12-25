@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         this->Write (from.begin (), from.end ());
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const Streams::InputStream::Ptr<byte>& from)
+    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const Streams::InputStream<byte>::Ptr& from)
     {
         while (true) {
             byte   buf[32 * 1024];
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      ********************************************************************************
      */
     template <typename ALGORITHM, typename RETURN_TYPE>
-    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const Streams::InputStream::Ptr<byte>& from) const -> ReturnType
+    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const Streams::InputStream<byte>::Ptr& from) const -> ReturnType
     {
         return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (from);
     }
@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         }
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
-    RETURN_TYPE ComputeDigest (const Streams::InputStream::Ptr<byte>& from)
+    RETURN_TYPE ComputeDigest (const Streams::InputStream<byte>::Ptr& from)
     {
         IncrementalDigester<ALGORITHM> ctx;
         ctx.Write (from);

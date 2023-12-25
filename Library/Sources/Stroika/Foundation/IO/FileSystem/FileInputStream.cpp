@@ -42,15 +42,15 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 using namespace Stroika::Foundation::IO::FileSystem::FileInputStream;
-using namespace Stroika::Foundation::Streams;
 
+using Streams::InputStream;
 using Streams::SeekOffsetType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
-    class Rep_ : public InputStream::_IRep<byte> /*, public Memory::UseBlockAllocationIfAppropriate<Rep_>*/ { // @todo figure out why not working!!!
+    class Rep_ : public InputStream<byte>::_IRep /*, public Memory::UseBlockAllocationIfAppropriate<Rep_>*/ { // @todo figure out why not working!!!
     public:
         Rep_ ()            = delete;
         Rep_ (const Rep_&) = delete;
@@ -289,13 +289,13 @@ auto FileInputStream::New (Execution::InternallySynchronized internallySynchroni
     }
 }
 
-InputStream::Ptr<byte> FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<byte>::Ptr FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{L"FileInputStream::New", L"fileName: %s, seekable: %d, bufferFlag: %d", ToString (fileName).c_str (),
                                   seekable, bufferFlag};
 #endif
-    InputStream::Ptr<byte> in = FileInputStream::New (fileName, seekable);
+    InputStream<byte>::Ptr in = FileInputStream::New (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
             return Streams::BufferedInputStream::New<byte> (in);
@@ -307,12 +307,12 @@ InputStream::Ptr<byte> FileInputStream::New (const filesystem::path& fileName, S
     }
 }
 
-InputStream::Ptr<byte> FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<byte>::Ptr FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{L"FileInputStream::New", L"fd: %d, seekable: %d, bufferFlag: %d", fd, seekable, bufferFlag};
 #endif
-    InputStream::Ptr<byte> in = FileInputStream::New (fd, adoptFDPolicy, seekable);
+    InputStream<byte>::Ptr in = FileInputStream::New (fd, adoptFDPolicy, seekable);
     switch (bufferFlag) {
         case eBuffered:
             return Streams::BufferedInputStream::New<byte> (in);

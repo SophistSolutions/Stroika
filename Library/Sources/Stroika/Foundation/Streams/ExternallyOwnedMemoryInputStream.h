@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
      *
      *  This class is threadsafe - meaning Read() can safely be called from multiple threads at a time freely.
      *
-     *  NB: Be VERY careful about using this. It can be assigned to a InputStream::Ptr<ELEMENT_TYPE>, and
+     *  NB: Be VERY careful about using this. It can be assigned to a InputStream<ELEMENT_TYPE>::Ptr, and
      *  if any of its constructor arguments are destroyed, it will contain invalid memory references.
      *  Use VERY CAREFULLY. If in doubt, use @MemoryStream<ELEMENT_TYPE> - which is MUCH safer (because it copies its CTOR-argument data)
      *
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
     /**
          */
     template <typename ELEMENT_TYPE>
-    using Ptr = typename InputStream::Ptr<ELEMENT_TYPE>;
+    using Ptr = typename InputStream<ELEMENT_TYPE>::Ptr;
 
     /**
          *  \note   The CTOR with random_access_iterator ELEMENT_ITERATOR is safe because you can (always take diff between two
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
          *
          *  \par Example Usage
          *      \code
-         *          InputStream::Ptr<byte> in = ExternallyOwnedMemoryInputStream::New<byte> (begin (buf), begin (buf) + nBytesRead);
+         *          InputStream<byte>::Ptr in = ExternallyOwnedMemoryInputStream::New<byte> (begin (buf), begin (buf) + nBytesRead);
          *      \endcode
          *
          *  \par Example Usage

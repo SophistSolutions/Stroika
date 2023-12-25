@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
         using Traversal::Iterable;
         using Traversal::Iterator;
         // Simply iterate over the 'iterable' of characacters, but allow seekability (by saving original iteration start)
-        class IterableAdapterStreamRep_ final : public InputStream::_IRep<ELEMENT_TYPE> {
+        class IterableAdapterStreamRep_ final : public InputStream<ELEMENT_TYPE>::_IRep {
         public:
             IterableAdapterStreamRep_ (const Traversal::Iterable<ELEMENT_TYPE>& src)
                 : fSource_{src}

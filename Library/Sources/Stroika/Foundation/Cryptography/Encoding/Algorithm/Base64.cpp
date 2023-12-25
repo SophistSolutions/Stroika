@@ -303,13 +303,13 @@ namespace {
     }
 }
 
-string Algorithm::EncodeBase64 (const Streams::InputStream::Ptr<byte>& from, LineBreak lb)
+string Algorithm::EncodeBase64 (const Streams::InputStream<byte>::Ptr& from, LineBreak lb)
 {
 #if 0
     // Use look doing multiple base64_encode_block_() calls!
 #elif 1
     // quick hack impl
-    Memory::BLOB bytes = Streams::InputStream::Ptr<byte> (from).ReadAll ();
+    Memory::BLOB bytes = Streams::InputStream<byte>::Ptr (from).ReadAll ();
     const byte*  start = bytes.begin ();
     const byte*  end   = bytes.end ();
     Require (start == end or start != nullptr);

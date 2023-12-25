@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Memory {
         return BLOB{MakeSharedPtr<AdoptAndDeleteRep_> (b, b + arrayLen)};
     }
     template <>
-    Streams::InputStream::Ptr<byte> BLOB::As () const;
+    Streams::InputStream<byte>::Ptr BLOB::As () const;
     template <typename T>
     inline T BLOB::As () const
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Memory {
             or same_as<T,pair<const uint8_t*, const uint8_t*>>
             or same_as<T,vector<byte>>
             or same_as<T,vector<uint8_t>>
-            or same_as<T,Streams::InputStream::Ptr<byte>>
+            or same_as<T,Streams::InputStream<byte>::Ptr>
             or same_as<T,string>
             or is_trivially_copyable_v<T>
         )
@@ -233,7 +233,7 @@ namespace Stroika::Foundation::Memory {
             auto s = this->As<span<const uint8_t>> ();
             return T{s.begin (), s.end ()};
         }
-        else if constexpr (same_as<T, Streams::InputStream::Ptr<byte>>) {
+        else if constexpr (same_as<T, Streams::InputStream<byte>::Ptr>) {
             AssertNotReached (); //template specialized - handled in C++ file
         }
         else if constexpr (same_as<T, string>) {
@@ -245,9 +245,9 @@ namespace Stroika::Foundation::Memory {
             return *(reinterpret_cast<const T*> (begin ()));
         }
     }
-    inline BLOB::operator Streams::InputStream::Ptr<byte> () const
+    inline BLOB::operator Streams::InputStream<byte>::Ptr () const
     {
-        return As<Streams::InputStream::Ptr<byte>> ();
+        return As<Streams::InputStream<byte>::Ptr> ();
     }
     inline byte BLOB::operator[] (const size_t i) const
     {

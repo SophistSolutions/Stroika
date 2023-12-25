@@ -198,12 +198,12 @@ BLOB BLOB::FromBase64 (const Characters::String& s)
 
 namespace {
     using namespace Streams;
-    struct BLOBBINSTREAM_ : InputStream::Ptr<byte> {
+    struct BLOBBINSTREAM_ : InputStream<byte>::Ptr {
         BLOBBINSTREAM_ (const BLOB& b)
-            : InputStream::Ptr<byte>{Memory::MakeSharedPtr<REP> (b)}
+            : InputStream<byte>::Ptr{Memory::MakeSharedPtr<REP> (b)}
         {
         }
-        struct REP : InputStream::_IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<REP> {
+        struct REP : InputStream<byte>::_IRep, public Memory::UseBlockAllocationIfAppropriate<REP> {
             bool                                                    fIsOpenForRead_{true};
             [[no_unique_address]] AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
             REP (const BLOB& b)
@@ -300,7 +300,7 @@ namespace {
 }
 
 template <>
-Streams::InputStream::Ptr<byte> BLOB::As () const
+Streams::InputStream<byte>::Ptr BLOB::As () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     return BLOBBINSTREAM_{*this};

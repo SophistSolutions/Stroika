@@ -13,7 +13,7 @@
 namespace Stroika::Foundation::DataExchange::XML {
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-    inline void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback, const Schema::Ptr& schema,
+    inline void SAXParse (const Streams::InputStream<byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback, const Schema::Ptr& schema,
                           Execution::ProgressMonitor::Updater progress)
     {
 #if qHasFeature_Xerces

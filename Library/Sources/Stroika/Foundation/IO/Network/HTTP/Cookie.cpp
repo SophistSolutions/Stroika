@@ -118,7 +118,7 @@ String Cookie::As<String> () const
     return String{};
 }
 
-Cookie Cookie::Parse (Streams::InputStream::Ptr<Character> src)
+Cookie Cookie::Parse (Streams::InputStream<Character>::Ptr src)
 {
     Require (src.IsSeekable ());
     auto skipWS = [&] () {

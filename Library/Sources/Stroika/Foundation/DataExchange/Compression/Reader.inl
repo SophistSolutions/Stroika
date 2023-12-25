@@ -34,21 +34,21 @@ namespace Stroika::Foundation::DataExchange::Compression {
         EnsureNotNull (fRep_.get ());
         return *fRep_;
     }
-    inline InputStream::Ptr<byte> Reader::Compress (const InputStream::Ptr<byte>& src) const
+    inline InputStream<byte>::Ptr Reader::Compress (const InputStream<byte>::Ptr& src) const
     {
         return _GetRep ().Compress (src);
     }
     inline BLOB Reader::Compress (const BLOB& src) const
     {
-        return _GetRep ().Compress (src.As<InputStream::Ptr<byte>> ()).ReadAll ();
+        return _GetRep ().Compress (src.As<InputStream<byte>::Ptr> ()).ReadAll ();
     }
-    inline InputStream::Ptr<byte> Reader::Decompress (const InputStream::Ptr<byte>& src) const
+    inline InputStream<byte>::Ptr Reader::Decompress (const InputStream<byte>::Ptr& src) const
     {
         return _GetRep ().Decompress (src);
     }
     inline BLOB Reader::Decompress (const BLOB& src) const
     {
-        return _GetRep ().Decompress (src.As<InputStream::Ptr<byte>> ()).ReadAll ();
+        return _GetRep ().Decompress (src.As<InputStream<byte>::Ptr> ()).ReadAll ();
     }
 
 }

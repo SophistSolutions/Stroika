@@ -23,16 +23,16 @@ using Memory::BLOB;
 
 /*
  ********************************************************************************
- ******************** Streams::InputStream::Ptr<ELEMENT_TYPE> *******************
+ ******************** Streams::InputStream<ELEMENT_TYPE>::Ptr *******************
  ********************************************************************************
  */
 DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 template <>
 template <>
-Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
+Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{L"InputStream::Ptr<byte>::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo)};
+    Debug::TraceContextBumper ctx{L"InputStream<byte>::Ptr::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo)};
 #endif
     Require (upTo >= 1);
     vector<byte> r; // @todo Consider using StackBuffer<>

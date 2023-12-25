@@ -21,42 +21,42 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
      */
     template <typename ELEMENT_TYPE>
     inline Ptr<ELEMENT_TYPE>::Ptr (const shared_ptr<_IRep<ELEMENT_TYPE>>& rep)
-        : InputStream::Ptr<ELEMENT_TYPE>{rep}
+        : InputStream<ELEMENT_TYPE>::Ptr{rep}
         , OutputStream::Ptr<ELEMENT_TYPE>{rep}
     {
         RequireNotNull (rep);
     }
     template <typename ELEMENT_TYPE>
     inline Ptr<ELEMENT_TYPE>::Ptr (nullptr_t)
-        : InputStream::Ptr<ELEMENT_TYPE>{nullptr}
+        : InputStream<ELEMENT_TYPE>::Ptr{nullptr}
         , OutputStream::Ptr<ELEMENT_TYPE>{nullptr}
     {
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::_GetSharedRep () const -> shared_ptr<_IRep<ELEMENT_TYPE>>
     {
-        Ensure (dynamic_pointer_cast<_IRep<ELEMENT_TYPE>> (InputStream::Ptr<ELEMENT_TYPE>::_GetSharedRep ()) ==
+        Ensure (dynamic_pointer_cast<_IRep<ELEMENT_TYPE>> (InputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep ()) ==
                 dynamic_pointer_cast<_IRep<ELEMENT_TYPE>> (OutputStream::Ptr<ELEMENT_TYPE>::_GetSharedRep ()));
-        return Debug::UncheckedDynamicPointerCast<_IRep<ELEMENT_TYPE>> (InputStream::Ptr<ELEMENT_TYPE>::_GetSharedRep ());
+        return Debug::UncheckedDynamicPointerCast<_IRep<ELEMENT_TYPE>> (InputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep ());
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::_GetRepConstRef () const -> const _IRep<ELEMENT_TYPE>&
     {
-        Ensure (dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::_GetRepConstRef ()) ==
+        Ensure (dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef ()) ==
                 dynamic_cast<const _IRep<ELEMENT_TYPE>*> (&OutputStream::Ptr<ELEMENT_TYPE>::_GetRepConstRef ()));
-        return *Debug::UncheckedDynamicCast<const _IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::_GetRepConstRef ());
+        return *Debug::UncheckedDynamicCast<const _IRep<ELEMENT_TYPE>*> (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef ());
     }
     template <typename ELEMENT_TYPE>
     inline auto Ptr<ELEMENT_TYPE>::_GetRepRWRef () const -> _IRep<ELEMENT_TYPE>&
     {
-        Ensure (&typename InputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef () == &OutputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef ());
-        return *Debug::UncheckedDynamicCast<_IRep<ELEMENT_TYPE>*> (&InputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef ());
+        Ensure (&typename InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () == &OutputStream::Ptr<ELEMENT_TYPE>::_GetRepRWRef ());
+        return *Debug::UncheckedDynamicCast<_IRep<ELEMENT_TYPE>*> (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef ());
     }
     template <typename ELEMENT_TYPE>
     inline bool Ptr<ELEMENT_TYPE>::IsSeekable () const
     {
-        Require (InputStream::Ptr<ELEMENT_TYPE>::IsSeekable () == OutputStream::Ptr<ELEMENT_TYPE>::IsSeekable ());
-        return InputStream::Ptr<ELEMENT_TYPE>::IsSeekable ();
+        Require (InputStream<ELEMENT_TYPE>::Ptr::IsSeekable () == OutputStream::Ptr<ELEMENT_TYPE>::IsSeekable ());
+        return InputStream<ELEMENT_TYPE>::Ptr::IsSeekable ();
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::Close () const
@@ -73,12 +73,12 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::CloseRead () const
     {
-        InputStream::Ptr<ELEMENT_TYPE>::Close ();
+        InputStream<ELEMENT_TYPE>::Ptr::Close ();
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::CloseRead (bool reset)
     {
-        InputStream::Ptr<ELEMENT_TYPE>::Close (reset);
+        InputStream<ELEMENT_TYPE>::Ptr::Close (reset);
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::CloseWrite () const
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
     template <typename ELEMENT_TYPE>
     inline bool Ptr<ELEMENT_TYPE>::IsOpenRead () const
     {
-        return InputStream::Ptr<ELEMENT_TYPE>::IsOpen ();
+        return InputStream<ELEMENT_TYPE>::Ptr::IsOpen ();
     }
     template <typename ELEMENT_TYPE>
     inline bool Ptr<ELEMENT_TYPE>::IsOpenWrite () const
@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType Ptr<ELEMENT_TYPE>::GetReadOffset () const
     {
-        return InputStream::Ptr<ELEMENT_TYPE>::GetOffset ();
+        return InputStream<ELEMENT_TYPE>::Ptr::GetOffset ();
     }
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType Ptr<ELEMENT_TYPE>::GetWriteOffset () const
@@ -123,18 +123,18 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType Ptr<ELEMENT_TYPE>::SeekRead (SignedSeekOffsetType offset) const
     {
-        return InputStream::Ptr<ELEMENT_TYPE>::Seek (offset);
+        return InputStream<ELEMENT_TYPE>::Ptr::Seek (offset);
     }
     template <typename ELEMENT_TYPE>
     inline SeekOffsetType Ptr<ELEMENT_TYPE>::SeekRead (Whence whence, SignedSeekOffsetType offset) const
     {
-        return InputStream::Ptr<ELEMENT_TYPE>::Seek (whence, offset);
+        return InputStream<ELEMENT_TYPE>::Ptr::Seek (whence, offset);
     }
     template <typename ELEMENT_TYPE>
     inline bool Ptr<ELEMENT_TYPE>::operator== (nullptr_t) const
     {
-        Ensure (InputStream::Ptr<ELEMENT_TYPE>::operator== (nullptr) == OutputStream::Ptr<ELEMENT_TYPE>::operator== (nullptr));
-        return InputStream::Ptr<ELEMENT_TYPE>::operator== (nullptr);
+        Ensure (InputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr) == OutputStream::Ptr<ELEMENT_TYPE>::operator== (nullptr));
+        return InputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr);
     }
 
 }

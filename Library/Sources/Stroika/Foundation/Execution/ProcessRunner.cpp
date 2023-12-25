@@ -394,7 +394,7 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream::Ptr<byte>& in,
+ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in,
                               const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
     : fCommandLine_{commandLine}
     , fExecutable_{}
@@ -404,7 +404,7 @@ ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStr
 {
 }
 
-ProcessRunner::ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream::Ptr<byte>& in,
+ProcessRunner::ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in,
                               const Streams::OutputStream::Ptr<byte>& out, const Streams::OutputStream::Ptr<byte>& error)
     : fExecutable_{executable}
     , fArgs_{args}
@@ -443,13 +443,13 @@ void ProcessRunner::SetWorkingDirectory (const optional<String>& d)
     fWorkingDirectory_ = d;
 }
 
-Streams::InputStream::Ptr<byte> ProcessRunner::GetStdIn () const
+Streams::InputStream<byte>::Ptr ProcessRunner::GetStdIn () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     return fStdIn_;
 }
 
-void ProcessRunner::SetStdIn (const Streams::InputStream::Ptr<byte>& in)
+void ProcessRunner::SetStdIn (const Streams::InputStream<byte>::Ptr& in)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     fStdIn_ = in;
@@ -458,7 +458,7 @@ void ProcessRunner::SetStdIn (const Streams::InputStream::Ptr<byte>& in)
 void ProcessRunner::SetStdIn (const Memory::BLOB& in)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    fStdIn_ = in.As<Streams::InputStream::Ptr<byte>> ();
+    fStdIn_ = in.As<Streams::InputStream<byte>::Ptr> ();
 }
 
 Streams::OutputStream::Ptr<byte> ProcessRunner::GetStdOut () const
@@ -517,7 +517,7 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
                                        ProgressMonitor::Updater progress, Time::DurationSeconds timeout)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    Streams::InputStream::Ptr<byte>                 oldStdIn  = GetStdIn ();
+    Streams::InputStream<byte>::Ptr                 oldStdIn  = GetStdIn ();
     Streams::OutputStream::Ptr<byte>                oldStdOut = GetStdOut ();
     try {
         Streams::MemoryStream::Ptr<byte> useStdIn  = Streams::MemoryStream::New<byte> ();
@@ -563,7 +563,7 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 namespace {
     void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
                                 Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress, const String& cmdLine,
-                                const SDKChar* currentDir, const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
+                                const SDKChar* currentDir, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream::Ptr<byte>& out,
                                 const Streams::OutputStream::Ptr<byte>& err, const String& effectiveCmdLine)
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
@@ -922,7 +922,7 @@ namespace {
 namespace {
     void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
                                   ProgressMonitor::Updater progress, const String& cmdLine, const SDKChar* currentDir,
-                                  const Streams::InputStream::Ptr<byte>& in, const Streams::OutputStream::Ptr<byte>& out,
+                                  const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream::Ptr<byte>& out,
                                   const Streams::OutputStream::Ptr<byte>& err, const String& effectiveCmdLine)
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
@@ -1196,7 +1196,7 @@ function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessR
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     String                                         cmdLine          = fCommandLine_.value_or (String{});
     optional<String>                               workingDir       = GetWorkingDirectory ();
-    Streams::InputStream::Ptr<byte>                in               = GetStdIn ();
+    Streams::InputStream<byte>::Ptr                in               = GetStdIn ();
     Streams::OutputStream::Ptr<byte>               out              = GetStdOut ();
     Streams::OutputStream::Ptr<byte>               err              = GetStdErr ();
     String                                         effectiveCmdLine = GetEffectiveCmdLine_ ();

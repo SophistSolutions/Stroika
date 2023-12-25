@@ -350,7 +350,7 @@ namespace {
     void DoCommonDigesterTest_ (const byte* dataStart, const byte* dataEnd, uint32_t answer)
     {
         EXPECT_TRUE (DIGESTER{}(dataStart, dataEnd) == answer);
-        EXPECT_TRUE (DIGESTER{}(Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream::Ptr<byte>> ()) == answer);
+        EXPECT_TRUE (DIGESTER{}(Memory::BLOB (dataStart, dataEnd).As<Streams::InputStream<byte>::Ptr> ()) == answer);
     }
 }
 
@@ -516,9 +516,9 @@ namespace {
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
             auto roundTripTester_ = [] (const OpenSSLCryptoParams& cryptoParams, BLOB src) -> void {
-                BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
+                BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
                 BLOB decodedData =
-                    OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
+                    OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
                 EXPECT_TRUE (src == decodedData);
             };
 
@@ -776,9 +776,9 @@ namespace {
                     OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
                     DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());
                     BLOB encodedData =
-                        OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
+                        OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
                     BLOB decodedData =
-                        OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream::Ptr<byte>> ()).ReadAll ();
+                        OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
                     DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (),
                               Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (),
                               Characters::ToString (decodedData).c_str ());

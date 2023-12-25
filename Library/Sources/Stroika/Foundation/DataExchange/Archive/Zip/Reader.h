@@ -24,7 +24,7 @@ namespace Stroika::Foundation::DataExchange::Archive::Zip {
      */
     class Reader : public DataExchange::Archive::Reader {
     public:
-        Reader (const Streams::InputStream::Ptr<byte>& in);
+        Reader (const Streams::InputStream<byte>::Ptr& in);
 
     private:
         class Rep_;
