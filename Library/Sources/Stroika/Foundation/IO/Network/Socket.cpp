@@ -92,7 +92,7 @@ Socket::PlatformNativeHandle Socket::_Protected::mkLowLevelSocket_ (SocketAddres
 Socket::PlatformNativeHandle Socket::Ptr::Detach ()
 {
     Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{this->_fThisAssertExternallySynchronized};
-    PlatformNativeHandle                            h = kINVALID_NATIVE_HANDLE_;
+    PlatformNativeHandle                                   h = kINVALID_NATIVE_HANDLE_;
     if (fRep_ != nullptr) {
         h = fRep_->Detach ();
     }
