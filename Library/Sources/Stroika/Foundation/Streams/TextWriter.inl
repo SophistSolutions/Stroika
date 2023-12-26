@@ -175,50 +175,17 @@ namespace Stroika::Foundation::Streams::TextWriter {
                 return New (src, Characters::CodeCvt<Character> (e));
         }
     }
-
-    /////////////// ***************** DEPRECATED BELOW /////////////////
-
-    DISABLE_COMPILER_MSC_WARNING_START (4996); // DEPRECATED
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    enum class [[deprecated ("Since Stroka v3.0d1, use UnicodeExternalEncodings overload")]] Format : uint8_t{
-        eUTF8WithBOM = 1, eUTF8WithoutBOM = 2, eUTF8 = eUTF8WithBOM, eWCharTWithBOM = 3, eWCharTWithoutBOM = 4, eWCharT = eWCharTWithBOM,
-    };
-    [[deprecated ("Since Stroka v3.0d1, use UnicodeExternalEncodings overload")]] static Ptr New (const OutputStream::Ptr<byte>& src,
-                                                                                                  Format format); // to be deprecated soon
-    [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
-    New (Execution::InternallySynchronized internallySynchronized, const OutputStream::Ptr<byte>& src, Format format = Format::eUTF8);
-    [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
-                New (Execution::InternallySynchronized internallySynchronized, const OutputStream::Ptr<Character>& src);
-    inline auto New (const OutputStream::Ptr<byte>& src, Format format) -> Ptr
+    template <typename... ARGS>
+    inline Ptr New (Execution::InternallySynchronized internallySynchronized, ARGS... args)
     {
-        using Characters::UnicodeExternalEncodings;
-        switch (format) {
-            case Format::eUTF8WithBOM:
-            case Format::eUTF8WithoutBOM:
-                return New (src, UnicodeExternalEncodings::eUTF8, format == Format::eUTF8WithBOM ? ByteOrderMark::eInclude : ByteOrderMark::eDontInclude);
-            case Format::eWCharTWithBOM:
-            case Format::eWCharTWithoutBOM:
-                return New (src, sizeof (wchar_t) == 2 ? UnicodeExternalEncodings::eUTF16 : UnicodeExternalEncodings::eUTF32,
-                            format == Format::eWCharTWithBOM ? ByteOrderMark::eInclude : ByteOrderMark::eDontInclude);
-            default:
-                RequireNotReached ();
-                return Ptr{};
+        switch (internallySynchronized) {
+            case Execution::InternallySynchronized::eNotKnownInternallySynchronized:
+                return New (forward<ARGS> (args...));
+            case Execution::InternallySynchronized::eInternallySynchronized:
+                // @todo could explicitly specialize more cases and handle more efficiently, but using the REP overload of InternallySynchronizedInputStream
+                return InternallySynchronizedOutputStream::New ({}, New (forward<ARGS> (args...)));
         }
     }
-    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized, const OutputStream::Ptr<Character>& src) -> Ptr
-    {
-        Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
-        return src;
-    }
-    inline auto New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized, const OutputStream::Ptr<byte>& src, Format format) -> Ptr
-    {
-        Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
-        return New (src, format);
-    }
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_MSC_WARNING_END (4996); // DEPRECATED
 
 }
 

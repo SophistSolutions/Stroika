@@ -76,6 +76,8 @@ namespace Stroika::Foundation::Streams::TextWriter {
     Ptr New (const OutputStream::Ptr<byte>& src, UnicodeExternalEncodings e = UnicodeExternalEncodings::eDefault,
              ByteOrderMark bom = ByteOrderMark::eDontInclude);
     Ptr New (const OutputStream::Ptr<Character>& src);
+    template <typename... ARGS>
+    Ptr New (Execution::InternallySynchronized internallySynchronized, ARGS... args);
 
 }
 
