@@ -25,6 +25,9 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
     /**
      */
     struct DefaultOptions {
+        /**
+         * Default to using non-recursive simple mutex (so beware of one rep method calling another - if you do, override this argument to New).
+         */
         using MutexType = mutex;
     };
 
@@ -37,8 +40,6 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
      *          Streams::InputOutputStream::Ptr<byte> syncStream = Streams::InternallySynchronizedInputOutputStream::New<UNSYNC_REP> (otherInputOutputStreamToBeSharedAcrossThread);
      *      \endcode
      *
-     *  \note   Uses mutex, not recursive_mutex internally, so be carefully about mutual recursion calls in UNSYNC_REP.
-     * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
     template <typename BASE_REP_TYPE, typename OPTIONS = DefaultOptions, typename... ARGS>

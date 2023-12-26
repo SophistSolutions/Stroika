@@ -431,20 +431,6 @@ namespace {
  ************************** Streams::TextReader::New ****************************
  ********************************************************************************
  */
-auto TextReader::New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags) -> Ptr
-{
-    Ptr p = TextReader::New (src.As<InputStream::Ptr<byte>> (), codeCvtFlags);
-    Ensure (p.IsSeekable ());
-    return p;
-}
-
-auto TextReader::New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter) -> Ptr
-{
-    Ptr p = TextReader::New (src.As<InputStream::Ptr<byte>> (), codeConverter, SeekableFlag::eSeekable);
-    Ensure (p.IsSeekable ());
-    return p;
-}
-
 auto TextReader::New (const InputStream::Ptr<byte>& src, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
     Ptr p = TextReader::New (src, Characters::UnicodeExternalEncodings::eUTF8, seekable, readAhead);

@@ -25,12 +25,13 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
     /**
      */
     struct DefaultOptions {
+        /**
+         * Default to using non-recursive simple mutex (so beware of one rep method calling another - if you do, override this argument to New).
+         */
         using MutexType = mutex;
     };
 
     /**
-     *  \note   Uses mutex, not recursive_mutex internally, so be carefully about mutual recursion calls in UNSYNC_REP.
-     * 
      *  \par Example Usage
      *      \code
      *          Streams::OutputStream::Ptr<byte> syncStream = Streams::InternallySynchronizedOutputStream<byte>::New (otherOutputStreamToBeSharedAcrossThread);

@@ -21,9 +21,7 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-588 - TextReader should be seekable (maybe just optionally)
  *              INCOMPLETE IMPLEMENTATION - API probably OK.
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-487 - TextReader should have CTOR taking String as argument (so can be seekable)
- *
- *      @todo   DOCUMENT why we put ReadLine etc in InputStreamPtr, instead of here. Gist of why - though more
+ *      @todo   DOCUMENT why we put ReadLine etc in InputStream::Ptr, instead of here. Gist of why - though more
  *              logical here - requires no state - and so more flexible there. May reconsider.
  *              -- LGP 2015-07-06
  *
@@ -35,11 +33,11 @@ namespace Stroika::Foundation::Memory {
 }
 
 namespace Stroika::Foundation::Streams {
-
     using Characters::Character;
 }
 
 namespace Stroika::Foundation::Streams::TextReader {
+
     /**
      *  \brief TextReader is an InputStream of Character, usually constructted wrapping some binary object or binary stream
      *
@@ -81,13 +79,8 @@ namespace Stroika::Foundation::Streams::TextReader {
         eReadAheadNever,
         eReadAheadAllowed,
     };
-    static constexpr ReadAhead eReadAheadNever   = ReadAhead::eReadAheadNever;
-    static constexpr ReadAhead eReadAheadAllowed = ReadAhead::eReadAheadAllowed;
-
-    /**
-     * @todo DOCUMENT - NEED EXAMPLE - WHY???
-     */
-    static const Characters::UTFCodeConverter<Character> kDefaultUTFCoodeCoverter;
+    constexpr ReadAhead eReadAheadNever   = ReadAhead::eReadAheadNever;
+    constexpr ReadAhead eReadAheadAllowed = ReadAhead::eReadAheadAllowed;
 
     /**
      */
@@ -97,8 +90,8 @@ namespace Stroika::Foundation::Streams::TextReader {
 
         eDEFAULT = eReadBOMAndIfNotPresentUseCurrentLocale
     };
-    static constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseUTF8 = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
-    static constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseCurrentLocale = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale;
+    constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseUTF8 = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
+    constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseCurrentLocale = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale;
 
     /**
      *  Seekable defaults to the same value as that of the underlying stream wrapped.
@@ -116,9 +109,10 @@ namespace Stroika::Foundation::Streams::TextReader {
      *              DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
      *          }
      *      \endcode
+     * 
+     *  \note New (const InputStream::Ptr<byte>& src) interprets source as UTF-8, and produces a seekable result iff arg was seekable.
+     *        Use more specific overloads to choose handling of seekability or code conversion options.
      */
-    Ptr New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags = AutomaticCodeCvtFlags::eDEFAULT);
-    Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter);
     Ptr New (const InputStream::Ptr<byte>& src);
     Ptr New (const InputStream::Ptr<byte>& src, SeekableFlag seekable, ReadAhead readAhead = eReadAheadAllowed);
     Ptr New (const InputStream::Ptr<byte>& src, AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead = eReadAheadAllowed);
