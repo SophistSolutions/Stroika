@@ -25,7 +25,7 @@
  *
  */
 
-namespace Stroika::Foundation::Streams::iostream ::InputStreamFromStdIStream {
+namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
 
     template <typename ELEMENT_TYPE>
     using Ptr = typename InputStream::Ptr<ELEMENT_TYPE>;
@@ -43,47 +43,39 @@ namespace Stroika::Foundation::Streams::iostream ::InputStreamFromStdIStream {
      *      \note   InputStreamFromStdIStream ::Close () does not call close on the owned basic_istream, because there is no such stdC++ method (though filestream has one)
      */
 
-    enum class SeekableFlag {
-        eSeekable,
-        eNotSeekable
-    };
-    static constexpr SeekableFlag eSeekable    = SeekableFlag::eSeekable;
-    static constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
-
     /**
-         *
-         *  Default seekability should be determined automatically, but for now, I cannot figure out how...
-         *  \par Example Usage
-         *      \code
-         *          stringstream tmpStrm;
-         *          WriteTextStream_ (newDocXML, tmpStrm);
-         *          return InputStreamFromStdIStream::New<byte>(tmpStrm).ReadAll ();
-         *      \endcode
-         *
-         *  \par Example Usage
-         *      \code
-         *          stringstream tmpStrm;
-         *          WriteTextStream_ (newDocXML, tmpStrm);
-         *          MyCallback myCallback;
-         *          XML::SAXParse (InputStreamFromStdIStream::New<byte> (tmpStrm), myCallback);
-         *      \endcode
-         *
-         *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::istream
-         *
-         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
-         *              It is also up to the caller to assure no references to or calls to that istream
-         *              be made from another thread. However, no data is cached in this class - it just
-         *              delegates, so calls CAN be made the the underlying istream - so long as not
-         *              concurrently.
-         *
-         *              If you pass in eInternallySynchronized, the internal rep is internally synchronized, but you still must assure
-         *              no other threads access the IStreamType object.
-         */
+     *
+     *  Default seekability should be determined automatically, but for now, I cannot figure out how...
+     *  \par Example Usage
+     *      \code
+     *          stringstream tmpStrm;
+     *          WriteTextStream_ (newDocXML, tmpStrm);
+     *          return InputStreamFromStdIStream::New<byte>(tmpStrm).ReadAll ();
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          stringstream tmpStrm;
+     *          WriteTextStream_ (newDocXML, tmpStrm);
+     *          MyCallback myCallback;
+     *          XML::SAXParse (InputStreamFromStdIStream::New<byte> (tmpStrm), myCallback);
+     *      \endcode
+     *
+     *  \note   The lifetime of the underlying created (shared_ptr) Stream must be >= the lifetime of the argument std::istream
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
+     *              It is also up to the caller to assure no references to or calls to that istream
+     *              be made from another thread. However, no data is cached in this class - it just
+     *              delegates, so calls CAN be made the the underlying istream - so long as not
+     *              concurrently.
+     *
+     *              If you pass in eInternallySynchronized, the internal rep is internally synchronized, but you still must assure
+     *              no other threads access the IStreamType object.
+     */
     template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
     Ptr<ELEMENT_TYPE> New (basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream)
         requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or
                   (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, wchar_t>));
-    ;
     template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
     Ptr<ELEMENT_TYPE> New (basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream, SeekableFlag seekable)
         requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or

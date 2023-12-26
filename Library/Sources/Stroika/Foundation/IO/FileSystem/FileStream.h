@@ -6,7 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#include "../../Characters/String.h"
+#include "../../Configuration/Enumeration.h"
 
 /**
  *  \file

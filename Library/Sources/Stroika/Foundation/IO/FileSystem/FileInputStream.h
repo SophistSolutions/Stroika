@@ -21,8 +21,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
- *
  *      @todo   Unclear if we need the mutexes here. Probably yes (necause our API promises re-entrancy but I'm unclear
  *              on filessytem reads/writes).
  *
@@ -44,13 +42,13 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
     using Characters::String;
     using namespace FileStream;
 
+    using namespace Streams;
     using Ptr = Streams::InputStream::Ptr<byte>;
+
     /**
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
-     *
      *  \note   We considered having a GetFD () method to retrieve the file descriptor, but that opened up too many
-     *          possabilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
+     *          possibilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
      *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
      *          but then the results are 'on you.
      */
@@ -77,18 +75,6 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
     constexpr BufferFlag kBufferFlag_DEFAULT = BufferFlag::eBuffered;
 
     /**
-     */
-    using SeekableFlag = Streams::SeekableFlag;
-
-    /**
-     */
-    constexpr SeekableFlag eSeekable = SeekableFlag::eSeekable;
-
-    /**
-     */
-    constexpr SeekableFlag eNotSeekable = SeekableFlag::eNotSeekable;
-
-    /**
      *  \note - prior to v2.1d27, this defaulted to unseekable, but for files, it makes way more sense to default to seekable, since
      *        doing so typically costs nothing, and is pretty commonly useful.
      */
@@ -105,16 +91,18 @@ namespace Stroika::Foundation::IO::FileSystem::FileInputStream {
      *      \code
      *          Ptr stream = FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable);
      *      \endcode
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
     Ptr New (const filesystem::path& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
     Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
     Ptr New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, SeekableFlag seekable = kSeekableFlag_DEFAULT);
-    Ptr                             New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd,
-                                         AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
-    Streams::InputStream::Ptr<byte> New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
-    Streams::InputStream::Ptr<byte> New (const filesystem::path& fileName, BufferFlag bufferFlag);
-    Streams::InputStream::Ptr<byte> New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
-    Streams::InputStream::Ptr<byte> New (FileDescriptorType fd, BufferFlag bufferFlag);
+    Ptr New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd,
+             AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = kSeekableFlag_DEFAULT);
+    Ptr New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
+    Ptr New (const filesystem::path& fileName, BufferFlag bufferFlag);
+    Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
+    Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
 
 }
 
