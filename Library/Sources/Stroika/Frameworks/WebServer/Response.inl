@@ -35,7 +35,7 @@ namespace Stroika::Frameworks::WebServer {
     }
     inline void Response::writeln (const wchar_t* e)
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
         RequireNotNull (e);
         const wchar_t kEOL[] = L"\r\n";
         write (e, e + ::wcslen (e));
@@ -43,8 +43,8 @@ namespace Stroika::Frameworks::WebServer {
     }
     inline void Response::writeln (const String& e)
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        constexpr wchar_t                               kEOL[] = L"\r\n";
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
+        constexpr wchar_t                                      kEOL[] = L"\r\n";
         if (not e.empty ()) {
             wstring tmp{e.As<wstring> ()};
             write (Containers::Start (tmp), Containers::End (tmp));
@@ -53,7 +53,7 @@ namespace Stroika::Frameworks::WebServer {
     }
     inline void Response::EnterHeadMode ()
     {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{_fThisAssertExternallySynchronized};
         Require (fState_ == State::ePreparingHeaders);
         fHeadMode_ = true;
     }
