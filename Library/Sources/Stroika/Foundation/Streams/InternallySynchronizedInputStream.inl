@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
 
     namespace Private_ {
         template <typename BASE_REP_TYPE>
-        class Rep_ final : public Memory::InheritAndUseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE>, BASE_REP_TYPE> {
+        struct Rep_ final : Memory::InheritAndUseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE>, BASE_REP_TYPE> {
         public:
             using ElementType = typename BASE_REP_TYPE::ElementType;
             template <typename... ARGS>
@@ -68,8 +68,8 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
         private:
             mutable mutex fCriticalSection_;
         };
-
     }
+
     /*
      ********************************************************************************
      **************** InternallySynchronizedInputStream<BASE_REP_TYPE> **************
