@@ -128,15 +128,14 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
      ********************************************************************************
      */
     template <typename BASE_REP_TYPE, typename OPTIONS, typename... ARGS>
-    inline typename InputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (const OPTIONS& o, ARGS&&... args)
+    inline Ptr<typename BASE_REP_TYPE::ElementType> New (const OPTIONS& o, ARGS&&... args)
     {
-        return typename InputStream::Ptr<typename BASE_REP_TYPE::ElementType>{
-            make_shared<Private_::Rep_<BASE_REP_TYPE, OPTIONS>> (o, forward<ARGS> (args)...)};
+        return Ptr<typename BASE_REP_TYPE::ElementType>{make_shared<Private_::Rep_<BASE_REP_TYPE, OPTIONS>> (o, forward<ARGS> (args)...)};
     }
     template <typename ELEMENT_TYPE, typename OPTIONS>
-    inline typename InputStream::Ptr<ELEMENT_TYPE> New (const OPTIONS& o, const InputStream::Ptr<ELEMENT_TYPE>& stream2Wrap)
+    inline Ptr<ELEMENT_TYPE> New (const OPTIONS& o, const InputStream::Ptr<ELEMENT_TYPE>& stream2Wrap)
     {
-        return typename InputStream::Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep2_<ELEMENT_TYPE, OPTIONS>> (o, stream2Wrap)};
+        return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep2_<ELEMENT_TYPE, OPTIONS>> (o, stream2Wrap)};
     }
 
 }

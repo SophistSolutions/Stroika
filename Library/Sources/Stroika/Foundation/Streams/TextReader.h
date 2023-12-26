@@ -125,6 +125,8 @@ namespace Stroika::Foundation::Streams::TextReader {
              ReadAhead readAhead = eReadAheadAllowed);
     Ptr New (const InputStream::Ptr<Character>& src);
     Ptr New (const Traversal::Iterable<Character>& src);
+    template <typename... ARGS>
+    Ptr New (Execution::InternallySynchronized internallySynchronized, ARGS... args);
 
 }
 

@@ -18,6 +18,8 @@
 
 namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
 
+    using OutputStream::Ptr;
+
     /**
      */
     struct DefaultOptions {
@@ -38,9 +40,9 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
     template <typename BASE_REP_TYPE, typename OPTIONS = DefaultOptions, typename... ARGS>
-    typename OutputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (const OPTIONS& o = {}, ARGS&&... args);
+    Ptr<typename BASE_REP_TYPE::ElementType> New (const OPTIONS& o = {}, ARGS&&... args);
     template <typename ELEMENT_TYPE, typename OPTIONS = DefaultOptions>
-    typename OutputStream::Ptr<ELEMENT_TYPE> New (const OPTIONS& o, const OutputStream::Ptr<ELEMENT_TYPE>& stream2Wrap);
+    Ptr<ELEMENT_TYPE> New (const OPTIONS& o, const OutputStream::Ptr<ELEMENT_TYPE>& stream2Wrap);
 
 }
 
