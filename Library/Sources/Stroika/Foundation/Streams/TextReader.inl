@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../Memory/BLOB.h" // just for deprecated API
 #include "InternallySynchronizedInputStream.h"
 
 namespace Stroika::Foundation::Streams::TextReader {

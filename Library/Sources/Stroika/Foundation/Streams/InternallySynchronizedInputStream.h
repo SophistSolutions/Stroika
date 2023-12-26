@@ -6,13 +6,9 @@
 
 #include "../StroikaPreComp.h"
 
-#include <vector>
+#include <mutex>
 
-#include "../Characters/String.h"
-#include "../Configuration/Common.h"
-#include "../Memory/BLOB.h"
-
-#include "InputOutputStream.h"
+#include "InputStream.h"
 
 /*
  *  \file
@@ -39,10 +35,14 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
      *          Streams::InputStream::Ptr<byte> syncStream = Streams::InternallySynchronizedInputStream::New<byte> (otherInputStreamToBeSharedAcrossThread);
      *      \endcode
      *
+     *  \note BASE_REP overload more efficient, and ::Ptr overload more flexible/simple to use.
+     *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
     template <typename BASE_REP_TYPE, typename OPTIONS = DefaultOptions, typename... ARGS>
-    typename InputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (OPTIONS o = {}, ARGS&&... args);
+    typename InputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (const OPTIONS& o = {}, ARGS&&... args);
+    template <typename ELEMENT_TYPE, typename OPTIONS = DefaultOptions>
+    typename InputStream::Ptr<ELEMENT_TYPE> New (const OPTIONS& o, const InputStream::Ptr<ELEMENT_TYPE>& stream2Wrap);
 
 }
 

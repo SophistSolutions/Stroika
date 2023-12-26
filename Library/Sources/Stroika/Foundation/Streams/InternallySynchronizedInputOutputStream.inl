@@ -103,6 +103,58 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
             [[no_unique_address]] OPTIONS       fOptions_;
             mutable typename OPTIONS::MutexType fCriticalSection_;
         };
+        template <typename ELEMENT_TYPE, typename OPTIONS>
+        struct Rep2_ : InputOutputStream::IRep<ELEMENT_TYPE> {
+            using ElementType = ELEMENT_TYPE;
+            Rep2_ ([[maybe_unused]] const OPTIONS& o, const InputOutputStream::Ptr<ELEMENT_TYPE>& stream2Wrap)
+                : fStream2Wrap{stream2Wrap}
+            {
+            }
+            virtual bool IsSeekable () const override
+            {
+                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                return fStream2Wrap.IsSeekable ();
+            }
+            virtual void CloseRead () override
+            {
+                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                Require (IsOpenRead ());
+                fStream2Wrap.CloseRead ();
+            }
+            virtual bool IsOpenRead () const override
+            {
+                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                return fStream2Wrap.IsOpenRead ();
+            }
+            virtual SeekOffsetType GetReadOffset () const override
+            {
+                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                Require (IsOpenRead ());
+                return fStream2Wrap.GetReadOffset ();
+            }
+            virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
+            {
+                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                Require (IsOpenRead ());
+                return fStream2Wrap.SeekRead (whence, offset);
+            }
+            virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) override
+            {
+                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                Require (IsOpenRead ());
+                return fStream2Wrap.Read (intoStart, intoEnd);
+            }
+            virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
+            {
+                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                Require (IsOpenRead ());
+                return fStream2Wrap.ReadNonBlocking (intoStart, intoEnd);
+            }
+
+        private:
+            InputOutputStream::Ptr<ELEMENT_TYPE> fStream2Wrap;
+            mutable typename OPTIONS::MutexType  fCriticalSection_;
+        };
     }
 
     /*
@@ -111,10 +163,15 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
      ********************************************************************************
      */
     template <typename BASE_REP_TYPE, typename OPTIONS, typename... ARGS>
-    inline auto New (OPTIONS o, ARGS&&... args) -> typename InputOutputStream::Ptr<typename BASE_REP_TYPE::ElementType>
+    inline auto New (const OPTIONS& o, ARGS&&... args) -> typename InputOutputStream::Ptr<typename BASE_REP_TYPE::ElementType>
     {
         return typename InputOutputStream::Ptr<typename BASE_REP_TYPE::ElementType>{
             make_shared<Private_::Rep_<BASE_REP_TYPE, OPTIONS>> (o, forward<ARGS> (args)...)};
+    }
+    template <typename ELEMENT_TYPE, typename OPTIONS>
+    inline typename InputOutputStream::Ptr<ELEMENT_TYPE> New (const OPTIONS& o, const InputOutputStream::Ptr<ELEMENT_TYPE>& stream2Wrap)
+    {
+        return typename InputOutputStream::Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep2_<ELEMENT_TYPE, OPTIONS>> (o, stream2Wrap)};
     }
 
 }
