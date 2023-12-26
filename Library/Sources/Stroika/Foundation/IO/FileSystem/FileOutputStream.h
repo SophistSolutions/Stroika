@@ -17,21 +17,6 @@
  *  \file
  *
  * TODO:
- *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
- *
- *      @todo   Add enum BufferFlag { eBuffered, eUnbuffered }; to mk () method, and like we have
- *              with FileOutputStream
- *
- *      @todo   Unclear if we need the mutexes here. Probably yes (necause our API promises re-entrancy but I'm unclear
- *              on filessytem reads/writes).
- *
- *      @todo   This code is just a first (probably working) draft. But it needs cleanup. Review
- *              older FileReader/FileWriter code - and see if the windows code should use CreateFile instead of s_open...
- *
- *      @todo   We need a FileInputOutputStream
- *
- *      @todo   Document these are not buffered, (well document). Document how easy to wrap buffered stream around.
- *
  *      @todo   Add optional file sharing parameters to stream readers, and maybe file-descriptor CTOR?
  */
 
