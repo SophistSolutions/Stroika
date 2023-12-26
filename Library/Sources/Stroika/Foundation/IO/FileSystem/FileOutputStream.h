@@ -40,6 +40,7 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
     using Characters::String;
 
     using namespace FileStream;
+    using namespace Streams;
 
     using Ptr = Streams::OutputStream::Ptr<byte>;
 
@@ -100,7 +101,7 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
      *  \req fd is a valid file descriptor (for that overload)
      *
      *  \note   We considered having a GetFD () method to retrieve the file descriptor, but that opened up too many
-     *          possabilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
+     *          possibilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
      *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
      *          but then the results are 'on you.
      *
@@ -113,13 +114,13 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
      *
      *  \par Example Usage
      *      \code
-     *          String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
+     *          String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + "t.txt";
      *          JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          TextWriter tw { IO::FileSystem::FileOutputStream::New (L"/tmp/fred.txt") };
+     *          TextWriter tw { IO::FileSystem::FileOutputStream::New ("/tmp/fred.txt") };
      *          tw.PrintF (L"Hello %s\n", L"World");
      *      \endcode
      *
@@ -134,10 +135,9 @@ namespace Stroika::Foundation::IO::FileSystem ::FileOutputStream {
              FlushFlag flushFlag = FlushFlag::eDEFAULT);
     Ptr New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT,
              SeekableFlag seekableFlag = kSeekableFlag_DEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-    Streams::OutputStream::Ptr<byte> New (const filesystem::path& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
-    Streams::OutputStream::Ptr<byte> New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
-    Streams::OutputStream::Ptr<byte> New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag,
-                                          FlushFlag flushFlag, BufferFlag bufferedFlag);
+    Ptr New (const filesystem::path& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
+    Ptr New (const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
+    Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
 
 }
 
