@@ -105,7 +105,7 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
 
     /*
      ********************************************************************************
-     ********************* OutputStreamFromStdOStream<ELEMENT_TYPE> *****************
+     **************** OutputStreamFromStdOStream<ELEMENT_TYPE>::New *****************
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename BASIC_OSTREAM_ELEMENT_TYPE, typename BASIC_OSTREAM_TRAITS_TYPE>

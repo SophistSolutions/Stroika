@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
 
     /*
      ********************************************************************************
-     ********************* InputStreamFromStdIStream<ELEMENT_TYPE> ******************
+     ***************** InputStreamFromStdIStream<ELEMENT_TYPE>::New *****************
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
