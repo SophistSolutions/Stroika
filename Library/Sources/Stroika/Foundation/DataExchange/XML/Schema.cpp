@@ -5,8 +5,10 @@
 
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
+#include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 
 #include "Schema.h"
+#include "SAXReader.h"
 
 #if qHasFeature_Xerces
 #include "Providers/Xerces.h"
@@ -260,14 +262,23 @@ void DataExchange::XML::ValidateFile (const filesystem::path& externalFileName, 
     {
         using namespace XercesImpl_;
         shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
-        shared_ptr<SAX2XMLReader>    parser       = shared_ptr<SAX2XMLReader> (
-            XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ()));
-        SetupCommonParserFeatures (*parser, true);
-        Map2StroikaExceptionsErrorReporter errReporter;
-        parser->setErrorHandler (&errReporter);
-        parser->parse (IO::FileSystem::FromPath (externalFileName).As<u16string> ().c_str ());
+        if (accessSchema) {
+            shared_ptr<SAX2XMLReader> parser = shared_ptr<SAX2XMLReader> (
+                XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ()));
+            SetupCommonParserFeatures (*parser, true);
+            Map2StroikaExceptionsErrorReporter errReporter;
+            parser->setErrorHandler (&errReporter);
+            parser->parse (IO::FileSystem::FromPath (externalFileName).As<u16string> ().c_str ());
+        }
     }
     END_LIB_EXCEPTION_MAPPER
+#endif
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
+    // not the most efficient impl but simple and generic, and good enuf for now
+    struct noOpConsumer : StructuredStreamEvents::IConsumer {
+    };
+    noOpConsumer consumer;
+    SAXParse (IO::FileSystem::FileInputStream::New (externalFileName), consumer, schema);
 #endif
 }
 #endif
