@@ -144,6 +144,7 @@ namespace Stroika::Foundation::Memory {
      *     more CRTP style
      * 
      *  @todo - somewhat confusing implmentation - not sure why cannot be simpler?? -- LGP 2023-12-25
+     * // couldn't get concepots working for this - on g++
      */
     template <typename DERIVED, typename BASE_REP, bool andTrueCheck = true>
     struct InheritAndUseBlockAllocationIfAppropriate : BASE_REP {
@@ -152,29 +153,41 @@ namespace Stroika::Foundation::Memory {
             : BASE_REP{forward<ARGS> (args)...}
         {
         }
-        template <bool isTrue = andTrueCheck>
         static void* operator new (size_t n)
-            requires (isTrue)
         {
-            return BlockAllocationUseHelper<DERIVED>::operator new (n);
+            if constexpr (andTrueCheck) {
+                return BlockAllocationUseHelper<DERIVED>::operator new (n);
+            }
+            else {
+                return BASE_REP::operator new (n);
+            }
         }
-        template <bool isTrue = andTrueCheck>
         static void* operator new (size_t n, int a, const char* b, int c)
-            requires (isTrue)
         {
-            return BlockAllocationUseHelper<DERIVED>::operator new (n, a, b, c);
+            if constexpr (andTrueCheck) {
+                return BlockAllocationUseHelper<DERIVED>::operator new (n, a, b, c);
+            }
+            else {
+                return BASE_REP::operator new (n, a, b, c);
+            }
         }
-        template <bool isTrue = andTrueCheck>
         static void operator delete (void* p)
-            requires (isTrue)
         {
+            if constexpr (andTrueCheck) {
             BlockAllocationUseHelper<DERIVED>::operator delete (p);
+            }
+            else {
+                return BASE_REP::operator delete (p);
+            }
         }
-        template <bool isTrue = andTrueCheck>
         static void operator delete (void* p, int a, const char* b, int c)
-            requires (isTrue)
         {
+            if constexpr (andTrueCheck) {
             BlockAllocationUseHelper<DERIVED>::operator delete (p, a, b, c);
+            }
+            else {
+                return BASE_REP::operator delete (p, a, b, c);
+            }
         }
     };
 
