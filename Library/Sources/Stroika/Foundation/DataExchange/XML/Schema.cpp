@@ -176,7 +176,8 @@ namespace {
 namespace {
     namespace LibXML2Impl_ {
         using namespace XML::Providers::LibXML2;
-        struct SchemaRep_ : Schema::IRep {
+        struct SchemaRep_ : Schema::IRep, ILibXML2SchemaRep {
+
             SchemaRep_ (const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
                         const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
                 : fTargetNamespace{targetNamespace}
@@ -190,13 +191,12 @@ namespace {
                                                                                      static_cast<int> (targetNamespaceData.size ()));
                 fCompiledSchema = xmlSchemaParse (schemaParseContext);
                 xmlSchemaFreeParserCtxt (schemaParseContext);
+                Execution::ThrowIfNull (fCompiledSchema);
             }
             SchemaRep_ (const SchemaRep_&) = delete;
             virtual ~SchemaRep_ ()
             {
-                if (fCompiledSchema != nullptr) {
-                    xmlSchemaFree (fCompiledSchema);
-                }
+                xmlSchemaFree (fCompiledSchema);
             }
             optional<URI>             fTargetNamespace;
             Sequence<SourceComponent> fSourceComponents;
@@ -214,6 +214,11 @@ namespace {
             virtual Sequence<SourceComponent> GetSourceComponents () override
             {
                 return fSourceComponents;
+            }
+            virtual xmlSchema* GetSchemaLibRep () override
+            {
+                AssertNotNull (fCompiledSchema);
+                return fCompiledSchema;
             }
         };
     }

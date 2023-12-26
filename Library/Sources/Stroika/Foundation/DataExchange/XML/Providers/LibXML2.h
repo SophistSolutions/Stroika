@@ -38,6 +38,12 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
     String libXMLString2String (const xmlChar* s, int len);
     String libXMLString2String (const xmlChar* t);
 
+    /**
+     */
+    struct ILibXML2SchemaRep {
+        virtual xmlSchema* GetSchemaLibRep () = 0;
+    };
+
 }
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Providers_LibXML2_h_*/
