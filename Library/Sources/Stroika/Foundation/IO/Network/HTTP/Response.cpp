@@ -24,6 +24,8 @@ using namespace Stroika::Foundation::Memory;
 
 using namespace Stroika::Foundation::IO::Network::HTTP;
 
+using Debug::AssertExternallySynchronizedMutex;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -42,48 +44,49 @@ Response::Response (Response&& src)
 Response::Response (const optional<Headers>& initialHeaders)
     : headers{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {
         const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headers);
-        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
         return thisObj->fHeaders_;
     }}
     , rwHeaders{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers& {
                     const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::rwHeaders);
-                    AssertExternallySynchronizedMutex::WriteContext declareContext{*const_cast<Response*> (thisObj)}; // not ReadContext cuz rw object returned
+                    AssertExternallySynchronizedMutex::WriteContext declareContext{
+                        const_cast<Response*> (thisObj)->_fThisAssertExternallySynchronized}; // not ReadContext cuz rw object returned
                     return const_cast<IO::Network::HTTP::Headers&> (thisObj->fHeaders_);
                 },
                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
                     Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::rwHeaders);
-                    AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+                    AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                     thisObj->fHeaders_ = newHeaders;
                 }}
     , status{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                  const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::status);
-                 AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+                 AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                  return get<0> (thisObj->fStatusAndOverrideReason_);
              },
              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto newStatus) {
                  Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::status);
-                 AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+                 AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                  thisObj->fStatusAndOverrideReason_ = make_tuple (newStatus, optional<String>{}); // if setting status, clear override string
              }}
     , statusAndOverrideReason{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
               const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::statusAndOverrideReason);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+              AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
               return thisObj->fStatusAndOverrideReason_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newStatusAndOverride) {
               Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::statusAndOverrideReason);
-              AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+              AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
               thisObj->fStatusAndOverrideReason_ = newStatusAndOverride;
           }}
     , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
                       const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
-                      AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+                      AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                       return thisObj->headers ().contentType ();
                   },
                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCT) {
                       Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::contentType);
-                      AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+                      AssertExternallySynchronizedMutex::WriteContext declareContext{thisObj->_fThisAssertExternallySynchronized};
                       thisObj->rwHeaders ().contentType = newCT;
                   }}
     , fStatusAndOverrideReason_{make_tuple (StatusCodes::kOK, optional<String>{})}
@@ -92,16 +95,16 @@ Response::Response (const optional<Headers>& initialHeaders)
 }
 
 #if qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled
-void Response::SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext)
+void Response::SetAssertExternallySynchronizedMutexContext (const shared_ptr<AssertExternallySynchronizedMutex::SharedContext>& sharedContext)
 {
-    AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext (sharedContext);
+    _fThisAssertExternallySynchronized . SetAssertExternallySynchronizedMutexContext (sharedContext);
     fHeaders_.SetAssertExternallySynchronizedMutexContext (sharedContext);
 }
 #endif
 
 String Response::ToString () const
 {
-    AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+    AssertExternallySynchronizedMutex::ReadContext declareContext{_fThisAssertExternallySynchronized};
     StringBuilder                                  sb;
     sb << "{"sv;
     sb << "Status-And-Override-Reason: "sv << Characters::ToString (fStatusAndOverrideReason_) << ", "sv;

@@ -27,7 +27,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     /*
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    class Response : protected Debug::AssertExternallySynchronizedMutex {
+    class Response {
     public:
         Response (const Response&) = delete;
         Response (Response&& src);
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *
          *  \see AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext
          */
-        nonvirtual void SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext);
+        nonvirtual void SetAssertExternallySynchronizedMutexContext (const shared_ptr<Debug::AssertExternallySynchronizedMutex::SharedContext>& sharedContext);
 #endif
 
     public:
@@ -105,6 +105,9 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *  @see Characters::ToString ();
          */
         nonvirtual String ToString () const;
+
+    protected:
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
 
     private:
         tuple<Status, optional<String>> fStatusAndOverrideReason_;
