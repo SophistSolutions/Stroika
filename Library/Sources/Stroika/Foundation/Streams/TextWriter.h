@@ -9,7 +9,6 @@
 #include "../Characters/CodeCvt.h"
 #include "../Characters/TextConvert.h"
 
-#include "InternallySynchronizedOutputStream.h" // no need to include once we remove deprecated references to this
 #include "OutputStream.h"
 
 /**

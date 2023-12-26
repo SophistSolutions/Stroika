@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Memory {
         static void operator delete (void* p)
         {
             if constexpr (andTrueCheck) {
-            BlockAllocationUseHelper<DERIVED>::operator delete (p);
+                BlockAllocationUseHelper<DERIVED>::operator delete (p);
             }
             else {
                 return BASE_REP::operator delete (p);
@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Memory {
         static void operator delete (void* p, int a, const char* b, int c)
         {
             if constexpr (andTrueCheck) {
-            BlockAllocationUseHelper<DERIVED>::operator delete (p, a, b, c);
+                BlockAllocationUseHelper<DERIVED>::operator delete (p, a, b, c);
             }
             else {
                 return BASE_REP::operator delete (p, a, b, c);

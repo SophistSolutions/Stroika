@@ -71,12 +71,12 @@ namespace Stroika::Foundation::Streams::TextReader {
     using Ptr = InputStream::Ptr<Character>;
 
     /**
-        * This flag controls whether the TextReader instance will try to read-ahead (typically in order to cache). This is generally
-        * a good thing, but for some stream uses, its important to not read ahead - e.g. in the underlying binary stream contains multiple objects and we
-        * are just reading one).
-        *
-        *  \note eReadAheadAllowed doesn't mean the underlying class actually WILL read ahead, only that it is permitted to.
-        */
+     * This flag controls whether the TextReader instance will try to read-ahead (typically in order to cache). This is generally
+     * a good thing, but for some stream uses, its important to not read ahead - e.g. in the underlying binary stream contains multiple objects and we
+     * are just reading one).
+     *
+     *  \note eReadAheadAllowed doesn't mean the underlying class actually WILL read ahead, only that it is permitted to.
+     */
     enum class ReadAhead {
         eReadAheadNever,
         eReadAheadAllowed,

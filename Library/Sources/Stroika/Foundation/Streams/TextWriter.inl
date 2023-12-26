@@ -9,6 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "InternallySynchronizedOutputStream.h" // no need to include once we remove deprecated references to this
+
 namespace Stroika::Foundation::Streams::TextWriter {
 
     namespace Private_ {

@@ -10,7 +10,6 @@
 
 #include "../../Configuration/Common.h"
 
-#include "../InternallySynchronizedOutputStream.h"
 #include "../OutputStream.h"
 
 /**
@@ -31,12 +30,7 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
      *  OutputStreamFromStdOStream wraps an argument std::ostream or std::wostream or std::basic_ostream<> as a Stroika OutputStream object
      *
      *      \note   OutputStreamFromStdOStream ::Close () does not call close on the owned basic_ostream, because there is no such stdC++ method (though filestream has one)
-     */
-    //   class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
-    //  public:
-    //     using OStreamType = typename TRAITS::OStreamType;
-
-    /**
+     *
      *  Default seekability should be determined automatically, but for now, I cannot figure out how...
      *
      *  \par Example Usage
@@ -68,15 +62,6 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
                            basic_ostream<BASIC_OSTREAM_ELEMENT_TYPE, BASIC_OSTREAM_TRAITS_TYPE>& originalStream)
         requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_OSTREAM_ELEMENT_TYPE, char>) or
                   (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_OSTREAM_ELEMENT_TYPE, wchar_t>));
-
-    template <typename ELEMENT_TYPE, typename BASIC_OSTREAM_ELEMENT_TYPE, typename BASIC_OSTREAM_TRAITS_TYPE>
-    class Rep_;
-
-#if 0
-    private:
-        using InternalSyncRep_ = InternallySynchronizedOutputStream<ELEMENT_TYPE, OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>,
-                                                                    typename OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_>;
-#endif
 
 }
 

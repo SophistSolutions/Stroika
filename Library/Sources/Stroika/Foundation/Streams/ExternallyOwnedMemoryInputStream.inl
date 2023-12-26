@@ -7,6 +7,8 @@
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Traversal/Iterator.h"
 
+#include "InternallySynchronizedInputStream.h"
+
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
@@ -157,8 +159,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                AssertNotImplemented (); //tmphack disable --LGP 2023-12-22
-                                         //   return InternalSyncRep_::New (start, end);
+                return InternallySynchronizedInputStream::New<Rep_> ({}, start, end);
             case Execution::eNotKnownInternallySynchronized:
                 return New<ELEMENT_TYPE> (start, end);
             default:
@@ -173,8 +174,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
-                AssertNotImplemented (); //tmphack disable --LGP 2023-12-22
-                //return InternalSyncRep_::New (start, end);
+                return InternallySynchronizedInputStream::New<Rep_> ({}, start, end);
             case Execution::eNotKnownInternallySynchronized:
                 return New<ELEMENT_TYPE> (start, end);
             default:
@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
         }
     }
     template <typename ELEMENT_TYPE>
-    auto New (const uint8_t* start, const uint8_t* end) -> Ptr<ELEMENT_TYPE>
+    inline auto New (const uint8_t* start, const uint8_t* end) -> Ptr<ELEMENT_TYPE>
         requires is_same_v<ELEMENT_TYPE, byte>
     {
         return New<ELEMENT_TYPE> (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));

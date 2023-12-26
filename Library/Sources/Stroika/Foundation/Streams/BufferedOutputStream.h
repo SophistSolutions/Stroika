@@ -6,11 +6,6 @@
 
 #include "../StroikaPreComp.h"
 
-#include <vector>
-
-#include "../Configuration/Common.h"
-
-#include "InternallySynchronizedOutputStream.h"
 #include "OutputStream.h"
 
 /**
@@ -23,11 +18,12 @@
  *
  *              BufferedOutputStream NOW must properly support SEEKABLE! if arg
  *              is seekable, we must override seek methods, and forward them, and adjust buffer as appropriate.
- *
- *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sycn form - using direct mutex
  */
 
 namespace Stroika::Foundation::Streams::BufferedOutputStream {
+
+    template <typename ELEMENT_TYPE>
+    class Ptr;
 
     /**
      *  A BufferedOutputStream wraps an argument stream
@@ -41,29 +37,21 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
      *              will Close that substream.
      *
      *      \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
+     *
+     *  \par Example Usage
+     *      \code
+     *          OutputStream::Ptr<byte> out = BufferedOutputStream::New<byte> (FileOutputStream (fileName, flushFlag));
+     *      \endcode
      */
-    template <typename ELEMENT_TYPE>
-    class Ptr;
-
-    /**
-         *  \par Example Usage
-         *      \code
-         *          OutputStream::Ptr<byte> out = BufferedOutputStream::New<byte> (FileOutputStream (fileName, flushFlag));
-         *      \endcode
-         */
     template <typename ELEMENT_TYPE>
     Ptr<ELEMENT_TYPE> New (const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut);
     template <typename ELEMENT_TYPE>
     Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream::Ptr<ELEMENT_TYPE>& realOut);
 
-    template <typename ELEMENT_TYPE>
-    class Rep_;
-
-#if 0
-    template <typename ELEMENT_TYPE>
-        using InternalSyncRep_ =
-            InternallySynchronizedOutputStream<ELEMENT_TYPE, Streams::BufferedOutputStream<ELEMENT_TYPE>, typename BufferedOutputStream<ELEMENT_TYPE>::Rep_>;
-#endif
+    namespace Private_ {
+        template <typename ELEMENT_TYPE>
+        class Rep_;
+    }
 
     /**
      *  Ptr is a copyable smart pointer to a BufferedOutputStream.
@@ -83,7 +71,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
         Ptr ()                = default;
         Ptr (const Ptr& from) = default;
         Ptr (Ptr&& from)      = default;
-        Ptr (const shared_ptr<Rep_<ELEMENT_TYPE>>& from);
+        Ptr (const shared_ptr<Private_::Rep_<ELEMENT_TYPE>>& from);
 
     public:
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
@@ -107,14 +95,11 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
          */
         nonvirtual void Abort ();
 
-    protected:
+    private:
         /**
          *  \brief protected access to underlying stream smart pointer
          */
-        nonvirtual shared_ptr<Rep_<ELEMENT_TYPE>> _GetSharedRep () const;
-
-        //private:
-        // friend class BufferedOutputStream;
+        nonvirtual shared_ptr<Private_::Rep_<ELEMENT_TYPE>> GetSharedRep_ () const;
     };
 
 }

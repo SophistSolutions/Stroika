@@ -7,7 +7,6 @@
 #include "../StroikaPreComp.h"
 
 #include "InputOutputStream.h"
-#include "InternallySynchronizedInputOutputStream.h"
 
 /**
 *  \file
@@ -17,15 +16,7 @@
 */
 namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
 
-    /**
-     */
-    //template <typename ELEMENT_TYPE>
-    //    using ElementType = typename Stream<ELEMENT_TYPE>::ElementType;
-
-    template <typename ELEMENT_TYPE>
-    /**
-     */
-    using Ptr = typename InputOutputStream::Ptr<ELEMENT_TYPE>;
+    using InputOutputStream::Ptr;
 
     /**
      *  \par Example Usage
@@ -38,16 +29,6 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
     template <typename ELEMENT_TYPE>
     Ptr<ELEMENT_TYPE> New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream::Ptr<ELEMENT_TYPE>& realStream,
                            const typename OutputStream::Ptr<ELEMENT_TYPE>& logInput, const typename OutputStream::Ptr<ELEMENT_TYPE>& logOutput);
-
-    template <typename ELEMENT_TYPE>
-    class Rep_;
-
-#if 0
-        // tmp disable til we can fix --LGP2 2023-12-22
-        template <typename ELEMENT_TYPE>
-        using InternalSyncRep_ =
-            InternallySynchronizedInputOutputStream<ELEMENT_TYPE, Streams::LoggingInputOutputStream<ELEMENT_TYPE>, typename LoggingInputOutputStream<ELEMENT_TYPE>::Rep_>;
-#endif
 
 }
 

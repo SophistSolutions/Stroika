@@ -13,7 +13,6 @@
 #include "../Memory/BLOB.h"
 
 #include "InputStream.h"
-#include "InternallySynchronizedInputStream.h"
 
 /**
  *  \file
@@ -26,6 +25,8 @@
  */
 
 namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
+
+    using InputStream::Ptr;
 
     /**
     * 
@@ -52,34 +53,30 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    /**
-         */
-    template <typename ELEMENT_TYPE>
-    using Ptr = typename InputStream::Ptr<ELEMENT_TYPE>;
 
     /**
-         *  \note   The CTOR with random_access_iterator ELEMENT_ITERATOR is safe because you can (always take diff between two
-         *          random access iterators and (for now convert to pointers, but that may not be safe????).
-         * 
-         *  \todo Support RANGES - since thats REALLY what this takes as argument (stl range not Stroika range)
-         *
-         *  \par Example Usage
-         *      \code
-         *          InputStream::Ptr<byte> in = ExternallyOwnedMemoryInputStream::New<byte> (begin (buf), begin (buf) + nBytesRead);
-         *      \endcode
-         *
-         *  \par Example Usage
-         *      \code
-         *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream::New<byte> (begin (buf), begin (buf) + nBytesRead))
-         *      \endcode
-         * 
-         *  \note Though generally for these constructors, the pointer types of the arguments must match ELEMENT_TYPE, we have a
-         *        few exceptions allowed, for common C++ backward compatability.
-         * 
-         *          if ELEMENT_TYPE==byte:
-         *              allow iterator/pointer of uint8_t
-         *              allow iterator/pointer of char
-         */
+     *  \note   The CTOR with random_access_iterator ELEMENT_ITERATOR is safe because you can (always take diff between two
+     *          random access iterators and (for now convert to pointers, but that may not be safe????).
+     * 
+     *  \todo Support RANGES - since thats REALLY what this takes as argument (stl range not Stroika range)
+     *
+     *  \par Example Usage
+     *      \code
+     *          InputStream::Ptr<byte> in = ExternallyOwnedMemoryInputStream::New<byte> (begin (buf), begin (buf) + nBytesRead);
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream::New<byte> (begin (buf), begin (buf) + nBytesRead))
+     *      \endcode
+     * 
+     *  \note Though generally for these constructors, the pointer types of the arguments must match ELEMENT_TYPE, we have a
+     *        few exceptions allowed, for common C++ backward compatability.
+     * 
+     *          if ELEMENT_TYPE==byte:
+     *              allow iterator/pointer of uint8_t
+     *              allow iterator/pointer of char
+     */
     template <typename ELEMENT_TYPE>
     Ptr<ELEMENT_TYPE> New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
     template <typename ELEMENT_TYPE, random_access_iterator ELEMENT_ITERATOR>
@@ -98,12 +95,6 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedMemoryInputStream {
 
     template <typename ELEMENT_TYPE>
     class Rep_;
-
-#if 0
-    template < typename ELEMENT_TYPE>
-       using InternalSyncRep_ = InternallySynchronizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>,
-                                                                   typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_>;
-#endif
 
 }
 

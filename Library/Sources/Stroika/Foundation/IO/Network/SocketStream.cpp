@@ -11,6 +11,7 @@
 #include <cstdlib>
 
 #include "../../Execution/OperationNotSupportedException.h"
+#include "../../Streams/InternallySynchronizedInputOutputStream.h"
 
 #include "SocketStream.h"
 

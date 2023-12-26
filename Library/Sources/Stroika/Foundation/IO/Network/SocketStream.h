@@ -8,7 +8,6 @@
 
 #include "../../Configuration/Common.h"
 #include "../../Streams/InputOutputStream.h"
-#include "../../Streams/InternallySynchronizedInputOutputStream.h"
 
 #include "ConnectionOrientedStreamSocket.h"
 
@@ -58,10 +57,6 @@ namespace Stroika::Foundation::IO::Network::SocketStream {
     Ptr New (const ConnectionOrientedStreamSocket::Ptr& sd);
 
     class Rep_;
-
-#if 0
-        using InternalSyncRep_ = Streams::InternallySynchronizedInputOutputStream<byte, SocketStream, SocketStream::Rep_>;
-#endif
 
 }
 

@@ -27,8 +27,7 @@
 
 namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
 
-    template <typename ELEMENT_TYPE>
-    using Ptr = typename InputStream::Ptr<ELEMENT_TYPE>;
+    using InputStream::Ptr;
 
     /**
      *  InputStreamFromStdIStream wraps an argument std::istream or std::wistream or std::basic_istream<> as a Stroika InputStream object
@@ -41,9 +40,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
      *      \endcode
      *
      *      \note   InputStreamFromStdIStream ::Close () does not call close on the owned basic_istream, because there is no such stdC++ method (though filestream has one)
-     */
-
-    /**
+     *
      *
      *  Default seekability should be determined automatically, but for now, I cannot figure out how...
      *  \par Example Usage
@@ -90,15 +87,6 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                            basic_istream<BASIC_ISTREAM_ELEMENT_TYPE, BASIC_ISTREAM_TRAITS_TYPE>& originalStream, SeekableFlag seekable)
         requires ((same_as<ELEMENT_TYPE, byte> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, char>) or
                   (same_as<ELEMENT_TYPE, Characters::Character> and same_as<BASIC_ISTREAM_ELEMENT_TYPE, wchar_t>));
-
-    template <typename ELEMENT_TYPE, typename BASIC_ISTREAM_ELEMENT_TYPE, typename BASIC_ISTREAM_TRAITS_TYPE>
-    class Rep_;
-#if 0
-        //tmphack disable
-    private:
-        using InternalSyncRep_ =
-            InternallySynchronizedInputStream<ELEMENT_TYPE, InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>, typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_>;
-#endif
 
 }
 
