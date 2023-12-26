@@ -15,12 +15,12 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
 
     namespace Private_ {
         template <typename BASE_REP_TYPE>
-        class Rep_ final : public BASE_REP_TYPE, public Memory::UseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE>> {
+        class Rep_ final : public Memory::InheritAndUseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE>, BASE_REP_TYPE> {
         public:
             using ElementType = typename BASE_REP_TYPE::ElementType;
             template <typename... ARGS>
             Rep_ (ARGS&&... args)
-                : BASE_REP_TYPE{forward<ARGS> (args)...}
+                : Memory::InheritAndUseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE>, BASE_REP_TYPE>{forward<ARGS> (args)...}
             {
             }
             Rep_ (const Rep_&) = delete;

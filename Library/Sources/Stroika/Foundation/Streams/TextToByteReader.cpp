@@ -24,7 +24,7 @@ using Debug::AssertExternallySynchronizedMutex;
 using Memory::StackBuffer;
 
 namespace {
-    class Rep_ final : public InputStream::IRep<byte> {
+    class Rep_ final : public InputStream::IRep<byte>, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     public:
         Rep_ (const InputStream::Ptr<Character>& src)
             : fSrc_{src}

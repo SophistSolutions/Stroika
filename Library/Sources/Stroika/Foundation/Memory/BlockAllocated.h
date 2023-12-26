@@ -138,6 +138,47 @@ namespace Stroika::Foundation::Memory {
         conditional_t<qStroika_Foundation_Memory_PreferBlockAllocation and andTrueCheck, BlockAllocationUseHelper<T>, Configuration::Empty>;
 
     /**
+     *  \brief same idea as UseBlockAllocationIfAppropriate, except always 'inherits' from BASE_REP, so hides any existing static operator new/delete
+     *         methods.
+     *
+     *     more CRTP style
+     * 
+     *  @todo - somewhat confusing implmentation - not sure why cannot be simpler?? -- LGP 2023-12-25
+     */
+    template <typename DERIVED, typename BASE_REP, bool andTrueCheck = true>
+    struct InheritAndUseBlockAllocationIfAppropriate : BASE_REP {
+        template <typename... ARGS>
+        InheritAndUseBlockAllocationIfAppropriate (ARGS&&... args)
+            : BASE_REP{forward<ARGS> (args)...}
+        {
+        }
+        template <bool isTrue = andTrueCheck>
+        static void* operator new (size_t n)
+            requires (isTrue)
+        {
+            return BlockAllocationUseHelper<DERIVED>::operator new (n);
+        }
+        template <bool isTrue = andTrueCheck>
+        static void* operator new (size_t n, int a, const char* b, int c)
+            requires (isTrue)
+        {
+            return BlockAllocationUseHelper<DERIVED>::operator new (n, a, b, c);
+        }
+        template <bool isTrue = andTrueCheck>
+        static void operator delete (void* p)
+            requires (isTrue)
+        {
+            BlockAllocationUseHelper<DERIVED>::operator delete (p);
+        }
+        template <bool isTrue = andTrueCheck>
+        static void operator delete (void* p, int a, const char* b, int c)
+            requires (isTrue)
+        {
+            BlockAllocationUseHelper<DERIVED>::operator delete (p, a, b, c);
+        }
+    };
+
+    /**
      */
     template <typename T, bool andTrueCheck = true>
     using BlockAllocatorOrStdAllocatorAsAppropriate =

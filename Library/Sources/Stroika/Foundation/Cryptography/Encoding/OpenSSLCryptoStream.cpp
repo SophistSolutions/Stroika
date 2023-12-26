@@ -149,10 +149,10 @@ namespace {
         virtual size_t Read (byte* intoStart, byte* intoEnd) override
         {
             /*
-         *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
-         *  If none to read there - pull from fRealIn_ src, and push those through the cipher.
-         *  and use that to re-populate fOutBuf_.
-         */
+             *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
+             *  If none to read there - pull from fRealIn_ src, and push those through the cipher.
+             *  and use that to re-populate fOutBuf_.
+             */
             Require (intoStart < intoEnd);
             [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
             Require (IsOpenRead ());
