@@ -15,14 +15,14 @@
 namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
 
     namespace Private_ {
-        template <typename BASE_REP_TYPE>
-        struct Rep_ final : Memory::InheritAndUseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE>, BASE_REP_TYPE> {
+        template <typename BASE_REP_TYPE, typename OPTIONS>
+        struct Rep_ final : Memory::InheritAndUseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE, OPTIONS>, BASE_REP_TYPE> {
             using ElementType = typename BASE_REP_TYPE::ElementType;
-
-        public:
+            using inherited   = Memory::InheritAndUseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE, OPTIONS>, BASE_REP_TYPE>;
             template <typename... ARGS>
-            Rep_ (ARGS&&... args)
-                : Memory::InheritAndUseBlockAllocationIfAppropriate<Rep_<BASE_REP_TYPE>, BASE_REP_TYPE>{forward<ARGS> (args)...}
+            Rep_ (OPTIONS o, ARGS&&... args)
+                : inherited{forward<ARGS> (args)...}
+                , fOptions_{o}
             {
             }
             Rep_ (const Rep_&) = delete;
@@ -67,7 +67,8 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
             }
 
         private:
-            mutable mutex fCriticalSection_;
+            [[no_unique_address]] OPTIONS       fOptions_;
+            mutable typename OPTIONS::MutexType fCriticalSection_;
         };
     }
 
@@ -76,11 +77,11 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
      **************** InternallySynchronizedInputStream<BASE_REP_TYPE> **************
      ********************************************************************************
      */
-    template <typename BASE_REP_TYPE, typename... ARGS>
-    inline typename OutputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (ARGS&&... args)
+    template <typename BASE_REP_TYPE, typename OPTIONS, typename... ARGS>
+    inline typename OutputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (OPTIONS o, ARGS&&... args)
     {
         return typename OutputStream::Ptr<typename BASE_REP_TYPE::ElementType>{
-            Memory::MakeSharedPtr<Private_::Rep_<BASE_REP_TYPE>> (forward<ARGS> (args)...)};
+            Memory::MakeSharedPtr<Private_::Rep_<BASE_REP_TYPE, OPTIONS>> (o, forward<ARGS> (args)...)};
     }
 
 }

@@ -242,7 +242,7 @@ auto FileOutputStream::New (Execution::InternallySynchronized internallySynchron
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            return Streams::InternallySynchronizedOutputStream::New<Rep_> (fileName, AppendFlag::eDEFAULT, flushFlag);
+            return Streams::InternallySynchronizedOutputStream::New<Rep_> ({}, fileName, AppendFlag::eDEFAULT, flushFlag);
         case Execution::eNotKnownInternallySynchronized:
             return New (fileName, AppendFlag::eDEFAULT, flushFlag);
         default:
@@ -256,7 +256,7 @@ auto FileOutputStream::New (Execution::InternallySynchronized internallySynchron
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            return Streams::InternallySynchronizedOutputStream::New<Rep_> (fileName, appendFlag, flushFlag);
+            return Streams::InternallySynchronizedOutputStream::New<Rep_> ({}, fileName, appendFlag, flushFlag);
         case Execution::eNotKnownInternallySynchronized:
             return New (fileName, appendFlag, flushFlag);
         default:
@@ -270,7 +270,7 @@ auto FileOutputStream::New (Execution::InternallySynchronized internallySynchron
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            return Streams::InternallySynchronizedOutputStream::New<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag);
+            return Streams::InternallySynchronizedOutputStream::New<Rep_> ({}, fd, adoptFDPolicy, seekableFlag, flushFlag);
         case Execution::eNotKnownInternallySynchronized:
             return New (fd, adoptFDPolicy, seekableFlag, flushFlag);
         default:

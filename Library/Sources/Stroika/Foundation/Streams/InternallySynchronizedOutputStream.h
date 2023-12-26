@@ -23,6 +23,12 @@
 namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
 
     /**
+     */
+    struct DefaultOptions {
+        using MutexType = mutex;
+    };
+
+    /**
      *  \note   Uses mutex, not recursive_mutex internally, so be carefully about mutual recursion calls in UNSYNC_REP.
      * 
      *  \par Example Usage
@@ -32,8 +38,8 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
-    template <typename BASE_REP_TYPE, typename... ARGS>
-    typename OutputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (ARGS&&... args);
+    template <typename BASE_REP_TYPE, typename OPTIONS = DefaultOptions, typename... ARGS>
+    typename OutputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (OPTIONS o = {}, ARGS&&... args);
 
 }
 

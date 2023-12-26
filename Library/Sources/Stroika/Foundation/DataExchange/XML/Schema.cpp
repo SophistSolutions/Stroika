@@ -4,11 +4,11 @@
 #include "../../StroikaPreComp.h"
 
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 
-#include "Schema.h"
 #include "SAXReader.h"
+#include "Schema.h"
 
 #if qHasFeature_Xerces
 #include "Providers/Xerces.h"
@@ -275,8 +275,7 @@ void DataExchange::XML::ValidateFile (const filesystem::path& externalFileName, 
 #endif
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
     // not the most efficient impl but simple and generic, and good enuf for now
-    struct noOpConsumer : StructuredStreamEvents::IConsumer {
-    };
+    struct noOpConsumer : StructuredStreamEvents::IConsumer {};
     noOpConsumer consumer;
     SAXParse (IO::FileSystem::FileInputStream::New (externalFileName), consumer, schema);
 #endif

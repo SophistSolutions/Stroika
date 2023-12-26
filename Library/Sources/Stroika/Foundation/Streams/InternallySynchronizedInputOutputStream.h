@@ -23,6 +23,12 @@
 namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream {
 
     /**
+     */
+    struct DefaultOptions {
+        using MutexType = mutex;
+    };
+
+    /**
      *  Helper to wrap an existing stream in synchronized wrapper - like @see Execution::Synchronized - except this wrape
      *  the underlying pointed to stream, not the external smart-pointer wrapper.
      *
@@ -35,8 +41,8 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      */
-    template <typename BASE_REP_TYPE, typename... ARGS>
-    typename InputOutputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (ARGS&&... args);
+    template <typename BASE_REP_TYPE, typename OPTIONS = DefaultOptions, typename... ARGS>
+    typename InputOutputStream::Ptr<typename BASE_REP_TYPE::ElementType> New (OPTIONS o = {}, ARGS&&... args);
 
 }
 

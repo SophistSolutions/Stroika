@@ -133,7 +133,7 @@ auto SocketStream::New (Execution::InternallySynchronized internallySynchronized
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            return InternallySynchronizedInputOutputStream::New<Rep_> (sd);
+            return InternallySynchronizedInputOutputStream::New<Rep_> ({}, sd);
         case Execution::eNotKnownInternallySynchronized:
             return New (sd);
         default:
