@@ -476,7 +476,7 @@ public:
     virtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in) override
     {
         using namespace Streams;
-        return Read (TextReader::New (in, SeekableFlag::eSeekable));
+        return Read (TextReader::New (in, nullopt, SeekableFlag::eSeekable));
     }
     virtual VariantValue Read (const Streams::InputStream::Ptr<Characters::Character>& in) override
     {

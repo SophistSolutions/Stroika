@@ -109,14 +109,19 @@ namespace Stroika::Foundation::Streams::TextReader {
      *              DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
      *          }
      *      \endcode
+     *  
+     *  \note New (const InputStream::Ptr<byte>& src,... overloads)
+     *      o   Seekability
+     *              if not specified, its copied from the src binary stream.
+     *      o   CodeCvt flags 
+     *          either as specified, or, if src.IsSeekable () - defaults to AutomaticCodeCvtFlags::eDefault (which looks at the BOM)
+     *          and if not seekable and not specified, use CodeCvt<>{locale{}}.
      * 
-     *  \note New (const InputStream::Ptr<byte>& src) interprets source as UTF-8, and produces a seekable result iff arg was seekable.
-     *        Use more specific overloads to choose handling of seekability or code conversion options.
+     *      o   These defaults changed in Stroika v3.0d5 (mostly before 3.0d5 - defaults for seekabiliity changed and code page sometimes defaulted to UTF8).
      */
-    Ptr New (const InputStream::Ptr<byte>& src);
-    Ptr New (const InputStream::Ptr<byte>& src, SeekableFlag seekable, ReadAhead readAhead = eReadAheadAllowed);
-    Ptr New (const InputStream::Ptr<byte>& src, AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead = eReadAheadAllowed);
-    Ptr New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable,
+    Ptr New (const InputStream::Ptr<byte>& src, optional<AutomaticCodeCvtFlags> codeCvtFlags = {}, optional<SeekableFlag> seekable = {},
+             ReadAhead readAhead = eReadAheadAllowed);
+    Ptr New (const InputStream::Ptr<byte>& src, const Characters::CodeCvt<>& codeConverter, optional<SeekableFlag> seekable = {},
              ReadAhead readAhead = eReadAheadAllowed);
     Ptr New (const InputStream::Ptr<Character>& src);
     Ptr New (const Traversal::Iterable<Character>& src);
