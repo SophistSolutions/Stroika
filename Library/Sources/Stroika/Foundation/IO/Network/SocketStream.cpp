@@ -76,12 +76,12 @@ public:
         Require (IsOpenRead ());
         return 0;
     }
-    virtual size_t Read (span<byte> intoBuffer) override
+    virtual span<byte> Read (span<byte> intoBuffer) override
     {
         Require (IsOpenRead ());
         size_t n = fSD_.Read (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ());
         fReadSeekOffset_ += n;
-        return n;
+        return intoBuffer.subspan (0, n);
     }
     virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {

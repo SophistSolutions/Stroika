@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     /*
      ********************************************************************************
-     *********************** InputStream::IRep<ELEMENT_TYPE> ***********************
+     *********************** InputStream::IRep<ELEMENT_TYPE> ************************
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Streams::InputStream {
             return elementsRemaining;
         }
         else {
-            return elementsRemaining == 0 ? 0 : Read (span{intoStart, intoEnd}); // safe to call beacuse this cannot block - there are elements available
+            return elementsRemaining == 0 ? 0 : Read (span{intoStart, intoEnd}).size (); // safe to call beacuse this cannot block - there are elements available
         }
     }
 
@@ -119,15 +119,15 @@ namespace Stroika::Foundation::Streams::InputStream {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
         ElementType b{};
-        return (GetRepRWRef ().Read (span{&b, 1}) == 0) ? optional<ElementType>{} : b;
+        return (GetRepRWRef ().Read (span{&b, 1}).size () == 0) ? optional<ElementType>{} : b;
     }
     template <typename ELEMENT_TYPE>
     inline size_t InputStream::Ptr<ELEMENT_TYPE>::Read (ElementType* intoStart, ElementType* intoEnd) const
     {
-        return Read (span<ElementType>{intoStart, intoEnd});
+        return Read (span{intoStart, intoEnd}).size ();
     }
     template <typename ELEMENT_TYPE>
-    inline size_t InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer) const
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer) const -> span<ElementType>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed

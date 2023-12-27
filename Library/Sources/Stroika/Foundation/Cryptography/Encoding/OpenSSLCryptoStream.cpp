@@ -146,7 +146,7 @@ namespace {
             Require (IsOpenRead ());
             return 0;
         }
-        virtual size_t Read (span<ElementType> intoBuffer) override
+        virtual span<ElementType> Read (span<ElementType> intoBuffer) override
         {
             /*
              *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
@@ -158,9 +158,9 @@ namespace {
             Require (IsOpenRead ());
             if (fOutBufStart_ == fOutBufEnd_) {
                 /*
-             *  Then pull from 'real in' stream until we have reach EOF there, or until we have some bytes to output
-             *  on our own.
-             */
+                 *  Then pull from 'real in' stream until we have reach EOF there, or until we have some bytes to output
+                 *  on our own.
+                 */
                 byte toDecryptBuf[kInBufSize_];
             Again:
                 size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
@@ -189,9 +189,9 @@ namespace {
                 size_t n2Copy = min<size_t> (fOutBufEnd_ - fOutBufStart_, intoBuffer.size ());
                 (void)::memcpy (intoBuffer.data (), fOutBufStart_, n2Copy);
                 fOutBufStart_ += n2Copy;
-                return n2Copy;
+                return intoBuffer.subspan (0, n2Copy);
             }
-            return 0; // EOF
+            return span<ElementType>{}; // EOF
         }
         virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
         {

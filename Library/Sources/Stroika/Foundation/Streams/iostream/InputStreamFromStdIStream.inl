@@ -49,13 +49,13 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             {
                 return fOpen_;
             }
-            virtual size_t Read (span<ELEMENT_TYPE> intoBuffer) override
+            virtual span<ELEMENT_TYPE> Read (span<ELEMENT_TYPE> intoBuffer) override
             {
                 Require (not intoBuffer.empty ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 if (fOriginalStreamRef_.eof ()) {
-                    return 0;
+                    return span<ELEMENT_TYPE>{};
                 }
                 size_t maxToRead        = intoBuffer.size ();
                 using StreamElementType = BASIC_ISTREAM_ELEMENT_TYPE;
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                     static const Execution::RuntimeErrorException kException_{"Failed to read from istream"sv};
                     Execution::Throw (kException_);
                 }
-                return n;
+                return intoBuffer.subspan (0, n);
             }
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {

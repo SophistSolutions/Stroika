@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             {
                 return fIsOpen_;
             }
-            virtual size_t Read (span<ELEMENT_TYPE> intoBuffer) override
+            virtual span<ELEMENT_TYPE> Read (span<ELEMENT_TYPE> intoBuffer) override
             {
                 Require (not intoBuffer.empty ());
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
                 else {
                     fPrevCharCached_ = nullopt;
                 }
-                return outI - intoBuffer.data ();
+                return intoBuffer.subspan (0, outI - intoBuffer.data ());
             }
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
                     return cnt;
                 }
                 else {
-                    return Read (span{intoStart, intoEnd}); // safe because implementation of Read () in this type of stream doesn't block
+                    return Read (span{intoStart, intoEnd}).size (); // safe because implementation of Read () in this type of stream doesn't block
                 }
             }
             virtual SeekOffsetType GetReadOffset () const override

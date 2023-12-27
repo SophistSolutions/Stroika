@@ -47,11 +47,10 @@ namespace {
             return fSrc_ != nullptr;
         }
 
-        virtual size_t Read (span<byte> intoBuffer) override
+        virtual span<byte> Read (span<byte> intoBuffer) override
         {
             Require (IsOpenRead ());
             Require (not intoBuffer.empty ());
-            //   span<byte> intoSpan{intoStart, intoEnd}; // soon change Stream API to pass in span instead
             // first see if any partially translated bytes to return
             if (not fSrcBufferedSpan_.empty ()) [[unlikely]] {
                 auto copiedIntoSpan =
@@ -59,7 +58,7 @@ namespace {
                 Assert (copiedIntoSpan.size () >= 1);
                 fSrcBufferedSpan_ = fSrcBufferedSpan_.subspan (copiedIntoSpan.size ()); // skip copied bytes
                 _fOffset += copiedIntoSpan.size ();
-                return copiedIntoSpan.size ();
+                return intoBuffer.subspan (0, copiedIntoSpan.size ());
             }
             // more likely - KISS for now - read one character from upstream and return appropriate number of bytes
             Assert (fSrcBufferedSpan_.empty ());
@@ -75,10 +74,10 @@ namespace {
                     Assert (1 <= fSrcBufferedSpan_.size () and fSrcBufferedSpan_.size () <= sizeof (fSrcBufferedRawBytes_));
                 }
                 _fOffset += copiedIntoSpan.size ();
-                return copiedIntoSpan.size ();
+                return intoBuffer.subspan (0, copiedIntoSpan.size ());
             }
             // if we got here, nothing in our buf, and nothing upstream - EOF
-            return 0;
+            return span<byte>{};
         }
 
         virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) override

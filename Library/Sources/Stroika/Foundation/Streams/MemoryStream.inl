@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             {
                 return fOpenRead_;
             }
-            virtual size_t Read (span<ELEMENT_TYPE> intoBuffer) override
+            virtual span<ELEMENT_TYPE> Read (span<ELEMENT_TYPE> intoBuffer) override
             {
                 Require (IsOpenRead ());
                 Require (not intoBuffer.empty ());
@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                     copy (fReadCursor_, fReadCursor_ + nCopied, intoBuffer.data ());
                     fReadCursor_ = fReadCursor_ + nCopied;
                 }
-                return nCopied; // this can be zero iff EOF
+                return intoBuffer.subspan (0, nCopied); // this can be empty iff EOF
             }
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {

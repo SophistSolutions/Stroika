@@ -152,7 +152,7 @@ protected:
     {
         return fSource_ != nullptr;
     }
-    virtual size_t Read (span<Character> intoBuffer) override
+    virtual span<Character> Read (span<Character> intoBuffer) override
     {
         Require (not intoBuffer.empty ());
         Require (IsOpenRead ());
@@ -194,7 +194,7 @@ protected:
             }
         }
         Ensure (outN <= intoBuffer.size ());
-        return outN;
+        return intoBuffer.subspan (0, outN);
     }
     virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {

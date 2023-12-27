@@ -229,7 +229,7 @@ namespace {
             {
                 return fIsOpenForRead_;
             }
-            virtual size_t Read (span<byte> intoBuffer) override
+            virtual span<byte> Read (span<byte> intoBuffer) override
             {
                 Require (not intoBuffer.empty ());
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -241,7 +241,7 @@ namespace {
                     (void)::memcpy (intoBuffer.data (), fCur, bytesToRead);
                     fCur += bytesToRead;
                 }
-                return bytesToRead;
+                return intoBuffer.subspan (0, bytesToRead);
             }
             virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {

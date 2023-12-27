@@ -235,10 +235,10 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  Read/0
          *      return nullopt on EOF, and otherwise return a single element. Read/0 will block if no data available.
          *
-         *  Read/2
-         *      Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
-         *      bufSize (intoEnd-intoStart) must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
-         *      BLOCKING until data is available, but can return with fewer bytes than bufSize
+         *  Read/1
+         *      Pointer must refer to valid non-empty span.
+         *      Returns empty iff EOF, and otherwise subspan of original span (starting at 0) actually read.
+         *      BLOCKING until data is available, but can return with fewer elements than argument spansize
          *      without prejudice about how much more is available.
          *
          *      So if you call first with ReadNonBlocking() to assure there is some data available (at least one element) you can
@@ -247,15 +247,14 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  All overloads:
          *      It is legal to call Read () if its already returned EOF, but then it MUST return EOF again.
          *
-         *      \req (intoEnd - intoStart) >= 1
-         *
-         *  @see ReadAll () to read all the data in the file at once.
+         *  @see ReadAll () to read all the data from the stream at once.
          *
          *  @see ReadNonBlocking ()
          */
         nonvirtual optional<ElementType> Read () const;
-        nonvirtual size_t                Read (ElementType* intoStart, ElementType* intoEnd) const;
-        nonvirtual size_t                Read (span<ElementType> intoBuffer) const;
+        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer) const;
+
+        nonvirtual size_t Read (ElementType* intoStart, ElementType* intoEnd) const; // @todo DEPRECATE
 
     public:
         /**
@@ -277,7 +276,8 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          */
         nonvirtual optional<ElementType> Peek () const;
-        nonvirtual size_t                Peek (ElementType* intoStart, ElementType* intoEnd) const;
+        // @todo SPANIFIY LIKE READ
+        nonvirtual size_t Peek (ElementType* intoStart, ElementType* intoEnd) const;
 
     public:
         /**
@@ -368,6 +368,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         template <typename POD_TYPE>
         nonvirtual void ReadRaw (POD_TYPE* start, POD_TYPE* end) const
             requires (is_same_v<ELEMENT_TYPE, byte>);
+        // @todo SPANIFY
 
     public:
         /**
@@ -436,9 +437,12 @@ namespace Stroika::Foundation::Streams::InputStream {
          */
         nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
             requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+
+        // @todo redo this overload using requires...
         template <same_as<byte> TEST_TYPE = ELEMENT_TYPE>
         nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
         nonvirtual size_t       ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
+        // @todo SPANIFY last overload
 
     public:
         /**
@@ -495,40 +499,51 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
-         *  May (but typically not) called before destruction. If called, \req no other write or seek etc operations.
+         *  May (but typically not) called before destruction. If called, \req no other read or seek etc operations.
          *
          *  \note - 'Require (IsOpen()) automatically checked in Ptr wrappers for things like Read, so subclassers don't need to
          *          do that in implementing reps, but probably good docs/style todo in both places.'
+         * 
+         *  \note this could have just be called 'close' but we want to be able to mix InputStream::IRep and OutputStream::IRep without conflict.
          */
         virtual void CloseRead () = 0;
 
     public:
         /**
          *  return true iff CloseRead () has not been called (cannot construct closed stream)
+         * 
+         *  \note this could have just be called 'IsOpen' but we want to be able to mix InputStream::IRep and OutputStream::IRep without conflict.
          */
         virtual bool IsOpenRead () const = 0;
 
     public:
+        /**
+         *  \note this could have just be called 'GetOffset' but we want to be able to mix InputStream::IRep and OutputStream::IRep without conflict.
+         */
         virtual SeekOffsetType GetReadOffset () const = 0;
 
     public:
         /*
          *  \req IsSeekable ()
+         *
+         *  \note this could have just be called 'Seek' but we want to be able to mix InputStream::IRep and OutputStream::IRep without conflict.
+         * 
+         *  \note if not seekable (what method) - this method may just AssertNotImplemented ();
          */
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) = 0;
 
     public:
         /**
-         *  Pointer must refer to valid memory at least 1 ELEMENT_TYPE long, and cannot be nullptr.
-         *  bufSize (intoEnd-intoStart) must always be >= 1. Returns 0 iff EOF, and otherwise number of ELEMENT_TYPE elements read.
+         *  incoming intoBuffer must be a valid, non-empty span of elements (to be overwritten).
+         * 
+         *  Returns empty span iff EOF, and otherwise intoBuffer.subspan(0,number of ELEMENT_TYPE elements read).
          *  BLOCKING until data is available, but can return with fewer bytes than bufSize
          *  without prejudice about how much more is available.
-         *
-         *      \req (intoEnd - intoStart) >= 1
          */
-        virtual size_t Read (span<ElementType> intoBuffer) = 0;
+        virtual span<ElementType> Read (span<ElementType> intoBuffer) = 0;
 
     public:
+        // LEANING TOWARDS DEPRECTING/REPLACING WITH IS_AVAIL_READ
         /**
          *  @see InputStream<>::ReadNonBlocking () for the details of the read semantics.
          * 

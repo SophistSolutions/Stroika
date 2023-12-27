@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                     return fRealIn_.Seek (whence, offset + fOffsetMine2Real_) - fOffsetMine2Real_;
                 }
             }
-            virtual size_t Read (span<ELEMENT_TYPE> intoBuffer) override
+            virtual span<ELEMENT_TYPE> Read (span<ELEMENT_TYPE> intoBuffer) override
             {
                 Require (not intoBuffer.empty ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                     SeekOffsetType maxNewReal = curReal + intoBuffer.size ();
                     if (maxNewReal > *fForcedEndInReal_) {
                         if (curReal == *fForcedEndInReal_) {
-                            return 0; // EOF
+                            return span<ELEMENT_TYPE>{}; // EOF
                         }
                         else {
                             ELEMENT_TYPE* newIntoEnd{intoBuffer.data () + *fForcedEndInReal_ - curReal};

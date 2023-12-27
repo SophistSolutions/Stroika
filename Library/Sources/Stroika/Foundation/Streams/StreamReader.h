@@ -21,7 +21,7 @@
 namespace Stroika::Foundation::Streams {
 
     /**
-     *  \brief StreamReader is an non-essential Stream utility, adding simplicity of use for a common use case, and significant performance boost.
+     *  \brief StreamReader is an non-essential Stream utility, adding simplicity of use for a common use case, and a significant performance boost.
      * 
      * \see also https://learn.microsoft.com/en-us/dotnet/api/system.io.streamreader?view=net-8.0 - similar idea, except there you specify conversion from
      *      binary stream.

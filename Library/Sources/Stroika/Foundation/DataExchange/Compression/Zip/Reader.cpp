@@ -115,7 +115,7 @@ namespace {
             {
                 Verify (::deflateEnd (&fZStream_) == Z_OK);
             }
-            virtual size_t Read (span<byte> intoBuffer) override
+            virtual span<byte> Read (span<byte> intoBuffer) override
             {
                 Require (not intoBuffer.empty ()); // API rule for streams
                 Require (IsOpenRead ());
@@ -144,7 +144,7 @@ namespace {
                     goto Again;
                 }
                 _fSeekOffset += pulledOut;
-                return pulledOut;
+                return intoBuffer.subspan (0, pulledOut);
             }
             virtual optional<size_t> ReadNonBlocking ([[maybe_unused]] ElementType* intoStart, [[maybe_unused]] ElementType* intoEnd) override
             {
@@ -227,7 +227,7 @@ namespace {
             {
                 Verify (::inflateEnd (&fZStream_) == Z_OK);
             }
-            virtual size_t Read (span<ElementType> intoBuffer) override
+            virtual span<ElementType> Read (span<ElementType> intoBuffer) override
             {
                 Require (not intoBuffer.empty ()); // API rule for streams
                 Require (IsOpenRead ());
@@ -253,7 +253,7 @@ namespace {
                     goto Again;
                 }
                 _fSeekOffset += pulledOut;
-                return pulledOut;
+                return intoBuffer.subspan (0, pulledOut);
             }
             virtual optional<size_t> ReadNonBlocking ([[maybe_unused]] ElementType* intoStart, [[maybe_unused]] ElementType* intoEnd) override
             {

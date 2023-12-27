@@ -124,7 +124,7 @@ namespace {
         {
             return fFD_ >= 0;
         }
-        virtual size_t Read (span<byte> intoBuffer) override
+        virtual span<byte> Read (span<byte> intoBuffer) override
         {
             Require (not intoBuffer.empty ());
             size_t nRequested = intoBuffer.size ();
@@ -136,9 +136,10 @@ namespace {
                 [&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); }};
             DeclareActivity currentActivity{&readingFromFileActivity};
 #if qPlatform_Windows
-            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoBuffer.data (), Math::PinToMaxForType<unsigned int> (nRequested))));
+            return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (
+                                              ::_read (fFD_, intoBuffer.data (), Math::PinToMaxForType<unsigned int> (nRequested)))));
 #else
-            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoBuffer.data (), nRequested)));
+            return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoBuffer.data (), nRequested))));
 #endif
         }
         virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
@@ -161,7 +162,7 @@ namespace {
              *
              *  but windows doesn't appear to support fcntl()
              */
-            return Read (span{intoStart, intoEnd});
+            return Read (span{intoStart, intoEnd}).size ();
 #elif qPlatform_POSIX
             pollfd pollData{fFD_, POLLIN, 0};
             int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });

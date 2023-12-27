@@ -75,7 +75,7 @@ namespace {
         {
             return _fSource != nullptr;
         }
-        virtual size_t Read (span<Character> intoBuffer) override
+        virtual span<Character> Read (span<Character> intoBuffer) override
         {
             Require (not intoBuffer.empty ());
             Require (IsOpenRead ());
@@ -110,7 +110,7 @@ namespace {
                     // then we got data - already copied into intoStart (part of target span) - so just return the number of characters read
                     Assert (convertedCharacters.size () <= targetBuf.size ());
                     _fOffset += convertedCharacters.size ();
-                    return convertedCharacters.size ();
+                    return intoBuffer.subspan (0, convertedCharacters.size ());
                 }
                 else if (convertedCharacters.empty ()) {
                     // We have zero convertedCharacters, so apparently not enough bytes read. Read one more, and try again.
@@ -130,10 +130,10 @@ namespace {
                     _fOffset += convertedCharacters.size (); // complete the read
                     // Save the extra bytes for next time (with the offset where those bytes come from)
                     _fReadAheadCache.emplace (_ReadAheadCache{.fFrom = _fOffset, .fData = binarySrcSpan});
-                    return convertedCharacters.size ();
+                    return intoBuffer.subspan (0, convertedCharacters.size ());
                 }
             }
-            return 0;
+            return span<Character>{};
         }
         virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
         {
@@ -286,7 +286,7 @@ namespace {
         {
             return true;
         }
-        virtual size_t Read (span<Character> intoBuffer) override
+        virtual span<Character> Read (span<Character> intoBuffer) override
         {
             Require (not intoBuffer.empty ());
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -304,7 +304,7 @@ namespace {
                     intoBuffer[i] = fCache_[i + static_cast<size_t> (_fOffset)];
                 }
                 _fOffset += nToRead;
-                return nToRead;
+                return intoBuffer.subspan (0, nToRead);
             }
 
             // if not already cached, add to cache, and then return the data
@@ -324,34 +324,35 @@ namespace {
             // If the calling read big enough, re-use that buffer.
             constexpr size_t kMinCachedReadSize_{512};
             if (intoBuffer.size () >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
-                size_t n = inherited::Read (intoBuffer);
-                if (n != 0) {
-                    if (origOffset + n > numeric_limits<size_t>::max ()) [[unlikely]] {
+                auto result = inherited::Read (intoBuffer);
+                if (result.size () != 0) {
+                    if (origOffset + result.size () > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
                         Execution::Throw (range_error{"seek past max size for size_t"});
                     }
-                    pushIntoCacheBuf (intoBuffer.data (), intoBuffer.data () + n);
+                    pushIntoCacheBuf (intoBuffer.data (), intoBuffer.data () + result.size ());
                 }
-                return n;
+                return result;
             }
             else {
                 // if argument buffer not big enough, read into a temporary buffer
                 constexpr size_t kUseCacheSize_ = 8 * kMinCachedReadSize_;
                 Character        buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
-                size_t n = inherited::Read (span{reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf))});
-                if (n != 0) {
-                    if (origOffset + n > numeric_limits<size_t>::max ()) [[unlikely]] {
+                auto             result =
+                    inherited::Read (span{reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf))});
+                if (result.size () != 0) {
+                    if (origOffset + result.size () > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
                         Execution::Throw (range_error{"seek past max size for size_t"});
                     }
-                    pushIntoCacheBuf (std::begin (buf), std::begin (buf) + n);
-                    n = intoBuffer.size ();
+                    pushIntoCacheBuf (std::begin (buf), std::begin (buf) + result.size ());
+                    result = result.subspan (0, intoBuffer.size ());
                     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"");
-                    (void)::memcpy (intoBuffer.data (), std::begin (buf), n * sizeof (Character));
+                    (void)::memcpy (intoBuffer.data (), std::begin (buf), result.size () * sizeof (Character));
                     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"");
-                    _fOffset = origOffset + n;
+                    _fOffset = origOffset + result.size ();
                 }
-                return n;
+                return result;
             }
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
@@ -376,7 +377,7 @@ namespace {
                 } break;
                 case Whence::eFromEnd: {
                     Character c;
-                    while (Read (span{&c, 1}) == 1) {
+                    while (Read (span{&c, 1}).size () == 1) {
                         break; // read til EOF
                     }
                     SeekTo_ (_fOffset + offset);
@@ -391,7 +392,7 @@ namespace {
             // easy - keep reading
             while (_fOffset < offset) {
                 Character c;
-                if (Read (span{&c, 1}) == 0) [[unlikely]] {
+                if (Read (span{&c, 1}).size () == 0) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
             }
