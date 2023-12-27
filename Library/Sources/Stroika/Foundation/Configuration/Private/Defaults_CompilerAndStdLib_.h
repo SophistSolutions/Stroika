@@ -248,7 +248,7 @@ Test.cpp:1109:93: error: no viable constructor or deduction guide for deduction 
 #ifndef qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
 
 #if defined(_LIBCPP_VERSION)
-#define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy    (_LIBCPP_VERSION < 15000)
+#define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy    (_LIBCPP_VERSION < 16000)
 #else
 #define qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy 0
 #endif
