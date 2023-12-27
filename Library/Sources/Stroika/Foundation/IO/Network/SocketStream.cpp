@@ -76,10 +76,10 @@ public:
         Require (IsOpenRead ());
         return 0;
     }
-    virtual size_t Read (byte* intoStart, byte* intoEnd) override
+    virtual size_t Read (span<byte> intoBuffer) override
     {
         Require (IsOpenRead ());
-        size_t n = fSD_.Read (intoStart, intoEnd);
+        size_t n = fSD_.Read (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ());
         fReadSeekOffset_ += n;
         return n;
     }

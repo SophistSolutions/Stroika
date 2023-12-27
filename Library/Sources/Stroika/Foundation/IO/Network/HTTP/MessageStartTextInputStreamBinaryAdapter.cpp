@@ -152,16 +152,10 @@ protected:
     {
         return fSource_ != nullptr;
     }
-    virtual size_t Read (Character* intoStart, Character* intoEnd) override
+    virtual size_t Read (span<Character> intoBuffer) override
     {
-        Require ((intoStart == intoEnd) or (intoStart != nullptr));
-        Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+        Require (not intoBuffer.empty ());
         Require (IsOpenRead ());
-
-        if (intoStart == nullptr) {
-            return 0;
-        }
-        AssertNotNull (intoStart);
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Assert (fBufferFilledUpValidBytes_ >= fOffset_); // limitation/feature of current implemetnation
         if (fBufferFilledUpValidBytes_ == fOffset_) {
@@ -176,7 +170,7 @@ protected:
             //tmphack
             {
                 // this code is crap and needs to be thrown out/rewritten - but this kludge may get us limping along
-                size_t nBytesNeeded = intoEnd - intoStart;
+                size_t nBytesNeeded = intoBuffer.size ();
                 if (roomLeftInBuf > nBytesNeeded) {
                     roomLeftInBuf = nBytesNeeded;
                 }
@@ -191,7 +185,7 @@ protected:
 
         // At this point - see if we can fullfill the request. If not - its cuz we got EOF
         size_t outN = 0;
-        for (Character* outChar = intoStart; outChar != intoEnd; ++outChar) {
+        for (auto outChar = intoBuffer.begin (); outChar != intoBuffer.end (); ++outChar) {
             if (fOffset_ < fBufferFilledUpValidBytes_) {
                 // SEE https://stroika.atlassian.net/browse/STK-969 - treat incoming chars as ascii for now
                 *outChar = Characters::Character{(char32_t)*(fAllDataReadBuf_.begin () + fOffset_)};
@@ -199,7 +193,7 @@ protected:
                 outN++;
             }
         }
-        Ensure (outN <= static_cast<size_t> (intoEnd - intoStart));
+        Ensure (outN <= intoBuffer.size ());
         return outN;
     }
     virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override

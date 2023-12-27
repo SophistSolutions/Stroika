@@ -62,13 +62,11 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             {
                 return fIsOpenForRead_;
             }
-            virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+            virtual size_t Read (span<ELEMENT_TYPE> intoBuffer) override
             {
-                RequireNotNull (intoStart);
-                RequireNotNull (intoEnd);
-                Require (intoStart < intoEnd);
+                Require (not intoBuffer.empty ());
                 Require (IsOpenRead ());
-                size_t nRequested = intoEnd - intoStart;
+                size_t nRequested = intoBuffer.size ();
 
             tryAgain:
                 fMoreDataWaiter_.Wait ();
@@ -82,7 +80,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 }
                 size_t nCopied = min (nAvail, nRequested);
                 {
-                    copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
+                    copy (fReadCursor_, fReadCursor_ + nCopied, intoBuffer.data ());
                     fReadCursor_ = fReadCursor_ + nCopied;
                 }
                 return nCopied; // this can be zero on EOF

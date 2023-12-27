@@ -52,11 +52,11 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::SeekRead (whence, offset);
             }
-            virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) override
+            virtual size_t Read (span<ElementType> intoBuffer) override
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
                 Require (IsOpenRead ());
-                return BASE_REP_TYPE::Read (intoStart, intoEnd);
+                return BASE_REP_TYPE::Read (intoBuffer);
             }
             virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
@@ -103,11 +103,11 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
                 Require (IsOpenRead ());
                 return fStream2Wrap.SeekRead (whence, offset);
             }
-            virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) override
+            virtual size_t Read (span<ElementType> intoBuffer) override
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
                 Require (IsOpenRead ());
-                return fStream2Wrap.Read (intoStart, intoEnd);
+                return fStream2Wrap.Read (intoBuffer);
             }
             virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {

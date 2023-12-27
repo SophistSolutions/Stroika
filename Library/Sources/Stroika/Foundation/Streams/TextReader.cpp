@@ -75,11 +75,9 @@ namespace {
         {
             return _fSource != nullptr;
         }
-
-        virtual size_t Read (Character* intoStart, Character* intoEnd) override
+        virtual size_t Read (span<Character> intoBuffer) override
         {
-            Require ((intoStart == intoEnd) or (intoStart != nullptr));
-            Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+            Require (not intoBuffer.empty ());
             Require (IsOpenRead ());
 
             /*
@@ -93,7 +91,7 @@ namespace {
              */
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             {
-                size_t readAtMostCharacters = size_t (intoEnd - intoStart); // must read at least one character, and no more than (intoEnd - intoStart)
+                size_t readAtMostCharacters = intoBuffer.size (); // must read at least one character, and no more than (intoEnd - intoStart)
                 StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, readAtMostCharacters};
                 if (_fReadAheadCache and _fReadAheadCache->fFrom == this->_fOffset) {
                     // If _fReadAheadCache present, may contain enuf bytes for a full character, so don't do another
@@ -105,7 +103,7 @@ namespace {
                 }
             again:
                 span<const byte> binarySrcSpan{inBuf};
-                span<Character>  targetBuf{intoStart, intoEnd};
+                span<Character>  targetBuf{intoBuffer};
                 Assert (_fCharConverter.ComputeTargetCharacterBufferSize (inBuf.size ()) <= targetBuf.size ()); // just because _fCharConverter will require this
                 span<Character> convertedCharacters = _fCharConverter.Bytes2Characters (&binarySrcSpan, targetBuf);
                 if (binarySrcSpan.empty ()) {
@@ -137,7 +135,6 @@ namespace {
             }
             return 0;
         }
-
         virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
         {
             /// @todo hANDLE intoStart==nullptr case!!!
@@ -236,14 +233,12 @@ namespace {
                 }
             }
         }
-
         virtual SeekOffsetType GetReadOffset () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
             return _fOffset;
         }
-
         virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -291,10 +286,9 @@ namespace {
         {
             return true;
         }
-        virtual size_t Read (Character* intoStart, Character* intoEnd) override
+        virtual size_t Read (span<Character> intoBuffer) override
         {
-            Require ((intoStart == intoEnd) or (intoStart != nullptr));
-            Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+            Require (not intoBuffer.empty ());
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
 
@@ -302,12 +296,12 @@ namespace {
             // and not say 'eof'
             if (_fOffset < fCache_.size ()) {
                 // return data from cache
-                size_t nToRead     = intoEnd - intoStart;
+                size_t nToRead     = intoBuffer.size ();
                 size_t nInBufAvail = fCache_.size () - static_cast<size_t> (_fOffset);
                 nToRead            = min (nToRead, nInBufAvail);
                 Assert (nToRead > 0);
                 for (size_t i = 0; i < nToRead; ++i) {
-                    intoStart[i] = fCache_[i + static_cast<size_t> (_fOffset)];
+                    intoBuffer[i] = fCache_[i + static_cast<size_t> (_fOffset)];
                 }
                 _fOffset += nToRead;
                 return nToRead;
@@ -329,14 +323,14 @@ namespace {
             // if not a cache hit, use inherited Read (), and fill the cache.
             // If the calling read big enough, re-use that buffer.
             constexpr size_t kMinCachedReadSize_{512};
-            if (intoEnd - intoStart >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
-                size_t n = inherited::Read (intoStart, intoEnd);
+            if (intoBuffer.size () >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
+                size_t n = inherited::Read (intoBuffer);
                 if (n != 0) {
                     if (origOffset + n > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
                         Execution::Throw (range_error{"seek past max size for size_t"});
                     }
-                    pushIntoCacheBuf (intoStart, intoStart + n);
+                    pushIntoCacheBuf (intoBuffer.data (), intoBuffer.data () + n);
                 }
                 return n;
             }
@@ -344,16 +338,16 @@ namespace {
                 // if argument buffer not big enough, read into a temporary buffer
                 constexpr size_t kUseCacheSize_ = 8 * kMinCachedReadSize_;
                 Character        buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
-                size_t n = inherited::Read (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf)));
+                size_t n = inherited::Read (span{reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf))});
                 if (n != 0) {
                     if (origOffset + n > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
                         Execution::Throw (range_error{"seek past max size for size_t"});
                     }
                     pushIntoCacheBuf (std::begin (buf), std::begin (buf) + n);
-                    n = intoEnd - intoStart;
+                    n = intoBuffer.size ();
                     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"");
-                    (void)::memcpy (intoStart, std::begin (buf), n * sizeof (Character));
+                    (void)::memcpy (intoBuffer.data (), std::begin (buf), n * sizeof (Character));
                     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"");
                     _fOffset = origOffset + n;
                 }
@@ -382,7 +376,7 @@ namespace {
                 } break;
                 case Whence::eFromEnd: {
                     Character c;
-                    while (Read (&c, &c + 1) == 1) {
+                    while (Read (span{&c, 1}) == 1) {
                         break; // read til EOF
                     }
                     SeekTo_ (_fOffset + offset);
@@ -397,7 +391,7 @@ namespace {
             // easy - keep reading
             while (_fOffset < offset) {
                 Character c;
-                if (Read (&c, &c + 1) == 0) [[unlikely]] {
+                if (Read (span{&c, 1}) == 0) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
             }

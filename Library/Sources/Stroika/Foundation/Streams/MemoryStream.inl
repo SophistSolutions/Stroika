@@ -59,19 +59,17 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             {
                 return fOpenRead_;
             }
-            virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+            virtual size_t Read (span<ELEMENT_TYPE> intoBuffer) override
             {
-                RequireNotNull (intoStart);
-                RequireNotNull (intoEnd);
-                Require (intoStart < intoEnd);
                 Require (IsOpenRead ());
-                size_t                                                 nRequested = intoEnd - intoStart;
+                Require (not intoBuffer.empty ());
+                size_t                                                 nRequested = intoBuffer.size ();
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
                 size_t nAvail  = fData_.end () - fReadCursor_;
                 size_t nCopied = min (nAvail, nRequested);
                 {
-                    copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
+                    copy (fReadCursor_, fReadCursor_ + nCopied, intoBuffer.data ());
                     fReadCursor_ = fReadCursor_ + nCopied;
                 }
                 return nCopied; // this can be zero iff EOF

@@ -59,18 +59,16 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
             {
                 return fIsOpenForRead_;
             }
-            virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+            virtual size_t Read (span<ELEMENT_TYPE> intoBuffer) override
             {
-                RequireNotNull (intoStart);
-                RequireNotNull (intoEnd);
-                Require (intoStart < intoEnd);
+                Require (not intoBuffer.empty ());
                 Require (IsOpenRead ());
-                size_t                                                 nRequested = intoEnd - intoStart;
+                size_t                                                 nRequested = intoBuffer.size ();
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
                 size_t nAvail  = fEnd_ - fCursor_;
                 size_t nCopied = min (nAvail, nRequested);
-                copy (fCursor_, fCursor_ + nCopied, intoStart);
+                copy (fCursor_, fCursor_ + nCopied, intoBuffer.data ());
                 fCursor_ += nCopied;
                 return nCopied; // this can be zero on EOF
             }

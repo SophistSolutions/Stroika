@@ -49,20 +49,17 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             {
                 return fOpen_;
             }
-            virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+            virtual size_t Read (span<ELEMENT_TYPE> intoBuffer) override
             {
-                RequireNotNull (intoStart);
-                RequireNotNull (intoEnd);
-                Require (intoStart < intoEnd);
-
+                Require (not intoBuffer.empty ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 if (fOriginalStreamRef_.eof ()) {
                     return 0;
                 }
-                size_t maxToRead        = intoEnd - intoStart;
+                size_t maxToRead        = intoBuffer.size ();
                 using StreamElementType = BASIC_ISTREAM_ELEMENT_TYPE;
-                fOriginalStreamRef_.read (reinterpret_cast<StreamElementType*> (intoStart), maxToRead);
+                fOriginalStreamRef_.read (reinterpret_cast<StreamElementType*> (intoBuffer.data ()), maxToRead);
                 size_t n = static_cast<size_t> (fOriginalStreamRef_.gcount ()); // cast safe cuz amount asked to read was also size_t
 
                 // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit

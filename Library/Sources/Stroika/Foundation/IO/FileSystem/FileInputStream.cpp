@@ -124,12 +124,10 @@ namespace {
         {
             return fFD_ >= 0;
         }
-        virtual size_t Read (byte* intoStart, byte* intoEnd) override
+        virtual size_t Read (span<byte> intoBuffer) override
         {
-            RequireNotNull (intoStart);
-            RequireNotNull (intoEnd);
-            Require (intoStart < intoEnd);
-            size_t nRequested = intoEnd - intoStart;
+            Require (not intoBuffer.empty ());
+            size_t nRequested = intoBuffer.size ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested)};
 #endif
@@ -138,9 +136,9 @@ namespace {
                 [&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); }};
             DeclareActivity currentActivity{&readingFromFileActivity};
 #if qPlatform_Windows
-            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
+            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoBuffer.data (), Math::PinToMaxForType<unsigned int> (nRequested))));
 #else
-            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
+            return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoBuffer.data (), nRequested)));
 #endif
         }
         virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
@@ -148,22 +146,22 @@ namespace {
             Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
 #if qPlatform_Windows
             /*
-         *  For now, assume all FILE reads are already non-blocking. Not sure about this.
-         *
-         *  COULD use intptr_t _get_osfhandle (int fd);
-         *  to use Windows APIs, but those all seem to require the file to be opened a special way to do async reads.
-         *
-         *  Tried:
-         *      int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
-         *      if (fcntl (fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
-         *          ;
-         *      [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() noexcept {
-         *          fcntl (fFD_, F_SETFL, oldFileFlags);
-         *      });
-         *
-         *  but windows doesn't appear to support fcntl()
-         */
-            return Read (intoStart, intoEnd);
+             *  For now, assume all FILE reads are already non-blocking. Not sure about this.
+             *
+             *  COULD use intptr_t _get_osfhandle (int fd);
+             *  to use Windows APIs, but those all seem to require the file to be opened a special way to do async reads.
+             *
+             *  Tried:
+             *      int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
+             *      if (fcntl (fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
+             *          ;
+             *      [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() noexcept {
+             *          fcntl (fFD_, F_SETFL, oldFileFlags);
+             *      });
+             *
+             *  but windows doesn't appear to support fcntl()
+             */
+            return Read (span{intoStart, intoEnd});
 #elif qPlatform_POSIX
             pollfd pollData{fFD_, POLLIN, 0};
             int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
@@ -178,7 +176,7 @@ namespace {
                 }
                 else {
                     // if there is data available, read as much as you can...
-                    return Read (intoStart, intoEnd);
+                    return Read (span{intoStart, intoEnd});
                 }
             }
 #endif

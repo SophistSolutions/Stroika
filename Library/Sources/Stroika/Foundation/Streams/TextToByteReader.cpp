@@ -47,15 +47,15 @@ namespace {
             return fSrc_ != nullptr;
         }
 
-        virtual size_t Read (byte* intoStart, byte* intoEnd) override
+        virtual size_t Read (span<byte> intoBuffer) override
         {
-            Require ((intoStart == intoEnd) or (intoStart != nullptr));
-            Require ((intoStart == intoEnd) or (intoEnd != nullptr));
             Require (IsOpenRead ());
-            span<byte> intoSpan{intoStart, intoEnd}; // soon change Stream API to pass in span instead
+            Require (not intoBuffer.empty ());
+            //   span<byte> intoSpan{intoStart, intoEnd}; // soon change Stream API to pass in span instead
             // first see if any partially translated bytes to return
             if (not fSrcBufferedSpan_.empty ()) [[unlikely]] {
-                auto copiedIntoSpan = Memory::CopySpanData (fSrcBufferedSpan_.subspan (0, min (fSrcBufferedSpan_.size (), intoSpan.size ())), intoSpan);
+                auto copiedIntoSpan =
+                    Memory::CopySpanData (fSrcBufferedSpan_.subspan (0, min (fSrcBufferedSpan_.size (), intoBuffer.size ())), intoBuffer);
                 Assert (copiedIntoSpan.size () >= 1);
                 fSrcBufferedSpan_ = fSrcBufferedSpan_.subspan (copiedIntoSpan.size ()); // skip copied bytes
                 _fOffset += copiedIntoSpan.size ();
@@ -67,7 +67,7 @@ namespace {
             if (size_t nChars = fSrc_.Read (begin (readBuf), end (readBuf))) {
                 char8_t       buf[10];
                 span<char8_t> convertedSpan  = Characters::UTFConvert::kThe.ConvertSpan (span{readBuf, nChars}, span{buf, sizeof (buf)});
-                auto          copiedIntoSpan = Memory::CopySpanData_StaticCast (convertedSpan, intoSpan);
+                auto          copiedIntoSpan = Memory::CopySpanData_StaticCast (convertedSpan, intoBuffer);
                 if (copiedIntoSpan.size () < convertedSpan.size ()) {
                     // save extra bytes in fSrcBufferedSpan_
                     fSrcBufferedSpan_ =

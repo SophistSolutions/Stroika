@@ -51,29 +51,29 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             {
                 return fIsOpen_;
             }
-            virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+            virtual size_t Read (span<ELEMENT_TYPE> intoBuffer) override
             {
-                Require (intoEnd - intoStart >= 1);
+                Require (not intoBuffer.empty ());
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
-                ELEMENT_TYPE* outI = intoStart;
+                ELEMENT_TYPE* outI = intoBuffer.data ();
                 if (fPutBack_) {
                     *outI     = *fPutBack_;
                     fPutBack_ = nullopt;
                     ++outI;
                     // fOffset_ doesn't take into account putback
                 }
-                for (; fSrcIter_ != fSource_.end () and outI != intoEnd; ++fSrcIter_, ++outI) {
+                for (; fSrcIter_ != fSource_.end () and outI != intoBuffer.data () + intoBuffer.size (); ++fSrcIter_, ++outI) {
                     *outI = *fSrcIter_;
                     ++fOffset_;
                 }
-                if (outI > intoStart) {
+                if (outI > intoBuffer.data ()) {
                     fPrevCharCached_ = *(outI - 1);
                 }
                 else {
                     fPrevCharCached_ = nullopt;
                 }
-                return outI - intoStart;
+                return outI - intoBuffer.data ();
             }
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
                     return cnt;
                 }
                 else {
-                    return Read (intoStart, intoEnd); // safe because implementation of Read () in this type of stream doesn't block
+                    return Read (span{intoStart, intoEnd}); // safe because implementation of Read () in this type of stream doesn't block
                 }
             }
             virtual SeekOffsetType GetReadOffset () const override

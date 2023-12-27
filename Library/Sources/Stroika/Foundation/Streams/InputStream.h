@@ -253,6 +253,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          */
         nonvirtual optional<ElementType> Read () const;
         nonvirtual size_t                Read (ElementType* intoStart, ElementType* intoEnd) const;
+        nonvirtual size_t                Read (span<ElementType> intoBuffer) const;
 
     public:
         /**
@@ -523,7 +524,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *      \req (intoEnd - intoStart) >= 1
          */
-        virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) = 0;
+        virtual size_t Read (span<ElementType> intoBuffer) = 0;
 
     public:
         /**

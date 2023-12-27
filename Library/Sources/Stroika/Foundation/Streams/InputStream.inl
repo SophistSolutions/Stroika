@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Streams::InputStream {
             return elementsRemaining;
         }
         else {
-            return elementsRemaining == 0 ? 0 : Read (intoStart, intoEnd); // safe to call beacuse this cannot block - there are elements available
+            return elementsRemaining == 0 ? 0 : Read (span{intoStart, intoEnd}); // safe to call beacuse this cannot block - there are elements available
         }
     }
 
@@ -119,16 +119,20 @@ namespace Stroika::Foundation::Streams::InputStream {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
         ElementType b{};
-        return (GetRepRWRef ().Read (&b, &b + 1) == 0) ? optional<ElementType>{} : b;
+        return (GetRepRWRef ().Read (span{&b, 1}) == 0) ? optional<ElementType>{} : b;
     }
     template <typename ELEMENT_TYPE>
     inline size_t InputStream::Ptr<ELEMENT_TYPE>::Read (ElementType* intoStart, ElementType* intoEnd) const
     {
+        return Read (span<ElementType>{intoStart, intoEnd});
+    }
+    template <typename ELEMENT_TYPE>
+    inline size_t InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer) const
+    {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
-        RequireNotNull (intoStart);
-        Require ((intoEnd - intoStart) >= 1);
-        return GetRepRWRef ().Read (intoStart, intoEnd);
+        Require (not intoBuffer.empty ());
+        return GetRepRWRef ().Read (intoBuffer);
     }
     template <typename ELEMENT_TYPE>
     auto InputStream::Ptr<ELEMENT_TYPE>::Peek () const -> optional<ElementType>

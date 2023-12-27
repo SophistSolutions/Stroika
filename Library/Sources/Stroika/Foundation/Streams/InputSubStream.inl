@@ -121,27 +121,28 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                     return fRealIn_.Seek (whence, offset + fOffsetMine2Real_) - fOffsetMine2Real_;
                 }
             }
-            virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+            virtual size_t Read (span<ELEMENT_TYPE> intoBuffer) override
             {
-                Require (intoEnd - intoStart >= 1); // rule for InputStream<>::_IRep
+                Require (not intoBuffer.empty ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 if (fForcedEndInReal_) {
+                    // @todo clean this code up for switch to spans - simplify!
                     // adjust intoEnd to accomodate shortened stream
                     SeekOffsetType curReal    = fRealIn_.GetOffset ();
-                    SeekOffsetType maxNewReal = curReal + (intoEnd - intoStart);
+                    SeekOffsetType maxNewReal = curReal + intoBuffer.size ();
                     if (maxNewReal > *fForcedEndInReal_) {
                         if (curReal == *fForcedEndInReal_) {
                             return 0; // EOF
                         }
                         else {
-                            ELEMENT_TYPE* newIntoEnd{intoStart + *fForcedEndInReal_ - curReal};
-                            Assert (newIntoEnd < intoEnd);
-                            return fRealIn_.Read (intoStart, newIntoEnd);
+                            ELEMENT_TYPE* newIntoEnd{intoBuffer.data () + *fForcedEndInReal_ - curReal};
+                            Assert (newIntoEnd < intoBuffer.data () + intoBuffer.size ());
+                            return fRealIn_.Read (span{intoBuffer.data (), newIntoEnd});
                         }
                     }
                 }
-                return fRealIn_.Read (intoStart, intoEnd);
+                return fRealIn_.Read (intoBuffer);
             }
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {

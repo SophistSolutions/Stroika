@@ -146,14 +146,14 @@ namespace {
             Require (IsOpenRead ());
             return 0;
         }
-        virtual size_t Read (byte* intoStart, byte* intoEnd) override
+        virtual size_t Read (span<ElementType> intoBuffer) override
         {
             /*
              *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
              *  If none to read there - pull from fRealIn_ src, and push those through the cipher.
              *  and use that to re-populate fOutBuf_.
              */
-            Require (intoStart < intoEnd);
+            Require (not intoBuffer.empty ());
             [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
             Require (IsOpenRead ());
             if (fOutBufStart_ == fOutBufEnd_) {
@@ -186,8 +186,8 @@ namespace {
                 }
             }
             if (fOutBufStart_ < fOutBufEnd_) {
-                size_t n2Copy = min (fOutBufEnd_ - fOutBufStart_, intoEnd - intoStart);
-                (void)::memcpy (intoStart, fOutBufStart_, n2Copy);
+                size_t n2Copy = min<size_t> (fOutBufEnd_ - fOutBufStart_, intoBuffer.size ());
+                (void)::memcpy (intoBuffer.data (), fOutBufStart_, n2Copy);
                 fOutBufStart_ += n2Copy;
                 return n2Copy;
             }
