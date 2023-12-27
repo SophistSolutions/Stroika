@@ -180,10 +180,10 @@ namespace Stroika::Foundation::Streams::TextWriter {
     {
         switch (internallySynchronized) {
             case Execution::InternallySynchronized::eNotKnownInternallySynchronized:
-                return New (forward<ARGS> (args...));
+                return New (forward<ARGS...> (args...));
             case Execution::InternallySynchronized::eInternallySynchronized:
                 // @todo could explicitly specialize more cases and handle more efficiently, but using the REP overload of InternallySynchronizedInputStream
-                return InternallySynchronizedOutputStream::New ({}, New (forward<ARGS> (args...)));
+                return InternallySynchronizedOutputStream::New ({}, New (forward<ARGS...> (args...)));
         }
     }
 

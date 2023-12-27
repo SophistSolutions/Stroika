@@ -27,10 +27,10 @@ namespace Stroika::Foundation::Streams::TextReader {
     {
         switch (internallySynchronized) {
             case Execution::InternallySynchronized::eNotKnownInternallySynchronized:
-                return New (forward<ARGS> (args...));
+                return New (forward<ARGS...> (args...));
             case Execution::InternallySynchronized::eInternallySynchronized:
                 // @todo could explicitly specialize more cases and handle more efficiently, but using the REP loverload of InternallySynchronizedInputStream
-                return InternallySynchronizedInputStream::New ({}, New (forward<ARGS> (args...)));
+                return InternallySynchronizedInputStream::New ({}, New (forward<ARGS...> (args...)));
         }
     }
 
