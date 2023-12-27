@@ -116,6 +116,8 @@ namespace Stroika::Foundation::Streams::InputStream {
      *          blocking (including seek, when supported). But when you must do non-blocking IO, you can call ReadNonBlocking ()
      *          which mostly tells you if there is any data available to read (and variants will also read it for you).
      *
+     *  \note   For better performance, but some slight usage restrictions, consider using @see StreamReader
+     * 
      *  \note ***Cancelation Point***
      *        @todo not 100% sure we want to require this as part of API - but tentatively lets say
      *        All subtypes of InputStream () must have the Read (and related Peek etc) methods implementation be a cancelation point so that those reads can be aborted.

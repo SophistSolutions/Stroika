@@ -1105,7 +1105,7 @@ namespace {
             ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{kSAMPLE_FILE_}));
             EXPECT_TRUE (sd.fAuxData.ContainsKey ("Sample-Pressure"));
             EXPECT_TRUE (sd.fScanID == 5856);
-            Memory::BLOB b   = doWrite_ (sd);
+            Memory::BLOB b = doWrite_ (sd);
 #if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
             ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedSpanInputStream::New<byte> (span<const byte>{b}));
 #else
