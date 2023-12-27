@@ -52,7 +52,7 @@
 #include "Stroika/Foundation/Math/Statistics.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
-#include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Time/DateTime.h"
 #include "Stroika/Foundation/Time/Duration.h"
@@ -1102,11 +1102,11 @@ namespace {
         }
         void DoRunPerfTest ()
         {
-            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream::New<byte> (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
+            ScanDetails_ sd = doRead_ (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{kSAMPLE_FILE_}));
             EXPECT_TRUE (sd.fAuxData.ContainsKey ("Sample-Pressure"));
             EXPECT_TRUE (sd.fScanID == 5856);
             Memory::BLOB b   = doWrite_ (sd);
-            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream::New<byte> (begin (b), end (b)));
+            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{b}));
             EXPECT_TRUE (sd2.fScanID == sd.fScanID);
             EXPECT_TRUE (sd2.fAuxData == sd.fAuxData);
             EXPECT_TRUE (sd2.fRawSpectrum == sd.fRawSpectrum); // @todo - FIX - this test should pass!
@@ -1232,7 +1232,7 @@ namespace {
             using namespace Streams;
             Variant::JSON::Reader reader{Variant::JSON::ReaderOptions{.fPreferredAlgorithm = Variant::JSON::ReaderOptions::eStroikaNative}};
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
-                VariantValue output{reader.Read (ExternallyOwnedMemoryInputStream::New<byte> (begin (p), end (p)))};
+                VariantValue output{reader.Read (ExternallyOwnedSpanInputStream::New<byte> (span{p}))};
             }
         }
         void DoStroikaJSONParse_ (const string& p, unsigned int nTimes)
@@ -1241,7 +1241,7 @@ namespace {
             using namespace Streams;
             Variant::JSON::Reader reader{Variant::JSON::ReaderOptions{}};
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
-                VariantValue output{reader.Read (ExternallyOwnedMemoryInputStream::New<byte> (begin (p), end (p)))};
+                VariantValue output{reader.Read (ExternallyOwnedSpanInputStream::New<byte> (span{p}))};
             }
         }
         void DoJSONParse_ (const filesystem::path& p, unsigned int nTimes,

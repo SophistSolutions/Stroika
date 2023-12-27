@@ -22,6 +22,9 @@ namespace Stroika::Foundation::Memory {
      *  I hope this function isnt needed often. And whereever it is needed, I think is a std::span<> design
      *  defect (or something I don't yet understand about how to use span better).
      * 
+     *  But it appears if you declare function argument span<const T,EXT> and pass in a non-const T span, you get
+     *  error messages about failure to deduce (at least on visual studio).
+     * 
      *  See https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
      */
     template <class T, size_t EXTENT>

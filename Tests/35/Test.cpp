@@ -17,7 +17,7 @@
 #include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
-#include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 

@@ -13,7 +13,7 @@
 #include "../../../../Foundation/Execution/Thread.h"
 #include "../../../../Foundation/Execution/WaitForIOReady.h"
 #include "../../../../Foundation/IO/Network/ConnectionlessSocket.h"
-#include "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "../../../../Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "../../../../Foundation/Streams/TextReader.h"
 #include "../Common.h"
 
@@ -140,8 +140,7 @@ public:
                     size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                     Assert (nBytesRead <= Memory::NEltsOf (buf));
                     using namespace Streams;
-                    ReadPacketAndNotifyCallbacks_ (
-                        TextReader::New (ExternallyOwnedMemoryInputStream::New<byte> (std::begin (buf), std::begin (buf) + nBytesRead)));
+                    ReadPacketAndNotifyCallbacks_ (TextReader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})));
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();

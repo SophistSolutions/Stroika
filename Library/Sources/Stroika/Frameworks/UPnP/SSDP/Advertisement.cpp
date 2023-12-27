@@ -6,7 +6,7 @@
 #include "../../../Foundation/Characters/Format.h"
 #include "../../../Foundation/Characters/StringBuilder.h"
 #include "../../../Foundation/Characters/ToString.h"
-#include "../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "../../../Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "../../../Foundation/Streams/MemoryStream.h"
 #include "../../../Foundation/Streams/TextReader.h"
 #include "../../../Foundation/Streams/TextWriter.h"
@@ -119,7 +119,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
     RequireNotNull (advertisement);
     *advertisement = Advertisement{};
 
-    TextReader::Ptr in = TextReader::New (ExternallyOwnedMemoryInputStream::New<byte> (b.begin (), b.end ()));
+    TextReader::Ptr in = TextReader::New (ExternallyOwnedSpanInputStream::New<byte> (span{b}));
 
     *headLine = in.ReadLine ().Trim ();
     while (true) {

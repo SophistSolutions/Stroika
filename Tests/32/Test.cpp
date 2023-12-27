@@ -30,7 +30,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Visualizations.h"
 #include "Stroika/Foundation/Math/Common.h"
-#include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "Stroika/Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
@@ -174,7 +174,7 @@ namespace {
                     0x05, 0x5d, 0x00, 0x10, 0x00, 0x00, 0x0c, 0x81, 0x9b, 0x0a, 0x01, 0xa0, 0xee, 0xa0, 0x06, 0x00, 0x00};
                 Assert (sizeof (ksample_zip_7z_) == 2157);
 #if qHasFeature_LZMA
-                Archive::_7z::Reader reader (Streams::ExternallyOwnedMemoryInputStream::New<byte> (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
+                Archive::_7z::Reader reader (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{ksample_zip_7z_}));
                 EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp",
                                                                                      L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 
@@ -363,7 +363,7 @@ namespace {
                     0x00, 0x00, 0x4f, 0x09, 0x00, 0x00, 0x00, 0x00};
                 Assert (sizeof (ksample_zip_) == 2948);
 #if qHasFeature_ZLib
-                Archive::Zip::Reader reader{Streams::ExternallyOwnedMemoryInputStream::New<byte> (begin (ksample_zip_), end (ksample_zip_))};
+                Archive::Zip::Reader reader{Streams::ExternallyOwnedSpanInputStream::New<byte> (span{ksample_zip_})};
 
                 EXPECT_TRUE ((reader.GetContainedFiles () == Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp",
                                                                                      "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
@@ -798,34 +798,32 @@ namespace Test_05_ParseRegressionTest_1_ {
     {
         Debug::TraceContextBumper ctx{"Test_05_ParseRegressionTest_1_::DoAll_"};
         {
-            const char   kJSONExample_[] = "{"
-                                           "    \"Automated Backups\" : {"
-                                           "        \"From\" : {"
-                                           "            \"CurrentHRWildcard\" : true,"
-                                           "            \"PrintName\" : \"{Current HR}\""
-                                           "        },"
-                                           "        \"LastRanAt\" : {"
-                                           "            \"ID-ca22f72c-9ff5-4082-82d0-d9763c64ddd6\" : \"2013-03-03T13:53:05-05:00\""
-                                           "        },"
-                                           "        \"Operation\" : 0,"
-                                           "        \"Output\" : {"
-                                           "            \"AttachmentPolicy\" : 2,"
-                                           "            \"Format\" : \"application/x-healthframe-snapshotphr-3\","
-                                           "            \"MaxFiles\" : 0,"
-                                           "            \"NamePolicy\" : 1,"
-                                           "            \"Password\" : \"\""
-                                           "        },"
-                                           "        \"PolicyName\" : \"Automated Backups\","
-                                           "        \"Schedule\" : 2,"
-                                           "        \"To\" : {"
-                                           "            \"DefaultBackupDirectory\" : true,"
-                                           "            \"PrintName\" : \"{Default Backup Directory}\""
-                                           "        }"
-                                           "    }"
-                                           "}";
-            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedMemoryInputStream::New<byte> (
-                reinterpret_cast<const byte*> (std::begin (kJSONExample_)),
-                reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+            const char kJSONExample_[] = "{"
+                                         "    \"Automated Backups\" : {"
+                                         "        \"From\" : {"
+                                         "            \"CurrentHRWildcard\" : true,"
+                                         "            \"PrintName\" : \"{Current HR}\""
+                                         "        },"
+                                         "        \"LastRanAt\" : {"
+                                         "            \"ID-ca22f72c-9ff5-4082-82d0-d9763c64ddd6\" : \"2013-03-03T13:53:05-05:00\""
+                                         "        },"
+                                         "        \"Operation\" : 0,"
+                                         "        \"Output\" : {"
+                                         "            \"AttachmentPolicy\" : 2,"
+                                         "            \"Format\" : \"application/x-healthframe-snapshotphr-3\","
+                                         "            \"MaxFiles\" : 0,"
+                                         "            \"NamePolicy\" : 1,"
+                                         "            \"Password\" : \"\""
+                                         "        },"
+                                         "        \"PolicyName\" : \"Automated Backups\","
+                                         "        \"Schedule\" : 2,"
+                                         "        \"To\" : {"
+                                         "            \"DefaultBackupDirectory\" : true,"
+                                         "            \"PrintName\" : \"{Default Backup Directory}\""
+                                         "        }"
+                                         "    }"
+                                         "}";
+            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{kJSONExample_}));
             map<wstring, VariantValue> mv = v.As<map<wstring, VariantValue>> ();
             EXPECT_TRUE (mv[L"Automated Backups"].GetType () == VariantValue::eMap);
             map<wstring, VariantValue> outputMap = v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
@@ -890,22 +888,20 @@ namespace Test_05_ParseRegressionTest_3_ {
     {
         Debug::TraceContextBumper ctx{"Test_05_ParseRegressionTest_3_::DoAll_"};
         {
-            const char   kJSONExample_[] = "{"
-                                           "    \"T1\" : \"\","
-                                           "    \"T2\" : null,"
-                                           "    \"T3\" : {"
-                                           "        \"DefaultBackupDirectory\" : true,"
-                                           "        \"PrintName\" : \"{Default Backup Directory}\""
-                                           "    }"
-                                           "}";
-            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedMemoryInputStream::New<byte> (
-                reinterpret_cast<const byte*> (std::begin (kJSONExample_)),
-                reinterpret_cast<const byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+            const char kJSONExample_[] = "{"
+                                         "    \"T1\" : \"\","
+                                         "    \"T2\" : null,"
+                                         "    \"T3\" : {"
+                                         "        \"DefaultBackupDirectory\" : true,"
+                                         "        \"PrintName\" : \"{Default Backup Directory}\""
+                                         "    }"
+                                         "}";
+            VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{kJSONExample_}));
             Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> ();
-            EXPECT_TRUE (mv[L"T1"].GetType () == VariantValue::eString);
-            EXPECT_TRUE (mv[L"T1"] == String{});
-            EXPECT_TRUE (mv[L"T2"].GetType () == VariantValue::eNull);
-            EXPECT_TRUE (mv[L"T3"].GetType () == VariantValue::eMap);
+            EXPECT_TRUE (mv["T1"].GetType () == VariantValue::eString);
+            EXPECT_TRUE (mv["T1"] == String{});
+            EXPECT_TRUE (mv["T2"].GetType () == VariantValue::eNull);
+            EXPECT_TRUE (mv["T3"].GetType () == VariantValue::eMap);
         }
     }
 }

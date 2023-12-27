@@ -9,7 +9,7 @@
 #include "../../../../Foundation/Execution/Thread.h"
 #include "../../../../Foundation/Execution/WaitForIOReady.h"
 #include "../../../../Foundation/IO/Network/ConnectionlessSocket.h"
-#include "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include "../../../../Foundation/Streams/ExternallyOwnedSpanInputStream.h"
 #include "../../../../Foundation/Streams/MemoryStream.h"
 #include "../../../../Foundation/Streams/TextReader.h"
 
@@ -188,7 +188,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                         size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
                         Assert (nBytesRead <= Memory::NEltsOf (buf));
                         using namespace Streams;
-                        ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream::New<byte> (begin (buf), begin (buf) + nBytesRead)),
+                        ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedSpanInputStream::New<byte> (span{buf, nBytesRead})),
                                                 advertisements, s, from);
                     }
                 }
