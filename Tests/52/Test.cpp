@@ -1106,7 +1106,7 @@ namespace {
             EXPECT_TRUE (sd.fAuxData.ContainsKey ("Sample-Pressure"));
             EXPECT_TRUE (sd.fScanID == 5856);
             Memory::BLOB b   = doWrite_ (sd);
-            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedSpanInputStream::New<byte> (span{b}));
+            ScanDetails_ sd2 = doRead_ (Streams::ExternallyOwnedSpanInputStream::New<byte> (span<byte>{b}));
             EXPECT_TRUE (sd2.fScanID == sd.fScanID);
             EXPECT_TRUE (sd2.fAuxData == sd.fAuxData);
             EXPECT_TRUE (sd2.fRawSpectrum == sd.fRawSpectrum); // @todo - FIX - this test should pass!
