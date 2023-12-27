@@ -83,7 +83,11 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
 span<const byte> BLOB::BasicRep_::GetBounds () const
 {
     Ensure (fData.begin () <= fData.end ());
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
     return span<const byte>{fData.begin (), fData.end ()};
+#else
+    return span{fData.begin (), fData.end ()};
+#endif
 }
 
 /*

@@ -119,7 +119,11 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
     RequireNotNull (advertisement);
     *advertisement = Advertisement{};
 
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
     TextReader::Ptr in = TextReader::New (ExternallyOwnedSpanInputStream::New<byte> (span<const byte>{b}));
+#else
+    TextReader::Ptr in = TextReader::New (ExternallyOwnedSpanInputStream::New<byte> (span{b}));
+#endif
 
     *headLine = in.ReadLine ().Trim ();
     while (true) {

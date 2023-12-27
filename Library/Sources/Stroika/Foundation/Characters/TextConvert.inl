@@ -31,19 +31,39 @@ namespace Stroika::Foundation::Characters {
         // Values from https://en.wikipedia.org/wiki/Byte_order_mark
         switch (e) {
             case UnicodeExternalEncodings::eUTF8: {
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
                 return span<const byte>{Private_ ::kUTF8_bom, sizeof (Private_ ::kUTF8_bom)};
+#else
+                return span{Private_ ::kUTF8_bom, sizeof (Private_ ::kUTF8_bom)};
+#endif
             }
             case UnicodeExternalEncodings::eUTF16_BE: {
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
                 return span<const byte>{Private_ ::kUTF16_BE_bom, sizeof (Private_ ::kUTF16_BE_bom)};
+#else
+                return span{Private_ ::kUTF16_BE_bom, sizeof (Private_ ::kUTF16_BE_bom)};
+#endif
             }
             case UnicodeExternalEncodings::eUTF16_LE: {
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
                 return span<const byte>{Private_ ::kUTF16_LE_bom, sizeof (Private_ ::kUTF16_LE_bom)};
+#else
+                return span{Private_ ::kUTF16_LE_bom, sizeof (Private_ ::kUTF16_LE_bom)};
+#endif
             }
             case UnicodeExternalEncodings::eUTF32_BE: {
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
                 return span<const byte>{Private_ ::kUTF32_BE_bom, sizeof (Private_ ::kUTF32_BE_bom)};
+#else
+                return span<const byte>{Private_ ::kUTF32_BE_bom, sizeof (Private_ ::kUTF32_BE_bom)};
+#endif
             }
             case UnicodeExternalEncodings::eUTF32_LE: {
+#if qCompilerAndStdLib_span_requires_explicit_type_for_BLOBCVT_Buggy
                 return span<const byte>{Private_ ::kUTF32_LE_bom, sizeof (Private_ ::kUTF32_LE_bom)};
+#else
+                return span{Private_ ::kUTF32_LE_bom, sizeof (Private_ ::kUTF32_LE_bom)};
+#endif
             }
             default:
                 AssertNotReached ();
