@@ -12,6 +12,7 @@
 
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Memory/StackBuffer.h"
+#include "InternallySynchronizedInputStream.h"
 
 namespace Stroika::Foundation::Streams::InputSubStream {
 

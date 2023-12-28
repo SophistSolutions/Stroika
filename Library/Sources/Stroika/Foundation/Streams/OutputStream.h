@@ -50,6 +50,9 @@ namespace Stroika::Foundation::Memory {
 
 namespace Stroika::Foundation::Streams::OutputStream {
 
+    template <typename ELEMENT_TYPE>
+    class IRep;
+
     /**
      *  \em Design Overview
      *
@@ -73,12 +76,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
      *  the destructor on the OutputStream (last reference goes away) or until you call Flush ().
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
-     */
-
-    template <typename ELEMENT_TYPE>
-    class IRep;
-
-    /**
+     *
      *  \brief  OutputStream<>::Ptr is Smart pointer to a stream-based sink of data.
      *
      * @see OutputStream<ELEMENT_TYPE>
@@ -308,6 +306,8 @@ namespace Stroika::Foundation::Streams::OutputStream {
     };
 
     /**
+     *  \brief Abstract interface for output stream object. Don't call directly (use Ptr usually) - but use directly mostly to implement new output stream types.
+     * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>
      */
     template <typename ELEMENT_TYPE>

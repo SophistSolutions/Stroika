@@ -187,11 +187,10 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
     POD_TYPE InputStream::Ptr<ELEMENT_TYPE>::ReadRaw () const
-        requires (same_as<ELEMENT_TYPE, byte>)
+        requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
-        static_assert (is_pod_v<POD_TYPE>);
         POD_TYPE tmp; // intentionally don't zero-initialize
         size_t   n{ReadAll (reinterpret_cast<byte*> (&tmp), reinterpret_cast<byte*> (&tmp + 1))};
         if (n == sizeof (tmp)) [[likely]] {
@@ -203,15 +202,14 @@ namespace Stroika::Foundation::Streams::InputStream {
     }
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
-    inline void InputStream::Ptr<ELEMENT_TYPE>::ReadRaw (POD_TYPE* start, POD_TYPE* end) const
-        requires (same_as<ELEMENT_TYPE, byte>)
+    inline void InputStream::Ptr<ELEMENT_TYPE>::ReadRaw (span<POD_TYPE> intoBuffer) const
+        requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
-        static_assert (is_pod_v<POD_TYPE>);
-        size_t n{ReadAll (reinterpret_cast<byte*> (start), reinterpret_cast<byte*> (end))};
-        if (n != sizeof (POD_TYPE) * (end - start)) {
-            Execution::Throw ((n == 0) ? EOFException::kThe : EOFException (true));
+        size_t n{ReadAll (reinterpret_cast<byte*> (intoBuffer.data ()), reinterpret_cast<byte*> (intoBuffer.data () + intoBuffer.size ()))};
+        if (n != intoBuffer.size_bytes ()) {
+            Execution::Throw ((n == 0) ? EOFException::kThe : EOFException{true});
         }
     }
     template <typename ELEMENT_TYPE>
@@ -278,7 +276,7 @@ namespace Stroika::Foundation::Streams::InputStream {
                     }
                     else if (c == '\r') {
                         c = s.ReadCharacter ();
-                        // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
+                        // if CR is followed by LF, append that to result too before returning. Otherwise, put the character back
                         if (c == '\n') {
                             result.push_back (c);
                             return make_tuple (result.str (), nullopt);

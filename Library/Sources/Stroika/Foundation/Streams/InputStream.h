@@ -338,11 +338,9 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
-         *  @todo Consider if we should lose this. Optional appraoch maybe better.
+         *  @todo Consider if we should lose this. Optional approach maybe better.
          *
          *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
-         * 
-         * 
          */
         nonvirtual Characters::Character ReadCharacter () const
             requires (same_as<ELEMENT_TYPE, Characters::Character>);
@@ -360,11 +358,10 @@ namespace Stroika::Foundation::Streams::InputStream {
          */
         template <typename POD_TYPE>
         nonvirtual POD_TYPE ReadRaw () const
-            requires (same_as<ELEMENT_TYPE, byte>);
+            requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>);
         template <typename POD_TYPE>
-        nonvirtual void ReadRaw (POD_TYPE* start, POD_TYPE* end) const
-            requires (same_as<ELEMENT_TYPE, byte>);
-        // @todo SPANIFY
+        nonvirtual void ReadRaw (span<POD_TYPE> intoBuffer) const
+            requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>);
 
     public:
         /**
@@ -479,6 +476,12 @@ namespace Stroika::Foundation::Streams::InputStream {
         [[deprecated ("Since Stroika v3.0d5 use span overload")]] size_t Peek (ElementType* intoStart, ElementType* intoEnd) const
         {
             return Peek (span{intoStart, intoEnd}).size ();
+        }
+        template <typename POD_TYPE>
+        [[deprecated ("Since Stroika v3.0d5 use span overload")]] void ReadRaw (POD_TYPE* start, POD_TYPE* end) const
+            requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
+        {
+            ReadRaw (span{start, end});
         }
     };
 

@@ -12,7 +12,6 @@
 #include "../Configuration/Common.h"
 
 #include "InputStream.h"
-#include "InternallySynchronizedInputStream.h"
 
 /**
  *  \file
