@@ -527,9 +527,9 @@ namespace {
             {
                 auto serialized =
                     Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate = false}}.WriteAsString (kCase2_noSpace_.data);
-                EXPECT_TRUE (serialized.AsASCII () == kCase2_noSpace_.dataAsFile);
+                EXPECT_EQ (serialized.AsASCII (), kCase2_noSpace_.dataAsFile);
                 stringstream tmp{kCase2_noSpace_.dataAsFile};
-                EXPECT_TRUE ((kCase2_noSpace_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));
+                EXPECT_EQ (kCase2_noSpace_.data, Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)});
             }
         }
 

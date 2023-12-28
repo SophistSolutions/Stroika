@@ -10,16 +10,14 @@
 
 #include "../Configuration/Common.h"
 
+#include "Character.h"
+
 namespace Stroika::Foundation::Characters {
 
     /**
      */
-    template <typename T>
+    template <IPossibleCharacterRepresentation T>
     constexpr const T* GetEOL ();
-    template <>
-    constexpr const char* GetEOL ();
-    template <>
-    constexpr const wchar_t* GetEOL ();
 
     /**
      */

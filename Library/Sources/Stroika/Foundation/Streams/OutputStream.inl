@@ -75,74 +75,62 @@ namespace Stroika::Foundation::Streams::OutputStream {
     template <typename ELEMENT_TYPE>
     template <typename ELEMENT_TYPE2, size_t EXTENT_2>
     inline void Ptr<ELEMENT_TYPE>::Write (span<const ELEMENT_TYPE2, EXTENT_2> elts) const
-        requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or (same_as<ELEMENT_TYPE, byte> and (same_as<ELEMENT_TYPE2, uint8_t>)))
+        requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or
+                  (same_as<ELEMENT_TYPE, byte> and (same_as<remove_cvref_t<ELEMENT_TYPE2>, uint8_t>)) or
+                  (same_as<ELEMENT_TYPE, Characters::Character> and (Characters::IUNICODECanUnambiguouslyConvertFrom<remove_cvref_t<ELEMENT_TYPE2>>)))
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
         Require (not elts.empty ());
-        GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
+        if constexpr (same_as<ELEMENT_TYPE, byte>) {
+            GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
+        }
+        else if constexpr (same_as<ELEMENT_TYPE, Characters::Character>) {
+            if constexpr (sizeof (ELEMENT_TYPE2) == sizeof (Characters::Character)) {
+                GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
+            }
+            else {
+                Memory::StackBuffer<Characters::Character> buf{Memory::eUninitialized,
+                                                               Characters::UTFConvert::ComputeTargetBufferSize<Characters::Character> (elts)};
+                GetRepRWRef ().Write (Characters::UTFConvert::kThe.ConvertSpan (elts, span{buf}));
+            }
+        }
+        else {
+            GetRepRWRef ().Write (elts);
+        }
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::Write (const Memory::BLOB& blob) const
-        requires (is_same_v<ELEMENT_TYPE, byte>)
+        requires (same_as<ELEMENT_TYPE, byte>)
     {
         this->Write (blob.As<span<const byte>> ());
     }
     template <typename ELEMENT_TYPE>
-    inline void Ptr<ELEMENT_TYPE>::Write (const wchar_t* cStr) const
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
-    {
-        this->Write (span{cStr, ::wcslen (cStr)});
-    }
-    template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::Write (const ELEMENT_TYPE& e) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
         this->Write (span{&e, 1});
     }
     template <typename ELEMENT_TYPE>
     void Ptr<ELEMENT_TYPE>::Write (const Characters::String& s) const
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
-        // @todo performance tweek so uses Peek
-        Memory::StackBuffer<wchar_t> ignored;
-        span<const wchar_t>          sp = s.GetData<wchar_t> (&ignored);
-        Write (sp.data (), sp.data () + sp.size ());
+        Memory::StackBuffer<Characters::Character> ignored;
+        this->Write (s.GetData<Characters::Character> (&ignored));
     }
     template <typename ELEMENT_TYPE>
-    template <typename ELEMENT_TYPE2, size_t EXTENT_2>
-    inline void Ptr<ELEMENT_TYPE>::Write (span<ELEMENT_TYPE2, EXTENT_2> elts) const
-        requires (same_as<ELEMENT_TYPE, Characters::Character> and same_as<remove_cvref_t<ELEMENT_TYPE2>, Characters::Character>)
+    template <Characters::IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    inline void Ptr<ELEMENT_TYPE>::Write (const CHAR_T* cStr) const
+        requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
-        GetRepRWRef ().Write (elts);
+        this->Write (span{cStr, Characters::CString::Length (cStr)});
     }
     template <typename ELEMENT_TYPE>
-    void Ptr<ELEMENT_TYPE>::Write (const wchar_t* start, const wchar_t* end) const
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+    template <typename ELT_2_WRITE>
+    inline void Ptr<ELEMENT_TYPE>::WriteLn (ELT_2_WRITE&& arg) const
+        requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
-        if constexpr (sizeof (wchar_t) == sizeof (Characters::Character)) {
-            Write (span{reinterpret_cast<const Characters::Character*> (start), reinterpret_cast<const Characters::Character*> (end)});
-        }
-        else {
-            Memory::StackBuffer<Characters::Character> buf{
-                Memory::eUninitialized, Characters::UTFConvert::ComputeTargetBufferSize<Characters::Character> (span{start, end})};
-            Write (Characters::UTFConvert::kThe.ConvertSpan (span{start, end}, span{buf}));
-        }
-    }
-    template <typename ELEMENT_TYPE>
-    inline void Ptr<ELEMENT_TYPE>::WriteLn (const wchar_t* cStr) const
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
-    {
-        Write (span{cStr, Characters::CString::Length (cStr)});
-    }
-    template <typename ELEMENT_TYPE>
-    inline void Ptr<ELEMENT_TYPE>::WriteLn (const Characters::String& s) const
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
-    {
-        Write (s + Characters::GetEOL<wchar_t> ());
+        this->Write (forward<ELT_2_WRITE> (arg));
+        this->Write (Characters::GetEOL<Characters::Character> ());
     }
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>

@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "../Characters/Character.h"
 #include "../Configuration/Common.h"
 #include "../Memory/Common.h"
 
@@ -41,7 +42,7 @@
  */
 
 namespace Stroika::Foundation::Characters {
-    class Character;
+    //class Character;
     class String;
 }
 namespace Stroika::Foundation::Memory {
@@ -131,45 +132,42 @@ namespace Stroika::Foundation::Streams::OutputStream {
 
     public:
         /**
-         *  Write the bytes bounded by start and end. Start and End maybe equal, and only
-         *  then can they be nullptr.
-         *
+         *  Write the given span of elements to the output stream.
+         * 
+         *  If ELEMENT_TYPE==byte
+         *      then the argument may also be of type uint8_t
+         *  if ELEMENT_TYPE=Character
+         *      then the argument may also be of type String or something convertible to String (char8_t*, string_view, etc)
+         *  
          *  Writes always succeed fully or throw (no partial writes).
          *
          *  \note The meaning of Write () depends on the exact type of Stream you are referencing. The data
          *        may still be buffered. Call @Flush () to get it pushed out.
          *
-         *  \req start <= end, and if one is nullptr, both mustbe nullptr { for overload taking start/end }
-         *  \req cStr != nullptr { for overload taking 'C' string }
-         *
          *  \req IsOpen ()
          */
         template <typename ELEMENT_TYPE2, size_t EXTENT_2>
         nonvirtual void Write (span<const ELEMENT_TYPE2, EXTENT_2> elts) const
-            requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or (same_as<ELEMENT_TYPE, byte> and (same_as<ELEMENT_TYPE2, uint8_t>)));
+            requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or
+                      (same_as<ELEMENT_TYPE, byte> and (same_as<remove_cvref_t<ELEMENT_TYPE2>, uint8_t>)) or
+                      (same_as<ELEMENT_TYPE, Characters::Character> and
+                       (Characters::IUNICODECanUnambiguouslyConvertFrom<remove_cvref_t<ELEMENT_TYPE2>>)));
         nonvirtual void Write (const ELEMENT_TYPE& e) const;
-
         nonvirtual void Write (const Memory::BLOB& blob) const
-            requires (is_same_v<ELEMENT_TYPE, byte>);
-
-        // todo deprecate in favor of span overload ELEMEN_TYPE2
-        template <typename ELEMENT_TYPE2, size_t EXTENT_2>
-        nonvirtual void Write (span<ELEMENT_TYPE2, EXTENT_2> elts) const
-            requires (same_as<ELEMENT_TYPE, Characters::Character> and same_as<remove_cvref_t<ELEMENT_TYPE2>, Characters::Character>);
-        nonvirtual void Write (const wchar_t* start, const wchar_t* end) const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
-        nonvirtual void Write (const wchar_t* cStr) const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, byte>);
         nonvirtual void Write (const Characters::String& s) const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, Characters::Character>);
+        template <Characters::IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        nonvirtual void Write (const CHAR_T* cStr) const
+            requires (same_as<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
+         *  For Character output streams only - do a Write () with the given argument, followed by a newline.
          */
-        nonvirtual void WriteLn (const wchar_t* cStr) const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
-        nonvirtual void WriteLn (const Characters::String& s) const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+        template <typename ELT_2_WRITE>
+        nonvirtual void WriteLn (ELT_2_WRITE&& arg) const
+            requires (same_as<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -325,6 +323,11 @@ namespace Stroika::Foundation::Streams::OutputStream {
             requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
         {
             WriteRaw (span{start, end});
+        }
+        [[deprecated ("Since Stroika v3.0d5 use span overload of Write")]] void Write (const wchar_t* start, const wchar_t* end) const
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+        {
+            this->Write (span{start, end});
         }
     };
 

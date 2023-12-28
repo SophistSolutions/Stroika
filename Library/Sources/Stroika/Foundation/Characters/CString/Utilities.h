@@ -12,6 +12,8 @@
 
 #include "../../Configuration/Common.h"
 
+#include "../Character.h"
+
 /**
  *  \file
  *
@@ -42,9 +44,8 @@ namespace Stroika::Foundation::Characters::CString {
      *
      * Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
      */
-    template <typename T>
-    size_t Length (const T* p)
-        requires (is_same_v<T, char> or is_same_v<T, char8_t> or is_same_v<T, char16_t> or is_same_v<T, char32_t> or is_same_v<T, wchar_t>);
+    template <IPossibleCharacterRepresentation T>
+    size_t Length (const T* p);
 
     /**
      *  \brief  strcmp or wsccmp() as appropriate == 0

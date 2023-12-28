@@ -21,9 +21,8 @@ namespace Stroika::Foundation::Characters::CString {
      ********************************** Length **************************************
      ********************************************************************************
      */
-    template <typename T>
+    template <IPossibleCharacterRepresentation T>
     inline size_t Length (const T* p)
-        requires (is_same_v<T, char> or is_same_v<T, char8_t> or is_same_v<T, char16_t> or is_same_v<T, char32_t> or is_same_v<T, wchar_t>)
     {
         RequireNotNull (p);
         if constexpr (sizeof (T) == 1) {

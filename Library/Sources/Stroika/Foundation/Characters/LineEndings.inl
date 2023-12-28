@@ -21,24 +21,15 @@ namespace Stroika::Foundation::Characters {
      ********************************** GetEOL **************************************
      ********************************************************************************
      */
-    template <>
-    inline constexpr const char* GetEOL ()
+    template <IPossibleCharacterRepresentation T>
+    inline constexpr const T* GetEOL ()
     {
 #if qPlatform_Windows
-        return "\r\n";
+        static constexpr T kResult_[] = {'\r', '\n', '\0'}; // "\r\n"
+        return kResult_;
 #elif qPlatform_POSIX
-        return "\n";
-#else
-        AssertNotImplemented ();
-#endif
-    }
-    template <>
-    inline constexpr const wchar_t* GetEOL ()
-    {
-#if qPlatform_Windows
-        return L"\r\n";
-#elif qPlatform_POSIX
-        return L"\n";
+        static constexpr T kResult_[] = {'\n', '\0'}; //  "\n"
+        return kResult_;
 #else
         AssertNotImplemented ();
 #endif
@@ -91,7 +82,7 @@ namespace Stroika::Foundation::Characters {
         }
         size_t nBytes = outPtr - outBuf;
         Assert (nBytes <= outBufSize);
-        return (nBytes);
+        return nBytes;
     }
     template <typename TCHAR>
     inline void CRLFToNL (basic_string<TCHAR>* text)
