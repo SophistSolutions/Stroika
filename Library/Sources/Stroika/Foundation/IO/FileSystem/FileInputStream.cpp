@@ -177,7 +177,7 @@ namespace {
                 }
                 else {
                     // if there is data available, read as much as you can...
-                    return Read (span{intoStart, intoEnd});
+                    return Read (span{intoStart, intoEnd}).size ();
                 }
             }
 #endif
