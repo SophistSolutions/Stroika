@@ -101,31 +101,28 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                     return {}; // if nothing available, but not closed for write, no idea if more to come
                 }
             }
-            virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
+            virtual void Write (span<const ELEMENT_TYPE> elts) override
             {
-                Require (start != nullptr or start == end);
-                Require (end != nullptr or start == end);
+                Require (not elts.empty ());
                 Require (IsOpenWrite ());
-                if (start != end) {
-                    [[maybe_unused]] auto&& critSec      = lock_guard{fMutex_};
-                    size_t                  roomLeft     = fData_.end () - fWriteCursor_;
-                    size_t                  roomRequired = end - start;
-                    fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
-                    if (roomLeft < roomRequired) {
-                        size_t       curReadOffset  = fReadCursor_ - fData_.begin ();
-                        size_t       curWriteOffset = fWriteCursor_ - fData_.begin ();
-                        const size_t kChunkSize_    = 128; // WAG: @todo tune number...
-                        Containers::Support::ReserveTweaks::Reserve4AddN (fData_, roomRequired - roomLeft, kChunkSize_);
-                        fData_.resize (curWriteOffset + roomRequired);
-                        fReadCursor_  = fData_.begin () + curReadOffset;
-                        fWriteCursor_ = fData_.begin () + curWriteOffset;
-                        Assert (fWriteCursor_ < fData_.end ());
-                    }
-                    copy (start, start + roomRequired, fWriteCursor_);
-                    fWriteCursor_ += roomRequired;
-                    Assert (fReadCursor_ < fData_.end ()); // < because we wrote at least one byte and that didnt move read cursor
-                    Assert (fWriteCursor_ <= fData_.end ());
+                [[maybe_unused]] auto&& critSec      = lock_guard{fMutex_};
+                size_t                  roomLeft     = fData_.end () - fWriteCursor_;
+                size_t                  roomRequired = elts.size ();
+                fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
+                if (roomLeft < roomRequired) {
+                    size_t       curReadOffset  = fReadCursor_ - fData_.begin ();
+                    size_t       curWriteOffset = fWriteCursor_ - fData_.begin ();
+                    const size_t kChunkSize_    = 128; // WAG: @todo tune number...
+                    Containers::Support::ReserveTweaks::Reserve4AddN (fData_, roomRequired - roomLeft, kChunkSize_);
+                    fData_.resize (curWriteOffset + roomRequired);
+                    fReadCursor_  = fData_.begin () + curReadOffset;
+                    fWriteCursor_ = fData_.begin () + curWriteOffset;
+                    Assert (fWriteCursor_ < fData_.end ());
                 }
+                copy (elts.data (), elts.data () + roomRequired, fWriteCursor_);
+                fWriteCursor_ += roomRequired;
+                Assert (fReadCursor_ < fData_.end ()); // < because we wrote at least one byte and that didnt move read cursor
+                Assert (fWriteCursor_ <= fData_.end ());
             }
             virtual void Flush () override
             {

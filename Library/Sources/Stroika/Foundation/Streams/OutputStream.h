@@ -144,13 +144,18 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *
          *  \req IsOpen ()
          */
-        nonvirtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) const;
+        template <typename ELEMENT_TYPE2, size_t EXTENT_2>
+        nonvirtual void Write (span<const ELEMENT_TYPE2, EXTENT_2> elts) const
+            requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or (same_as<ELEMENT_TYPE, byte> and (same_as<ELEMENT_TYPE2, uint8_t>)));
         nonvirtual void Write (const ELEMENT_TYPE& e) const;
-        nonvirtual void Write (span<const ELEMENT_TYPE> s) const;
-        nonvirtual void Write (const uint8_t* start, const uint8_t* end) const
-            requires (is_same_v<ELEMENT_TYPE, byte>);
+
         nonvirtual void Write (const Memory::BLOB& blob) const
             requires (is_same_v<ELEMENT_TYPE, byte>);
+
+        // todo deprecate in favor of span overload ELEMEN_TYPE2
+        template <typename ELEMENT_TYPE2, size_t EXTENT_2>
+        nonvirtual void Write (span<ELEMENT_TYPE2, EXTENT_2> elts) const
+            requires (same_as<ELEMENT_TYPE, Characters::Character> and same_as<remove_cvref_t<ELEMENT_TYPE2>, Characters::Character>);
         nonvirtual void Write (const wchar_t* start, const wchar_t* end) const
             requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
         nonvirtual void Write (const wchar_t* cStr) const
@@ -171,8 +176,11 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *      WriteRaw () only applies to binary (ELEMENT_TYPE=byte) streams. It allows easily writing POD (plain old data) types
          *      to the stream.
          *
-         *      WriteRaw (X) is an alias for WriteRaw (&x, &x+1)
-         *      WriteRaw (start, end) writes all the POD records from start to end to the binary stream.
+         *      WriteRaw (X) is an alias for WriteRaw (span{&x, 1})
+         *      WriteRaw (span) writes all the POD records from start to end to the binary stream.
+         * 
+         *  @todo consider LOSING this in favor or Write (as_bytes (X)) - since the same as that too!!
+         * ``        see what as_bytes () does on a string...
          *
          *      \note Used to be called WritePOD (too easy to use mistakenly, and if you really want to do something like this with
          *            non-POD data, not hard, but we don't want to encourage it.
@@ -187,10 +195,10 @@ namespace Stroika::Foundation::Streams::OutputStream {
          */
         template <typename POD_TYPE>
         nonvirtual void WriteRaw (const POD_TYPE& p) const
-            requires (is_same_v<ELEMENT_TYPE, byte>);
+            requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>);
         template <typename POD_TYPE>
-        nonvirtual void WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
-            requires (is_same_v<ELEMENT_TYPE, byte>);
+        nonvirtual void WriteRaw (span<const POD_TYPE> elts) const
+            requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>);
 
     public:
         /**
@@ -303,6 +311,21 @@ namespace Stroika::Foundation::Streams::OutputStream {
             size -= savedReadFrom;
             return size;
         }
+        [[deprecated ("Since Stroika v3.0d5 use span overload of Write")]] void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) const
+        {
+            Write (span{start, end});
+        }
+        [[deprecated ("Since Stroika v3.0d5 use span overload")]] void Write (const uint8_t* start, const uint8_t* end) const
+            requires (is_same_v<ELEMENT_TYPE, byte>)
+        {
+            this->Write (span{start, end});
+        }
+        template <typename POD_TYPE>
+        [[deprecated ("Since Stroika v3.0d5 use span overload of WriteRaw")]] void WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
+            requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
+        {
+            WriteRaw (span{start, end});
+        }
     };
 
     /**
@@ -354,10 +377,12 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *  BufSize must always be >= 1.
          *  Writes always succeed fully or throw (no partial writes so no return value of amount written).
          *
-         *  \Note The meaning of Write () depends on the exact type of Stream you are referencing. The data
+         *  \note The meaning of Write () depends on the exact type of Stream you are referencing. The data
          *        may still be buffered. Call @Flush () to ensure it pushed out.
+         * 
+         *  \note This can block indefinitely (for example in writing to a UNIX Pipe) - when output buffers fill.
          */
-        virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) = 0;
+        virtual void Write (span<const ELEMENT_TYPE> elts) = 0;
 
     public:
         /**

@@ -95,25 +95,24 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
             }
             // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
             // Writes always succeed fully or throw.
-            virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
+            virtual void Write (span<const ELEMENT_TYPE> elts) override
             {
-                Require (start < end); // for OutputStream<byte> - this function requires non-empty write
+                Require (not elts.empty ()); // for OutputStream<byte> - this function requires non-empty write
                 Require (not fAborted_);
                 Require (IsOpenWrite ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 /*
-             * Minimize the number of writes at the possible cost of extra copying.
-             *
-             * See if there is room in the buffer, and use it up. Only when no more room do we flush.
-             */
+                 * Minimize the number of writes at the possible cost of extra copying.
+                 *
+                 * See if there is room in the buffer, and use it up. Only when no more room do we flush.
+                 */
                 size_t bufSpaceRemaining   = fBuffer_.capacity () - fBuffer_.size ();
-                size_t size2WriteRemaining = end - start;
-
-                size_t copy2Buffer = min (bufSpaceRemaining, size2WriteRemaining);
+                size_t size2WriteRemaining = elts.size ();
+                size_t copy2Buffer         = min (bufSpaceRemaining, size2WriteRemaining);
 #if qDebug
                 size_t oldCap = fBuffer_.capacity ();
 #endif
-                fBuffer_.insert (fBuffer_.end (), start, start + copy2Buffer);
+                fBuffer_.insert (fBuffer_.end (), elts.data (), elts.data () + copy2Buffer);
 #if qDebug
                 Assert (oldCap == fBuffer_.capacity ());
 #endif
@@ -122,8 +121,8 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
                 size2WriteRemaining -= copy2Buffer;
 
                 /*
-             * At this point - either the buffer is full, OR we are done writing. EITHER way - if the buffer is full - we may as well write it now.
-             */
+                 * At this point - either the buffer is full, OR we are done writing. EITHER way - if the buffer is full - we may as well write it now.
+                 */
                 if (fBuffer_.capacity () == fBuffer_.size ()) {
                     Flush_ ();
                     Assert (fBuffer_.empty ());
@@ -138,10 +137,10 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
                     // DONE
                 }
                 else if (size2WriteRemaining < fBuffer_.capacity ()) {
-                    fBuffer_.insert (fBuffer_.end (), start + copy2Buffer, end);
+                    fBuffer_.insert (fBuffer_.end (), elts.data () + copy2Buffer, elts.data () + elts.size ());
                 }
                 else {
-                    fRealOut_.Write (start + copy2Buffer, end);
+                    fRealOut_.Write (elts.subspan (copy2Buffer));
                 }
             }
 
@@ -153,7 +152,7 @@ namespace Stroika::Foundation::Streams::BufferedOutputStream {
                 }
                 else {
                     if (not fBuffer_.empty ()) {
-                        fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
+                        fRealOut_.Write (span{fBuffer_});
                         fBuffer_.clear ();
                     }
                     fRealOut_.Flush ();

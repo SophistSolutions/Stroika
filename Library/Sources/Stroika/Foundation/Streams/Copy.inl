@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Streams {
         }
         while (size_t n = from.Read (span{buf}).size ()) {
             Assert (n <= buf.size ());
-            to.Write (buf.begin (), buf.begin () + n);
+            to.Write (span{buf.begin (), n});
             Execution::Thread::CheckForInterruption ();
         }
     }

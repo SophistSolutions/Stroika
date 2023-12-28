@@ -51,15 +51,15 @@ namespace Stroika::Foundation::Streams::TextWriter {
                 Require (IsOpenWrite ());
                 return 0;
             }
-            virtual void Write (const Character* start, const Character* end) override
+            virtual void Write (span<const Character> elts) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
-                Memory::StackBuffer<byte> cvtBuf{size_t (end - start) * 5}; // excessive but start with that
-                auto                      srcSpan = span<const Character>{start, end};
+                Memory::StackBuffer<byte> cvtBuf{elts.size () * 5}; // excessive but start with that
+                auto                      srcSpan = elts;
                 auto                      trgSpan = span<byte>{cvtBuf.data (), cvtBuf.size ()};
                 trgSpan                           = _fConverter.Characters2Bytes (srcSpan, trgSpan);
-                _fSource.Write (trgSpan.data (), trgSpan.data () + trgSpan.size ());
+                _fSource.Write (trgSpan);
             }
             virtual void Flush () override
             {
@@ -119,16 +119,16 @@ namespace Stroika::Foundation::Streams::TextWriter {
                 Require (IsOpenWrite ());
                 return 0;
             }
-            virtual void Write (const Character* start, const Character* end) override
+            virtual void Write (span<const Character> elts) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenWrite ());
-                auto                               srcSpan = span<const Character>{start, end};
+                auto                               srcSpan = elts;
                 Memory::StackBuffer<OUTPUT_CHAR_T> cvtBuf{_fConverter.ComputeTargetBufferSize<OUTPUT_CHAR_T> (srcSpan)};
                 auto                               trgSpan  = span<OUTPUT_CHAR_T>{cvtBuf.data (), cvtBuf.size ()};
                 auto                               r        = _fConverter.ConvertSpan (srcSpan, trgSpan);
                 auto                               trgBytes = as_bytes (r);
-                _fSource.Write (trgBytes.data (), trgBytes.data () + trgBytes.size ());
+                _fSource.Write (trgBytes);
             }
             virtual void Flush () override
             {

@@ -81,31 +81,28 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 Require (IsOpenRead ());
                 return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fData_.end () - fReadCursor_);
             }
-            virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
+            virtual void Write (span<const ELEMENT_TYPE> elts) override
             {
-                Require (start != nullptr or start == end);
-                Require (end != nullptr or start == end);
+                Require (not elts.empty ());
                 Require (IsOpenWrite ());
                 // @todo - rewrite so does in one copy - no idea why this code does multiple copies! IF it makes sense DOCUMENT why...--LGP 2023-12-18
-                if (start != end) {
-                    Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                    size_t                                                 roomLeft     = fData_.end () - fWriteCursor_;
-                    size_t                                                 roomRequired = end - start;
-                    if (roomLeft < roomRequired) {
-                        size_t       curReadOffset  = fReadCursor_ - fData_.begin ();
-                        size_t       curWriteOffset = fWriteCursor_ - fData_.begin ();
-                        const size_t kChunkSize_    = 128; // WAG: @todo tune number...
-                        Containers::Support::ReserveTweaks::Reserve4AddN (fData_, roomRequired - roomLeft, kChunkSize_);
-                        fData_.resize (curWriteOffset + roomRequired); // fixup cursors after any possible realloc of fData_
-                        fReadCursor_  = fData_.begin () + curReadOffset;
-                        fWriteCursor_ = fData_.begin () + curWriteOffset;
-                        Assert (fWriteCursor_ < fData_.end ());
-                    }
-                    copy (start, start + roomRequired, fWriteCursor_);
-                    fWriteCursor_ += roomRequired;
-                    Assert (fReadCursor_ < fData_.end ()); // < because we wrote at least one byte and that didnt move read cursor
-                    Assert (fWriteCursor_ <= fData_.end ());
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                size_t                                                 roomLeft     = fData_.end () - fWriteCursor_;
+                size_t                                                 roomRequired = elts.size ();
+                if (roomLeft < roomRequired) {
+                    size_t       curReadOffset  = fReadCursor_ - fData_.begin ();
+                    size_t       curWriteOffset = fWriteCursor_ - fData_.begin ();
+                    const size_t kChunkSize_    = 128; // WAG: @todo tune number...
+                    Containers::Support::ReserveTweaks::Reserve4AddN (fData_, roomRequired - roomLeft, kChunkSize_);
+                    fData_.resize (curWriteOffset + roomRequired); // fixup cursors after any possible realloc of fData_
+                    fReadCursor_  = fData_.begin () + curReadOffset;
+                    fWriteCursor_ = fData_.begin () + curWriteOffset;
+                    Assert (fWriteCursor_ < fData_.end ());
                 }
+                copy (elts.data (), elts.data () + roomRequired, fWriteCursor_);
+                fWriteCursor_ += roomRequired;
+                Assert (fReadCursor_ < fData_.end ()); // < because we wrote at least one byte and that didn't move read cursor
+                Assert (fWriteCursor_ <= fData_.end ());
             }
             virtual void Flush () override
             {

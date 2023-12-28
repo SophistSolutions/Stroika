@@ -338,7 +338,9 @@ namespace Stroika::Foundation::Streams::InputStream {
     }
     DISABLE_COMPILER_MSC_WARNING_END (6262)
     template <typename ELEMENT_TYPE>
-    auto InputStream::Ptr<ELEMENT_TYPE>::ReadAll (span<ElementType> intoBuffer) const -> span<ElementType>
+    template <typename ELEMENT_TYPE2, size_t EXTENT2_T>
+    auto InputStream::Ptr<ELEMENT_TYPE>::ReadAll (span<ELEMENT_TYPE2, EXTENT2_T> intoBuffer) const -> span<ElementType>
+        requires (same_as<ELEMENT_TYPE, ELEMENT_TYPE2>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (not intoBuffer.empty ());

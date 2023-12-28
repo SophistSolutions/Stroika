@@ -59,7 +59,6 @@ namespace {
 
 namespace {
     namespace BasicBinaryOutputStream_ {
-
         void TestBasicConstruction_ ()
         {
             {
@@ -74,10 +73,10 @@ namespace {
 
                 using namespace Memory;
                 constexpr byte kData_[] = {3_b, 53_b, 43_b, 23_b, 3_b};
-                s.Write (std::begin (kData_), std::end (kData_));
+                s.Write (span{kData_});
                 Memory::BLOB b = s.As<Memory::BLOB> ();
                 EXPECT_TRUE (b.size () == sizeof (kData_));
-                EXPECT_TRUE (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
+                EXPECT_TRUE (b == Memory::BLOB{span{kData_}});
             }
         }
 
@@ -105,7 +104,7 @@ namespace {
                 EXPECT_TRUE (s != nullptr);
 
                 const uint8_t kData_[] = {3, 53, 43, 23, 3};
-                s.Write (std::begin (kData_), std::end (kData_));
+                s.Write (span{kData_});
                 Memory::BLOB b = s.As<Memory::BLOB> ();
                 EXPECT_TRUE (b.size () == sizeof (kData_));
                 EXPECT_TRUE (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
@@ -115,7 +114,7 @@ namespace {
                 EXPECT_TRUE (s.GetReadOffset () == 0);
                 EXPECT_TRUE (s.GetWriteOffset () == 0);
                 const uint8_t kData_[] = {3, 53, 43, 23, 3};
-                s.Write (std::begin (kData_), std::end (kData_));
+                s.Write (span{kData_});
                 EXPECT_TRUE (s.GetReadOffset () == 0);
                 EXPECT_TRUE (s.GetWriteOffset () == sizeof (kData_));
                 byte bArr[1024];
@@ -143,7 +142,7 @@ namespace {
                 stringstream                          s;
                 OutputStreamFromStdOStream::Ptr<byte> so       = OutputStreamFromStdOStream::New<byte> (s);
                 const char                            kData_[] = "ddasdf3294234";
-                so.Write (reinterpret_cast<const byte*> (std::begin (kData_)), reinterpret_cast<const byte*> (std::begin (kData_)) + strlen (kData_));
+                so.Write (span{kData_, ::strlen (kData_)});
                 EXPECT_TRUE (s.str () == kData_);
             }
         }

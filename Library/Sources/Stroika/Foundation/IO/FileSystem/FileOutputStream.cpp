@@ -117,26 +117,23 @@ namespace {
         {
             return fFD_ >= 0;
         }
-        virtual void Write (const byte* start, const byte* end) override
+        virtual void Write (span<const byte> elts) override
         {
-            Require (start != nullptr or start == end);
-            Require (end != nullptr or start == end);
-
-            if (start != end) [[likely]] {
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                auto                                            activity = LazyEvalActivity (
-                    [&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
-                DeclareActivity currentActivity{&activity};
-                const byte*     i = start;
-                while (i < end) {
+            Require (not elts.empty ());
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            auto                                            activity = LazyEvalActivity (
+                [&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity currentActivity{&activity};
+            const byte*     i   = elts.data ();
+            const byte*     end = elts.data () + elts.size ();
+            while (i < end) {
 #if qPlatform_Windows
-                    int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
+                int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
 #else
-                    int n = ThrowPOSIXErrNoIfNegative (write (fFD_, i, end - i));
+                int n = ThrowPOSIXErrNoIfNegative (write (fFD_, i, end - i));
 #endif
-                    Assert (n <= (end - i));
-                    i += n;
-                }
+                Assert (n <= (end - i));
+                i += n;
             }
         }
         virtual void Flush () override
@@ -144,8 +141,8 @@ namespace {
             // normally nothing todo - write 'writes thru' (except if fFlushFlag)
             if (fFlushFlag == FlushFlag::eToDisk) {
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                auto                                            activity = LazyEvalActivity (
-                    [&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
+                auto                                            activity = LazyEvalActivity{
+                    [&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); }};
                 DeclareActivity currentActivity{&activity};
 #if qPlatform_POSIX
                 ThrowPOSIXErrNoIfNegative (::fsync (fFD_));

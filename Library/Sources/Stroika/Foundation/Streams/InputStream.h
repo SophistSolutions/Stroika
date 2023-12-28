@@ -433,7 +433,9 @@ namespace Stroika::Foundation::Streams::InputStream {
             requires (same_as<ELEMENT_TYPE, byte>)  // get compile error on vis studio when we specailize - not sure if LGP bug or compiler bug...--LGP 2023-12-28
 #endif
             ;
-        nonvirtual span<ElementType> ReadAll (span<ElementType> intoBuffer) const;
+        template <typename ELEMENT_TYPE2, size_t EXTENT2_T>
+        nonvirtual span<ElementType> ReadAll (span<ELEMENT_TYPE2, EXTENT2_T> intoBuffer) const
+            requires (same_as<ELEMENT_TYPE, ELEMENT_TYPE2>);
 
     public:
         /**

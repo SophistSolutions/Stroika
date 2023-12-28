@@ -2742,7 +2742,7 @@ public:
             }
             else if (err > 0) {
                 Assert (static_cast<size_t> (err) <= Memory::NEltsOf (buf));
-                tmpBuf.Write (buf, buf + err);
+                tmpBuf.Write (span{buf, static_cast<size_t> (err)});
             }
         } while (err > 0);
         return tmpBuf.As<Memory::BLOB> ();

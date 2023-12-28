@@ -1018,7 +1018,7 @@ namespace {
 #endif
                     ::ReadFile (p, buf, sizeof (buf), &nBytesRead, nullptr) and nBytesRead > 0) {
                     if (o != nullptr) {
-                        o.Write (buf, buf + nBytesRead);
+                        o.Write (span{buf, nBytesRead});
                     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     buf[(nBytesRead == Memory::NEltsOf (buf)) ? (Memory::NEltsOf (buf) - 1) : nBytesRead] = '\0';
@@ -1157,7 +1157,7 @@ namespace {
                         byte  buf[kReadBufSize_];
                         DWORD nBytesRead = 0;
                         while (::ReadFile (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr)) {
-                            out.Write (buf, buf + nBytesRead);
+                            out.Write (span{buf, nBytesRead});
                         }
                     }
                 }

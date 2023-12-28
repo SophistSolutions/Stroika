@@ -190,7 +190,7 @@ namespace {
              */
             while (true) {
                 MBAPHeaderIsh_ requestHeader; // intentionally don't initialize since either all read, or we throw
-                size_t         n = in.ReadAll (reinterpret_cast<byte*> (&requestHeader), reinterpret_cast<byte*> (&requestHeader + 1));
+                size_t         n = in.ReadAll (as_writable_bytes (span{&requestHeader, 1})).size ();
                 if (n != sizeof (requestHeader)) {
                     if (n == 0) {
                         break; // just EOF - so quietly end/close connection
@@ -255,7 +255,7 @@ namespace {
                                                requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
-                            out.Write (results.begin (), results.begin () + responseLen);
+                            out.Write (span{results.begin (), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d, responsePayload=%s",
                                       Characters::ToString (responseHeader).c_str (), responseLen,
@@ -298,7 +298,7 @@ namespace {
                                                requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
-                            out.Write (results.begin (), results.begin () + responseLen);
+                            out.Write (span{results.begin (), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
 #endif
@@ -335,7 +335,7 @@ namespace {
                                                requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
-                            out.Write (reinterpret_cast<const byte*> (results.begin ()), reinterpret_cast<const byte*> (results.begin ()) + responseLen);
+                            out.Write (span{reinterpret_cast<const byte*> (results.begin ()), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
 #endif
@@ -372,7 +372,7 @@ namespace {
                                                requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
-                            out.Write (reinterpret_cast<const byte*> (results.begin ()), reinterpret_cast<const byte*> (results.begin ()) + responseLen);
+                            out.Write (span{reinterpret_cast<const byte*> (results.begin ()), responseLen});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
 #endif
@@ -410,8 +410,7 @@ namespace {
                         MBAPHeaderIsh_ responseHeader = requestHeader;
                         responseHeader.fFunctionCode = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80); // set high bit
                         out.WriteRaw (ToNetwork_ (responseHeader));
-                        uint8_t exceptionCode = static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION);
-                        out.Write (reinterpret_cast<const byte*> (&exceptionCode), reinterpret_cast<const byte*> (&exceptionCode + 1));
+                        out.WriteRaw (static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"Sent UNREGONIZED_FUNCTION response: header=%s, and exceptionCode=%d",
                                   Characters::ToString (responseHeader).c_str (), exceptionCode);

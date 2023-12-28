@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Streams::SplitterOutputStream {
             }
             // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
             // Writes always succeed fully or throw.
-            virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
+            virtual void Write (span<const ELEMENT_TYPE> elts) override
             {
                 Require (start < end); // for OutputStream<byte> - this function requires non-empty write
                 Require (IsOpenWrite ());

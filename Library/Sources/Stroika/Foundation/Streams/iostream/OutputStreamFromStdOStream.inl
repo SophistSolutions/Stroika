@@ -71,16 +71,14 @@ namespace Stroika::Foundation::Streams::iostream::OutputStreamFromStdOStream {
                 }
                 return fOriginalStreamRef_.tellp ();
             }
-            virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
+            virtual void Write (span<const ELEMENT_TYPE> elts) override
             {
-                Require (start != nullptr or start == end);
-                Require (end != nullptr or start == end);
+                Require (not elts.empty ());
                 Require (IsOpenWrite ());
-
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
 
                 using StreamElementType = BASIC_OSTREAM_ELEMENT_TYPE;
-                fOriginalStreamRef_.write (reinterpret_cast<const StreamElementType*> (start), end - start);
+                fOriginalStreamRef_.write (reinterpret_cast<const StreamElementType*> (elts.data ()), elts.size ());
                 if (fOriginalStreamRef_.fail ()) [[unlikely]] {
                     static const Execution::RuntimeErrorException kException_{"Failed to write from ostream"sv};
                     Execution::Throw (kException_);

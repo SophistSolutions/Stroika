@@ -86,11 +86,11 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
                 Require (IsOpenWrite ());
                 return BASE_REP_TYPE::SeekWrite (whence, offset);
             }
-            virtual void Write (const ElementType* start, const ElementType* end) override
+            virtual void Write (span<const ElementType> elts) override
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
                 Require (IsOpenWrite ());
-                BASE_REP_TYPE::Write (start, end);
+                BASE_REP_TYPE::Write (elts);
             }
             virtual void Flush () override
             {

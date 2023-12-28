@@ -74,17 +74,16 @@ namespace {
             return n + EVP_MAX_BLOCK_LENGTH;
         }
         // return nBytes in outBuf, throws on error
-        size_t _runOnce (const byte* data2ProcessStart, const byte* data2ProcessEnd, byte* outBufStart, [[maybe_unused]] byte* outBufEnd)
+        span<byte> _runOnce (span<const byte> data2Process, span<byte> outBuf)
         {
-            Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >=
-                                                      _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart)); // always need out buf big enuf for inbuf
+            Require (outBuf.size () >= _GetMinOutBufSize (data2Process.size ())); // always need out buf big enuf for inbuf
             int outLen = 0;
-            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherUpdate (
-                fCTX_, reinterpret_cast<unsigned char*> (outBufStart), &outLen, reinterpret_cast<const unsigned char*> (data2ProcessStart),
-                static_cast<int> (data2ProcessEnd - data2ProcessStart)));
+            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (
+                ::EVP_CipherUpdate (fCTX_, reinterpret_cast<unsigned char*> (outBuf.data ()), &outLen,
+                                    reinterpret_cast<const unsigned char*> (data2Process.data ()), static_cast<int> (data2Process.size ())));
             Ensure (outLen >= 0);
-            Ensure (outLen <= (outBufEnd - outBufStart));
-            return size_t (outLen);
+            Ensure (outLen <= outBuf.size ());
+            return outBuf.subspan (0, outLen);
         }
         // return nBytes in outBuf, throws on error
         // Can call multiple times - it keeps track itself if finalized.
@@ -172,16 +171,16 @@ namespace {
                 }
                 else {
                     fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
-                    size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
-                    Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
-                    if (nBytesInOutBuf == 0) {
+                    span<byte> outBufUsed = _runOnce (span{toDecryptBuf, n2Decrypt}, span{fOutBuf_});
+                    Assert (outBufUsed.size () <= fOutBuf_.GetSize ());
+                    if (outBufUsed.size () == 0) {
                         // This can happen with block ciphers - we put stuff in, and get nothing out. But we cannot return EOF
                         // yet, so try again...
                         goto Again;
                     }
                     else {
                         fOutBufStart_ = fOutBuf_.begin ();
-                        fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
+                        fOutBufEnd_   = fOutBufStart_ + outBufUsed.size ();
                     }
                 }
             }
@@ -215,16 +214,16 @@ namespace {
                 }
                 else {
                     fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
-                    size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + *n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
-                    Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
-                    if (nBytesInOutBuf == 0) {
+                    span<byte> outBufUsed = _runOnce (span{toDecryptBuf, *n2Decrypt}, span{fOutBuf_});
+                    Assert (outBufUsed.size () <= fOutBuf_.GetSize ());
+                    if (outBufUsed.size () == 0) {
                         // This can happen with block ciphers - we put stuff in, and get nothing out. But we cannot return EOF
                         // yet, so try again...
                         goto Again;
                     }
                     else {
                         fOutBufStart_ = fOutBuf_.begin ();
-                        fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
+                        fOutBufEnd_   = fOutBufStart_ + outBufUsed.size ();
                     }
                 }
             }
@@ -285,23 +284,23 @@ namespace {
         }
         // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
         // Writes always succeed fully or throw.
-        virtual void Write (const byte* start, const byte* end) override
+        virtual void Write (span<const byte> elts) override
         {
-            Require (start < end); // for OutputStream<byte> - this function requires non-empty write
+            Require (not elts.empty ());
             Require (IsOpenWrite ());
-            StackBuffer<byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf{Memory::eUninitialized, _GetMinOutBufSize (end - start)};
-            [[maybe_unused]] auto&&                        critSec        = lock_guard{fCriticalSection_};
-            size_t                                         nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
-            Assert (nBytesEncypted <= outBuf.GetSize ());
-            fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);
+            StackBuffer<byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf{Memory::eUninitialized, _GetMinOutBufSize (elts.size ())};
+            [[maybe_unused]] auto&&                        critSec    = lock_guard{fCriticalSection_};
+            span<byte>                                     outBufUsed = _runOnce (elts, span{outBuf});
+            Assert (outBufUsed.size () <= outBuf.GetSize ());
+            fRealOut_.Write (outBufUsed);
         }
         virtual void Flush () override
         {
             Require (IsOpenWrite ());
-            byte   outBuf[EVP_MAX_BLOCK_LENGTH];
+            byte   outBuf[EVP_MAX_BLOCK_LENGTH]; // intentionally uninitialized
             size_t nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
             Assert (nBytesInOutBuf < sizeof (outBuf));
-            fRealOut_.Write (begin (outBuf), begin (outBuf) + nBytesInOutBuf);
+            fRealOut_.Write (span{outBuf, nBytesInOutBuf});
         }
 
     private:

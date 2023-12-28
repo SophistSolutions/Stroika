@@ -73,54 +73,33 @@ namespace Stroika::Foundation::Streams::OutputStream {
         return GetRepRWRef ().SeekWrite (whence, offset);
     }
     template <typename ELEMENT_TYPE>
-    inline void Ptr<ELEMENT_TYPE>::Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) const
+    template <typename ELEMENT_TYPE2, size_t EXTENT_2>
+    inline void Ptr<ELEMENT_TYPE>::Write (span<const ELEMENT_TYPE2, EXTENT_2> elts) const
+        requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or (same_as<ELEMENT_TYPE, byte> and (same_as<ELEMENT_TYPE2, uint8_t>)))
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
-        Require (start <= end);
-        Require (start != nullptr or start == end);
-        Require (end != nullptr or start == end);
-        if (start != end) {
-            GetRepRWRef ().Write (start, end);
-        }
-    }
-    template <typename ELEMENT_TYPE>
-    inline void Ptr<ELEMENT_TYPE>::Write (const uint8_t* start, const uint8_t* end) const
-        requires (is_same_v<ELEMENT_TYPE, byte>)
-    {
-        Write (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
+        Require (not elts.empty ());
+        GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::Write (const Memory::BLOB& blob) const
         requires (is_same_v<ELEMENT_TYPE, byte>)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
-        Write (blob.begin (), blob.end ());
+        this->Write (blob.As<span<const byte>> ());
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::Write (const wchar_t* cStr) const
         requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
-        Write (cStr, cStr + ::wcslen (cStr));
+        this->Write (span{cStr, ::wcslen (cStr)});
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::Write (const ELEMENT_TYPE& e) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
-        Write (&e, &e + 1);
-    }
-    template <typename ELEMENT_TYPE>
-    inline void Ptr<ELEMENT_TYPE>::Write (span<const ELEMENT_TYPE> s) const
-    {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
-        if (not s.empty ()) {
-            Write (s.data (), s.data () + s.size ());
-        }
+        this->Write (span{&e, 1});
     }
     template <typename ELEMENT_TYPE>
     void Ptr<ELEMENT_TYPE>::Write (const Characters::String& s) const
@@ -132,24 +111,32 @@ namespace Stroika::Foundation::Streams::OutputStream {
         Write (sp.data (), sp.data () + sp.size ());
     }
     template <typename ELEMENT_TYPE>
+    template <typename ELEMENT_TYPE2, size_t EXTENT_2>
+    inline void Ptr<ELEMENT_TYPE>::Write (span<ELEMENT_TYPE2, EXTENT_2> elts) const
+        requires (same_as<ELEMENT_TYPE, Characters::Character> and same_as<remove_cvref_t<ELEMENT_TYPE2>, Characters::Character>)
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Require (IsOpen ());
+        GetRepRWRef ().Write (elts);
+    }
+    template <typename ELEMENT_TYPE>
     void Ptr<ELEMENT_TYPE>::Write (const wchar_t* start, const wchar_t* end) const
         requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
     {
         if constexpr (sizeof (wchar_t) == sizeof (Characters::Character)) {
-            Write (reinterpret_cast<const Characters::Character*> (start), reinterpret_cast<const Characters::Character*> (end));
+            Write (span{reinterpret_cast<const Characters::Character*> (start), reinterpret_cast<const Characters::Character*> (end)});
         }
         else {
             Memory::StackBuffer<Characters::Character> buf{
                 Memory::eUninitialized, Characters::UTFConvert::ComputeTargetBufferSize<Characters::Character> (span{start, end})};
-            span<Characters::Character> writeSpan = Characters::UTFConvert::kThe.ConvertSpan (span{start, end}, span{buf});
-            Write (writeSpan.data (), writeSpan.data () + writeSpan.size ());
+            Write (Characters::UTFConvert::kThe.ConvertSpan (span{start, end}, span{buf}));
         }
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::WriteLn (const wchar_t* cStr) const
         requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
     {
-        Write (Characters::String{cStr});
+        Write (span{cStr, Characters::CString::Length (cStr)});
     }
     template <typename ELEMENT_TYPE>
     inline void Ptr<ELEMENT_TYPE>::WriteLn (const Characters::String& s) const
@@ -160,21 +147,16 @@ namespace Stroika::Foundation::Streams::OutputStream {
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
     inline void Ptr<ELEMENT_TYPE>::WriteRaw (const POD_TYPE& p) const
-        requires (is_same_v<ELEMENT_TYPE, byte>)
+        requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
-        WriteRaw (&p, &p + 1);
+        this->WriteRaw (span{&p, 1});
     }
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
-    inline void Ptr<ELEMENT_TYPE>::WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
-        requires (is_same_v<ELEMENT_TYPE, byte>)
+    inline void Ptr<ELEMENT_TYPE>::WriteRaw (span<const POD_TYPE> elts) const
+        requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
-        static_assert (is_trivially_copyable_v<POD_TYPE> and is_standard_layout_v<POD_TYPE>);
-        Write (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
+        this->Write (as_bytes (elts));
     }
     template <typename ELEMENT_TYPE>
     void Ptr<ELEMENT_TYPE>::PrintF (const wchar_t* format, ...)

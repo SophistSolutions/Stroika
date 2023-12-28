@@ -53,11 +53,11 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
                 Require (IsOpenWrite ());
                 return BASE_REP_TYPE::SeekWrite (whence, offset);
             }
-            virtual void Write (const ElementType* start, const ElementType* end) override
+            virtual void Write (span<const ElementType> elts) override
             {
                 lock_guard critSec{fCriticalSection_};
                 Require (IsOpenWrite ());
-                BASE_REP_TYPE::Write (start, end);
+                BASE_REP_TYPE::Write (elts);
             }
             virtual void Flush () override
             {
@@ -104,11 +104,11 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedOutputStream {
                 Require (IsOpenWrite ());
                 return fStream2Wrap.SeekWrite (whence, offset);
             }
-            virtual void Write (const ElementType* start, const ElementType* end) override
+            virtual void Write (span<const ElementType> elts) override
             {
                 lock_guard critSec{fCriticalSection_};
                 Require (IsOpenWrite ());
-                fStream2Wrap.Write (start, end);
+                fStream2Wrap.Write (elts);
             }
             virtual void Flush () override
             {

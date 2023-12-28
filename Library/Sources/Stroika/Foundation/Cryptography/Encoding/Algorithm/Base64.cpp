@@ -185,8 +185,7 @@ Memory::BLOB Algorithm::DecodeBase64 (const u8string& s)
 void Algorithm::DecodeBase64 (const string& s, const Streams::OutputStream::Ptr<byte>& out)
 {
     // QUICKIE implementation...
-    Memory::BLOB tmp = DecodeBase64 (s);
-    out.Write (tmp.begin (), tmp.end ());
+    out.Write (DecodeBase64 (s));
 }
 
 /*

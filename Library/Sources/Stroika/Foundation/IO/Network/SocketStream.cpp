@@ -105,10 +105,10 @@ public:
         Require (IsOpenWrite ());
         return 0;
     }
-    virtual void Write (const byte* start, const byte* end) override
+    virtual void Write (span<const byte> elts) override
     {
         Require (IsOpenWrite ());
-        fSD_.Write (start, end);
+        fSD_.Write (elts);
     }
     virtual void Flush () override
     {

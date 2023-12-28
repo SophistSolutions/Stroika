@@ -257,20 +257,20 @@ void Response::Flush ()
             wstring  version = L"1.1";
             wstring  tmp     = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), curStatus, statusMsg.c_str ());
             u8string utf8    = String{tmp}.AsUTF8 ();
-            fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
+            fUseOutStream_.WriteRaw (span{utf8.data (), utf8.length ()});
         }
         {
             Assert (InChunkedMode_ () or this->headers ().contentLength ().has_value ()); // I think is is always required, but double check...
             for (const auto& i : this->headers ().As<> ()) {
                 u8string utf8 = Characters::Format (L"%s: %s\r\n", i.fKey.As<wstring> ().c_str (), i.fValue.As<wstring> ().c_str ()).AsUTF8 ();
-                fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
+                fUseOutStream_.WriteRaw (span{utf8.data (), utf8.length ()});
             }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"headers: %s", Characters::ToString (this->headers ().As<> ()).c_str ());
 #endif
         }
         const char kCRLF[] = "\r\n";
-        fUseOutStream_.Write (reinterpret_cast<const byte*> (kCRLF), reinterpret_cast<const byte*> (kCRLF + 2));
+        fUseOutStream_.WriteRaw (span{kCRLF, ::strlen (kCRLF)});
         fState_ = State::ePreparingBodyAfterHeadersSent;
     }
     // write BYTES to fOutStream
@@ -281,7 +281,7 @@ void Response::Flush ()
 #endif
         // See https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html - body must not be sent for not-modified
         if (not fHeadMode_ and this->status () != HTTP::StatusCodes::kNotModified) {
-            fUseOutStream_.Write (Containers::Start (fBodyBytes_), Containers::End (fBodyBytes_));
+            fUseOutStream_.Write (span{fBodyBytes_});
         }
         fBodyBytes_.clear ();
     }
@@ -298,8 +298,8 @@ bool Response::End ()
         try {
             if (InChunkedMode_ ()) {
                 constexpr string_view kEndChunk_ = "0\r\n\r\n";
-                fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)),
-                                      reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));
+                Assert (as_bytes (span{kEndChunk_}).size () == 5); // not including NUL-byte
+                fUseOutStream_.Write (as_bytes (span{kEndChunk_}));
             }
             Flush ();
             fState_ = State::eCompleted;
@@ -362,10 +362,10 @@ void Response::write (const byte* s, const byte* e)
         if (InChunkedMode_ ()) {
             if (not fHeadMode_) {
                 string n = CString::Format ("%x\r\n", static_cast<unsigned int> (e - s));
-                fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (n)), reinterpret_cast<const byte*> (Containers::End (n)));
-                fUseOutStream_.Write (s, e);
+                fUseOutStream_.WriteRaw (span{n.data (), n.size ()});
+                fUseOutStream_.WriteRaw (span{s, e});
                 const char kCRLF[] = "\r\n";
-                fUseOutStream_.Write (reinterpret_cast<const byte*> (kCRLF), reinterpret_cast<const byte*> (kCRLF + NEltsOf (kCRLF)));
+                fUseOutStream_.WriteRaw (span{kCRLF, strlen (kCRLF)});
             }
         }
         else {
