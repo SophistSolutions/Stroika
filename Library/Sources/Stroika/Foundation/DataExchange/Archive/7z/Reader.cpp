@@ -64,7 +64,7 @@ private:
         static SRes Stream_Read_ (void* pp, void* buf, size_t* size)
         {
             MyISeekInStream* pThis = (MyISeekInStream*)pp;
-            size_t           sz    = pThis->fInStream_.Read (reinterpret_cast<byte*> (buf), reinterpret_cast<byte*> (buf) + *size);
+            size_t           sz    = pThis->fInStream_.Read (span{reinterpret_cast<byte*> (buf), *size}).size ();
             Assert (sz <= *size);
             *size = sz;
             return SZ_OK; // not sure on EOF/underflow?SZ_ERROR_READ

@@ -2531,7 +2531,7 @@ private:
 #if qDebug
                 Assert (myThis->fOpened_);
 #endif
-                size_t sz = myThis->fInStream_.Read (reinterpret_cast<byte*> (buf), reinterpret_cast<byte*> (buf) + size);
+                size_t sz = myThis->fInStream_.Read (span{reinterpret_cast<byte*> (buf), size}).size ();
                 Assert (sz <= size);
                 return static_cast<uLong> (sz);
             };

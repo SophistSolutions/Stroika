@@ -138,14 +138,14 @@ namespace Stroika::Foundation::Streams {
         return (Read_Slow_Case_ (&b, &b + 1) == 0) ? optional<ElementType>{} : b;
     }
     template <typename ELEMENT_TYPE>
-    inline size_t StreamReader<ELEMENT_TYPE>::Read (ElementType* intoStart, ElementType* intoEnd)
+    inline span<ELEMENT_TYPE> StreamReader<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer)
     {
         // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
         // and not say 'eof'
-        if (optional<size_t> o = ReadFromCache_ (intoStart, intoEnd)) {
-            return *o;
+        if (optional<size_t> o = ReadFromCache_ (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ())) {
+            return intoBuffer.subspan (0, *o);
         }
-        return Read_Slow_Case_ (intoStart, intoEnd);
+        return intoBuffer.subspan (0, Read_Slow_Case_ (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ()));
     }
     template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::Peek () -> optional<ElementType>
@@ -155,6 +155,15 @@ namespace Stroika::Foundation::Streams {
         }
         SeekOffsetType saved  = fOffset_;
         auto           result = this->Read ();
+        fOffset_              = saved;
+        return result;
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto StreamReader<ELEMENT_TYPE>::Peek (span<ElementType> intoBuffer) -> span<ElementType>
+    {
+        // @todo maybe able to better optimize this with peeks, and avoid seek
+        SeekOffsetType saved  = fOffset_;
+        auto           result = this->Read (intoBuffer);
         fOffset_              = saved;
         return result;
     }
@@ -191,7 +200,7 @@ namespace Stroika::Foundation::Streams {
     {
         size_t elementsRead{};
         for (ElementType* readCursor = intoStart; readCursor < intoEnd;) {
-            size_t eltsReadThisTime = Read (readCursor, intoEnd);
+            size_t eltsReadThisTime = Read (span{readCursor, intoEnd}).size ();
             Assert (eltsReadThisTime <= static_cast<size_t> (intoEnd - readCursor));
             if (eltsReadThisTime == 0) {
                 // irrevocable EOF

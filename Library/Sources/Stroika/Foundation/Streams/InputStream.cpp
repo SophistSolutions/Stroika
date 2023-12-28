@@ -48,7 +48,7 @@ Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
             e = s + nEltsLeft;
         }
         Assert (s < e);
-        size_t n = Read (s, e);
+        size_t n = Read (span{s, e}).size ();
         Assert (0 <= n and n <= nEltsLeft);
         Assert (0 <= n and n <= Memory::NEltsOf (buf));
         if (n == 0) {

@@ -1050,7 +1050,7 @@ namespace {
                     if (in != nullptr) {
                         byte stdinBuf[10 * 1024];
                         // blocking read to 'in' til it reaches EOF (returns 0)
-                        while (size_t nbytes = in.Read (begin (stdinBuf), end (stdinBuf))) {
+                        while (size_t nbytes = in.Read (span{stdinBuf}).size ()) {
                             Assert (nbytes <= Memory::NEltsOf (stdinBuf));
                             const byte* p = begin (stdinBuf);
                             const byte* e = p + nbytes;

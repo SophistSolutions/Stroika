@@ -254,8 +254,6 @@ namespace Stroika::Foundation::Streams::InputStream {
         nonvirtual optional<ElementType> Read () const;
         nonvirtual span<ElementType> Read (span<ElementType> intoBuffer) const;
 
-        nonvirtual size_t Read (ElementType* intoStart, ElementType* intoEnd) const; // @todo DEPRECATE
-
     public:
         /**
          *  \brief  Same as Read, but \req IsSeekable, and seeks back to original position
@@ -276,8 +274,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          */
         nonvirtual optional<ElementType> Peek () const;
-        // @todo SPANIFIY LIKE READ
-        nonvirtual size_t Peek (ElementType* intoStart, ElementType* intoEnd) const;
+        nonvirtual span<ElementType> Peek (span<ElementType> intoBuffer) const;
 
     public:
         /**
@@ -349,7 +346,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          * 
          */
         nonvirtual Characters::Character ReadCharacter () const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -475,6 +472,14 @@ namespace Stroika::Foundation::Streams::InputStream {
             Assert (size >= savedReadFrom);
             size -= savedReadFrom;
             return size;
+        }
+        [[deprecated ("Since Stroika v3.0d5 use span overload")]] size_t Read (ElementType* intoStart, ElementType* intoEnd) const
+        {
+            return Read (span{intoStart, intoEnd}).size ();
+        }
+        [[deprecated ("Since Stroika v3.0d5 use span overload")]] size_t Peek (ElementType* intoStart, ElementType* intoEnd) const
+        {
+            return Peek (span{intoStart, intoEnd}).size ();
         }
     };
 

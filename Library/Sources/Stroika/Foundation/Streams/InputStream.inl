@@ -122,11 +122,6 @@ namespace Stroika::Foundation::Streams::InputStream {
         return (GetRepRWRef ().Read (span{&b, 1}).size () == 0) ? optional<ElementType>{} : b;
     }
     template <typename ELEMENT_TYPE>
-    inline size_t InputStream::Ptr<ELEMENT_TYPE>::Read (ElementType* intoStart, ElementType* intoEnd) const
-    {
-        return Read (span{intoStart, intoEnd}).size ();
-    }
-    template <typename ELEMENT_TYPE>
     inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer) const -> span<ElementType>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
@@ -146,13 +141,13 @@ namespace Stroika::Foundation::Streams::InputStream {
         return result;
     }
     template <typename ELEMENT_TYPE>
-    size_t InputStream::Ptr<ELEMENT_TYPE>::Peek (ElementType* intoStart, ElementType* intoEnd) const
+    auto InputStream::Ptr<ELEMENT_TYPE>::Peek (span<ElementType> intoBuffer) const -> span<ElementType>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (this->IsSeekable ());
         Require (IsOpen ());
         SeekOffsetType saved  = GetOffset ();
-        auto           result = this->Read (intoStart, intoEnd);
+        auto           result = this->Read (intoBuffer);
         this->Seek (saved);
         return result;
     }
@@ -181,10 +176,10 @@ namespace Stroika::Foundation::Streams::InputStream {
     }
     template <typename ELEMENT_TYPE>
     inline Characters::Character InputStream::Ptr<ELEMENT_TYPE>::ReadCharacter () const
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
         Characters::Character c;
-        if (Read (&c, &c + 1) == 1) {
+        if (Read (span{&c, 1}).size () == 1) {
             return c;
         }
         return '\0';
@@ -326,7 +321,7 @@ namespace Stroika::Foundation::Streams::InputStream {
             if (nEltsLeft < Memory::NEltsOf (buf)) {
                 e = s + nEltsLeft;
             }
-            size_t n = Read (s, e);
+            size_t n = Read (span{s, e}).size ();
             Assert (0 <= n and n <= nEltsLeft);
             Assert (0 <= n and n <= Memory::NEltsOf (buf));
             if (n == 0) {
@@ -353,7 +348,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         Require (IsOpen ());
         size_t elementsRead{};
         for (ElementType* readCursor = intoStart; readCursor < intoEnd;) {
-            size_t eltsReadThisTime = Read (readCursor, intoEnd);
+            size_t eltsReadThisTime = Read (span{readCursor, intoEnd}).size ();
             Assert (eltsReadThisTime <= static_cast<size_t> (intoEnd - readCursor));
             if (eltsReadThisTime == 0) {
                 // irrevocable EOF

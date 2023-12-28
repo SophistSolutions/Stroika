@@ -62,13 +62,14 @@ namespace Stroika::Foundation::Streams {
          *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::Read () but reading cached data
          */
         nonvirtual optional<ElementType> Read ();
-        nonvirtual size_t                Read (ElementType* intoStart, ElementType* intoEnd);
+        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer);
 
     public:
         /**
          *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::Peek () but reading cached data
          */
         nonvirtual optional<ElementType> Peek ();
+        nonvirtual span<ElementType> Peek (span<ElementType> intoBuffer);
 
     public:
         /**
@@ -107,6 +108,12 @@ namespace Stroika::Foundation::Streams {
 
     public:
         nonvirtual bool IsAtEOF ();
+
+    public:
+        [[deprecated ("Since Stroika v3.0d5 use Read/1-span")]] size_t Read (ElementType* intoStart, ElementType* intoEnd)
+        {
+            return Read (span{intoStart, intoEnd}).size ();
+        }
 
     private:
         // may want to tune these; but I did a little tuning on Windows --LGP 2022-12-17

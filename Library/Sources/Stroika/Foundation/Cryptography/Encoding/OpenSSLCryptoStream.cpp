@@ -163,7 +163,7 @@ namespace {
                  */
                 byte toDecryptBuf[kInBufSize_];
             Again:
-                size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
+                size_t n2Decrypt = fRealIn_.Read (span{toDecryptBuf}).size ();
                 if (n2Decrypt == 0) {
                     size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
                     Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());

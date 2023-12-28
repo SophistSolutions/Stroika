@@ -99,7 +99,7 @@ namespace {
                     inBuf = span<byte>{_fReadAheadCache->fData};
                 }
                 else {
-                    inBuf.ShrinkTo (_fSource.Read (begin (inBuf), end (inBuf)));
+                    inBuf.ShrinkTo (_fSource.Read (span{inBuf}).size ());
                 }
             again:
                 span<const byte> binarySrcSpan{inBuf};
@@ -115,7 +115,7 @@ namespace {
                 else if (convertedCharacters.empty ()) {
                     // We have zero convertedCharacters, so apparently not enough bytes read. Read one more, and try again.
                     byte b;
-                    if (_fSource.Read (&b, &b + 1) == 1) {
+                    if (_fSource.Read (span{&b, 1}).size () == 1) {
                         inBuf.push_back (b);
                         goto again;
                     }

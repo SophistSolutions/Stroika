@@ -63,7 +63,7 @@ namespace {
             // more likely - KISS for now - read one character from upstream and return appropriate number of bytes
             Assert (fSrcBufferedSpan_.empty ());
             Character readBuf[1];
-            if (size_t nChars = fSrc_.Read (begin (readBuf), end (readBuf))) {
+            if (size_t nChars = fSrc_.Read (span{readBuf}).size ()) {
                 char8_t       buf[10];
                 span<char8_t> convertedSpan  = Characters::UTFConvert::kThe.ConvertSpan (span{readBuf, nChars}, span{buf, sizeof (buf)});
                 auto          copiedIntoSpan = Memory::CopySpanData_StaticCast (convertedSpan, intoBuffer);

@@ -98,7 +98,7 @@ namespace {
                 Require (IsOpenRead ());
                 if (fZStream_.avail_in == 0) {
                     Assert (Memory::NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
-                    fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (begin (fInBuf_), end (fInBuf_)));
+                    fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (span{fInBuf_}).size ());
                     fZStream_.next_in  = reinterpret_cast<Bytef*> (begin (fInBuf_));
                 }
                 return fZStream_.avail_in == 0;

@@ -177,7 +177,7 @@ protected:
             }
 
             byte*  startReadAt = fAllDataReadBuf_.begin () + fBufferFilledUpValidBytes_;
-            size_t n           = fSource_.Read (startReadAt, startReadAt + roomLeftInBuf);
+            size_t n           = fSource_.Read (span{startReadAt, roomLeftInBuf}).size ();
             Assert (n <= roomLeftInBuf);
             // if n == 0, OK, just means EOF
             fBufferFilledUpValidBytes_ += n;
