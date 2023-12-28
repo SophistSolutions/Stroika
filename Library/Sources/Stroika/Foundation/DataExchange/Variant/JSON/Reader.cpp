@@ -819,7 +819,7 @@ public:
                 byte                buf[8 * 1024];
                 const size_t        targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
                 size_t              actualChunkSize;
-                while ((actualChunkSize = in.Read (begin (buf), begin (buf) + targetChunkSize)) != 0) {
+                while ((actualChunkSize = in.Read (span{buf, targetChunkSize}).size ()) != 0) {
                     boost::json::error_code ec;
                     size_t                  nParsed = p.write_some (reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
                     Assert (nParsed <= actualChunkSize);
