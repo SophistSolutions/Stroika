@@ -44,7 +44,7 @@ namespace {
                 EXPECT_TRUE (s != nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
                 byte result[100] = {byte{0}};
-                EXPECT_TRUE (s.Read (std::begin (result), std::end (result)) == 2);
+                EXPECT_TRUE (s.Read (span{result}).size () == 2);
                 EXPECT_TRUE (to_integer<char> (result[0]) == '1');
                 EXPECT_TRUE (to_integer<char> (result[1]) == '\0');
             }
@@ -119,7 +119,7 @@ namespace {
                 EXPECT_TRUE (s.GetReadOffset () == 0);
                 EXPECT_TRUE (s.GetWriteOffset () == sizeof (kData_));
                 byte bArr[1024];
-                Verify (s.Read (std::begin (bArr), std::end (bArr)) == sizeof (kData_));
+                Verify (s.Read (span{bArr}).size () == sizeof (kData_));
                 EXPECT_TRUE (s.GetReadOffset () == sizeof (kData_));
                 EXPECT_TRUE (s.GetWriteOffset () == sizeof (kData_));
                 EXPECT_TRUE ((Memory::BLOB{std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()} ==

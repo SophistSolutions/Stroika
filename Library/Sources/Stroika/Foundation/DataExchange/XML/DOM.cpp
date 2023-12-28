@@ -698,7 +698,7 @@ namespace {
                 }
                 virtual XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
                 {
-                    return _fSource.Read (reinterpret_cast<byte*> (toFill), reinterpret_cast<byte*> (toFill + maxToRead));
+                    return _fSource.Read (span{reinterpret_cast<byte*> (toFill), maxToRead}).size ();
                 }
                 virtual const XMLCh* getContentType () const override
                 {

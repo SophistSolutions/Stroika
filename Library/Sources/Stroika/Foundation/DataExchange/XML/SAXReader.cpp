@@ -59,7 +59,7 @@ namespace {
                 }
                 virtual XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
                 {
-                    return fSource.Read (reinterpret_cast<byte*> (toFill), reinterpret_cast<byte*> (toFill) + maxToRead);
+                    return fSource.Read (span{reinterpret_cast<byte*> (toFill), maxToRead}).size ();
                 }
                 virtual const XMLCh* getContentType () const override
                 {
@@ -115,7 +115,7 @@ namespace {
                         curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
                         fProgress_.SetProgress (curOffset / fTotalSize_);
                     }
-                    XMLSize_t result = fSource.Read (reinterpret_cast<byte*> (toFill), reinterpret_cast<byte*> (toFill) + maxToRead);
+                    XMLSize_t result = fSource.Read (span{reinterpret_cast<byte*> (toFill), maxToRead}).size ();
                     if (fTotalSize_ > 0) {
                         curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
                         fProgress_.SetProgress (curOffset / fTotalSize_);
@@ -302,7 +302,7 @@ void XML::SAXParse (Provider saxProvider, [[maybe_unused]] const Streams::InputS
         xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
         byte                    buf[1024];
-        while (auto n = in.Read (begin (buf), end (buf))) {
+        while (auto n = in.Read (span{buf}).size ()) {
             if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
                 xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but trnaslate to throw
                                                         // return 1;

@@ -261,17 +261,16 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  Peek/0
          *      return nullopt on EOF, and otherwise return a single element.
          *
-         *  Peek/2
-         *      Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
-         *      bufSize (intoEnd-intoStart) must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
-         *      BLOCKING until data is available, but can return with fewer bytes than bufSize
+         *  Peek/1
+         *      Pointer must refer to valid non-empty span.
+         *      Returns empty iff EOF, and otherwise subspan of original span (starting at 0) actually read.
+         *      BLOCK until some data is available, but can return with fewer bytes than bufSize
          *      without prejudice about how much more is available.
          *
          *  \note    Peek will block if no data available.
          *
-         *      \req (intoEnd - intoStart) >= 1
+         *      \req not intoBuffer.empty ()
          *      \req IsSeekable ()
-         *
          */
         nonvirtual optional<ElementType> Peek () const;
         nonvirtual span<ElementType> Peek (span<ElementType> intoBuffer) const;
@@ -361,10 +360,10 @@ namespace Stroika::Foundation::Streams::InputStream {
          */
         template <typename POD_TYPE>
         nonvirtual POD_TYPE ReadRaw () const
-            requires (is_same_v<ELEMENT_TYPE, byte>);
+            requires (same_as<ELEMENT_TYPE, byte>);
         template <typename POD_TYPE>
         nonvirtual void ReadRaw (POD_TYPE* start, POD_TYPE* end) const
-            requires (is_same_v<ELEMENT_TYPE, byte>);
+            requires (same_as<ELEMENT_TYPE, byte>);
         // @todo SPANIFY
 
     public:
@@ -377,7 +376,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *      \req IsSeekable () to implement read-ahead required for CRLF mapping support 
          */
         nonvirtual Characters::String ReadLine () const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -391,7 +390,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  However, UNLIKE ReadLine(), this function does NOT require the input stream be seekable!
          */
         nonvirtual Traversal::Iterable<Characters::String> ReadLines () const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -433,7 +432,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *        specialization, and cannot specify requires with template specialization (or I cannot figure out how)
          */
         nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+            requires (same_as<ELEMENT_TYPE, Characters::Character>);
 
         // @todo redo this overload using requires...
         template <same_as<byte> TEST_TYPE = ELEMENT_TYPE>

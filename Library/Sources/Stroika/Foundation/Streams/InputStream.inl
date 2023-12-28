@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
     POD_TYPE InputStream::Ptr<ELEMENT_TYPE>::ReadRaw () const
-        requires (is_same_v<ELEMENT_TYPE, byte>)
+        requires (same_as<ELEMENT_TYPE, byte>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
     inline void InputStream::Ptr<ELEMENT_TYPE>::ReadRaw (POD_TYPE* start, POD_TYPE* end) const
-        requires (is_same_v<ELEMENT_TYPE, byte>)
+        requires (same_as<ELEMENT_TYPE, byte>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     }
     template <typename ELEMENT_TYPE>
     Characters::String InputStream::Ptr<ELEMENT_TYPE>::ReadLine () const
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
         using namespace Characters;
         Require (this->IsSeekable ());
@@ -246,7 +246,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     }
     template <typename ELEMENT_TYPE>
     Traversal::Iterable<Characters::String> InputStream::Ptr<ELEMENT_TYPE>::ReadLines () const
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
         using namespace Characters;
         using namespace Traversal;
@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
     template <typename ELEMENT_TYPE>
     Characters::String InputStream::Ptr<ELEMENT_TYPE>::ReadAll (size_t upTo) const
-        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+        requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
         using namespace Characters;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
