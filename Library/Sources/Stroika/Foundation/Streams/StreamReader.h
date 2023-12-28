@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Streams {
      *  StreamReader is an unnecessary class for using the Streams library, but it is easy to use, similar to InputStream<T>::Ptr, and significantly more performant
      * 
      *  TODO:
-     *      \todo consider if should take templated parameter indicating buffer size
+     *      \todo consider if should take templated parameter indicating buffer size (really template parameter StreamReaderDefaultOptions - with various settings
      */
     template <typename ELEMENT_TYPE>
     struct StreamReader {
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Streams {
         static constexpr size_t kCountPingPingBufs_ = 2;
 
     private:
-        // Hack to allow use of inline buffer and uninitialized array even thoug Character class not 'trivial', it probably should be (or I'm not checking the right trait)
+        // Hack to allow use of inline buffer and uninitialized array even though Character class not 'trivial', it probably should be (or I'm not checking the right trait)
         using InlineBufferElementType_ = conditional_t<is_same_v<Characters::Character, ElementType>, char32_t, ElementType>;
         static_assert (sizeof (ElementType) == sizeof (InlineBufferElementType_));
 
