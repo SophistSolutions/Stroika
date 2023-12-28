@@ -463,7 +463,7 @@ auto TextReader::New (const InputStream::Ptr<byte>& src, const optional<Automati
             // read possible BOM, and then chose CodeCvt according to codeCvtFlags
             byte                                                          bomData[Characters::kMaxBOMSize];
             optional<tuple<Characters::UnicodeExternalEncodings, size_t>> bomInfo;
-            if (src.ReadAll (begin (bomData), end (bomData)) == Memory::NEltsOf (bomData) and
+            if (src.ReadAll (span{bomData}).size () == Memory::NEltsOf (bomData) and
                 (bomInfo = Characters::ReadByteOrderMark (span{bomData})).has_value ()) {
                 // adjust amount read from input stream if we over-read
                 src.Seek (savedSeek + get<size_t> (*bomInfo)); // adjust amount read from input stream if we read anything (could be a no-op seek)

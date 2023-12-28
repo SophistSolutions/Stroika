@@ -338,16 +338,15 @@ namespace Stroika::Foundation::Streams::InputStream {
     }
     DISABLE_COMPILER_MSC_WARNING_END (6262)
     template <typename ELEMENT_TYPE>
-    size_t InputStream::Ptr<ELEMENT_TYPE>::ReadAll (ElementType* intoStart, ElementType* intoEnd) const
+    auto InputStream::Ptr<ELEMENT_TYPE>::ReadAll (span<ElementType> intoBuffer) const -> span<ElementType>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        RequireNotNull (intoStart);
-        Require ((intoEnd - intoStart) >= 1);
+        Require (not intoBuffer.empty ());
         Require (IsOpen ());
-        size_t elementsRead{};
-        for (ElementType* readCursor = intoStart; readCursor < intoEnd;) {
+        size_t       elementsRead{};
+        ElementType* intoEnd = intoBuffer.data () + intoBuffer.size ();
+        for (ElementType* readCursor = intoBuffer.data (); readCursor < intoEnd;) {
             size_t eltsReadThisTime = Read (span{readCursor, intoEnd}).size ();
-            Assert (eltsReadThisTime <= static_cast<size_t> (intoEnd - readCursor));
             if (eltsReadThisTime == 0) {
                 // irrevocable EOF
                 break;
@@ -355,7 +354,7 @@ namespace Stroika::Foundation::Streams::InputStream {
             elementsRead += eltsReadThisTime;
             readCursor += eltsReadThisTime;
         }
-        return elementsRead;
+        return intoBuffer.subspan (0, elementsRead);
     }
 
 }

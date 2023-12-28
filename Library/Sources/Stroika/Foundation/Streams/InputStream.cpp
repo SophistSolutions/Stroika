@@ -29,7 +29,6 @@ using Memory::BLOB;
  */
 DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 template <>
-template <>
 Memory::BLOB InputStream::Ptr<byte>::ReadAll (size_t upTo) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

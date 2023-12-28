@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                             else {
                                 buf.resize (static_cast<size_t> (*start - realSeekOffset));
                             }
-                            (void)realIn.ReadAll (buf.begin (), buf.end ()); // read exactly that many elements, and drop them on the floor
+                            (void)realIn.ReadAll (span{buf}); // read exactly that many elements, and drop them on the floor
                         }
                     }
                 }

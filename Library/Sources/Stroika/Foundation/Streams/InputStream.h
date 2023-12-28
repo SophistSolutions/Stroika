@@ -25,7 +25,7 @@
  *              Then it would ONLY require Seekable() for CRLF or Auto.
  *
  *      @todo   Consider if IsAtEOF() should be added to the virtual rep? Easy, and can provide (current) default implementation. But
- *              putting it there allows it to be much cheaper and its called pretty often (avoid seek logic). Wouldnt change semantics (about possibly blocking).
+ *              putting it there allows it to be much cheaper and its called pretty often (avoid seek logic). Wouldn't change semantics (about possibly blocking).
  */
 
 namespace Stroika::Foundation::Characters {
@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  Read/1
          *      Pointer must refer to valid non-empty span.
          *      Returns empty iff EOF, and otherwise subspan of original span (starting at 0) actually read.
-         *      BLOCKING until data is available, but can return with fewer elements than argument spansize
+         *      BLOCKING until data is available, but can return with fewer elements than argument span-size
          *      without prejudice about how much more is available.
          *
          *      So if you call first with ReadNonBlocking() to assure there is some data available (at least one element) you can
@@ -315,7 +315,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *          What we mean by non-blocking is that this doesn't depend on data being available from an outside upstream
          *          source, and that the code will run with the data it has at its disposal.
          *
-         *          If you really need a gaurantee, use a separate thread to do the reading and a BlockingQueue to pass the data
+         *          If you really need a guarantee, use a separate thread to do the reading and a BlockingQueue to pass the data
          *          from that thread to the caller.
          *
          *  \note   Returns Memory::nullopt means no data immediately and definitely available. But sometimes its not possible
@@ -323,7 +323,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *  \note   We may need to abandon this experimental API because:
          *              1>  It makes building Reps more complicated
-         *              2>  Its not that useful without guarantees of not blocking and gaurantees that when you read and get back
+         *              2>  Its not that useful without guarantees of not blocking and guarantees that when you read and get back
          *                  nullopt, there is no point in reading
          *              3>  it is easily workaroundable using a Blocking Queue and another thread to read actual data
          *              4>  Original mandate for this Streams class module was simplicity of use, extension etc, and this makes it harder.
@@ -392,7 +392,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     public:
         /**
          *  ReadAll/0
-         *  ReadAll/1
+         *  ReadAll/size_t upTo
          *      Read from the current seek position, until EOF or upTo elements read (whichever comes first),
          *      and accumulate all of it into a String or BLOB (depending on stream type).
          *
@@ -404,23 +404,21 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *      \req upTo >= 1
          *
-         *  ReadAll/2
-         *      Like Read, in that it reads all the elements that will fit into the range intoStart...intoEnd.
+         *  ReadAll/span<ElementType> intoBuffer
+         *      Like Read, in that it reads all the elements that will fit into the range intoBuffer.
          *      However, this guarantees to read all the data that will fit before returning (Read () only
          *      guarantees to read at least one element).
          *
          *      So this can be handy when you KNOW you have a buffer large enough to read all the data in
          *      the file, you can read without having to check the number of elements read and re-call Read().
          *
-         *      ReadAll/2 will always return a size_t = intoEnd-intoStart unless it encounters EOF before filling
-         *      the entire buffer.
+         *      ReadAll will always return a subspan of intoBuffer (or empty).
          *
          *      \req intoEnd-intoStart >= 1
          *
          *  \note ReadAll () will block if the stream is not KNOWN to be at EOF, and we just ran out of data. Use
          *        @see ReadNonBlocking () to get non-blocking read behavior.
          *
-         *  @todo DOCUMENT EDGE CONDITIONS - like run out of bytes to read full String - or can we return less than requested number (answer yes - but IFF EOF).
          *  @see ReadRaw()
          *  @see Streams::CopyAll()
          * 
@@ -430,16 +428,16 @@ namespace Stroika::Foundation::Streams::InputStream {
          */
         nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
             requires (same_as<ELEMENT_TYPE, Characters::Character>);
-
-        // @todo redo this overload using requires...
-        template <same_as<byte> TEST_TYPE = ELEMENT_TYPE>
-        nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
-        nonvirtual size_t       ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
-        // @todo SPANIFY last overload
+        nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
+#if 0
+            requires (same_as<ELEMENT_TYPE, byte>)  // get compile error on vis studio when we specailize - not sure if LGP bug or compiler bug...--LGP 2023-12-28
+#endif
+            ;
+        nonvirtual span<ElementType> ReadAll (span<ElementType> intoBuffer) const;
 
     public:
         /**
-         *  \brief protected access to underlying stream smart pointer
+         *  \brief access to underlying stream smart pointer
          */
         nonvirtual shared_ptr<IRep<ELEMENT_TYPE>> GetSharedRep () const;
 
@@ -482,6 +480,10 @@ namespace Stroika::Foundation::Streams::InputStream {
             requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
         {
             ReadRaw (span{start, end});
+        }
+        [[deprecated ("Since Stroika v3.0d5 use span overload")]] size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const
+        {
+            return ReadAll (span{intoStart, intoEnd}).size ();
         }
     };
 
