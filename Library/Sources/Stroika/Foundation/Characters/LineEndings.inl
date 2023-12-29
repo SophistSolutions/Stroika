@@ -22,7 +22,11 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <IPossibleCharacterRepresentation T>
-    inline constexpr const T* GetEOL ()
+    inline 
+    #if __cpp_constexpr >= 202211L
+    constexpr 
+    #endif
+    const T* GetEOL ()
     {
 #if qPlatform_Windows
         static constexpr T kResult_[] = {'\r', '\n', '\0'}; // "\r\n"
