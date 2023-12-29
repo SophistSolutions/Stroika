@@ -151,7 +151,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = SpellCheckEngine_Basic::Dictionary;
 
     public:
-        EditableDictionary ();
+        EditableDictionary () = default;
 
     public:
         virtual ~EditableDictionary ();
@@ -173,8 +173,8 @@ namespace Stroika::Frameworks::Led {
 
     private:
         set<Led_tString>  fSortedWordList;
-        Led_tChar*        fDictBufStart;
-        Led_tChar*        fDictBufEnd;
+        Led_tChar*        fDictBufStart{nullptr};
+        Led_tChar*        fDictBufEnd{nullptr};
         vector<InfoBlock> fInfoBlocks;
     };
 

@@ -165,7 +165,7 @@ namespace Stroika::Foundation::Streams::InputOutputStream {
 
     public:
         /**
-         *  \brief protected access to underlying stream smart pointer
+         *  \brief access to underlying stream smart pointer
          */
         nonvirtual shared_ptr<IRep<ELEMENT_TYPE>> GetSharedRep () const;
 

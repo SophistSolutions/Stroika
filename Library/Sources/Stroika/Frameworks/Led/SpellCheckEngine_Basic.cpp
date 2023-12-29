@@ -790,15 +790,6 @@ void SpellCheckEngine_Basic::RegressionTest_1 ()
  ****************** SpellCheckEngine_Basic::EditableDictionary ******************
  ********************************************************************************
  */
-SpellCheckEngine_Basic::EditableDictionary::EditableDictionary ()
-    : inherited ()
-    , fSortedWordList ()
-    , fDictBufStart (NULL)
-    , fDictBufEnd (NULL)
-    , fInfoBlocks ()
-{
-}
-
 SpellCheckEngine_Basic::EditableDictionary::~EditableDictionary ()
 {
     delete[] fDictBufStart;
@@ -952,8 +943,7 @@ void SpellCheckEngine_Basic::EditableDictionary::ConstructInfoBlocksEtcFromWordL
  ********************************************************************************
  */
 SpellCheckEngine_Basic::CompiledDictionary::CompiledDictionary (const CompiledDictionaryData& data)
-    : inherited ()
-    , fData (data)
+    : fData{data}
 {
 }
 
@@ -982,7 +972,6 @@ void SpellCheckEngine_Basic::CompiledDictionary::GetInfoBlocks (const InfoBlock*
  */
 
 TextBreaks_SpellChecker::TextBreaks_SpellChecker ()
-    : inherited{}
 {
 #if qDebug
     // NB: since this is called in this CTOR - it doesn't capture (or pay attention to) subclass overrides of CharToCharacterClass
@@ -1043,8 +1032,7 @@ void TextBreaks_SpellChecker::RegressionTest ()
  ********************************************************************************
  */
 SpellCheckEngine_Basic_Simple::SpellCheckEngine_Basic_Simple ()
-    : inherited{}
-    , fMainDictionary{nullptr}
+    : fMainDictionary{nullptr}
     , fUDName{}
     , fUD{nullptr}
 {
@@ -1147,7 +1135,7 @@ void SpellCheckEngine_Basic_Simple::WriteToUD ()
 
     IO::FileSystem::FileOutputStream::Ptr writer = IO::FileSystem::FileOutputStream::New (filesystem::path (fUDName));
 #if qWideCharacters
-    Streams::TextWriter::New (writer, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eInclude).Write (data.data (), data.data () + data.size ());
+    Streams::TextWriter::New (writer, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eInclude).Write (span{data});
 #else
     writer.Append (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (data.begin ())), data.size ());
 #endif

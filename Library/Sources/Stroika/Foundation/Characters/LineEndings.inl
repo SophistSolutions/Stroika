@@ -28,15 +28,18 @@ namespace Stroika::Foundation::Characters {
     #endif
     const T* GetEOL ()
     {
-#if qPlatform_Windows
-        static constexpr T kResult_[] = {'\r', '\n', '\0'}; // "\r\n"
-        return kResult_;
-#elif qPlatform_POSIX
-        static constexpr T kResult_[] = {'\n', '\0'}; //  "\n"
-        return kResult_;
-#else
-        AssertNotImplemented ();
-#endif
+        // note queer syntax for strings so works with many character types, including Characters::Character
+        if constexpr (qPlatform_Windows) {
+            static constexpr T kResult_[] = {'\r', '\n', '\0'}; // "\r\n"
+            return kResult_;
+        }
+        else if constexpr (qPlatform_POSIX) {
+            static constexpr T kResult_[] = {'\n', '\0'}; //  "\n"
+            return kResult_;
+        }
+        else {
+            AssertNotImplemented ();
+        }
     }
 
     /*

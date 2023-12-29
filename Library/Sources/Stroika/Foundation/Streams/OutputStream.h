@@ -42,7 +42,6 @@
  */
 
 namespace Stroika::Foundation::Characters {
-    //class Character;
     class String;
 }
 namespace Stroika::Foundation::Memory {
@@ -73,14 +72,12 @@ namespace Stroika::Foundation::Streams::OutputStream {
      *  extend the stream to the point seeked to, and if you seek back (less) than the end and write, this overwrites
      *  instead of inserting.
      *
-     *  Note - Write is sufficient to guarnatee the data is written, but it may be buffered until you call
+     *  Note - Write is sufficient to guarantee the data is written, but it may be buffered until you call
      *  the destructor on the OutputStream (last reference goes away) or until you call Flush ().
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter</a>
      *
      *  \brief  OutputStream<>::Ptr is Smart pointer to a stream-based sink of data.
-     *
-     * @see OutputStream<ELEMENT_TYPE>
      *
      *  \note Since OutputStream::Ptr<ELEMENT_TYPE> is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
      *        the underlying thread object.
