@@ -197,7 +197,7 @@ jobs:
         if: always()
         run: |
           mkdir /tmp/LOGS-ARCHIVE
-          cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE
+          cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE || :
       - name: DEBUG Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
         if: always()
         run: |
