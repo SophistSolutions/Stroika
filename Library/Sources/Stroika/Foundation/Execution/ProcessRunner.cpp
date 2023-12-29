@@ -773,7 +773,7 @@ namespace {
 #endif
                 while ((nBytesRead = ::read (fd, buf, sizeof (buf))) > 0) {
                     if (stream != nullptr) {
-                        stream.Write (buf, buf + nBytesRead);
+                        stream.Write (span{buf,  nBytesRead});
                     }
                     if (write2StdErrCache) {
                         for (size_t i = 0; i < nBytesRead; ++i) {
