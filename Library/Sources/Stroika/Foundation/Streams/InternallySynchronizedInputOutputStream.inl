@@ -52,11 +52,11 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::SeekRead (whence, offset);
             }
-            virtual span<ElementType> Read (span<ElementType> intoBuffer) override
+            virtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
                 Require (IsOpenRead ());
-                return BASE_REP_TYPE::Read (intoBuffer);
+                return BASE_REP_TYPE::Read (intoBuffer, blockFlag);
             }
             virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {

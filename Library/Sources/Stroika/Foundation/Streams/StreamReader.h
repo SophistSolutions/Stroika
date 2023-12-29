@@ -61,8 +61,8 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::Read () but reading cached data
          */
-        nonvirtual optional<ElementType> Read ();
-        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer);
+        nonvirtual optional<ElementType> Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault);
+        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault);
 
     public:
         /**
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Streams {
         nonvirtual optional<size_t> ReadFromCache_ (ElementType* intoStart, ElementType* intoEnd);
         nonvirtual void FillCacheWith_ (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd);
         nonvirtual void FillCacheWith_ (SeekOffsetType s, const ElementType* intoStart, const ElementType* intoEnd);
-        size_t          Read_Slow_Case_ (ElementType* intoStart, ElementType* intoEnd);
+        size_t          Read_Slow_Case_ (ElementType* intoStart, ElementType* intoEnd, NoDataAvailableHandling blockFlag);
     };
 
 }

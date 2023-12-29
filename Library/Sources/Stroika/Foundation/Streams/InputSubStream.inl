@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                     return fRealIn_.Seek (whence, offset + fOffsetMine2Real_) - fOffsetMine2Real_;
                 }
             }
-            virtual span<ELEMENT_TYPE> Read (span<ELEMENT_TYPE> intoBuffer) override
+            virtual span<ELEMENT_TYPE> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -139,11 +139,11 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                         else {
                             ELEMENT_TYPE* newIntoEnd{intoBuffer.data () + *fForcedEndInReal_ - curReal};
                             Assert (newIntoEnd < intoBuffer.data () + intoBuffer.size ());
-                            return fRealIn_.Read (span{intoBuffer.data (), newIntoEnd});
+                            return fRealIn_.Read (span{intoBuffer.data (), newIntoEnd}, blockFlag);
                         }
                     }
                 }
-                return fRealIn_.Read (intoBuffer);
+                return fRealIn_.Read (intoBuffer, blockFlag);
             }
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {

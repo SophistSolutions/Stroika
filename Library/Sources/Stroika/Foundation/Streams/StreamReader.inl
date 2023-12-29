@@ -129,23 +129,23 @@ namespace Stroika::Foundation::Streams {
         IgnoreExceptionsForCall (this->SynchronizeToUnderlyingStream ())
     }
     template <typename ELEMENT_TYPE>
-    inline auto StreamReader<ELEMENT_TYPE>::Read () -> optional<ElementType>
+    inline auto StreamReader<ELEMENT_TYPE>::Read (NoDataAvailableHandling blockFlag) -> optional<ElementType>
     {
         if (auto p = Read1FromCache_ ()) [[likely]] { // usually will get hit - else default to standard algorithm
             return p;
         }
         ElementType b; // intentionally not initialized, since will be filled in by Read_Slow_Case_ or unused
-        return (Read_Slow_Case_ (&b, &b + 1) == 0) ? optional<ElementType>{} : b;
+        return (Read_Slow_Case_ (&b, &b + 1, blockFlag) == 0) ? optional<ElementType>{} : b;
     }
     template <typename ELEMENT_TYPE>
-    inline span<ELEMENT_TYPE> StreamReader<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer)
+    inline span<ELEMENT_TYPE> StreamReader<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag)
     {
         // if already cached, return from cache. Note - even if only one element is in the Cache, thats enough to return
         // and not say 'eof'
         if (optional<size_t> o = ReadFromCache_ (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ())) {
             return intoBuffer.subspan (0, *o);
         }
-        return intoBuffer.subspan (0, Read_Slow_Case_ (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ()));
+        return intoBuffer.subspan (0, Read_Slow_Case_ (intoBuffer.data (), intoBuffer.data () + intoBuffer.size (), blockFlag));
     }
     template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::Peek () -> optional<ElementType>
@@ -299,11 +299,11 @@ namespace Stroika::Foundation::Streams {
         FillCacheWith_ (s, reinterpret_cast<const InlineBufferElementType_*> (intoStart), reinterpret_cast<const InlineBufferElementType_*> (intoEnd));
     }
     template <typename ELEMENT_TYPE>
-    size_t StreamReader<ELEMENT_TYPE>::Read_Slow_Case_ (ElementType* intoStart, ElementType* intoEnd)
+    size_t StreamReader<ELEMENT_TYPE>::Read_Slow_Case_ (ElementType* intoStart, ElementType* intoEnd, NoDataAvailableHandling blockFlag)
     {
         ElementType buf[kDefaultReadBufferSize_];
         fStrm_.Seek (fOffset_); // check if getoffset not same in case not seekable) - or handle not seekable case
-        size_t nRecordsRead = fStrm_.Read (span{buf}).size ();
+        size_t nRecordsRead = fStrm_.Read (span{buf}, blockFlag).size ();
         if (nRecordsRead == 0) {
             // not much point in caching - at eof
             return 0;

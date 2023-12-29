@@ -251,8 +251,8 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *  @see ReadNonBlocking ()
          */
-        nonvirtual optional<ElementType> Read () const;
-        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer) const;
+        nonvirtual optional<ElementType> Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault) const;
+        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault) const;
 
     public:
         /**
@@ -551,7 +551,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  BLOCKING until data is available, but can return with fewer bytes than bufSize
          *  without prejudice about how much more is available.
          */
-        virtual span<ElementType> Read (span<ElementType> intoBuffer) = 0;
+        virtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) = 0;
 
     public:
         // LEANING TOWARDS DEPRECTING/REPLACING WITH IS_AVAIL_READ

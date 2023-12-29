@@ -93,12 +93,12 @@ namespace {
                 Require (IsOpenRead ());
                 return SeekOffsetType{};
             }
-            nonvirtual bool _AssureInputAvailableReturnTrueIfAtEOF ()
+            nonvirtual bool _AssureInputAvailableReturnTrueIfAtEOF (NoDataAvailableHandling blockFlag)
             {
                 Require (IsOpenRead ());
                 if (fZStream_.avail_in == 0) {
                     Assert (Memory::NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
-                    fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (span{fInBuf_}).size ());
+                    fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (span{fInBuf_}, blockFlag).size ());
                     fZStream_.next_in  = reinterpret_cast<Bytef*> (begin (fInBuf_));
                 }
                 return fZStream_.avail_in == 0;
@@ -115,12 +115,12 @@ namespace {
             {
                 Verify (::deflateEnd (&fZStream_) == Z_OK);
             }
-            virtual span<byte> Read (span<byte> intoBuffer) override
+            virtual span<byte> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ()); // API rule for streams
                 Require (IsOpenRead ());
             Again:
-                bool isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
+                bool isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF (blockFlag);
 
                 ptrdiff_t outBufSize = intoBuffer.size ();
 
@@ -227,12 +227,12 @@ namespace {
             {
                 Verify (::inflateEnd (&fZStream_) == Z_OK);
             }
-            virtual span<ElementType> Read (span<ElementType> intoBuffer) override
+            virtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ()); // API rule for streams
                 Require (IsOpenRead ());
             Again:
-                bool      isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
+                bool      isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF (blockFlag);
                 ptrdiff_t outBufSize = intoBuffer.size ();
 
                 fZStream_.avail_out = static_cast<uInt> (outBufSize);

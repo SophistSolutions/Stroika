@@ -75,7 +75,7 @@ namespace {
         {
             return _fSource != nullptr;
         }
-        virtual span<Character> Read (span<Character> intoBuffer) override
+        virtual span<Character> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (not intoBuffer.empty ());
             Require (IsOpenRead ());
@@ -113,9 +113,10 @@ namespace {
                     return intoBuffer.subspan (0, convertedCharacters.size ());
                 }
                 else if (convertedCharacters.empty ()) {
+                    // @todo - we only NEED one byte here, but probably more efficient to grab more. Either wrap _fSource in streamReader or cache more directly here!
                     // We have zero convertedCharacters, so apparently not enough bytes read. Read one more, and try again.
                     byte b;
-                    if (_fSource.Read (span{&b, 1}).size () == 1) {
+                    if (_fSource.Read (span{&b, 1}, blockFlag).size () == 1) {
                         inBuf.push_back (b);
                         goto again;
                     }
@@ -286,7 +287,7 @@ namespace {
         {
             return true;
         }
-        virtual span<Character> Read (span<Character> intoBuffer) override
+        virtual span<Character> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (not intoBuffer.empty ());
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -324,7 +325,7 @@ namespace {
             // If the calling read big enough, re-use that buffer.
             constexpr size_t kMinCachedReadSize_{512};
             if (intoBuffer.size () >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
-                auto result = inherited::Read (intoBuffer);
+                auto result = inherited::Read (intoBuffer, blockFlag);
                 if (result.size () != 0) {
                     if (origOffset + result.size () > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
@@ -339,7 +340,7 @@ namespace {
                 constexpr size_t kUseCacheSize_ = 8 * kMinCachedReadSize_;
                 Character        buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
                 auto             result =
-                    inherited::Read (span{reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf))});
+                    inherited::Read (span{reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf))}, blockFlag);
                 if (result.size () != 0) {
                     if (origOffset + result.size () > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
@@ -376,8 +377,9 @@ namespace {
                     SeekTo_ (static_cast<size_t> (uNewOffset));
                 } break;
                 case Whence::eFromEnd: {
+                    // @todo DECIDE IF SeekRead needs blockFlag???
                     Character c;
-                    while (Read (span{&c, 1}).size () == 1) {
+                    while (Read (span{&c, 1}, NoDataAvailableHandling::eDefault).size () == 1) {
                         break; // read til EOF
                     }
                     SeekTo_ (_fOffset + offset);
@@ -392,7 +394,8 @@ namespace {
             // easy - keep reading
             while (_fOffset < offset) {
                 Character c;
-                if (Read (span{&c, 1}).size () == 0) [[unlikely]] {
+                // @todo Seek may require NoDataAvailableHandling flag!!!
+                if (Read (span{&c, 1}, NoDataAvailableHandling::eDefault).size () == 0) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
             }
