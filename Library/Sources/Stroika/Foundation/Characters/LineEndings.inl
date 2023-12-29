@@ -22,11 +22,12 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <IPossibleCharacterRepresentation T>
-    inline 
-    #if __cpp_constexpr >= 202211L
-    constexpr 
-    #endif
-    const T* GetEOL ()
+    inline
+#if __cpp_constexpr >= 202211L
+        constexpr
+#endif
+        const T*
+        GetEOL ()
     {
         // note queer syntax for strings so works with many character types, including Characters::Character
         if constexpr (qPlatform_Windows) {

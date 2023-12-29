@@ -17,10 +17,11 @@ namespace Stroika::Foundation::Characters {
     /**
      */
     template <IPossibleCharacterRepresentation T>
-    #if __cpp_constexpr >= 202211L
-    constexpr 
-    #endif
-    const T* GetEOL ();
+#if __cpp_constexpr >= 202211L
+    constexpr
+#endif
+        const T*
+        GetEOL ();
 
     /**
      */
