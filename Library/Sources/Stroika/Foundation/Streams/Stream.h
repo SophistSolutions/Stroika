@@ -69,6 +69,18 @@ namespace Stroika::Foundation::Streams {
     class IRep;
 
     /**
+     *  If eThrowIfWouldBlock passed to most Stream APIs, then when the code would do a blocking read/write, instead it will throw EWouldBlock
+     */
+    enum class NoDataAvailableHandling {
+        eThrowIfWouldBlock,
+        eBlockIfNoDataAvailable,
+
+        eDefault = eBlockIfNoDataAvailable
+    };
+    constexpr NoDataAvailableHandling eThrowIfWouldBlock      = NoDataAvailableHandling::eThrowIfWouldBlock;
+    constexpr NoDataAvailableHandling eBlockIfNoDataAvailable = NoDataAvailableHandling::eBlockIfNoDataAvailable;
+
+    /**
      *  \em Design Overview
      *     o   A Streams is a sequence of data elements made available over time. These elements
      *         are typically 'Bytes' - or 'Characters' - but can be any copyable type.

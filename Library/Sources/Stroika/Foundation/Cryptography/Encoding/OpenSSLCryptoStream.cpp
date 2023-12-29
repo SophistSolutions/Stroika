@@ -145,7 +145,7 @@ namespace {
             Require (IsOpenRead ());
             return 0;
         }
-        virtual span<ElementType> Read (span<ElementType> intoBuffer) override
+        virtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             /*
              *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
@@ -162,7 +162,7 @@ namespace {
                  */
                 byte toDecryptBuf[kInBufSize_];
             Again:
-                size_t n2Decrypt = fRealIn_.Read (span{toDecryptBuf}).size ();
+                size_t n2Decrypt = fRealIn_.Read (span{toDecryptBuf}, blockFlag).size ();
                 if (n2Decrypt == 0) {
                     size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
                     Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());

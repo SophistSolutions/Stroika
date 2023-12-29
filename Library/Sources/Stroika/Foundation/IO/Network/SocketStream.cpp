@@ -76,7 +76,7 @@ public:
         Require (IsOpenRead ());
         return 0;
     }
-    virtual span<byte> Read (span<byte> intoBuffer) override
+    virtual span<byte> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
     {
         Require (IsOpenRead ());
         size_t n = fSD_.Read (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ());

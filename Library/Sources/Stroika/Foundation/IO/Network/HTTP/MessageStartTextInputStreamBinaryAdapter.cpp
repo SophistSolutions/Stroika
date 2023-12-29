@@ -152,7 +152,7 @@ protected:
     {
         return fSource_ != nullptr;
     }
-    virtual span<Character> Read (span<Character> intoBuffer) override
+    virtual span<Character> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
     {
         Require (not intoBuffer.empty ());
         Require (IsOpenRead ());
@@ -177,7 +177,7 @@ protected:
             }
 
             byte*  startReadAt = fAllDataReadBuf_.begin () + fBufferFilledUpValidBytes_;
-            size_t n           = fSource_.Read (span{startReadAt, roomLeftInBuf}).size ();
+            size_t n           = fSource_.Read (span{startReadAt, roomLeftInBuf}, blockFlag).size ();
             Assert (n <= roomLeftInBuf);
             // if n == 0, OK, just means EOF
             fBufferFilledUpValidBytes_ += n;

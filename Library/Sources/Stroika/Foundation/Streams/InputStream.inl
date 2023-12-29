@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Streams::InputStream {
             return elementsRemaining;
         }
         else {
-            return elementsRemaining == 0 ? 0 : Read (span{intoStart, intoEnd}).size (); // safe to call beacuse this cannot block - there are elements available
+            return elementsRemaining == 0 ? 0 : Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault).size (); // safe to call beacuse this cannot block - there are elements available
         }
     }
 
@@ -114,20 +114,18 @@ namespace Stroika::Foundation::Streams::InputStream {
         return GetRepRWRef ().SeekRead (whence, offset);
     }
     template <typename ELEMENT_TYPE>
-    inline auto InputStream::Ptr<ELEMENT_TYPE>::Read () const -> optional<ElementType>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (NoDataAvailableHandling blockFlag) const -> optional<ElementType>
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
-        ElementType b{};
-        return (GetRepRWRef ().Read (span{&b, 1}).size () == 0) ? optional<ElementType>{} : b;
+        ELEMENT_TYPE b; // intentionally uninitialized in case POD-type, filled in by Read or not used
+        return this->Read (span{&b, 1}, blockFlag).size () == 0 ? optional<ElementType>{} : b;
     }
     template <typename ELEMENT_TYPE>
-    inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer) const -> span<ElementType>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const -> span<ElementType>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
         Require (not intoBuffer.empty ());
-        return GetRepRWRef ().Read (intoBuffer);
+        return GetRepRWRef ().Read (intoBuffer, blockFlag);
     }
     template <typename ELEMENT_TYPE>
     auto InputStream::Ptr<ELEMENT_TYPE>::Peek () const -> optional<ElementType>
