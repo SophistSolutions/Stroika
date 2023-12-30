@@ -164,14 +164,7 @@ namespace {
                     return nullopt; // if no data available, return nullopt
                 }
                 else {
-                    // we don't know how much is available, but at least one byte. If not actually reading, just return 1
-                    if (intoStart == nullptr) {
-                        return 1;
-                    }
-                    else {
-                        // if there is data available, read as much as you can...
-                        return Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault)->size (); //tmphack code going away
-                    }
+                    // if there is data available, safe to perform normal read = fall-thru
                 }
 #endif
 #if qPlatform_Windows
