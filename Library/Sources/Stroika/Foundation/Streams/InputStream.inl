@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Streams::InputStream {
     inline optional<size_t> InputStream::Ptr<ELEMENT_TYPE>::ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const
     {
         try {
-            return this->Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eThrowIfWouldBlock);
+            return this->Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eThrowIfWouldBlock).size();
         }
         catch (const EWouldBlock& e) {
             return nullopt;
