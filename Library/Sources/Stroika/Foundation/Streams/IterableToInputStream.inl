@@ -51,6 +51,13 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             {
                 return fIsOpen_;
             }
+            virtual optional<size_t> AvailableToRead () override
+            {
+                Require (IsOpenRead ());
+                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                // usually just want to know 0 or >= 1, so don't bother computing full length
+                return fSrcIter_.Done () ? 0 : 1;
+            }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
@@ -74,27 +81,6 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
                     fPrevCharCached_ = nullopt;
                 }
                 return intoBuffer.subspan (0, outI - intoBuffer.data ());
-            }
-            virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
-            {
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-                Require (IsOpenRead ());
-                if (intoStart == nullptr) {
-                    // Don't read (so don't update fOffset_) - just see how much available
-                    Iterator<ELEMENT_TYPE> srcIt = fSrcIter_;
-                    size_t                 cnt{};
-                    if (fPutBack_) {
-                        ++cnt;
-                    }
-                    for (; srcIt != fSource_.end (); ++srcIt, ++cnt)
-                        ;
-                    return cnt;
-                }
-                else {
-                    //tmphack code to disapepear
-                    return Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault)->size (); // safe because implementation of Read () in this type of stream doesn't block
-                }
             }
             virtual SeekOffsetType GetReadOffset () const override
             {

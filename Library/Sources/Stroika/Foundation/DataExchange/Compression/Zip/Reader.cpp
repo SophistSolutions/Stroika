@@ -93,13 +93,13 @@ namespace {
                 Require (IsOpenRead ());
                 return SeekOffsetType{};
             }
-            nonvirtual bool _AssureInputAvailableReturnTrueIfAtEOF (NoDataAvailableHandling blockFlag)
+            nonvirtual bool _AssureInputAvailableReturnTrueIfAtEOF ()
             {
                 Require (IsOpenRead ());
                 if (fZStream_.avail_in == 0) {
                     Assert (Memory::NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
-                    fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (span{fInBuf_}, blockFlag).size ());
-                    fZStream_.next_in  = reinterpret_cast<Bytef*> (begin (fInBuf_));
+                    fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (span{fInBuf_}).size ()); // blocking read always OK by the time we get here
+                    fZStream_.next_in = reinterpret_cast<Bytef*> (begin (fInBuf_));
                 }
                 return fZStream_.avail_in == 0;
             }
@@ -120,7 +120,12 @@ namespace {
                 Require (not intoBuffer.empty ()); // API rule for streams
                 Require (IsOpenRead ());
             Again:
-                bool isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF (blockFlag);
+                if (blockFlag == NoDataAvailableHandling::eThrowIfWouldBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
+                    // if non-blocking call, no data pre-available in zstream, and nothing in upstream, NoDataAvailable!
+                    // note MAY not be enuf in zbuf to read a full byte of output, but OK - will come back here
+                    return nullopt;
+                }
+                bool isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
 
                 ptrdiff_t outBufSize = intoBuffer.size ();
 
@@ -146,10 +151,15 @@ namespace {
                 _fSeekOffset += pulledOut;
                 return intoBuffer.subspan (0, pulledOut);
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking ([[maybe_unused]] ElementType* intoStart, [[maybe_unused]] ElementType* intoEnd) override
             {
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                 Require (IsOpenRead ());
+#if 1
+                AssertNotReached ();
+                return nullopt;
+#else
 // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - INCOMPLETE IMPL
 #if 0
                 if (intoStart == nullptr) {
@@ -212,7 +222,9 @@ namespace {
                 WeakAssert (false);
                 // @todo - FIX TO REALLY CHECK
                 return {};
+#endif
             }
+#endif
         };
         struct InflateRep_ : BaseRep_ {
             InflateRep_ (const Streams::InputStream::Ptr<byte>& in)
@@ -232,7 +244,12 @@ namespace {
                 Require (not intoBuffer.empty ()); // API rule for streams
                 Require (IsOpenRead ());
             Again:
-                bool      isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF (blockFlag);
+                if (blockFlag == NoDataAvailableHandling::eThrowIfWouldBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
+                    // if non-blocking call, no data pre-available in zstream, and nothing in upstream, NoDataAvailable!
+                    // note MAY not be enuf in zbuf to read a full byte of output, but OK - will come back here
+                    return nullopt;
+                }
+                bool      isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
                 ptrdiff_t outBufSize = intoBuffer.size ();
 
                 fZStream_.avail_out = static_cast<uInt> (outBufSize);
@@ -255,6 +272,7 @@ namespace {
                 _fSeekOffset += pulledOut;
                 return intoBuffer.subspan (0, pulledOut);
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking ([[maybe_unused]] ElementType* intoStart, [[maybe_unused]] ElementType* intoEnd) override
             {
                 // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - incomplete IMPL
@@ -264,6 +282,7 @@ namespace {
                 // @todo - FIX TO REALLY CHECK
                 return {};
             }
+#endif
         };
         enum Compression {
             eCompression

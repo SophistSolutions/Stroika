@@ -31,6 +31,8 @@ namespace {
 // but for now this seems and adequate hack
 
 class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream::IRep<Character> {
+    using inherited = InputStream::IRep<Character>;
+
 public:
     Rep_ (const InputStream::Ptr<byte>& src)
         : fSource_{src}
@@ -43,6 +45,7 @@ public:
 public:
     bool AssureHeaderSectionAvailable ()
     {
+        // @todo fix - inefficient implementation - LGP 2023-12-30
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{
             Stroika_Foundation_Debug_OptionalizeTraceArgs ("MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable")};
@@ -56,11 +59,11 @@ public:
             gotNOTHING,
         };
         state s = gotNOTHING;
-        while (optional<size_t> o = ReadNonBlocking (&c, &c + 1)) {
-            if (*o == 0) {
+        while (optional<span<Character>> o = Read (span{&c, &c + 1}, NoDataAvailableHandling::eThrowIfWouldBlock)) {
+            if (o->size () == 0) {
                 return true; // tricky corner case - EOF in header - treat as available so we process whole header
             }
-            Assert (*o == 1);
+            Assert (o->size () == 1);
             switch (c.GetCharacterCode ()) {
                 case '\r': {
                     switch (s) {
@@ -152,6 +155,15 @@ protected:
     {
         return fSource_ != nullptr;
     }
+    virtual optional<size_t> AvailableToRead () override
+    {
+        Require (IsOpenRead ());
+        if (fOffset_ < fBufferFilledUpValidBytes_) {
+            return fBufferFilledUpValidBytes_ - fOffset_;
+        }
+        // default impl handles this case since we are seekable
+        return inherited::AvailableToRead ();
+    }
     virtual optional<span<Character>> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
     {
         Require (not intoBuffer.empty ());
@@ -195,20 +207,6 @@ protected:
         }
         Ensure (outN <= intoBuffer.size ());
         return intoBuffer.subspan (0, outN);
-    }
-    virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
-    {
-        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-        Require (IsOpenRead ());
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        // See if data already in fAllDataReadBuf_. If yes, then data available. If no, ReadNonBlocking () from upstream, and return that result.
-        if (fOffset_ < fBufferFilledUpValidBytes_) {
-            return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fBufferFilledUpValidBytes_ - fOffset_);
-        }
-        if (optional<size_t> n = fSource_.ReadNonBlocking ()) {
-            return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, *n);
-        }
-        return {};
     }
     virtual SeekOffsetType GetReadOffset () const override
     {

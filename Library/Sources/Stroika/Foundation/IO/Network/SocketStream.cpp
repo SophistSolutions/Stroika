@@ -76,22 +76,31 @@ public:
         Require (IsOpenRead ());
         return 0;
     }
+    virtual optional<size_t> AvailableToRead () override
+    {
+        Require (IsOpenRead ());
+        return fSD_.ReadNonBlocking (nullptr, nullptr);
+    }
     virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
     {
         Require (IsOpenRead ());
-        // @todo HANDLE blockFlag - IMPORANT HERE!!!
-        size_t n = fSD_.Read (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ());
-        fReadSeekOffset_ += n;
-        return intoBuffer.subspan (0, n);
-    }
-    virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
-    {
-        Require (IsOpenRead ());
-        Require (IsOpenWrite ());
-        optional<size_t> result = fSD_.ReadNonBlocking (intoStart, intoEnd);
-        if (result and intoStart != nullptr) {
-            fReadSeekOffset_ += *result;
+        optional<span<byte>> result;
+        switch (blockFlag) {
+            case NoDataAvailableHandling::eBlockIfNoDataAvailable:
+                result = intoBuffer.subspan (0, fSD_.Read (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ()));
+                break;
+            case NoDataAvailableHandling::eThrowIfWouldBlock: {
+                auto o = fSD_.ReadNonBlocking (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ());
+                if (o == nullopt) {
+                    Execution::Throw (EWouldBlock::kThe);
+                }
+                result = intoBuffer.subspan (0, *o);
+            } break;
+            default:
+                RequireNotReached ();
         }
+        Assert (result);
+        fReadSeekOffset_ += result->size ();
         return result;
     }
     virtual SeekOffsetType GetWriteOffset () const override

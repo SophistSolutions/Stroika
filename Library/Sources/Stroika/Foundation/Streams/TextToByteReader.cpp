@@ -79,7 +79,7 @@ namespace {
             // if we got here, nothing in our buf, and nothing upstream - EOF
             return span<byte>{};
         }
-
+#if 0
         virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) override
         {
             Require ((intoStart == intoEnd) or (intoStart != nullptr));
@@ -87,7 +87,7 @@ namespace {
             Require (IsOpenRead ());
             return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fSrcBufferedSpan_.size ());
         }
-
+#endif
         virtual SeekOffsetType GetReadOffset () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};

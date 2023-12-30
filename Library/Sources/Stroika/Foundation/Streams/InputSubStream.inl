@@ -145,6 +145,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                 }
                 return fRealIn_.Read (intoBuffer, blockFlag);
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -166,6 +167,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                 }
                 return fRealIn_.ReadNonBlocking (intoStart, intoEnd);
             }
+#endif
 
         private:
             nonvirtual void ValidateRealOffset_ (SignedSeekOffsetType offset) const

@@ -58,12 +58,14 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::Read (intoBuffer, blockFlag);
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::ReadNonBlocking (intoStart, intoEnd);
             }
+#endif
             virtual void CloseWrite () override
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
@@ -71,7 +73,7 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
             }
             virtual bool IsOpenWrite () const override
             {
-                lock_guard<mutex> critSec{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 return BASE_REP_TYPE::IsOpenWrite ();
             }
             virtual SeekOffsetType GetWriteOffset () const override
@@ -144,12 +146,14 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
                 Require (IsOpenRead ());
                 return fStream2Wrap.Read (intoStart, intoEnd);
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
                 Require (IsOpenRead ());
                 return fStream2Wrap.ReadNonBlocking (intoStart, intoEnd);
             }
+#endif
 
         private:
             InputOutputStream::Ptr<ELEMENT_TYPE> fStream2Wrap;

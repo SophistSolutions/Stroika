@@ -72,12 +72,14 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
                 fCursor_ += nCopied;
                 return intoBuffer.subspan (0, nCopied); // this can be empty on EOF
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
                 return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd_ - fCursor_);
             }
+#endif
             virtual SeekOffsetType GetReadOffset () const override
             {
                 Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};

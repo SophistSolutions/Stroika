@@ -24,9 +24,9 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
      */
     struct DefaultOptions {
         /**
-         * Default to using non-recursive simple mutex (so beware of one rep method calling another - if you do, override this argument to New).
+         * Default to using recursive mutex since this is the safest, most flexible option, and callers can specify explcitly if its safe todo another way (e.g. mutex)
          */
-        using MutexType = mutex;
+        using MutexType = recursive_mutex;
     };
 
     /**

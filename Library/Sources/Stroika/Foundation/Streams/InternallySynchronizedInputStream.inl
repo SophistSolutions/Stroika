@@ -58,12 +58,14 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::Read (intoBuffer, blockFlag);
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::ReadNonBlocking (intoStart, intoEnd);
             }
+#endif
 
         private:
             mutable typename OPTIONS::MutexType fCriticalSection_;
@@ -109,12 +111,14 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
                 Require (IsOpenRead ());
                 return fStream2Wrap.Read (intoBuffer, blockFlag);
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
                 Require (IsOpenRead ());
                 return fStream2Wrap.ReadNonBlocking (intoStart, intoEnd);
             }
+#endif
 
         private:
             InputStream::Ptr<ELEMENT_TYPE>      fStream2Wrap;

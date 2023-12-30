@@ -69,6 +69,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                 }
                 return intoBuffer.subspan (0, n);
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {
                 Require (IsOpenRead ());
@@ -83,6 +84,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                 }
                 return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, static_cast<size_t> (sz));
             }
+#endif
             virtual SeekOffsetType GetReadOffset () const override
             {
                 // instead of tellg () - avoids issue with EOF where fail bit set???
