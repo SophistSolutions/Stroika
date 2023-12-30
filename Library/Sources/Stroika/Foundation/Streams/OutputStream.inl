@@ -74,24 +74,24 @@ namespace Stroika::Foundation::Streams::OutputStream {
     }
     template <typename ELEMENT_TYPE>
     template <typename ELEMENT_TYPE2, size_t EXTENT_2>
-    inline void Ptr<ELEMENT_TYPE>::Write (span<const ELEMENT_TYPE2, EXTENT_2> elts) const
+    inline void Ptr<ELEMENT_TYPE>::Write (span<ELEMENT_TYPE2, EXTENT_2> elts) const
         requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or
                   (same_as<ELEMENT_TYPE, byte> and (same_as<remove_cvref_t<ELEMENT_TYPE2>, uint8_t>)) or
                   (same_as<ELEMENT_TYPE, Characters::Character> and (Characters::IUNICODECanUnambiguouslyConvertFrom<remove_cvref_t<ELEMENT_TYPE2>>)))
     {
+        using Characters::Character;
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
         Require (not elts.empty ());
         if constexpr (same_as<ELEMENT_TYPE, byte>) {
             GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
         }
-        else if constexpr (same_as<ELEMENT_TYPE, Characters::Character>) {
-            if constexpr (sizeof (ELEMENT_TYPE2) == sizeof (Characters::Character)) {
+        else if constexpr (same_as<ELEMENT_TYPE, Character>) {
+            if constexpr (sizeof (ELEMENT_TYPE2) == sizeof (Character)) {
                 GetRepRWRef ().Write (Memory::SpanReInterpretCast<const ELEMENT_TYPE> (elts));
             }
             else {
-                Memory::StackBuffer<Characters::Character> buf{Memory::eUninitialized,
-                                                               Characters::UTFConvert::ComputeTargetBufferSize<Characters::Character> (elts)};
+                Memory::StackBuffer<Character> buf{Memory::eUninitialized, Characters::UTFConvert::ComputeTargetBufferSize<Character> (elts)};
                 GetRepRWRef ().Write (Characters::UTFConvert::kThe.ConvertSpan (elts, span{buf}));
             }
         }
@@ -135,13 +135,13 @@ namespace Stroika::Foundation::Streams::OutputStream {
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
     inline void Ptr<ELEMENT_TYPE>::WriteRaw (const POD_TYPE& p) const
-        requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
+        requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE> and not Memory::ISpanT<POD_TYPE>)
     {
         this->WriteRaw (span{&p, 1});
     }
     template <typename ELEMENT_TYPE>
-    template <typename POD_TYPE>
-    inline void Ptr<ELEMENT_TYPE>::WriteRaw (span<const POD_TYPE> elts) const
+    template <typename POD_TYPE, size_t SPAN_LENGTH>
+    inline void Ptr<ELEMENT_TYPE>::WriteRaw (span<POD_TYPE, SPAN_LENGTH> elts) const
         requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
     {
         this->Write (as_bytes (elts));

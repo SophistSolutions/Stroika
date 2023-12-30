@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *  \req IsOpen ()
          */
         template <typename ELEMENT_TYPE2, size_t EXTENT_2>
-        nonvirtual void Write (span<const ELEMENT_TYPE2, EXTENT_2> elts) const
+        nonvirtual void Write (span<ELEMENT_TYPE2, EXTENT_2> elts) const
             requires (same_as<ELEMENT_TYPE, remove_cvref_t<ELEMENT_TYPE2>> or
                       (same_as<ELEMENT_TYPE, byte> and (same_as<remove_cvref_t<ELEMENT_TYPE2>, uint8_t>)) or
                       (same_as<ELEMENT_TYPE, Characters::Character> and
@@ -190,9 +190,9 @@ namespace Stroika::Foundation::Streams::OutputStream {
          */
         template <typename POD_TYPE>
         nonvirtual void WriteRaw (const POD_TYPE& p) const
-            requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>);
-        template <typename POD_TYPE>
-        nonvirtual void WriteRaw (span<const POD_TYPE> elts) const
+            requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE> and not Memory::ISpanT<POD_TYPE>);
+        template <typename POD_TYPE, size_t SPAN_LENGTH>
+        nonvirtual void WriteRaw (span<POD_TYPE, SPAN_LENGTH> elts) const
             requires (is_same_v<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>);
 
     public:
