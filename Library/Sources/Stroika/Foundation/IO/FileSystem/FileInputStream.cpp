@@ -124,7 +124,7 @@ namespace {
         {
             return fFD_ >= 0;
         }
-        virtual span<byte> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
+        virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (not intoBuffer.empty ());
             size_t nRequested = intoBuffer.size ();
@@ -162,7 +162,7 @@ namespace {
              *
              *  but windows doesn't appear to support fcntl()
              */
-            return Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault).size ();
+            return Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault)->size (); //tmphack - code going away...
 #elif qPlatform_POSIX
             pollfd pollData{fFD_, POLLIN, 0};
             int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
@@ -177,7 +177,7 @@ namespace {
                 }
                 else {
                     // if there is data available, read as much as you can...
-                    return Read (span{intoStart, intoEnd}).size ();
+                    return Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault)->size (); //tmphack code going away
                 }
             }
 #endif

@@ -12,6 +12,11 @@
 
 namespace Stroika::Foundation::Streams {
 
+    inline EWouldBlock::EWouldBlock ()
+        : inherited{"Stream Read Would Block"sv}
+    {
+    }
+
 }
 
 #endif /*_Stroika_Foundation_Streams_EWouldBlock_inl_*/

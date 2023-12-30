@@ -115,7 +115,7 @@ namespace {
             {
                 Verify (::deflateEnd (&fZStream_) == Z_OK);
             }
-            virtual span<byte> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
+            virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ()); // API rule for streams
                 Require (IsOpenRead ());
@@ -227,7 +227,7 @@ namespace {
             {
                 Verify (::inflateEnd (&fZStream_) == Z_OK);
             }
-            virtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
+            virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ()); // API rule for streams
                 Require (IsOpenRead ());

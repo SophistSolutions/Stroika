@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 Require (IsOpenRead ());
                 return 0;
             }
-            virtual span<ELEMENT_TYPE> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
+            virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());

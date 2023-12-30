@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                     return fRealIn_.Seek (whence, offset + fOffsetMine2Real_) - fOffsetMine2Real_;
                 }
             }
-            virtual span<ELEMENT_TYPE> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
+            virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};

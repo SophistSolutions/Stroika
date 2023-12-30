@@ -152,7 +152,7 @@ protected:
     {
         return fSource_ != nullptr;
     }
-    virtual span<Character> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
+    virtual optional<span<Character>> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
     {
         Require (not intoBuffer.empty ());
         Require (IsOpenRead ());

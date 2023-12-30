@@ -47,7 +47,7 @@ namespace {
             return fSrc_ != nullptr;
         }
 
-        virtual span<byte> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
+        virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (IsOpenRead ());
             Require (not intoBuffer.empty ());

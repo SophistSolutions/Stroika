@@ -15,6 +15,7 @@
 #include "../Debug/Assertions.h"
 #include "../Debug/Cast.h"
 #include "EOFException.h"
+#include "EWouldBlock.h"
 
 namespace Stroika::Foundation::Streams::InputStream {
 
@@ -33,7 +34,8 @@ namespace Stroika::Foundation::Streams::InputStream {
             return elementsRemaining;
         }
         else {
-            return elementsRemaining == 0 ? 0 : Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault).size (); // safe to call beacuse this cannot block - there are elements available
+            //tmphack - code going away
+            return elementsRemaining == 0 ? 0 : Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault)->size (); // safe to call beacuse this cannot block - there are elements available
         }
     }
 
@@ -125,7 +127,12 @@ namespace Stroika::Foundation::Streams::InputStream {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
         Require (not intoBuffer.empty ());
-        return GetRepRWRef ().Read (intoBuffer, blockFlag);
+        if (auto o = GetRepRWRef ().Read (intoBuffer, blockFlag)) [[likely]] {
+            return *o;
+        }
+        else {
+            Execution::Throw (EWouldBlock::kThe);
+        }
     }
     template <typename ELEMENT_TYPE>
     auto InputStream::Ptr<ELEMENT_TYPE>::Peek () const -> optional<ElementType>

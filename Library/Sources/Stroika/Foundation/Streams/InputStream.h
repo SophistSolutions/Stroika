@@ -550,8 +550,11 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  Returns empty span iff EOF, and otherwise intoBuffer.subspan(0,number of ELEMENT_TYPE elements read).
          *  BLOCKING until data is available, but can return with fewer bytes than bufSize
          *  without prejudice about how much more is available.
+         * 
+         *  Return nullopt is shortcut for throwing EWouldBlock (implementations MAY at their discretion either throw EWouldBlock or return nullopt). Only possible if blockFlag != eBlockIfNoDataAvailable
+         *  
          */
-        virtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) = 0;
+        virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) = 0;
 
     public:
         // LEANING TOWARDS DEPRECTING/REPLACING WITH IS_AVAIL_READ
