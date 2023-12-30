@@ -74,6 +74,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 }
                 return intoBuffer.subspan (0, nCopied); // this can be empty iff EOF
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
@@ -81,6 +82,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 Require (IsOpenRead ());
                 return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fData_.end () - fReadCursor_);
             }
+#endif
             virtual void Write (span<const ELEMENT_TYPE> elts) override
             {
                 Require (not elts.empty ());

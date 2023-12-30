@@ -13,6 +13,8 @@
 #include "../Memory/Common.h"
 #include "../Traversal/Iterable.h"
 
+#include "EWouldBlock.h"
+
 #include "Stream.h"
 
 /**
@@ -232,6 +234,12 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
+         *  \brief returns nullopt if nothing known available, zero if known EOF, and any other number of elements (typically 1) if that number know to be available to read
+         */
+        nonvirtual optional<size_t> AvailableToRead () const;
+
+    public:
+        /**
          *  Read/0
          *      return nullopt on EOF, and otherwise return a single element. Read/0 will block if no data available.
          *
@@ -253,6 +261,10 @@ namespace Stroika::Foundation::Streams::InputStream {
          */
         nonvirtual optional<ElementType> Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault) const;
         nonvirtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault) const;
+
+    public:
+        // almost identical to Read (intoBuffer, NoDataAvailableHandling::eThrow except doesnt throw in that case but returns optional
+        nonvirtual optional<span<ElementType>> ReadNonBlocking (span<ElementType> intoBuffer) const;
 
     public:
         /**
@@ -333,8 +345,9 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  @see Read ()
          *  @see ReadAll ()
          */
-        nonvirtual optional<size_t> ReadNonBlocking () const;
-        nonvirtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const;
+        [[deprecated ("Since Stroika v3.0d5 use IsDataAvailableToRead ()")]] optional<size_t> ReadNonBlocking () const;
+        [[deprecated ("Since Stroika v3.0d5 use Read (span, NoDataAvailableHandling::eThrowIfWouldBlock )")]] optional<size_t>
+        ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const;
 
     public:
         /**
@@ -545,17 +558,29 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
+         *  \brief returns nullopt if nothing known available, zero if known EOF, and any other number of elements (typically 1) if that number know to be available to read
+         * 
+         *  Default implementation - if seekable - does a read, and then seeks back, so flexible, but fairly inefficient.
+         *  Subclassers MUST re-implement this function if not IsSeekable ()
+         */
+        virtual optional<size_t> AvailableToRead ();
+
+    public:
+        /**
          *  incoming intoBuffer must be a valid, non-empty span of elements (to be overwritten).
          * 
          *  Returns empty span iff EOF, and otherwise intoBuffer.subspan(0,number of ELEMENT_TYPE elements read).
          *  BLOCKING until data is available, but can return with fewer bytes than bufSize
          *  without prejudice about how much more is available.
          * 
-         *  Return nullopt is shortcut for throwing EWouldBlock (implementations MAY at their discretion either throw EWouldBlock or return nullopt). Only possible if blockFlag != eBlockIfNoDataAvailable
-         *  
+         *  Blocking:
+         *      o   If blockFlag == eBlockIfNoDataAvailable, always blocks until data available and returns non-nullopt span
+         *      o   if blockFlag == eThrowIfWouldBlock, will return nullopt if would block, and else number of elements read
+         *      In EITHER case, NEVER throws EWouldBlock (can throw other stuff). That is done by Ptr wrapper.
          */
         virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) = 0;
 
+#if 0
     public:
         // LEANING TOWARDS DEPRECTING/REPLACING WITH IS_AVAIL_READ
         /**
@@ -586,7 +611,9 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  \note similar to basic_istream::readsome - http://en.cppreference.com/w/cpp/io/basic_istream/readsome
          */
         virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) = 0;
+#endif
 
+#if 0
     protected:
         /**
          *  Implementers of IRep where there is no 'non-blocking' mode supported (always the same as blocking) - can
@@ -597,6 +624,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          */
         nonvirtual optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd,
                                                                                                      size_t elementsRemaining);
+#endif
     };
 
 }

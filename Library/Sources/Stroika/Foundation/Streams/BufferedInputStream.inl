@@ -55,13 +55,20 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 Require (IsOpenRead ());
                 return fRealIn_.Read (intoBuffer, blockFlag);
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {
                 // easy todo while no real buffer implementation ;-)
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
+#if 1
+                AssertNotReached ();
+                return nullopt;
+#else
                 return fRealIn_.ReadNonBlocking (intoStart, intoEnd);
+#endif
             }
+#endif
 
         private:
             typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;

@@ -192,8 +192,12 @@ namespace {
             }
             return span<ElementType>{}; // EOF
         }
+#if 0
         virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
         {
+            AssertNotImplemented ();
+            return nullopt;
+#if 0
             Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
             [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
             Require (IsOpenRead ());
@@ -228,7 +232,9 @@ namespace {
                 }
             }
             return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fOutBufEnd_ - fOutBufStart_);
+#endif
         }
+#endif
 
     private:
         mutable recursive_mutex                                        fCriticalSection_;

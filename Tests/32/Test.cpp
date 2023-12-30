@@ -1196,7 +1196,7 @@ namespace {
                 ReadJSON_ (sharedMemStream);
                 WriteJSON_ (sharedMemStream);
                 ReadJSON_ (sharedMemStream);
-                EXPECT_TRUE (not sharedMemStream.ReadNonBlocking ().has_value ()); // would be at EOF, but not KNOWN at EOF til writing side closed.
+                EXPECT_TRUE (not sharedMemStream.AvailableToRead ().has_value ()); // would be at EOF, but not KNOWN at EOF til writing side closed.
                 sharedMemStream.CloseWrite ();
                 EXPECT_TRUE (sharedMemStream.IsAtEOF ()); // now at EOF because input closed
             }

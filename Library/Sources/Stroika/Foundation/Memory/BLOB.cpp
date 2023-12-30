@@ -229,6 +229,12 @@ namespace {
             {
                 return fIsOpenForRead_;
             }
+            virtual optional<size_t> AvailableToRead () override
+            {
+                Require (IsOpenRead ());
+                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                return fEnd - fCur;
+            }
             virtual optional<span<byte>> Read (span<byte> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
@@ -242,12 +248,6 @@ namespace {
                     fCur += bytesToRead;
                 }
                 return intoBuffer.subspan (0, bytesToRead);
-            }
-            virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
-            {
-                Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd - fCur);
             }
             virtual SeekOffsetType GetReadOffset () const override
             {

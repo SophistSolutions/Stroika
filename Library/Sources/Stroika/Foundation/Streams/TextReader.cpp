@@ -136,12 +136,17 @@ namespace {
             }
             return span<Character>{};
         }
+#if 0
         virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
         {
             /// @todo hANDLE intoStart==nullptr case!!!
             Require ((intoStart == intoEnd) or (intoStart != nullptr));
             Require ((intoStart == intoEnd) or (intoEnd != nullptr));
             Require (IsOpenRead ());
+#if 1
+            AssertNotReached ();
+            return nullopt;
+#else
             // Plan:
             //      o   ReadNonBlocking upstream (or grab from _fReadAheadCache)
             //      o   decode and see if at least one character
@@ -233,7 +238,9 @@ namespace {
                     }
                 }
             }
+#endif
         }
+#endif
         virtual SeekOffsetType GetReadOffset () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};

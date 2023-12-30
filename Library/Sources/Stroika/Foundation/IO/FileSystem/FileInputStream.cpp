@@ -124,6 +124,25 @@ namespace {
         {
             return fFD_ >= 0;
         }
+        virtual optional<size_t> AvailableToRead () override
+        {
+#if qPlatform_POSIX
+            pollfd pollData{fFD_, POLLIN, 0};
+            int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
+            Assert (pollResult >= 0);
+            if (pollResult == 0) {
+                return nullopt; // if no data available, return nullopt
+            }
+            else {
+                // we don't know how much is available, but at least one byte. If not actually reading, just return 1
+                return 1;
+            }
+#endif
+#if qPlatform_Windows
+            AssertNotImplemented ();
+            return nullopt;
+#endif
+        }
         virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (not intoBuffer.empty ());
@@ -135,53 +154,55 @@ namespace {
             auto                                            readingFromFileActivity = LazyEvalActivity{
                 [&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); }};
             DeclareActivity currentActivity{&readingFromFileActivity};
+
+            if (blockFlag == NoDataAvailableHandling::eThrowIfWouldBlock) {
+#if qPlatform_POSIX
+                pollfd pollData{fFD_, POLLIN, 0};
+                int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
+                Assert (pollResult >= 0);
+                if (pollResult == 0) {
+                    return nullopt; // if no data available, return nullopt
+                }
+                else {
+                    // we don't know how much is available, but at least one byte. If not actually reading, just return 1
+                    if (intoStart == nullptr) {
+                        return 1;
+                    }
+                    else {
+                        // if there is data available, read as much as you can...
+                        return Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault)->size (); //tmphack code going away
+                    }
+                }
+#endif
+#if qPlatform_Windows
+                /*
+                 *  For now, assume all FILE reads are already non-blocking. Not sure about this.
+                 *
+                 *  COULD use intptr_t _get_osfhandle (int fd);
+                 *  to use Windows APIs, but those all seem to require the file to be opened a special way to do async reads.
+                 *
+                 *  Tried:
+                 *      int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
+                 *      if (fcntl (fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
+                 *          ;
+                 *      [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() noexcept {
+                 *          fcntl (fFD_, F_SETFL, oldFileFlags);
+                 *      });
+                 *
+                 *  but windows doesn't appear to support fcntl()
+                 */
+#endif
+            }
+
+            /*
+             *  Standard blocking read
+             */
 #if qPlatform_Windows
             return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (
                                               ::_read (fFD_, intoBuffer.data (), Math::PinToMaxForType<unsigned int> (nRequested)))));
 #else
             return intoBuffer.subspan (0, static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::read (fFD_, intoBuffer.data (), nRequested))));
 #endif
-        }
-        virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
-        {
-            Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-#if qPlatform_Windows
-            /*
-             *  For now, assume all FILE reads are already non-blocking. Not sure about this.
-             *
-             *  COULD use intptr_t _get_osfhandle (int fd);
-             *  to use Windows APIs, but those all seem to require the file to be opened a special way to do async reads.
-             *
-             *  Tried:
-             *      int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
-             *      if (fcntl (fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
-             *          ;
-             *      [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() noexcept {
-             *          fcntl (fFD_, F_SETFL, oldFileFlags);
-             *      });
-             *
-             *  but windows doesn't appear to support fcntl()
-             */
-            return Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault)->size (); //tmphack - code going away...
-#elif qPlatform_POSIX
-            pollfd pollData{fFD_, POLLIN, 0};
-            int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
-            Assert (pollResult >= 0);
-            if (pollResult == 0) {
-                return nullopt; // if no data available, return nullopt
-            }
-            else {
-                // we don't know how much is available, but at least one byte. If not actually reading, just return 1
-                if (intoStart == nullptr) {
-                    return 1;
-                }
-                else {
-                    // if there is data available, read as much as you can...
-                    return Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault)->size (); //tmphack code going away
-                }
-            }
-#endif
-            return {};
         }
         virtual Streams::SeekOffsetType GetReadOffset () const override
         {

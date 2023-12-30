@@ -61,6 +61,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
                 fLogInput_.Write (intoStart, intoStart + result);
                 return result;
             }
+#if 0
             virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {
                 // note - in rep, intoStart==nullptr allowed, but not allowed in call to smart ptr public API
@@ -76,6 +77,7 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
                     return {};
                 }
             }
+#endif
 
             // OutputStream::IRep
         public:

@@ -14,6 +14,8 @@
 #include "../Characters/StringBuilder.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Cast.h"
+#include "../Execution/Finally.h"
+
 #include "EOFException.h"
 #include "EWouldBlock.h"
 
@@ -24,6 +26,27 @@ namespace Stroika::Foundation::Streams::InputStream {
      *********************** InputStream::IRep<ELEMENT_TYPE> ************************
      ********************************************************************************
      */
+    template <typename ELEMENT_TYPE>
+    optional<size_t> InputStream::IRep<ELEMENT_TYPE>::AvailableToRead ()
+    {
+        Require (this->IsSeekable ()); // subclassers must override if not seekable
+                                       // not sure why not compiling
+        SeekOffsetType offset = GetReadOffset ();
+        // note this impl assumes seek won't fail - perhaps should catch internally rather than std::terminate?
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&, this] () noexcept { this->SeekRead (Whence::eFromStart, offset); });
+        ElementType elts[1]; // typically not useful to know if more than one available, and typically more costly to read extras we will toss out
+        try {
+            optional<span<ELEMENT_TYPE>> o = this->Read (span{elts}, NoDataAvailableHandling::eThrowIfWouldBlock);
+            return o ? o->size () : optional<size_t>{};
+        }
+        catch (const EWouldBlock&) {
+            return nullopt;
+        }
+        catch (...) {
+            Execution::ReThrow ();
+        }
+    }
+#if 0
     template <typename ELEMENT_TYPE>
     optional<size_t> InputStream::IRep<ELEMENT_TYPE>::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart,
                                                                                                                        ElementType* intoEnd,
@@ -38,6 +61,7 @@ namespace Stroika::Foundation::Streams::InputStream {
             return elementsRemaining == 0 ? 0 : Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault)->size (); // safe to call beacuse this cannot block - there are elements available
         }
     }
+#endif
 
     /*
      ********************************************************************************
@@ -116,6 +140,11 @@ namespace Stroika::Foundation::Streams::InputStream {
         return GetRepRWRef ().SeekRead (whence, offset);
     }
     template <typename ELEMENT_TYPE>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::AvailableToRead () const -> optional<size_t>
+    {
+        return GetRepRWRef ().AvailableToRead ();
+    }
+    template <typename ELEMENT_TYPE>
     inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (NoDataAvailableHandling blockFlag) const -> optional<ElementType>
     {
         ELEMENT_TYPE b; // intentionally uninitialized in case POD-type, filled in by Read or not used
@@ -133,6 +162,14 @@ namespace Stroika::Foundation::Streams::InputStream {
         else {
             Execution::Throw (EWouldBlock::kThe);
         }
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::ReadNonBlocking (span<ElementType> intoBuffer) const -> optional<span<ElementType>>
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
+        Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
+        Require (not intoBuffer.empty ());
+        return GetRepRWRef ().Read (intoBuffer, NoDataAvailableHandling::eThrowIfWouldBlock);
     }
     template <typename ELEMENT_TYPE>
     auto InputStream::Ptr<ELEMENT_TYPE>::Peek () const -> optional<ElementType>
@@ -166,18 +203,20 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     inline optional<size_t> InputStream::Ptr<ELEMENT_TYPE>::ReadNonBlocking () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
-        return GetRepRWRef ().ReadNonBlocking (nullptr, nullptr);
+        return AvailableToRead ();
     }
     template <typename ELEMENT_TYPE>
     inline optional<size_t> InputStream::Ptr<ELEMENT_TYPE>::ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        RequireNotNull (intoStart);
-        Require ((intoEnd - intoStart) >= 1);
-        Require (IsOpen ());
-        return GetRepRWRef ().ReadNonBlocking (intoStart, intoEnd);
+        try {
+            return this->Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eThrowIfWouldBlock);
+        }
+        catch (const EWouldBlock& e) {
+            return nullopt;
+        }
+        catch (...) {
+            Execution::ReThrow ();
+        }
     }
     template <typename ELEMENT_TYPE>
     inline Characters::Character InputStream::Ptr<ELEMENT_TYPE>::ReadCharacter () const
