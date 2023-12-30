@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             {
                 return fIsOpenForRead_;
             }
-            virtual span<ELEMENT_TYPE> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
+            virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
                 Require (IsOpenRead ());

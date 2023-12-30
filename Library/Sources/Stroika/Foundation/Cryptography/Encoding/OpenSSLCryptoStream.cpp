@@ -145,7 +145,7 @@ namespace {
             Require (IsOpenRead ());
             return 0;
         }
-        virtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
+        virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             /*
              *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.

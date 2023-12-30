@@ -2163,7 +2163,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedSpanInputStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\EWiouldBlock.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\EWouldBlock.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
   </ItemGroup>

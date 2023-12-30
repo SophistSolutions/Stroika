@@ -75,7 +75,7 @@ namespace {
         {
             return _fSource != nullptr;
         }
-        virtual span<Character> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
+        virtual optional<span<Character>> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (not intoBuffer.empty ());
             Require (IsOpenRead ());
@@ -287,7 +287,7 @@ namespace {
         {
             return true;
         }
-        virtual span<Character> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
+        virtual optional<span<Character>> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (not intoBuffer.empty ());
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -326,12 +326,15 @@ namespace {
             constexpr size_t kMinCachedReadSize_{512};
             if (intoBuffer.size () >= kMinCachedReadSize_ or not fReadAheadAllowed_) {
                 auto result = inherited::Read (intoBuffer, blockFlag);
-                if (result.size () != 0) {
-                    if (origOffset + result.size () > numeric_limits<size_t>::max ()) [[unlikely]] {
+                if (result == nullopt) {
+                    Execution::Throw (EWouldBlock::kThe);
+                }
+                if (result->size () != 0) {
+                    if (origOffset + result->size () > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
                         Execution::Throw (range_error{"seek past max size for size_t"});
                     }
-                    pushIntoCacheBuf (intoBuffer.data (), intoBuffer.data () + result.size ());
+                    pushIntoCacheBuf (intoBuffer.data (), intoBuffer.data () + result->size ());
                 }
                 return result;
             }
@@ -341,17 +344,20 @@ namespace {
                 Character        buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
                 auto             result =
                     inherited::Read (span{reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf))}, blockFlag);
-                if (result.size () != 0) {
-                    if (origOffset + result.size () > numeric_limits<size_t>::max ()) [[unlikely]] {
+                if (result == nullopt) {
+                    Execution::Throw (EWouldBlock::kThe);
+                }
+                if (result->size () != 0) {
+                    if (origOffset + result->size () > numeric_limits<size_t>::max ()) [[unlikely]] {
                         // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
                         Execution::Throw (range_error{"seek past max size for size_t"});
                     }
-                    pushIntoCacheBuf (std::begin (buf), std::begin (buf) + result.size ());
-                    result = result.subspan (0, intoBuffer.size ());
+                    pushIntoCacheBuf (std::begin (buf), std::begin (buf) + result->size ());
+                    result = result->subspan (0, intoBuffer.size ());
                     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"");
-                    (void)::memcpy (intoBuffer.data (), std::begin (buf), result.size () * sizeof (Character));
+                    (void)::memcpy (intoBuffer.data (), std::begin (buf), result->size () * sizeof (Character));
                     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"");
-                    _fOffset = origOffset + result.size ();
+                    _fOffset = origOffset + result->size ();
                 }
                 return result;
             }
@@ -378,8 +384,10 @@ namespace {
                 } break;
                 case Whence::eFromEnd: {
                     // @todo DECIDE IF SeekRead needs blockFlag???
+                    // and fix/simpify code here!!! for blockflag
                     Character c;
-                    while (Read (span{&c, 1}, NoDataAvailableHandling::eDefault).size () == 1) {
+                    for (auto o = Read (span{&c, 1}, NoDataAvailableHandling::eDefault); o && o->size () == 1;
+                         o      = Read (span{&c, 1}, NoDataAvailableHandling::eDefault)) {
                         break; // read til EOF
                     }
                     SeekTo_ (_fOffset + offset);
@@ -395,7 +403,8 @@ namespace {
             while (_fOffset < offset) {
                 Character c;
                 // @todo Seek may require NoDataAvailableHandling flag!!!
-                if (Read (span{&c, 1}, NoDataAvailableHandling::eDefault).size () == 0) [[unlikely]] {
+                // @todo fix data missing logic... - need datanotavailhandling flag arg
+                if (auto o = Read (span{&c, 1}, NoDataAvailableHandling::eDefault); o && o->size () == 0) [[unlikely]] {
                     Execution::Throw (range_error{"seek"});
                 }
             }

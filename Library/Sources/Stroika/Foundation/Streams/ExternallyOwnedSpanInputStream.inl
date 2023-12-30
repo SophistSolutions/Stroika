@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
             {
                 return fIsOpenForRead_;
             }
-            virtual span<ELEMENT_TYPE> Read (span<ELEMENT_TYPE> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
+            virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
                 Require (IsOpenRead ());
