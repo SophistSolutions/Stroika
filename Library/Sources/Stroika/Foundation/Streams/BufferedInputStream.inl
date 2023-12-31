@@ -43,11 +43,11 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 Require (IsOpenRead ());
                 return fRealIn_.GetOffset ();
             }
-            virtual SeekOffsetType SeekRead ([[maybe_unused]] Whence whence, [[maybe_unused]] SignedSeekOffsetType offset) override
+            virtual optional<size_t> AvailableToRead () override
             {
-                RequireNotReached (); // not seekable (could fix)
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
-                return 0;
+                return fRealIn_.AvailableToRead (); // since no actual buffering here yet
             }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
@@ -55,20 +55,6 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 Require (IsOpenRead ());
                 return fRealIn_.Read (intoBuffer, blockFlag);
             }
-#if 0
-            virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
-            {
-                // easy todo while no real buffer implementation ;-)
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                Require (IsOpenRead ());
-#if 1
-                AssertNotReached ();
-                return nullopt;
-#else
-                return fRealIn_.ReadNonBlocking (intoStart, intoEnd);
-#endif
-            }
-#endif
 
         private:
             typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;

@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 size_t nRequested = intoBuffer.size ();
 
             tryAgain:
-                if (blockFlag == NoDataAvailableHandling::eThrowIfWouldBlock and this->AvailableToRead () == nullopt) {
+                if (blockFlag == NoDataAvailableHandling::eDontBlock and this->AvailableToRead () == nullopt) {
                     return nullopt;
                 }
                 if (blockFlag == NoDataAvailableHandling::eBlockIfNoDataAvailable) {

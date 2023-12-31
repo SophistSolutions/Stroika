@@ -49,7 +49,20 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             {
                 return fOpen_;
             }
-            virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
+            virtual optional<size_t> AvailableToRead () override
+            {
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                streamsize                                             sz = fOriginalStreamRef_.rdbuf ()->in_avail ();
+                // http://en.cppreference.com/w/cpp/io/basic_streambuf/in_avail
+                if (sz == 0) {
+                    return nullopt;
+                }
+                else if (sz == -1) {
+                    return 0;
+                }
+                return static_cast<size_t> (sz);
+            }
+            virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
@@ -57,9 +70,11 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                 if (fOriginalStreamRef_.eof ()) {
                     return span<ELEMENT_TYPE>{};
                 }
-                size_t maxToRead        = intoBuffer.size ();
-                using StreamElementType = BASIC_ISTREAM_ELEMENT_TYPE;
-                fOriginalStreamRef_.read (reinterpret_cast<StreamElementType*> (intoBuffer.data ()), maxToRead);
+                if (blockFlag == NoDataAvailableHandling::eDontBlock and AvailableToRead () == nullopt) {
+                    return nullopt;
+                }
+                size_t maxToRead = intoBuffer.size ();
+                fOriginalStreamRef_.read (reinterpret_cast<BASIC_ISTREAM_ELEMENT_TYPE*> (intoBuffer.data ()), maxToRead);
                 size_t n = static_cast<size_t> (fOriginalStreamRef_.gcount ()); // cast safe cuz amount asked to read was also size_t
 
                 // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
@@ -69,22 +84,6 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                 }
                 return intoBuffer.subspan (0, n);
             }
-#if 0
-            virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
-            {
-                Require (IsOpenRead ());
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                streamsize                                             sz = fOriginalStreamRef_.rdbuf ()->in_avail ();
-                // http://en.cppreference.com/w/cpp/io/basic_streambuf/in_avail
-                if (sz == 0) {
-                    return {};
-                }
-                else if (sz == -1) {
-                    sz = 0;
-                }
-                return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, static_cast<size_t> (sz));
-            }
-#endif
             virtual SeekOffsetType GetReadOffset () const override
             {
                 // instead of tellg () - avoids issue with EOF where fail bit set???

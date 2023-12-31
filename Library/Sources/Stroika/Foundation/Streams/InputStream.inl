@@ -30,13 +30,12 @@ namespace Stroika::Foundation::Streams::InputStream {
     optional<size_t> InputStream::IRep<ELEMENT_TYPE>::AvailableToRead ()
     {
         Require (this->IsSeekable ()); // subclassers must override if not seekable
-                                       // not sure why not compiling
         SeekOffsetType offset = GetReadOffset ();
         // note this impl assumes seek won't fail - perhaps should catch internally rather than std::terminate?
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&, this] () noexcept { this->SeekRead (Whence::eFromStart, offset); });
         ElementType elts[1]; // typically not useful to know if more than one available, and typically more costly to read extras we will toss out
         try {
-            optional<span<ELEMENT_TYPE>> o = this->Read (span{elts}, NoDataAvailableHandling::eThrowIfWouldBlock);
+            optional<span<ELEMENT_TYPE>> o = this->Read (span{elts}, NoDataAvailableHandling::eDontBlock);
             return o ? o->size () : optional<size_t>{};
         }
         catch (const EWouldBlock&) {
@@ -46,22 +45,12 @@ namespace Stroika::Foundation::Streams::InputStream {
             Execution::ReThrow ();
         }
     }
-#if 0
     template <typename ELEMENT_TYPE>
-    optional<size_t> InputStream::IRep<ELEMENT_TYPE>::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart,
-                                                                                                                       ElementType* intoEnd,
-                                                                                                                       size_t elementsRemaining)
+    auto InputStream::IRep<ELEMENT_TYPE>::SeekRead ([[maybe_unused]] Whence whence, [[maybe_unused]] SignedSeekOffsetType offset) -> SeekOffsetType
     {
-        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-        if (intoStart == nullptr) {
-            return elementsRemaining;
-        }
-        else {
-            //tmphack - code going away
-            return elementsRemaining == 0 ? 0 : Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDefault)->size (); // safe to call beacuse this cannot block - there are elements available
-        }
+        AssertNotImplemented (); // never call if not seekable and must override if IsSeekable
+        return 0;
     }
-#endif
 
     /*
      ********************************************************************************
@@ -169,7 +158,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
         Require (not intoBuffer.empty ());
-        return GetRepRWRef ().Read (intoBuffer, NoDataAvailableHandling::eThrowIfWouldBlock);
+        return GetRepRWRef ().Read (intoBuffer, NoDataAvailableHandling::eDontBlock);
     }
     template <typename ELEMENT_TYPE>
     auto InputStream::Ptr<ELEMENT_TYPE>::Peek () const -> optional<ElementType>
@@ -203,13 +192,15 @@ namespace Stroika::Foundation::Streams::InputStream {
     template <typename ELEMENT_TYPE>
     inline optional<size_t> InputStream::Ptr<ELEMENT_TYPE>::ReadNonBlocking () const
     {
+        // DEPRECATED
         return AvailableToRead ();
     }
     template <typename ELEMENT_TYPE>
     inline optional<size_t> InputStream::Ptr<ELEMENT_TYPE>::ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const
     {
+        // DEPRECATED
         try {
-            return this->Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eThrowIfWouldBlock).size();
+            return this->Read (span{intoStart, intoEnd}, NoDataAvailableHandling::eDontBlock).size ();
         }
         catch (const EWouldBlock& e) {
             return nullopt;

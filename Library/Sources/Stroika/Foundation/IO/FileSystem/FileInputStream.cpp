@@ -155,7 +155,7 @@ namespace {
                 [&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); }};
             DeclareActivity currentActivity{&readingFromFileActivity};
 
-            if (blockFlag == NoDataAvailableHandling::eThrowIfWouldBlock) {
+            if (blockFlag == NoDataAvailableHandling::eDontBlock) {
 #if qPlatform_POSIX
                 pollfd pollData{fFD_, POLLIN, 0};
                 int    pollResult = Execution::Handle_ErrNoResultInterruption ([&] () { return ::poll (&pollData, 1, 0); });
