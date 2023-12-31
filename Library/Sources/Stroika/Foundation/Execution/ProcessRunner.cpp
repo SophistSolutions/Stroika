@@ -838,13 +838,13 @@ namespace {
                 // even if no input is ready to send to child.
                 while (true) {
                     if (optional<span<byte>> bytesReadFromStdIn = in.ReadNonBlocking (span{stdinBuf})) {
-                        Assert (bytesReadFromStdIn->size() <= Memory::NEltsOf (stdinBuf));
+                        Assert (bytesReadFromStdIn->size () <= Memory::NEltsOf (stdinBuf));
                         if (bytesReadFromStdIn->empty ()) {
                             break;
                         }
                         else {
-                            const byte* e = bytesReadFromStdIn->data() + bytesReadFromStdIn->size ();
-                            for (const byte* i = bytesReadFromStdIn->data(); i != e;) {
+                            const byte* e = bytesReadFromStdIn->data () + bytesReadFromStdIn->size ();
+                            for (const byte* i = bytesReadFromStdIn->data (); i != e;) {
                                 // read stuff from stdout, stderr while pushing to stdin, so that we don't get the PIPE buf too full
                                 readSoNotBlocking (useSTDOUT, out, false);
                                 readSoNotBlocking (useSTDERR, err, true);

@@ -263,7 +263,9 @@ namespace Stroika::Foundation::Streams::InputStream {
         nonvirtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault) const;
 
     public:
-        // almost identical to Read (intoBuffer, NoDataAvailableHandling::eThrow except doesnt throw in that case but returns optional
+        /**
+         * almost identical to Read (intoBuffer, NoDataAvailableHandling::eThrow except doesn't throw in that case but returns nullopt
+         */
         nonvirtual optional<span<ElementType>> ReadNonBlocking (span<ElementType> intoBuffer) const;
 
     public:
@@ -296,58 +298,6 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  \req IsSeekable ()
          */
         nonvirtual bool IsAtEOF () const;
-
-    public:
-        /**
-         *  \brief  similar to Read () - except that it is non-blocking, and will return Memory::nullopt if no data available without blocking.
-         *
-         *  \note   https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API
-         *
-         *      ReadNonBlocking/0:
-         *          Returns the number of elements definitely available to read without blocking. nullopt return value means
-         *          no data available, and 0 return value means @ EOF.
-         *
-         *          This often will return 1 when more data is available, but due to the semantics of Read() allowing a read of
-         *          less than requested, just knowing there is some data is sufficient.
-         *  
-         *          Note this cannot be reliably used to check for EOF, because a return value of Missing () - maybe EOF, and may not be.
-         *
-         *          Note this does not adjust the seek pointer, because it doesn't read anything
-         *
-         *      ReadNonBlocking/2:
-         *          Never blocks. Read up to the amount specified in the arguments (intoEnd-intoStart), and return Missing/nullopt
-         *          if nothing can be read without blocking, or 0 for EOF, or > 0 for actual elements read.
-         *
-         *      Like Read (), it is legal to call ReadNonBlocking () if its already returned EOF, but then it MUST return EOF again.
-         *
-         *  \note   Blocking
-         *          When we say non-blocking, that is in general ambiguous and to the extent to which clear, impossible to guarantee
-         *          (consider a breakpoint or  mutex lock someplace - say on memory allocation, halting problem).
-         *
-         *          What we mean by non-blocking is that this doesn't depend on data being available from an outside upstream
-         *          source, and that the code will run with the data it has at its disposal.
-         *
-         *          If you really need a guarantee, use a separate thread to do the reading and a BlockingQueue to pass the data
-         *          from that thread to the caller.
-         *
-         *  \note   Returns Memory::nullopt means no data immediately and definitely available. But sometimes its not possible
-         *          to be sure, so this could return nullopt - even when a blocking read could have read something.
-         *
-         *  \note   We may need to abandon this experimental API because:
-         *              1>  It makes building Reps more complicated
-         *              2>  Its not that useful without guarantees of not blocking and guarantees that when you read and get back
-         *                  nullopt, there is no point in reading
-         *              3>  it is easily workaroundable using a Blocking Queue and another thread to read actual data
-         *              4>  Original mandate for this Streams class module was simplicity of use, extension etc, and this makes it harder.
-         *
-         *      \req (intoEnd - intoStart) >= 1
-         *
-         *  @see Read ()
-         *  @see ReadAll ()
-         */
-        [[deprecated ("Since Stroika v3.0d5 use IsDataAvailableToRead ()")]] optional<size_t> ReadNonBlocking () const;
-        [[deprecated ("Since Stroika v3.0d5 use Read (span, NoDataAvailableHandling::eThrowIfWouldBlock )")]] optional<size_t>
-        ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const;
 
     public:
         /**
@@ -469,6 +419,9 @@ namespace Stroika::Foundation::Streams::InputStream {
         nonvirtual IRep<ELEMENT_TYPE>& GetRepRWRef () const;
 
     public:
+        [[deprecated ("Since Stroika v3.0d5 use IsDataAvailableToRead ()")]] optional<size_t> ReadNonBlocking () const;
+        [[deprecated ("Since Stroika v3.0d5 use Read (span, NoDataAvailableHandling::eDontBlock )")]] optional<size_t>
+        ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const;
         [[deprecated ("Since Strokka v3.0d5 deprecated since not widely used and very specific purpose and directly implementingable given "
                       "apis")]] SeekOffsetType
         GetOffsetToEndOfStream () const
@@ -552,16 +505,16 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *  \note this could have just be called 'Seek' but we want to be able to mix InputStream::IRep and OutputStream::IRep without conflict.
          * 
-         *  \note if not seekable (what method) - this method may just AssertNotImplemented ();
+         *  \note if not seekable (what method) - default does AssertNotImplemented (); so must override iff IsSeekable
          */
-        virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) = 0;
+        virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset);
 
     public:
         /**
          *  \brief returns nullopt if nothing known available, zero if known EOF, and any other number of elements (typically 1) if that number know to be available to read
          * 
          *  Default implementation - if seekable - does a read, and then seeks back, so flexible, but fairly inefficient.
-         *  Subclassers MUST re-implement this function if not IsSeekable ()
+         *  Subclassers MUST re-implement this function if not IsSeekable (); and should re-implement for efficiency sake.
          */
         virtual optional<size_t> AvailableToRead ();
 
@@ -575,56 +528,10 @@ namespace Stroika::Foundation::Streams::InputStream {
          * 
          *  Blocking:
          *      o   If blockFlag == eBlockIfNoDataAvailable, always blocks until data available and returns non-nullopt span
-         *      o   if blockFlag == eThrowIfWouldBlock, will return nullopt if would block, and else number of elements read
+         *      o   if blockFlag == eDontBlock, will return nullopt if would block, and else number of elements read
          *      In EITHER case, NEVER throws EWouldBlock (can throw other stuff). That is done by Ptr wrapper.
          */
         virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) = 0;
-
-#if 0
-    public:
-        // LEANING TOWARDS DEPRECTING/REPLACING WITH IS_AVAIL_READ
-        /**
-         *  @see InputStream<>::ReadNonBlocking () for the details of the read semantics.
-         * 
-         *  But roughly - if intoStart == nullptr, then just return number of elements readable, and dont read them.
-         *  If intoStart != nullptr, if elts available, read them (into intoStart) and return number read, else return nullopt;
-         *
-         *  For simple cases, where the amount of data available to read can be computed easily, just implement this as:
-         *      \code
-         *          return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, NUMBER_OF_ELTS_DEFINITELY_AVAILABLE)
-         *      \endcode
-         *
-         *  For trickier cases, where the upstream source may block, a helpful pattern is:
-         *      \code
-         *          do code to check if anything upstream is avaialble - like ::select () - or fUpstream.ReadNonBlocking() and if we find no
-         *          data, return {} and if we find at least n bytes avail, set NUMBER_OF_ELTS_DEFINITELY_AVAILABLE = n and fallthrough...
-         *          return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, NUMBER_OF_ELTS_DEFINITELY_AVAILABLE)
-         *      \endcode
-         *
-         *  A legal (but not very useful) implementation would be:
-         *      \code
-         *          return {};  // no data KNOWN to be available - you must make blocking call to find out!
-         *      \endcode
-         *
-         *  \req  ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1)
-         *
-         *  \note similar to basic_istream::readsome - http://en.cppreference.com/w/cpp/io/basic_istream/readsome
-         */
-        virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) = 0;
-#endif
-
-#if 0
-    protected:
-        /**
-         *  Implementers of IRep where there is no 'non-blocking' mode supported (always the same as blocking) - can
-         *  simply call this in the ReadNonBlocking () override.
-         *
-         *  The only 'hitch' is that the IRep subtype using this must know the number of elements available, and pass that in.
-         *  All that really matters is if this is 0 or 1, but best if you can pass in the actual value.
-         */
-        nonvirtual optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd,
-                                                                                                     size_t elementsRemaining);
-#endif
     };
 
 }

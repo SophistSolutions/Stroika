@@ -70,12 +70,6 @@ public:
         Require (IsOpenRead ());
         return fReadSeekOffset_;
     }
-    virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
-    {
-        RequireNotReached (); // not seekable
-        Require (IsOpenRead ());
-        return 0;
-    }
     virtual optional<size_t> AvailableToRead () override
     {
         Require (IsOpenRead ());
@@ -89,7 +83,7 @@ public:
             case NoDataAvailableHandling::eBlockIfNoDataAvailable:
                 result = intoBuffer.subspan (0, fSD_.Read (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ()));
                 break;
-            case NoDataAvailableHandling::eThrowIfWouldBlock: {
+            case NoDataAvailableHandling::eDontBlock: {
                 auto o = fSD_.ReadNonBlocking (intoBuffer.data (), intoBuffer.data () + intoBuffer.size ());
                 if (o == nullopt) {
                     Execution::Throw (EWouldBlock::kThe);

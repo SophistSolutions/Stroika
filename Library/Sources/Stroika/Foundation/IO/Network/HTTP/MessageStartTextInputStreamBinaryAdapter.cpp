@@ -59,7 +59,7 @@ public:
             gotNOTHING,
         };
         state s = gotNOTHING;
-        while (optional<span<Character>> o = Read (span{&c, &c + 1}, NoDataAvailableHandling::eThrowIfWouldBlock)) {
+        while (optional<span<Character>> o = Read (span{&c, &c + 1}, NoDataAvailableHandling::eDontBlock)) {
             if (o->size () == 0) {
                 return true; // tricky corner case - EOF in header - treat as available so we process whole header
             }

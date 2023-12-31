@@ -53,31 +53,21 @@ namespace Stroika::Foundation::Streams::LoggingInputOutputStream {
             {
                 SeekOffsetType result = fRealStream_.SeekRead (whence, offset);
                 // @todo - perhaps should seek the fLogInput_ stream? But not clear by how much
+                // DEFINITELY should or read logging will produce weird ansers - and least write SOME SORT OF NOTE that a seek happened! (like seeked from pos X to Y in stream)
                 return result;
             }
-            virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+            virtual optional<size_t> AvailableToRead () override
             {
-                size_t result = fRealStream_.Read (intoStart, intoEnd);
-                fLogInput_.Write (intoStart, intoStart + result);
+                return fRealStream_.AvailableToRead ();
+            }
+            virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
+            {
+                optional<span<ELEMENT_TYPE>> result = fRealStream_.Read (intoBuffer, blockFlag);
+                if (result) {
+                    fLogInput_.Write (*result);
+                }
                 return result;
             }
-#if 0
-            virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
-            {
-                // note - in rep, intoStart==nullptr allowed, but not allowed in call to smart ptr public API
-                Require (((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1));
-                if (intoStart == nullptr) {
-                    return fRealStream_.ReadNonBlocking ();
-                }
-                else {
-                    if (optional<size_t> result = fRealStream_.ReadNonBlocking (intoStart, intoEnd)) {
-                        fLogInput_.Write (intoStart, intoStart + *result);
-                        return result;
-                    }
-                    return {};
-                }
-            }
-#endif
 
             // OutputStream::IRep
         public:

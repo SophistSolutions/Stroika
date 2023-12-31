@@ -59,6 +59,11 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             {
                 return fOpenRead_;
             }
+            virtual optional<size_t> AvailableToRead () override
+            {
+                Ensure (fData_.end () >= fReadCursor_);
+                return static_cast<size_t> (fData_.end () - fReadCursor_); // no uncertainty about data available in MemoryStream
+            }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (IsOpenRead ());
@@ -74,15 +79,6 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 }
                 return intoBuffer.subspan (0, nCopied); // this can be empty iff EOF
             }
-#if 0
-            virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
-            {
-                Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                Require (IsOpenRead ());
-                return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fData_.end () - fReadCursor_);
-            }
-#endif
             virtual void Write (span<const ELEMENT_TYPE> elts) override
             {
                 Require (not elts.empty ());

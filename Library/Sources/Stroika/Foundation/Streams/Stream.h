@@ -69,15 +69,23 @@ namespace Stroika::Foundation::Streams {
     class IRep;
 
     /**
-     *  If eThrowIfWouldBlock passed to most Stream APIs, then when the code would do a blocking read/write, instead it will throw EWouldBlock
+     *  If eDontBlock passed to most Stream APIs, then when the code would do a blocking read/write, instead it will throw EWouldBlock
      */
     enum class NoDataAvailableHandling {
-        eThrowIfWouldBlock,
+        /**
+         *  Don't block EITHER translates into a THROW of EWouldBlock or returning of nullopt, depending
+         *  on the API where this flag is used.
+         */
+        eDontBlock,
+
+        /**
+         *  Note - even when blocking, Stroika APIs respect thread cancelation
+         */
         eBlockIfNoDataAvailable,
 
         eDefault = eBlockIfNoDataAvailable
     };
-    constexpr NoDataAvailableHandling eThrowIfWouldBlock      = NoDataAvailableHandling::eThrowIfWouldBlock;
+    constexpr NoDataAvailableHandling eDontBlock              = NoDataAvailableHandling::eDontBlock;
     constexpr NoDataAvailableHandling eBlockIfNoDataAvailable = NoDataAvailableHandling::eBlockIfNoDataAvailable;
 
     /**

@@ -46,7 +46,12 @@ namespace {
         {
             return fSrc_ != nullptr;
         }
-
+        virtual optional<size_t> AvailableToRead () override
+        {
+            // todo
+            AssertNotImplemented ();
+            return 0; // not sure used right now - but review ReadNonBlocking code below and fix Read to handle non-blocking case
+        }
         virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (IsOpenRead ());
@@ -63,7 +68,7 @@ namespace {
             // more likely - KISS for now - read one character from upstream and return appropriate number of bytes
             Assert (fSrcBufferedSpan_.empty ());
             Character readBuf[1];
-            if (size_t nChars = fSrc_.Read (span{readBuf}, blockFlag).size ()) {
+            if (size_t nChars = fSrc_.Read (span{readBuf}, blockFlag).size ()) { // @todo fix cuz this will throw rather than block - could fix with trycatch or readnonblocking
                 char8_t       buf[10];
                 span<char8_t> convertedSpan  = Characters::UTFConvert::kThe.ConvertSpan (span{readBuf, nChars}, span{buf, sizeof (buf)});
                 auto          copiedIntoSpan = Memory::CopySpanData_StaticCast (convertedSpan, intoBuffer);
@@ -92,14 +97,6 @@ namespace {
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
-            return _fOffset;
-        }
-
-        virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
-        {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            Require (IsOpenRead ());
-            AssertNotReached (); // not seekable
             return _fOffset;
         }
 

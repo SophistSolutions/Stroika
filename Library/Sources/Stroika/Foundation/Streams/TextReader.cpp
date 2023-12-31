@@ -75,6 +75,12 @@ namespace {
         {
             return _fSource != nullptr;
         }
+        virtual optional<size_t> AvailableToRead () override
+        {
+            // todo
+            AssertNotImplemented ();
+            return 0; // not sure used right now - but review ReadNonBlocking code below and fix Read to handle nonblcoig case
+        }
         virtual optional<span<Character>> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (not intoBuffer.empty ());
@@ -99,7 +105,7 @@ namespace {
                     inBuf = span<byte>{_fReadAheadCache->fData};
                 }
                 else {
-                    inBuf.ShrinkTo (_fSource.Read (span{inBuf}).size ());
+                    inBuf.ShrinkTo (_fSource.Read (span{inBuf}).size ()); // @todo WRONG FOR NONBLOCKING CASE
                 }
             again:
                 span<const byte> binarySrcSpan{inBuf};
@@ -245,13 +251,6 @@ namespace {
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             Require (IsOpenRead ());
-            return _fOffset;
-        }
-        virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
-        {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            Require (IsOpenRead ());
-            AssertNotReached (); // not seekable
             return _fOffset;
         }
 

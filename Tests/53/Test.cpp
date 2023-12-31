@@ -13,7 +13,6 @@
 #include "Stroika/Frameworks/Test/ArchtypeClasses.h"
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
@@ -29,7 +28,6 @@ using DataStructures::Array;
 namespace {
     GTEST_TEST (Frameworks_WebServer, all)
     {
-      
     }
 }
 #endif

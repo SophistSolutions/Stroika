@@ -107,7 +107,6 @@ namespace {
 }
 
 namespace {
-
     class OpenSSLInputStreamRep_ : public InputStream::IRep<byte>, private InOutStrmCommon_ {
     private:
         static constexpr size_t kInBufSize_ = 10 * 1024;
@@ -139,11 +138,13 @@ namespace {
             Require (IsOpenRead ());
             return 0;
         }
-        virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
+        virtual optional<size_t> AvailableToRead () override
         {
-            RequireNotReached ();
-            Require (IsOpenRead ());
-            return 0;
+            // must override since not seekable
+            if (not PreRead_ (NoDataAvailableHandling::eDontBlock)) {
+                return nullopt;
+            }
+            return static_cast<size_t> (fOutBufEnd_ > fOutBufStart_);
         }
         virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
@@ -155,6 +156,20 @@ namespace {
             Require (not intoBuffer.empty ());
             [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
             Require (IsOpenRead ());
+            if (not PreRead_ (blockFlag)) {
+                return nullopt;
+            }
+            if (fOutBufStart_ < fOutBufEnd_) {
+                size_t n2Copy = min<size_t> (fOutBufEnd_ - fOutBufStart_, intoBuffer.size ());
+                (void)::memcpy (intoBuffer.data (), fOutBufStart_, n2Copy);
+                fOutBufStart_ += n2Copy;
+                return intoBuffer.subspan (0, n2Copy);
+            }
+            return span<ElementType>{}; // EOF
+        }
+        // false means EWouldBlock
+        bool PreRead_ (NoDataAvailableHandling blockFlag)
+        {
             if (fOutBufStart_ == fOutBufEnd_) {
                 /*
                  *  Then pull from 'real in' stream until we have reach EOF there, or until we have some bytes to output
@@ -162,7 +177,23 @@ namespace {
                  */
                 byte toDecryptBuf[kInBufSize_];
             Again:
-                size_t n2Decrypt = fRealIn_.Read (span{toDecryptBuf}, blockFlag).size ();
+                size_t n2Decrypt = 0;
+                switch (blockFlag) {
+                    case NoDataAvailableHandling::eBlockIfNoDataAvailable: {
+                        n2Decrypt = fRealIn_.Read (span{toDecryptBuf}, blockFlag).size ();
+                    } break;
+                    case NoDataAvailableHandling::eDontBlock: {
+                        if (auto oRes = fRealIn_.ReadNonBlocking (span{toDecryptBuf})) {
+                            n2Decrypt = oRes->size ();
+                        }
+                        else {
+                            return false;
+                        }
+                    } break;
+                    default:
+                        RequireNotReached ();
+                }
+
                 if (n2Decrypt == 0) {
                     size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
                     Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
@@ -184,57 +215,8 @@ namespace {
                     }
                 }
             }
-            if (fOutBufStart_ < fOutBufEnd_) {
-                size_t n2Copy = min<size_t> (fOutBufEnd_ - fOutBufStart_, intoBuffer.size ());
-                (void)::memcpy (intoBuffer.data (), fOutBufStart_, n2Copy);
-                fOutBufStart_ += n2Copy;
-                return intoBuffer.subspan (0, n2Copy);
-            }
-            return span<ElementType>{}; // EOF
+            return true;
         }
-#if 0
-        virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
-        {
-            AssertNotImplemented ();
-            return nullopt;
-#if 0
-            Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-            [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-            Require (IsOpenRead ());
-            // advance fOutBufStart_ if possible, and then we know if there is upstream data, and can use _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
-            if (fOutBufStart_ == fOutBufEnd_) {
-                byte toDecryptBuf[kInBufSize_];
-            Again:
-                optional<size_t> n2Decrypt = fRealIn_.ReadNonBlocking (begin (toDecryptBuf), end (toDecryptBuf));
-                if (not n2Decrypt.has_value ()) {
-                    // if no known data upstream, we cannot say if this is EOF
-                    return {};
-                }
-                else if (n2Decrypt == 0u) {
-                    size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
-                    Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
-                    fOutBufStart_ = fOutBuf_.begin ();
-                    fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
-                }
-                else {
-                    fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
-                    span<byte> outBufUsed = _runOnce (span{toDecryptBuf, *n2Decrypt}, span{fOutBuf_});
-                    Assert (outBufUsed.size () <= fOutBuf_.GetSize ());
-                    if (outBufUsed.size () == 0) {
-                        // This can happen with block ciphers - we put stuff in, and get nothing out. But we cannot return EOF
-                        // yet, so try again...
-                        goto Again;
-                    }
-                    else {
-                        fOutBufStart_ = fOutBuf_.begin ();
-                        fOutBufEnd_   = fOutBufStart_ + outBufUsed.size ();
-                    }
-                }
-            }
-            return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fOutBufEnd_ - fOutBufStart_);
-#endif
-        }
-#endif
 
     private:
         mutable recursive_mutex                                        fCriticalSection_;

@@ -122,6 +122,17 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                     return fRealIn_.Seek (whence, offset + fOffsetMine2Real_) - fOffsetMine2Real_;
                 }
             }
+            virtual optional<size_t> AvailableToRead () override
+            {
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Require (IsOpenRead ());
+                SeekOffsetType myOffset = fRealIn_.GetOffset ();
+                if (fForcedEndInReal_ and myOffset >= *fForcedEndInReal_) { // could be past end if through another non-substream Ptr we read past
+                    return 0;
+                }
+                // otherwise, our answer is same as answer from underlying stream (since we do no buffering)
+                return fRealIn_.AvailableToRead (); // @todo nechnically maybe wrong, in may suggest we can read more than we have but not worth fix cuz can cause no problems I'm aware of
+            }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());

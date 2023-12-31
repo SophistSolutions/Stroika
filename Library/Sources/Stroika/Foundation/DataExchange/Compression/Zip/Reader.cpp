@@ -87,12 +87,6 @@ namespace {
                 Require (IsOpenRead ());
                 return _fSeekOffset;
             }
-            virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
-            {
-                RequireNotReached ();
-                Require (IsOpenRead ());
-                return SeekOffsetType{};
-            }
             nonvirtual bool _AssureInputAvailableReturnTrueIfAtEOF ()
             {
                 Require (IsOpenRead ());
@@ -120,7 +114,7 @@ namespace {
                 Require (not intoBuffer.empty ()); // API rule for streams
                 Require (IsOpenRead ());
             Again:
-                if (blockFlag == NoDataAvailableHandling::eThrowIfWouldBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
+                if (blockFlag == NoDataAvailableHandling::eDontBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
                     // if non-blocking call, no data pre-available in zstream, and nothing in upstream, NoDataAvailable!
                     // note MAY not be enuf in zbuf to read a full byte of output, but OK - will come back here
                     return nullopt;
@@ -244,7 +238,7 @@ namespace {
                 Require (not intoBuffer.empty ()); // API rule for streams
                 Require (IsOpenRead ());
             Again:
-                if (blockFlag == NoDataAvailableHandling::eThrowIfWouldBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
+                if (blockFlag == NoDataAvailableHandling::eDontBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
                     // if non-blocking call, no data pre-available in zstream, and nothing in upstream, NoDataAvailable!
                     // note MAY not be enuf in zbuf to read a full byte of output, but OK - will come back here
                     return nullopt;
