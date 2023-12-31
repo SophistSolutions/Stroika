@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = typename Sequence_Array<T>::IImplRep_;
 
     protected:
-        static constexpr size_t _kSentinalLastItemIndex = inherited::_kSentinalLastItemIndex;
+        static constexpr size_t _kSentinelLastItemIndex = inherited::_kSentinelLastItemIndex;
 
     public:
         Rep_ ()                 = default;
@@ -102,9 +102,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual value_type GetAt (size_t i) const override
         {
             Require (fData_.size () != 0);
-            Require (i == _kSentinalLastItemIndex or i < fData_.size ());
+            Require (i == _kSentinelLastItemIndex or i < fData_.size ());
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            if (i == _kSentinalLastItemIndex) {
+            if (i == _kSentinelLastItemIndex) {
                 i = fData_.size () - 1;
             }
             return fData_.GetAt (i);
@@ -152,9 +152,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Insert (size_t at, const value_type* from, const value_type* to) override
         {
-            Require (at == _kSentinalLastItemIndex or at <= fData_.size ());
+            Require (at == _kSentinelLastItemIndex or at <= fData_.size ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            if (at == _kSentinalLastItemIndex) {
+            if (at == _kSentinelLastItemIndex) {
                 at = fData_.size ();
             }
             Support::ReserveTweaks::Reserve4AddN (fData_, to - from);

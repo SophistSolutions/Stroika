@@ -67,7 +67,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual bool    OtherStringToIgnore (const Led_tString& checkWord);
         nonvirtual bool OtherStringToIgnore_AllPunctuation (const Led_tString& checkWord);
-        nonvirtual bool OtherStringToIgnore_Sentinals (const Led_tString& checkWord);
+        nonvirtual bool OtherStringToIgnore_Sentinels (const Led_tString& checkWord);
         nonvirtual bool OtherStringToIgnore_Number (const Led_tString& checkWord);
 
     public:

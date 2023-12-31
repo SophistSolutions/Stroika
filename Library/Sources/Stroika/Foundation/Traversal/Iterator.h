@@ -279,8 +279,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note since copy constructor calls Clone_, these can throw exceptions but move copies/assignments are no-except
          * 
-         *  \note for ranges to work, the return type of Iterable<T>::end () must be a 'sentinal_for' compatible concept
-         *        which implies it must be default constructible. So interpret default construction of Iterator as meaning empty/end sentinal.
+         *  \note for ranges to work, the return type of Iterable<T>::end () must be a 'sentinel_for' compatible concept
+         *        which implies it must be default constructible. So interpret default construction of Iterator as meaning empty/end sentinel.
          * 
          *  \req RequireNotNull (rep.get ())
          */

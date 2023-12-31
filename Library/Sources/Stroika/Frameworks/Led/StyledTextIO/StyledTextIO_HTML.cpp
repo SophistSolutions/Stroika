@@ -2220,7 +2220,7 @@ void StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
             }
         } break;
 
-        case kEmbeddingSentinalChar: {
+        case kEmbeddingSentinelChar: {
             unique_ptr<Table> table (writerContext.GetSrcStream ().GetTableAt (writerContext.GetCurSrcOffset () - 1));
             if (table.get () != nullptr) {
                 WriteTable (writerContext, table.get ());

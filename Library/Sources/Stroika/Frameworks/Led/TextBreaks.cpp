@@ -214,13 +214,13 @@ void TextBreaks_Basic::FindWordBreaks (const Led_tChar* startOfText, size_t leng
      *  looking for the same class of characters. Then scan forwards (from our starting point)
      *  looking for the same class of characters. Return a signal if the class of characters is
      *  space or not (treat all other word-classes as the same for this purpose).
-     *  Except that there is a special sentinal class which always breaks anything.
+     *  Except that there is a special sentinel class which always breaks anything.
      */
     Assert (textOffsetToStartLookingForWord < lengthOfText); // cuz we checked at start - and returned if equal
 
     CharacterClasses charClass = CharToCharacterClass (startOfText, lengthOfText, &startOfText[textOffsetToStartLookingForWord]);
 
-    if (charClass == eSentinalClass) {
+    if (charClass == eSentinelClass) {
         *wordStartResult = textOffsetToStartLookingForWord;
         *wordEndResult   = textOffsetToStartLookingForWord + 1;
         *wordReal        = true;
@@ -306,7 +306,7 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
     CharacterClasses startCharClass = CharToCharacterClass (startOfText, lengthOfText, &startOfText[textOffsetToStartLookingForWord]);
 
     // Scan forward - while character of the same class
-    if (startCharClass == eSentinalClass) {
+    if (startCharClass == eSentinelClass) {
         *wordEndResult = textOffsetToStartLookingForWord + 1;
         Assert (not isspace (thisChar)); // else we need to cleanup the wordReal logic below...
     }
@@ -329,7 +329,7 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
 #endif
 
             CharacterClasses charClass = CharToCharacterClass (startOfText, lengthOfText, cur);
-            if (charClass == eSentinalClass) {
+            if (charClass == eSentinelClass) {
                 break;
             }
 
@@ -379,7 +379,7 @@ TextBreaks_Basic::CharacterClasses TextBreaks_Basic::CharToCharacterClass (const
 #endif
 
     if (c == 0) {
-        return eSentinalClass;
+        return eSentinelClass;
     }
     /*
         *   Return appropriate class for all characters we are SURE of. Some deepend on

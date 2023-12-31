@@ -105,7 +105,7 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
 
     // At least for MS-Windows - NUL-chars in the middle of the text just cause confusion in other
     // apps. Don't know about Mac. But I doubt they help any there either. Since for this stuff
-    // we aren't going todo the right thing for sentinals ANYHOW - we may as well eliminate them
+    // we aren't going todo the right thing for sentinels ANYHOW - we may as well eliminate them
     // (or any other NUL-chars)
     length = Led_SkrunchOutSpecialChars (buf.data (), length, '\0');
 

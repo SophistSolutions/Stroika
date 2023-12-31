@@ -24,7 +24,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void SimpleTextImager::InvalidateTotalRowsInWindow ()
     {
-        fTotalRowsInWindow = 0; // zero is sentinal meaning invalid
+        fTotalRowsInWindow = 0; // zero is sentinel meaning invalid
     }
     inline SimpleTextImager::RowReference SimpleTextImager::GetTopRowReferenceInWindow () const
     {

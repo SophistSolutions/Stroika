@@ -669,7 +669,7 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     protected:
-        static constexpr size_t _kSentinalLastItemIndex = numeric_limits<size_t>::max ();
+        static constexpr size_t _kSentinelLastItemIndex = numeric_limits<size_t>::max ();
 
     public:
         virtual shared_ptr<_IRep> CloneEmpty () const                                   = 0;

@@ -71,7 +71,7 @@ namespace Stroika::Foundation::IO::Network {
 #endif
 
     /**
-     *  InternetAddress repesents an internet IP address. Its easily convertable to/from
+     *  InternetAddress represents an internet IP address. Its easily convertible to/from
      *  the variety of POSIX/Berkley socket formats.
      *
      *  InternetAddress supports either IPv4 or IPv6 format addresses.
@@ -232,14 +232,14 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  InternetAddress::min () is the smallest allowed InternetAddress. This is mostly useful as a sentinal (better to use optional)
+         *  InternetAddress::min () is the smallest allowed InternetAddress. This is mostly useful as a sentinel (better to use optional)
          *  or for sorting.
          */
         static constexpr InternetAddress min ();
 
     public:
         /**
-         *  InternetAddress::min () is the smallest allowed InternetAddress. This is mostly useful as a sentinal (better to use optional)
+         *  InternetAddress::min () is the smallest allowed InternetAddress. This is mostly useful as a sentinel (better to use optional)
          *  or for sorting.
          */
         static constexpr InternetAddress max ();

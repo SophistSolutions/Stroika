@@ -104,12 +104,12 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             optional<String> fForeignKeyToTable;
 
             /**
-             *  Note, this can be the special (sentinal) value kDefaultExpression_AutoIncrement
+             *  Note, this can be the special (sentinel) value kDefaultExpression_AutoIncrement
              */
             optional<String> fDefaultExpression;
 
             /**
-             *  Sentinal value for fDefaultExpression, meaning the default value is 1 + the previous max for the field.
+             *  Sentinel value for fDefaultExpression, meaning the default value is 1 + the previous max for the field.
              */
             static inline constexpr string_view kDefaultExpression_AutoIncrement = "<<auto-increment>>"sv;
 

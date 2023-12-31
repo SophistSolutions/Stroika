@@ -19,7 +19,7 @@ namespace Stroika::Frameworks::Led {
         */
 
     // class SpellCheckEngine_Basic
-    inline bool SpellCheckEngine_Basic::OtherStringToIgnore_Sentinals (const Led_tString& checkWord)
+    inline bool SpellCheckEngine_Basic::OtherStringToIgnore_Sentinels (const Led_tString& checkWord)
     {
         return checkWord.length () == 1 and checkWord[0] == '\0';
     }

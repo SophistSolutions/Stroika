@@ -300,7 +300,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinal' value.
+         *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinel' value.
          *
          *  \note Alias LookupOrDefault
          */

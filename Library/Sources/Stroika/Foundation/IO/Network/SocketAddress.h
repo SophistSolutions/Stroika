@@ -25,7 +25,7 @@
 namespace Stroika::Foundation::IO::Network {
 
     /**
-     *  Freindly C++ wrapper on berkley socket sockaddr structure (so sockaddr, sockaddr_in, sockaddr_storage, etc).
+     *  Friendly C++ wrapper on Berkley socket sockaddr structure (so sockaddr, sockaddr_in, sockaddr_storage, etc).
      *  A SocketAddress is the combination of an @see InternetAddress with a port#.
      */
     class SocketAddress {
