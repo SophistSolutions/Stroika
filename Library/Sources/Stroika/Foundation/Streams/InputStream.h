@@ -114,9 +114,26 @@ namespace Stroika::Foundation::Streams::InputStream {
      *          Mostly - blocking is MUCH simpler to read/write/debug. But you NEED non-blocking sometimes for efficeincy
      *          reasons (to manage progress through a long operation).
      *
-     *          Stroika's approach to this is to essentially everywhere in the InputStreamPtr API, have the methods be
-     *          blocking (including seek, when supported). But when you must do non-blocking IO, you can call ReadNonBlocking ()
-     *          which mostly tells you if there is any data available to read (and variants will also read it for you).
+     *          Stroika Stream's approach to this is to essentially everywhere in the InputStream::Ptr API, have the methods
+     *          take a flag indicating if the caller expects blocking or not (defaulting to blocking).
+     *
+     *          This adds very little complexity to the implementation classes (reps) and essentially zero to the callers
+     *          (since they default to blocking behavior).
+     *
+     *          And with only modest effort (explicit flag in call) you can get the non-blocking behavior.
+     * 
+     *          One twist has todo with what todo in the non-blocking case when data isn't available. One
+     *          choice would be to return optional (or some other flagging / sentinel approach) and the other is to throw.
+     *          Throw behavior is much simpler to write code and reason about. Returning a flag/optional is possibly
+     *          more efficient (depends - you have extra flag being copied around, but you avoid the cost of handling expcetions
+     *          - which wins the performance balanace depends on the costs of a throw, and the frequency of a throw.
+     * 
+     *          Stroika Streams generally use the throw (EWouldBlock) approach. However, in the 'Rep' classes, they use the
+     *          return optional approach, and this is exposed through the ReadNonBlocking Ptr API. Plus they expose an
+     *          AvailableToRead () API;
+     * 
+     *          So generally - the Stroika appraoch is that for the causual observer (defaults) - things just work with blocking
+     *          reads, but if you need to do non-blocking reads, this is pretty straightforward.
      *
      *  \note   For better performance, but some slight usage restrictions, consider using @see StreamReader
      * 
@@ -281,49 +298,61 @@ namespace Stroika::Foundation::Streams::InputStream {
          *      BLOCK until some data is available, but can return with fewer bytes than bufSize
          *      without prejudice about how much more is available.
          *
-         *  \note    Peek will block if no data available.
+         *  \note    Peek will block if no data available, by default, unless eDontBlock argument is specified, in which case it will throw EWouldBlock rather than block
+         * 
+         *  \note Peek () will always throw EWouldBlock for all cases where eDontBlock specified and the call might block).
+         * 
+         *  \note for this API, nullopt means KNOWN NO DATA, not EWouldBlock
          *
          *      \req not intoBuffer.empty ()
          *      \req IsSeekable ()
          */
-        nonvirtual optional<ElementType> Peek () const;
-        nonvirtual span<ElementType> Peek (span<ElementType> intoBuffer) const;
+        nonvirtual optional<ElementType> Peek (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
+        nonvirtual span<ElementType> Peek (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
 
     public:
         /**
-         *  \brief check if the stream is currently at EOF (blocking call)
+         *  \brief check if the stream is currently at EOF
          *
-         *  \note - this does a Read () call - which can block, to check for EOF. Use ReadNonBlocking () to avoid blocking.
+         *  \note - IsAtEOF/0 does a blocking Read () call.
+         *  \note - IsAtEOF (eDontBlock) returns optional<bool> - nullopt if would block, and false if known not at EOF, and true if known EOF; 
+         *          this differs from most Stroika streams APIs - in that nullopt here means 'EWouldBlock';
          *
          *  \req IsSeekable ()
          */
         nonvirtual bool IsAtEOF () const;
+        nonvirtual optional<bool> IsAtEOF (NoDataAvailableHandling blockFlag) const;
 
     public:
         /**
          *  @todo Consider if we should lose this. Optional approach maybe better.
          *
-         *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
+         *  Read of a single character. Returns a NUL-character on EOF ('\0');
+         * 
+         *  Blocking (by default), but if you pass eDontBlock, will throw EWouldBlock if would have blocked
          */
-        nonvirtual Characters::Character ReadCharacter () const
+        nonvirtual Characters::Character ReadCharacter (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const
             requires (same_as<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
-         * shorthand for declaring
-         *      POD_TYPE    tmp;
-         *      size_n = ReadAll ((byte*)&tmp, (byte*)(&tmp+1));
-         *      if (n==sizeof(tmp)) {  return tmp; } else throw EOFException (...);
+         *  \brief Read a single (or span of) POD_TYPE objects, like with Read () - except always blocking, and treating stream of bytes as composing a single POD_TYPE object
+         * 
+         *  \note ReadRaw(span > 1 element) requires IsSeekable()
          *
-         *  \note   If not enough bytes are available to return a POD_TYPE, EOFException will be thrown.
+         *  \note   If not enough data available to return a single POD_TYPE, EOFException will be thrown.
          *  \note   Only defined on Binary Streams (InputStream::Ptr<byte>), but POD_TYPE can be any (is_pod) type.
-         *  \note   ReadRaw will read exactly the number of records requested, or throw an EOF exception.
+         *  \note   ReadRaw will read a whole number of records requested (> 0, seeking to adjust if necessary. but it may
+         *          return any number (>=1 but <= size of input span).
+         *          It may result in Seek being called to return a smaller number of records than requested.
+         * 
+         *  This API is always blocking (see ReadAll () for reasons why - need way to undo - seek or buffer - but may extend this API in the future).
          */
         template <typename POD_TYPE>
         nonvirtual POD_TYPE ReadRaw () const
             requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>);
         template <typename POD_TYPE>
-        nonvirtual void ReadRaw (span<POD_TYPE> intoBuffer) const
+        nonvirtual span<POD_TYPE> ReadRaw (span<POD_TYPE> intoBuffer) const
             requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>);
 
     public:
@@ -334,6 +363,8 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  ReadLine() will return an empty string iff EOF.
          *
          *      \req IsSeekable () to implement read-ahead required for CRLF mapping support 
+         *
+         *  This API is always blocking (perhaps someday overloads will allow non-blocking but very low priority)
          */
         nonvirtual Characters::String ReadLine () const
             requires (same_as<ELEMENT_TYPE, Characters::Character>);
@@ -348,13 +379,14 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  Like ReadLine(), the returned lines include trailing newlines/etc.
          * 
          *  However, UNLIKE ReadLine(), this function does NOT require the input stream be seekable!
+         *
+         *  This API is always blocking (perhaps someday overloads will allow non-blocking but very low priority)
          */
         nonvirtual Traversal::Iterable<Characters::String> ReadLines () const
             requires (same_as<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
-         *  ReadAll/0
          *  ReadAll/size_t upTo
          *      Read from the current seek position, until EOF or upTo elements read (whichever comes first),
          *      and accumulate all of it into a String or BLOB (depending on stream type).
@@ -380,7 +412,11 @@ namespace Stroika::Foundation::Streams::InputStream {
          *      \req intoEnd-intoStart >= 1
          *
          *  \note ReadAll () will block if the stream is not KNOWN to be at EOF, and we just ran out of data. Use
-         *        @see ReadNonBlocking () to get non-blocking read behavior.
+         *        @see ReadNonBlocking () or Read (eDontBlock) to get non-blocking read behavior.
+         * 
+         *  \note ReadAll is ONLY available in a blocking form, because to handle to handle the non-blocking case
+         *        we might need to either seek back, or have internal buffering to manage a partial read (could posssibly
+         *        extend API like this in the future but no need).
          *
          *  @see ReadRaw()
          *  @see Streams::CopyAll()

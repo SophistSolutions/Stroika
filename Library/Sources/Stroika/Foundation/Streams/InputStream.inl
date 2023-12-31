@@ -161,33 +161,44 @@ namespace Stroika::Foundation::Streams::InputStream {
         return GetRepRWRef ().Read (intoBuffer, NoDataAvailableHandling::eDontBlock);
     }
     template <typename ELEMENT_TYPE>
-    auto InputStream::Ptr<ELEMENT_TYPE>::Peek () const -> optional<ElementType>
+    auto InputStream::Ptr<ELEMENT_TYPE>::Peek (NoDataAvailableHandling blockFlag) const -> optional<ElementType>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (this->IsSeekable ());
         Require (IsOpen ());
         SeekOffsetType saved  = GetOffset ();
-        auto           result = this->Read ();
+        auto           result = this->Read (blockFlag);
         this->Seek (saved);
         return result;
     }
     template <typename ELEMENT_TYPE>
-    auto InputStream::Ptr<ELEMENT_TYPE>::Peek (span<ElementType> intoBuffer) const -> span<ElementType>
+    auto InputStream::Ptr<ELEMENT_TYPE>::Peek (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) const -> span<ElementType>
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (this->IsSeekable ());
         Require (IsOpen ());
         SeekOffsetType saved  = GetOffset ();
-        auto           result = this->Read (intoBuffer);
+        auto           result = this->Read (intoBuffer, blockFlag);
         this->Seek (saved);
         return result;
     }
     template <typename ELEMENT_TYPE>
-    inline bool InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF () const
+    bool InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF () const
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
-        return not Peek ().has_value ();
+        return not Peek (NoDataAvailableHandling::eBlockIfNoDataAvailable).has_value ();
+    }
+    template <typename ELEMENT_TYPE>
+    optional<bool> InputStream::Ptr<ELEMENT_TYPE>::IsAtEOF (NoDataAvailableHandling blockFlag) const
+    {
+        if (blockFlag == eBlockIfNoDataAvailable) {
+            return IsAtEOF ();
+        }
+        ELEMENT_TYPE ignored{};
+        Require (this->IsSeekable ());
+        SeekOffsetType saved = GetOffset ();
+        auto           o     = this->ReadNonBlocking (span{&ignored, 1});
+        this->Seek (saved);
+        return not o.has_value ();
     }
     template <typename ELEMENT_TYPE>
     inline optional<size_t> InputStream::Ptr<ELEMENT_TYPE>::ReadNonBlocking () const
@@ -210,41 +221,55 @@ namespace Stroika::Foundation::Streams::InputStream {
         }
     }
     template <typename ELEMENT_TYPE>
-    inline Characters::Character InputStream::Ptr<ELEMENT_TYPE>::ReadCharacter () const
+    inline Characters::Character InputStream::Ptr<ELEMENT_TYPE>::ReadCharacter (NoDataAvailableHandling blockFlag) const
         requires (same_as<ELEMENT_TYPE, Characters::Character>)
     {
         Characters::Character c;
-        if (Read (span{&c, 1}).size () == 1) {
+        if (Read (span{&c, 1}, blockFlag).size () == 1) [[likely]] {
             return c;
         }
         return '\0';
     }
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
-    POD_TYPE InputStream::Ptr<ELEMENT_TYPE>::ReadRaw () const
+    inline POD_TYPE InputStream::Ptr<ELEMENT_TYPE>::ReadRaw () const
         requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
     {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
-        Require (IsOpen ());
         POD_TYPE tmp; // intentionally don't zero-initialize
-        size_t   n{ReadAll (reinterpret_cast<byte*> (&tmp), reinterpret_cast<byte*> (&tmp + 1))};
-        if (n == sizeof (tmp)) [[likely]] {
-            return tmp;
-        }
-        else {
-            Execution::Throw ((n == 0) ? EOFException::kThe : EOFException (true));
-        }
+        return this->ReadRaw (span{&tmp, 1})[0];
     }
     template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
-    inline void InputStream::Ptr<ELEMENT_TYPE>::ReadRaw (span<POD_TYPE> intoBuffer) const
+    span<POD_TYPE> InputStream::Ptr<ELEMENT_TYPE>::ReadRaw (span<POD_TYPE> intoBuffer) const
         requires (same_as<ELEMENT_TYPE, byte> and is_standard_layout_v<POD_TYPE>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (IsOpen ());
-        size_t n{ReadAll (reinterpret_cast<byte*> (intoBuffer.data ()), reinterpret_cast<byte*> (intoBuffer.data () + intoBuffer.size ()))};
-        if (n != intoBuffer.size_bytes ()) {
-            Execution::Throw ((n == 0) ? EOFException::kThe : EOFException{true});
+        Require (intoBuffer.size () == 1 or this->IsSeekable ());
+        auto   byteSpan = as_writable_bytes (intoBuffer);
+        size_t n{Read (byteSpan)};
+        if (n < sizeof (POD_TYPE)) {
+            // must keep (blocking) reading til we have one POD_TYPE, and if we come up short, must throw EOF
+            while (n < sizeof (POD_TYPE)) {
+                auto ni = this->Read (byteSpan.subspan (n, sizeof (POD_TYPE) - n)).size ();
+                if (ni == 0) {
+                    Execution::Throw (EOFException{true});
+                }
+                n += ni;
+            }
+            Assert (n == sizeof (POD_TYPE));
+            return intoBuffer.subspan (0, 1);
+        }
+        else {
+            // we win, just return the right span size
+            if (n % sizeof (POD_TYPE) != 0) {
+                // Read even number of objects and adjust seek pointer
+                this->Seek (Whence::eFromCurrent, -static_cast<SignedSeekOffsetType> (n % sizeof (POD_TYPE)));
+            }
+            // we win, just return the right span size
+            size_t nObjectsRead = n / sizeof (POD_TYPE);
+            Assert (1 <= nObjectsRead and nObjectsRead <= intoBuffer.size ());
+            return intoBuffer.subspan (0, nObjectsRead);
         }
     }
     template <typename ELEMENT_TYPE>
@@ -380,6 +405,15 @@ namespace Stroika::Foundation::Streams::InputStream {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{this->_fThisAssertExternallySynchronized};
         Require (not intoBuffer.empty ());
         Require (IsOpen ());
+        /*
+         *  Conceptually very simple - the same API as READ - so we can just forward. BUT - its not quite the same.
+         *  Read is ALLOWED to return less than requested, without prejudice about whether more is available.
+         *  This API is NOT.
+         *
+         *  So keep reading will we know we got everything.
+         * 
+         *  Note - its because of this, and to avoid potentiallly needing to unread, that this API doesn't support non-blocking ReadAll (could do with seek).
+         */
         size_t       elementsRead{};
         ElementType* intoEnd = intoBuffer.data () + intoBuffer.size ();
         for (ElementType* readCursor = intoBuffer.data (); readCursor < intoEnd;) {

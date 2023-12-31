@@ -21,6 +21,8 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
+ *      @todo   https://stroika.atlassian.net/browse/STK-998 - support EWouldBlock on output stream writes (like we do for InputStream)
+ * 
  *      @todo   Consider if Seek () past end of stream on writable stream should be
  *              allowed. Often - like in UNIX - this works - and you can then write there,
  *              and this creates a hole in the file read back as zeros.
