@@ -293,7 +293,7 @@ void StandardMacPictureStyleMarker::DrawSegment (const StyledTextImager* imager,
                                                  const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     Assert (from + 1 == to);
-    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinelChar);
     StackBasedHandleLocker locker (GetPictureHandle ());
     MacPictureDrawSegment (GetPictureHandle (), tablet, imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor),
                            imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
@@ -310,9 +310,9 @@ void StandardMacPictureStyleMarker::MeasureSegmentWidth ([[maybe_unused]] const 
     /*
      *  Though we generally require that:
      *
-     *      Require (text[0] == kEmbeddingSentinalChar);
+     *      Require (text[0] == kEmbeddingSentinelChar);
      *
-     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
+     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinel
      *  in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
      *  when THIS is called (cuz some other update handlers may force it. No big deal. We just ignore that
      *  character here. We know the right width here anyhow.
@@ -424,7 +424,7 @@ void StandardDIBStyleMarker::DrawSegment (const StyledTextImager* imager, [[mayb
                                           const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     Assert (from + 1 == to);
-    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinelChar);
     DIBDrawSegment (fDIBData, tablet, imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor),
                     imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                     drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, Led_GetDIBImageSize (fDIBData));
@@ -439,9 +439,9 @@ void StandardDIBStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imag
     /*
      *  Though we generally require that:
      *
-     *      Require (text[0] == kEmbeddingSentinalChar);
+     *      Require (text[0] == kEmbeddingSentinelChar);
      *
-     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
+     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinel
      *  in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
      *  when THIS is called (cuz some other update handlers may force it. No big deal. We just ignore that
      *  character here. We know the right width here anyhow.
@@ -685,9 +685,9 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
     /*
      *  Though we generally require that:
      *
-     *      Require (text[0] == kEmbeddingSentinalChar);
+     *      Require (text[0] == kEmbeddingSentinelChar);
      *
-     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
+     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinel
      *  in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
      *  when THIS is called (cuz some other update handlers may force it. No big deal. We just ignore that
      *  character here. We know the right width here anyhow.
@@ -997,7 +997,7 @@ void StandardMacPictureWithURLStyleMarker::DrawSegment (const StyledTextImager* 
                                                         const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     Assert (from + 1 == to);
-    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinelChar);
     StackBasedHandleLocker locker (GetPictureHandle ());
     MacPictureDrawSegment (GetPictureHandle (), tablet, imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor),
                            imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
@@ -1014,9 +1014,9 @@ void StandardMacPictureWithURLStyleMarker::MeasureSegmentWidth (const StyledText
     /*
      *  Though we generally require that:
      *
-     *      Require (text[0] == kEmbeddingSentinalChar);
+     *      Require (text[0] == kEmbeddingSentinelChar);
      *
-     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
+     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinel
      *  in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
      *  when THIS is called (cuz some other update handlers may force it. No big deal. We just ignore that
      *  character here. We know the right width here anyhow.
@@ -1186,7 +1186,7 @@ void StandardDIBWithURLStyleMarker::DrawSegment (const StyledTextImager* imager,
                                                  const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     Assert (from + 1 == to);
-    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinelChar);
     DIBDrawSegment (fDIBData, tablet, imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor),
                     imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                     drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, Led_GetDIBImageSize (fDIBData));
@@ -1201,9 +1201,9 @@ void StandardDIBWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager*
     /*
      *  Though we generally require that:
      *
-     *      Require (text[0] == kEmbeddingSentinalChar);
+     *      Require (text[0] == kEmbeddingSentinelChar);
      *
-     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
+     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinel
      *  in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
      *  when THIS is called (cuz some other update handlers may force it. No big deal. We just ignore that
      *  character here. We know the right width here anyhow.
@@ -1376,7 +1376,7 @@ void StandardUnknownTypeStyleMarker::DrawSegment (const StyledTextImager* imager
                                                   const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     Assert (from + 1 == to);
-    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinelChar);
     Led_Size shownPixelSize = Led_Size (tablet->CvtFromTWIPSV (fShownSize.v), tablet->CvtFromTWIPSH (fShownSize.h));
 
     if (fDisplayDIB.get () != nullptr) {
@@ -1405,9 +1405,9 @@ void StandardUnknownTypeStyleMarker::MeasureSegmentWidth (const StyledTextImager
     /*
      *  Though we generally require that:
      *
-     *      Require (text[0] == kEmbeddingSentinalChar);
+     *      Require (text[0] == kEmbeddingSentinelChar);
      *
-     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinal
+     *  we cannot here - cuz  we provent assure we are a one-length marker surrouding a sentinel
      *  in SimpleEmbeddedObjectStyleMarker::DidUpdateText - which may not have yet been called
      *  when THIS is called (cuz some other update handlers may force it. No big deal. We just ignore that
      *  character here. We know the right width here anyhow.
@@ -1451,10 +1451,10 @@ const char* StandardUnknownTypeStyleMarker::GetTag () const
 
 /*
  ********************************************************************************
- ************************ InsertEmbeddingForExistingSentinal ********************
+ ************************ InsertEmbeddingForExistingSentinel ********************
  ********************************************************************************
  */
-void Led::InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt, MarkerOwner* ownerForEmbedding)
+void Led::InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt, MarkerOwner* ownerForEmbedding)
 {
     RequireNotNull (embedding);
     RequireNotNull (ownerForEmbedding);
@@ -1471,8 +1471,8 @@ void Led::AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& t
 {
     RequireNotNull (embedding);
     RequireNotNull (ownerForEmbedding);
-    textStore.Replace (insertAt, insertAt, &kEmbeddingSentinalChar, 1);
-    InsertEmbeddingForExistingSentinal (embedding, textStore, insertAt, ownerForEmbedding);
+    textStore.Replace (insertAt, insertAt, &kEmbeddingSentinelChar, 1);
+    InsertEmbeddingForExistingSentinel (embedding, textStore, insertAt, ownerForEmbedding);
 }
 
 #if qPlatform_MacOS || qPlatform_Windows
