@@ -30,7 +30,7 @@
  *              zero write, and it assuming no seek past EOF makes implementations simpler, and
  *              definition more consistent (read).
  *
- *      @todo   Add abiiliy to SetEOF (); You can SEEK, but if you seek backwards, and start writing - that doesn't change EOF. EOF
+ *      @todo   Add ability to SetEOF (); You can SEEK, but if you seek backwards, and start writing - that doesn't change EOF. EOF
  *              remains fixed as max written to. DODUCMNET THIS (for text and binary) - and provide a SetEOF() method
  *              (maybe just for seekable streams)? Maybe add rule that SetEOF () can only go backwards (shorten). Then call
  *              PullBackEOF() or RestrictEOF() or RemovePast(); OR ResetEOFToCurrentPosiiton(). Later maybe best API.
@@ -107,7 +107,8 @@ namespace Stroika::Foundation::Streams::OutputStream {
 
     public:
         /**
-         * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0).
+         * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0), except that the later
+         * requires IsSeekable ().
          *
          *  \req IsOpen ()
          */
@@ -140,6 +141,9 @@ namespace Stroika::Foundation::Streams::OutputStream {
          *
          *  \note The meaning of Write () depends on the exact type of Stream you are referencing. The data
          *        may still be buffered. Call @Flush () to get it pushed out.
+         * 
+         *  \note Span argument is really a span<const ELEMENT_TYPE> but must declare this way to it matches non-const
+         *        arguments as well - one area where either spans suck, or I'm not using/understanding properly.
          *
          *  \req IsOpen ()
          */
