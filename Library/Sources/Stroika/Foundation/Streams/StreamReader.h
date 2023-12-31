@@ -61,8 +61,8 @@ namespace Stroika::Foundation::Streams {
         /**
          *  \brief Logically the same as InputStream::Ptr<ELEMENT_TYPE>::Read () but reading cached data
          */
-        nonvirtual optional<ElementType> Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault);
-        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault);
+        nonvirtual optional<ElementType> Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT);
+        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT);
 
     public:
         /**

@@ -83,7 +83,10 @@ namespace Stroika::Foundation::Streams {
          */
         eBlockIfNoDataAvailable,
 
-        eDefault = eBlockIfNoDataAvailable
+        /**
+         *  By far safest, simplest approach, but sometimes unacceptable for various reasons, typically involving mutliprocessing, and I/O.
+         */
+        eDEFAULT = eBlockIfNoDataAvailable
     };
     constexpr NoDataAvailableHandling eDontBlock              = NoDataAvailableHandling::eDontBlock;
     constexpr NoDataAvailableHandling eBlockIfNoDataAvailable = NoDataAvailableHandling::eBlockIfNoDataAvailable;

@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Streams::TextReader {
      *      o   Seekability
      *              if not specified, its copied from the src binary stream.
      *      o   CodeCvt flags 
-     *          either as specified, or, if src.IsSeekable () - defaults to AutomaticCodeCvtFlags::eDefault (which looks at the BOM)
+     *          either as specified, or, if src.IsSeekable () - defaults to AutomaticCodeCvtFlags::eDEFAULT (which looks at the BOM)
      *          and if not seekable and not specified, use CodeCvt<>{locale{}}.
      * 
      *      o   These defaults changed in Stroika v3.0d5 (mostly before 3.0d5 - defaults for seekabiliity changed and code page sometimes defaulted to UTF8).

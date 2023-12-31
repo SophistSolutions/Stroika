@@ -38,10 +38,10 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
 #endif
 
 #if __has_include("boost/json.hpp")
-            eDefault = eBoost,
+            eDEFAULT = eBoost,
             Stroika_Define_Enum_Bounds (eStroikaNative, eBoost)
 #else
-            eDefault = eStroikaNative,
+            eDEFAULT = eStroikaNative,
             Stroika_Define_Enum_Bounds (eStroikaNative, eStroikaNative)
 #endif
         };

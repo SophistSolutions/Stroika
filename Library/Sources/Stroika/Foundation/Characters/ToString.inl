@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        inline String ToString (const T& t, StringShorteningPreference shortenPref = StringShorteningPreference::eDefault, size_t maxLen2Display = 100)
+        inline String ToString (const T& t, StringShorteningPreference shortenPref = StringShorteningPreference::eDEFAULT, size_t maxLen2Display = 100)
             requires (is_convertible_v<T, String>)
         {
             return "'"sv + static_cast<String> (t).LimitLength (maxLen2Display, shortenPref) + "'"sv;

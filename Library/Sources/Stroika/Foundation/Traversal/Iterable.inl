@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Traversal {
          */
         size_t sz{};
         if constexpr (true) {
-            this->Apply ([&sz] (const T&) { ++sz; }, Execution::SequencePolicy::eDefault);
+            this->Apply ([&sz] (const T&) { ++sz; }, Execution::SequencePolicy::eDEFAULT);
         }
         else {
             for (Iterator<T> i = MakeIterator (); i != Iterator<T>::GetEmptyIterator (); ++i, ++sz)

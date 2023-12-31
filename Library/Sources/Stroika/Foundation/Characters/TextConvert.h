@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Characters {
      *              return make_tuple (Characters::CodeCvt<Character> (get<0> (*o)), get<1> (*o));
      *          }
      *          else {
-     *              return make_tuple (Characters::CodeCvt<Character> (UnicodeExternalEncodings::eDefault), 0);
+     *              return make_tuple (Characters::CodeCvt<Character> (UnicodeExternalEncodings::eDEFAULT), 0);
      *          }
      *      \endcode
      */

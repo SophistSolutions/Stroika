@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); },
-                                     Execution::SequencePolicy::eDefault)) {
+                                     Execution::SequencePolicy::eDEFAULT)) {
                 if (item != nullptr) {
                     *item = *i;
                 }
@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             KEY_TYPE                                               key{fKeyExtractor_ (item)};
             if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); },
-                                     Execution::SequencePolicy::eDefault)) {
+                                     Execution::SequencePolicy::eDEFAULT)) {
                 auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
                 fData_.SetAt (mir.fIterator, item);
                 fChangeCounts_.PerformedChange ();
@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); },
-                                     Execution::SequencePolicy::eDefault)) {
+                                     Execution::SequencePolicy::eDEFAULT)) {
                 Remove (i, nullptr);
                 return true;
             }
