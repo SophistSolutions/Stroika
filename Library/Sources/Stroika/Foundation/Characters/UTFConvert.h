@@ -23,7 +23,7 @@
 namespace Stroika::Foundation::Characters {
 
     /**
-     *  \brief list of external UNICODE character encodings, for file IO (eDefault = eUTF8)
+     *  \brief list of external UNICODE character encodings, for file IO (eDEFAULT = eUTF8)
      * 
      *  \note - UTF-7 **not** supported because very few places support it/ever used it, and
      *          https://en.wikipedia.org/wiki/UTF-7 says its obsolete. So don't bother.
@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Characters {
         eUTF32_LE,
         eUTF32 = std::endian::native == std::endian::big ? eUTF32_BE : eUTF32_LE,
 
-        eDefault = eUTF8,
+        eDEFAULT = eUTF8,
     };
 
     /**

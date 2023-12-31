@@ -259,8 +259,8 @@ namespace Stroika::Foundation::Streams::InputStream {
          *
          *  @see ReadNonBlocking ()
          */
-        nonvirtual optional<ElementType> Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault) const;
-        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDefault) const;
+        nonvirtual optional<ElementType> Read (NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
+        nonvirtual span<ElementType> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag = NoDataAvailableHandling::eDEFAULT) const;
 
     public:
         /**

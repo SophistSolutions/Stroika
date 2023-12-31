@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: O(N)
          */
         template <typename FUNCTION>
-        nonvirtual void Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
+        nonvirtual void Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
 
     public:
         /**

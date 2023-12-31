@@ -524,7 +524,7 @@ namespace Stroika::Foundation::Traversal {
          *              directly (or indirectly) access the Iterable<> being iterated over.
          */
         nonvirtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement,
-                               Execution::SequencePolicy                      seq = Execution::SequencePolicy::eDefault) const;
+                               Execution::SequencePolicy                      seq = Execution::SequencePolicy::eDEFAULT) const;
 
     public:
         /**
@@ -586,16 +586,16 @@ namespace Stroika::Foundation::Traversal {
          *        EqualsComparer, just to simplify use, and because we cannot anticipate any real ambiguity or confusion resulting from this loose restriction.
          */
         template <predicate<T> THAT_FUNCTION>
-        nonvirtual Iterator<T> Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
+        nonvirtual Iterator<T> Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
         template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
         nonvirtual Iterator<T> Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
-                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
+                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
         template <predicate<T> THAT_FUNCTION>
         nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that,
-                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
+                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
         template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
         nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
-                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
+                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDEFAULT) const;
 
     public:
         /**

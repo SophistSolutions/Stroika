@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Streams::TextWriter {
      *      \endcode
      */
     Ptr New (const OutputStream::Ptr<byte>& src, Characters::CodeCvt<>&& char2OutputConverter);
-    Ptr New (const OutputStream::Ptr<byte>& src, UnicodeExternalEncodings e = UnicodeExternalEncodings::eDefault,
+    Ptr New (const OutputStream::Ptr<byte>& src, UnicodeExternalEncodings e = UnicodeExternalEncodings::eDEFAULT,
              ByteOrderMark bom = ByteOrderMark::eDontInclude);
     Ptr New (const OutputStream::Ptr<Character>& src);
     template <typename... ARGS>

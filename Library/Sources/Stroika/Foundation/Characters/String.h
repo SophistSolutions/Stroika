@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Characters {
         ePreferKeepRight,
         ePreferKeepMid,
 
-        eDefault = ePreferKeepLeft,
+        eDEFAULT = ePreferKeepLeft,
 
         Stroika_Define_Enum_Bounds (ePreferKeepLeft, ePreferKeepMid)
     };

@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Execution {
 
         Stroika_Define_Enum_Bounds (eSeq, eUnseq)
 
-            eDefault = eSeq,
+            eDEFAULT = eSeq,
     };
 
 }
