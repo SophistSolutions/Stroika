@@ -337,7 +337,7 @@ bool SpellCheckEngine_Basic::LookupWordHelper_ (const Led_tString& checkWord, Le
 */
 bool SpellCheckEngine_Basic::OtherStringToIgnore (const Led_tString& checkWord)
 {
-    return OtherStringToIgnore_AllPunctuation (checkWord) or OtherStringToIgnore_Sentinals (checkWord) or OtherStringToIgnore_Number (checkWord);
+    return OtherStringToIgnore_AllPunctuation (checkWord) or OtherStringToIgnore_Sentinels (checkWord) or OtherStringToIgnore_Number (checkWord);
 }
 
 bool SpellCheckEngine_Basic::OtherStringToIgnore_AllPunctuation (const Led_tString& checkWord)

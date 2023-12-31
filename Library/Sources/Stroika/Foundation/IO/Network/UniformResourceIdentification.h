@@ -74,17 +74,17 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *      We COULD allow for EITHER, but that would be clearly needlessly confusing.
      *      PRO USE of optional
      *          o   its the normal way (since C++17) to represent that something is there, or not (string empty is a throwback
-     *              sentinal value approach)
+     *              sentinel value approach)
      *          o   Some objects (like port#, or authority) have formatting constraints and using optional makes
      *              clear that IF it exists its of the right form, and else it just doesn't exist (small point)
      *      CONS USE of optional
-     *          o   Backward compatability with earlier versions of the API are a bit of a pain, as the old API used
+     *          o   Backward compatibility with earlier versions of the API are a bit of a pain, as the old API used
      *              string and string.empty () in many places.
      *      Performance:
      *          o   optional more often avoids allocating memory, but is larger, so probably a wash
      *      Choice:
      *          o   API will use optional<> for sub-elements of URL and URI that may or may not be present, and
-     *              if a string value is provoded (not nullopt) - then it MUST be a legal value (not empty typically).
+     *              if a string value is provided (not nullopt) - then it MUST be a legal value (not empty typically).
      *              So, for example, Authority.Get/SetUserInfo () - MUST be either nullopt or a non-empty string.
      *          o   Exception - because the https://tools.ietf.org/html/rfc3986#page-11 explicitly says the path is not optional
      *              

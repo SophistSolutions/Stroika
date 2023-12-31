@@ -349,7 +349,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinal' value.
+         *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinel' value.
          *
          *  \note Alias LookupOrDefault
          */
@@ -361,7 +361,7 @@ namespace Stroika::Foundation::Containers {
          *  container (not an error or exception) (except that if T contains fields not part of comparison, those will be updated).
          *
          *  So for a user-defined type T (or any type where the caller specifies the compare function)
-         *  it is left undefined whether or not the new (not included) attributes assocaited with the added
+         *  it is left undefined whether or not the new (not included) attributes associated with the added
          *  item make it into the Set.
          *
          *  return true if new item, and false if simply updated

@@ -1910,7 +1910,7 @@ void WordProcessor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t drag
 WordProcessor::Table* WordProcessor::InsertTable (size_t at)
 {
     Table* t = new Table (fParagraphDatabase.get (), at);
-    t->SetDimensions (1, 1); //tmphack so we have at least one sentinal - auto-delete table when it becomes empty?
+    t->SetDimensions (1, 1); //tmphack so we have at least one sentinel - auto-delete table when it becomes empty?
     //like the embeddings it owns!
     // LGP 2002-11-15
     return t;
@@ -3719,7 +3719,7 @@ void WordProcessor::DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowR
 vector<Led_Rect> WordProcessor::GetRowHilightRects (const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, size_t hilightStart, size_t hilightEnd) const
 {
     size_t len = rowEnd - rowStart;
-    if (len == 1 and text.PeekAtRealText ()[0] == kEmbeddingSentinalChar) {
+    if (len == 1 and text.PeekAtRealText ()[0] == kEmbeddingSentinelChar) {
         vector<Table*> tables = GetTablesInRange (rowStart, rowEnd);
         Assert (tables.size () <= 1);
         if (not tables.empty ()) {
@@ -3939,7 +3939,7 @@ void WordProcessor::AdjustBestRowLength (size_t textStart, const Led_tChar* text
     Require (*rowLength > 0);
     inherited::AdjustBestRowLength (textStart, text, end, rowLength);
     for (const Led_tChar* cur = &text[0]; cur < end; cur = Led_NextChar (cur)) {
-        if (*cur == kEmbeddingSentinalChar) {
+        if (*cur == kEmbeddingSentinelChar) {
             // Check if its inside a table - and if yes - then rowLength=1
             vector<Table*> tables = GetTablesInRange (textStart + cur - text, textStart + cur - text + 1);
             if (not tables.empty ()) {
@@ -4658,7 +4658,7 @@ void WordProcessorTextIOSinkStream::StartTable ()
 
     if (fCurrentTable == nullptr) {
         fCurrentTable = new Table (fParagraphDatabase.get (), current_offset () + GetOriginalStart ());
-        SetInsertionStart (GetInsertionStart () + 1); // cuz we added a row which adds a sentinal
+        SetInsertionStart (GetInsertionStart () + 1); // cuz we added a row which adds a sentinel
         fNextTableRow     = 0;
         fNextTableCell    = 0;
         fCurrentTableCell = size_t (-1);
@@ -5332,7 +5332,7 @@ StyledTextIOWriter::SrcStream* WordProcessorTextIOSrcStream::TableIOMapper::Make
 
 size_t WordProcessorTextIOSrcStream::TableIOMapper::GetOffsetEnd () const
 {
-    // The current implementation of tables uses a single embedding object with a single sentinal character
+    // The current implementation of tables uses a single embedding object with a single sentinel character
     // for the entire table (no matter how many rows)
     return 1;
 }
@@ -5753,7 +5753,7 @@ void Table::FinalizeAddition (WordProcessor::AbstractParagraphDatabaseRep* o, si
     RequireNotNull (o);
     TextStore&               ts = o->GetTextStore ();
     TextStore::SimpleUpdater updater (ts, addAt, addAt + 1);
-    ts.ReplaceWithoutUpdate (addAt, addAt, &kEmbeddingSentinalChar, 1);
+    ts.ReplaceWithoutUpdate (addAt, addAt, &kEmbeddingSentinelChar, 1);
     ts.AddMarker (this, addAt, 1, o);
 }
 
@@ -5764,7 +5764,7 @@ void Table::DrawSegment (const StyledTextImager* imager, const RunElement& /*run
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
     Assert (from + 1 == to);
     RequireNotNull (text.PeekAtVirtualText ());
-    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinelChar);
 
     using TemporarilyUseTablet = EmbeddedTableWordProcessor::TemporarilyUseTablet;
 
@@ -5861,7 +5861,7 @@ vector<Led_Rect> Table::GetRowHilightRects () const
     if (segmentHilighted) {
         Led_Rect         tableRect    = fCurrentOwningWP->GetIntraRowTextWindowBoundingRect (rowStart, rowEnd);
         vector<Led_Rect> hilightRects = fCurrentOwningWP->TextImager::GetRowHilightRects (
-            TextLayoutBlock_Basic (&kEmbeddingSentinalChar, &kEmbeddingSentinalChar + 1), rowStart, rowEnd, hilightStart, hilightEnd);
+            TextLayoutBlock_Basic{&kEmbeddingSentinelChar, &kEmbeddingSentinelChar + 1}, rowStart, rowEnd, hilightStart, hilightEnd);
 
         // If all the WHOLE table is hilighted, then display that selection as the entire table hilighted.
         // No need to walk through just the cells etc...

@@ -268,10 +268,10 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         nonvirtual void swap (forward_list& other) noexcept;
 
     private:
-        // provides a globally unique pointer for the lock/spin sentinals node_
+        // provides a globally unique pointer for the lock/spin sentinels node_
         // would be nice to use constexpr, but not allowed by gcc with reinterpret_cast
-        static inline node_* const kTerminalSentinal_ = reinterpret_cast<node_*> (1);
-        static inline node_* const kSpinSentinal_     = reinterpret_cast<node_*> (2);
+        static inline node_* const kTerminalSentinel_ = reinterpret_cast<node_*> (1);
+        static inline node_* const kSpinSentinel_     = reinterpret_cast<node_*> (2);
 
         std::atomic<node_*> fFirst_;
 
@@ -293,7 +293,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         // return a new "ownership"
         static node_* increment_reference_count_ (node_* n);
 
-        // fetch the data from node 'n' until we get a value which differs from kSpinSentinal_
+        // fetch the data from node 'n' until we get a value which differs from kSpinSentinel_
         static node_* spin_get_ (const std::atomic<node_*>& n);
 
         // lock free, swap the node_ *s in left and right,

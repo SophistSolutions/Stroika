@@ -30,73 +30,73 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     public:
         ForwardIterator_ ()
-            : current{kTerminalSentinal_}
+            : current{kTerminalSentinel_}
         {
         }
         ForwardIterator_ (node_* n)
-            : current{n != kTerminalSentinal_ ? increment_reference_count_ (n) : kTerminalSentinal_}
+            : current{n != kTerminalSentinel_ ? increment_reference_count_ (n) : kTerminalSentinel_}
         {
         }
         ForwardIterator_ (const ForwardIterator_& other)
-            : current{other.current != kTerminalSentinal_ ? increment_reference_count_ (other.current) : kTerminalSentinal_}
+            : current{other.current != kTerminalSentinel_ ? increment_reference_count_ (other.current) : kTerminalSentinel_}
         {
         }
         ForwardIterator_ (ForwardIterator_&& other) noexcept
-            : current{kTerminalSentinal_}
+            : current{kTerminalSentinel_}
         {
             std::swap (current, other.current);
         }
         ~ForwardIterator_ ()
         {
-            if (current == kTerminalSentinal_) {
+            if (current == kTerminalSentinel_) {
                 return;
             }
             decrement_reference_count_ (current);
         }
         ForwardIterator_& operator= (ForwardIterator_ const& other)
         {
-            if (current != kTerminalSentinal_) {
+            if (current != kTerminalSentinel_) {
                 decrement_reference_count_ (current);
             }
-            current = other.current != kTerminalSentinal_ ? increment_reference_count_ (other.current) : kTerminalSentinal_;
+            current = other.current != kTerminalSentinel_ ? increment_reference_count_ (other.current) : kTerminalSentinel_;
             return *this;
         }
         template <typename V>
         ForwardIterator_& operator= (const V& rhs)
         {
-            if (current != kTerminalSentinal_) {
+            if (current != kTerminalSentinel_) {
                 decrement_reference_count_ (current);
             }
-            current = rhs.current != kTerminalSentinal_ ? increment_reference_count_ (rhs.current) : kTerminalSentinal_;
+            current = rhs.current != kTerminalSentinel_ ? increment_reference_count_ (rhs.current) : kTerminalSentinel_;
             return *this;
         }
         T& operator* () const
         {
-            if (current == kTerminalSentinal_) {
+            if (current == kTerminalSentinel_) {
                 throw std::logic_error{"invalid iterator"};
             }
             return current->value;
         }
         T* operator->() const
         {
-            if (current == kTerminalSentinal_) {
+            if (current == kTerminalSentinel_) {
                 throw std::logic_error{"invalid iterator"};
             }
             return &current->value;
         }
         ForwardIterator_& operator++ ()
         {
-            Assert (current != kTerminalSentinal_); // this is the end()
+            Assert (current != kTerminalSentinel_); // this is the end()
             node_* temp = new_ownership_ (current->next);
             std::swap (current, temp);
-            if (temp != kTerminalSentinal_) {
+            if (temp != kTerminalSentinel_) {
                 decrement_reference_count_ (temp); // discard newly created ownership
             }
             return *this;
         }
         ForwardIterator_ operator++ (int)
         {
-            Assert (current != kTerminalSentinal_); // this is the end()
+            Assert (current != kTerminalSentinel_); // this is the end()
             ForwardIterator_ temp = *this;
             ++*this;
             return temp;
@@ -132,29 +132,29 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
         node_ (T const& value)
             : value{value}
-            , next{kTerminalSentinal_}
+            , next{kTerminalSentinel_}
             , referenceCount{1}
         {
         }
         node_ (T&& value)
             : value{std::move (value)}
-            , next{kTerminalSentinal_}
+            , next{kTerminalSentinel_}
             , referenceCount{1}
         {
         }
         template <typename... U>
         node_ (U&&... params)
             : value{std::forward<U> (params)...}
-            , next{kTerminalSentinal_}
+            , next{kTerminalSentinel_}
             , referenceCount{1}
         {
         }
         ~node_ ()
         {
-            node_* n = owner_lock_ (next); // change next to kSpinSentinal_
-            if (n != kTerminalSentinal_) {
+            node_* n = owner_lock_ (next); // change next to kSpinSentinel_
+            if (n != kTerminalSentinel_) {
                 decrement_reference_count_ (n);                             // release ownership of next
-                next.store (kTerminalSentinal_, std::memory_order_relaxed); // relaxed because observers will see kSpinSentinal_
+                next.store (kTerminalSentinel_, std::memory_order_relaxed); // relaxed because observers will see kSpinSentinel_
             }
         }
     };
@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
      */
     template <typename T>
     inline forward_list<T>::forward_list ()
-        : fFirst_{kTerminalSentinal_}
+        : fFirst_{kTerminalSentinel_}
     {
     }
     template <typename T>
@@ -195,24 +195,24 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename T>
     inline bool forward_list<T>::empty () const noexcept
     {
-        return fFirst_.load () == kTerminalSentinal_;
+        return fFirst_.load () == kTerminalSentinel_;
     }
     template <typename T>
     size_t forward_list<T>::clear ()
     {
-        node_* current = kTerminalSentinal_;
+        node_* current = kTerminalSentinel_;
         // detach the elements fFirst_ so that blocking is minimal
         exchange_ (fFirst_, current);
-        if (current == kTerminalSentinal_) {
+        if (current == kTerminalSentinel_) {
             return 0;
         }
         // if we just delete the fFirst_ node_, it may cascade down all the
         // subsequent nodes. This would be fine, if not for the possibility
         // of blowing the stack. Instead we delete them in reverse.
         std::vector<node_*> nodes;
-        while (current != kTerminalSentinal_) {
+        while (current != kTerminalSentinel_) {
             nodes.push_back (current);
-            node_* temp = kTerminalSentinal_;
+            node_* temp = kTerminalSentinel_;
             // take ownership of the next node_
             exchange_ (current->next, temp);
             current = temp;
@@ -227,18 +227,18 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     {
         std::list<node_*> nodes;
         {
-            node_* i = kTerminalSentinal_;
+            node_* i = kTerminalSentinel_;
             exchange_ (fFirst_, i);
             while (i) {
                 nodes.push_back (i);
-                node_* temp = kSpinSentinal_;
+                node_* temp = kSpinSentinel_;
                 exchange_ (i->next, temp); // lock all the nodes
                 i = temp;
             }
         }
         for (auto const& i = nodes.begin (); i != nodes.end (); ++i) {
             decrement_reference_count_ (*i);                               // remove prior nodes reference
-            i->next.store (kTerminalSentinal_, std::memory_order_relaxed); // unlink, relaxed because observers will see kSpinSentinal_
+            i->next.store (kTerminalSentinel_, std::memory_order_relaxed); // unlink, relaxed because observers will see kSpinSentinel_
         }
         return nodes.size (); // return number of deleted elements
     }
@@ -280,7 +280,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     {
         node_*   n = new_ownership_ (fFirst_); // wait for unlock
         iterator result{n};
-        if (n != kTerminalSentinal_) {
+        if (n != kTerminalSentinel_) {
             decrement_reference_count_ (n); // discard newly created ownership
         }
         return result;
@@ -291,7 +291,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         // const_cast is needed to lock fFirst_
         std::atomic<node_*>& nonConstFirst = *const_cast<std::atomic<node_*>*> (&fFirst_);
         node_*               n             = new_ownership_ (nonConstFirst);
-        if (n == kTerminalSentinal_) {
+        if (n == kTerminalSentinel_) {
             return end ();
         }
         const_iterator result{n};
@@ -385,17 +385,17 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     bool forward_list<T>::remove_node_ (std::atomic<node_*>& atomic_ptr, T* value)
     {
         node_* x = owner_lock_ (atomic_ptr);
-        if (x == kTerminalSentinal_) {
-            if (atomic_ptr.load () == kTerminalSentinal_)
+        if (x == kTerminalSentinel_) {
+            if (atomic_ptr.load () == kTerminalSentinel_)
                 return false;
-            node_* temp = kTerminalSentinal_;
+            node_* temp = kTerminalSentinel_;
             owner_unlock_ (atomic_ptr, temp);
             return false;
         }
         *value   = x->value;
         node_* y = owner_lock_ (x->next);
         owner_unlock_ (atomic_ptr, y);
-        x->next.store (kTerminalSentinal_);
+        x->next.store (kTerminalSentinel_);
         decrement_reference_count_ (x);
         return true;
     }
@@ -410,7 +410,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename T>
     inline auto forward_list<T>::separate_ (std::atomic<node_*>& atomic_ptr) -> node_*
     {
-        node_* oldNext = kTerminalSentinal_;
+        node_* oldNext = kTerminalSentinel_;
         exchange_ (atomic_ptr, oldNext);
         return oldNext;
     }
@@ -418,8 +418,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     inline void forward_list<T>::decrement_reference_count_ (node_*& n)
     {
         Assert (n != nullptr);
-        Assert (n != kTerminalSentinal_); // not a valid node_
-        Assert (n != kSpinSentinal_);     // not a valid node_
+        Assert (n != kTerminalSentinel_); // not a valid node_
+        Assert (n != kSpinSentinel_);     // not a valid node_
         if (n->referenceCount-- == 1) {
             delete n;
         }
@@ -429,8 +429,8 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     inline auto forward_list<T>::increment_reference_count_ (node_* n) -> node_*
     {
         Assert (n != nullptr); //must be a valid node_ because ownership is a precondition
-        Assert (n != kTerminalSentinal_);
-        Assert (n != kSpinSentinal_);
+        Assert (n != kTerminalSentinel_);
+        Assert (n != kSpinSentinel_);
         ++n->referenceCount;
         return n;
     }
@@ -439,7 +439,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     {
         while (true) {
             auto p = n.load ();
-            if (p != kSpinSentinal_) {
+            if (p != kSpinSentinel_) {
                 return p;
             }
         }
@@ -448,7 +448,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     void forward_list<T>::exchange_ (std::atomic<node_*>& left, node_*& right)
     {
         Assert (right != nullptr);
-        Assert (right != kSpinSentinal_); // invalid node_
+        Assert (right != kSpinSentinel_); // invalid node_
         node_* n = left.load ();
         do {
             n = spin_get_ (left);
@@ -461,11 +461,11 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     {
         node_* temp = owner_lock_ (left);
         exchange_ (right, temp);
-        if (temp != kTerminalSentinal_) {
+        if (temp != kTerminalSentinel_) {
             owner_unlock_ (left, temp);
         }
         else {
-            left.store (kTerminalSentinal_);
+            left.store (kTerminalSentinel_);
         }
     }
     template <typename T>
@@ -474,12 +474,12 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
         node_* n = atomic_ptr.load ();
         do {
             n = spin_get_ (atomic_ptr);
-        } while (!atomic_ptr.compare_exchange_weak (n, kSpinSentinal_));
+        } while (!atomic_ptr.compare_exchange_weak (n, kSpinSentinel_));
 
-        if (n == kTerminalSentinal_) {                                        // the node_ has been deleted already
+        if (n == kTerminalSentinel_) {                                        // the node_ has been deleted already
                                                                               // put terminal_ back in to owner_unlock_
-            atomic_ptr.store (kTerminalSentinal_, std::memory_order_relaxed); // relaxed because observers will see kSpinSentinal_
-            return kTerminalSentinal_;
+            atomic_ptr.store (kTerminalSentinel_, std::memory_order_relaxed); // relaxed because observers will see kSpinSentinel_
+            return kTerminalSentinel_;
         } // else stays locked
         return n;
     }
@@ -487,19 +487,19 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     inline void forward_list<T>::owner_unlock_ (std::atomic<node_*>& atomic_ptr, node_*& n)
     {
         Assert (n != nullptr);
-        Assert (n != kSpinSentinal_);
-        Assert (atomic_ptr.load (std::memory_order_relaxed) == kSpinSentinal_); // relaxed because it was set to kSpinSentinal_ by the current thread
-        atomic_ptr.store (n, std::memory_order_relaxed);                        // relaxed because observers will see kSpinSentinal_
+        Assert (n != kSpinSentinel_);
+        Assert (atomic_ptr.load (std::memory_order_relaxed) == kSpinSentinel_); // relaxed because it was set to kSpinSentinel_ by the current thread
+        atomic_ptr.store (n, std::memory_order_relaxed);                        // relaxed because observers will see kSpinSentinel_
         n = nullptr;                                                            // make sure the caller cant use the pointer anymore
     }
     template <typename T>
     auto forward_list<T>::new_ownership_ (std::atomic<node_*>& atomic_ptr) -> node_*
     {
         node_* temp = owner_lock_ (atomic_ptr);
-        if (temp == kTerminalSentinal_) {
-            return kTerminalSentinal_;
+        if (temp == kTerminalSentinel_) {
+            return kTerminalSentinel_;
         }
-        node_* result = temp != kTerminalSentinal_ ? increment_reference_count_ (temp) : kTerminalSentinal_;
+        node_* result = temp != kTerminalSentinel_ ? increment_reference_count_ (temp) : kTerminalSentinel_;
         owner_unlock_ (atomic_ptr, temp);
         return result;
     }

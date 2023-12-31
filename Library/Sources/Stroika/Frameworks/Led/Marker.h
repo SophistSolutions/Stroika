@@ -70,7 +70,7 @@
     marker subclass might display a picture. Since this marker really has nothing todo with
     any text, it might be a zero-length marker. Even zero length markers CAN end
     up being displayed. They participate in the TextImager layout, and display.
-    But, more typically, it would be a marker of length 1 (with a sentinal character in the
+    But, more typically, it would be a marker of length 1 (with a sentinel character in the
     character position marked by that marker), so that cursoring in the editor the image
     is treated as a single item (like a character of text).</p>
         <p>It is for this reason (and others) that we care about the ordering of markers with

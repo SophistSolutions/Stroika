@@ -103,7 +103,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         enum CharacterClasses {
             eSpaceClass,
-            eSentinalClass, // Special character which always breaks on either side, and stands by itself
+            eSentinelClass, // Special character which always breaks on either side, and stands by itself
             eWordClass,
 #if qSingleByteCharacters
 #elif qWideCharacters

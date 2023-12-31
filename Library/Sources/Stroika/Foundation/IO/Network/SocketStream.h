@@ -56,8 +56,6 @@ namespace Stroika::Foundation::IO::Network::SocketStream {
     Ptr New (Execution::InternallySynchronized internallySynchronized, const ConnectionOrientedStreamSocket::Ptr& sd);
     Ptr New (const ConnectionOrientedStreamSocket::Ptr& sd);
 
-    class Rep_;
-
 }
 
 /*

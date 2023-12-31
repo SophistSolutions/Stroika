@@ -489,7 +489,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
                 GetSrcStream ().seek_to (justBeforeEmbedding + howManyBytes);
             }
             else {
-                GetSinkStream ().InsertEmbeddingForExistingSentinal (embedding, whereAt);
+                GetSinkStream ().InsertEmbeddingForExistingSentinel (embedding, whereAt);
             }
         }
     }
@@ -604,7 +604,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
                 GetSrcStream ().seek_to (justBeforeEmbedding + howManyBytes);
             }
             else {
-                GetSinkStream ().InsertEmbeddingForExistingSentinal (embedding, whereAt);
+                GetSinkStream ().InsertEmbeddingForExistingSentinel (embedding, whereAt);
             }
         }
     }
@@ -719,7 +719,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
                 GetSrcStream ().seek_to (justBeforeEmbedding + howManyBytes);
             }
             else {
-                GetSinkStream ().InsertEmbeddingForExistingSentinal (embedding, whereAt);
+                GetSinkStream ().InsertEmbeddingForExistingSentinel (embedding, whereAt);
             }
         }
     }

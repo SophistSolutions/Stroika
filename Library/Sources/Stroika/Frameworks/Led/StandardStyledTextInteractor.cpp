@@ -586,20 +586,20 @@ FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const
     return TextImager::GetStaticDefaultFont ();
 }
 
-void StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at)
+void StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at)
 {
     RequireNotNull (embedding);
     if (GetCachedTextSize () != 0) {
         Flush ();
     }
     size_t    effectiveFrom = fOriginalStart + at;
-    Led_tChar testSentinal;
+    Led_tChar testSentinel;
     AssertNotNull (fTextStore);
-    fTextStore->CopyOut (effectiveFrom, 1, &testSentinal);
-    if (testSentinal != kEmbeddingSentinalChar) {
+    fTextStore->CopyOut (effectiveFrom, 1, &testSentinel);
+    if (testSentinel != kEmbeddingSentinelChar) {
         Execution::Throw (DataExchange::BadFormatException::kThe);
     }
-    Stroika::Frameworks::Led::InsertEmbeddingForExistingSentinal (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase.get ());
+    Stroika::Frameworks::Led::InsertEmbeddingForExistingSentinel (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase.get ());
 }
 
 void StandardStyledTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
@@ -1074,7 +1074,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_OtherRegisteredEmbed
                 size_t pasteEnd   = to;
                 Assert (pasteEnd >= pasteStart);
 
-                GetTextStore ().Replace (pasteStart, pasteEnd, &kEmbeddingSentinalChar, 1); // clear current selection and put in embedding character
+                GetTextStore ().Replace (pasteStart, pasteEnd, &kEmbeddingSentinelChar, 1); // clear current selection and put in embedding character
 
                 {
                     // add marker, and do DID_UPDATE stuff so cached metrics and rowheights get refreshed...

@@ -4323,7 +4323,7 @@ void StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
             write ("\\\\");
         } break;
 
-        case kEmbeddingSentinalChar: {
+        case kEmbeddingSentinelChar: {
             unique_ptr<StyledTextIOWriter_RTF::Table> table (writerContext.GetCurRTFTable ());
             if (table.get () != nullptr) {
                 Assert (writerContext.fCharsToSkip == 0); // must preserve / restore for nested tables?
@@ -4336,7 +4336,7 @@ void StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
 
             SimpleEmbeddedObjectStyleMarker* embedding = writerContext.GetCurSimpleEmbeddedObjectStyleMarker ();
             if (embedding == nullptr) {
-                WriteHexCharHelper (kEmbeddingSentinalChar);
+                WriteHexCharHelper (kEmbeddingSentinelChar);
             }
             else {
                 if (PossiblyWriteUnknownRTFEmbedding (writerContext, embedding)) {

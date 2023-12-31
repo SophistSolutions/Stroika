@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Sequence<T>::Append (ArgByValueType<value_type> item)
     {
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kSentinalLastItemIndex, &item, &item + 1);
+        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, &item, &item + 1);
     }
     template <typename T>
     template <IIterableOf<T> ITERABLE_OF_ADDABLE>
@@ -322,7 +322,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep> accessor = {this};
         for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
             const T& tmp = *i;
-            accessor._GetWriteableRep ().Insert (_IRep::_kSentinalLastItemIndex, &tmp, &tmp + 1);
+            accessor._GetWriteableRep ().Insert (_IRep::_kSentinelLastItemIndex, &tmp, &tmp + 1);
         }
     }
     template <typename T>
@@ -382,8 +382,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline auto Sequence<T>::Last () const -> optional<value_type>
     {
-        // IRep::GetAt() defined to allow special _IRep::_kSentinalLastItemIndex
-        return this->empty () ? optional<T>{} : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinalLastItemIndex);
+        // IRep::GetAt() defined to allow special _IRep::_kSentinelLastItemIndex
+        return this->empty () ? optional<T>{} : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinelLastItemIndex);
     }
     template <typename T>
     inline auto Sequence<T>::Last (const function<bool (ArgByValueType<value_type>)>& that) const -> optional<value_type>
@@ -394,8 +394,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline auto Sequence<T>::LastValue (ArgByValueType<value_type> defaultValue) const -> value_type
     {
-        // IRep::GetAt() defined to allow special _IRep::_kSentinalLastItemIndex
-        return this->empty () ? defaultValue : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinalLastItemIndex);
+        // IRep::GetAt() defined to allow special _IRep::_kSentinelLastItemIndex
+        return this->empty () ? defaultValue : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kSentinelLastItemIndex);
     }
     template <typename T>
     inline void Sequence<T>::push_back (ArgByValueType<value_type> item)

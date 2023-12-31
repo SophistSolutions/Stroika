@@ -205,7 +205,7 @@ namespace Stroika::Frameworks::Led {
         virtual void   AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
         virtual void   ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) override;
         virtual FontSpecification GetDefaultFontSpec () const override;
-        virtual void              InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
+        virtual void              InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
         virtual void              AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
         virtual void              AppendSoftLineBreak () override;
         virtual void              InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;

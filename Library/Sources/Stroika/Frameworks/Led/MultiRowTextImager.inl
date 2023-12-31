@@ -19,7 +19,7 @@ namespace Stroika::Frameworks::Led {
      */
     inline void MultiRowTextImager::InvalidateTotalRowsInWindow ()
     {
-        fTotalRowsInWindow = 0; // zero is sentinal meaning invalid
+        fTotalRowsInWindow = 0; // zero is sentinel meaning invalid
     }
     inline MultiRowTextImager::RowReference MultiRowTextImager::GetTopRowReferenceInWindow () const
     {

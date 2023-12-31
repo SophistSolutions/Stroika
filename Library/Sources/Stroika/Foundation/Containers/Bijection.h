@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Always safe to call. If result empty/missing, returns argument 'default' or 'sentinal' value.
+         *  Always safe to call. If result empty/missing, returns argument 'default' or 'sentinel' value.
          *
          *  @see   Lookup ()
          *  @see   InverseLookup ()
@@ -312,7 +312,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Always safe to call. If result empty/missing, returns argument 'default' or 'sentinal' value.
+         *  Always safe to call. If result empty/missing, returns argument 'default' or 'sentinel' value.
          *
          *  @see   Lookup ()
          *  @see   LookupValue ()

@@ -31,15 +31,15 @@ namespace Stroika::Frameworks::Led {
     using Led_PrivateEmbeddingTag = char[10];
 
 /*
-        *  qOverrideDefaultSentinalValue allows you to use a different value for the sentinal than
+        *  qOverrideDefaultSentinelValue allows you to use a different value for the sentinel than
         *  the default of zero. NB, that zero is a good default choice because it isn't a valid
         *  character code, and nearly all other (if not all other) choices are valid characters
-        *  which you might be confusing with a sentinal.
+        *  which you might be confusing with a sentinel.
         */
-#if qOverrideDefaultSentinalValue
-    const Led_tChar kEmbeddingSentinalChar = qOverrideDefaultSentinalValue;
+#if qOverrideDefaultSentinelValue
+    const Led_tChar kEmbeddingSentinelChar = qOverrideDefaultSentinelValue;
 #else
-    const Led_tChar kEmbeddingSentinalChar = '\0';
+    const Led_tChar kEmbeddingSentinelChar = '\0';
 #endif
 
     // Its up to you in your application for each one of these you want to support to add a line such
@@ -120,7 +120,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>An abstract class which contains most of the functionality for supporting Led embeddings in a Styled Text
         document.</p>
             <p>All the various kinds of embeddings Led supports are subclasses of this class.</p>
-            <p>See @'InsertEmbeddingForExistingSentinal' and @'AddEmbedding' for more details on how to add these markers to the
+            <p>See @'InsertEmbeddingForExistingSentinel' and @'AddEmbedding' for more details on how to add these markers to the
         text. These utilities are not <em>needed</em> - but can simplify the process of adding embeddings.</p>
             <p>Also, to understand more about how these work, see @'StyledTextImager::StyleMarker' for more details.</p>
             <p>(NEED LOTS MORE DETAILS - THIS IS IMPORTANT)</p>
@@ -566,19 +566,19 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @METHOD:        InsertEmbeddingForExistingSentinal
+    @METHOD:        InsertEmbeddingForExistingSentinel
     @DESCRIPTION:   <p>Utility method to insert the given embedding (@'SimpleEmbeddedObjectStyleMarker') into the given
-                @'TextStore', at a given position in the text. To use this routine, the sentinal character must already
-                be present. Use @'AddEmbedding' if the sentinal has not yet been added.</p>
+                @'TextStore', at a given position in the text. To use this routine, the sentinel character must already
+                be present. Use @'AddEmbedding' if the sentinel has not yet been added.</p>
     */
-    void InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt,
+    void InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt,
                                              MarkerOwner* ownerForEmbedding);
 
     /*
     @METHOD:        AddEmbedding
     @DESCRIPTION:   <p>Utility method to insert the given embedding (@'SimpleEmbeddedObjectStyleMarker') into the given
-                @'TextStore', at a given position in the text. This routine, adds a sentinal character at that position. If
-                the sentinal character is already there, use @'InsertEmbeddingForExistingSentinal'.</p>
+                @'TextStore', at a given position in the text. This routine, adds a sentinel character at that position. If
+                the sentinel character is already there, use @'InsertEmbeddingForExistingSentinel'.</p>
                     <p>Actually, this function isn't strictly needed. But there is alot of mumbo-jumbo that needs to be
                 done when adding embeddings (e.g. DoAboutToUpdateCalls etc), and this packages up all those things and
                 avoids you from having todo them in a bunch of places.</p>

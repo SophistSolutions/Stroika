@@ -53,15 +53,15 @@ namespace Stroika::Foundation::Memory {
 
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
         /**
-         *  Basic idea is to use a sentinal value to indicate LOCKED - and use atomic exchange, with
+         *  Basic idea is to use a sentinel value to indicate LOCKED - and use atomic exchange, with
          *  the head of list pointer.
          *
-         *  If we exchange and get the sentinal, we didnt get the lock so retry.
+         *  If we exchange and get the sentinel, we didnt get the lock so retry.
          *
-         *  If don't get the sentinal, we have the lock (and stored the sentinal so nobody else will get the lock)
+         *  If don't get the sentinel, we have the lock (and stored the sentinel so nobody else will get the lock)
          *  so go ahead and complete the operation.
          *
-         *  \note   I tried to make kLockedSentinal_ constexpr, but this generates errors, apparently because:
+         *  \note   I tried to make kLockedsentinel_ constexpr, but this generates errors, apparently because:
          *          http://en.cppreference.com/w/cpp/language/constant_expression
          *
          *          Address constant expression is a prvalue core constant expression (after conversions required by context)
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Memory {
          *
          *          @todo COULD use UNION to workaround this...
          */
-        static void* const kLockedSentinal_ = (void*)1; // any invalid pointer
+        static void* const kLockedSentinel_ = (void*)1; // any invalid pointer
 #else
         /*
          *  kUseSpinLock_ is probaly best true (empirical tests with the
@@ -133,15 +133,15 @@ namespace Stroika::Foundation::Memory {
         constexpr bool kTryMemoryOrderOptimizations_ = true; // experiment as of 2023-09-26
 
         /*
-         *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
-         *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
+         *  Note - once we have stored Private_::kLockedSentinel_ in the sHeadLink_ and gotten back something other than that, we
+         *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinel_ from exchange).
          */
         void* p{};
         {
         again:
-            p = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
-            if (p == Private_::kLockedSentinal_) [[unlikely]] {
-                // we stored and retrieved a sentinal. So no lock. Try again!
+            p = sHeadLink_.exchange (Private_::kLockedSentinel_, memory_order_acq_rel);
+            if (p == Private_::kLockedSentinel_) [[unlikely]] {
+                // we stored and retrieved a sentinel. So no lock. Try again!
                 this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
                 goto again;
             }
@@ -161,10 +161,10 @@ namespace Stroika::Foundation::Memory {
         // even though we have 'acquired' a logical lock, the memory at address 'p' may not be syned to our local processor/thread
         void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
         if constexpr (kTryMemoryOrderOptimizations_) {
-            Verify (sHeadLink_.exchange (next, memory_order_release) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+            Verify (sHeadLink_.exchange (next, memory_order_release) == Private_::kLockedSentinel_); // must return Private_::kLockedSentinel_ cuz we owned lock, so Private_::kLockedSentinel_ must be there
         }
         else {
-            Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+            Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinel_); // must return Private_::kLockedSentinel_ cuz we owned lock, so Private_::kLockedSentinel_ must be there
         }
         return result;
 #else
@@ -195,15 +195,15 @@ namespace Stroika::Foundation::Memory {
         constexpr bool kTryMemoryOrderOptimizations_ = true; // experiment as of 2023-09-26
 
         /*
-         *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
-         *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
+         *  Note - once we have stored Private_::kLockedSentinel_ in the sHeadLink_ and gotten back something other than that, we
+         *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinel_ from exchange).
          */
         void* prevHead{};
         {
         again:
-            prevHead = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
-            if (prevHead == Private_::kLockedSentinal_) [[unlikely]] {
-                // we stored and retrieved a sentinal. So no lock. Try again!
+            prevHead = sHeadLink_.exchange (Private_::kLockedSentinel_, memory_order_acq_rel);
+            if (prevHead == Private_::kLockedSentinel_) [[unlikely]] {
+                // we stored and retrieved a sentinel. So no lock. Try again!
                 this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
                 goto again;
             }
@@ -217,10 +217,10 @@ namespace Stroika::Foundation::Memory {
         void* newHead = p;
         reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
         if constexpr (kTryMemoryOrderOptimizations_) {
-            Verify (sHeadLink_.exchange (newHead, memory_order_release) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+            Verify (sHeadLink_.exchange (newHead, memory_order_release) == Private_::kLockedSentinel_); // must return Private_::kLockedSentinel_ cuz we owned lock, so Private_::kLockedSentinel_ must be there
         }
         else {
-            Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+            Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinel_); // must return Private_::kLockedSentinel_ cuz we owned lock, so Private_::kLockedSentinel_ must be there
         }
 #else
         Private_::DoDeleteHandlingLocksExceptionsEtc_ (p, &sHeadLink_);

@@ -64,7 +64,7 @@ void TextStore::InlineBufferMarkerSink::Append (Marker* m)
 /*
 @METHOD:        TextStore::kAnyMarkerOwner
 @DESCRIPTION:
-    <p>Sentinal value meaning to match on ANY marker owner for @'TextStore::CollectAllMarkersInRangeInto' etc calls.</p>
+    <p>Sentinel value meaning to match on ANY marker owner for @'TextStore::CollectAllMarkersInRangeInto' etc calls.</p>
 */
 const MarkerOwner* TextStore::kAnyMarkerOwner = reinterpret_cast<MarkerOwner*> (1);
 

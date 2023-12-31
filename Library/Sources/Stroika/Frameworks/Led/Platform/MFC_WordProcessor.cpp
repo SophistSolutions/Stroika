@@ -339,7 +339,7 @@ void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const Run
                                        const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     Require (to - from == 1);
-    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
+    Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinelChar);
 
     Color foreColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
     ;
@@ -368,7 +368,7 @@ void Led_MFC_ControlItem::MeasureSegmentWidth ([[maybe_unused]] const StyledText
                                                [[maybe_unused]] const Led_tChar* text, DistanceType* distanceResults) const
 {
     Assert (from + 1 == to);
-    Assert (text[0] == kEmbeddingSentinalChar);
+    Assert (text[0] == kEmbeddingSentinelChar);
     distanceResults[0] = fSize.h + 2 * kDefaultEmbeddingMargin.h;
 }
 

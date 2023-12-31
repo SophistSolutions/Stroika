@@ -243,10 +243,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         /*
-        @METHOD:        StyledTextIOReader::SinkStream::InsertEmbeddingForExistingSentinal
+        @METHOD:        StyledTextIOReader::SinkStream::InsertEmbeddingForExistingSentinel
         @DESCRIPTION:
         */
-        virtual void InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) = 0;
+        virtual void InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) = 0;
 
     public:
         /*
