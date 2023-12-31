@@ -156,29 +156,6 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                 }
                 return fRealIn_.Read (intoBuffer, blockFlag);
             }
-#if 0
-            virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
-            {
-                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-                Require (IsOpenRead ());
-                if (fForcedEndInReal_) {
-                    // adjust intoEnd to accomodate shortened stream
-                    SeekOffsetType curReal    = fRealIn_.GetOffset ();
-                    SeekOffsetType maxNewReal = curReal + (intoEnd - intoStart);
-                    if (maxNewReal > *fForcedEndInReal_) {
-                        if (curReal == *fForcedEndInReal_) {
-                            return 0; // EOF
-                        }
-                        else {
-                            ELEMENT_TYPE* newIntoEnd{intoStart + *fForcedEndInReal_};
-                            Assert (newIntoEnd < intoEnd);
-                            return fRealIn_.ReadNonBlocking (intoStart, newIntoEnd);
-                        }
-                    }
-                }
-                return fRealIn_.ReadNonBlocking (intoStart, intoEnd);
-            }
-#endif
 
         private:
             nonvirtual void ValidateRealOffset_ (SignedSeekOffsetType offset) const
@@ -192,8 +169,6 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                     }
                 }
             }
-
-        private:
             typename InputStream::Ptr<ELEMENT_TYPE>                        fRealIn_;
             SeekOffsetType                                                 fOffsetMine2Real_; // subtract from real offset to get our offset
             optional<SeekOffsetType>                                       fForcedEndInReal_;

@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Streams {
      *         for reading and writing) in mixed (input/output) streams, the actual offset APIs and
      *         logic are in those subclasses.
      *
-     *     o   Stream APIs are intrinsically blocking (except see InputStream::Ptr<>::ReadNonBlocking()).
+     *     o   Stream APIs are intrinsically blocking (except see InputStream::Ptr<>::ReadNonBlocking() and APIs that take optional non-blocking parameter).
      *         This makes working with them much simpler, since code using Streams doesn't need to be written to handle
      *         both blocking and non-blocking behavior, and be surprised when a 'mode' is set on a stream making it non-blocking.
      *

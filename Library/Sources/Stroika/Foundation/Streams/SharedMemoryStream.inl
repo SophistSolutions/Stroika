@@ -84,13 +84,17 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 size_t nRequested = intoBuffer.size ();
 
             tryAgain:
-                if (blockFlag == NoDataAvailableHandling::eDontBlock and this->AvailableToRead () == nullopt) {
-                    return nullopt;
+                switch (blockFlag) {
+                    case eDontBlock: {
+                        if (this->AvailableToRead () == nullopt) {
+                            return nullopt;
+                        }
+                    } break;
+                    [[likely]] case eBlockIfNoDataAvailable : {
+                        fMoreDataWaiter_.Wait ();
+                    } break;
                 }
-                if (blockFlag == NoDataAvailableHandling::eBlockIfNoDataAvailable) {
-                    fMoreDataWaiter_.Wait ();
-                }
-
+                // at this point, data is available
                 [[maybe_unused]] auto&& critSec = lock_guard{fMutex_}; // hold lock for everything EXCEPT wait
                 Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
                 size_t nAvail = fData_.end () - fReadCursor_;
@@ -105,24 +109,6 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                 }
                 return intoBuffer.subspan (0, nCopied); // this can be empty on EOF
             }
-#if 0
-            virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
-            {
-                Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-                Require (IsOpenRead ());
-                [[maybe_unused]] auto&& critSec          = lock_guard{fMutex_};
-                size_t                  nDefinitelyAvail = fData_.end () - fReadCursor_;
-                if (nDefinitelyAvail > 0) {
-                    return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, nDefinitelyAvail);
-                }
-                else if (fClosedForWrites_) {
-                    return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, 0);
-                }
-                else {
-                    return {}; // if nothing available, but not closed for write, no idea if more to come
-                }
-            }
-#endif
             virtual void Write (span<const ELEMENT_TYPE> elts) override
             {
                 Require (not elts.empty ());

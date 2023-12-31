@@ -27,46 +27,46 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
             Rep_ (const Rep_&) = delete;
             virtual bool IsSeekable () const override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 return BASE_REP_TYPE::IsSeekable ();
             }
             virtual void CloseRead () override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 BASE_REP_TYPE::CloseRead ();
             }
             virtual bool IsOpenRead () const override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 return BASE_REP_TYPE::IsOpenRead ();
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::GetReadOffset ();
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::SeekRead (whence, offset);
             }
             virtual optional<size_t> AvailableToRead () override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::AvailableToRead ();
             }
             virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::Read (intoBuffer, blockFlag);
             }
             virtual void CloseWrite () override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 BASE_REP_TYPE::CloseWrite ();
             }
             virtual bool IsOpenWrite () const override
@@ -76,25 +76,25 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
             }
             virtual SeekOffsetType GetWriteOffset () const override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenWrite ());
                 return BASE_REP_TYPE::GetWriteOffset ();
             }
             virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenWrite ());
                 return BASE_REP_TYPE::SeekWrite (whence, offset);
             }
             virtual void Write (span<const ElementType> elts) override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenWrite ());
                 BASE_REP_TYPE::Write (elts);
             }
             virtual void Flush () override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenWrite ());
                 BASE_REP_TYPE::Flush ();
             }
@@ -112,46 +112,44 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
             }
             virtual bool IsSeekable () const override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 return fStream2Wrap.IsSeekable ();
             }
             virtual void CloseRead () override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
                 fStream2Wrap.CloseRead ();
             }
             virtual bool IsOpenRead () const override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 return fStream2Wrap.IsOpenRead ();
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
                 return fStream2Wrap.GetReadOffset ();
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
                 return fStream2Wrap.SeekRead (whence, offset);
             }
-            virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) override
+            virtual optional<size_t> AvailableToRead () override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
-                return fStream2Wrap.Read (intoStart, intoEnd);
+                return fStream2Wrap.AvailableToRead ();
             }
-#if 0
-            virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
+            virtual size_t Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
-                return fStream2Wrap.ReadNonBlocking (intoStart, intoEnd);
+                return fStream2Wrap.Read (intoBuffer, blockFlag);
             }
-#endif
 
         private:
             InputOutputStream::Ptr<ELEMENT_TYPE> fStream2Wrap;
