@@ -32,9 +32,6 @@ namespace Stroika::Foundation::DataExchange::Compression::Zip {
     class Reader : public DataExchange::Compression::Reader {
     public:
         Reader ();
-
-    private:
-        class Rep_;
     };
 #endif
 

@@ -7,11 +7,8 @@
 
 #include "Reader.h"
 
-//// SEEE http://www.zlib.net/zlib_how.html
-/// THIS SHOWS PRETTY SIMPLE EXAMPLE OF HOW TO DO COMPRESS/DECOMPRESS AND WE CAN USE THAT to amke new stream object
-/// where inner loop is done each time through with a CHUNK
-
 #if qHasFeature_ZLib
+// SEE http://www.zlib.net/zlib_how.html
 #include <zlib.h>
 
 using std::byte;
@@ -25,7 +22,6 @@ using namespace Stroika::Foundation::Streams;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 namespace {
-
     void ThrowIfZLibErr_ (int err)
     {
         // VERY ROUGH DRAFT - probably need a more specific exception object type
@@ -51,263 +47,199 @@ namespace {
         }
     }
 
-    struct MyCompressionStream_ : InputStream::Ptr<byte> {
-        struct BaseRep_ : public InputStream::IRep<byte> {
-        private:
-            static constexpr size_t CHUNK_ = 16384;
+    struct BaseRep_ : public InputStream::IRep<byte> {
+    private:
+        static constexpr size_t CHUNK_ = 16384;
 
-        public:
-            Streams::InputStream::Ptr<byte> fInStream_;
-            z_stream                        fZStream_{};
-            byte                            fInBuf_[CHUNK_];
-            SeekOffsetType                  _fSeekOffset{};
-            BaseRep_ (const Streams::InputStream::Ptr<byte>& in)
-                : fInStream_{in}
-            {
-            }
-            virtual ~BaseRep_ () = default;
-            virtual bool IsSeekable () const override
-            {
-                // for now - KISS
-                return false; // SHOULD allow seekable IFF src is seekable
-            }
-            virtual void CloseRead () override
-            {
-                Require (IsOpenRead ());
-                fInStream_.Close ();
-                Assert (fInStream_ == nullptr);
-                Ensure (not IsOpenRead ());
-            }
-            virtual bool IsOpenRead () const override
-            {
-                return fInStream_ != nullptr;
-            }
-            virtual SeekOffsetType GetReadOffset () const override
-            {
-                Require (IsOpenRead ());
-                return _fSeekOffset;
-            }
-            nonvirtual bool _AssureInputAvailableReturnTrueIfAtEOF ()
-            {
-                Require (IsOpenRead ());
-                if (fZStream_.avail_in == 0) {
-                    Assert (Memory::NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
-                    fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (span{fInBuf_}).size ()); // blocking read always OK by the time we get here
-                    fZStream_.next_in = reinterpret_cast<Bytef*> (begin (fInBuf_));
-                }
-                return fZStream_.avail_in == 0;
-            }
-        };
-        struct DeflateRep_ : BaseRep_ {
-            DeflateRep_ (const Streams::InputStream::Ptr<byte>& in)
-                : BaseRep_{in}
-            {
-                int level = Z_DEFAULT_COMPRESSION;
-                ThrowIfZLibErr_ (::deflateInit (&fZStream_, level));
-            }
-            virtual ~DeflateRep_ ()
-            {
-                Verify (::deflateEnd (&fZStream_) == Z_OK);
-            }
-            virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
-            {
-                Require (not intoBuffer.empty ()); // API rule for streams
-                Require (IsOpenRead ());
-            Again:
-                if (blockFlag == NoDataAvailableHandling::eDontBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
-                    // if non-blocking call, no data pre-available in zstream, and nothing in upstream, NoDataAvailable!
-                    // note MAY not be enuf in zbuf to read a full byte of output, but OK - will come back here
-                    return nullopt;
-                }
-                bool isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
+    public:
+        Streams::InputStream::Ptr<byte> fInStream_; // consider wrapping in StreamReader for efficiency sake - maybe unhelpful due to CHUNK logic below
+        z_stream       fZStream_{};
+        byte           fInBuf_[CHUNK_];
+        SeekOffsetType _fSeekOffset{};
+        optional<byte> _fNextOutputByte_; // 'cached' next output byte - if not nullopt - magic needed to make AvailableToRead
 
-                ptrdiff_t outBufSize = intoBuffer.size ();
-
-                int flush = isAtSrcEOF ? Z_FINISH : Z_NO_FLUSH;
-
-                fZStream_.avail_out = static_cast<uInt> (outBufSize);
-                fZStream_.next_out  = reinterpret_cast<Bytef*> (intoBuffer.data ());
-                int ret;
-                switch (ret = ::deflate (&fZStream_, flush)) {
-                    case Z_OK:
-                        break;
-                    case Z_STREAM_END:
-                        break;
-                    default:
-                        ThrowIfZLibErr_ (ret);
-                }
-
-                ptrdiff_t pulledOut = outBufSize - fZStream_.avail_out;
-                Assert (pulledOut <= outBufSize);
-                if (pulledOut == 0 and not isAtSrcEOF and flush == Z_NO_FLUSH) {
-                    goto Again;
-                }
-                _fSeekOffset += pulledOut;
-                return intoBuffer.subspan (0, pulledOut);
-            }
-#if 0
-            virtual optional<size_t> ReadNonBlocking ([[maybe_unused]] ElementType* intoStart, [[maybe_unused]] ElementType* intoEnd) override
-            {
-                Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-                Require (IsOpenRead ());
-#if 1
-                AssertNotReached ();
-                return nullopt;
-#else
-// https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - INCOMPLETE IMPL
-#if 0
-                if (intoStart == nullptr) {
-                    // Just check if any data available
-
-                }
-                else {
-                    Assert (intoStart < intoEnd);
-                Again:
-                    if (fZStream_.avail_in == 0) {
-                        Assert (Memory::NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
-                        if (auto o = fInStream_.ReadNonBlocking (begin (fInBuf_), end (fInBuf_))) {
-                            fZStream_.avail_in = static_cast<uInt> (*o);
-                            fZStream_.next_in = begin (fInBuf_);
-                        }
-                        else {
-                            return {};
-                        }
-                    }
-                    ptrdiff_t outBufSize = intoEnd - intoStart;
-                    fZStream_.avail_out = static_cast<uInt> (outBufSize);
-                    fZStream_.next_out = intoStart;
-                    bool isAtSrcEOF = fZStream_.avail_in == 0;
-                    int flush = isAtSrcEOF ? Z_FINISH : Z_NO_FLUSH;
-                    int ret;
-                    switch (ret = ::deflate (&fZStream_, flush)) {
-                    case Z_OK:
-                        break;
-                    case Z_STREAM_END:
-                        break;
-                    default:
-                        ThrowIfZLibErr_ (ret);
-                    }
-                    ptrdiff_t pulledOut = outBufSize - fZStream_.avail_out;
-                    Assert (pulledOut <= outBufSize);
-                    if (pulledOut == 0 and not isAtSrcEOF) {
-                        goto Again;
-                    }
-                    _fSeekOffset += pulledOut;
-                    return pulledOut;
-                }
-#else
-                // while nothing available to output, try getting more from input stream until we cannot (either cuz {} or EOF)
-                // and then report accordingly
-                //
-                // INCOMPLETE - tricky... most common cases easy, but edges hard...
-                //&&&& issues are:
-                //>> wrong meaning for available_out - we have no output buffer
-                //  >> need output buffer for this API, since could pass in no argument buffer (OK to be one byte in that case)
-                while (fZStream_.avail_out == 0) {
-                    if (fZStream_.avail_in == 0) {
-                        if (optional<size_t> tmpAvail = fInStream_.ReadNonBlocking (begin (fInBuf_), end (fInBuf_))) {
-                        }
-                        else {
-                            return {};
-                        }
-                    }
-                }
-#endif
-                WeakAssert (false);
-                // @todo - FIX TO REALLY CHECK
-                return {};
-#endif
-            }
-#endif
-        };
-        struct InflateRep_ : BaseRep_ {
-            InflateRep_ (const Streams::InputStream::Ptr<byte>& in)
-                : BaseRep_{in}
-            {
-                // see http://zlib.net/manual.html  for meaning of params and http://www.lemoda.net/c/zlib-open-read/ for example
-                constexpr int windowBits       = 15;
-                constexpr int ENABLE_ZLIB_GZIP = 32;
-                ThrowIfZLibErr_ (::inflateInit2 (&fZStream_, windowBits | ENABLE_ZLIB_GZIP));
-            }
-            virtual ~InflateRep_ ()
-            {
-                Verify (::inflateEnd (&fZStream_) == Z_OK);
-            }
-            virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
-            {
-                Require (not intoBuffer.empty ()); // API rule for streams
-                Require (IsOpenRead ());
-            Again:
-                if (blockFlag == NoDataAvailableHandling::eDontBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
-                    // if non-blocking call, no data pre-available in zstream, and nothing in upstream, NoDataAvailable!
-                    // note MAY not be enuf in zbuf to read a full byte of output, but OK - will come back here
-                    return nullopt;
-                }
-                bool      isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
-                ptrdiff_t outBufSize = intoBuffer.size ();
-
-                fZStream_.avail_out = static_cast<uInt> (outBufSize);
-                fZStream_.next_out  = reinterpret_cast<Bytef*> (intoBuffer.data ());
-                int ret;
-                switch (ret = ::inflate (&fZStream_, Z_NO_FLUSH)) {
-                    case Z_OK:
-                        break;
-                    case Z_STREAM_END:
-                        break;
-                    default:
-                        ThrowIfZLibErr_ (ret);
-                }
-
-                ptrdiff_t pulledOut = outBufSize - fZStream_.avail_out;
-                Assert (pulledOut <= outBufSize);
-                if (pulledOut == 0 and not isAtSrcEOF) {
-                    goto Again;
-                }
-                _fSeekOffset += pulledOut;
-                return intoBuffer.subspan (0, pulledOut);
-            }
-#if 0
-            virtual optional<size_t> ReadNonBlocking ([[maybe_unused]] ElementType* intoStart, [[maybe_unused]] ElementType* intoEnd) override
-            {
-                // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - incomplete IMPL
-                Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-                Require (IsOpenRead ());
-                WeakAssert (false);
-                // @todo - FIX TO REALLY CHECK
-                return {};
-            }
-#endif
-        };
-        enum Compression {
-            eCompression
-        };
-        enum DeCompression {
-            eDeCompression
-        };
-        MyCompressionStream_ (Compression, const Streams::InputStream::Ptr<byte>& in)
-            : InputStream::Ptr<byte>{make_shared<DeflateRep_> (in)}
+        BaseRep_ (const Streams::InputStream::Ptr<byte>& in)
+            : fInStream_{in}
         {
         }
-        MyCompressionStream_ (DeCompression, const Streams::InputStream::Ptr<byte>& in)
-            : InputStream::Ptr<byte>{make_shared<InflateRep_> (in)}
+        virtual ~BaseRep_ () = default;
+        virtual bool IsSeekable () const override
         {
+            return false; // SHOULD allow seekable IFF src is seekable, but tricky because of internal state in compress/decompress library - not sure how to update/manage
+        }
+        virtual void CloseRead () override
+        {
+            Require (IsOpenRead ());
+            fInStream_.Close ();
+            Assert (fInStream_ == nullptr);
+            Ensure (not IsOpenRead ());
+        }
+        virtual bool IsOpenRead () const override
+        {
+            return fInStream_ != nullptr;
+        }
+        virtual SeekOffsetType GetReadOffset () const override
+        {
+            Require (IsOpenRead ());
+            return _fSeekOffset;
+        }
+        nonvirtual bool _AssureInputAvailableReturnTrueIfAtEOF ()
+        {
+            Require (IsOpenRead ());
+            if (fZStream_.avail_in == 0) {
+                Assert (Memory::NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
+                fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (span{fInBuf_}).size ()); // blocking read always OK by the time we get here
+                fZStream_.next_in = reinterpret_cast<Bytef*> (begin (fInBuf_));
+            }
+            return fZStream_.avail_in == 0;
         }
     };
+    struct DeflateRep_ : BaseRep_ {
+        DeflateRep_ (const Streams::InputStream::Ptr<byte>& in)
+            : BaseRep_{in}
+        {
+            int level = Z_DEFAULT_COMPRESSION;
+            ThrowIfZLibErr_ (::deflateInit (&fZStream_, level));
+        }
+        virtual ~DeflateRep_ ()
+        {
+            Verify (::deflateEnd (&fZStream_) == Z_OK);
+        }
+        virtual optional<size_t> AvailableToRead () override
+        {
+            if (_fNextOutputByte_) {
+                return 1;
+            }
+            byte tmp;
+            auto pulledButMustCache = PullEnufForDeflate1Byte_ (NoDataAvailableHandling::eDontBlock, span{&tmp, 1});
+            if (pulledButMustCache) {
+                _fNextOutputByte_ = tmp;
+                return 1;
+            }
+            return nullopt;
+        }
+        virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
+        {
+            Require (not intoBuffer.empty ()); // API rule for streams
+            Require (IsOpenRead ());
+            if (_fNextOutputByte_) {
+                intoBuffer[0] = *_fNextOutputByte_;
+                _fNextOutputByte_.reset ();
+                return intoBuffer.subspan (0, 1);
+            }
+            if (auto o = PullEnufForDeflate1Byte_ (blockFlag, intoBuffer)) {
+                size_t pulledOut = *o;
+                _fSeekOffset += pulledOut;
+                return intoBuffer.subspan (0, pulledOut);
+            }
+            else {
+                return nullopt;
+            }
+        }
+        // nullopt means EWOULDBLOCK else size of bytes pulledOut
+        optional<size_t> PullEnufForDeflate1Byte_ (NoDataAvailableHandling blockFlag, span<byte> intoBuffer)
+        {
+        Again:
+            if (blockFlag == NoDataAvailableHandling::eDontBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
+                // if non-blocking call, no data pre-available in zstream, and nothing in upstream, NoDataAvailable!
+                // note MAY not be enuf in zbuf to read a full byte of output, but OK - will come back here
+                return false;
+            }
+            bool isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
+
+            ptrdiff_t outBufSize = intoBuffer.size ();
+
+            int flush = isAtSrcEOF ? Z_FINISH : Z_NO_FLUSH;
+
+            fZStream_.avail_out = static_cast<uInt> (outBufSize);
+            fZStream_.next_out  = reinterpret_cast<Bytef*> (intoBuffer.data ());
+            int ret;
+            switch (ret = ::deflate (&fZStream_, flush)) {
+                case Z_OK:
+                    break;
+                case Z_STREAM_END:
+                    break;
+                default:
+                    ThrowIfZLibErr_ (ret);
+            }
+            ptrdiff_t pulledOut = outBufSize - fZStream_.avail_out;
+            Assert (pulledOut <= outBufSize);
+            if (pulledOut == 0 and not isAtSrcEOF and flush == Z_NO_FLUSH) {
+                goto Again;
+            }
+            return pulledOut;
+        }
+    };
+    struct InflateRep_ : BaseRep_ {
+        InflateRep_ (const Streams::InputStream::Ptr<byte>& in)
+            : BaseRep_{in}
+        {
+            // see http://zlib.net/manual.html  for meaning of params and http://www.lemoda.net/c/zlib-open-read/ for example
+            constexpr int windowBits       = 15;
+            constexpr int ENABLE_ZLIB_GZIP = 32;
+            ThrowIfZLibErr_ (::inflateInit2 (&fZStream_, windowBits | ENABLE_ZLIB_GZIP));
+        }
+        virtual ~InflateRep_ ()
+        {
+            Verify (::inflateEnd (&fZStream_) == Z_OK);
+        }
+        virtual optional<size_t> AvailableToRead () override
+        {
+            AssertNotImplemented ();
+            return nullopt;
+        }
+        virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
+        {
+            Require (not intoBuffer.empty ()); // API rule for streams
+            Require (IsOpenRead ());
+        Again:
+            if (blockFlag == NoDataAvailableHandling::eDontBlock and fZStream_.avail_in == 0 and fInStream_.AvailableToRead () == nullopt) {
+                // if non-blocking call, no data pre-available in zstream, and nothing in upstream, NoDataAvailable!
+                // note MAY not be enuf in zbuf to read a full byte of output, but OK - will come back here
+                return nullopt;
+            }
+            bool      isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
+            ptrdiff_t outBufSize = intoBuffer.size ();
+
+            fZStream_.avail_out = static_cast<uInt> (outBufSize);
+            fZStream_.next_out  = reinterpret_cast<Bytef*> (intoBuffer.data ());
+            int ret;
+            switch (ret = ::inflate (&fZStream_, Z_NO_FLUSH)) {
+                case Z_OK:
+                    break;
+                case Z_STREAM_END:
+                    break;
+                default:
+                    ThrowIfZLibErr_ (ret);
+            }
+
+            ptrdiff_t pulledOut = outBufSize - fZStream_.avail_out;
+            Assert (pulledOut <= outBufSize);
+            if (pulledOut == 0 and not isAtSrcEOF) {
+                goto Again;
+            }
+            _fSeekOffset += pulledOut;
+            return intoBuffer.subspan (0, pulledOut);
+        }
+    };
+
 }
 #endif
 
 #if qHasFeature_ZLib
-class Zip::Reader::Rep_ : public Reader::_IRep {
-public:
-    virtual InputStream::Ptr<byte> Compress (const InputStream::Ptr<byte>& src) const override
-    {
-        return MyCompressionStream_{MyCompressionStream_::eCompression, src};
-    }
-    virtual InputStream::Ptr<byte> Decompress (const InputStream::Ptr<byte>& src) const override
-    {
-        return MyCompressionStream_{MyCompressionStream_::eDeCompression, src};
-    }
-};
+namespace {
+    class Rep_ : public Reader::IRep {
+    public:
+        virtual InputStream::Ptr<byte> Compress (const InputStream::Ptr<byte>& src) const override
+        {
+            return InputStream::Ptr<byte>{make_shared<DeflateRep_> (src)};
+        }
+        virtual InputStream::Ptr<byte> Decompress (const InputStream::Ptr<byte>& src) const override
+        {
+            return InputStream::Ptr<byte>{make_shared<InflateRep_> (src)};
+        }
+    };
+}
 
 Zip::Reader::Reader ()
     : DataExchange::Compression::Reader{make_shared<Rep_> ()}
