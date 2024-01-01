@@ -77,7 +77,9 @@ namespace {
         }
         virtual optional<size_t> AvailableToRead () override
         {
-            // todo
+            // Very tricky todo. Must grab ENUF bytes (non-blocking) to assure we can create at least one character.
+            // Note we cannot SEEK the _fSource stream, which is what makes it hard...
+            // Just means read ahead a bit, and store whatever we needed into _fReadAheadCache
             AssertNotImplemented ();
             return 0; // not sure used right now - but review ReadNonBlocking code below and fix Read to handle nonblcoig case
         }
@@ -85,7 +87,7 @@ namespace {
         {
             Require (not intoBuffer.empty ());
             Require (IsOpenRead ());
-
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             /*
              *  Try to minimize # of calls to underlying fSource binary stream per call this this Read () - efficiency.
              *
@@ -95,22 +97,14 @@ namespace {
              *
              *  Since number of Characters filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
              */
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            {
-                size_t readAtMostCharacters = intoBuffer.size (); // must read at least one character, and no more than (intoEnd - intoStart)
-                StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, readAtMostCharacters};
-                if (_fReadAheadCache and _fReadAheadCache->fFrom == this->_fOffset) {
-                    // If _fReadAheadCache present, may contain enuf bytes for a full character, so don't do another
-                    // blocking read as it MAY not be necessary, and if it is, will be caught in existing logic for 'again' not enuf data
-                    inBuf = span<byte>{_fReadAheadCache->fData};
-                }
-                else {
-                    inBuf.ShrinkTo (_fSource.Read (span{inBuf}).size ()); // @todo WRONG FOR NONBLOCKING CASE
-                }
-            again:
-                span<const byte> binarySrcSpan{inBuf};
+            size_t readAtMostCharacters = intoBuffer.size (); // must read at least one character, and no more than (intoEnd - intoStart)
+            StackBuffer<byte, 8 * 1024> inByteBuf{Memory::eUninitialized, readAtMostCharacters};
+            size_t currentByteGoal = 1;
+again:
+            if (auto o = PreReadUpstreamInto_ (span{inByteBuf}, currentByteGoal, blockFlag)) {
+                span<const byte> binarySrcSpan{*o};
                 span<Character>  targetBuf{intoBuffer};
-                Assert (_fCharConverter.ComputeTargetCharacterBufferSize (inBuf.size ()) <= targetBuf.size ()); // just because _fCharConverter will require this
+                Assert (_fCharConverter.ComputeTargetCharacterBufferSize (inByteBuf.size ()) <= targetBuf.size ()); // just because _fCharConverter will require this
                 span<Character> convertedCharacters = _fCharConverter.Bytes2Characters (&binarySrcSpan, targetBuf);
                 if (binarySrcSpan.empty ()) {
                     // then we got data - already copied into intoStart (part of target span) - so just return the number of characters read
@@ -119,17 +113,9 @@ namespace {
                     return intoBuffer.subspan (0, convertedCharacters.size ());
                 }
                 else if (convertedCharacters.empty ()) {
-                    // @todo - we only NEED one byte here, but probably more efficient to grab more. Either wrap _fSource in streamReader or cache more directly here!
                     // We have zero convertedCharacters, so apparently not enough bytes read. Read one more, and try again.
-                    byte b;
-                    if (_fSource.Read (span{&b, 1}, blockFlag).size () == 1) {
-                        inBuf.push_back (b);
-                        goto again;
-                    }
-                    else {
-                        // if we read EOF, and have a partial character read, thats an error - so throw
-                        Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
-                    }
+                    ++currentByteGoal;
+                    goto again;
                 }
                 else {
                     Assert (not binarySrcSpan.empty () and not convertedCharacters.empty ());
@@ -140,7 +126,74 @@ namespace {
                     return intoBuffer.subspan (0, convertedCharacters.size ());
                 }
             }
-            return span<Character>{};
+            else {
+                // if we failed to meet our byte goal, any already read bytes have been squirreled away and we just return saying not enuf data
+                Assert (blockFlag == eDontBlock);
+                return nullopt;
+            }
+            AssertNotReached ();
+            return nullopt;
+        }
+        // use (and empty) _fReadAheadCache, and read goalSizeAtLeast bytes (if possible) into intoBuf from upstream source.
+        // Return nullopt if fails due to EWouldBlock (in which case leave _fReadAheadCache unchanged)
+        // intoBuf assumed had no real data on entry, and filled in with good data on exit (except nullopt case).
+        // return span says how much good data read.
+        // If goal is met:
+        //      o   Return value is valid span of at least goalSizeAtLeast bytes
+        //      o   Any excess read data is stored in _fReadAheadCache (say because intoBuf was too small)
+        // If goal not met either:
+        //      o   return value is nullopt (and _fReadAheadCache saves any actually read bytes < goalsize);
+        //      o   return value is shorter buffer (iff EOF) - and that is known to be the end.
+        nonvirtual optional<span<byte>> PreReadUpstreamInto_ (span<byte> intoBuf, size_t goalSizeAtLeast, NoDataAvailableHandling blockFlag)
+        {
+            Require (goalSizeAtLeast <= intoBuf.size ());
+            span<byte> result; // always some subset of intoBuf
+            if (_fReadAheadCache and _fReadAheadCache->fFrom == this->_fOffset) {
+                // If _fReadAheadCache present, may contain enuf bytes for a full character, so don't do another
+                // blocking read as it MAY not be necessary, and if it is, will be caught in existing logic for 'again' not enuf data
+                //
+                // NOTE - for non-seekable case, this _fReadAheadCache->fFrom == this->_fOffset will always work/match. Only way to fail
+                // is if we got seeked (subclass). But then subclass better have adjusted seek offset of _fSource magically too
+
+                // @todo NOW - instead - allow copying less, and just leaving remainder in _fReadAheadCache
+                Assert (intoBuf.size () >= _fReadAheadCache->fData.size ());
+                result = Memory::CopySpanData (span{_fReadAheadCache->fData}, intoBuf);
+                _fReadAheadCache.reset ();
+            }
+            while (goalSizeAtLeast < result.size ()) {
+                switch (blockFlag) {
+                    case eBlockIfNoDataAvailable: {
+                        auto r = _fSource.Read (intoBuf.subspan (result.size ()));
+                        if (r.size () == 0) {
+                            // we are done - got EOF, and so just return as much as we have
+                            return result;
+                        }
+                        else {
+                            // add the new data to result (its already been read into the right place of intoBuf, just adjust size of result)
+                            result = intoBuf.subspan (0, result.size () + r.size ());
+                        }
+                    } break;
+                    case eDontBlock: {
+                        if (auto o = _fSource.ReadNonBlocking (intoBuf.subspan (result.size ()))) {
+                            if (o->size () == 0) {
+                                // we are done - got EOF, and so just return as much as we have
+                                return result;
+                            }
+                            else {
+                                // add the new data to result (its already been read into the right place of intoBuf, just adjust size of result)
+                                result = intoBuf.subspan (0, result.size () + o->size ());
+                            }
+                        }
+                        else {
+                            // if we have no raw bytes to work with, cannot produce characters (yet)
+                            // so must PUT BACK accumulated text for next time...&&&
+                            AssertNotImplemented ();
+                            return nullopt;
+                        }
+                    } break;
+                }
+            }
+            return result;
         }
 #if 0
         virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
@@ -455,18 +508,6 @@ namespace {
         return p;
     }
 }
-
-#if 0
-auto TextReader::New (const InputStream::Ptr<byte>& src, optional<SeekableFlag> seekable, ReadAhead readAhead) -> Ptr
-{
-    if (seekable == nullopt) {
-        seekable = src.IsSeekable () ? SeekableFlag::eSeekable : SeekableFlag::eNotSeekable;
-    }
-    Ptr p = TextReader::New (src, Characters::UnicodeExternalEncodings::eUTF8, *seekable, readAhead);
-    Ensure (src.IsSeekable () == (seekable == SeekableFlag::eSeekable));
-    return p;
-}
-#endif
 
 auto TextReader::New (const InputStream::Ptr<byte>& src, const optional<AutomaticCodeCvtFlags> codeCvtFlags,
                       optional<SeekableFlag> seekable, ReadAhead readAhead) -> Ptr
