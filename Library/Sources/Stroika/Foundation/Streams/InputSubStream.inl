@@ -16,15 +16,8 @@
 
 namespace Stroika::Foundation::Streams::InputSubStream {
 
-    /*
-     ********************************************************************************
-     ************************** Streams::InputSubStream *****************************
-     ********************************************************************************
-     */
-    template <typename ELEMENT_TYPE>
-    inline auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start,
-                     const optional<SeekOffsetType>& end) -> Ptr<ELEMENT_TYPE>
-    {
+    namespace Private_ {
+        template <typename ELEMENT_TYPE>
         class Rep_ : public InputStream::IRep<ELEMENT_TYPE> {
         public:
             Rep_ (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
@@ -174,7 +167,29 @@ namespace Stroika::Foundation::Streams::InputSubStream {
             optional<SeekOffsetType>                                       fForcedEndInReal_;
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
-        return Ptr<ELEMENT_TYPE>{make_shared<Rep_> (realIn, start, end)};
+    }
+
+    /*
+     ********************************************************************************
+     ************************** Streams::InputSubStream *****************************
+     ********************************************************************************
+     */
+    template <typename ELEMENT_TYPE>
+    inline auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start,
+                     const optional<SeekOffsetType>& end) -> Ptr<ELEMENT_TYPE>
+    {
+        return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep_> (realIn, start, end)};
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto New (Execution::InternallySynchronized internallySynchronized, const typename InputStream::Ptr<ELEMENT_TYPE>& realIn,
+                     const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end) -> Ptr<ELEMENT_TYPE>
+    {
+        switch (internallySynchronized) {
+            case Execution::eInternallySynchronized:
+                return InternallySynchronizedInputStream::New<Private_::Rep_<ELEMENT_TYPE>> ({}, realIn, start, end);
+            case Execution::eNotKnownInternallySynchronized:
+                return New<ELEMENT_TYPE> (start, end);
+        }
     }
 
 }

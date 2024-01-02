@@ -51,6 +51,9 @@ namespace Stroika::Foundation::Streams::InputSubStream {
     template <typename ELEMENT_TYPE>
     auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
         -> Ptr<ELEMENT_TYPE>;
+    template <typename ELEMENT_TYPE>
+    auto New (Execution::InternallySynchronized internallySynchronized, const typename InputStream::Ptr<ELEMENT_TYPE>& realIn,
+              const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end) -> Ptr<ELEMENT_TYPE>;
 
 }
 
