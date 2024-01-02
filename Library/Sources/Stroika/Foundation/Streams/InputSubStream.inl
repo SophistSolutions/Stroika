@@ -178,7 +178,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
     inline auto New (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn, const optional<SeekOffsetType>& start,
                      const optional<SeekOffsetType>& end) -> Ptr<ELEMENT_TYPE>
     {
-        return Ptr<ELEMENT_TYPE>{make_shared < Private_::Rep_<ELEMENT_TYPE>> (realIn, start, end)};
+        return Ptr<ELEMENT_TYPE>{make_shared<Private_::Rep_<ELEMENT_TYPE>> (realIn, start, end)};
     }
     template <typename ELEMENT_TYPE>
     inline auto New (Execution::InternallySynchronized internallySynchronized, const typename InputStream::Ptr<ELEMENT_TYPE>& realIn,
