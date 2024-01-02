@@ -44,8 +44,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             {
                 Require (IsOpenWrite ());
                 {
-                    [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
-                    fClosedForWrites_               = true;
+                    [[maybe_unused]] lock_guard critSec{fMutex_};
+                    fClosedForWrites_ = true;
                 }
                 fMoreDataWaiter_.Set ();
             }
@@ -65,8 +65,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             virtual optional<size_t> AvailableToRead () override
             {
                 Require (IsOpenRead ());
-                [[maybe_unused]] auto&& critSec          = lock_guard{fMutex_};
-                size_t                  nDefinitelyAvail = fData_.end () - fReadCursor_;
+                [[maybe_unused]] lock_guard critSec{fMutex_};
+                size_t                      nDefinitelyAvail = fData_.end () - fReadCursor_;
                 if (nDefinitelyAvail > 0) {
                     return nDefinitelyAvail;
                 }
@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                     } break;
                 }
                 // at this point, data is available
-                [[maybe_unused]] auto&& critSec = lock_guard{fMutex_}; // hold lock for everything EXCEPT wait
+                [[maybe_unused]] lock_guard critSec{fMutex_}; // hold lock for everything EXCEPT wait
                 Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
                 size_t nAvail = fData_.end () - fReadCursor_;
                 if (nAvail == 0 and not fClosedForWrites_) {
@@ -113,9 +113,9 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             {
                 Require (not elts.empty ());
                 Require (IsOpenWrite ());
-                [[maybe_unused]] auto&& critSec      = lock_guard{fMutex_};
-                size_t                  roomLeft     = fData_.end () - fWriteCursor_;
-                size_t                  roomRequired = elts.size ();
+                [[maybe_unused]] lock_guard critSec{fMutex_};
+                size_t                      roomLeft     = fData_.end () - fWriteCursor_;
+                size_t                      roomRequired = elts.size ();
                 fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
                 if (roomLeft < roomRequired) {
                     size_t       curReadOffset  = fReadCursor_ - fData_.begin ();
@@ -139,13 +139,13 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             virtual SeekOffsetType GetReadOffset () const override
             {
                 Require (IsOpenRead ());
-                [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+                [[maybe_unused]] lock_guard critSec{fMutex_};
                 return fReadCursor_ - fData_.begin ();
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
                 Require (IsOpenRead ());
-                [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+                [[maybe_unused]] lock_guard critSec{fMutex_};
                 fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
                 switch (whence) {
                     case Whence::eFromStart: {
@@ -188,13 +188,13 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             virtual SeekOffsetType GetWriteOffset () const override
             {
                 Require (IsOpenWrite ());
-                [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+                [[maybe_unused]] lock_guard critSec{fMutex_};
                 return fWriteCursor_ - fData_.begin ();
             }
             virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
             {
                 Require (IsOpenWrite ());
-                [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+                [[maybe_unused]] lock_guard critSec{fMutex_};
                 fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
                 switch (whence) {
                     case Whence::eFromStart: {
@@ -233,12 +233,12 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
             }
             vector<ElementType> AsVector () const
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+                [[maybe_unused]] lock_guard critSec{fMutex_};
                 return fData_;
             }
             string AsString () const
             {
-                [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
+                [[maybe_unused]] lock_guard critSec{fMutex_};
                 return string{reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_))};
             }
 

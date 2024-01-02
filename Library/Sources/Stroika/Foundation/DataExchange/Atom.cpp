@@ -64,9 +64,9 @@ auto AtomManager_Default::Intern (const String& s) -> AtomInternalType
         v = kEmpty;
     }
     else {
-        auto&                   mgr     = GetAtomManager_Default_Rep_ ();
-        [[maybe_unused]] auto&& critSec = lock_guard{mgr.fCritSec};
-        auto                    i       = mgr.fMap.Lookup (s);
+        auto&                       mgr = GetAtomManager_Default_Rep_ ();
+        [[maybe_unused]] lock_guard critSec{mgr.fCritSec};
+        auto                        i = mgr.fMap.Lookup (s);
         if (i.has_value ()) {
             return *i;
         }
@@ -83,8 +83,8 @@ String AtomManager_Default::Extract (AtomInternalType atomI)
     if (atomI == kEmpty) {
         return String{};
     }
-    auto&                   mgr     = GetAtomManager_Default_Rep_ ();
-    [[maybe_unused]] auto&& critSec = lock_guard{mgr.fCritSec};
+    auto&                       mgr = GetAtomManager_Default_Rep_ ();
+    [[maybe_unused]] lock_guard critSec{mgr.fCritSec};
     return (mgr.fSeq)[atomI];
 }
 
@@ -100,9 +100,9 @@ auto AtomManager_CaseInsensitive::Intern (const String& s) -> AtomInternalType
         v = kEmpty;
     }
     else {
-        auto&                   mgr     = GetAtomManager_CaseInsensitive_Rep_ ();
-        [[maybe_unused]] auto&& critSec = lock_guard{mgr.fCritSec};
-        auto                    i       = mgr.fMap.Lookup (s);
+        auto&                       mgr = GetAtomManager_CaseInsensitive_Rep_ ();
+        [[maybe_unused]] lock_guard critSec{mgr.fCritSec};
+        auto                        i = mgr.fMap.Lookup (s);
         if (i.has_value ()) {
             return *i;
         }
@@ -119,7 +119,7 @@ String AtomManager_CaseInsensitive::Extract (AtomInternalType atomI)
     if (atomI == kEmpty) {
         return String{};
     }
-    auto&                   mgr     = GetAtomManager_CaseInsensitive_Rep_ ();
-    [[maybe_unused]] auto&& critSec = lock_guard{mgr.fCritSec};
+    auto&                       mgr = GetAtomManager_CaseInsensitive_Rep_ ();
+    [[maybe_unused]] lock_guard critSec{mgr.fCritSec};
     return (mgr.fSeq)[atomI];
 }

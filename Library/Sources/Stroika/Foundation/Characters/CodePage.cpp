@@ -858,7 +858,7 @@ CodePagesInstalled::CodePagesInstalled ()
 #if qPlatform_Windows
     static mutex sCritSec_;
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{sCritSec_};
+        [[maybe_unused]] lock_guard critSec{sCritSec_};
         Assert (s_EnumCodePagesProc_Accumulator_.get () == nullptr);
         s_EnumCodePagesProc_Accumulator_ = accum;
         ::EnumSystemCodePages (EnumCodePagesProc_, CP_INSTALLED);

@@ -154,7 +154,7 @@ namespace {
              *  and use that to re-populate fOutBuf_.
              */
             Require (not intoBuffer.empty ());
-            [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+            [[maybe_unused]] lock_guard critSec{fCriticalSection_};
             Require (IsOpenRead ());
             if (not PreRead_ (blockFlag)) {
                 return nullopt;

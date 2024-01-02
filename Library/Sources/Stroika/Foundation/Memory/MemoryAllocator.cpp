@@ -208,7 +208,7 @@ void* LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 {
     void* memptr = fBaseAllocator_.Allocate (size);
     AssertNotNull (memptr);
-    [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
+    [[maybe_unused]] lock_guard critSec{fCritSection_};
     try {
         fAllocations_.insert ({memptr, size});
         return memptr;
@@ -222,8 +222,8 @@ void* LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 void LeakTrackingGeneralPurposeAllocator::Deallocate (void* p)
 {
     RequireNotNull (p);
-    [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
-    PTRMAP::iterator        i       = fAllocations_.find (p);
+    [[maybe_unused]] lock_guard critSec{fCritSection_};
+    PTRMAP::iterator            i = fAllocations_.find (p);
     SUPER_ASSERT_ (i != fAllocations_.end ());
     fAllocations_.erase (i);
     fBaseAllocator_.Deallocate (p);
@@ -231,14 +231,14 @@ void LeakTrackingGeneralPurposeAllocator::Deallocate (void* p)
 
 size_t LeakTrackingGeneralPurposeAllocator::GetNetAllocationCount () const
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
+    [[maybe_unused]] lock_guard critSec{fCritSection_};
     return fAllocations_.size ();
 }
 
 size_t LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
-    size_t                  total   = 0;
+    [[maybe_unused]] lock_guard critSec{fCritSection_};
+    size_t                      total = 0;
     for (auto i = fAllocations_.begin (); i != fAllocations_.end (); ++i) {
         total += i->second;
     }
@@ -247,7 +247,7 @@ size_t LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
 
 LeakTrackingGeneralPurposeAllocator::Snapshot LeakTrackingGeneralPurposeAllocator::GetSnapshot () const
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
+    [[maybe_unused]] lock_guard critSec{fCritSection_};
     return Snapshot{fAllocations_};
 }
 

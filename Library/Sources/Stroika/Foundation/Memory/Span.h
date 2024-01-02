@@ -53,9 +53,8 @@ namespace Stroika::Foundation::Memory {
      *  \see https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
      */
     template <typename SPAN_T, typename T>
-    concept ISpanOfT =
-        same_as<remove_cvref_t<SPAN_T>, span<T>> or same_as<remove_cvref_t<SPAN_T>, span<const T>> or
-        same_as<remove_cvref_t<SPAN_T>, span<T, SPAN_T::extent>> or same_as<remove_cvref_t<SPAN_T>, span<const T, SPAN_T::extent>>;
+    concept ISpanOfT = same_as<remove_cvref_t<SPAN_T>, span<T>> or same_as<remove_cvref_t<SPAN_T>, span<const T>> or
+                       same_as<remove_cvref_t<SPAN_T>, span<T, SPAN_T::extent>> or same_as<remove_cvref_t<SPAN_T>, span<const T, SPAN_T::extent>>;
     static_assert (ISpanOfT<span<int>, int> and ISpanOfT<span<const int>, int> and ISpanOfT<span<const int, 3>, int> and not ISpanOfT<span<int>, char>);
 
     namespace Private_ {

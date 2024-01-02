@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Execution {
             }
         });
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{sExtraWaitableEventsMutex_};
+            [[maybe_unused]] lock_guard critSec{sExtraWaitableEventsMutex_};
             for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                 (*i)->fExtraWaitableEvents_.push_front (we);
             }
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Execution {
             }
         });
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{sExtraWaitableEventsMutex_};
+            [[maybe_unused]] lock_guard critSec{sExtraWaitableEventsMutex_};
             for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                 (*i)->fExtraWaitableEvents_.push_front (we);
             }

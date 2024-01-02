@@ -100,7 +100,7 @@ void WaitableEvent::Set ()
 #endif
     fWE_.Set ();
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
-    [[maybe_unused]] auto&& critSec = lock_guard{sExtraWaitableEventsMutex_};
+    [[maybe_unused]] lock_guard critSec{sExtraWaitableEventsMutex_};
     for (const auto& i : fExtraWaitableEvents_) {
         i->Set ();
     }

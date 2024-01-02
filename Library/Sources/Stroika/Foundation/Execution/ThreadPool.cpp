@@ -53,26 +53,26 @@ public:
         while (true) {
             {
                 if constexpr (qDebug) {
-                    [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool.fCriticalSection_};
+                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
                     Assert (fCurTask == nullptr);
                 }
                 // Subtle point, but we must copy directly into fCurTask (WaitForNextTask_ call) so its filled in under lock
                 // while being moved so task moves from pending to in-use without ever temporarily disappearing from known tasks lists
                 fThreadPool.WaitForNextTask_ (&fCurTask, &fCurName); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
                 if constexpr (qDebug) {
-                    [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool.fCriticalSection_};
+                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
                     Assert (fCurTask != nullptr);
                 }
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept {
                 Time::TimePointSeconds taskStartedAt;
                 {
-                    [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool.fCriticalSection_};
-                    fCurTask                        = nullptr;
-                    taskStartedAt                   = fCurTaskStartedAt;
+                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
+                    fCurTask      = nullptr;
+                    taskStartedAt = fCurTaskStartedAt;
                 }
                 if (fThreadPool.fCollectStatistics_) {
-                    [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool.fCriticalSection_};
+                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
                     ++fThreadPool.fCollectedTaskStats_.fNumberOfTasksCompleted;
                     ++fThreadPool.fCollectedTaskStats_.fNumberOfTasksReporting;
                     fThreadPool.fCollectedTaskStats_.fTotalTimeConsumed += Time::GetTickCount () - taskStartedAt;
@@ -82,9 +82,9 @@ public:
                 // Use lock to access fCurTask, but don't hold the lock during run, so others can call getcurrenttask
                 ThreadPool::TaskType task2Run;
                 {
-                    [[maybe_unused]] auto&& critSec = lock_guard{fThreadPool.fCriticalSection_};
-                    task2Run                        = fCurTask;
-                    fCurTaskStartedAt               = Time::GetTickCount ();
+                    [[maybe_unused]] lock_guard critSec{fThreadPool.fCriticalSection_};
+                    task2Run          = fCurTask;
+                    fCurTaskStartedAt = Time::GetTickCount ();
                 }
                 task2Run ();
             }
@@ -146,7 +146,7 @@ ThreadPool::~ThreadPool ()
 
 unsigned int ThreadPool::GetPoolSize () const
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     return static_cast<unsigned int> (fThreads_.size ());
 }
 
@@ -154,7 +154,7 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
 {
     Debug::TraceContextBumper ctx{L"ThreadPool::SetPoolSize", L"poolSize=%d", poolSize};
     Require (not fAborted_);
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     DbgTrace (L"fThreads_.size ()=%d", fThreads_.size ());
     while (poolSize > fThreads_.size ()) {
         fThreads_.Add (mkThread_ ());
@@ -213,7 +213,7 @@ auto ThreadPool::AddTask_ (const TaskType& task, const optional<Characters::Stri
 #endif
     Require (not fAborted_);
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         fPendingTasks_.push_back (PendingTaskInfo_{.fTask = task, .fName = name});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_ || 1
         DbgTrace (L"fPendingTasks.size () now = %d", (int)fPendingTasks_.size ());
@@ -233,7 +233,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSeconds timeout)
     Debug::TraceContextBumper ctx{"ThreadPool::AbortTask"};
     {
         // First see if its in the Q
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
             if (i->fTask == task) {
                 fPendingTasks_.erase (i);
@@ -255,7 +255,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSeconds timeout)
     //      Anyhow SB OK for now to just not allow aborting a task which has already started....
     Thread::Ptr thread2Kill;
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             TaskType ct{i->fRunnable->fCurTask};
             if (task == ct) {
@@ -275,7 +275,7 @@ void ThreadPool::AbortTasks (Time::DurationSeconds timeout)
     Debug::TraceContextBumper ctx{"ThreadPool::AbortTasks"};
     auto                      tps = GetPoolSize ();
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         fPendingTasks_.clear ();
         for (const TPInfo_& ti : fThreads_) {
             ti.fThread.Abort ();
@@ -283,7 +283,7 @@ void ThreadPool::AbortTasks (Time::DurationSeconds timeout)
     }
     {
         // @todo maybe fix unsafe - waiting here holding the critsec lock - seems deadlock waiting to happen - LGP 2023-11-05
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         for (const TPInfo_& ti : fThreads_) {
             // @todo fix wrong timeout value here
             ti.fThread.AbortAndWaitForDone (timeout);
@@ -299,7 +299,7 @@ bool ThreadPool::IsPresent (const TaskType& task) const
     Require (task != nullptr);
     {
         // First see if its in the Q
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
             if (i->fTask == task) {
                 return true;
@@ -319,7 +319,7 @@ bool ThreadPool::IsPresent (const TaskType& task) const
 bool ThreadPool::IsRunning (const TaskType& task) const
 {
     Require (task != nullptr);
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
         if (task == i->fRunnable->fCurTask) {
             return true;
@@ -346,8 +346,8 @@ void ThreadPool::WaitForTask (const TaskType& task, Time::DurationSeconds timeou
 
 auto ThreadPool::GetTasks () const -> Collection<TaskInfo>
 {
-    Collection<TaskInfo>    result;
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    Collection<TaskInfo>        result;
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     for (const auto& ti : fPendingTasks_) {
         result.Add (TaskInfo{.fTask = ti.fTask, .fName = ti.fName});
     }
@@ -366,8 +366,8 @@ auto ThreadPool::GetTasks () const -> Collection<TaskInfo>
 
 auto ThreadPool::GetRunningTasks () const -> Collection<TaskType>
 {
-    Collection<TaskType>    result;
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    Collection<TaskType>        result;
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
         TaskType task{i->fRunnable->fCurTask};
         if (task != nullptr) {
@@ -380,8 +380,8 @@ auto ThreadPool::GetRunningTasks () const -> Collection<TaskType>
 size_t ThreadPool::GetTasksCount () const
 {
     // First see if its in the Q
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
-    size_t                  count   = fPendingTasks_.size ();
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+    size_t                      count = fPendingTasks_.size ();
     for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
         AssertNotNull (i->fRunnable);
         if (i->fRunnable->fCurTask != nullptr) {
@@ -393,8 +393,8 @@ size_t ThreadPool::GetTasksCount () const
 
 auto ThreadPool::GetPendingTasks () const -> Collection<TaskType>
 {
-    Collection<TaskType>    result;
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    Collection<TaskType>        result;
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     for (const auto& i : fPendingTasks_) {
         result.Add (i.fTask);
     }
@@ -403,7 +403,7 @@ auto ThreadPool::GetPendingTasks () const -> Collection<TaskType>
 
 size_t ThreadPool::GetPendingTasksCount () const
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     return fPendingTasks_.size ();
 }
 
@@ -437,14 +437,14 @@ void ThreadPool::WaitForTasksDoneUntil (Time::TimePointSeconds timeoutAt) const
 
 void ThreadPool::ResetStatistics ()
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     Require (fCollectStatistics_);
     fCollectedTaskStats_ = {};
 }
 
 auto ThreadPool::GetCurrentStatistics () const -> Statistics
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+    [[maybe_unused]] lock_guard critSec{fCriticalSection_};
     Require (fCollectStatistics_);
     return fCollectedTaskStats_;
 }
@@ -458,7 +458,7 @@ void ThreadPool::Abort_ () noexcept
                       // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
         // Clear the task Q and then abort each thread
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         fPendingTasks_.clear ();
         for (const TPInfo_& ti : fThreads_) {
             ti.fThread.Abort ();
@@ -478,7 +478,7 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
         Abort_ (); // to get the rest of the threadpool abort stuff triggered - flag saying aborting
         Collection<Thread::Ptr> threadsToShutdown;
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+            [[maybe_unused]] lock_guard critSec{fCriticalSection_};
             fThreads_.Apply ([&] (const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
         }
         Thread::AbortAndWaitForDone (threadsToShutdown);
@@ -494,7 +494,7 @@ String ThreadPool::ToString () const
     StringBuilder sb;
     sb << "{"sv;
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         if (fThreadPoolName_) {
             sb << Characters::Format (L"pool-name: '%s'", fThreadPoolName_->As<wstring> ().c_str ()) << ", "sv;
         }
@@ -502,7 +502,7 @@ String ThreadPool::ToString () const
     sb << Characters::Format (L"pending-task-count: %d", GetPendingTasksCount ()) << ", "sv;
     sb << Characters::Format (L"running-task-count: %d", GetRunningTasks ().size ()) << ", "sv;
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+        [[maybe_unused]] lock_guard critSec{fCriticalSection_};
         sb << Characters::Format (L"pool-thread-count: %d", fThreads_.size ());
     }
     sb << "}"sv;
@@ -521,7 +521,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result, optional<Characters::String
         }
 
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
+            [[maybe_unused]] lock_guard critSec{fCriticalSection_};
             if (not fPendingTasks_.empty ()) {
                 *result     = fPendingTasks_.front ().fTask;
                 *resultName = fPendingTasks_.front ().fName;

@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Execution {
     template <typename T>
     SharedStaticData<T>::SharedStaticData ()
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{sMutex_};
+        [[maybe_unused]] lock_guard critSec{sMutex_};
         ++sCountUses_;
         if (sCountUses_ == 1) {
             sOnceObj_ = new T{};

@@ -204,7 +204,7 @@ void Logger::Shutdown_ ()
     bool changed = false;
     RequireNotNull (fRep_); // not yet destroyed
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fRep_->fSuppressDuplicatesThreshold_};
+        [[maybe_unused]] lock_guard critSec{fRep_->fSuppressDuplicatesThreshold_};
         if (fRep_->fSuppressDuplicatesThreshold_.load ()) {
             fRep_->fSuppressDuplicatesThreshold_.store (nullopt);
             changed = true;
@@ -304,7 +304,7 @@ void Logger::SetSuppressDuplicates (const optional<Duration>& suppressDuplicates
         L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%s", Characters::ToString (suppressDuplicatesThreshold).c_str ())};
     Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0s);
     RequireNotNull (fRep_); // not destroyed
-    [[maybe_unused]] auto&& critSec = lock_guard{fRep_->fSuppressDuplicatesThreshold_};
+    [[maybe_unused]] lock_guard critSec{fRep_->fSuppressDuplicatesThreshold_};
     if (fRep_->fSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
         fRep_->fSuppressDuplicatesThreshold_ = suppressDuplicatesThreshold;
         fRep_->UpdateBookkeepingThread_ ();

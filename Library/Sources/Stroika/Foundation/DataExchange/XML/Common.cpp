@@ -64,8 +64,8 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         void DUMPCurMemStats ()
         {
-            TraceContextBumper      ctx{"MyXercesMemMgr_::DUMPCurMemStats"};
-            [[maybe_unused]] auto&& critSec = lock_guard{fLastSnapshot_CritSection};
+            TraceContextBumper          ctx{"MyXercesMemMgr_::DUMPCurMemStats"};
+            [[maybe_unused]] lock_guard critSec{fLastSnapshot_CritSection};
             fAllocator.DUMPCurMemStats (fLastSnapshot);
             // now copy current map to prev for next time this gets called
             fLastSnapshot = fAllocator.GetSnapshot ();

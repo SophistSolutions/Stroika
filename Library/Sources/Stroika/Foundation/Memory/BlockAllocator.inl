@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Memory {
             return sLock_;
         }
 
-        void                    DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
+        void                        DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
 #endif
     }
 
@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Memory {
         }
         return result;
 #else
-        [[maybe_unused]] auto&& critSec = lock_guard{Private_::GetLock_ ()};
+        [[maybe_unused]] lock_guard critSec{Private_::GetLock_ ()};
         /*
          * To implement linked list of BlockAllocated(T)'s before they are
          * actually alloced, re-use the begining of this as a link pointer.
@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Memory {
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
         // cannot compact lock-free - no biggie
 #else
-        [[maybe_unused]] auto&& critSec = lock_guard{Private_::GetLock_ ()};
+        [[maybe_unused]] lock_guard critSec{Private_::GetLock_ ()};
 
         // step one: put all the links into a single, sorted vector
         const size_t kChunks = ComputeChunks_ ();

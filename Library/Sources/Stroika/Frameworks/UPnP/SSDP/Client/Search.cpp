@@ -56,7 +56,7 @@ public:
     ~Rep_ () = default;
     void AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
     {
-        [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
+        [[maybe_unused]] lock_guard critSec{fCritSection_};
         fFoundCallbacks_.push_back (callOnFinds);
     }
     void Start (const String& serviceType, const optional<Time::Duration>& autoRetryInterval)
@@ -197,7 +197,7 @@ public:
             }
             {
                 // bad practice to keep mutex lock here - DEADLOCK CITY - find nice CLEAN way todo this...
-                [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};
+                [[maybe_unused]] lock_guard critSec{fCritSection_};
                 for (const auto& i : fFoundCallbacks_) {
                     i (d);
                 }

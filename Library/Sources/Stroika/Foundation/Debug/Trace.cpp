@@ -390,7 +390,7 @@ namespace {
 template <typename CHARTYPE>
 auto Debug::Private_::Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* s, const CHARTYPE* e) -> TraceLastBufferedWriteTokenType
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
+    [[maybe_unused]] lock_guard critSec{sModuleData_->fModuleMutex};
     FlushBufferedCharacters_ ();
 
     auto curRelativeTime = Time::DisplayedRealtimeClock::now (); // same as Time::clock_cast<Time::DisplayedRealtimeClock> (Time::GetTickCount ())
@@ -474,7 +474,7 @@ void Debug::Private_::Emitter::FlushBufferedCharacters_ ()
 bool Debug::Private_::Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
 {
     RequireNotNull (sModuleData_);
-    [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
+    [[maybe_unused]] lock_guard critSec{sModuleData_->fModuleMutex};
     // If the fLastNCharBuf_Token_ matches (no new tokens written since the saved one) and the time
     // hasn't been too long (we currently write 1/100th second timestamp resolution).
     // then blank unput (ignore) buffered characters, and return true so caller knows to write
@@ -662,7 +662,7 @@ TraceContextBumper::~TraceContextBumper ()
     DecrCount_ ();
     if (fDoEndMarker) {
         RequireNotNull (sModuleData_);
-        [[maybe_unused]] auto&& critSec = lock_guard{sModuleData_->fModuleMutex};
+        [[maybe_unused]] lock_guard critSec{sModuleData_->fModuleMutex};
         if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
             Emitter::Get ().EmitUnadornedText ("/>");
             Emitter::Get ().EmitUnadornedText (GetEOL<char> ());

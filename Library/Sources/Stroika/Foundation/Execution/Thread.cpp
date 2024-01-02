@@ -220,9 +220,9 @@ unsigned int Thread::IndexRegistrar::GetIndex (const IDType& threadID, bool* was
         }
         return 0;
     }
-    [[maybe_unused]] auto&& critSec          = lock_guard{fMutex_};
-    auto                    i                = fShownThreadIDs_.find (threadID);
-    unsigned int            threadIndex2Show = 0;
+    [[maybe_unused]] lock_guard critSec{fMutex_};
+    auto                        i                = fShownThreadIDs_.find (threadID);
+    unsigned int                threadIndex2Show = 0;
     if (i == fShownThreadIDs_.end ()) {
         threadIndex2Show = static_cast<unsigned int> (fShownThreadIDs_.size ());
         fShownThreadIDs_.insert ({threadID, threadIndex2Show});
@@ -497,7 +497,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
         {
             Require (Debug::AppearsDuringMainLifetime ());
-            [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
+            [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
             DbgTrace (L"Adding thread index %s to sRunningThreads_ (%s)",
                       Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))).c_str (),
@@ -513,7 +513,7 @@ void Thread::Ptr::Rep_::ThreadMain_ (const shared_ptr<Rep_> thisThreadRep) noexc
         [[maybe_unused]] auto&& cleanup = Finally ([thisThreadID] () noexcept {
             SuppressInterruptionInContext suppressThreadInterrupts; // may not be needed, but safer/harmless
             Require (Debug::AppearsDuringMainLifetime ()); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
-            [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
+            [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
 #if qStroika_Foundation_Debug_Trace_ShowThreadIndex
             DbgTrace (L"removing thread index %s from sRunningThreads_ (%s)",
                       Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (thisThreadID))).c_str (),
@@ -622,7 +622,7 @@ void Thread::Ptr::Rep_::NotifyOfInterruptionFromAnyThread_ ()
          */
 #if qPlatform_POSIX
         {
-            [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
+            [[maybe_unused]] lock_guard critSec{sHandlerInstalled_};
             if (not sHandlerInstalled_) {
                 SignalHandlerRegistry::Get ().AddSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
                 sHandlerInstalled_ = true;
@@ -988,7 +988,7 @@ Thread::Configuration Thread::DefaultConfiguration (const optional<Configuration
 #if qStroika_Foundation_Execution_Thread_SupportThreadStatistics
 Thread::Statistics Thread::GetStatistics ()
 {
-    [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
+    [[maybe_unused]] lock_guard critSec{sThreadSupportStatsMutex_};
     return Statistics{Containers::Set<IDType>{sRunningThreads_}};
 }
 #endif
@@ -1039,7 +1039,7 @@ SignalID Thread::SignalUsedForThreadInterrupt (optional<SignalID> signalNumber)
 {
     SignalID result = sSignalUsedForThreadInterrupt_;
     if (signalNumber) {
-        [[maybe_unused]] auto&& critSec = lock_guard{sHandlerInstalled_};
+        [[maybe_unused]] lock_guard critSec{sHandlerInstalled_};
         if (sHandlerInstalled_) {
             SignalHandlerRegistry::Get ().RemoveSignalHandler (SignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
             sHandlerInstalled_ = false;
