@@ -160,7 +160,7 @@ namespace {
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER2)
     {
         TraceContextBumper ctx{"SAX_PARSER2"};
-        const Memory::BLOB kHealthFrameWorks_v3_xml = Memory::BLOB::Attach (Resources_::HealthFrameWorks_v3_xml);
+        const Memory::BLOB kHealthFrameWorks_v3_xml = Memory::BLOB::Attach (Resources_::TestFiles_HealthFrameWorks_v3_xml);
         class MyCallback : public StructuredStreamEvents::IConsumer {
         public:
             virtual void StartDocument () override
@@ -192,8 +192,8 @@ namespace {
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER_SchemaValidate)
     {
         TraceContextBumper ctx{"SAX_PARSER2"};
-        const Memory::BLOB kPersonalXML_ = Memory::BLOB::Attach (Resources_::personal_xml);
-        const Memory::BLOB kPersonalXSD_ = Memory::BLOB::Attach (Resources_::personal_xsd);
+        const Memory::BLOB kPersonalXML_ = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);
+        const Memory::BLOB kPersonalXSD_ = Memory::BLOB::Attach (Resources_::TestFiles_personal_xsd);
         const Memory::BLOB kCCR_XSD_     = Memory::BLOB::Attach (Resources_::TestFiles_ASTM_CCR_V1_xsd);
         const Memory::BLOB kSampleCCR_   = Memory::BLOB::Attach (Resources_::TestFiles_SampleCCR_ccr);
 
@@ -1390,10 +1390,10 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, T15_DOMRead_)
     {
-        const Memory::BLOB kPersonalXML_                 = Memory::BLOB::Attach (Resources_::personal_xml);
-        const Memory::BLOB kPersonalXSD_                 = Memory::BLOB::Attach (Resources_::personal_xsd);
-        const Memory::BLOB kHealthFrameWorks_v3_xml      = Memory::BLOB::Attach (Resources_::HealthFrameWorks_v3_xml);
-        const Memory::BLOB kReferenceContent_2012_03_xsd = Memory::BLOB::Attach (Resources_::ReferenceContent_2012_03_xsd);
+        const Memory::BLOB kPersonalXML_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);
+        const Memory::BLOB kPersonalXSD_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xsd);
+        const Memory::BLOB kHealthFrameWorks_v3_xml      = Memory::BLOB::Attach (Resources_::TestFiles_HealthFrameWorks_v3_xml);
+        const Memory::BLOB kReferenceContent_2012_03_xsd = Memory::BLOB::Attach (Resources_::TestFiles_ReferenceContent_2012_03_xsd);
 
         {
             DOM::Document::Ptr d   = DOM::Document::New (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> ());
