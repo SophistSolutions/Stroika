@@ -66,8 +66,8 @@ namespace Stroika::Foundation::Memory {
      *************************** Memory::CopySpanData *******************************
      ********************************************************************************
      */
-    template <typename T>
-    constexpr std::span<T> CopySpanData (span<const T> src, span<T> target)
+    template <typename T, size_t E>
+    constexpr std::span<T, E> CopySpanData (span<const T, E> src, span<T, E> target)
     {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
@@ -76,8 +76,8 @@ namespace Stroika::Foundation::Memory {
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
         return target.subspan (0, src.size ());
     }
-    template <typename T>
-    constexpr std::span<T> CopySpanData (span<T> src, span<T> target)
+    template <typename T, size_t E>
+    constexpr std::span<T, E> CopySpanData (span<T, E> src, span<T, E> target)
     {
         return CopySpanData (ConstSpan (src), target);
     }
@@ -87,8 +87,8 @@ namespace Stroika::Foundation::Memory {
      *********************** Memory::CopySpanData_StaticCast ************************
      ********************************************************************************
      */
-    template <typename FROM_T, typename TO_T>
-    constexpr std::span<TO_T> CopySpanData_StaticCast (span<const FROM_T> src, span<TO_T> target)
+    template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    constexpr std::span<TO_T, TO_E> CopySpanData_StaticCast (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target)
     {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
@@ -98,8 +98,8 @@ namespace Stroika::Foundation::Memory {
         }
         return target.subspan (0, src.size ());
     }
-    template <typename FROM_T, typename TO_T>
-    constexpr std::span<TO_T> CopySpanData_StaticCast (span<FROM_T> src, span<TO_T> target)
+    template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    constexpr std::span<TO_T, TO_E> CopySpanData_StaticCast (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target)
     {
         return CopySpanData_StaticCast (ConstSpan (src), target);
     }

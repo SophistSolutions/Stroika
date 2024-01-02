@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Memory {
     template <typename SPAN_T>
     concept ISpanT = Private_::_Is_span_v<SPAN_T>;
     static_assert (ISpanT<span<int>> and ISpanT<span<int, 3>>);
-    static_assert (not ISpanT<std::string>); // we don't include <string> in this module, but sometimes helpful to test/debug/document
+    static_assert (not ISpanT<std::string> and not ISpanT<int>); // we don't include <string> in this module, but sometimes helpful to test/debug/document
 
     /**
      * \brief return true iff intersection of the two spans is non-empty (contains any bytes)
@@ -107,10 +107,10 @@ namespace Stroika::Foundation::Memory {
      * 
      *          @todo MAYBE RENAME TO MemMove()????
      */
-    template <typename T>
-    constexpr std::span<T> CopySpanData (span<const T> src, span<T> target);
-    template <typename T>
-    constexpr std::span<T> CopySpanData (span<T> src, span<T> target);
+    template <typename T, size_t E>
+    constexpr std::span<T, E> CopySpanData (span<const T, E> src, span<T, E> target);
+    template <typename T, size_t E>
+    constexpr std::span<T, E> CopySpanData (span<T, E> src, span<T, E> target);
 
     /*
      *  \brief Span-flavored memcpy/std::copy (copies from, to), but with cast (like CopySpanData but with cast)
@@ -126,10 +126,10 @@ namespace Stroika::Foundation::Memory {
      * 
      *          @todo MAYBE RENAME TO MemMove()????- STATICCAST
      */
-    template <typename FROM_T, typename TO_T>
-    constexpr std::span<TO_T> CopySpanData_StaticCast (span<const FROM_T> src, span<TO_T> target);
-    template <typename FROM_T, typename TO_T>
-    constexpr std::span<TO_T> CopySpanData_StaticCast (span<FROM_T> src, span<TO_T> target);
+    template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    constexpr std::span<TO_T, TO_E> CopySpanData_StaticCast (span<const FROM_T, FROM_E> src, span<TO_T, TO_E> target);
+    template <typename FROM_T, size_t FROM_E, typename TO_T, size_t TO_E>
+    constexpr std::span<TO_T, TO_E> CopySpanData_StaticCast (span<FROM_T, FROM_E> src, span<TO_T, TO_E> target);
 
 }
 
