@@ -48,9 +48,11 @@ namespace {
         }
         virtual optional<size_t> AvailableToRead () override
         {
-            // todo
-            AssertNotImplemented ();
-            return 0; // not sure used right now - but review ReadNonBlocking code below and fix Read to handle non-blocking case
+            // this is easy, because an upstream character always translates into at least one byte, so just check if any upstream characters
+            if (fSrcBufferedSpan_.size () > 0) {
+                return fSrcBufferedSpan_.size ();
+            }
+            return fSrc_.AvailableToRead ();
         }
         virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
@@ -68,31 +70,30 @@ namespace {
             // more likely - KISS for now - read one character from upstream and return appropriate number of bytes
             Assert (fSrcBufferedSpan_.empty ());
             Character readBuf[1];
-            if (size_t nChars = fSrc_.Read (span{readBuf}, blockFlag).size ()) { // @todo fix cuz this will throw rather than block - could fix with trycatch or readnonblocking
-                char8_t       buf[10];
-                span<char8_t> convertedSpan  = Characters::UTFConvert::kThe.ConvertSpan (span{readBuf, nChars}, span{buf, sizeof (buf)});
-                auto          copiedIntoSpan = Memory::CopySpanData_StaticCast (convertedSpan, intoBuffer);
-                if (copiedIntoSpan.size () < convertedSpan.size ()) {
-                    // save extra bytes in fSrcBufferedSpan_
-                    fSrcBufferedSpan_ =
-                        Memory::CopySpanData_StaticCast (convertedSpan.subspan (copiedIntoSpan.size ()), span<byte>{fSrcBufferedRawBytes_});
-                    Assert (1 <= fSrcBufferedSpan_.size () and fSrcBufferedSpan_.size () <= sizeof (fSrcBufferedRawBytes_));
+            if (auto o = fSrc_.GetRepRWRef ().Read (span{readBuf}, blockFlag)) {
+                if (size_t nChars = o->size ()) {
+                    char8_t       buf[10];
+                    span<char8_t> convertedSpan = Characters::UTFConvert::kThe.ConvertSpan (span{readBuf, nChars}, span{buf, sizeof (buf)});
+                    auto          copiedIntoSpan = Memory::CopySpanData_StaticCast (convertedSpan, intoBuffer);
+                    if (copiedIntoSpan.size () < convertedSpan.size ()) {
+                        // save extra bytes in fSrcBufferedSpan_
+                        fSrcBufferedSpan_ =
+                            Memory::CopySpanData_StaticCast (convertedSpan.subspan (copiedIntoSpan.size ()), span<byte>{fSrcBufferedRawBytes_});
+                        Assert (1 <= fSrcBufferedSpan_.size () and fSrcBufferedSpan_.size () <= sizeof (fSrcBufferedRawBytes_));
+                    }
+                    _fOffset += copiedIntoSpan.size ();
+                    return intoBuffer.subspan (0, copiedIntoSpan.size ());
                 }
-                _fOffset += copiedIntoSpan.size ();
-                return intoBuffer.subspan (0, copiedIntoSpan.size ());
+                else {
+                    // if we got here, nothing in our buf, and nothing upstream - EOF
+                    return span<byte>{};
+                }
             }
-            // if we got here, nothing in our buf, and nothing upstream - EOF
-            return span<byte>{};
+            else {
+                Assert (blockFlag == eDontBlock);
+                return nullopt; // nothing pre-read, and nothing available upstream, so nothing yet
+            }
         }
-#if 0
-        virtual optional<size_t> ReadNonBlocking (byte* intoStart, byte* intoEnd) override
-        {
-            Require ((intoStart == intoEnd) or (intoStart != nullptr));
-            Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-            Require (IsOpenRead ());
-            return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fSrcBufferedSpan_.size ());
-        }
-#endif
         virtual SeekOffsetType GetReadOffset () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
