@@ -195,14 +195,14 @@ namespace {
         const Memory::BLOB kPersonalXML_ = Memory::BLOB::Attach (Resources_::personal_xml);
         const Memory::BLOB kPersonalXSD_ = Memory::BLOB::Attach (Resources_::personal_xsd);
         const Memory::BLOB kCCR_XSD_     = Memory::BLOB::Attach (Resources_::TestFiles_ASTM_CCR_V1_xsd);
-        const Memory::BLOB kSampleCCR_     = Memory::BLOB::Attach (Resources_::TestFiles_SampleCCR_ccr);
-        
+        const Memory::BLOB kSampleCCR_   = Memory::BLOB::Attach (Resources_::TestFiles_SampleCCR_ccr);
+
         {
             Schema::Ptr                       personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
             StructuredStreamEvents::IConsumer ignoreData;
             XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), ignoreData, personalSchema);
         }
-        if (false) { //tmphack til I debug
+        {
             Schema::Ptr                       ccrSchema = XML::Schema::New (nullopt, kCCR_XSD_);
             StructuredStreamEvents::IConsumer ignoreData;
             XML::SAXParse (kSampleCCR_.As<InputStream::Ptr<byte>> (), ignoreData, ccrSchema);
@@ -221,7 +221,6 @@ namespace {
     GTEST_TEST (Foundation_DataExchange_XML, Test_2a_ObjectReader_viaRegistry_)
     {
         TraceContextBumper traceCtx{"Test_2a_ObjectReader_viaRegistry_"};
-
         const wstring kNSTest = L"Test-NAMESPACE";
         struct Person_ {
             String           firstName;
