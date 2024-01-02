@@ -21,7 +21,6 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 VERSION=8.5.0
 #VERSION=8.4.0		# Fails to build on Ubuntu  - so wait for next release and hope fixed
 #VERSION=8.3.0
-#VERSION=8.2.1
 #VERSION=7.86.0
 BASENAME=curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
@@ -206,36 +205,12 @@ endif
 endif
 
 
-### DISABLED - 2023-10-16 - since produces warnings on macos, and doesn't appear needed anymore
-# ifeq ($(qFeatureFlag_OpenSSL), use)
-# #Avoid:
-# #	configure:21566: pkg-config: SSL_LIBS: "-lssl -lcrypto "
-# #	configure:21568: pkg-config: SSL_LDFLAGS: "-L/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/lib "
-# #	configure:21570: pkg-config: SSL_CPPFLAGS: "-I/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/include "
-# #	configure:21582: checking for HMAC_Update in -lcrypto
-# #	configure:21604: gcc -o conftest -g -O0 -pedantic -Wall -W -Wpointer-arith -Wwrite-strings -Wunused -Wshadow -Winline -Wnested-externs -Wmissing-declarations -Wmissing-prototypes -Wno-long-long -Wfloat-equal -Wno-multichar -Wsign-compare -Wundef -Wno-format-nonliteral -Wendif-labels -Wstrict-prototypes -Wdeclaration-after-statement -Wstrict-aliasing=3 -Wcast-align -Wtype-limits -Wold-style-declaration -Wmissing-parameter-type -Wempty-body -Wclobbered -Wignored-qualifiers -Wconversion -Wno-sign-conversion -Wvla -Wno-system-headers -DDEBUGBUILD -DCURLDEBUG -isystem /include -I/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/include   -L/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/lib  conftest.c -lcrypto  -lssl -lcrypto   >&5
-# #	conftest.c:57:1: warning: function declaration isn't a prototype [-Wstrict-prototypes]
-# #	char HMAC_Update ();
-# #	^
-# #	/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/lib/libcrypto.a(dso_dlfcn.o): In function `dlfcn_globallookup':
-# #	dso_dlfcn.c:(.text+0x11): undefined reference to `dlopen'
-# #	dso_dlfcn.c:(.text+0x24): undefined reference to `dlsym'
-# #	dso_dlfcn.c:(.text+0x2f): undefined reference to `dlclose'
-# #
-# LIBCURL_CONFIGURE +=  LIBS='-ldl'
-
-# #https://stroika.atlassian.net/browse/STK-527
-# #This hack is NO GOOD - but without it - we don't get ssl feature enabled!
-# LIBCURL_CONFIGURE +=  LIBS='-ldl -lpthread'
-# endif
 
 ifeq ($(DETECTED_HOST_OS), Darwin)
 # https://stroika.atlassian.net/browse/STK-759
 # Undefined symbols for architecture x86_64: "_SCDynamicStoreCopyProxies", referenced from:  _Curl_resolv in libcurl.a(libcurl_la-hostip.o)
 LIBCURL_CONFIGURE +=  LIBS='-framework Foundation -framework SystemConfiguration'
 endif
-
-
 
 	
 .PHONY:	doBuilds_
