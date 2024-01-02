@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Characters {
         explicit String (Character c);
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         String (const CHAR_T* cString);
-        template <Memory::ISpanT SPAN_OF_CHAR_T>
+        template <Memory::ISpan SPAN_OF_CHAR_T>
         String (SPAN_OF_CHAR_T s)
             requires (IUNICODECanUnambiguouslyConvertFrom<typename SPAN_OF_CHAR_T::value_type>);
         template <IStdBasicStringCompatibleCharacter CHAR_T>
@@ -224,7 +224,7 @@ namespace Stroika::Foundation::Characters {
         explicit String (basic_string<CHAR_T>&& s);
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         String (const Iterable<CHAR_T>& src)
-            requires (not Memory::ISpanT<CHAR_T>);
+            requires (not Memory::ISpan<CHAR_T>);
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
 

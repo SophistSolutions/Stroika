@@ -307,7 +307,7 @@ namespace Stroika::Foundation::Memory {
         /**
          *  \brief same as push_back (span{}) except that the span type doesn't need to match exactly, so long as indirected items can be copied to destination (with static_cast).
          */
-        template <ISpanT SPAN_T>
+        template <ISpan SPAN_T>
         nonvirtual void push_back_coerced (const SPAN_T& copyFrom);
 
     public:

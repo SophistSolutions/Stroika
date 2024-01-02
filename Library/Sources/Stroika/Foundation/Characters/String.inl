@@ -170,7 +170,7 @@ namespace Stroika::Foundation::Characters {
                         //
                         // EXAMPLE:
                         //      https://www.utf8-chartable.de/
-                        //              U+00C2  Â   c3 82   LATIN CAPITAL LETTER A WITH CIRCUMFLEX
+                        //              U+00C2  ï¿½   c3 82   LATIN CAPITAL LETTER A WITH CIRCUMFLEX
                         //
                         // However, a quirk (reasonable) of UTFConvert::kThe.ConvertSpan is that it CANNOT convert to Latin1 becuase
                         // the concept IUNICODECanUnambiguouslyConvertTo<Latin1> evaluated to false.
@@ -284,7 +284,7 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (cString);
         _AssertRepValidType ();
     }
-    template <Memory::ISpanT SPAN_OF_CHAR_T>
+    template <Memory::ISpan SPAN_OF_CHAR_T>
     inline String::String (SPAN_OF_CHAR_T s)
         requires (IUNICODECanUnambiguouslyConvertFrom<typename SPAN_OF_CHAR_T::value_type>)
         : inherited{mk_ (span<const typename SPAN_OF_CHAR_T::value_type>{s})}
@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline String::String (const Iterable<CHAR_T>& src)
-        requires (not Memory::ISpanT<CHAR_T>)
+        requires (not Memory::ISpan<CHAR_T>)
         : inherited{mk_ (src)}
     {
     }

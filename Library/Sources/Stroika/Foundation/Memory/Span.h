@@ -71,9 +71,9 @@ namespace Stroika::Foundation::Memory {
      *  are CONVERTIBLE to span<T>
      */
     template <typename SPAN_T>
-    concept ISpanT = Private_::_Is_span_v<SPAN_T>;
-    static_assert (ISpanT<span<int>> and ISpanT<span<int, 3>>);
-    static_assert (not ISpanT<std::string> and not ISpanT<int>); // we don't include <string> in this module, but sometimes helpful to test/debug/document
+    concept ISpan = Private_::_Is_span_v<SPAN_T>;
+    static_assert (ISpan<span<int>> and ISpan<span<int, 3>>);
+    static_assert (not ISpan<std::string> and not ISpan<int>); // we don't include <string> in this module, but sometimes helpful to test/debug/document
 
     /**
      * \brief return true iff intersection of the two spans is non-empty (contains any bytes)

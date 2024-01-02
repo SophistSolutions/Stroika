@@ -435,7 +435,7 @@ namespace Stroika::Foundation::Memory {
         this->fSize_ = newS;
     }
     template <typename T, size_t BUF_SIZE>
-    template <ISpanT SPAN_T>
+    template <ISpan SPAN_T>
     void InlineBuffer<T, BUF_SIZE>::push_back_coerced (const SPAN_T& copyFrom)
     {
         size_t s    = size ();
