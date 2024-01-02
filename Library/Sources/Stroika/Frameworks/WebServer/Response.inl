@@ -39,7 +39,7 @@ namespace Stroika::Frameworks::WebServer {
         RequireNotNull (e);
         const wchar_t kEOL[] = L"\r\n";
         write (e, e + ::wcslen (e));
-        write (std::begin (kEOL), std::end (kEOL));
+        write (std::begin (kEOL), std::end (kEOL) - 1);
     }
     inline void Response::writeln (const String& e)
     {
@@ -49,7 +49,7 @@ namespace Stroika::Frameworks::WebServer {
             wstring tmp{e.As<wstring> ()};
             write (Containers::Start (tmp), Containers::End (tmp));
         }
-        write (std::begin (kEOL), std::end (kEOL));
+        write (std::begin (kEOL), std::end (kEOL) - 1);
     }
     inline void Response::EnterHeadMode ()
     {
