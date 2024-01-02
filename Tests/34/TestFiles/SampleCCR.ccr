@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContinuityOfCareRecord xmlns="urn:asthma:CCR" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:asthma:CCR CCR.xsd">
+    <Header>
+        <CCRVersion>1.0</CCRVersion>
+        <DateTime>2024-01-02T12:00:00</DateTime>
+    </Header>
+    <PatientInformation>
+        <Name>
+            <FirstName>John</FirstName>
+            <LastName>Doe</LastName>
+        </Name>
+        <DOB>1980-01-01</DOB>
+        <Gender>Male</Gender>
+        <Address>
+            <Street>123 Main St</Street>
+            <City>Anytown</City>
+            <State>CA</State>
+            <ZIP>12345</ZIP>
+        </Address>
+        <PhoneNumber>555-555-5555</PhoneNumber>
+    </PatientInformation>
+    <ProblemList>
+        <Problem>
+            <Condition>Asthma</Condition>
+            <Code>493.90</Code>
+            <StartDate>2020-05-01</StartDate>
+            <EndDate>ongoing</EndDate>
+            <Status>Active</Status>
+        </Problem>
+    </ProblemList>
+    <Medications>
+        <Medication>
+            <Name>Albuterol</Name>
+            <Code>54868-0644-00</Code>
+            <StartDate>2020-05-01</StartDate>
+            <EndDate>ongoing</EndDate>
+            <Dose>2 puffs every 4 hours</Dose>
+        </Medication>
+    </Medications>
+    <!-- Additional sections like Immunizations, Procedures, Results, etc., can be added as needed -->
+</ContinuityOfCareRecord>

@@ -27,6 +27,10 @@
 
 namespace Resources_ {
     constexpr
+#include "Tests/34/SampleCCR.ccr.embed"
+        constexpr
+#include "Tests/34/ASTM_CCR_V1.xsd.embed"
+        constexpr
 #include "Tests/34/personal.xml.embed"
         constexpr
 #include "Tests/34/personal.xsd.embed"
@@ -184,6 +188,32 @@ namespace {
         };
         MyCallback myCallback;
         XML::SAXParse (kHealthFrameWorks_v3_xml, myCallback);
+    }
+    GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER_SchemaValidate)
+    {
+        TraceContextBumper ctx{"SAX_PARSER2"};
+        const Memory::BLOB kPersonalXML_ = Memory::BLOB::Attach (Resources_::personal_xml);
+        const Memory::BLOB kPersonalXSD_ = Memory::BLOB::Attach (Resources_::personal_xsd);
+        const Memory::BLOB kCCR_XSD_     = Memory::BLOB::Attach (Resources_::TestFiles_ASTM_CCR_V1_xsd);
+        const Memory::BLOB kSampleCCR_     = Memory::BLOB::Attach (Resources_::TestFiles_SampleCCR_ccr);
+        
+        {
+            Schema::Ptr                       personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
+            StructuredStreamEvents::IConsumer ignoreData;
+            XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), ignoreData, personalSchema);
+        }
+        if (false) { //tmphack til I debug
+            Schema::Ptr                       ccrSchema = XML::Schema::New (nullopt, kCCR_XSD_);
+            StructuredStreamEvents::IConsumer ignoreData;
+            XML::SAXParse (kSampleCCR_.As<InputStream::Ptr<byte>> (), ignoreData, ccrSchema);
+        }
+        {
+            Schema::Ptr                       personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
+            Schema::Ptr                       ccrSchema      = XML::Schema::New (nullopt, kCCR_XSD_);
+            StructuredStreamEvents::IConsumer ignoreData;
+            EXPECT_THROW (XML::SAXParse (kSampleCCR_.As<InputStream::Ptr<byte>> (), ignoreData, personalSchema), BadFormatException);
+            EXPECT_THROW (XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), ignoreData, ccrSchema), BadFormatException);
+        }
     }
 }
 
