@@ -822,7 +822,7 @@ namespace {
         auto                      f = [] () {
             map<wstring, VariantValue> mv;
             mv[L"MaxFiles"] = VariantValue{405};
-            VariantValue v = VariantValue{mv};
+            VariantValue v  = VariantValue{mv};
 
             string encoded;
             {
