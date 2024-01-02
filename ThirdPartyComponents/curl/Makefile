@@ -20,7 +20,7 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 VERSION=8.5.0
 #VERSION=8.4.0		# Fails to build on Ubuntu  - so wait for next release and hope fixed
-VERSION=8.3.0
+#VERSION=8.3.0
 #VERSION=8.2.1
 #VERSION=7.86.0
 BASENAME=curl-$(VERSION)
@@ -41,7 +41,6 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 #lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/curl/)
 
-#OUTPUT_WORKDIR_PRETTYNAME="{StroikaRoot}Inter.../Thir.../curl/"
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
