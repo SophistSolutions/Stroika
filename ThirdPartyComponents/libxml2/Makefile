@@ -83,7 +83,21 @@ CMAKE_ARGS+=	-D LIBXML2_WITH_ZLIB="OFF"
 CMAKE_ARGS+=	-D LIBXML2_WITH_LZMA="OFF"
 CMAKE_ARGS+=	-D LIBXML2_WITH_PYTHON="OFF"
 
-
+#
+# Silence a bunch of warnings cuz we don't write this code!
+# And weirdly, with link time codegen, these warnings come out at link time, not when I compile this!
+# No apparent options to silence this stuff from the linker, but adding it to the compilation step here
+# appears to be preserved with the obj file, and used in link time codegen in the linker (visual studio 17.8.3)
+# -- LGP 2024-01-02
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (-LTCG,$(findstring -LTCG,$(LinkerArgs_ExtraPrefix)))
+CFLAGS	+= -wd4701
+CFLAGS	+= -wd4702
+CFLAGS	+= -wd4703
+CFLAGS	+= -wd4706
+CFLAGS	+= -wd4789
+endif
+endif
 
 # Sometimes helpful to debug
 CMAKE_XTRA_BLD_FLAGS_=
