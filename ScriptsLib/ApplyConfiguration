@@ -624,7 +624,7 @@ sub WriteVS2kIntellisenseConfigFile
 	print (OUT "\n");
 	print (OUT "  <PropertyGroup Label=\"UserMacros\">\n");
 	print (OUT "    <StroikaBuildToolsExtraPath>$msysStkBuildPath;$defCygwinStkBuildPath</StroikaBuildToolsExtraPath>\n");
-	print (OUT "    <JOBS_FLAG>-j 8</JOBS_FLAG>\n");
+	print (OUT "    <JOBS_FLAG>-j 5</JOBS_FLAG>\n");
 	print (OUT "  </PropertyGroup>\n");
 	if ("$^O" == "msys") {
 		print (OUT "  <PropertyGroup Label=\"UserMacros\" Condition=\"'\$(Configuration)|\$(Platform)'=='$activeConfiguration|Win32'\">\n");
