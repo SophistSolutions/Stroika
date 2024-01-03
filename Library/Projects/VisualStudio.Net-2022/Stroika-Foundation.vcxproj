@@ -674,6 +674,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedSpanInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputStreamDelegationHelper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputSubStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedInputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedInputStream.h" />
@@ -1142,6 +1143,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedSpanInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStreamDelegationHelper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputSubStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedInputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySynchronizedInputStream.inl" />
