@@ -11,8 +11,8 @@ static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libx
 #include <libxml/parser.h>
 #include <libxml/xmlschemas.h>
 
-#include "../../../Debug/CompileTimeFlagChecker.h"
-#include "../Common.h"
+#include "Stroika/Foundation//DataExchange/XML/Common.h"
+#include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
 
 #include "IProvider.h"
 
@@ -33,7 +33,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
 
     /**
      */
-    struct ILibXML2SchemaRep {
+    struct ILibXML2SchemaRep : Schema::IRep {
         virtual xmlSchema* GetSchemaLibRep () = 0;
     };
 

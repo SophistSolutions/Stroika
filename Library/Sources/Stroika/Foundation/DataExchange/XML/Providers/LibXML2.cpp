@@ -16,6 +16,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::DataExchange::XML::Schema;
+using namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 
@@ -41,7 +42,7 @@ namespace {
 #endif
 
 namespace {
-    struct SchemaRep_ : Schema::IRep, ILibXML2SchemaRep {
+    struct SchemaRep_ : ILibXML2SchemaRep {
         SchemaRep_ (const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
                     const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
             : fTargetNamespace{targetNamespace}
@@ -88,9 +89,6 @@ namespace {
 }
 
 namespace {
-
-    using namespace XML::Providers::LibXML2;
-
     struct SAXReader_ {
         using Name = StructuredStreamEvents::Name;
         xmlSAXHandler                      flibXMLSaxHndler_{};
@@ -149,15 +147,13 @@ namespace {
         }
         SAXReader_ (const SAXReader_&) = delete;
     };
-
 }
 
 /*
  ********************************************************************************
- *************** Provider::Xerces::Map2StroikaExceptionsErrorReporter ***********
+ ******************* Provider::Xerces::libXMLString2String **********************
  ********************************************************************************
  */
-
 String Providers::LibXML2::libXMLString2String (const xmlChar* s, int len)
 {
     return String{span{reinterpret_cast<const char*> (s), static_cast<size_t> (len)}};
@@ -193,6 +189,7 @@ shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const opti
 {
     return make_shared<SchemaRep_> (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
 }
+
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const String& documentElementName, const optional<URI>& ns) const
 {
     AssertNotImplemented ();
@@ -205,18 +202,40 @@ shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (c
     AssertNotImplemented ();
     return nullptr;
 }
+
 void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
                                              const Schema::Ptr& schema) const
 {
-    SAXReader_              handler{callback};
-    xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
-    byte                    buf[1024];
-    while (auto n = in.Read (span{buf}).size ()) {
-        if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-            xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but trnaslate to throw
-                                                    // return 1;
+    if (schema == nullptr) {
+        SAXReader_              handler{callback};
+        xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
+        byte                    buf[1024];
+        while (auto n = in.Read (span{buf}).size ()) {
+            if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
+                xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but trnaslate to throw
+                                                        // return 1;
+            }
         }
+        xmlParseChunk (ctxt, nullptr, 0, 1);
     }
-    xmlParseChunk (ctxt, nullptr, 0, 1);
+    else {
+        // @todo THIS MUST VALIDATE if schema != nullptr
+        // xmlSchemaValidateStream
+        // // seems avlidation with limx2ml happens wtih DOC, not SAX
+        // xmlSchemaValidateDoc     (xmlSchemaValidCtxtPtr ctxt,
+        ///                  xmlDocPtr doc)
+        // https://web.mit.edu/ghudson/dev/nokrb/third/libxml2/doc/html/libxml-xmlschemas.html#xmlSchemaValidateStream
+        SAXReader_              handler{callback};
+        xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
+        byte                    buf[1024];
+        while (auto n = in.Read (span{buf}).size ()) {
+            if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
+                xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but trnaslate to throw
+                                                        // return 1;
+            }
+        }
+        xmlParseChunk (ctxt, nullptr, 0, 1);
+    }
 }

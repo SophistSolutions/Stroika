@@ -30,9 +30,9 @@ static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerce
 #include <xercesc/validators/common/Grammar.hpp>
 #define Assert(c) AssertExpression (c);
 
-#include "../../../Characters/String.h"
-#include "../../../Debug/CompileTimeFlagChecker.h"
-#include "../DOM.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/DataExchange/XML/Common.h"
+#include "Stroika/Foundation/Debug/CompileTimeFlagChecker.h"
 
 #include "IProvider.h"
 
@@ -50,21 +50,8 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
 
     /**
      */
-    struct IXercesSchemaRep {
+    struct IXercesSchemaRep : Schema::IRep {
         virtual xercesc_3_2::XMLGrammarPool* GetCachedGrammarPool () = 0;
-    };
-
-    /**
-     */
-    struct Map2StroikaExceptionsErrorReporter : public XMLErrorReporter, public ErrorHandler {
-    public:
-        virtual void error ([[maybe_unused]] const unsigned int errCode, [[maybe_unused]] const XMLCh* const errDomain,
-                            [[maybe_unused]] const ErrTypes type, const XMLCh* const errorText, [[maybe_unused]] const XMLCh* const systemId,
-                            [[maybe_unused]] const XMLCh* const publicId, const XMLFileLoc lineNum, const XMLFileLoc colNum) override;
-        virtual void resetErrors () override;
-        virtual void warning ([[maybe_unused]] const SAXParseException& exc) override;
-        virtual void error (const SAXParseException& exc) override;
-        virtual void fatalError (const SAXParseException& exc) override;
     };
 
     /**
