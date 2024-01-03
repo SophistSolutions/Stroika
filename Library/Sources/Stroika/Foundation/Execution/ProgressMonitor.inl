@@ -171,10 +171,10 @@ namespace Stroika::Foundation::Execution {
     Streams::InputStream::Ptr<T> MakeInputStreamWithProgress (const Streams::InputStream::Ptr<T>& in, ProgressMonitor::Updater progress)
     {
         struct inputStreamWithProgress : Streams::InputStreamDelegationHelper<T> {
-            using inherited    = InputStreamDelegationHelper<T>;
+            using inherited    = Streams::InputStreamDelegationHelper<T>;
             using ProgressType = ProgressMonitor::ProgressRangeType;
             inputStreamWithProgress (const Streams::InputStream::Ptr<T>& in, Execution::ProgressMonitor::Updater progress)
-                : InputStreamDelegationHelper{in}
+                : inherited{in}
                 , fProgress_{progress}
                 , fInitialSeek_{in.GetOffset ()}
                 , fHighWaterMark_{fInitialSeek_}
@@ -193,7 +193,7 @@ namespace Stroika::Foundation::Execution {
                 }
                 ProgressType progress =
                     static_cast<ProgressType> (fHighWaterMark_ - fInitialSeek_) / static_cast<ProgressType> (fEstimatedEnd_ - fInitialSeek_);
-                if (progress > fLastProgressSent_) {
+                if (progress > fLastProgressSent_) [[likely]] {
                     fProgress_.SetProgress (progress);
                     fLastProgressSent_ = progress;
                 }
