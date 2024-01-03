@@ -64,6 +64,11 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 Ensure (fData_.end () >= fReadCursor_);
                 return static_cast<size_t> (fData_.end () - fReadCursor_); // no uncertainty about data available in MemoryStream
             }
+            virtual optional<size_t> RemainingLength () override
+            {
+                Ensure (fData_.end () >= fReadCursor_);
+                return static_cast<size_t> (fData_.end () - fReadCursor_);
+            }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (IsOpenRead ());

@@ -77,6 +77,11 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                     return nullopt; // if nothing available, but not closed for write, no idea if more to come
                 }
             }
+            virtual optional<size_t> RemainingLength () override
+            {
+                Require (IsOpenRead ());
+                return nullopt; // pretty easy but @todo
+            }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());

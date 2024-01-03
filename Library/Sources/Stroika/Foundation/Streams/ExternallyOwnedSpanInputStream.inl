@@ -66,6 +66,13 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
                 Ensure (fEnd_ >= fCursor_);
                 return static_cast<size_t> (fEnd_ - fCursor_);
             }
+            virtual optional<size_t> RemainingLength () override
+            {
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Require (IsOpenRead ());
+                Ensure (fEnd_ >= fCursor_);
+                return static_cast<size_t> (fEnd_ - fCursor_);
+            }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());

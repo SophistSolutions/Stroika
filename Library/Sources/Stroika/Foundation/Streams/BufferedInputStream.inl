@@ -49,6 +49,12 @@ namespace Stroika::Foundation::Streams::BufferedInputStream {
                 Require (IsOpenRead ());
                 return fRealIn_.AvailableToRead (); // since no actual buffering here yet
             }
+            virtual optional<size_t> RemainingLength () override
+            {
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Require (IsOpenRead ());
+                return fRealIn_.RemainingLength ();
+            }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};

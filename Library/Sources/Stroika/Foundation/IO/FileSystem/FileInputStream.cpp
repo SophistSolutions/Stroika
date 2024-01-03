@@ -143,6 +143,20 @@ namespace {
             return nullopt;
 #endif
         }
+        virtual optional<size_t> RemainingLength () override
+        {
+            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+            if (fSeekable_ == eSeekable) {
+                auto saved = GetReadOffset ();
+                auto eof   = SeekRead (Whence::eFromEnd, 0);
+                SeekRead (Whence::eFromStart, saved);
+                Ensure (eof >= saved);
+                return eof - saved;
+            }
+            else {
+                return nullopt;
+            }
+        }
         virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (not intoBuffer.empty ());

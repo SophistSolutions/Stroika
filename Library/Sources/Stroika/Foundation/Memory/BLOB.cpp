@@ -235,6 +235,12 @@ namespace {
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 return fEnd - fCur;
             }
+            virtual optional<size_t> RemainingLength () override
+            {
+                AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Require (IsOpenRead ());
+                return fEnd - fCur;
+            }
             virtual optional<span<byte>> Read (span<byte> intoBuffer, [[maybe_unused]] NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());

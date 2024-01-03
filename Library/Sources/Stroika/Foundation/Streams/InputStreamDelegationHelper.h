@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Streams {
         InputStreamDelegationHelper (const typename InputStream::Ptr<ELEMENT_TYPE>& realIn)
             : fRealIn{realIn}
         {
-            RequireNotNull (realIn);    // no point in a wrapping a null pointer!
+            RequireNotNull (realIn); // no point in a wrapping a null pointer!
         }
         // Stream::IRep
         virtual bool IsSeekable () const override
@@ -40,19 +40,23 @@ namespace Stroika::Foundation::Streams {
         }
         virtual bool IsOpenRead () const override
         {
-            fRealIn.IsOpenRead ();
+            return fRealIn.IsOpen ();
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
             return fRealIn.GetOffset ();
         }
-        virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset)
+        virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            return fRealIn.SeekRead (whence, offset);
+            return fRealIn.Seek (whence, offset);
         }
         virtual optional<size_t> AvailableToRead () override
         {
             return fRealIn.AvailableToRead ();
+        }
+        virtual optional<size_t> RemainingLength () override
+        {
+            return fRealIn.RemainingLength ();
         }
         virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
         {

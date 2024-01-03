@@ -54,6 +54,11 @@ namespace {
             }
             return fSrc_.AvailableToRead ();
         }
+        virtual optional<size_t> RemainingLength () override
+        {
+            Require (IsOpenRead ());
+            return nullopt; // possible, but not easy...
+        }
         virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (IsOpenRead ());

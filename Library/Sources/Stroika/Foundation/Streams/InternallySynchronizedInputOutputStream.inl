@@ -58,6 +58,12 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::AvailableToRead ();
             }
+            virtual optional<size_t> RemainingLength () override
+            {
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+                Require (IsOpenRead ());
+                return BASE_REP_TYPE::RemainingLength ();
+            }
             virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 [[maybe_unused]] lock_guard critSec{fCriticalSection_};
@@ -143,6 +149,12 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream 
                 [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
                 return fStream2Wrap.AvailableToRead ();
+            }
+            virtual optional<size_t> RemainingLength () override
+            {
+                [[maybe_unused]] lock_guard critSec{fCriticalSection_};
+                Require (IsOpenRead ());
+                return fStream2Wrap.RemainingLength ();
             }
             virtual size_t Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
             {

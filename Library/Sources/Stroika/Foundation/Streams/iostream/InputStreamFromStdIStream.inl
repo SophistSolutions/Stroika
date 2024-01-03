@@ -62,6 +62,13 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                 }
                 return static_cast<size_t> (sz);
             }
+            virtual optional<size_t> RemainingLength () override
+            {
+                Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+                Require (IsOpenRead ());
+                AssertNotImplemented ();
+                return nullopt; // pretty easy, but @todo
+            }
             virtual optional<span<ELEMENT_TYPE>> Read (span<ELEMENT_TYPE> intoBuffer, NoDataAvailableHandling blockFlag) override
             {
                 Require (not intoBuffer.empty ());

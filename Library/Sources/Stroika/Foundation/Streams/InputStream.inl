@@ -46,6 +46,11 @@ namespace Stroika::Foundation::Streams::InputStream {
         }
     }
     template <typename ELEMENT_TYPE>
+    optional<size_t> InputStream::IRep<ELEMENT_TYPE>::RemainingLength ()
+    {
+        return nullopt;
+    }
+    template <typename ELEMENT_TYPE>
     auto InputStream::IRep<ELEMENT_TYPE>::SeekRead ([[maybe_unused]] Whence whence, [[maybe_unused]] SignedSeekOffsetType offset) -> SeekOffsetType
     {
         AssertNotImplemented (); // never call if not seekable and must override if IsSeekable
@@ -132,6 +137,11 @@ namespace Stroika::Foundation::Streams::InputStream {
     inline auto InputStream::Ptr<ELEMENT_TYPE>::AvailableToRead () const -> optional<size_t>
     {
         return GetRepRWRef ().AvailableToRead ();
+    }
+    template <typename ELEMENT_TYPE>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::RemainingLength () const -> optional<size_t>
+    {
+        return GetRepRWRef ().RemainingLength ();
     }
     template <typename ELEMENT_TYPE>
     inline auto InputStream::Ptr<ELEMENT_TYPE>::Read (NoDataAvailableHandling blockFlag) const -> optional<ElementType>

@@ -146,6 +146,10 @@ namespace {
             }
             return static_cast<size_t> (fOutBufEnd_ > fOutBufStart_);
         }
+        virtual optional<size_t> RemainingLength () override
+        {
+            return nullopt; // generally cannot tell without side-effects on input stream
+        }
         virtual optional<span<ElementType>> Read (span<ElementType> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             /*

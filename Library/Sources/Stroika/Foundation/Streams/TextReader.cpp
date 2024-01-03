@@ -107,6 +107,11 @@ namespace {
             }
             return nullopt; // insufficient binary data known available to form a single character
         }
+        virtual optional<size_t> RemainingLength () override
+        {
+            Require (IsOpenRead ());
+            return nullopt; // possible, but not easy...
+        }
         virtual optional<span<Character>> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             Require (not intoBuffer.empty ());

@@ -181,6 +181,10 @@ namespace {
         {
             return _Available2Read ([this] (bool isEOF) { return DoProcess_ (isEOF); });
         }
+        virtual optional<size_t> RemainingLength () override
+        {
+            return nullopt; // generally cannot tell without side-effects on input stream
+        }
         virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {
             return _Read (intoBuffer, blockFlag, [this] (bool isEOF) { return DoProcess_ (isEOF); });
@@ -206,6 +210,10 @@ namespace {
         virtual optional<size_t> AvailableToRead () override
         {
             return _Available2Read ([this] (bool isEOF) { return DoProcess_ (isEOF); });
+        }
+        virtual optional<size_t> RemainingLength () override
+        {
+            return nullopt; // generally cannot tell without side-effects on input stream
         }
         virtual optional<span<byte>> Read (span<byte> intoBuffer, NoDataAvailableHandling blockFlag) override
         {

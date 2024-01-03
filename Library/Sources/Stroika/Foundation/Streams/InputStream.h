@@ -257,6 +257,12 @@ namespace Stroika::Foundation::Streams::InputStream {
 
     public:
         /**
+         *  \brief returns nullopt if not known (typical, and the default) - but sometimes it is known, and quite helpful)
+         */
+        nonvirtual optional<size_t> RemainingLength () const;
+
+    public:
+        /**
          *  Read/0
          *      return nullopt on EOF, and otherwise return a single element. Read/0 will block if no data available.
          *
@@ -553,6 +559,12 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  Subclassers MUST re-implement this function if not IsSeekable (); and should re-implement for efficiency sake.
          */
         virtual optional<size_t> AvailableToRead ();
+
+    public:
+        /**
+         *  \brief returns nullopt if not known (typical, and the default) - but sometimes it is known, and quite helpful)
+         */
+        virtual optional<size_t> RemainingLength ();
 
     public:
         /**
