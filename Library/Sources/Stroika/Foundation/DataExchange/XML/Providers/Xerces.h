@@ -6,21 +6,10 @@
 
 #include "../../../StroikaPreComp.h"
 
-/**
- *  \def qHasFeature_Xerces
- *      Stroika currently depends on Xerces to provide most XML services/functions./p>
- */
-#ifndef qHasFeature_Xerces
-#error "qHasFeature_Xerces should normally be defined indirectly by StroikaConfig.h"
-#endif
-
 static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerces not set");
-
-#include "../../../Debug/CompileTimeFlagChecker.h"
 
 // avoid namespace conflict with some Xerces code
 #undef Assert
-
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
 #include <xercesc/framework/MemBufFormatTarget.hpp>
@@ -41,15 +30,11 @@ static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerce
 #include <xercesc/validators/common/Grammar.hpp>
 #define Assert(c) AssertExpression (c);
 
-//#include "../../../Characters/String.h"
-#include "IProvider.h"
+#include "../../../Characters/String.h"
+#include "../../../Debug/CompileTimeFlagChecker.h"
+#include "../DOM.h"
 
-// @todo understand why cannot #include on windoze!!!
-//#include "../DOM.h"
-//#include "../Schema.h"
-namespace Stroika::Foundation::Characters {
-    class String;
-}
+#include "IProvider.h"
 
 /**
  *  \file
@@ -128,7 +113,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
         struct MyXercesMemMgr_;
         MyXercesMemMgr_* fUseXercesMemoryManager{nullptr};
     };
-    inline const Provider kDefault;
+    inline const Provider kDefaultProvider;
 
 }
 

@@ -20,12 +20,10 @@ using namespace Stroika::Foundation::DataExchange::XML;
 const XML::Providers::IXMLProvider* XML::Providers::Private_::GetDefaultProvider_ ()
 {
 #if qHasFeature_Xerces
-    return &Xerces::kDefault;
+    return &Xerces::kDefaultProvider;
 #endif
 #if qHasFeature_libxml2
-    return &LibXML2::kDefault;
+    return &LibXML2::kDefaultProvider;
 #endif
-    AssertNotReached ();
-    return static_cast<XML::Providers::IXMLProvider*> (nullptr);
 }
 #endif

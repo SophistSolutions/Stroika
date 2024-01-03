@@ -20,6 +20,7 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::DataExchange::XML::Schema;
+using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Streams;
@@ -46,10 +47,10 @@ namespace {
 #endif
 
 /*
-     *  A helpful class to isolete Xerces (etc) memory management calls. Could be the basis
-     *  of future perfomance/memory optimizations, but for now, just a helpful debugging/tracking
-     *  class.
-     */
+ *  A helpful class to isolete Xerces (etc) memory management calls. Could be the basis
+ *  of future perfomance/memory optimizations, but for now, just a helpful debugging/tracking
+ *  class.
+ */
 struct Provider::MyXercesMemMgr_ : public MemoryManager {
 public:
     MyXercesMemMgr_ ()
@@ -115,7 +116,6 @@ public:
 };
 
 namespace {
-    using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
     struct MySchemaResolver_ : public XMLEntityResolver {
     private:
         Sequence<Schema::SourceComponent> fSourceComponents;
@@ -245,9 +245,6 @@ namespace {
 }
 
 namespace {
-    using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
-
-    // These SHOULD be part of xerces! Perhaps someday post them?
     class StdIStream_InputSource_ : public InputSource {
     protected:
         class StdIStream_InputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
@@ -291,65 +288,6 @@ namespace {
         InputStream::Ptr<byte> fSource;
     };
 
-#if 0
-    // my variations of StdIInputSrc with progresstracker callback
-    class StdIStream_InputSourceWithProgress_ : public StdIStream_InputSource_ {
-    protected:
-        class ISWithProg : public StdIStream_InputSource_::StdIStream_InputStream {
-        public:
-            ISWithProg (const InputStream::Ptr<byte>& in, ProgressMonitor::Updater progressCallback)
-                : StdIStream_InputStream{in}
-                , fProgress_{progressCallback, 0.0f, 1.0f}
-                , fTotalSize_{0.0f}
-            {
-                // @todo - redo for if non-seekable streams - just set flag saying not seeakble and do right thing with progress. ....
-                /// for now we raise exceptions
-                SeekOffsetType start = in.GetOffset ();
-                in.Seek (Whence::eFromEnd, 0);
-                SeekOffsetType totalSize = in.GetOffset ();
-                Assert (start <= totalSize);
-                in.Seek (start);
-                fTotalSize_ = static_cast<float> (totalSize);
-            }
-
-        public:
-            virtual XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
-            {
-                using ProgressRangeType            = ProgressMonitor::ProgressRangeType;
-                ProgressRangeType curOffset        = 0.0;
-                bool              doProgressBefore = (maxToRead > 10 * 1024); // only bother calling both before & after if large read
-                if (fTotalSize_ > 0.0f and doProgressBefore) {
-                    curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
-                    fProgress_.SetProgress (curOffset / fTotalSize_);
-                }
-                XMLSize_t result = fSource.Read (span{reinterpret_cast<byte*> (toFill), maxToRead}).size ();
-                if (fTotalSize_ > 0) {
-                    curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
-                    fProgress_.SetProgress (curOffset / fTotalSize_);
-                }
-                return result;
-            }
-
-        private:
-            ProgressMonitor::Updater fProgress_;
-            float                    fTotalSize_;
-        };
-
-    public:
-        StdIStream_InputSourceWithProgress_ (InputStream::Ptr<byte> in, ProgressMonitor::Updater progressUpdater, const XMLCh* const bufId = nullptr)
-            : StdIStream_InputSource_{in, bufId}
-            , fProgressCallback_{progressUpdater}
-        {
-        }
-        virtual BinInputStream* makeStream () const override
-        {
-            return new (getMemoryManager ()) ISWithProg{fSource, fProgressCallback_};
-        }
-
-    private:
-        ProgressMonitor::Updater fProgressCallback_;
-    };
-#endif
     class SAX2PrintHandlers_ : public DefaultHandler {
     private:
         StructuredStreamEvents::IConsumer& fCallback_;
@@ -396,7 +334,6 @@ namespace {
             fCallback_.TextInsideElement (xercesString2String (chars, chars + length));
         }
     };
-
 }
 
 /*
@@ -502,7 +439,7 @@ String Providers::Xerces::xercesString2String (const XMLCh* t)
 
 /*
  ********************************************************************************
- ***************** XML::Providers::LibXML2::Provider ***************
+ ************************* XML::Providers::LibXML2::Provider ********************
  ********************************************************************************
  */
 Providers::Xerces::Provider::Provider ()
@@ -529,6 +466,7 @@ shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const optio
 {
     return make_shared<SchemaRep_> (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
 }
+
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const String& documentElementName, const optional<URI>& ns) const
 {
     AssertNotImplemented ();
@@ -541,25 +479,20 @@ shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (co
     AssertNotImplemented ();
     return nullptr;
 }
+
 void Providers::Xerces::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
                                             const Schema::Ptr& schema) const
 {
     SAX2PrintHandlers_           handler{callback};
-    shared_ptr<SAX2XMLReader>    parser;
     shared_ptr<IXercesSchemaRep> accessSchema;
     if (schema != nullptr) {
         accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
     }
-    if (accessSchema) {
-        parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ()));
-    }
-    else {
-        parser = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
-    }
+    shared_ptr<SAX2XMLReader> parser{XMLReaderFactory::createXMLReader (
+        XMLPlatformUtils::fgMemoryManager, accessSchema == nullptr ? nullptr : accessSchema->GetCachedGrammarPool ())};
     SetupCommonParserFeatures (*parser, accessSchema != nullptr);
     parser->setContentHandler (&handler);
     Map2StroikaExceptionsErrorReporter mErrorReproter_;
     parser->setErrorHandler (&mErrorReproter_);
-    // constexpr XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e', '\0'};
     parser->parse (StdIStream_InputSource_{in});
 }

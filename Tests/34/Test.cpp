@@ -1419,7 +1419,7 @@ namespace {
         }
 #if qHasFeature_libxml2
         {
-            Schema::Ptr schema = XML::Schema::New (XML::Providers::LibXML2::kDefault,
+            Schema::Ptr schema = XML::Schema::New (XML::Providers::LibXML2::kDefaultProvider,
                                                    IO::Network::URI{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"},
                                                    kReferenceContent_2012_03_xsd);
         }

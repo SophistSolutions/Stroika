@@ -8,11 +8,11 @@
 
 static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libxml2 not set");
 
-#include "../../../Debug/CompileTimeFlagChecker.h"
-#include "../Common.h"
-
 #include <libxml/parser.h>
 #include <libxml/xmlschemas.h>
+
+#include "../../../Debug/CompileTimeFlagChecker.h"
+#include "../Common.h"
 
 #include "IProvider.h"
 
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
         virtual void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
                                const Schema::Ptr& schema) const override;
     };
-    inline const Provider kDefault;
+    inline const Provider kDefaultProvider;
 
 }
 
