@@ -138,6 +138,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\IProvider.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\LibXML2.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.cpp" />
@@ -497,6 +498,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\IProvider.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\LibXML2.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.h" />

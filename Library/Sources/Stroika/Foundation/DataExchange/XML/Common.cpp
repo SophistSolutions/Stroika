@@ -9,7 +9,7 @@
 
 #include "Common.h"
 
-//using std::byte;
+using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
@@ -22,11 +22,6 @@ using namespace Stroika::Foundation::Debug;
 #if qHasFeature_Xerces
 #include "Providers/Xerces.h"
 using namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces;
-#endif
-
-#if qHasFeature_libxml2
-#include "Providers/LibXML2.h"
-using namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2;
 #endif
 
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
@@ -130,30 +125,7 @@ struct DependencyLibraryInitializer::LibXerces {
 };
 #endif
 
-#if qHasFeature_libxml2
-/*
- ********************************************************************************
- ******************* DependencyLibraryInitializer::LibXML2 **********************
- ********************************************************************************
- */
-struct DependencyLibraryInitializer::LibXML2 {
-    MyXercesMemMgr_* fUseXercesMemoryManager;
-    LibXML2 ()
-    {
-        LIBXML_TEST_VERSION;
-    }
-    ~LibXML2 ()
-    {
-        TraceContextBumper ctx{"~LibXML2"};
-        xmlCleanupParser ();
-#if qDebug
-        xmlMemoryDump ();
-#endif
-    }
-};
-#endif
-
-#if qHasFeature_Xerces or qHasFeature_libxml2
+#if qHasFeature_Xerces
 void DependencyLibraryInitializer::UsingProvider_ (Provider p)
 {
     // check outside of lock cuz once set, not unset, and then lock if needed
@@ -163,14 +135,6 @@ void DependencyLibraryInitializer::UsingProvider_ (Provider p)
             [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
             if (not fXERCES) {
                 fXERCES = make_shared<LibXerces> ();
-            }
-        } break;
-#endif
-#if qHasFeature_libxml2
-        case Provider::eLibXml2: {
-            [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
-            if (not fLibXML2) {
-                fLibXML2 = make_shared<LibXML2> ();
             }
         } break;
 #endif

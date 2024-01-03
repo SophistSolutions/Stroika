@@ -24,6 +24,8 @@
 #endif
 #if qHasFeature_libxml2
 #include "Providers/LibXML2.h"
+#include <libxml/parser.h>
+#include <libxml/xmlschemas.h>
 #endif
 
 using std::byte;

@@ -7,6 +7,7 @@
 #include "../../StroikaPreComp.h"
 
 #include <memory>
+#include <mutex>
 
 #include "../../Configuration/Enumeration.h"
 #include "../../Debug/CompileTimeFlagChecker.h"
@@ -96,10 +97,6 @@ namespace Stroika::Foundation::DataExchange::XML {
         struct LibXerces;
         shared_ptr<LibXerces> fXERCES;
 #endif
-#if qHasFeature_libxml2
-        struct LibXML2;
-        shared_ptr<LibXML2> fLibXML2;
-#endif
     public:
         DependencyLibraryInitializer ()                              = default;
         DependencyLibraryInitializer (DependencyLibraryInitializer&) = delete;
@@ -112,11 +109,6 @@ namespace Stroika::Foundation::DataExchange::XML {
             // this can false positive because no lock but we recheck inside UsingProvider_
 #if qHasFeature_Xerces
             if (p == Provider::eXerces and not fXERCES) [[unlikely]] {
-                UsingProvider_ (p);
-            }
-#endif
-#if qHasFeature_libxml2
-            if (p == Provider::eLibXml2 and not fLibXML2) [[unlikely]] {
                 UsingProvider_ (p);
             }
 #endif

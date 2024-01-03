@@ -9,19 +9,11 @@
 static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libxml2 not set");
 
 #include "../Common.h"
-//include libxml2 stuff here
 
 #include <libxml/parser.h>
 #include <libxml/xmlschemas.h>
 
-//#include "../../../Characters/String.h"
-namespace Stroika::Foundation::Characters {
-    class String;
-}
-
-// @todo understand why cannot #include on windoze!!!
-//#include "../DOM.h"
-//#include "../Schema.h"
+#include "IProvider.h"
 
 /**
  *  \file
@@ -43,6 +35,25 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
     struct ILibXML2SchemaRep {
         virtual xmlSchema* GetSchemaLibRep () = 0;
     };
+
+    /**
+     *  Can only be created ONCE (because libxml2 library can only be constructed once). Use the default impl.
+     */
+    struct Provider : Providers::IXMLProvider {
+        Provider ();
+        Provider (const Provider&) = delete;
+        ~Provider ();
+
+        virtual shared_ptr<Schema::IRep>        SchemaFactory (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
+                                                               const Sequence<Schema::SourceComponent>& sourceComponents,
+                                                               const NamespaceDefinitionsList&          namespaceDefinitions) const override;
+        virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const String& documentElementName, const optional<URI>& ns) const override;
+        virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
+                                                                 const Schema::Ptr& schemaToValidateAgainstWhileReading) const override;
+        virtual void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
+                               const Schema::Ptr& schema) const override;
+    };
+    inline const Provider kDefault;
 
 }
 

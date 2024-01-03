@@ -19,6 +19,12 @@
  *  \file
  */
 
+#if qStroika_Foundation_DataExchange_XML_SupportSchema
+namespace Stroika::Foundation::DataExchange::XML::Providers {
+    struct ISchemaProvider;
+};
+#endif
+
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
 namespace Stroika::Foundation::DataExchange::XML::DOM {
     class Ptr;
@@ -115,6 +121,8 @@ namespace Stroika::Foundation::DataExchange::XML {
          *  @todo consider why we have targetNamespace as argument to New () -since it can be and should be parsted out of the document!
          */
         Ptr New (Provider p, const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
+                 const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});
+        Ptr New (const Providers::ISchemaProvider& p, const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
                  const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});
         Ptr New (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
                  const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});

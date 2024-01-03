@@ -10,12 +10,13 @@
 #include "SAXReader.h"
 #include "Schema.h"
 
+#include "Providers/IProvider.h"
+
 #if qHasFeature_Xerces
 #include "Providers/Xerces.h"
 #endif
-#if qHasFeature_libxml2
-#include "Providers/LibXML2.h"
-#endif
+
+using std::byte;
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -174,58 +175,6 @@ namespace {
 }
 #endif
 
-#if qHasFeature_libxml2
-namespace {
-    namespace LibXML2Impl_ {
-        using namespace XML::Providers::LibXML2;
-        struct SchemaRep_ : Schema::IRep, ILibXML2SchemaRep {
-
-            SchemaRep_ (const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
-                        const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
-                : fTargetNamespace{targetNamespace}
-                , fSourceComponents{sourceComponents}
-                , fNamespaceDefinitions{namespaceDefinitions}
-            {
-                if (targetNamespace) {
-                    fSourceComponents.push_back (SourceComponent{.fBLOB = targetNamespaceData, .fNamespace = *targetNamespace});
-                }
-                xmlSchemaParserCtxt* schemaParseContext = xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (targetNamespaceData.data ()),
-                                                                                     static_cast<int> (targetNamespaceData.size ()));
-                fCompiledSchema = xmlSchemaParse (schemaParseContext);
-                xmlSchemaFreeParserCtxt (schemaParseContext);
-                Execution::ThrowIfNull (fCompiledSchema);
-            }
-            SchemaRep_ (const SchemaRep_&) = delete;
-            virtual ~SchemaRep_ ()
-            {
-                xmlSchemaFree (fCompiledSchema);
-            }
-            optional<URI>             fTargetNamespace;
-            Sequence<SourceComponent> fSourceComponents;
-            NamespaceDefinitionsList  fNamespaceDefinitions;
-            xmlSchema*                fCompiledSchema{nullptr};
-
-            virtual optional<URI> GetTargetNamespace () const override
-            {
-                return fTargetNamespace; // should get from READING the schema itself! I THINK --LGP 2023-12-18
-            }
-            virtual NamespaceDefinitionsList GetNamespaceDefinitions () const override
-            {
-                return fNamespaceDefinitions;
-            }
-            virtual Sequence<SourceComponent> GetSourceComponents () override
-            {
-                return fSourceComponents;
-            }
-            virtual xmlSchema* GetSchemaLibRep () override
-            {
-                AssertNotNull (fCompiledSchema);
-                return fCompiledSchema;
-            }
-        };
-    }
-}
-#endif
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
 /*
  ********************************************************************************
@@ -244,7 +193,7 @@ Schema::Ptr Schema::New ([[maybe_unused]] Provider p, const optional<URI>& targe
 #if qHasFeature_libxml2
     if (p == Provider::eLibXml2) {
         DependencyLibraryInitializer::sThe.UsingProvider (Provider::eLibXml2);
-        return Ptr{make_shared<LibXML2Impl_::SchemaRep_> (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions)};
+        return Ptr{Providers::kDefaultProvider ()->SchemaFactory (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions)};
     }
 #endif
     return nullptr;
