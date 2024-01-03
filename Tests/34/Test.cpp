@@ -221,7 +221,7 @@ namespace {
     GTEST_TEST (Foundation_DataExchange_XML, Test_2a_ObjectReader_viaRegistry_)
     {
         TraceContextBumper traceCtx{"Test_2a_ObjectReader_viaRegistry_"};
-        const wstring kNSTest = L"Test-NAMESPACE";
+        const wstring      kNSTest = L"Test-NAMESPACE";
         struct Person_ {
             String           firstName;
             String           lastName;
