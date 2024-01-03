@@ -58,7 +58,11 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
 
 }
 
-///IMPL DETAILS SECTION
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qHasFeature_libxml2, qHasFeature_libxml2);
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Providers_LibXML2_h_*/

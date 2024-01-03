@@ -48,30 +48,11 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
 
     XERCES_CPP_NAMESPACE_USE;
 
-/*
- */
-#define START_LIB_EXCEPTION_MAPPER try {
-#define END_LIB_EXCEPTION_MAPPER                                                                                                           \
-    }                                                                                                                                      \
-    catch (const xercesc_3_2::OutOfMemoryException&)                                                                                       \
-    {                                                                                                                                      \
-        Execution::Throw (bad_alloc{}, "xerces OutOfMemoryException - throwing bad_alloc");                                                \
-    }                                                                                                                                      \
-    catch (...)                                                                                                                            \
-    {                                                                                                                                      \
-        Execution::ReThrow ();                                                                                                             \
-    }
-
     /**
      */
     struct IXercesSchemaRep {
         virtual xercesc_3_2::XMLGrammarPool* GetCachedGrammarPool () = 0;
     };
-
-    /**
-     */
-    void SetupCommonParserFeatures (SAX2XMLReader& reader);
-    void SetupCommonParserFeatures (SAX2XMLReader& reader, bool validatingWithSchema);
 
     /**
      */
@@ -92,8 +73,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
     Characters::String xercesString2String (const XMLCh* t);
 
     /**
-    * &&&todo REDOC/OPTIONS....
-     *  Can only be created ONCE (because libxml2 library can only be constructed once). Use the default impl.
+     *  Can only be created ONCE (because Xerces library can only be initialized once). Use the default impl.
      */
     struct Provider : Providers::IXMLProvider {
         Provider ();
@@ -117,7 +97,11 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
 
 }
 
-///IMPL DETAILS SECTION
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
 CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Providers_Xerces_h_*/

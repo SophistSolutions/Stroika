@@ -17,6 +17,9 @@
 namespace Stroika::Foundation::DataExchange::XML::Schema {
     class Ptr;
 }
+namespace Stroika::Foundation::DataExchange::XML::Providers {
+    struct IDOMProvider;
+};
 
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 
@@ -322,6 +325,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          * @todo add overload taking String 'in' and parse using Streams::TextToByteReader
          */
+        Ptr New (const Providers::IDOMProvider& p, const String& documentElementName, const optional<URI>& ns);
+        Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in);
+        Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReadingr);
+        Ptr New (const Providers::IDOMProvider& p, const String& in);
+        Ptr New (const Providers::IDOMProvider& p, const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
         Ptr New (const String& documentElementName, const optional<URI>& ns);
         Ptr New (const Streams::InputStream::Ptr<byte>& in);
