@@ -8,6 +8,7 @@
 
 static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libxml2 not set");
 
+#include "../../../Debug/CompileTimeFlagChecker.h"
 #include "../Common.h"
 
 #include <libxml/parser.h>
@@ -56,5 +57,8 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
     inline const Provider kDefault;
 
 }
+
+///IMPL DETAILS SECTION
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qHasFeature_libxml2, qHasFeature_libxml2);
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Providers_LibXML2_h_*/

@@ -10,6 +10,7 @@
 #include "../../Execution/ProgressMonitor.h"
 #include "../../Streams/InputStream.h"
 #include "../StructuredStreamEvents/IConsumer.h"
+
 #include "Common.h"
 #include "Schema.h"
 
@@ -17,6 +18,9 @@
  *  \file
  */
 
+namespace Stroika::Foundation::DataExchange::XML::Providers {
+    struct ISAXProvider;
+};
 namespace Stroika::Foundation::DataExchange::XML {
 
     /**
@@ -24,9 +28,9 @@ namespace Stroika::Foundation::DataExchange::XML {
      *
      *  @see ObjectReaderRegistry for examples of one way to use this
      */
-#if qStroika_Foundation_DataExchange_XML_SupportParsing
-    void SAXParse (Provider saxProvider, const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
+    void SAXParse (const Providers::ISAXProvider& saxProvider, const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
                    const Schema::Ptr& schema = nullptr, Execution::ProgressMonitor::Updater progress = nullptr);
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
     void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
                    const Schema::Ptr& schema = nullptr, Execution::ProgressMonitor::Updater progress = nullptr);
 #endif

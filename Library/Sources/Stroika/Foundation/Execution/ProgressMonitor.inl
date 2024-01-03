@@ -14,6 +14,7 @@
 #include "../Debug/Assertions.h"
 #include "../Math/Common.h"
 #include "../Memory/BlockAllocated.h"
+#include "../Streams/InputStreamDelegationHelper.h"
 
 #include "Common.h"
 #include "Synchronized.h"
@@ -159,6 +160,53 @@ namespace Stroika::Foundation::Execution {
             SetProgress (currentProgress);
             ThrowIfCanceled ();
         }
+    }
+
+    /*
+     ********************************************************************************
+     ************************ MakeInputStreamWithProgress ***************************
+     ********************************************************************************
+     */
+    template <typename T>
+    Streams::InputStream::Ptr<T> MakeInputStreamWithProgress (const Streams::InputStream::Ptr<T>& in, ProgressMonitor::Updater progress)
+    {
+        struct inputStreamWithProgress : Streams::InputStreamDelegationHelper<T> {
+            using inherited    = InputStreamDelegationHelper<T>;
+            using ProgressType = ProgressMonitor::ProgressRangeType;
+            inputStreamWithProgress (const Streams::InputStream::Ptr<T>& in, Execution::ProgressMonitor::Updater progress)
+                : InputStreamDelegationHelper{in}
+                , fProgress_{progress}
+                , fInitialSeek_{in.GetOffset ()}
+                , fHighWaterMark_{fInitialSeek_}
+                , fKnownEnd_{in.RemainingLength ()}
+                , fEstimatedEnd_{static_cast<ProgressType> (fKnownEnd_.value_or (fInitialSeek_ + 1024))} // exponentially grow if we ever exceed
+            {
+            }
+            // Intentionally ignore Seek, because that could be used to estimate total file size and anything contributing to progress must be an actual READ
+            virtual optional<span<T>> Read (span<T> intoBuffer, Streams::NoDataAvailableHandling blockFlag) override
+            {
+                auto                    r      = inherited::fRealIn.Read (intoBuffer, blockFlag);
+                Streams::SeekOffsetType curOff = inherited::fRealIn.GetOffset ();
+                fHighWaterMark_                = max (curOff, fHighWaterMark_);
+                if (not fKnownEnd_ and curOff > 0.75 * fEstimatedEnd_) {
+                    fEstimatedEnd_ *= 1.5;
+                }
+                ProgressType progress =
+                    static_cast<ProgressType> (fHighWaterMark_ - fInitialSeek_) / static_cast<ProgressType> (fEstimatedEnd_ - fInitialSeek_);
+                if (progress > fLastProgressSent_) {
+                    fProgress_.SetProgress (progress);
+                    fLastProgressSent_ = progress;
+                }
+                return r;
+            }
+            ProgressMonitor::Updater          fProgress_;
+            Streams::SeekOffsetType           fInitialSeek_;
+            Streams::SeekOffsetType           fHighWaterMark_;
+            optional<Streams::SeekOffsetType> fKnownEnd_;
+            ProgressType                      fEstimatedEnd_;
+            ProgressType                      fLastProgressSent_{0};
+        };
+        return Streams::InputStream::Ptr<T>{make_shared<inputStreamWithProgress> (in, progress)};
     }
 
 }

@@ -6,11 +6,17 @@
 
 #include "../../../StroikaPreComp.h"
 
+/**
+ *  \def qHasFeature_Xerces
+ *      Stroika currently depends on Xerces to provide most XML services/functions./p>
+ */
+#ifndef qHasFeature_Xerces
+#error "qHasFeature_Xerces should normally be defined indirectly by StroikaConfig.h"
+#endif
+
 static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerces not set");
 
-// // Not sure if we want this defined HERE or in the MAKEFILE/PROJECT FILE
-// #define XML_LIBRARY 1
-// #define XERCES_STATIC_LIBRARY 1
+#include "../../../Debug/CompileTimeFlagChecker.h"
 
 // avoid namespace conflict with some Xerces code
 #undef Assert
@@ -36,6 +42,7 @@ static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerce
 #define Assert(c) AssertExpression (c);
 
 //#include "../../../Characters/String.h"
+#include "IProvider.h"
 
 // @todo understand why cannot #include on windoze!!!
 //#include "../DOM.h"
@@ -99,6 +106,33 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
     Characters::String xercesString2String (const XMLCh* s, const XMLCh* e);
     Characters::String xercesString2String (const XMLCh* t);
 
+    /**
+    * &&&todo REDOC/OPTIONS....
+     *  Can only be created ONCE (because libxml2 library can only be constructed once). Use the default impl.
+     */
+    struct Provider : Providers::IXMLProvider {
+        Provider ();
+        Provider (const Provider&) = delete;
+        ~Provider ();
+
+        virtual shared_ptr<Schema::IRep>        SchemaFactory (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
+                                                               const Sequence<Schema::SourceComponent>& sourceComponents,
+                                                               const NamespaceDefinitionsList&          namespaceDefinitions) const override;
+        virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const String& documentElementName, const optional<URI>& ns) const override;
+        virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
+                                                                 const Schema::Ptr& schemaToValidateAgainstWhileReading) const override;
+        virtual void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
+                               const Schema::Ptr& schema) const override;
+
+    private:
+        struct MyXercesMemMgr_;
+        MyXercesMemMgr_* fUseXercesMemoryManager{nullptr};
+    };
+    inline const Provider kDefault;
+
 }
+
+///IMPL DETAILS SECTION
+CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Providers_Xerces_h_*/

@@ -13,6 +13,7 @@
 #include "../Containers/Sequence.h"
 #include "../DataExchange/VariantValue.h"
 #include "../Execution/Function.h"
+#include "../Streams/InputStream.h"
 #include "Thread.h"
 
 /**
@@ -280,6 +281,12 @@ namespace Stroika::Foundation::Execution {
         ~Updater ();
 
     public:
+        bool operator== (const nullptr_t) const
+        {
+            return fRep_ == nullptr;
+        }
+
+    public:
         /**
          *  Progress is a number 0..1. However, if outside that range, it will be silently pinned to be in that range (so
          *  caller need not check/be careful).
@@ -323,6 +330,13 @@ namespace Stroika::Foundation::Execution {
         ProgressRangeType         fToProg_{1.0};
         optional<CurrentTaskInfo> fRestoreTaskInfo_;
     };
+
+    /**
+     *  Take an input-stream object, and produce another identical, except that it updates the argument progress updater object.
+     *  Note this works better if the argument 'in' supports RemainingLength, but guesses otherwise.
+     */
+    template <typename T>
+    Streams::InputStream::Ptr<T> MakeInputStreamWithProgress (const Streams::InputStream::Ptr<T>& in, ProgressMonitor::Updater progress);
 
 }
 

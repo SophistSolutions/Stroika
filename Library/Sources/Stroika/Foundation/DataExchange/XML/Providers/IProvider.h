@@ -51,14 +51,18 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
     };
     struct IXMLProvider : ISchemaProvider, IDOMProvider, ISAXProvider {};
 
+#if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
     namespace Private_ {
         const IXMLProvider* GetDefaultProvider_ ();
     }
+#endif
 
     /**
      *  Provided as a property so can be ...??? so used before main - and still destroyed properly... without forcing include of libxml2/xerces stuff
      */
+#if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
     inline const Foundation::Common::ConstantProperty<const IXMLProvider*> kDefaultProvider{Private_::GetDefaultProvider_};
+#endif
 
 }
 

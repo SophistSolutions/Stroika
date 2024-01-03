@@ -23,6 +23,10 @@
 #include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Time/Realtime.h"
 
+#if qHasFeature_libxml2
+#include "Stroika/Foundation/DataExchange/XML/Providers/LibXML2.h"
+#endif
+
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
 namespace Resources_ {
@@ -1415,8 +1419,7 @@ namespace {
         }
 #if qHasFeature_libxml2
         {
-            // play with limxml2
-            Schema::Ptr schema = XML::Schema::New (XML::Provider::eLibXml2,
+            Schema::Ptr schema = XML::Schema::New (XML::Providers::LibXML2::kDefault,
                                                    IO::Network::URI{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"},
                                                    kReferenceContent_2012_03_xsd);
         }

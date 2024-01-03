@@ -999,20 +999,30 @@ namespace {
  */
 Document::Ptr Document::New (const String& documentElementName, const optional<URI>& ns)
 {
-    DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
+    //  DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
     using namespace XercesImpl_;
     auto p = make_shared<XercesDocRep_> ();
     p->CreateDocumentElement (documentElementName, ns); // @todo change this to CTOR arg overload - not method
     return Ptr{p};
 }
 
+Document::Ptr Document::New (const Streams::InputStream::Ptr<byte>& in)
+{
+    return New (in, nullptr);
+}
+
 Document::Ptr Document::New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema)
 {
-    DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
+    // DependencyLibraryInitializer::sThe.UsingProvider (Provider::eXerces);
     using namespace XercesImpl_;
     Ptr p{make_shared<XercesDocRep_> ()};
     p.GetRep ()->Read (in, schema);
     return p;
+}
+
+Document::Ptr Document::New (const String& in)
+{
+    return New (Streams::TextToByteReader::New (in), nullptr);
 }
 
 Document::Ptr Document::New (const String& in, const Schema::Ptr& schema)
@@ -1020,3 +1030,10 @@ Document::Ptr Document::New (const String& in, const Schema::Ptr& schema)
     return New (Streams::TextToByteReader::New (in), schema);
 }
 #endif
+
+void Document::Ptr::Validate (const Schema::Ptr& schema) const
+{
+    RequireNotNull (schema);
+    RequireNotNull (fRep_);
+    fRep_->Validate (schema);
+}

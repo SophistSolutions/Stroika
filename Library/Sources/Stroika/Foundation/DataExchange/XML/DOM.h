@@ -13,9 +13,11 @@
 #include "../BadFormatException.h"
 
 #include "Namespace.h"
-#include "Schema.h"
 
-#if qStroika_Foundation_DataExchange_XML_SupportDOM
+namespace Stroika::Foundation::DataExchange::XML::Schema {
+    class Ptr;
+}
+
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     using DataExchange::BadFormatException;
@@ -320,9 +322,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          * @todo add overload taking String 'in' and parse using Streams::TextToByteReader
          */
+#if qStroika_Foundation_DataExchange_XML_SupportDOM
         Ptr New (const String& documentElementName, const optional<URI>& ns);
-        Ptr New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr);
-        Ptr New (const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading = nullptr);
+        Ptr New (const Streams::InputStream::Ptr<byte>& in);
+        Ptr New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReadingr);
+        Ptr New (const String& in);
+        Ptr New (const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
+#endif
 
         /**
          */
@@ -335,8 +341,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         };
     }
 
-};
-#endif
+}
 
 /*
  ********************************************************************************

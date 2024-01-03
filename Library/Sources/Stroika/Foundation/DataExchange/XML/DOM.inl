@@ -180,12 +180,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         }
         return nullptr;
     }
-    inline void Document::Ptr::Validate (const Schema::Ptr& schema) const
-    {
-        RequireNotNull (schema);
-        RequireNotNull (fRep_);
-        fRep_->Validate (schema);
-    }
 
 }
 #endif

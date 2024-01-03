@@ -6,29 +6,13 @@
 
 #include "../../StroikaPreComp.h"
 
-#include <memory>
-#include <mutex>
-
-#include "../../Configuration/Enumeration.h"
-#include "../../Debug/CompileTimeFlagChecker.h"
-
 /**
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
-/**
- *  \def qHasFeature_Xerces
- *      Stroika currently depends on Xerces to provide most XML services/functions./p>
- */
-#ifndef qHasFeature_Xerces
-#error "qHasFeature_Xerces should normally be defined indirectly by StroikaConfig.h"
-#endif
-
 namespace Stroika::Foundation::DataExchange::XML {
-
-    using namespace std;
 
 /**
  *  As of Stroika v3.0d4, we only support XML DOM if Xerces is builtin (could use libxml2 as well in the future).
@@ -65,71 +49,5 @@ namespace Stroika::Foundation::DataExchange::XML {
 #define qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations qDebug
 #endif
 
-    /**
-        @todo add DefaultNames suport and range (begin/end bounds) and add ifdefs for ef each of these values around.
-    
-    */
-    enum class Provider {
-#if qHasFeature_Xerces
-        eXerces,
-#endif
-#if qHasFeature_libxml2
-        eLibXml2,
-#endif
-
-#if qHasFeature_Xerces and qHasFeature_libxml2
-        Stroika_Define_Enum_Bounds (eXerces, eLibXml2)
-#elif qHasFeature_Xerces
-        Stroika_Define_Enum_Bounds (eXerces, eXerces)
-#elif qHasFeature_libxml2
-        Stroika_Define_Enum_Bounds (eLibXml2, eLibXml2)
-#endif
-    };
-
-    /*
-     * Automatically manage initialization of dependent libraries by any code which includes this module
-     */
-#if qHasFeature_Xerces or qHasFeature_libxml2
-    struct DependencyLibraryInitializer {
-    private:
-        mutex fMutex_;
-#if qHasFeature_Xerces
-        struct LibXerces;
-        shared_ptr<LibXerces> fXERCES;
-#endif
-    public:
-        DependencyLibraryInitializer ()                              = default;
-        DependencyLibraryInitializer (DependencyLibraryInitializer&) = delete;
-        ~DependencyLibraryInitializer ()                             = default;
-
-    public:
-        void UsingProvider (Provider p)
-        {
-            // check outside of lock cuz once set, not unset, and then lock if needed
-            // this can false positive because no lock but we recheck inside UsingProvider_
-#if qHasFeature_Xerces
-            if (p == Provider::eXerces and not fXERCES) [[unlikely]] {
-                UsingProvider_ (p);
-            }
-#endif
-        }
-
-    private:
-        void UsingProvider_ (Provider p);
-
-    public:
-        static DependencyLibraryInitializer sThe;
-    };
-    inline DependencyLibraryInitializer DependencyLibraryInitializer::sThe;
-#endif
-
-    // Expose private details for regression testing
-    namespace Private {
-        size_t GetNetAllocationCount ();
-        size_t GetNetAllocatedByteCount ();
-    }
 }
-CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qHasFeature_Xerces, qHasFeature_Xerces);
-CompileTimeFlagChecker_HEADER (Stroika::Foundation::DataExchange::XML, qHasFeature_libxml2, qHasFeature_libxml2);
-
 #endif /*_Stroika_Foundation_DataExchange_XML_Common_h_*/

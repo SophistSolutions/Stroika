@@ -8,7 +8,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if qStroika_Foundation_DataExchange_XML_SupportSchema
+
+#include "Providers/IProvider.h"
+
 namespace Stroika::Foundation::DataExchange::XML::Schema {
 
     /*
@@ -40,23 +42,6 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
         return fRep_;
     }
 
-    /*
-     ********************************************************************************
-     ********************************* Schema::New **********************************
-     ********************************************************************************
-     */
-    inline Ptr New (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
-                    const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
-    {
-#if qHasFeature_Xerces
-        constexpr Provider kDefaultProvider_ = Provider::eXerces;
-#elif qHasFeature_libxml2
-        constexpr Provider kDefaultProvider_ = Provider::eLibXml2;
-#endif
-        return New (kDefaultProvider_, targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
-    }
-
 }
-#endif
 
 #endif
