@@ -53,9 +53,10 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
      *  But mostly, used for internal private data, and that is captured with dynamic_cast, but privately internally
      */
     struct IRep {
-        virtual optional<URI>             GetTargetNamespace () const      = 0;
-        virtual NamespaceDefinitionsList  GetNamespaceDefinitions () const = 0;
-        virtual Sequence<SourceComponent> GetSourceComponents ()           = 0;
+        virtual const Providers::ISchemaProvider* GetProvider () const             = 0;
+        virtual optional<URI>                     GetTargetNamespace () const      = 0;
+        virtual NamespaceDefinitionsList          GetNamespaceDefinitions () const = 0;
+        virtual Sequence<SourceComponent>         GetSourceComponents ()           = 0;
     };
 
     /**

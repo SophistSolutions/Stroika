@@ -384,8 +384,8 @@ namespace {
                 registry, make_shared<ObjectReader::ReadDownToReader> (make_shared<ObjectReader::RepeatedElementReader<vector<Person_>>> (&people),
                                                                        Name{"envelope2"}, Name{"WithWhom"})};
             DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+                people.clear (); // cuz run multiple times
                 saxParser (mkdata_ (), &ctx, nullptr);
-
                 EXPECT_TRUE (people.size () == 2);
                 EXPECT_TRUE (people[0].firstName == "Jim");
                 EXPECT_TRUE (people[0].lastName == "Smith");
@@ -395,7 +395,7 @@ namespace {
         }
 
         DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
-            vector<Person_> people2; // add the vector type to the registry instead of explicitly constructing the right reader
+            vector<Person_>        people2; // add the vector type to the registry instead of explicitly constructing the right reader
             ObjectReader::Registry newRegistry = registry;
             newRegistry.AddCommonType<vector<Person_>> (Name{"WithWhom"});
             ObjectReader::IConsumerDelegateToContext ctx{
@@ -404,7 +404,7 @@ namespace {
             EXPECT_TRUE (people2 == people);
         });
         DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
-            Sequence<Person_> people3; // use sequence instead of vector
+            Sequence<Person_>      people3; // use sequence instead of vector
             ObjectReader::Registry newRegistry = registry;
             newRegistry.AddCommonType<Sequence<Person_>> (Name{"WithWhom"});
             ObjectReader::IConsumerDelegateToContext ctx{

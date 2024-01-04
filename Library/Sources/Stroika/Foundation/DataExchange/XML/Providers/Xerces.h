@@ -41,7 +41,9 @@ static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerce
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  * 
- *      \note - Generally most code should NOT include this file - its implemeantion specific data for each provider and just included in implemtatniosn of DOM etc code
+ *  \note - Generally most code should NOT include this file - its implementation specific data for each provider
+ *          Mostly use to control which implementation you are using for SAX, Schema etc, and/or to access implementation-specific objects
+ *          from schema, DOM nodes, etc.
  */
 
 namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {

@@ -27,11 +27,6 @@ static_assert (qHasFeature_libxml2, "Don't compile this file if qHasFeature_libx
 
 CompileTimeFlagChecker_SOURCE (Stroika::Foundation::DataExchange::XML, qHasFeature_libxml2, qHasFeature_libxml2);
 
-using namespace Stroika::Foundation::DataExchange::XML;
-using namespace Providers::LibXML2;
-
-using namespace XML::Providers::LibXML2;
-
 #if qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
 namespace {
     inline std::u16string clang_string_BWA_ (const char16_t* a, const char16_t* b)
@@ -68,6 +63,10 @@ namespace {
         NamespaceDefinitionsList  fNamespaceDefinitions;
         xmlSchema*                fCompiledSchema{nullptr};
 
+        virtual const Providers::ISchemaProvider* GetProvider () const
+        {
+            return &XML::Providers::LibXML2::kDefaultProvider;
+        }
         virtual optional<URI> GetTargetNamespace () const override
         {
             return fTargetNamespace; // should get from READING the schema itself! I THINK --LGP 2023-12-18
@@ -171,6 +170,10 @@ String Providers::LibXML2::libXMLString2String (const xmlChar* t)
 Providers::LibXML2::Provider::Provider ()
 {
     TraceContextBumper ctx{"LibXML2::Provider::CTOR"};
+#if qDebug
+    static unsigned int sNProvidersCreated_{0}; // don't create multiple of these - will lead to confusion
+    Assert (++sNProvidersCreated_ == 1);
+#endif
     LIBXML_TEST_VERSION;
 }
 
@@ -235,8 +238,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         byte                    buf[1024];
         while (auto n = in.Read (span{buf}).size ()) {
             if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-                xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but trnaslate to throw
-                                                        // return 1;
+                xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but translate to throw
             }
         }
         xmlParseChunk (ctxt, nullptr, 0, 1);

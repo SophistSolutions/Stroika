@@ -303,6 +303,10 @@ namespace {
         xercesc_3_2::XMLGrammarPool*        fCachedGrammarPool{nullptr};
         Map2StroikaExceptionsErrorReporter_ fErrorReporter_;
 
+        virtual const Providers::ISchemaProvider* GetProvider () const
+        {
+            return &XML::Providers::Xerces::kDefaultProvider;
+        }
         virtual optional<URI> GetTargetNamespace () const override
         {
             return fTargetNamespace; // should get from READING the schema itself! I THINK --LGP 2023-12-18
@@ -1373,6 +1377,10 @@ String Providers::Xerces::xercesString2String (const XMLCh* t)
 Providers::Xerces::Provider::Provider ()
 {
     TraceContextBumper ctx{"Xerces::Provider::CTOR"};
+#if qDebug
+    static unsigned int sNProvidersCreated_{0}; // don't create multiple of these - will lead to confusion
+    Assert (++sNProvidersCreated_ == 1);
+#endif
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
     fUseXercesMemoryManager = new MyXercesMemMgr_{};
 #endif

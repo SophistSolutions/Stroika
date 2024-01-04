@@ -19,7 +19,7 @@
  *  Generally ignore this file/module unless you need to control which XML provider you are using
  *  and/or to access internal representations from one of these providers.
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>  --- not yet...
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation::DataExchange::XML::Providers {
@@ -31,20 +31,19 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
         virtual ~IProvider () = default;
     };
 
-    // @todo FACTORIES for DOMNodes, Schema reps, etc - all with make_shared
-    struct ISchemaProvider : public IProvider {
+    struct ISchemaProvider : public virtual IProvider {
         virtual ~ISchemaProvider ()                                                                                 = default;
         virtual shared_ptr<Schema::IRep> SchemaFactory (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
                                                         const Sequence<Schema::SourceComponent>& sourceComponents,
                                                         const NamespaceDefinitionsList&          namespaceDefinitions) const = 0;
     };
-    struct IDOMProvider : public IProvider {
+    struct IDOMProvider : public virtual IProvider {
         virtual ~IDOMProvider () = default;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const String& documentElementName, const optional<URI>& ns) const = 0;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                  const Schema::Ptr& schemaToValidateAgainstWhileReading) const     = 0;
     };
-    struct ISAXProvider : public IProvider {
+    struct ISAXProvider : public virtual IProvider {
         virtual ~ISAXProvider ()                                = default;
         virtual void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                                const Schema::Ptr& schema) const = 0;

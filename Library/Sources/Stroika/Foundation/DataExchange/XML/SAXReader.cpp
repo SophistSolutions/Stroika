@@ -46,6 +46,7 @@ void XML::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamE
 void XML::SAXParse (const Providers::ISAXProvider& saxProvider, const Streams::InputStream::Ptr<byte>& in,
                     StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema, Execution::ProgressMonitor::Updater progress)
 {
+    Require (schema == nullptr or static_cast<const Providers::IProvider*> (schema.GetRep ()->GetProvider ()) == &saxProvider);
     if (progress == nullptr) {
         saxProvider.SAXParse (in, callback, schema);
     }
