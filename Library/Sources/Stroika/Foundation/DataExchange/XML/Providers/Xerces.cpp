@@ -824,15 +824,15 @@ namespace {
                 DOMElement* element = dynamic_cast<DOMElement*> (fNode_);
                 ThrowIfNull (element);
                 /*
-                     * For reasons that elude maybe (maybe because it was standard for XML early on)
-                     * all my attributes are free of namespaces. So why use setAttributeNS? Because otherwise
-                     * the XQilla code fails to match on the attribute names at all in its XPath stuff.
-                     * Considered copying the namespace from the parent element (fNode_->getNamespaceURI()),
-                     * but XQilla didnt like that either (maybe then I needed M: on xpath).
-                     * A differnt subclass object of DOMAttrNode is created - one that doesnt have a getLocalName,
-                     * or something like that. Anyhow - this appears to do the right thing for now...
-                     *      -- LGP 2007-06-13
-                     */
+                 * For reasons that elude maybe (maybe because it was standard for XML early on)
+                 * all my attributes are free of namespaces. So why use setAttributeNS? Because otherwise
+                 * the XQilla code fails to match on the attribute names at all in its XPath stuff.
+                 * Considered copying the namespace from the parent element (fNode_->getNamespaceURI()),
+                 * but XQilla didnt like that either (maybe then I needed M: on xpath).
+                 * A differnt subclass object of DOMAttrNode is created - one that doesnt have a getLocalName,
+                 * or something like that. Anyhow - this appears to do the right thing for now...
+                 *      -- LGP 2007-06-13
+                 */
                 element->setAttributeNS (nullptr, attrName.As<u16string> ().c_str (), v.As<u16string> ().c_str ());
             }
             END_LIB_EXCEPTION_MAPPER_
@@ -1121,22 +1121,22 @@ namespace {
                 else {
                     (void)fXMLDoc->replaceChild (n, oldRoot);
                     /*
-                         * I THOGUHT this was a memory leak, but that appears to have been wrong. First, the
-                         * DOMNode objects get associated with the document, and when the docment is destroyed
-                         * this is cleaned up. Secondly, there are enough other memory leaks - its unclear if this
-                         * actually helped. Plus the memory management pattern used by Xerces - with its own subchunking etc,
-                         * makes it hard to tell.
-                         *
-                         * More importantly - this caused a regression in HelathFrame - which I didn't debug. The OHSD reports
-                         * like AAFP CCR report - will be rejected by our 'valid HTML' tester. Unclear if thats cuz we generate
-                         * different HTML, but more likely a bug with the load/checker code. Still - not worth worrying
-                         * about why at this stage (especially as we are about to upgrade our Xerces version - could get fixed
-                         * by that?).
-                         *
-                         *      -- LGP 2009-05-15
-                         *
-                         *          oldRoot->release ();
-                         */
+                     * I THOGUHT this was a memory leak, but that appears to have been wrong. First, the
+                     * DOMNode objects get associated with the document, and when the docment is destroyed
+                     * this is cleaned up. Secondly, there are enough other memory leaks - its unclear if this
+                     * actually helped. Plus the memory management pattern used by Xerces - with its own subchunking etc,
+                     * makes it hard to tell.
+                     *
+                     * More importantly - this caused a regression in HelathFrame - which I didn't debug. The OHSD reports
+                     * like AAFP CCR report - will be rejected by our 'valid HTML' tester. Unclear if thats cuz we generate
+                     * different HTML, but more likely a bug with the load/checker code. Still - not worth worrying
+                     * about why at this stage (especially as we are about to upgrade our Xerces version - could get fixed
+                     * by that?).
+                     *
+                     *      -- LGP 2009-05-15
+                     *
+                     *          oldRoot->release ();
+                     */
                 }
                 Assert (fXMLDoc->getDocumentElement () == n);
             }
