@@ -3,6 +3,7 @@
  */
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Characters/CString/Utilities.h"
 #include "../../../Characters/String.h"
 #include "../../../DataExchange/BadFormatException.h"
 #include "../../../Debug/Trace.h"
@@ -208,11 +209,34 @@ namespace {
             Require (schema.GetRep ()->GetProvider () == &XML::Providers::LibXML2::kDefaultProvider);
             xmlSchema* libxml2Schema = dynamic_pointer_cast<ILibXML2SchemaRep> (schema.GetRep ())->GetSchemaLibRep ();
             RequireNotNull (libxml2Schema);
-            xmlSchemaValidCtxtPtr           validateCtx = xmlSchemaNewValidCtxt (libxml2Schema);
-            [[maybe_unused]] auto&&         cleanup     = Execution::Finally ([&] () noexcept { xmlSchemaFreeValidCtxt (validateCtx); });
-            int                             a           = xmlSchemaValidateDoc (validateCtx, fLibRep_);
-
-            // todo check result and map error messages
+            xmlSchemaValidCtxtPtr   validateCtx = xmlSchemaNewValidCtxt (libxml2Schema);
+            [[maybe_unused]] auto&& cleanup     = Execution::Finally ([&] () noexcept { xmlSchemaFreeValidCtxt (validateCtx); });
+            struct ValCB_ {
+                static void warnFun ([[maybe_unused]] void* ctx, [[maybe_unused]] const char* msg, ...)
+                {
+                    // ignored for now
+                }
+                static void errFun (void* ctx, const char* msg, ...)
+                {
+                    // Keep first error - and guess NarrowSDK2Wide does right charset mapping
+                    auto    useCtx = reinterpret_cast<ValCB_*> (ctx);
+                    if (useCtx->msg.empty ()) {
+                        va_list argsList;
+                        va_start (argsList, msg);
+                        auto b = Characters::CString::FormatV (msg, argsList);
+                        va_end (argsList);
+                        useCtx->msg = String{"Failed schema validation: "_k + NarrowSDK2Wide (b, Characters::eIgnoreErrors)}.Trim ();
+                    }
+                }
+                String msg;
+            };
+            ValCB_ validationCB;
+            xmlSchemaSetValidErrors (validateCtx, &ValCB_::errFun, &ValCB_::warnFun, &validationCB);
+            int r = xmlSchemaValidateDoc (validateCtx, fLibRep_);
+            if (r != 0) {
+                Assert (not validationCB.msg.empty ()); // guessing we only get validation error if error callback called?
+                Execution::Throw (BadFormatException{validationCB.msg});
+            }
         }
         xmlDoc*                                                        fLibRep_{nullptr};
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
@@ -282,8 +306,8 @@ shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (c
 void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                                              const Schema::Ptr& schema) const
 {
-    Streams::InputStream::Ptr<byte> useInput = in;
-    optional<Streams::SeekOffsetType>        seek2;
+    Streams::InputStream::Ptr<byte>   useInput = in;
+    optional<Streams::SeekOffsetType> seek2;
     if (schema != nullptr and callback != nullptr) {
         // at least for now this is needed - cuz we read twice - maybe can fix...
         useInput = Streams::ToSeekableInputStream::New (in);

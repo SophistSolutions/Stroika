@@ -64,6 +64,7 @@ using Containers::Sequence;
 using Containers::Set;
 using Containers::SortedMapping;
 using Debug::TraceContextBumper;
+using Memory::BLOB;
 
 #if qHasFeature_GoogleTest
 namespace {
@@ -86,18 +87,30 @@ namespace {
     template <typename REPEAT_TEST>
     void DoWithEachSAXParser_ (REPEAT_TEST&& test)
     {
-        test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema) {
-            XML::SAXParse (in, callback, schema);
-        });
+        using SourceComponent = XML::Schema::SourceComponent;
+        test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
+                  const Schema::Ptr& schema) { XML::SAXParse (in, callback, schema); },
+              [] (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents,
+                  const NamespaceDefinitionsList& namespaceDefinitions) {
+                  return XML::Schema::New (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
+              });
 #if qHasFeature_libxml2
-        test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema) {
-            XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, in, callback, schema);
-        });
+        test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
+                  const Schema::Ptr& schema) { XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, in, callback, schema); },
+              [] (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents,
+                  const NamespaceDefinitionsList& namespaceDefinitions) {
+                  return XML::Schema::New (XML::Providers::LibXML2::kDefaultProvider, targetNamespace, targetNamespaceData,
+                                           sourceComponents, namespaceDefinitions);
+              });
 #endif
 #if qHasFeature_Xerces
-        test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema) {
-            XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, in, callback, schema);
-        });
+        test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
+                  const Schema::Ptr& schema) { XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, in, callback, schema); },
+              [] (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents,
+                  const NamespaceDefinitionsList& namespaceDefinitions) {
+                  return XML::Schema::New (XML::Providers::Xerces::kDefaultProvider, targetNamespace, targetNamespaceData, sourceComponents,
+                                           namespaceDefinitions);
+              });
 #endif
     }
 }
@@ -183,7 +196,7 @@ namespace {
         };
         stringstream tmpStrm;
         WriteTextStream_ (newDocXML, tmpStrm);
-        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+        DoWithEachSAXParser_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory) {
             tmpStrm.clear ();
             tmpStrm.seekg (0);
             MyCallback myCallback;
@@ -220,7 +233,7 @@ namespace {
             unsigned int   fEltDepthCount;
             vector<String> fEltStack;
         };
-        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+        DoWithEachSAXParser_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory) {
             MyCallback myCallback;
             saxParser (kHealthFrameWorks_v3_xml, &myCallback, nullptr);
         });
@@ -233,22 +246,21 @@ namespace {
         const Memory::BLOB kCCR_XSD_     = Memory::BLOB::Attach (Resources_::TestFiles_ASTM_CCR_V1_xsd);
         const Memory::BLOB kSampleCCR_   = Memory::BLOB::Attach (Resources_::TestFiles_SampleCCR_ccr);
 
-        {
-            Schema::Ptr personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
-            XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr, personalSchema);
-        }
-        {
-            Schema::Ptr                       ccrSchema = XML::Schema::New (nullopt, kCCR_XSD_);
+        DoWithEachSAXParser_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory) {
+            Schema::Ptr personalSchema = schemaFactory (nullopt, kPersonalXSD_, {}, {});
+            saxParser (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr, personalSchema);
+        });
+        DoWithEachSAXParser_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory) {
+            Schema::Ptr ccrSchema = schemaFactory (nullopt, kCCR_XSD_, {}, {});
+            saxParser (kSampleCCR_.As<InputStream::Ptr<byte>> (), nullptr, ccrSchema);
+        });
+        DoWithEachSAXParser_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory) {
+            Schema::Ptr                       personalSchema = schemaFactory (nullopt, kPersonalXSD_, {}, {});
+            Schema::Ptr                       ccrSchema      = schemaFactory (nullopt, kCCR_XSD_, {}, {});
             StructuredStreamEvents::IConsumer ignoreData;
-            XML::SAXParse (kSampleCCR_.As<InputStream::Ptr<byte>> (), nullptr, ccrSchema);
-        }
-        {
-            Schema::Ptr                       personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
-            Schema::Ptr                       ccrSchema      = XML::Schema::New (nullopt, kCCR_XSD_);
-            StructuredStreamEvents::IConsumer ignoreData;
-            EXPECT_THROW (XML::SAXParse (kSampleCCR_.As<InputStream::Ptr<byte>> (), nullptr, personalSchema), BadFormatException);
-            EXPECT_THROW (XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr, ccrSchema), BadFormatException);
-        }
+            EXPECT_THROW (saxParser (kSampleCCR_.As<InputStream::Ptr<byte>> (), nullptr, personalSchema), BadFormatException);
+            EXPECT_THROW (saxParser (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr, ccrSchema), BadFormatException);
+        });
     }
 }
 
@@ -308,7 +320,7 @@ namespace {
         });
         registry.AddCommonType<vector<Appointment_>> (Name{"Appointment"});
 
-        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+        DoWithEachSAXParser_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory) {
             vector<Appointment_>                     calendar;
             ObjectReader::IConsumerDelegateToContext ctx{
                 registry, make_shared<ObjectReader::ReadDownToReader> (
@@ -322,7 +334,7 @@ namespace {
             EXPECT_TRUE (calendar[1].withWhom.firstName == "Fred");
             EXPECT_TRUE (calendar[1].withWhom.lastName == "Down");
         });
-        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+        DoWithEachSAXParser_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory) {
             vector<Appointment_> calendar;
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar))};
             saxParser (mkdata_ (), &ctx, nullptr);
@@ -383,7 +395,7 @@ namespace {
             ObjectReader::IConsumerDelegateToContext ctx{
                 registry, make_shared<ObjectReader::ReadDownToReader> (make_shared<ObjectReader::RepeatedElementReader<vector<Person_>>> (&people),
                                                                        Name{"envelope2"}, Name{"WithWhom"})};
-            DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+            DoWithEachSAXParser_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory) {
                 people.clear (); // cuz run multiple times
                 saxParser (mkdata_ (), &ctx, nullptr);
                 EXPECT_TRUE (people.size () == 2);
@@ -394,7 +406,7 @@ namespace {
             });
         }
 
-        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+        DoWithEachSAXParser_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory) {
             vector<Person_>        people2; // add the vector type to the registry instead of explicitly constructing the right reader
             ObjectReader::Registry newRegistry = registry;
             newRegistry.AddCommonType<vector<Person_>> (Name{"WithWhom"});
@@ -403,7 +415,7 @@ namespace {
             saxParser (mkdata_ (), &ctx, nullptr);
             EXPECT_TRUE (people2 == people);
         });
-        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+        DoWithEachSAXParser_ ([&] (auto saxParser, [[maybe_unused]] auto schemaFactory) {
             Sequence<Person_>      people3; // use sequence instead of vector
             ObjectReader::Registry newRegistry = registry;
             newRegistry.AddCommonType<Sequence<Person_>> (Name{"WithWhom"});
