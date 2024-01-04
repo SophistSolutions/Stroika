@@ -161,19 +161,19 @@ namespace {
         }
         DocRep_ (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading)
         {
-            xmlParserCtxtPtr  ctxt = xmlCreatePushParserCtxt (NULL, NULL, nullptr, 0, "in-stream.xml" /*filename*/);
+            xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (NULL, NULL, nullptr, 0, "in-stream.xml" /*filename*/);
             Execution::ThrowIfNull (ctxt);
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
-            byte buf[1024];
+            byte                    buf[1024];
             while (auto n = in.Read (span{buf}).size ()) {
                 if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
                     xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but trnaslate to throw
                                                             // return 1;
                 }
             }
-            xmlParseChunk (ctxt, nullptr, 0, 1);        // indicate the parsing is finished
+            xmlParseChunk (ctxt, nullptr, 0, 1); // indicate the parsing is finished
             if (not ctxt->wellFormed) {
-                Execution::Throw ("");  // get good error message and throw that BadFormatException
+                Execution::Throw (BadFormatException{"not well formed"sv}); // get good error message and throw that BadFormatException
             }
             fLibRep_ = ctxt->myDoc;
         }
@@ -181,18 +181,18 @@ namespace {
         {
             AssertNotImplemented ();
         }
-        ~DocRep_()
+        ~DocRep_ ()
         {
             AssertNotNull (fLibRep_);
             xmlFreeDoc (fLibRep_);
         }
-        virtual xmlDoc* GetLibXMLDocRep() override
+        virtual xmlDoc* GetLibXMLDocRep () override
         {
             return fLibRep_;
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
-            TraceContextBumper                             ctx{"LibXML2::Doc::Write"};
+            TraceContextBumper ctx{"LibXML2::Doc::Write"};
             AssertNotImplemented ();
         }
         virtual Iterable<Node::Ptr> GetChildren () const override
@@ -202,7 +202,7 @@ namespace {
         }
         virtual void Validate (const Schema::Ptr& schema) const override
         {
-            TraceContextBumper                             ctx{"LibXML2::Doc::Validate"};
+            TraceContextBumper ctx{"LibXML2::Doc::Validate"};
             AssertNotImplemented ();
         }
         xmlDoc*                                                        fLibRep_{nullptr};
@@ -293,8 +293,8 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
 #endif
     }
     if (callback != nullptr) {
-        SAXReader_              handler{*callback};
-        xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
+        SAXReader_       handler{*callback};
+        xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
         Execution::ThrowIfNull (ctxt);
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
         byte                    buf[1024];
