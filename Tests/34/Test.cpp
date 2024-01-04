@@ -84,7 +84,7 @@ namespace {
 
 namespace {
     template <typename REPEAT_TEST>
-    void DoWithEachSAXParser_(REPEAT_TEST&& test)
+    void DoWithEachSAXParser_ (REPEAT_TEST&& test)
     {
         test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema) {
             XML::SAXParse (in, callback, schema);
@@ -220,14 +220,10 @@ namespace {
             unsigned int   fEltDepthCount;
             vector<String> fEltStack;
         };
-        MyCallback myCallback;
-        XML::SAXParse (kHealthFrameWorks_v3_xml, &myCallback);
-#if qHasFeature_libxml2
-        XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, kHealthFrameWorks_v3_xml, &myCallback);
-#endif
-#if qHasFeature_Xerces
-        XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, kHealthFrameWorks_v3_xml, &myCallback);
-#endif
+        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+            MyCallback myCallback;
+            saxParser (kHealthFrameWorks_v3_xml, &myCallback, nullptr);
+        });
     }
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER_SchemaValidate)
     {
@@ -312,12 +308,12 @@ namespace {
         });
         registry.AddCommonType<vector<Appointment_>> (Name{"Appointment"});
 
-        {
+        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
             vector<Appointment_>                     calendar;
             ObjectReader::IConsumerDelegateToContext ctx{
                 registry, make_shared<ObjectReader::ReadDownToReader> (
                               make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar), Name{"Appointment"})};
-            XML::SAXParse (mkdata_ (), &ctx);
+            saxParser (mkdata_ (), &ctx, nullptr);
             EXPECT_TRUE (calendar.size () == 2);
             EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
             EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
@@ -325,12 +321,11 @@ namespace {
             EXPECT_TRUE ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year{2005}, Time::June, Time::DayOfMonth{1}}));
             EXPECT_TRUE (calendar[1].withWhom.firstName == "Fred");
             EXPECT_TRUE (calendar[1].withWhom.lastName == "Down");
-        }
-        // must figure out how to get below working
-        {
+        });
+        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
             vector<Appointment_> calendar;
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar))};
-            XML::SAXParse (mkdata_ (), &ctx);
+            saxParser (mkdata_ (), &ctx, nullptr);
             EXPECT_TRUE (calendar.size () == 2);
             EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
             EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
@@ -338,7 +333,7 @@ namespace {
             EXPECT_TRUE ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
             EXPECT_TRUE (calendar[1].withWhom.firstName == "Fred");
             EXPECT_TRUE (calendar[1].withWhom.lastName == "Down");
-        }
+        });
     }
 }
 
