@@ -2175,6 +2175,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputStreamDelegationHelper.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ToSeekableInputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl">
@@ -3587,6 +3590,9 @@
       <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStreamDelegationHelper.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ToSeekableInputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>

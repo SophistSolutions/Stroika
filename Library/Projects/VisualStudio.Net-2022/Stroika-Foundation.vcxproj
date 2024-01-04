@@ -688,6 +688,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\IterableToInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ToSeekableInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\LoggingInputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.h" />
@@ -1158,6 +1159,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ToSeekableInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\LoggingInputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.inl" />

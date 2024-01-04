@@ -9,6 +9,7 @@
 #include "../../../Execution/Throw.h"
 #include "../../../Memory/Common.h"
 #include "../../../Memory/MemoryAllocator.h"
+#include "Stroika/Foundation/Streams/ToSeekableInputStream.h"
 
 #include "LibXML2.h"
 
@@ -203,7 +204,15 @@ namespace {
         virtual void Validate (const Schema::Ptr& schema) const override
         {
             TraceContextBumper ctx{"LibXML2::Doc::Validate"};
-            AssertNotImplemented ();
+            RequireNotNull (schema);
+            Require (schema.GetRep ()->GetProvider () == &XML::Providers::LibXML2::kDefaultProvider);
+            xmlSchema* libxml2Schema = dynamic_pointer_cast<ILibXML2SchemaRep> (schema.GetRep ())->GetSchemaLibRep ();
+            RequireNotNull (libxml2Schema);
+            xmlSchemaValidCtxtPtr           validateCtx = xmlSchemaNewValidCtxt (libxml2Schema);
+            [[maybe_unused]] auto&&         cleanup     = Execution::Finally ([&] () noexcept { xmlSchemaFreeValidCtxt (validateCtx); });
+            int                             a           = xmlSchemaValidateDoc (validateCtx, fLibRep_);
+
+            // todo check result and map error messages
         }
         xmlDoc*                                                        fLibRep_{nullptr};
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
@@ -273,28 +282,16 @@ shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (c
 void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                                              const Schema::Ptr& schema) const
 {
-    // @todo must clone/copy the stream - read it into ram so can be used twice...
+    Streams::InputStream::Ptr<byte> useInput = in;
+    optional<Streams::SeekOffsetType>        seek2;
+    if (schema != nullptr and callback != nullptr) {
+        // at least for now this is needed - cuz we read twice - maybe can fix...
+        useInput = Streams::ToSeekableInputStream::New (in);
+        seek2    = useInput.GetOffset ();
+    }
     if (schema != nullptr) {
-// @todo THIS MUST VALIDATE if schema != nullptr
-// xmlSchemaValidateStream
-// // seems avlidation with limx2ml happens wtih DOC, not SAX
-// xmlSchemaValidateDoc     (xmlSchemaValidCtxtPtr ctxt,
-///                  xmlDocPtr doc)
-#if 0
-        // https://web.mit.edu/ghudson/dev/nokrb/third/libxml2/doc/html/libxml-xmlschemas.html#xmlSchemaValidateStream
-        SAXReader_              handler{callback};
-        xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
-        Execution::ThrowIfNull (ctxt);
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
-        byte                    buf[1024];
-        while (auto n = in.Read (span{buf}).size ()) {
-            if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-                xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but trnaslate to throw
-                                                        // return 1;
-            }
-        }
-        xmlParseChunk (ctxt, nullptr, 0, 1);
-#endif
+        DocRep_ dr{useInput};
+        dr.Validate (schema);
     }
     if (callback != nullptr) {
         SAXReader_       handler{*callback};
@@ -302,7 +299,10 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         Execution::ThrowIfNull (ctxt);
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
         byte                    buf[1024];
-        while (auto n = in.Read (span{buf}).size ()) {
+        if (seek2) {
+            useInput.Seek (*seek2);
+        }
+        while (auto n = useInput.Read (span{buf}).size ()) {
             if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
                 xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but translate to throw
             }
