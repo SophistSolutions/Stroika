@@ -219,7 +219,7 @@ namespace {
                 static void errFun (void* ctx, const char* msg, ...)
                 {
                     // Keep first error - and guess NarrowSDK2Wide does right charset mapping
-                    auto    useCtx = reinterpret_cast<ValCB_*> (ctx);
+                    auto useCtx = reinterpret_cast<ValCB_*> (ctx);
                     if (useCtx->msg.empty ()) {
                         va_list argsList;
                         va_start (argsList, msg);
