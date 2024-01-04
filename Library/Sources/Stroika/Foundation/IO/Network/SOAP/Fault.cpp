@@ -41,7 +41,7 @@ optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream::Ptr<byte>& 
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing && USE_NOISY_TRACE_IN_THIS_MODULE_
         ctx.fContext.fTraceThisReader = true;
 #endif
-        XML::SAXParse (from, ctx);
+        XML::SAXParse (from, &ctx);
 
         return result;
     }

@@ -370,10 +370,10 @@ namespace {
 namespace {
     class SAX2PrintHandlers_ : public DefaultHandler {
     private:
-        StructuredStreamEvents::IConsumer& fCallback_;
+        StructuredStreamEvents::IConsumer* fCallback_;
 
     public:
-        SAX2PrintHandlers_ (StructuredStreamEvents::IConsumer& callback)
+        SAX2PrintHandlers_ (StructuredStreamEvents::IConsumer* callback)
             : fCallback_{callback}
         {
         }
@@ -381,37 +381,47 @@ namespace {
     public:
         virtual void startDocument () override
         {
-            fCallback_.StartDocument ();
+            if (fCallback_ != nullptr) {
+                fCallback_->StartDocument ();
+            }
         }
         virtual void endDocument () override
         {
-            fCallback_.EndDocument ();
+            if (fCallback_ != nullptr) {
+                fCallback_->EndDocument ();
+            }
         }
         virtual void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const /*qname*/, const Attributes& attributes) override
         {
             Require (uri != nullptr);
             Require (localName != nullptr);
-            using Name = StructuredStreamEvents::Name;
-            Mapping<Name, String> useAttrs;
-            size_t                attributesLen = attributes.getLength ();
-            for (XMLSize_t i = 0; i < attributesLen; ++i) {
-                Name attrName{xercesString2String (attributes.getURI (i)), xercesString2String (attributes.getLocalName (i)), Name::eAttribute};
-                useAttrs.Add (attrName, xercesString2String (attributes.getValue (i)));
+            if (fCallback_ != nullptr) {
+                using Name = StructuredStreamEvents::Name;
+                Mapping<Name, String> useAttrs;
+                size_t                attributesLen = attributes.getLength ();
+                for (XMLSize_t i = 0; i < attributesLen; ++i) {
+                    Name attrName{xercesString2String (attributes.getURI (i)), xercesString2String (attributes.getLocalName (i)), Name::eAttribute};
+                    useAttrs.Add (attrName, xercesString2String (attributes.getValue (i)));
+                }
+                fCallback_->StartElement (Name{xercesString2String (uri), xercesString2String (localName)}, useAttrs);
             }
-            fCallback_.StartElement (Name{xercesString2String (uri), xercesString2String (localName)}, useAttrs);
         }
         virtual void endElement (const XMLCh* const uri, const XMLCh* const localName, [[maybe_unused]] const XMLCh* const qname) override
         {
             Require (uri != nullptr);
             Require (localName != nullptr);
             Require (qname != nullptr);
-            fCallback_.EndElement (StructuredStreamEvents::Name{xercesString2String (uri), xercesString2String (localName)});
+            if (fCallback_ != nullptr) {
+                fCallback_->EndElement (StructuredStreamEvents::Name{xercesString2String (uri), xercesString2String (localName)});
+            }
         }
         virtual void characters (const XMLCh* const chars, const XMLSize_t length) override
         {
             Require (chars != nullptr);
             Require (length != 0);
-            fCallback_.TextInsideElement (xercesString2String (chars, chars + length));
+            if (fCallback_ != nullptr) {
+                fCallback_->TextInsideElement (xercesString2String (chars, chars + length));
+            }
         }
     };
 }
@@ -1400,7 +1410,7 @@ shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (co
     return p;
 }
 
-void Providers::Xerces::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
+void Providers::Xerces::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                                             const Schema::Ptr& schema) const
 {
     SAX2PrintHandlers_           handler{callback};

@@ -35,7 +35,7 @@ using namespace Stroika::Foundation::Streams;
  ********************************************************************************
  */
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-void XML::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback, const Schema::Ptr& schema,
+void XML::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema,
                     Execution::ProgressMonitor::Updater progress)
 {
     static const XML::Providers::ISAXProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
@@ -44,7 +44,7 @@ void XML::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamE
 #endif
 
 void XML::SAXParse (const Providers::ISAXProvider& saxProvider, const Streams::InputStream::Ptr<byte>& in,
-                    StructuredStreamEvents::IConsumer& callback, const Schema::Ptr& schema, Execution::ProgressMonitor::Updater progress)
+                    StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema, Execution::ProgressMonitor::Updater progress)
 {
     if (progress == nullptr) {
         saxProvider.SAXParse (in, callback, schema);

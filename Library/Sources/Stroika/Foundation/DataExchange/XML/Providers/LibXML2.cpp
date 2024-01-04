@@ -203,10 +203,18 @@ shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (c
     return nullptr;
 }
 
-void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
+void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                                              const Schema::Ptr& schema) const
 {
-    if (schema == nullptr) {
+    // @todo must clone/copy the stream - read it into ram so can be used twice...
+    if (schema != nullptr) {
+// @todo THIS MUST VALIDATE if schema != nullptr
+// xmlSchemaValidateStream
+// // seems avlidation with limx2ml happens wtih DOC, not SAX
+// xmlSchemaValidateDoc     (xmlSchemaValidCtxtPtr ctxt,
+///                  xmlDocPtr doc)
+#if 0
+        // https://web.mit.edu/ghudson/dev/nokrb/third/libxml2/doc/html/libxml-xmlschemas.html#xmlSchemaValidateStream
         SAXReader_              handler{callback};
         xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
@@ -218,15 +226,10 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
             }
         }
         xmlParseChunk (ctxt, nullptr, 0, 1);
+#endif
     }
-    else {
-        // @todo THIS MUST VALIDATE if schema != nullptr
-        // xmlSchemaValidateStream
-        // // seems avlidation with limx2ml happens wtih DOC, not SAX
-        // xmlSchemaValidateDoc     (xmlSchemaValidCtxtPtr ctxt,
-        ///                  xmlDocPtr doc)
-        // https://web.mit.edu/ghudson/dev/nokrb/third/libxml2/doc/html/libxml-xmlschemas.html#xmlSchemaValidateStream
-        SAXReader_              handler{callback};
+    if (callback != nullptr) {
+        SAXReader_              handler{*callback};
         xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
         byte                    buf[1024];

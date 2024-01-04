@@ -26,6 +26,9 @@
 #if qHasFeature_libxml2
 #include "Stroika/Foundation/DataExchange/XML/Providers/LibXML2.h"
 #endif
+#if qHasFeature_Xerces
+#include "Stroika/Foundation/DataExchange/XML/Providers/Xerces.h"
+#endif
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
 
@@ -158,8 +161,13 @@ namespace {
         stringstream tmpStrm;
         WriteTextStream_ (newDocXML, tmpStrm);
         MyCallback myCallback;
-        XML::SAXParse (InputStreamFromStdIStream::New<byte> (tmpStrm), myCallback);
-        //        XML::SAXParse (XML::Provider::eLibXml2, InputStreamFromStdIStream::New<byte> (tmpStrm), myCallback);
+        XML::SAXParse (InputStreamFromStdIStream::New<byte> (tmpStrm), &myCallback);
+#if qHasFeature_libxml2
+        XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, InputStreamFromStdIStream::New<byte> (tmpStrm), &myCallback);
+#endif
+#if qHasFeature_Xerces
+        XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, InputStreamFromStdIStream::New<byte> (tmpStrm), &myCallback);
+#endif
     }
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER2)
     {
@@ -191,7 +199,13 @@ namespace {
             vector<String> fEltStack;
         };
         MyCallback myCallback;
-        XML::SAXParse (kHealthFrameWorks_v3_xml, myCallback);
+        XML::SAXParse (kHealthFrameWorks_v3_xml, &myCallback);
+#if qHasFeature_libxml2
+        XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, kHealthFrameWorks_v3_xml, &myCallback);
+#endif
+#if qHasFeature_Xerces
+        XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, kHealthFrameWorks_v3_xml, &myCallback);
+#endif
     }
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER_SchemaValidate)
     {
@@ -202,21 +216,20 @@ namespace {
         const Memory::BLOB kSampleCCR_   = Memory::BLOB::Attach (Resources_::TestFiles_SampleCCR_ccr);
 
         {
-            Schema::Ptr                       personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
-            StructuredStreamEvents::IConsumer ignoreData;
-            XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), ignoreData, personalSchema);
+            Schema::Ptr personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
+            XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr,personalSchema);
         }
         {
             Schema::Ptr                       ccrSchema = XML::Schema::New (nullopt, kCCR_XSD_);
             StructuredStreamEvents::IConsumer ignoreData;
-            XML::SAXParse (kSampleCCR_.As<InputStream::Ptr<byte>> (), ignoreData, ccrSchema);
+            XML::SAXParse (kSampleCCR_.As<InputStream::Ptr<byte>> (), nullptr, ccrSchema);
         }
         {
             Schema::Ptr                       personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
             Schema::Ptr                       ccrSchema      = XML::Schema::New (nullopt, kCCR_XSD_);
             StructuredStreamEvents::IConsumer ignoreData;
-            EXPECT_THROW (XML::SAXParse (kSampleCCR_.As<InputStream::Ptr<byte>> (), ignoreData, personalSchema), BadFormatException);
-            EXPECT_THROW (XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), ignoreData, ccrSchema), BadFormatException);
+            EXPECT_THROW (XML::SAXParse (kSampleCCR_.As<InputStream::Ptr<byte>> (), nullptr, personalSchema), BadFormatException);
+            EXPECT_THROW (XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr, ccrSchema), BadFormatException);
         }
     }
 }
@@ -282,7 +295,7 @@ namespace {
             ObjectReader::IConsumerDelegateToContext ctx{
                 registry, make_shared<ObjectReader::ReadDownToReader> (
                               make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar), Name{"Appointment"})};
-            XML::SAXParse (mkdata_ (), ctx);
+            XML::SAXParse (mkdata_ (), &ctx);
             EXPECT_TRUE (calendar.size () == 2);
             EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
             EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
@@ -295,7 +308,7 @@ namespace {
         {
             vector<Appointment_> calendar;
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar))};
-            XML::SAXParse (mkdata_ (), ctx);
+            XML::SAXParse (mkdata_ (), &ctx);
             EXPECT_TRUE (calendar.size () == 2);
             EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
             EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
@@ -353,7 +366,7 @@ namespace {
             ObjectReader::IConsumerDelegateToContext ctx{
                 registry, make_shared<ObjectReader::ReadDownToReader> (make_shared<ObjectReader::RepeatedElementReader<vector<Person_>>> (&people),
                                                                        Name{"envelope2"}, Name{"WithWhom"})};
-            XML::SAXParse (mkdata_ (), ctx);
+            XML::SAXParse (mkdata_ (), &ctx);
 
             EXPECT_TRUE (people.size () == 2);
             EXPECT_TRUE (people[0].firstName == "Jim");
@@ -368,7 +381,7 @@ namespace {
             newRegistry.AddCommonType<vector<Person_>> (Name{"WithWhom"});
             ObjectReader::IConsumerDelegateToContext ctx{
                 newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name{"envelope2"})};
-            XML::SAXParse (mkdata_ (), ctx);
+            XML::SAXParse (mkdata_ (), &ctx);
             EXPECT_TRUE (people2 == people);
         }
 
@@ -378,7 +391,7 @@ namespace {
             newRegistry.AddCommonType<Sequence<Person_>> (Name{"WithWhom"});
             ObjectReader::IConsumerDelegateToContext ctx{
                 newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name{"envelope2"})};
-            XML::SAXParse (mkdata_ (), ctx);
+            XML::SAXParse (mkdata_ (), &ctx);
             EXPECT_TRUE (people3.As<vector<Person_>> () == people);
         }
     }
@@ -448,7 +461,7 @@ namespace {
         ObjectReader::IConsumerDelegateToContext ctx{
             mapper, make_shared<ObjectReader::ReadDownToReader> (make_shared<ObjectReader::RepeatedElementReader<vector<ObjectContent>>> (&objsContent),
                                                                  Name{"RetrievePropertiesResponse"}, Name{"returnval"})};
-        XML::SAXParse (mkdata_ (), ctx);
+        XML::SAXParse (mkdata_ (), &ctx);
 
         EXPECT_TRUE (objsContent.size () == 2);
         EXPECT_TRUE (objsContent[0].obj.type == "VirtualMachine");
@@ -484,7 +497,7 @@ namespace {
         });
         Person_                                  p;
         ObjectReader::IConsumerDelegateToContext tmp{mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p))};
-        XML::SAXParse (mkdata_ (), tmp);
+        XML::SAXParse (mkdata_ (), &tmp);
         EXPECT_TRUE (p.firstName == "Jim");
         EXPECT_TRUE (p.lastName == "Smith");
     }
@@ -567,7 +580,7 @@ namespace {
         Data_ data;
         {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
-            XML::SAXParse (mkdata_ (), ctx);
+            XML::SAXParse (mkdata_ (), &ctx);
             EXPECT_TRUE (data.people.size () == 2);
             EXPECT_TRUE (data.people[0].firstName == "Jim");
             EXPECT_TRUE (data.people[0].lastName == "Smith");
@@ -744,7 +757,7 @@ namespace {
             ObjectReader::IConsumerDelegateToContext consumerCallback{
                 registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"Sensors"})};
             //consumerCallback.fContext.fTraceThisReader = true;
-            XML::SAXParse (mkdata_ (), consumerCallback);
+            XML::SAXParse (mkdata_ (), &consumerCallback);
             DbgTrace (L"LaserTemperatures=%s", Characters::ToString (data.LaserTemperatures).c_str ());
             DbgTrace (L"MirrorTemperature=%s", Characters::ToString (data.MirrorTemperatures).c_str ());
             DbgTrace (L"LaserCurrents=%s", Characters::ToString (data.LaserCurrents).c_str ());
@@ -807,7 +820,7 @@ namespace {
             {
                 ObjectReader::IConsumerDelegateToContext consumerCallback{
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetAlarmsResponse"}, Name{"Alarm"})};
-                XML::SAXParse (mkdata_ (), consumerCallback);
+                XML::SAXParse (mkdata_ (), &consumerCallback);
                 DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
             }
             EXPECT_TRUE ((data == Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
@@ -820,7 +833,7 @@ namespace {
             {
                 ObjectReader::IConsumerDelegateToContext consumerCallback{
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetAlarmsResponse"}, kAlarmName_)};
-                XML::SAXParse (mkdata_ (), consumerCallback);
+                XML::SAXParse (mkdata_ (), &consumerCallback);
                 DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
             }
             EXPECT_TRUE ((data == Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
@@ -833,7 +846,7 @@ namespace {
             {
                 ObjectReader::IConsumerDelegateToContext consumerCallback{
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetAlarmsResponse"}, kWrongAlarmName_)};
-                XML::SAXParse (mkdata_ (), consumerCallback);
+                XML::SAXParse (mkdata_ (), &consumerCallback);
                 DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
             }
             EXPECT_TRUE ((data == Set<AlarmType_>{}));
@@ -975,7 +988,7 @@ namespace {
                 registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data),
                                                                        Name{"ScanPersistenceGetScanDetailsResponse"}, Name{"Scan"})};
             //consumerCallback.fContext.fTraceThisReader = true;
-            XML::SAXParse (mkdata_ (), consumerCallback);
+            XML::SAXParse (mkdata_ (), &consumerCallback);
             DbgTrace (L"ScanID=%s", Characters::ToString (data.ScanID).c_str ());
             DbgTrace (L"ScanStart=%s", Characters::ToString (data.ScanStart).c_str ());
             DbgTrace (L"ScanEnd=%s", Characters::ToString (data.ScanEnd).c_str ());
@@ -1033,7 +1046,7 @@ namespace {
             values.valueMissing = 999;
             ObjectReader::IConsumerDelegateToContext ctx{
                 registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{"Values"})};
-            XML::SAXParse (mkdata_ (), ctx);
+            XML::SAXParse (mkdata_ (), &ctx);
             EXPECT_TRUE (values.valueMissing == 999);
             EXPECT_TRUE (Math::NearlyEquals (values.valueExplicitGood, 3.0));
             EXPECT_TRUE (isnan (values.valueExplicitNAN1));
@@ -1213,7 +1226,7 @@ namespace {
                 registry,
                 make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetFactorySettingsResponse"})};
             //consumerCallback.fContext.fTraceThisReader = true;
-            XML::SAXParse (mkdata_ (), consumerCallback);
+            XML::SAXParse (mkdata_ (), &consumerCallback);
             DbgTrace (L"Tuners=%s", Characters::ToString (data.Tuners).c_str ());
             EXPECT_TRUE ((data.Tuners.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2}));
             EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorOperationFrequency, 40.0));
@@ -1251,7 +1264,7 @@ namespace {
             Values_                                  values{};
             ObjectReader::IConsumerDelegateToContext ctx{
                 registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{"Values"})};
-            XML::SAXParse (mkdata_ (), ctx);
+            XML::SAXParse (mkdata_ (), &ctx);
             EXPECT_TRUE (Math::NearlyEquals (values.r.GetLowerBound (), 3.0));
             EXPECT_TRUE (Math::NearlyEquals (values.r.GetUpperBound (), 6.0));
         }
@@ -1312,7 +1325,7 @@ namespace {
         Data_ data;
         {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
-            XML::SAXParse (mkdata_ (), ctx);
+            XML::SAXParse (mkdata_ (), &ctx);
             EXPECT_TRUE (data.people.size () == 2);
             EXPECT_TRUE (data.people[0].firstName == "Jim");
             EXPECT_TRUE (data.people[0].lastName == "Smith");
@@ -1379,7 +1392,7 @@ namespace {
         Data_ data;
         {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
-            XML::SAXParse (mkdata_ (), ctx);
+            XML::SAXParse (mkdata_ (), &ctx);
             EXPECT_TRUE (data.people.size () == 2);
             EXPECT_TRUE (data.people[0].firstName == "Jim");
             EXPECT_TRUE (data.people[0].lastName == "Smith");

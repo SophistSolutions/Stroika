@@ -28,11 +28,20 @@ namespace Stroika::Foundation::DataExchange::XML {
      *
      *  @see ObjectReaderRegistry for examples of one way to use this
      */
-    void SAXParse (const Providers::ISAXProvider& saxProvider, const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
-                   const Schema::Ptr& schema = nullptr, Execution::ProgressMonitor::Updater progress = nullptr);
+    void SAXParse (const Providers::ISAXProvider& saxProvider, const Streams::InputStream::Ptr<byte>& in,
+                   StructuredStreamEvents::IConsumer* callback = nullptr, const Schema::Ptr& schema = nullptr,
+                   Execution::ProgressMonitor::Updater progress = nullptr);
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-    void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
+    void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback = nullptr,
                    const Schema::Ptr& schema = nullptr, Execution::ProgressMonitor::Updater progress = nullptr);
+#endif
+
+#if qStroika_Foundation_DataExchange_XML_SupportParsing
+    inline [[deprecated ("Since Stroika v3.0d5 use address of callback")]] void
+    SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback, const Schema::Ptr& schema = nullptr)
+    {
+        SAXParse (in, &callback, schema);
+    }
 #endif
 
 }

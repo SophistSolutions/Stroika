@@ -520,8 +520,9 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                 filesystem::path mimeRoot{"/usr/share/mime/"sv};
                 myHander_        handler;
                 // @todo validate ct.GetType () to make sure not a ../../ ATTACK
-                DataExchange::XML::SAXParse (
-                    IO::FileSystem::FileInputStream::New (mimeRoot / IO::FileSystem::ToPath (ct.GetType () + "/"_k + ct.GetSubType () + ".xml"_k)), handler);
+                DataExchange::XML::SAXParse (IO::FileSystem::FileInputStream::New (
+                                                 mimeRoot / IO::FileSystem::ToPath (ct.GetType () + "/"_k + ct.GetSubType () + ".xml"_k)),
+                                             &handler);
                 if (handler.fResult) {
                     fMediaType2PrettyNameCache.rwget ()->Add (ct, *handler.fResult);
                     return *handler.fResult;

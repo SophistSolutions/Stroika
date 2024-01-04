@@ -46,7 +46,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
     };
     struct ISAXProvider : public IProvider {
         virtual ~ISAXProvider ()                                = default;
-        virtual void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback,
+        virtual void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                                const Schema::Ptr& schema) const = 0;
     };
     struct IXMLProvider : ISchemaProvider, IDOMProvider, ISAXProvider {};

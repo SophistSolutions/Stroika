@@ -48,9 +48,6 @@ Ptr Schema::New (const optional<URI>& targetNamespace, const BLOB& targetNamespa
 #if qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing
 void DataExchange::XML::Schema::ValidateFile (const filesystem::path& externalFileName, const Ptr& schema)
 {
-    // not the most efficient impl but simple and generic, and good enuf for now
-    struct noOpConsumer : StructuredStreamEvents::IConsumer {};
-    noOpConsumer consumer;
-    SAXParse (IO::FileSystem::FileInputStream::New (externalFileName), consumer, schema);
+    SAXParse (IO::FileSystem::FileInputStream::New (externalFileName), nullptr, schema);
 }
 #endif
