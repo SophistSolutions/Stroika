@@ -37,7 +37,7 @@ namespace Stroika::Foundation::DataExchange::XML {
 #endif
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
-   [[deprecated ("Since Stroika v3.0d5 use address of callback")]]  inline void
+    [[deprecated ("Since Stroika v3.0d5 use address of callback")]] inline void
     SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer& callback, const Schema::Ptr& schema = nullptr)
     {
         SAXParse (in, &callback, schema);
