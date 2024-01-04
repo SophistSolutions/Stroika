@@ -159,7 +159,7 @@ namespace {
         {
             AssertNotImplemented ();
         }
-        DocRep_ (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading)
+        DocRep_ (const Streams::InputStream::Ptr<byte>& in)
         {
             xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (NULL, NULL, nullptr, 0, "in-stream.xml" /*filename*/);
             Execution::ThrowIfNull (ctxt);
@@ -263,7 +263,11 @@ shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (c
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                                const Schema::Ptr& schemaToValidateAgainstWhileReading) const
 {
-    return make_shared<DocRep_> (in, schemaToValidateAgainstWhileReading);
+    auto r = make_shared<DocRep_> (in);
+    if (schemaToValidateAgainstWhileReading != nullptr) {
+        r->Validate (schemaToValidateAgainstWhileReading);
+    }
+    return r;
 }
 
 void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
