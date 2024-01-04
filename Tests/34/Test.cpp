@@ -383,34 +383,35 @@ namespace {
             ObjectReader::IConsumerDelegateToContext ctx{
                 registry, make_shared<ObjectReader::ReadDownToReader> (make_shared<ObjectReader::RepeatedElementReader<vector<Person_>>> (&people),
                                                                        Name{"envelope2"}, Name{"WithWhom"})};
-            XML::SAXParse (mkdata_ (), &ctx);
+            DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+                saxParser (mkdata_ (), &ctx, nullptr);
 
-            EXPECT_TRUE (people.size () == 2);
-            EXPECT_TRUE (people[0].firstName == "Jim");
-            EXPECT_TRUE (people[0].lastName == "Smith");
-            EXPECT_TRUE (people[1].firstName == "Fred");
-            EXPECT_TRUE (people[1].lastName == "Down");
+                EXPECT_TRUE (people.size () == 2);
+                EXPECT_TRUE (people[0].firstName == "Jim");
+                EXPECT_TRUE (people[0].lastName == "Smith");
+                EXPECT_TRUE (people[1].firstName == "Fred");
+                EXPECT_TRUE (people[1].lastName == "Down");
+            });
         }
 
-        vector<Person_> people2; // add the vector type to the registry instead of explicitly constructing the right reader
-        {
+        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+            vector<Person_> people2; // add the vector type to the registry instead of explicitly constructing the right reader
             ObjectReader::Registry newRegistry = registry;
             newRegistry.AddCommonType<vector<Person_>> (Name{"WithWhom"});
             ObjectReader::IConsumerDelegateToContext ctx{
                 newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name{"envelope2"})};
-            XML::SAXParse (mkdata_ (), &ctx);
+            saxParser (mkdata_ (), &ctx, nullptr);
             EXPECT_TRUE (people2 == people);
-        }
-
-        Sequence<Person_> people3; // use sequence instead of vector
-        {
+        });
+        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+            Sequence<Person_> people3; // use sequence instead of vector
             ObjectReader::Registry newRegistry = registry;
             newRegistry.AddCommonType<Sequence<Person_>> (Name{"WithWhom"});
             ObjectReader::IConsumerDelegateToContext ctx{
                 newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name{"envelope2"})};
-            XML::SAXParse (mkdata_ (), &ctx);
+            saxParser (mkdata_ (), &ctx, nullptr);
             EXPECT_TRUE (people3.As<vector<Person_>> () == people);
-        }
+        });
     }
 }
 
