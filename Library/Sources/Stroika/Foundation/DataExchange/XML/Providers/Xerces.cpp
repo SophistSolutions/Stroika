@@ -547,6 +547,7 @@ namespace {
         TYPE* p_;
     };
 }
+
 namespace {
     DOMImplementation& GetDOMIMPL_ ()
     {
@@ -1102,61 +1103,13 @@ namespace {
 namespace {
     class XercesDocRep_ : public DataExchange::XML::DOM::Document::IRep {
     public:
-        XercesDocRep_ ()
+        XercesDocRep_ (const String& name, const optional<URI>& ns)
         {
             [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
             START_LIB_EXCEPTION_MAPPER_
             {
                 MakeXMLDoc_ (fXMLDoc);
                 fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
-        XercesDocRep_ (const XercesDocRep_& from)
-        {
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                fXMLDoc = shared_ptr<xercesc::DOMDocument> (dynamic_cast<xercesc::DOMDocument*> (from.fXMLDoc->cloneNode (true)));
-                fXMLDoc->setXmlStandalone (true);
-                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
-            }
-            END_LIB_EXCEPTION_MAPPER_
-            EnsureNotNull (fXMLDoc);
-        }
-
-        //
-        // If this function is passed a nullptr exceptionResult - it will throw on bad validation.
-        // If it is passed a non-nullptr exceptionResult - then it will map BadFormatException to being ignored, but filling in this
-        // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
-        // failing the read (for http://bugzilla/show_bug.cgi?id=513).
-        //
-        virtual void Read (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema) override
-        {
-            TraceContextBumper ctx{"XercesDocRep_::Read"};
-            AssertNotNull (fXMLDoc);
-
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_}; // write context cuz reading from stream, but writing to 'this'
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                MyMaybeSchemaDOMParser_ myDOMParser{schema};
-                myDOMParser.fParser->parse (StdIStream_InputSource_{in, u"XMLDB"});
-                fXMLDoc.reset ();
-                fXMLDoc = shared_ptr<xercesc::DOMDocument>{myDOMParser.fParser->adoptDocument ()};
-                fXMLDoc->setXmlStandalone (true);
-                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
-        Node::Ptr CreateDocumentElement (const String& name, const optional<URI>& ns)
-        {
-            TraceContextBumper ctx{"XercesDocRep_Rep::CreateDocumentElement"};
-#if qDebug
-            Require (ValidNewNodeName_ (name));
-#endif
-            AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            AssertNotNull (fXMLDoc);
-            START_LIB_EXCEPTION_MAPPER_
-            {
                 DOMElement* n = ns == nullopt
                                     ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
                                     : fXMLDoc->createElementNS (ns->As<String> ().As<u16string> ().c_str (), name.As<u16string> ().c_str ());
@@ -1186,9 +1139,42 @@ namespace {
                          */
                 }
                 Assert (fXMLDoc->getDocumentElement () == n);
-                return WrapImpl_ (n);
             }
             END_LIB_EXCEPTION_MAPPER_
+        }
+        //
+        // If this function is passed a nullptr exceptionResult - it will throw on bad validation.
+        // If it is passed a non-nullptr exceptionResult - then it will map BadFormatException to being ignored, but filling in this
+        // parameter with the exception details. This is used to allow 'advisory' read xsd validation failure, without actually fully
+        // failing the read (for http://bugzilla/show_bug.cgi?id=513).
+        //
+        XercesDocRep_ (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema)
+        {
+            [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                MakeXMLDoc_ (fXMLDoc);
+                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
+
+                MyMaybeSchemaDOMParser_ myDOMParser{schema};
+                myDOMParser.fParser->parse (StdIStream_InputSource_{in, u"XMLDB"});
+                fXMLDoc.reset ();
+                fXMLDoc = shared_ptr<xercesc::DOMDocument>{myDOMParser.fParser->adoptDocument ()};
+                fXMLDoc->setXmlStandalone (true);
+                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
+            }
+            END_LIB_EXCEPTION_MAPPER_
+        }
+        XercesDocRep_ (const XercesDocRep_& from)
+        {
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                fXMLDoc = shared_ptr<xercesc::DOMDocument> (dynamic_cast<xercesc::DOMDocument*> (from.fXMLDoc->cloneNode (true)));
+                fXMLDoc->setXmlStandalone (true);
+                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
+            }
+            END_LIB_EXCEPTION_MAPPER_
+            EnsureNotNull (fXMLDoc);
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
@@ -1405,17 +1391,13 @@ shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const optio
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const String& documentElementName, const optional<URI>& ns) const
 {
-    auto p = make_shared<XercesDocRep_> ();
-    p->CreateDocumentElement (documentElementName, ns); // @todo change this to CTOR arg overload - not method
-    return p;
+    return make_shared<XercesDocRep_> (documentElementName, ns);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                               const Schema::Ptr& schemaToValidateAgainstWhileReading) const
 {
-    auto p{make_shared<XercesDocRep_> ()};
-    p->Read (in, schemaToValidateAgainstWhileReading);
-    return p;
+    return make_shared<XercesDocRep_> (in, schemaToValidateAgainstWhileReading);
 }
 
 void Providers::Xerces::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,

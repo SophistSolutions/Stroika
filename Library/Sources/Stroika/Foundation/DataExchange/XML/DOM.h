@@ -341,8 +341,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         /**
          */
         struct IRep {
-            virtual ~IRep ()                                                                                        = default;
-            virtual void                Read (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schema) = 0;
+            virtual ~IRep () = default;
             virtual void                Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             virtual Iterable<Node::Ptr> GetChildren () const                                                                          = 0;
             virtual void                Validate (const Schema::Ptr& schema) const                                                    = 0;

@@ -3,6 +3,7 @@
  */
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Characters/String.h"
 #include "../../../DataExchange/BadFormatException.h"
 #include "../../../Debug/Trace.h"
 #include "../../../Execution/Throw.h"
@@ -15,10 +16,13 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
+using namespace Stroika::Foundation::DataExchange::XML::DOM;
 using namespace Stroika::Foundation::DataExchange::XML::Schema;
 using namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
+
+using std::byte;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -148,6 +152,64 @@ namespace {
     };
 }
 
+namespace {
+    class DocRep_ : public ILibXML2DocRep {
+    public:
+        DocRep_ (const String& name, const optional<URI>& ns)
+        {
+            AssertNotImplemented ();
+        }
+        DocRep_ (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading)
+        {
+            xmlParserCtxtPtr  ctxt = xmlCreatePushParserCtxt (NULL, NULL, nullptr, 0, "in-stream.xml" /*filename*/);
+            Execution::ThrowIfNull (ctxt);
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
+            byte buf[1024];
+            while (auto n = in.Read (span{buf}).size ()) {
+                if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
+                    xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but trnaslate to throw
+                                                            // return 1;
+                }
+            }
+            xmlParseChunk (ctxt, nullptr, 0, 1);        // indicate the parsing is finished
+            if (not ctxt->wellFormed) {
+                Execution::Throw ("");  // get good error message and throw that BadFormatException
+            }
+            fLibRep_ = ctxt->myDoc;
+        }
+        DocRep_ (const DocRep_& from)
+        {
+            AssertNotImplemented ();
+        }
+        ~DocRep_()
+        {
+            AssertNotNull (fLibRep_);
+            xmlFreeDoc (fLibRep_);
+        }
+        virtual xmlDoc* GetLibXMLDocRep() override
+        {
+            return fLibRep_;
+        }
+        virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
+        {
+            TraceContextBumper                             ctx{"LibXML2::Doc::Write"};
+            AssertNotImplemented ();
+        }
+        virtual Iterable<Node::Ptr> GetChildren () const override
+        {
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertNotImplemented ();
+        }
+        virtual void Validate (const Schema::Ptr& schema) const override
+        {
+            TraceContextBumper                             ctx{"LibXML2::Doc::Validate"};
+            AssertNotImplemented ();
+        }
+        xmlDoc*                                                        fLibRep_{nullptr};
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+    };
+}
+
 /*
  ********************************************************************************
  ******************* Provider::Xerces::libXMLString2String **********************
@@ -195,15 +257,13 @@ shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const opti
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const String& documentElementName, const optional<URI>& ns) const
 {
-    AssertNotImplemented ();
-    return nullptr;
+    return make_shared<DocRep_> (documentElementName, ns);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                                const Schema::Ptr& schemaToValidateAgainstWhileReading) const
 {
-    AssertNotImplemented ();
-    return nullptr;
+    return make_shared<DocRep_> (in, schemaToValidateAgainstWhileReading);
 }
 
 void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
@@ -220,6 +280,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         // https://web.mit.edu/ghudson/dev/nokrb/third/libxml2/doc/html/libxml-xmlschemas.html#xmlSchemaValidateStream
         SAXReader_              handler{callback};
         xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
+        Execution::ThrowIfNull (ctxt);
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
         byte                    buf[1024];
         while (auto n = in.Read (span{buf}).size ()) {
@@ -234,6 +295,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
     if (callback != nullptr) {
         SAXReader_              handler{*callback};
         xmlParserCtxtPtr        ctxt    = xmlCreatePushParserCtxt (&handler.flibXMLSaxHndler_, &handler, nullptr, 0, nullptr);
+        Execution::ThrowIfNull (ctxt);
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
         byte                    buf[1024];
         while (auto n = in.Read (span{buf}).size ()) {

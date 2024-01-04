@@ -39,6 +39,10 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
         virtual xmlSchema* GetSchemaLibRep () = 0;
     };
 
+    struct ILibXML2DocRep : DOM::Document::IRep {
+        virtual xmlDoc* GetLibXMLDocRep () = 0;
+    };
+
     /**
      *  Can only be created ONCE (because libxml2 library can only be constructed once). Use the default impl.
      */
