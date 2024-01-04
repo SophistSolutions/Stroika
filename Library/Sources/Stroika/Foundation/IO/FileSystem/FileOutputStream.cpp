@@ -168,11 +168,12 @@ namespace {
         {
             Require (fSeekable_);
             using namespace Streams;
+            static const auto                               kException_ = range_error{"seek"};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             switch (whence) {
                 case Whence::eFromStart: {
                     if (offset < 0) [[unlikely]] {
-                        Execution::Throw (range_error{"seek"});
+                        Execution::Throw (kException_);
                     }
 #if qPlatform_Linux
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));

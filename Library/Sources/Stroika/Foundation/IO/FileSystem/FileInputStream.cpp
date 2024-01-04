@@ -228,11 +228,12 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::SeekRead", L"whence: %d, offset: %lld", whence, static_cast<long long> (offset)};
 #endif
+            static const auto                               kException_ = range_error{"seek"};
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             switch (whence) {
                 case Whence::eFromStart: {
                     if (offset < 0) [[unlikely]] {
-                        Execution::Throw (range_error{"seek"});
+                        Execution::Throw (kException_);
                     }
 #if qPlatform_Windows
                     return static_cast<Streams::SeekOffsetType> (ThrowPOSIXErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));

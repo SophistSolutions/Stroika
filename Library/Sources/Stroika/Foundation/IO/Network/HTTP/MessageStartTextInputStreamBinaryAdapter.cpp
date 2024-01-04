@@ -223,14 +223,15 @@ protected:
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         Require (IsOpenRead ());
+        static const auto kException_ = range_error{"seek"};
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
+                    Execution::Throw (kException_);
                 }
                 SeekOffsetType uOffset = static_cast<SeekOffsetType> (offset);
                 if (uOffset > fBufferFilledUpValidBytes_) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
+                    Execution::Throw (kException_);
                 }
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work with large streams
                 fOffset_ = static_cast<size_t> (offset);
@@ -239,11 +240,11 @@ protected:
                 Streams::SeekOffsetType       curOffset = fOffset_;
                 Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                 if (newOffset < 0) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
+                    Execution::Throw (kException_);
                 }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                 if (uNewOffset > fBufferFilledUpValidBytes_) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
+                    Execution::Throw (kException_);
                 }
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
                 fOffset_ = static_cast<size_t> (newOffset);
@@ -251,11 +252,11 @@ protected:
             case Whence::eFromEnd: {
                 Streams::SignedSeekOffsetType newOffset = fBufferFilledUpValidBytes_ + offset;
                 if (newOffset < 0) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
+                    Execution::Throw (kException_);
                 }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                 if (uNewOffset > fBufferFilledUpValidBytes_) [[unlikely]] {
-                    Execution::Throw (range_error{"seek"});
+                    Execution::Throw (kException_);
                 }
                 // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
                 fOffset_ = static_cast<size_t> (newOffset);

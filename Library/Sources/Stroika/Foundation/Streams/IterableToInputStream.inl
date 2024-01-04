@@ -102,36 +102,37 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
                 Require (IsOpenRead ());
+                static const auto                               kException_ = range_error{"seek"};
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 size_t                                          sourceLen = fSource_.size ();
                 SeekOffsetType                                  newOffset{};
                 switch (whence) {
                     case Whence::eFromStart: {
                         if (offset < 0) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kException_);
                         }
                         if (static_cast<SeekOffsetType> (offset) > sourceLen) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kException_);
                         }
                         newOffset = static_cast<SeekOffsetType> (offset);
                     } break;
                     case Whence::eFromCurrent: {
                         Streams::SignedSeekOffsetType tmpOffset = fOffset_ + offset;
                         if (tmpOffset < 0) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kException_);
                         }
                         if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kException_);
                         }
                         newOffset = static_cast<SeekOffsetType> (tmpOffset);
                     } break;
                     case Whence::eFromEnd: {
                         Streams::SignedSeekOffsetType tmpOffset = fSource_.size () + offset;
                         if (tmpOffset < 0) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kException_);
                         }
                         if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) [[unlikely]] {
-                            Execution::Throw (range_error{"seek"});
+                            Execution::Throw (kException_);
                         }
                         newOffset = static_cast<SeekOffsetType> (tmpOffset);
                     } break;
