@@ -137,6 +137,7 @@ namespace {
             virtual void StartDocument () override
             {
                 fEltDepthCount = 0;
+                fStartCount    = 0;
             }
             virtual void EndDocument () override
             {
@@ -156,17 +157,27 @@ namespace {
                 fEltDepthCount--;
             }
             unsigned int   fEltDepthCount;
+            unsigned int   fStartCount{0};
             vector<String> fEltStack;
         };
         stringstream tmpStrm;
         WriteTextStream_ (newDocXML, tmpStrm);
         MyCallback myCallback;
         XML::SAXParse (InputStreamFromStdIStream::New<byte> (tmpStrm), &myCallback);
+        EXPECT_EQ (myCallback.fStartCount, 34);
 #if qHasFeature_libxml2
+        tmpStrm.clear ();
+        tmpStrm.seekg (0);
+        myCallback = MyCallback{};
         XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, InputStreamFromStdIStream::New<byte> (tmpStrm), &myCallback);
+        EXPECT_EQ (myCallback.fStartCount, 34);
 #endif
 #if qHasFeature_Xerces
+        tmpStrm.clear ();
+        tmpStrm.seekg (0);
+        myCallback = MyCallback{};
         XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, InputStreamFromStdIStream::New<byte> (tmpStrm), &myCallback);
+        EXPECT_EQ (myCallback.fStartCount, 34);
 #endif
     }
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER2)
@@ -217,7 +228,7 @@ namespace {
 
         {
             Schema::Ptr personalSchema = XML::Schema::New (nullopt, kPersonalXSD_);
-            XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr,personalSchema);
+            XML::SAXParse (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr, personalSchema);
         }
         {
             Schema::Ptr                       ccrSchema = XML::Schema::New (nullopt, kCCR_XSD_);
