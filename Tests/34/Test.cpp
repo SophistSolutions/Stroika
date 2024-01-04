@@ -82,6 +82,26 @@ namespace {
     }
 }
 
+namespace {
+    template <typename REPEAT_TEST>
+    void DoWithEachSAXParser_(REPEAT_TEST&& test)
+    {
+        test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema) {
+            XML::SAXParse (in, callback, schema);
+        });
+#if qHasFeature_libxml2
+        test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema) {
+            XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, in, callback, schema);
+        });
+#endif
+#if qHasFeature_Xerces
+        test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema) {
+            XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, in, callback, schema);
+        });
+#endif
+    }
+}
+
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER1)
@@ -148,6 +168,7 @@ namespace {
             {
                 //DbgTrace (L"attr=%s", Characters::ToString (attributes).c_str ());
                 fEltDepthCount++;
+                fStartCount++;
                 fEltStack.push_back (Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
             }
             virtual void EndElement (const StructuredStreamEvents::Name& name) override
@@ -162,23 +183,13 @@ namespace {
         };
         stringstream tmpStrm;
         WriteTextStream_ (newDocXML, tmpStrm);
-        MyCallback myCallback;
-        XML::SAXParse (InputStreamFromStdIStream::New<byte> (tmpStrm), &myCallback);
-        EXPECT_EQ (myCallback.fStartCount, 34);
-#if qHasFeature_libxml2
-        tmpStrm.clear ();
-        tmpStrm.seekg (0);
-        myCallback = MyCallback{};
-        XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, InputStreamFromStdIStream::New<byte> (tmpStrm), &myCallback);
-        EXPECT_EQ (myCallback.fStartCount, 34);
-#endif
-#if qHasFeature_Xerces
-        tmpStrm.clear ();
-        tmpStrm.seekg (0);
-        myCallback = MyCallback{};
-        XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, InputStreamFromStdIStream::New<byte> (tmpStrm), &myCallback);
-        EXPECT_EQ (myCallback.fStartCount, 34);
-#endif
+        DoWithEachSAXParser_ ([&] (function<void (InputStream::Ptr<byte>, StructuredStreamEvents::IConsumer*, const Schema::Ptr&)> saxParser) {
+            tmpStrm.clear ();
+            tmpStrm.seekg (0);
+            MyCallback myCallback;
+            saxParser (InputStreamFromStdIStream::New<byte> (tmpStrm), &myCallback, nullptr);
+            EXPECT_EQ (myCallback.fStartCount, 34u);
+        });
     }
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER2)
     {
