@@ -303,7 +303,7 @@ namespace {
         xercesc_3_2::XMLGrammarPool*        fCachedGrammarPool{nullptr};
         Map2StroikaExceptionsErrorReporter_ fErrorReporter_;
 
-        virtual const Providers::ISchemaProvider* GetProvider () const
+        virtual const Providers::ISchemaProvider* GetProvider () const override
         {
             return &XML::Providers::Xerces::kDefaultProvider;
         }

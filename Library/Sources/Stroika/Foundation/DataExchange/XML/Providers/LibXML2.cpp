@@ -69,7 +69,7 @@ namespace {
         NamespaceDefinitionsList  fNamespaceDefinitions;
         xmlSchema*                fCompiledSchema{nullptr};
 
-        virtual const Providers::ISchemaProvider* GetProvider () const
+        virtual const Providers::ISchemaProvider* GetProvider () const override
         {
             return &XML::Providers::LibXML2::kDefaultProvider;
         }
