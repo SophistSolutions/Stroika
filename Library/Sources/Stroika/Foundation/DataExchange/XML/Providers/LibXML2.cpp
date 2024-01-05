@@ -159,6 +159,21 @@ namespace {
     public:
         DocRep_ (const String& name, const optional<URI>& ns)
         {
+// SEE http://www.xmlsoft.org/examples/io2.c
+#if 0
+             xmlNodePtr n;
+    xmlDocPtr doc;
+    xmlChar *xmlbuff;
+    int buffersize;
+
+    /*
+     * Create the document.
+     */
+    doc = xmlNewDoc(BAD_CAST "1.0");
+    n = xmlNewNode(NULL, BAD_CAST "root");
+    xmlNodeSetContent(n, BAD_CAST "content");
+    xmlDocSetRootElement(doc, n);
+#endif
             AssertNotImplemented ();
         }
         DocRep_ (const Streams::InputStream::Ptr<byte>& in)
@@ -195,7 +210,11 @@ namespace {
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
             TraceContextBumper ctx{"LibXML2::Doc::Write"};
-            AssertNotImplemented ();
+            xmlChar*           xmlbuff{nullptr};
+            int                buffersize{};
+            xmlDocDumpFormatMemory (fLibRep_, &xmlbuff, &buffersize, 1);
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (xmlbuff); });
+            to.Write (span{reinterpret_cast<const byte*> (xmlbuff), static_cast<size_t> (buffersize)});
         }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
