@@ -9,6 +9,7 @@
 #include "../../../Debug/Trace.h"
 #include "../../../Execution/Throw.h"
 #include "../../../Memory/Common.h"
+#include "../../../Memory/BlockAllocated.h"
 #include "../../../Memory/MemoryAllocator.h"
 #include "Stroika/Foundation/Streams/ToSeekableInputStream.h"
 
@@ -151,6 +152,311 @@ namespace {
             };
         }
         SAXReader_ (const SAXReader_&) = delete;
+    };
+}
+
+namespace {
+#if qDebug
+    bool ValidNewNodeName_ (const String& n)
+    {
+        if (n.empty ()) {
+            return false;
+        }
+        if (n.find (':') != wstring::npos) { // if triggered, you probably used XPath as arg for CreateElement call!!!
+            return false;
+        }
+        return true;
+    }
+#endif 
+}
+
+namespace {
+    class NodeRep_ : public Node::IRep, Memory::UseBlockAllocationIfAppropriate<NodeRep_> {
+    public:
+        NodeRep_ (xmlNode* n)
+            : fNode_{n}
+        {
+            RequireNotNull (n);
+        }
+        virtual Node::Type GetNodeType () const override
+        {
+            AssertNotNull (fNode_);
+            switch (fNode_->type) {
+                case XML_ELEMENT_NODE:
+                    return Node::eElementNT;
+                case XML_ATTRIBUTE_NODE:
+                    return Node::eAttributeNT;
+                case XML_TEXT_NODE:
+                    return Node::eTextNT;
+                case XML_COMMENT_NODE:
+                    return Node::eCommentNT;
+                default:
+                    return Node::eOtherNT;
+            }
+        }
+        virtual optional<URI> GetNamespace () const override
+        {
+            AssertNotNull (fNode_);
+            Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
+            switch (fNode_->type) {
+                case XML_ELEMENT_NODE: {
+                    _xmlEntity* e = reinterpret_cast<_xmlEntity*> (fNode_);
+                    return e->URI == nullptr ? optional<URI>{} : libXMLString2String (e->URI);
+                }
+                case XML_ATTRIBUTE_NODE: {
+                    _xmlAttr* e = reinterpret_cast<_xmlAttr*> (fNode_);
+                    return e->ns == nullptr ? optional<URI>{} : libXMLString2String (e->ns->href);
+                }
+                default:
+                    AssertNotReached ();
+                    return nullopt;
+            }
+        }
+        virtual String GetName () const override
+        {
+            AssertNotNull (fNode_);
+            Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
+            switch (fNode_->type) {
+                case XML_ELEMENT_NODE: {
+                    _xmlEntity* e = reinterpret_cast<_xmlEntity*> (fNode_);
+                    return libXMLString2String (e->name);
+                }
+                case XML_ATTRIBUTE_NODE: {
+                    _xmlAttr* a = reinterpret_cast<_xmlAttr*> (fNode_);
+                    return libXMLString2String (a->name);
+                }
+                default:
+                    AssertNotReached ();
+                    return {};
+            }
+        }
+        virtual void SetName (const String& name) override
+        {
+            AssertNotNull (fNode_);
+#if qDebug
+            Require (ValidNewNodeName_ (name));
+#endif
+            xmlNodeSetName (fNode_, BAD_CAST name.AsUTF8 ().c_str ());	
+        }
+        virtual String GetValue () const override
+        {
+            AssertNotNull (fNode_);
+            auto r = xmlNodeGetContent (fNode_);
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (r); });
+            return libXMLString2String (r);
+        }
+        virtual void SetValue (const String& v) override
+        {
+            AssertNotNull (fNode_);
+            xmlNodeSetContent (fNode_, BAD_CAST v.AsUTF8 ().c_str ());
+        }
+        virtual void SetAttribute (const String& attrName, const String& v) override
+        {
+            RequireNotNull (fNode_);
+            Require (GetNodeType () == Node::eElementNT);
+            // @todo handle namespaces on attributes
+            xmlNewProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str (), BAD_CAST v.AsUTF8 ().c_str ());
+        }
+        virtual bool HasAttribute (const String& attrName, const String* value) const override
+        {
+            RequireNotNull (fNode_);
+            Require (GetNodeType () == Node::eElementNT);
+            return xmlHasProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str ());
+        }
+        virtual optional<String> GetAttribute (const String& attrName) const override
+        {
+            // @todo handle ns properly..
+            auto                    r       = xmlGetProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str ());
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (r); });
+            return libXMLString2String (r);
+        }
+        virtual Node::Ptr GetFirstAncestorNodeWithAttribute (const String& attrName) const override
+        {
+            AssertNotNull (fNode_);
+            return nullptr;
+#if 0
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                for (DOMNode* p = fNode_; p != nullptr; p = p->getParentNode ()) {
+                    if (p->getNodeType () == DOMNode::ELEMENT_NODE) {
+                        AssertMember (p, DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
+                        const DOMElement* elt = reinterpret_cast<const DOMElement*> (p);
+                        if (elt->hasAttribute (attrName.As<u16string> ().c_str ())) {
+                            return WrapImpl_ (p);
+                        }
+                    }
+                }
+                return nullptr;
+            }
+            END_LIB_EXCEPTION_MAPPER_
+#endif
+        }
+        virtual Node::Ptr InsertChild (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
+        {
+            return nullptr;
+#if 0
+#if qDebug
+            Require (ValidNewNodeName_ (name));
+#endif
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
+                // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
+                DOMNode* child = doc->createElementNS ((ns == nullopt) ? fNode_->getNamespaceURI () : ns->As<String> ().As<u16string> ().c_str (),
+                                                       name.As<u16string> ().c_str ());
+                DOMNode* refChildNode = nullptr;
+                if (afterNode == nullptr) {
+                    // this means PREPEND.
+                    // If there is a first element, then insert before it. If no elements, then append is the same thing.
+                    refChildNode = fNode_->getFirstChild ();
+                }
+                else {
+                    refChildNode = GetInternalRep_ (GetRep4Node (afterNode).get ())->getNextSibling ();
+                }
+                DOMNode* childx = fNode_->insertBefore (child, refChildNode);
+                ThrowIfNull (childx);
+                return WrapImpl_ (childx);
+            }
+            END_LIB_EXCEPTION_MAPPER_
+#endif
+        }
+        virtual Node::Ptr AppendChild (const String& name, const optional<URI>& ns) override
+        {
+            return nullptr;
+#if 0
+#if qDebug
+            Require (ValidNewNodeName_ (name));
+#endif
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
+                DOMNode*              child{};
+                if (ns) {
+                    u16string namespaceURI = ns->As<String> ().As<u16string> ();
+                    child                  = doc->createElementNS (namespaceURI.c_str (), name.As<u16string> ().c_str ());
+                }
+                else {
+                    const XMLCh* namespaceURI = fNode_->getNamespaceURI ();
+                    child                     = doc->createElementNS (namespaceURI, name.As<u16string> ().c_str ());
+                }
+                DOMNode* childx = fNode_->appendChild (child);
+                ThrowIfNull (childx);
+                return WrapImpl_ (childx);
+            }
+            END_LIB_EXCEPTION_MAPPER_
+#endif
+        }
+        virtual void DeleteNode () override
+        {
+#if 0
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                DOMNode* selNode = fNode_;
+                ThrowIfNull (selNode);
+                DOMNode* parentNode = selNode->getParentNode ();
+                if (parentNode == nullptr) {
+                    // This happens if the selected node is an attribute
+                    if (fNode_ != nullptr) {
+                        const XMLCh* ln = selNode->getNodeName ();
+                        AssertNotNull (ln);
+                        DOMElement* de = dynamic_cast<DOMElement*> (fNode_);
+                        de->removeAttribute (ln);
+                    }
+                }
+                else {
+                    (void)parentNode->removeChild (selNode);
+                }
+            }
+            END_LIB_EXCEPTION_MAPPER_
+#endif
+        }
+        virtual Node::Ptr ReplaceNode () override
+        {
+            return nullptr;
+#if 0
+            RequireNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
+                ThrowIfNull (doc);
+                DOMNode* selNode = fNode_;
+                ThrowIfNull (selNode); // perhaps this should be an assertion?
+                DOMNode* parentNode = selNode->getParentNode ();
+                ThrowIfNull (parentNode);
+                DOMElement* n = doc->createElementNS (selNode->getNamespaceURI (), selNode->getNodeName ());
+                (void)parentNode->replaceChild (n, selNode);
+                return WrapImpl_ (n);
+            }
+            END_LIB_EXCEPTION_MAPPER_
+#endif
+        }
+        virtual Node::Ptr GetParentNode () const override
+        {
+            RequireNotNull (fNode_);
+            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (fNode_->parent)};
+        }
+        virtual Iterable<Node::Ptr> GetChildren () const override
+        {
+            AssertNotNull (fNode_);
+            return Iterable<Node::Ptr>{};
+#if 0
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                return Traversal::CreateGenerator<Node::Ptr> (
+                    [sni = SubNodeIterator_{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node::Ptr> {
+                        if (sni.IsAtEnd ()) {
+                            return optional<Node::Ptr>{};
+                        }
+                        Node::Ptr r = *sni;
+                        ++sni;
+                        return r;
+                    });
+            }
+            END_LIB_EXCEPTION_MAPPER_
+#endif
+        }
+        virtual Node::Ptr GetChildNodeByID (const String& id) const override
+        {
+            return nullptr;
+            AssertNotNull (fNode_);
+#if 0
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                for (DOMNode* i = fNode_->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
+                    if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
+                        AssertMember (i, DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
+                        DOMElement*  elt = reinterpret_cast<DOMElement*> (i);
+                        const XMLCh* s   = elt->getAttribute (u"id");
+                        AssertNotNull (s);
+                        if (CString::Equals (s, id.As<u16string> ().c_str ())) {
+                            return WrapImpl_ (i);
+                        }
+                    }
+                }
+                return nullptr;
+            }
+            END_LIB_EXCEPTION_MAPPER_
+#endif
+        }
+        virtual void* GetInternalTRep () override
+        {
+            return fNode_;
+        }
+
+    private:
+#if 0
+        nonvirtual XercesDocRep_& GetAssociatedDoc_ () const
+        {
+            AssertNotNull (fNode_);
+            xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
+            AssertNotNull (doc);
+            void* docData = doc->getUserData (kXerces2XMLDBDocumentKey_);
+            AssertNotNull (docData);
+            return *reinterpret_cast<XercesDocRep_*> (docData);
+        }
+#endif
+        // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
+        xmlNode* fNode_;
     };
 }
 

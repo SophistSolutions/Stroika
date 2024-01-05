@@ -62,6 +62,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline void Node::Ptr::SetAttribute (const String& attrName, const String& v)
     {
         RequireNotNull (fRep_);
+        Require (GetNodeType () == Node::eElementNT);
         fRep_->SetAttribute (attrName, v);
     }
     inline bool Node::Ptr::HasAttribute (const String& attrName) const

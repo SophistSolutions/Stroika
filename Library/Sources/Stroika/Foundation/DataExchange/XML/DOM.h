@@ -124,6 +124,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  \req GetNodeType () == Node::eElementNT
              */
             nonvirtual void SetAttribute (const String& attrName, const String& v);
 

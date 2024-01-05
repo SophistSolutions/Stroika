@@ -818,6 +818,7 @@ namespace {
         }
         virtual void SetAttribute (const String& attrName, const String& v) override
         {
+            Require (GetNodeType () == Node::eElementNT);
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER_
             {
