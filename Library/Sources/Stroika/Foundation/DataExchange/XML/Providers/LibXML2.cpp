@@ -267,6 +267,9 @@ namespace {
         {
             // @todo handle ns properly..
             auto                    r       = xmlGetProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str ());
+            if (r == nullptr) {
+                return nullopt;
+            }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (r); });
             return libXMLString2String (r);
         }
