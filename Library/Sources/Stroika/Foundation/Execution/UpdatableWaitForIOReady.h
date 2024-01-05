@@ -161,11 +161,11 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /*
-         *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or possibly zero if pollable2Wakeup Set.
+         *  Waits until the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor), or possibly zero if pollable2Wakeup Set.
          *
          *  Returns set of file descriptors which are ready, or an empty set if time expired before any became ready.
          *
-         *  if timeout is <= 0, this will not wait (but may still find some file desciptors ready).
+         *  if timeout is <= 0, this will not wait (but may still find some file descriptors ready).
          *
          *  \note   ***Cancelation Point***
          *

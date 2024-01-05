@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Debug {
      * 
      *  \note TRIED to do this with constexpr bool kAssertExternallySynchronizedMutexEnabled, but as of C++20 rules
      *        still too much of a PITA to use: cannot conditionally define classes, and nearly anything
-     *        based on requires/ifconstexpr, unless it is a template.
+     *        based on requires/if constexpr, unless it is a template.
      */
 #if not defined(qStroika_Foundation_Debug_AssertExternallySynchronizedMutex_Enabled)
 #if qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer

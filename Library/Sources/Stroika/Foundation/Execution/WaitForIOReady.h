@@ -9,6 +9,7 @@
 #include "../Configuration/Common.h"
 #include "../Containers/Collection.h"
 #include "../Containers/Set.h"
+#include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Execution/Synchronized.h"
 #include "../IO/Network/Socket.h"
 #include "../Time/Duration.h"
@@ -130,6 +131,8 @@ namespace Stroika::Foundation::Execution {
          *  (Private) utility to allow select() to wakeup without sending EINTR such signals...
          *  
          *  \note idea originally from https://stackoverflow.com/questions/12050072/how-to-wake-up-a-thread-being-blocked-by-select-poll-poll-function-from-anothe/22239521
+         * 
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
          */
         class EventFD {
         public:
@@ -186,8 +189,6 @@ namespace Stroika::Foundation::Execution {
      *          lots of log noise (dbgtrace). Also, interreupt means if there were real answers mixed with 
      *          non-nanswer we would miss the real ansers and this way captures them too)
      *
-     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *
      *  \par Example Usage
      *      \code
      *          Execution::WaitForIOReady waiter{fd};
@@ -215,6 +216,8 @@ namespace Stroika::Foundation::Execution {
      *
      *  \note   WaitForIOReady internally uses SDKPollableType, which is a UNIX file descriptor or Windows SOCKET. TRAITS
      *          must be provided to map 'T' objects to that SDKPollableType. These are provided by default for most appropriate types.
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T = WaitForIOReady_Support::SDKPollableType, typename TRAITS = WaitForIOReady_Support::WaitForIOReady_Traits<T>>
     class [[nodiscard]] WaitForIOReady : public WaitForIOReady_Support::WaitForIOReady_Base {
@@ -304,8 +307,9 @@ namespace Stroika::Foundation::Execution {
         nonvirtual Containers::Set<T> WaitQuietlyUntil (Time::TimePointSeconds timeoutAt = Time::TimePointSeconds{Time::kInfinity});
 
     private:
-        Traversal::Iterable<pair<T, TypeOfMonitorSet>>    fPollData_;
-        optional<pair<SDKPollableType, TypeOfMonitorSet>> fPollable2Wakeup_;
+        [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+        Traversal::Iterable<pair<T, TypeOfMonitorSet>>                 fPollData_;
+        optional<pair<SDKPollableType, TypeOfMonitorSet>>              fPollable2Wakeup_;
     };
 
 }

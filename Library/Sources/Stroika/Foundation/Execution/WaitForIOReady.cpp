@@ -41,6 +41,10 @@ using Time::DurationSeconds;
 using Time::TimePointSeconds;
 
 namespace {
+
+    /*
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     */
     struct EventFD_Based_ : public EventFD {
 
         EventFD_Based_ () = default;
@@ -69,12 +73,13 @@ namespace {
         virtual void _WriteOne ()     = 0;
 
     private:
-        bool fIsSet_{false};
+        atomic<bool> fIsSet_{false};    // cuz called from multiple threads - sync
     };
 
     /*
      *  This strategy may not be the most efficient (esp to construct) but it should work
      *  portably, so implemented first.
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     struct EventFD_Based_SocketPair_ : EventFD_Based_ {
         static const inline Memory::BLOB sSingleEltDatum{Memory::BLOB ({1})};
@@ -105,12 +110,14 @@ namespace {
         }
         virtual void _ReadAllAvail () override
         {
+            // thread safety OK cuz only reading from Ptr (nobody writes) and socket rep internally synchronized
             byte buf[1024];
             while (fReadSocket_.ReadNonBlocking (begin (buf), end (buf)))
                 ;
         }
         virtual void _WriteOne () override
         {
+            // thread safety OK cuz only reading from Ptr (nobody writes) and socket rep internally synchronized
             fWriteSocket_.Write (sSingleEltDatum);
         }
     };
