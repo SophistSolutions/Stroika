@@ -201,6 +201,7 @@ namespace {
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             AssertNotImplemented ();
+            return {};
         }
         virtual void Validate (const Schema::Ptr& schema) const override
         {
