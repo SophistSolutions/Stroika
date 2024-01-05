@@ -34,7 +34,7 @@ wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrors
 #else
     // If - as is not uncommon - kDefaultMissingReplacementCharacter is not representable in the current locale code page,
     // then try something that will be. This API says 'AllowMissingCharacter....' - so allow it!
-    auto codeCvt = [] () {
+    auto codeCvt = [&] () {
         try {
             return CodeCvt<wchar_t>{locale{}, kOptions_};
         }
