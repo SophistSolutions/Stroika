@@ -212,7 +212,7 @@ namespace {
             TraceContextBumper ctx{"LibXML2::Doc::Write"};
             xmlChar*           xmlbuff{nullptr};
             int                buffersize{};
-            xmlDocDumpFormatMemory (fLibRep_, &xmlbuff, &buffersize, 1);
+            xmlDocDumpFormatMemoryEnc (fLibRep_, &xmlbuff, &buffersize, "UTF-8", options.fPrettyPrint);
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (xmlbuff); });
             to.Write (span{reinterpret_cast<const byte*> (xmlbuff), static_cast<size_t> (buffersize)});
         }
