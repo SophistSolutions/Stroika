@@ -39,7 +39,7 @@ wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrors
             return CodeCvt<wchar_t>{locale{}, kOptions_};
         }
         catch (...) {
-            auto o = kOptions_;
+            auto o                         = kOptions_;
             o.fInvalidCharacterReplacement = '?';
             return CodeCvt<wchar_t>{locale{}, o};
         }
