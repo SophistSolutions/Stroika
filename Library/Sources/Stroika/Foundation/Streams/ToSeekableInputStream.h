@@ -28,13 +28,19 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
      *  That's what this utility does: maps the given input stream into a functionally identical one, except possibly
      *  adding seekability.
      * 
+     *  If the argument stream is already seekable, New () just returns its argument (so perhaps a misnomer but I thought better
+     *  to follow factory pattern).
+     * 
      *  \par Example Usage
      *      \code
-     *          InputStream::Ptr<Character> in = ToSeekableInputStream::New<Character> (existingInputStream...);
+     *          InputStream::Ptr<Character> in = ToSeekableInputStream::New<Character> (existingInputStream);
      *      \endcode
      * 
      *  \note this helper does not require it be given the input stream at SeekOffset 0, but for pretty obvious reasons
      *        it cannot produce a stream that permits seeking backwards from where it starts. This is checked via assertions.
+     * 
+     *  \note this helper cannot be used with very large streams, as it caches the stream in memory as it reads, and would
+     *        eventually run out.
      */
     template <typename ELEMENT_TYPE>
     auto New (const Ptr<ELEMENT_TYPE>& in) -> Ptr<ELEMENT_TYPE>;

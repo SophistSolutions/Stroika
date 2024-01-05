@@ -143,7 +143,7 @@ namespace {
             return nullopt;
 #endif
         }
-        virtual optional<size_t> RemainingLength () override
+        virtual optional<SeekOffsetType> RemainingLength () override
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             if (fSeekable_ == eSeekable) {

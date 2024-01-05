@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Streams::MemoryStream {
                 Ensure (fData_.end () >= fReadCursor_);
                 return static_cast<size_t> (fData_.end () - fReadCursor_); // no uncertainty about data available in MemoryStream
             }
-            virtual optional<size_t> RemainingLength () override
+            virtual optional<SeekOffsetType> RemainingLength () override
             {
                 Ensure (fData_.end () >= fReadCursor_);
                 return static_cast<size_t> (fData_.end () - fReadCursor_);

@@ -82,7 +82,7 @@ namespace {
                 ::EVP_CipherUpdate (fCTX_, reinterpret_cast<unsigned char*> (outBuf.data ()), &outLen,
                                     reinterpret_cast<const unsigned char*> (data2Process.data ()), static_cast<int> (data2Process.size ())));
             Ensure (outLen >= 0);
-            Ensure (outLen <= outBuf.size ());
+            Ensure (static_cast<size_t> (outLen) <= outBuf.size ());
             return outBuf.subspan (0, outLen);
         }
         // return nBytes in outBuf, throws on error
@@ -146,7 +146,7 @@ namespace {
             }
             return static_cast<size_t> (fOutBufEnd_ > fOutBufStart_);
         }
-        virtual optional<size_t> RemainingLength () override
+        virtual optional<SeekOffsetType> RemainingLength () override
         {
             return nullopt; // generally cannot tell without side-effects on input stream
         }

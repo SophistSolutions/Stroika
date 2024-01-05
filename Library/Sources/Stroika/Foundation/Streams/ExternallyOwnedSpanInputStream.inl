@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Streams::ExternallyOwnedSpanInputStream {
                 Ensure (fEnd_ >= fCursor_);
                 return static_cast<size_t> (fEnd_ - fCursor_);
             }
-            virtual optional<size_t> RemainingLength () override
+            virtual optional<SeekOffsetType> RemainingLength () override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());

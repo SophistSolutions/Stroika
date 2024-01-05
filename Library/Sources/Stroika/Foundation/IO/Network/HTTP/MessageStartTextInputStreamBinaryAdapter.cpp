@@ -164,10 +164,10 @@ protected:
         // default impl handles this case since we are seekable
         return inherited::AvailableToRead ();
     }
-    virtual optional<size_t> RemainingLength () override
+    virtual optional<SeekOffsetType> RemainingLength () override
     {
         Require (IsOpenRead ());
-        return nullopt; // could do a bit better, but not  important here - generaly can do no better
+        return nullopt; // could do a bit better, but not  important here - generally can do no better
     }
     virtual optional<span<Character>> Read (span<Character> intoBuffer, NoDataAvailableHandling blockFlag) override
     {

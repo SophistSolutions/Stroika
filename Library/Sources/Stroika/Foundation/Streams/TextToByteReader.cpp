@@ -54,7 +54,7 @@ namespace {
             }
             return fSrc_.AvailableToRead ();
         }
-        virtual optional<size_t> RemainingLength () override
+        virtual optional<SeekOffsetType> RemainingLength () override
         {
             Require (IsOpenRead ());
             return nullopt; // possible, but not easy...

@@ -112,8 +112,8 @@ namespace {
                 Assert (thisReader->flibXMLSaxHndler_.initialized == XML_SAX2_MAGIC); // assure ctx ptr passed through properly
                 thisReader->fCallback_.EndDocument ();
             };
-            flibXMLSaxHndler_.startElementNs = [] (void* ctx, const xmlChar* localname, [[maybe_unused]] const xmlChar* prefix,
-                                                   const xmlChar* URI, [[maybe_unused]] int nb_namespaces, const xmlChar** namespaces,
+            flibXMLSaxHndler_.startElementNs = [] (void* ctx, const xmlChar* localname, [[maybe_unused]] const xmlChar* prefix, const xmlChar* URI,
+                                                   [[maybe_unused]] int nb_namespaces, [[maybe_unused]] const xmlChar** namespaces,
                                                    int nb_attributes, [[maybe_unused]] int nb_defaulted, const xmlChar** attributes) {
                 SAXReader_* thisReader = reinterpret_cast<SAXReader_*> (ctx);
                 Assert (thisReader->flibXMLSaxHndler_.initialized == XML_SAX2_MAGIC); // assure ctx ptr passed through properly
@@ -159,22 +159,15 @@ namespace {
     public:
         DocRep_ (const String& name, const optional<URI>& ns)
         {
-// SEE http://www.xmlsoft.org/examples/io2.c
-#if 0
-             xmlNodePtr n;
-    xmlDocPtr doc;
-    xmlChar *xmlbuff;
-    int buffersize;
-
-    /*
-     * Create the document.
-     */
-    doc = xmlNewDoc(BAD_CAST "1.0");
-    n = xmlNewNode(NULL, BAD_CAST "root");
-    xmlNodeSetContent(n, BAD_CAST "content");
-    xmlDocSetRootElement(doc, n);
-#endif
-            AssertNotImplemented ();
+            // Roughly based on http://www.xmlsoft.org/examples/io2.c
+            xmlDocPtr  doc = xmlNewDoc (BAD_CAST "1.0");
+            xmlNodePtr n   = xmlNewNode (NULL, BAD_CAST name.AsUTF8 ().c_str ()); // @todo NOT clear what characterset/encoding to use here!
+            xmlDocSetRootElement (doc, n);
+            // AND not super clear how to create the namespace if needed?
+            if (ns) {
+                (void)xmlNewNs (n, BAD_CAST ns->As<String> ().AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
+            }
+            fLibRep_ = doc;
         }
         DocRep_ (const Streams::InputStream::Ptr<byte>& in)
         {
@@ -210,11 +203,12 @@ namespace {
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
             TraceContextBumper ctx{"LibXML2::Doc::Write"};
-            xmlChar*           xmlbuff{nullptr};
-            int                buffersize{};
-            xmlDocDumpFormatMemoryEnc (fLibRep_, &xmlbuff, &buffersize, "UTF-8", options.fPrettyPrint);
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (xmlbuff); });
-            to.Write (span{reinterpret_cast<const byte*> (xmlbuff), static_cast<size_t> (buffersize)});
+            xmlChar*           xmlBuffer{nullptr};
+            int                bufferSize{};
+            xmlDocDumpFormatMemoryEnc (fLibRep_, &xmlBuffer, &bufferSize, "UTF-8", options.fPrettyPrint);
+            Assert (strlen ((char*)xmlBuffer) == static_cast<size_t> (bufferSize)); // misnomer cuz really number of valid not nul-term characters (so actual allocated size must be one more)
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (xmlBuffer); });
+            to.Write (span{reinterpret_cast<const byte*> (xmlBuffer), static_cast<size_t> (bufferSize)});
         }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
@@ -329,7 +323,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
     Streams::InputStream::Ptr<byte>   useInput = in;
     optional<Streams::SeekOffsetType> seek2;
     if (schema != nullptr and callback != nullptr) {
-        // at least for now this is needed - cuz we read twice - maybe can fix...
+        // @todo --- at least for now this is needed - cuz we read twice - maybe can fix...
         useInput = Streams::ToSeekableInputStream::New (in);
         seek2    = useInput.GetOffset ();
     }

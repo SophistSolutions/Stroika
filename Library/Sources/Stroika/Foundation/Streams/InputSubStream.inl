@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Streams::InputSubStream {
                 // otherwise, our answer is same as answer from underlying stream (since we do no buffering)
                 return fRealIn_.AvailableToRead (); // @todo nechnically maybe wrong, in may suggest we can read more than we have but not worth fix cuz can cause no problems I'm aware of
             }
-            virtual optional<size_t> RemainingLength () override
+            virtual optional<SeekOffsetType> RemainingLength () override
             {
                 AssertNotImplemented ();
                 return nullopt; // sb pretty easy

@@ -73,7 +73,7 @@ namespace {
             Require (IsOpenRead ());
             return fSD_.ReadNonBlocking (nullptr, nullptr);
         }
-        virtual optional<size_t> RemainingLength () override
+        virtual optional<SeekOffsetType> RemainingLength () override
         {
             Require (IsOpenRead ());
             return nullopt; // maybe in some cases we can answer this like closed, but not generally

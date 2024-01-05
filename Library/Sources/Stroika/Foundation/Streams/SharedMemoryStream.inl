@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                     return nullopt; // if nothing available, but not closed for write, no idea if more to come
                 }
             }
-            virtual optional<size_t> RemainingLength () override
+            virtual optional<SeekOffsetType> RemainingLength () override
             {
                 Require (IsOpenRead ());
                 return nullopt; // pretty easy but @todo

@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                 }
                 return static_cast<size_t> (sz);
             }
-            virtual optional<size_t> RemainingLength () override
+            virtual optional<SeekOffsetType> RemainingLength () override
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());

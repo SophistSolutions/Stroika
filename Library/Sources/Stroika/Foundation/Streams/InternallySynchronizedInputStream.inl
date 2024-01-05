@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::AvailableToRead ();
             }
-            virtual optional<size_t> RemainingLength () override
+            virtual optional<SeekOffsetType> RemainingLength () override
             {
                 [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());
@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Streams::InternallySynchronizedInputStream {
                 Require (IsOpenRead ());
                 return fStream2Wrap.SeekRead (whence, offset);
             }
-            virtual optional<size_t> RemainingLength () override
+            virtual optional<SeekOffsetType> RemainingLength () override
             {
                 [[maybe_unused]] lock_guard critSec{fCriticalSection_};
                 Require (IsOpenRead ());

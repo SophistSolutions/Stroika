@@ -17,7 +17,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
 
     /*
      ********************************************************************************
-     **************** Streams::ToSeekableInputStream::New ***************************
+     ****************** Streams::ToSeekableInputStream::New *************************
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
@@ -47,13 +47,13 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                 }
                 return this->fRealIn.AvailableToRead ();
             }
-            virtual optional<size_t> RemainingLength () override
+            virtual optional<SeekOffsetType> RemainingLength () override
             {
                 auto baseRemaining = this->fRealIn.AvailableToRead ();
                 if (baseRemaining) {
                     SeekOffsetType cacheEnd = fCacheBaseOffset_ + fCachedData_.size ();
                     Assert (fOffset_ <= cacheEnd);
-                    baseRemaining = *baseRemaining + (cacheEnd - fOffset_); // if we have some cached data past current seek offset, add it too
+                    baseRemaining = *baseRemaining + static_cast<size_t> (cacheEnd - fOffset_); // if we have some cached data past current seek offset, add it too
                 }
                 return baseRemaining;
             }
@@ -66,8 +66,8 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                  */
                 SeekOffsetType cacheEnd = fCacheBaseOffset_ + fCachedData_.size ();
                 if (fCacheBaseOffset_ <= fOffset_ and fOffset_ < cacheEnd) [[unlikely]] {
-                    size_t copyCnt = max<size_t> (cacheEnd - fOffset_, intoBuffer.size ());
-                    auto   r       = Memory::CopySpanData (span{fCachedData_}.subspan (fOffset_ - fCacheBaseOffset_, copyCnt), intoBuffer);
+                    size_t copyCnt = max<size_t> (static_cast<size_t> (cacheEnd - fOffset_), intoBuffer.size ());
+                    auto r = Memory::CopySpanData (span{fCachedData_}.subspan (static_cast<size_t> (fOffset_ - fCacheBaseOffset_), copyCnt), intoBuffer);
                     fOffset_ += copyCnt;
                     return r;
                 }

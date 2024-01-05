@@ -107,7 +107,7 @@ namespace {
             }
             return nullopt; // insufficient binary data known available to form a single character
         }
-        virtual optional<size_t> RemainingLength () override
+        virtual optional<SeekOffsetType> RemainingLength () override
         {
             Require (IsOpenRead ());
             return nullopt; // possible, but not easy...

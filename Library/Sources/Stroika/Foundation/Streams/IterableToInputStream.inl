@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Streams::IterableToInputStream {
                 // usually just want to know 0 or >= 1, so don't bother computing full length
                 return fSrcIter_.Done () ? 0 : 1;
             }
-            virtual optional<size_t> RemainingLength () override
+            virtual optional<SeekOffsetType> RemainingLength () override
             {
                 AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());

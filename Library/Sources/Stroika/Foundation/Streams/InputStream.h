@@ -259,7 +259,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         /**
          *  \brief returns nullopt if not known (typical, and the default) - but sometimes it is known, and quite helpful)
          */
-        nonvirtual optional<size_t> RemainingLength () const;
+        nonvirtual optional<SeekOffsetType> RemainingLength () const;
 
     public:
         /**
@@ -564,7 +564,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         /**
          *  \brief returns nullopt if not known (typical, and the default) - but sometimes it is known, and quite helpful)
          */
-        virtual optional<size_t> RemainingLength ();
+        virtual optional<SeekOffsetType> RemainingLength ();
 
     public:
         /**

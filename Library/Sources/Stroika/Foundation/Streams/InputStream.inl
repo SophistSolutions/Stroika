@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         }
     }
     template <typename ELEMENT_TYPE>
-    optional<size_t> InputStream::IRep<ELEMENT_TYPE>::RemainingLength ()
+    optional<SeekOffsetType> InputStream::IRep<ELEMENT_TYPE>::RemainingLength ()
     {
         return nullopt;
     }
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Streams::InputStream {
         return GetRepRWRef ().AvailableToRead ();
     }
     template <typename ELEMENT_TYPE>
-    inline auto InputStream::Ptr<ELEMENT_TYPE>::RemainingLength () const -> optional<size_t>
+    inline auto InputStream::Ptr<ELEMENT_TYPE>::RemainingLength () const -> optional<SeekOffsetType>
     {
         return GetRepRWRef ().RemainingLength ();
     }

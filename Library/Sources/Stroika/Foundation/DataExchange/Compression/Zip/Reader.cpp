@@ -181,7 +181,7 @@ namespace {
         {
             return _Available2Read ([this] (bool isEOF) { return DoProcess_ (isEOF); });
         }
-        virtual optional<size_t> RemainingLength () override
+        virtual optional<SeekOffsetType> RemainingLength () override
         {
             return nullopt; // generally cannot tell without side-effects on input stream
         }
@@ -211,7 +211,7 @@ namespace {
         {
             return _Available2Read ([this] (bool isEOF) { return DoProcess_ (isEOF); });
         }
-        virtual optional<size_t> RemainingLength () override
+        virtual optional<SeekOffsetType> RemainingLength () override
         {
             return nullopt; // generally cannot tell without side-effects on input stream
         }

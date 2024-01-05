@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Streams {
         {
             return fRealIn.AvailableToRead ();
         }
-        virtual optional<size_t> RemainingLength () override
+        virtual optional<SeekOffsetType> RemainingLength () override
         {
             return fRealIn.RemainingLength ();
         }
