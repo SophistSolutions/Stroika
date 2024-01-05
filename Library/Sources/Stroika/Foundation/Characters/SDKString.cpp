@@ -32,7 +32,19 @@ wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrors
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kOptions_};
     return kCvt_.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (s));
 #else
-    return CodeCvt<wchar_t>{locale{}, kOptions_}.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (s));
+    // If - as is not uncommon - kDefaultMissingReplacementCharacter is not representable in the current locale code page,
+    // then try something that will be. This API says 'AllowMissingCharacter....' - so allow it!
+    auto codeCvt = [] () {
+        try {
+            return CodeCvt<wchar_t>{locale{}, kOptions_};
+        }
+        catch (...) {
+            auto o = kOptions_;
+            o.fInvalidCharacterReplacement = '?';
+            return CodeCvt<wchar_t>{locale{}, o};
+        }
+    }();
+    return codeCvt.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (s));
 #endif
 }
 #endif
