@@ -73,7 +73,7 @@ namespace {
         virtual void _WriteOne ()     = 0;
 
     private:
-        atomic<bool> fIsSet_{false};    // cuz called from multiple threads - sync
+        atomic<bool> fIsSet_{false}; // cuz called from multiple threads - sync
     };
 
     /*
