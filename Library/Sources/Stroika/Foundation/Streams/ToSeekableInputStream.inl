@@ -134,6 +134,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
                     } break;
                     default:
                         RequireNotReached ();
+                        return 0;
                 }
             }
 
