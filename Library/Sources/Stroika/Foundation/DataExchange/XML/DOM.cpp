@@ -36,7 +36,8 @@ using namespace Stroika::Foundation::DataExchange::XML::DOM::Document;
 Node::Ptr Node::IRep::GetChildElementByID (const String& id) const
 {
     for (Node::Ptr c : this->GetChildren ()) {
-        if (c.GetAttribute ("id"sv) == id) {
+        static const String kID_ = "id"s;
+        if (c.GetAttribute (kID_) == id) {
             Ensure (c.GetNodeType () == Node::eElementNT);
             return c;
         }

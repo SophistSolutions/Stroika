@@ -788,7 +788,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual void SetName (const String& name) override
+        virtual void SetName (const optional<URI>& ns, const String& name) override
         {
             AssertNotNull (fNode_);
 #if qDebug
@@ -858,7 +858,8 @@ namespace {
                      * or something like that. Anyhow - this appears to do the right thing for now...
                      *      -- LGP 2007-06-13
                      */
-                    element->setAttributeNS (ns? ns->As<String> ().As<u16string> ().c_str (): nullptr, attrName.As<u16string> ().c_str (), v->As<u16string> ().c_str ());
+                    element->setAttributeNS (ns ? ns->As<String> ().As<u16string> ().c_str () : nullptr, attrName.As<u16string> ().c_str (),
+                                             v->As<u16string> ().c_str ());
                 }
                 else {
                     element->removeAttributeNS (nullptr, attrName.As<u16string> ().c_str ());
@@ -988,6 +989,7 @@ namespace {
         {
             return fNode_;
         }
+
     private:
         // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
         DOMNode* fNode_;

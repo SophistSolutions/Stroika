@@ -236,7 +236,7 @@ namespace {
                     return {};
             }
         }
-        virtual void SetName (const String& name) override
+        virtual void SetName (const optional<URI>& ns, const String& name) override
         {
             AssertNotNull (fNode_);
 #if qDebug

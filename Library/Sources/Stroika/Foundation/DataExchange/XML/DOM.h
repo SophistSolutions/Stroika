@@ -301,7 +301,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual Type             GetNodeType () const                                                                      = 0;
             virtual optional<URI>    GetNamespace () const                                                                     = 0;
             virtual String           GetName () const                                                                          = 0;
-            virtual void             SetName (const String& name)                                                              = 0;
+            virtual void             SetName (const optional<URI>& ns, const String& name)                                     = 0;
             virtual String           GetValue () const                                                                         = 0;
             virtual void             SetValue (const String& v)                                                                = 0;
             virtual optional<String> GetAttribute (const optional<URI>& ns, const String& attrName) const                      = 0;
@@ -321,19 +321,14 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     namespace Element {
 
-        using Node::NameWithNamespace;
-
-        // Todo - maybe introduce ElementPtr, wtih the extra methods that require you are an Element?
-        // @todo - and can simply Ptr api (docs at least) above. Maybe cast from Ptr to ElementPtr automatically maps non-elements to nullptr?? Simplifiication
-        // // NYI...
-        //???? --LGP 2024-01-06
+        using namespace Node;
 
         /**
          *  Simple wrapper on Node::Ptr API, but with the Ptr objects refer to Elements.
          * 
          *  If you assign a non-Element to an Element::Ptr, it automatically, silently becomes nullptr (like dynamic_cast).
          */
-        struct Ptr : public Node::Ptr {
+        struct Ptr : Node::Ptr {
         public:
             /**
              */
@@ -366,21 +361,21 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             *  \req GetNodeType () == Node::eElementNT
-            // returns string value of attribute, and nullopt if doesn't exist
+             * returns string value of attribute, and nullopt if doesn't exist
              */
             nonvirtual optional<String> GetAttribute (const NameWithNamespace& attrName) const;
 
         public:
             /**
-            // return true iff attribute exists on this node
-            // return true iff attribute exists on this node and equals (case sensative) value
+             * return true iff attribute exists on this node
+             * return true iff attribute exists on this node and equals (case sensative) value
              */
             nonvirtual bool HasAttribute (const NameWithNamespace& attrName) const;
             nonvirtual bool HasAttribute (const NameWithNamespace& attrName, const String& value) const;
 
         public:
             /**
+             *  Note - setting the attribute to nullopt is equivalent to deleting the attribute
              */
             nonvirtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v);
 
@@ -388,7 +383,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  \brief Insert Element (after argument node) inside of this 'Element'
              * 
-             *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
+             *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'Node::Ptr::GetChildren()' - need not be an element
              */
             nonvirtual Ptr Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode);
 
@@ -436,7 +431,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              * can return a NULL Node Ptr if not found. Only examines this node's (direct) children
              */
-            nonvirtual Ptr GetChildElementByID (const String& id) const;
+            nonvirtual Ptr GetChildByID (const String& id) const;
         };
     }
 
@@ -501,7 +496,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              * \brief always returns Node of eElement or return nullptr if none
              */
-            nonvirtual Node::Ptr GetRootElement () const;
+            nonvirtual Element::Ptr GetRootElement () const;
 
         public:
             /**

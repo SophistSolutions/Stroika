@@ -73,7 +73,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline void Node::Ptr::SetName (const String& name)
     {
         RequireNotNull (fRep_);
-        fRep_->SetName (name);
+        fRep_->SetName (nullopt, name);
     }
     inline String Node::Ptr::GetValue () const
     {
@@ -214,6 +214,121 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     /*
      ********************************************************************************
+     ************************* XML::DOM::Element::Ptr *******************************
+     ********************************************************************************
+     */
+    inline Element::Ptr::Ptr (const Node::Ptr& p)
+        : Node::Ptr{p != nullptr and p.GetNodeType () == Node::eElementNT ? p : nullptr}
+    {
+    }
+    inline auto Element::Ptr::GetName () const -> NameWithNamespace
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        return NameWithNamespace{GetRep ()->GetNamespace (), GetRep ()->GetName ()};
+    }
+    inline void Element::Ptr::SetName (const NameWithNamespace& name)
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        GetRep ()->SetName (name.fNamespace, name.fName);
+    }
+    inline String Element::Ptr::GetValue () const
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        return GetRep ()->GetValue ();
+    }
+    inline void Element::Ptr::SetValue (const String& v)
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        return GetRep ()->SetValue (v);
+    }
+    inline optional<String> Element::Ptr::GetAttribute (const NameWithNamespace& attrName) const
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        return GetRep ()->GetAttribute (attrName.fNamespace, attrName.fName);
+    }
+    inline bool Element::Ptr::HasAttribute (const NameWithNamespace& attrName) const
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        return GetRep ()->GetAttribute (attrName.fNamespace, attrName.fName) != nullopt;
+    }
+    inline bool Element::Ptr::HasAttribute (const NameWithNamespace& attrName, const String& value) const
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        if (auto o = GetRep ()->GetAttribute (attrName.fNamespace, attrName.fName)) {
+            return *o == value;
+        }
+        return false;
+    }
+    inline void Element::Ptr::SetAttribute (const NameWithNamespace& attrName, const optional<String>& v)
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        GetRep ()->SetAttribute (attrName.fNamespace, attrName.fName, v);
+    }
+    inline auto Element::Ptr::Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode) -> Ptr
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        return GetRep ()->InsertElement (eltName.fNamespace, eltName.fName, afterNode);
+    }
+    inline Element::Ptr Element::Ptr::Append (const NameWithNamespace& eltName)
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        return GetRep ()->AppendElement (eltName.fNamespace, eltName.fName);
+    }
+    inline Element::Ptr Element::Ptr::Append (const NameWithNamespace& eltName, const String& v)
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        auto r = Append (eltName);
+        r.SetValue (v);
+        return r;
+    }
+    inline Element::Ptr Element::Ptr::AppendIfNotEmpty (const NameWithNamespace& eltName, const optional<String>& v)
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        if (v) {
+            auto r = Append (eltName);
+            r.SetValue (*v);
+            return r;
+        }
+        return Element::Ptr{nullptr};
+    }
+    inline Element::Ptr Element::Ptr::ReplaceElement ()
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        /**
+         *  Disallow replacing the root element - create a new document instead. (@todo fix a nd allow docRoot)
+         * 
+         *  Basic algorithm:
+         *      o   Save parent node
+         *      o   Add new node just after this one (with same name/namespace)
+         *      o   Delete this node (one just 'replaced')
+         * 
+         *  Note - to avoid issues with temporarily having two nodes of the same name in list of children - may need to modify this logic?
+         */
+        Element::Ptr parent = this->GetParent ();
+        Require (parent != nullptr);                                    // create new Document for this case
+        Element::Ptr newNode = parent.Insert (this->GetName (), *this); // @todo clone NS as well!!!
+        this->DeleteNode ();
+        Ensure (newNode.GetParent () == parent);
+        return newNode;
+    }
+    inline Element::Ptr Element::Ptr::GetParent () const
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        return Element::Ptr{GetRep ()->GetParentNode ()};
+    }
+    inline auto Element::Ptr::GetChildren () const -> Iterable<Ptr>
+    {
+        // return just the child elements - so simple filter
+        return this->Node::Ptr::GetChildren ().Map<Iterable<Ptr>> ([] (Node::Ptr p) -> optional<Ptr> { return Ptr{p}; });
+    }
+    inline auto Element::Ptr::GetChildByID (const String& id) const -> Ptr
+    {
+        Require (GetNodeType () == eElementNT); // cheaters never prosper
+        return Element::Ptr{GetRep ()->GetChildElementByID (id)};
+    }
+
+    /*
+     ********************************************************************************
      ************************ XML::DOM::Document::Ptr *******************************
      ********************************************************************************
      */
@@ -245,7 +360,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         RequireNotNull (fRep_);
         return fRep_->GetChildren ();
     }
-    inline Node::Ptr Document::Ptr::GetRootElement () const
+    inline Element::Ptr Document::Ptr::GetRootElement () const
     {
         RequireNotNull (fRep_);
         // Should only be one in an XML document.
@@ -254,7 +369,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                 return ni;
             }
         }
-        return nullptr;
+        return Element::Ptr{nullptr};
     }
 
 }
