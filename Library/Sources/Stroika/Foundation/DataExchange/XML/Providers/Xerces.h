@@ -58,6 +58,12 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
 
     /**
      */
+    struct IXercesNodeRep : DOM::Node::IRep {
+        virtual xercesc_3_2::DOMNode* GetInternalTRep () = 0;
+    };
+
+    /**
+     */
     Characters::String xercesString2String (const XMLCh* s, const XMLCh* e);
     Characters::String xercesString2String (const XMLCh* t);
 

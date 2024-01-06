@@ -68,22 +68,35 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline bool Node::Ptr::HasAttribute (const String& attrName) const
     {
         RequireNotNull (fRep_);
-        return fRep_->HasAttribute (attrName, nullptr);
+        Require (GetNodeType () == Node::eElementNT);
+        return fRep_->GetAttribute (attrName) != nullopt;
     }
     inline bool Node::Ptr::HasAttribute (const String& attrName, const String& value) const
     {
         RequireNotNull (fRep_);
-        return fRep_->HasAttribute (attrName, &value);
+        Require (GetNodeType () == Node::eElementNT);
+        if (auto o = fRep_->GetAttribute (attrName)) {
+            return *o == value;
+        }
+        return false;
     }
     inline optional<String> Node::Ptr::GetAttribute (const String& attrName) const
     {
         RequireNotNull (fRep_);
+        Require (GetNodeType () == Node::eElementNT);
         return fRep_->GetAttribute (attrName);
     }
     inline Node::Ptr Node::Ptr::GetFirstAncestorNodeWithAttribute (const String& attrName) const
     {
         RequireNotNull (fRep_);
-        return fRep_->GetFirstAncestorNodeWithAttribute (attrName);
+        for (Node::Ptr p = *this; p != nullptr; p = p.GetParentNode ()) {
+            if (p.GetNodeType () == Type::eElementNT) {
+                if (p.HasAttribute (attrName)) {
+                    return p;
+                }
+            }
+            return nullptr;
+        }
     }
     inline Node::Ptr Node::Ptr::InsertChild (const String& name, const Node::Ptr& afterNode)
     {
@@ -135,6 +148,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline Node::Ptr Node::Ptr::GetChildNodeByID (const String& id) const
     {
         return fRep_->GetChildNodeByID (id);
+    }
+    inline shared_ptr<Node::IRep> Node::Ptr::GetRep () const
+    {
+        return fRep_;
     }
 
     /*

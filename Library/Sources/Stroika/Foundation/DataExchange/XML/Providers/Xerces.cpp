@@ -674,7 +674,6 @@ namespace {
 
     class XercesDocRep_;
     Node::Ptr WrapImpl_ (DOMNode* n);
-    DOMNode*  GetInternalRep_ (Node::IRep* anr);
 }
 
 namespace {
@@ -734,7 +733,7 @@ namespace {
 }
 
 namespace {
-    class XercesNodeRep_ : public Node::IRep, Memory::UseBlockAllocationIfAppropriate<XercesNodeRep_> {
+    class XercesNodeRep_ : public IXercesNodeRep, Memory::UseBlockAllocationIfAppropriate<XercesNodeRep_> {
     public:
         XercesNodeRep_ (DOMNode* n)
             : fNode_{n}
@@ -838,26 +837,6 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual bool HasAttribute (const String& attrName, const String* value) const override
-        {
-            AssertNotNull (fNode_);
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
-                    DOMElement* elt = Debug::UncheckedDynamicCast<DOMElement*> (fNode_);
-                    if (elt->hasAttribute (attrName.As<u16string> ().c_str ())) {
-                        if (value != nullptr) {
-                            const XMLCh* s = elt->getAttribute (attrName.As<u16string> ().c_str ());
-                            AssertNotNull (s);
-                            return CString::Equals (s, value->As<u16string> ().c_str ());
-                        }
-                        return true;
-                    }
-                }
-                return false;
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
         virtual optional<String> GetAttribute (const String& attrName) const override
         {
             AssertNotNull (fNode_);
@@ -872,24 +851,6 @@ namespace {
                     }
                 }
                 return nullopt;
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
-        virtual Node::Ptr GetFirstAncestorNodeWithAttribute (const String& attrName) const override
-        {
-            AssertNotNull (fNode_);
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                for (DOMNode* p = fNode_; p != nullptr; p = p->getParentNode ()) {
-                    if (p->getNodeType () == DOMNode::ELEMENT_NODE) {
-                        AssertMember (p, DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                        const DOMElement* elt = reinterpret_cast<const DOMElement*> (p);
-                        if (elt->hasAttribute (attrName.As<u16string> ().c_str ())) {
-                            return WrapImpl_ (p);
-                        }
-                    }
-                }
-                return nullptr;
             }
             END_LIB_EXCEPTION_MAPPER_
         }
@@ -911,7 +872,7 @@ namespace {
                     refChildNode = fNode_->getFirstChild ();
                 }
                 else {
-                    refChildNode = GetInternalRep_ (GetRep4Node (afterNode).get ())->getNextSibling ();
+                    refChildNode = Debug::UncheckedDynamicCast<XercesNodeRep_&> (*afterNode.GetRep ()).GetInternalTRep ()->getNextSibling ();
                 }
                 DOMNode* childx = fNode_->insertBefore (child, refChildNode);
                 ThrowIfNull (childx);
@@ -1028,7 +989,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual void* GetInternalTRep () override
+        virtual xercesc_3_2::DOMNode* GetInternalTRep () override
         {
             return fNode_;
         }
@@ -1300,12 +1261,7 @@ namespace {
 }
 
 namespace {
-    DOMNode* GetInternalRep_ (Node::IRep* anr)
-    {
-        RequireNotNull (anr);
-        AssertNotNull (anr->GetInternalTRep ());
-        return reinterpret_cast<DOMNode*> (anr->GetInternalTRep ());
-    }
+
     Node::Ptr WrapImpl_ (DOMNode* n)
     {
         RequireNotNull (n);

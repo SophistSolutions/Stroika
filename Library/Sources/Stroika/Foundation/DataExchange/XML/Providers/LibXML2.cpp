@@ -8,8 +8,8 @@
 #include "../../../DataExchange/BadFormatException.h"
 #include "../../../Debug/Trace.h"
 #include "../../../Execution/Throw.h"
-#include "../../../Memory/Common.h"
 #include "../../../Memory/BlockAllocated.h"
+#include "../../../Memory/Common.h"
 #include "../../../Memory/MemoryAllocator.h"
 #include "Stroika/Foundation/Streams/ToSeekableInputStream.h"
 
@@ -167,11 +167,11 @@ namespace {
         }
         return true;
     }
-#endif 
+#endif
 }
 
 namespace {
-    class NodeRep_ : public Node::IRep, Memory::UseBlockAllocationIfAppropriate<NodeRep_> {
+    class NodeRep_ : public ILibXML2NodeRep, Memory::UseBlockAllocationIfAppropriate<NodeRep_> {
     public:
         NodeRep_ (xmlNode* n)
             : fNode_{n}
@@ -236,12 +236,12 @@ namespace {
 #if qDebug
             Require (ValidNewNodeName_ (name));
 #endif
-            xmlNodeSetName (fNode_, BAD_CAST name.AsUTF8 ().c_str ());	
+            xmlNodeSetName (fNode_, BAD_CAST name.AsUTF8 ().c_str ());
         }
         virtual String GetValue () const override
         {
             AssertNotNull (fNode_);
-            auto r = xmlNodeGetContent (fNode_);
+            auto                    r       = xmlNodeGetContent (fNode_);
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (r); });
             return libXMLString2String (r);
         }
@@ -257,42 +257,15 @@ namespace {
             // @todo handle namespaces on attributes
             xmlNewProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str (), BAD_CAST v.AsUTF8 ().c_str ());
         }
-        virtual bool HasAttribute (const String& attrName, const String* value) const override
-        {
-            RequireNotNull (fNode_);
-            Require (GetNodeType () == Node::eElementNT);
-            return xmlHasProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str ());
-        }
         virtual optional<String> GetAttribute (const String& attrName) const override
         {
             // @todo handle ns properly..
-            auto                    r       = xmlGetProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str ());
+            auto r = xmlGetProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str ());
             if (r == nullptr) {
                 return nullopt;
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (r); });
             return libXMLString2String (r);
-        }
-        virtual Node::Ptr GetFirstAncestorNodeWithAttribute (const String& attrName) const override
-        {
-            AssertNotNull (fNode_);
-            return nullptr;
-#if 0
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                for (DOMNode* p = fNode_; p != nullptr; p = p->getParentNode ()) {
-                    if (p->getNodeType () == DOMNode::ELEMENT_NODE) {
-                        AssertMember (p, DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                        const DOMElement* elt = reinterpret_cast<const DOMElement*> (p);
-                        if (elt->hasAttribute (attrName.As<u16string> ().c_str ())) {
-                            return WrapImpl_ (p);
-                        }
-                    }
-                }
-                return nullptr;
-            }
-            END_LIB_EXCEPTION_MAPPER_
-#endif
         }
         virtual Node::Ptr InsertChild (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
         {
@@ -418,30 +391,7 @@ namespace {
             END_LIB_EXCEPTION_MAPPER_
 #endif
         }
-        virtual Node::Ptr GetChildNodeByID (const String& id) const override
-        {
-            return nullptr;
-            AssertNotNull (fNode_);
-#if 0
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                for (DOMNode* i = fNode_->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
-                    if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
-                        AssertMember (i, DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                        DOMElement*  elt = reinterpret_cast<DOMElement*> (i);
-                        const XMLCh* s   = elt->getAttribute (u"id");
-                        AssertNotNull (s);
-                        if (CString::Equals (s, id.As<u16string> ().c_str ())) {
-                            return WrapImpl_ (i);
-                        }
-                    }
-                }
-                return nullptr;
-            }
-            END_LIB_EXCEPTION_MAPPER_
-#endif
-        }
-        virtual void* GetInternalTRep () override
+        virtual xmlNode* GetInternalTRep () override
         {
             return fNode_;
         }

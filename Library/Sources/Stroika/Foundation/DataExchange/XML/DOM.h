@@ -130,6 +130,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  \req GetNodeType () == Node::eElementNT
             // return true iff attribute exists on this node
             // return true iff attribute exists on this node and equals (case sensative) value
              */
@@ -138,6 +139,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  \req GetNodeType () == Node::eElementNT
             // returns string value of attribute, and nullopt if doesn't exist
              */
             nonvirtual optional<String> GetAttribute (const String& attrName) const;
@@ -198,6 +200,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              */
             nonvirtual Ptr GetChildNodeByID (const String& id) const;
 
+        public:
+            /**
+             */
+            nonvirtual shared_ptr<IRep> GetRep () const;
+
         private:
             shared_ptr<IRep> fRep_;
 
@@ -220,27 +227,15 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual String           GetValue () const                                                               = 0;
             virtual void             SetValue (const String& v)                                                      = 0;
             virtual void             SetAttribute (const String& attrName, const String& v)                          = 0;
-            virtual bool             HasAttribute (const String& attrName, const String* value) const                = 0;
             virtual optional<String> GetAttribute (const String& attrName) const                                     = 0;
-            virtual Ptr              GetFirstAncestorNodeWithAttribute (const String& attrName) const                = 0;
             virtual Ptr              InsertChild (const String& name, const optional<URI>& ns, const Ptr& afterNode) = 0;
             virtual Ptr              AppendChild (const String& name, const optional<URI>& ns)                       = 0;
             virtual void             DeleteNode ()                                                                   = 0;
             virtual Ptr              ReplaceNode ()                                                                  = 0;
             virtual Ptr              GetParentNode () const                                                          = 0;
             virtual Iterable<Ptr>    GetChildren () const                                                            = 0;
-            virtual Ptr              GetChildNodeByID (const String& id) const                                       = 0;
-
-            // @todo see if I can lose GetInteralRep, and do with dynamic_cast - better/more portable to diff impls...
-            virtual void* GetInternalTRep () = 0;
-
-        protected:
-            // todo see if I can lose this or better doucment the point
-            inline static shared_ptr<IRep> GetRep4Node (Ptr n)
-            {
-                // @todo - see if this needed/why
-                return n.fRep_;
-            }
+            // Redundant API, but provided since commonly used and can be optimized
+            virtual Ptr GetChildNodeByID (const String& id) const;
         };
     }
 

@@ -30,6 +30,9 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
 
     using Characters::String;
 
+    /**
+     *  Note - it is documented in the headers that xmlChar is always UTF8
+     */
     String libXMLString2String (const xmlChar* s, int len);
     String libXMLString2String (const xmlChar* t);
 
@@ -41,6 +44,12 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
 
     struct ILibXML2DocRep : DOM::Document::IRep {
         virtual xmlDoc* GetLibXMLDocRep () = 0;
+    };
+
+    /**
+     */
+    struct ILibXML2NodeRep : DOM::Node::IRep {
+        virtual xmlNode* GetInternalTRep () = 0;
     };
 
     /**
@@ -57,8 +66,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const String& documentElementName, const optional<URI>& ns) const override;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                  const Schema::Ptr& schemaToValidateAgainstWhileReading) const override;
-        virtual void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
-                               const Schema::Ptr& schema) const override;
+        virtual void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema) const override;
     };
     inline const Provider kDefaultProvider;
 
