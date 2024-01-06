@@ -98,30 +98,37 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             return nullptr;
         }
     }
-    inline Node::Ptr Node::Ptr::InsertChild (const String& name, const Node::Ptr& afterNode)
+    inline Node::Ptr Node::Ptr::InsertElement (const String& name, const Node::Ptr& afterNode)
     {
         RequireNotNull (fRep_);
-        return fRep_->InsertChild (name, nullopt, afterNode);
+        Require (GetNodeType () == Node::eElementNT);
+        return fRep_->InsertElement (name, nullopt, afterNode);
     }
-    inline Node::Ptr Node::Ptr::InsertChild (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode)
+    inline Node::Ptr Node::Ptr::InsertElement (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode)
     {
         RequireNotNull (fRep_);
-        return fRep_->InsertChild (name, ns, afterNode);
+        Require (GetNodeType () == Node::eElementNT);
+        return fRep_->InsertElement (name, ns, afterNode);
     }
-    inline Node::Ptr Node::Ptr::AppendChild (const String& name, const optional<URI>& ns)
+    inline Node::Ptr Node::Ptr::AppendElement (const String& name, const optional<URI>& ns)
     {
         RequireNotNull (fRep_);
-        return fRep_->AppendChild (name, ns);
+        Require (GetNodeType () == Node::eElementNT);
+        return fRep_->AppendElement (name, ns);
     }
-    inline void Node::Ptr::AppendChild (const String& name, const optional<URI>& ns, const String& v)
+    inline Node::Ptr Node::Ptr::AppendElement (const String& name, const optional<URI>& ns, const String& v)
     {
-        AppendChild (name, ns).SetValue (v);
+        Require (GetNodeType () == Node::eElementNT);
+        auto r = AppendElement (name, ns);
+        r.SetValue (v);
+        return r;
     }
-    inline void Node::Ptr::AppendChildIfNotEmpty (const String& name, const optional<URI>& ns, const String& v)
+    inline void Node::Ptr::AppendElementIfNotEmpty (const String& name, const optional<URI>& ns, const optional<String>& v)
     {
         RequireNotNull (fRep_);
-        if (not v.empty ()) {
-            fRep_->AppendChild (name, ns).SetValue (v);
+        Require (GetNodeType () == Node::eElementNT);
+        if (v != nullopt and not v->empty ()) {
+            fRep_->AppendElement (name, ns).SetValue (*v);
         }
     }
     inline void Node::Ptr::DeleteNode ()
@@ -147,6 +154,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
     inline Node::Ptr Node::Ptr::GetChildNodeByID (const String& id) const
     {
+        RequireNotNull (fRep_);
+        Require (GetNodeType () == Node::eElementNT);
         return fRep_->GetChildNodeByID (id);
     }
     inline shared_ptr<Node::IRep> Node::Ptr::GetRep () const

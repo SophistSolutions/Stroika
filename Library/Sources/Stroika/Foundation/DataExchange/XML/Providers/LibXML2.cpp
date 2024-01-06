@@ -267,7 +267,7 @@ namespace {
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (r); });
             return libXMLString2String (r);
         }
-        virtual Node::Ptr InsertChild (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
+        virtual Node::Ptr InsertElement (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
         {
             return nullptr;
 #if 0
@@ -296,31 +296,14 @@ namespace {
             END_LIB_EXCEPTION_MAPPER_
 #endif
         }
-        virtual Node::Ptr AppendChild (const String& name, const optional<URI>& ns) override
+        virtual Node::Ptr AppendElement (const String& name, const optional<URI>& ns) override
         {
-            return nullptr;
-#if 0
 #if qDebug
             Require (ValidNewNodeName_ (name));
 #endif
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
-                DOMNode*              child{};
-                if (ns) {
-                    u16string namespaceURI = ns->As<String> ().As<u16string> ();
-                    child                  = doc->createElementNS (namespaceURI.c_str (), name.As<u16string> ().c_str ());
-                }
-                else {
-                    const XMLCh* namespaceURI = fNode_->getNamespaceURI ();
-                    child                     = doc->createElementNS (namespaceURI, name.As<u16string> ().c_str ());
-                }
-                DOMNode* childx = fNode_->appendChild (child);
-                ThrowIfNull (childx);
-                return WrapImpl_ (childx);
-            }
-            END_LIB_EXCEPTION_MAPPER_
-#endif
+            xmlNode* newNode = xmlNewNode (NULL, BAD_CAST name.AsUTF8 ().c_str ()); // @todo handle NS
+            xmlAddChild (fNode_, newNode);
+            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
         }
         virtual void DeleteNode () override
         {
@@ -397,17 +380,6 @@ namespace {
         }
 
     private:
-#if 0
-        nonvirtual XercesDocRep_& GetAssociatedDoc_ () const
-        {
-            AssertNotNull (fNode_);
-            xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
-            AssertNotNull (doc);
-            void* docData = doc->getUserData (kXerces2XMLDBDocumentKey_);
-            AssertNotNull (docData);
-            return *reinterpret_cast<XercesDocRep_*> (docData);
-        }
-#endif
         // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
         xmlNode* fNode_;
     };

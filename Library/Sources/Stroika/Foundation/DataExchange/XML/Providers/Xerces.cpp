@@ -854,7 +854,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Node::Ptr InsertChild (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
+        virtual Node::Ptr InsertElement (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (name));
@@ -880,7 +880,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Node::Ptr AppendChild (const String& name, const optional<URI>& ns) override
+        virtual Node::Ptr AppendElement (const String& name, const optional<URI>& ns) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (name));

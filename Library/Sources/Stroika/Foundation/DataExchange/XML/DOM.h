@@ -152,21 +152,33 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-            // if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
+             *  \brief Insert Element (after argument node) inside of this 'Element'
+             * 
+             *  \req GetNodeType () == Node::eElementNT
+             * 
+             *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
              */
-            nonvirtual Ptr InsertChild (const String& name, const Ptr& afterNode);
-            nonvirtual Ptr InsertChild (const String& name, const optional<URI>& ns, const Ptr& afterNode);
+            nonvirtual Ptr InsertElement (const String& name, const Ptr& afterNode);
+            nonvirtual Ptr InsertElement (const String& name, const optional<URI>& ns, const Ptr& afterNode);
 
         public:
             /**
+             * 
+             *  \req GetNodeType () == Node::eElementNT
+             * 
              */
-            nonvirtual Ptr  AppendChild (const String& name, const optional<URI>& ns = nullopt);
-            nonvirtual void AppendChild (const String& name, const optional<URI>& ns, const String& v);
+            nonvirtual Ptr AppendElement (const String& name, const optional<URI>& ns = nullopt);
+            nonvirtual Ptr AppendElement (const String& name, const optional<URI>& ns, const String& v);
 
         public:
             /**
+             *  \brief Trivial wrapper on AppendElement, but if v is missing or "", then this is a no-op.
+             * 
+             *  \req GetNodeType () == Node::eElementNT
+             * 
+             *  Trivial, but I've found helpful in making certain uses more terse.
              */
-            nonvirtual void AppendChildIfNotEmpty (const String& name, const optional<URI>& ns, const String& v);
+            nonvirtual void AppendElementIfNotEmpty (const String& name, const optional<URI>& ns, const optional<String>& v);
 
         public:
             /**
@@ -196,7 +208,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-            // can return a NULL Node. Only examines this node's children
+             *  \req GetNodeType () == Node::eElementNT
+             * can return a NULL Node Ptr if not found. Only examines this node's (direct) children
              */
             nonvirtual Ptr GetChildNodeByID (const String& id) const;
 
@@ -204,6 +217,30 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              */
             nonvirtual shared_ptr<IRep> GetRep () const;
+
+        public:
+            [[deprecated ("Since Stroika v3.0d5 use InsertElement")]] inline Ptr InsertChild (const String& name, const Ptr& afterNode)
+            {
+                return InsertElement (name, afterNode);
+            }
+            [[deprecated ("Since Stroika v3.0d5 use InsertElement")]] inline Ptr InsertChild (const String& name, const optional<URI>& ns,
+                                                                                              const Ptr& afterNode)
+            {
+                return InsertElement (name, ns, afterNode);
+            }
+            [[deprecated ("Since Stroika v3.0d5 use InsertElement")]] inline Ptr AppendChild (const String& name, const optional<URI>& ns = nullopt)
+            {
+                return AppendElement (name, ns);
+            }
+            [[deprecated ("Since Stroika v3.0d5 use InsertElement")]] inline Ptr AppendChild (const String& name, const optional<URI>& ns, const String& v)
+            {
+                return AppendElement (name, ns, v);
+            }
+            [[deprecated ("Since Stroika v3.0d5 use InsertElement")]] inline void AppendChildIfNotEmpty (const String& name,
+                                                                                                         const optional<URI>& ns, const String& v)
+            {
+                return AppendElementIfNotEmpty (name, ns, v);
+            }
 
         private:
             shared_ptr<IRep> fRep_;
@@ -220,20 +257,20 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual ~IRep () = default;
 
         public:
-            virtual Type             GetNodeType () const                                                            = 0;
-            virtual optional<URI>    GetNamespace () const                                                           = 0;
-            virtual String           GetName () const                                                                = 0;
-            virtual void             SetName (const String& name)                                                    = 0;
-            virtual String           GetValue () const                                                               = 0;
-            virtual void             SetValue (const String& v)                                                      = 0;
-            virtual void             SetAttribute (const String& attrName, const String& v)                          = 0;
-            virtual optional<String> GetAttribute (const String& attrName) const                                     = 0;
-            virtual Ptr              InsertChild (const String& name, const optional<URI>& ns, const Ptr& afterNode) = 0;
-            virtual Ptr              AppendChild (const String& name, const optional<URI>& ns)                       = 0;
-            virtual void             DeleteNode ()                                                                   = 0;
-            virtual Ptr              ReplaceNode ()                                                                  = 0;
-            virtual Ptr              GetParentNode () const                                                          = 0;
-            virtual Iterable<Ptr>    GetChildren () const                                                            = 0;
+            virtual Type             GetNodeType () const                                                              = 0;
+            virtual optional<URI>    GetNamespace () const                                                             = 0;
+            virtual String           GetName () const                                                                  = 0;
+            virtual void             SetName (const String& name)                                                      = 0;
+            virtual String           GetValue () const                                                                 = 0;
+            virtual void             SetValue (const String& v)                                                        = 0;
+            virtual void             SetAttribute (const String& attrName, const String& v)                            = 0;
+            virtual optional<String> GetAttribute (const String& attrName) const                                       = 0;
+            virtual Ptr              InsertElement (const String& name, const optional<URI>& ns, const Ptr& afterNode) = 0;
+            virtual Ptr              AppendElement (const String& name, const optional<URI>& ns)                       = 0;
+            virtual void             DeleteNode ()                                                                     = 0;
+            virtual Ptr              ReplaceNode ()                                                                    = 0;
+            virtual Ptr              GetParentNode () const                                                            = 0;
+            virtual Iterable<Ptr>    GetChildren () const                                                              = 0;
             // Redundant API, but provided since commonly used and can be optimized
             virtual Ptr GetChildNodeByID (const String& id) const;
         };
