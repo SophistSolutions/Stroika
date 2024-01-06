@@ -243,7 +243,7 @@ namespace {
             Require (ValidNewNodeName_ (name));
 #endif
             if (ns) {
-                AssertNotImplemented ();// see SetAttribtues - simple now...
+                AssertNotImplemented (); // see SetAttribtues - simple now...
             }
             else {
                 xmlNodeSetName (fNode_, BAD_CAST name.AsUTF8 ().c_str ());
