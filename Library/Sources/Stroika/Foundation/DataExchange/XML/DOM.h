@@ -84,8 +84,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  \note a bit queer, but very helpful - two Node::Ptr's are equal not by comparing their pointers (shared_ptr rep) but
+             *        if they refer to the same underlying (in providers representation) object. Meaning if they are created by two
+             *        different APIs (say an interator and some other api) - you can check to see if they refer to the same underlying node.
+             * 
+             *  \req the two Ptrs are either nullptr or come from the same XML Provider object.
              */
-            bool operator== (const Ptr&) const = default;
+            nonvirtual bool operator== (const Ptr& rhs) const;
 
         public:
             /**
@@ -189,11 +194,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             * creates a new (empty) node with same name (and namespace) as orig
+             * creates a new (empty) node with same name (and namespace) as orig, and in the same position (but not root of document)
              * 
-             *  \note Queer API - why do I have this??? --LGP 2023-12-16
+             *  \req Require (GetNodeType () == Node::eElementNT)
+             *  \req GetParent () != nullptr
+             * 
+             *  To replace the root element, just create a new Document;
+             * 
+             *  This can be used to delete all the children/content under a given node and is equivilent, except that it returns
+             *  a new NodePtr, and invalidates this.
              */
-            nonvirtual Ptr ReplaceNode ();
+            nonvirtual Ptr ReplaceElement ();
 
         public:
             /**
@@ -210,8 +221,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  \req GetNodeType () == Node::eElementNT
              * can return a NULL Node Ptr if not found. Only examines this node's (direct) children
+             * 
+             *  \ens result == nullptr or result.GetNodeType () == Element
              */
-            nonvirtual Ptr GetChildNodeByID (const String& id) const;
+            nonvirtual Ptr GetChildElementByID (const String& id) const;
 
         public:
             /**
@@ -228,18 +241,26 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             {
                 return InsertElement (name, ns, afterNode);
             }
-            [[deprecated ("Since Stroika v3.0d5 use InsertElement")]] inline Ptr AppendChild (const String& name, const optional<URI>& ns = nullopt)
+            [[deprecated ("Since Stroika v3.0d5 use AppendElement")]] inline Ptr AppendChild (const String& name, const optional<URI>& ns = nullopt)
             {
                 return AppendElement (name, ns);
             }
-            [[deprecated ("Since Stroika v3.0d5 use InsertElement")]] inline Ptr AppendChild (const String& name, const optional<URI>& ns, const String& v)
+            [[deprecated ("Since Stroika v3.0d5 use AppendElement")]] inline Ptr AppendChild (const String& name, const optional<URI>& ns, const String& v)
             {
                 return AppendElement (name, ns, v);
             }
-            [[deprecated ("Since Stroika v3.0d5 use InsertElement")]] inline void AppendChildIfNotEmpty (const String& name,
-                                                                                                         const optional<URI>& ns, const String& v)
+            [[deprecated ("Since Stroika v3.0d5 use AppendElementIfNotEmpty")]] inline void
+            AppendChildIfNotEmpty (const String& name, const optional<URI>& ns, const String& v)
             {
                 return AppendElementIfNotEmpty (name, ns, v);
+            }
+            [[deprecated ("Since Stroika v3.0d5 use ReplaceElement or create new Document")]] Ptr ReplaceNode ()
+            {
+                return ReplaceElement ();
+            }
+            [[deprecated ("Since Stroika v3.0d5 use GetChildElementByID")]] Ptr GetChildNodeByID (const String& id) const
+            {
+                return GetChildElementByID (id);
             }
 
         private:
@@ -257,22 +278,25 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual ~IRep () = default;
 
         public:
-            virtual Type             GetNodeType () const                                                              = 0;
-            virtual optional<URI>    GetNamespace () const                                                             = 0;
-            virtual String           GetName () const                                                                  = 0;
-            virtual void             SetName (const String& name)                                                      = 0;
-            virtual String           GetValue () const                                                                 = 0;
-            virtual void             SetValue (const String& v)                                                        = 0;
-            virtual void             SetAttribute (const String& attrName, const String& v)                            = 0;
-            virtual optional<String> GetAttribute (const String& attrName) const                                       = 0;
-            virtual Ptr              InsertElement (const String& name, const optional<URI>& ns, const Ptr& afterNode) = 0;
-            virtual Ptr              AppendElement (const String& name, const optional<URI>& ns)                       = 0;
-            virtual void             DeleteNode ()                                                                     = 0;
-            virtual Ptr              ReplaceNode ()                                                                    = 0;
-            virtual Ptr              GetParentNode () const                                                            = 0;
-            virtual Iterable<Ptr>    GetChildren () const                                                              = 0;
+            virtual bool             Equals (const IRep* rhs) const                         = 0;
+            virtual Type             GetNodeType () const                                   = 0;
+            virtual optional<URI>    GetNamespace () const                                  = 0;
+            virtual String           GetName () const                                       = 0;
+            virtual void             SetName (const String& name)                           = 0;
+            virtual String           GetValue () const                                      = 0;
+            virtual void             SetValue (const String& v)                             = 0;
+            virtual void             SetAttribute (const String& attrName, const String& v) = 0;
+            virtual optional<String> GetAttribute (const String& attrName) const            = 0;
+            /**
+             *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
+             */
+            virtual Ptr           InsertElement (const String& name, const optional<URI>& ns, const Ptr& afterNode) = 0;
+            virtual Ptr           AppendElement (const String& name, const optional<URI>& ns)                       = 0;
+            virtual void          DeleteNode ()                                                                     = 0;
+            virtual Ptr           GetParentNode () const                                                            = 0;
+            virtual Iterable<Ptr> GetChildren () const                                                              = 0;
             // Redundant API, but provided since commonly used and can be optimized
-            virtual Ptr GetChildNodeByID (const String& id) const;
+            virtual Ptr GetChildElementByID (const String& id) const;
         };
     }
 

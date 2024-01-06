@@ -178,6 +178,12 @@ namespace {
         {
             RequireNotNull (n);
         }
+        virtual bool Equals (const IRep* rhs) const override
+        {
+            RequireNotNull (fNode_);
+            RequireNotNull (rhs);
+            return fNode_ == Debug::UncheckedDynamicCast<const NodeRep_*> (rhs)->fNode_;
+        }
         virtual Node::Type GetNodeType () const override
         {
             AssertNotNull (fNode_);
@@ -269,32 +275,11 @@ namespace {
         }
         virtual Node::Ptr InsertElement (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
         {
-            return nullptr;
-#if 0
-#if qDebug
-            Require (ValidNewNodeName_ (name));
-#endif
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
-                // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
-                DOMNode* child = doc->createElementNS ((ns == nullopt) ? fNode_->getNamespaceURI () : ns->As<String> ().As<u16string> ().c_str (),
-                                                       name.As<u16string> ().c_str ());
-                DOMNode* refChildNode = nullptr;
-                if (afterNode == nullptr) {
-                    // this means PREPEND.
-                    // If there is a first element, then insert before it. If no elements, then append is the same thing.
-                    refChildNode = fNode_->getFirstChild ();
-                }
-                else {
-                    refChildNode = GetInternalRep_ (GetRep4Node (afterNode).get ())->getNextSibling ();
-                }
-                DOMNode* childx = fNode_->insertBefore (child, refChildNode);
-                ThrowIfNull (childx);
-                return WrapImpl_ (childx);
-            }
-            END_LIB_EXCEPTION_MAPPER_
-#endif
+            Require (afterNode == nullptr or this->GetChildren ().Contains (afterNode));
+            xmlNode*  newNode      = xmlNewNode (NULL, BAD_CAST name.AsUTF8 ().c_str ()); // @todo handle NS
+            NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : Debug::UncheckedDynamicCast<NodeRep_*> (afterNode.GetRep ().get ());
+            xmlAddNextSibling (Debug::UncheckedDynamicCast<NodeRep_&> (*afterNode.GetRep ()).fNode_, newNode);
+            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
         }
         virtual Node::Ptr AppendElement (const String& name, const optional<URI>& ns) override
         {
@@ -329,26 +314,6 @@ namespace {
             END_LIB_EXCEPTION_MAPPER_
 #endif
         }
-        virtual Node::Ptr ReplaceNode () override
-        {
-            return nullptr;
-#if 0
-            RequireNotNull (fNode_);
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
-                ThrowIfNull (doc);
-                DOMNode* selNode = fNode_;
-                ThrowIfNull (selNode); // perhaps this should be an assertion?
-                DOMNode* parentNode = selNode->getParentNode ();
-                ThrowIfNull (parentNode);
-                DOMElement* n = doc->createElementNS (selNode->getNamespaceURI (), selNode->getNodeName ());
-                (void)parentNode->replaceChild (n, selNode);
-                return WrapImpl_ (n);
-            }
-            END_LIB_EXCEPTION_MAPPER_
-#endif
-        }
         virtual Node::Ptr GetParentNode () const override
         {
             RequireNotNull (fNode_);
@@ -357,22 +322,16 @@ namespace {
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
             AssertNotNull (fNode_);
-            return Iterable<Node::Ptr>{};
-#if 0
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                return Traversal::CreateGenerator<Node::Ptr> (
-                    [sni = SubNodeIterator_{Memory::MakeSharedPtr<SubNodeIteratorOver_SiblingList_Rep_> (fNode_)}] () mutable -> optional<Node::Ptr> {
-                        if (sni.IsAtEnd ()) {
-                            return optional<Node::Ptr>{};
-                        }
-                        Node::Ptr r = *sni;
-                        ++sni;
-                        return r;
-                    });
-            }
-            END_LIB_EXCEPTION_MAPPER_
-#endif
+            // No reference counting possible here because these notes - i THINK - are owned by document, and the linked list not
+            // reference counted (elts) - so just count on no changes during iteration
+            return Traversal::CreateGenerator<Node::Ptr> ([curChild = fNode_->children] () mutable -> optional<Node::Ptr> {
+                if (curChild == nullptr) {
+                    return optional<Node::Ptr>{};
+                }
+                Node::Ptr r = Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (curChild)};
+                ++curChild;
+                return r;
+            });
         }
         virtual xmlNode* GetInternalTRep () override
         {

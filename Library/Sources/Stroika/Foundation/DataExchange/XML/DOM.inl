@@ -29,6 +29,16 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         : fRep_{}
     {
     }
+    inline bool Node::Ptr::operator== (const Ptr& rhs) const
+    {
+        if (fRep_ == nullptr) [[unlikely]] {
+            return rhs.fRep_ == nullptr;
+        }
+        if (rhs.fRep_ == nullptr) {
+            return false;
+        }
+        return fRep_->Equals (rhs.fRep_.get ());
+    }
     inline Node::Type Node::Ptr::GetNodeType () const
     {
         RequireNotNull (fRep_);
@@ -137,10 +147,26 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         fRep_->DeleteNode ();
         fRep_ = nullptr;
     }
-    inline Node::Ptr Node::Ptr::ReplaceNode ()
+    inline Node::Ptr Node::Ptr::ReplaceElement ()
     {
+        Require (GetNodeType () == Node::eElementNT);
         AssertNotNull (fRep_);
-        return fRep_->ReplaceNode ();
+        /**
+         *  Disallow replacing the root element - create a new document instead.
+         * 
+         *  Basic algorithm:
+         *      o   Save parent node
+         *      o   Add new node just after this one (with same name/namespace)
+         *      o   Delete this node (one just 'replaced')
+         * 
+         *  Note - to avoid issues with temporarily having two nodes of the same name in list of children - may need to modify this logic?
+         */
+        Node::Ptr parent = this->GetParentNode ();
+        Require (parent != nullptr);                                        // create new Document for this case
+        Node::Ptr newNode = parent.InsertElement (this->GetName (), *this); // @todo clone NS as well!!!
+        this->DeleteNode ();
+        Ensure (newNode.GetParentNode () == parent);
+        return newNode;
     }
     inline Node::Ptr Node::Ptr::GetParentNode () const
     {
@@ -152,11 +178,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         AssertNotNull (fRep_);
         return fRep_->GetChildren ();
     }
-    inline Node::Ptr Node::Ptr::GetChildNodeByID (const String& id) const
+    inline Node::Ptr Node::Ptr::GetChildElementByID (const String& id) const
     {
         RequireNotNull (fRep_);
         Require (GetNodeType () == Node::eElementNT);
-        return fRep_->GetChildNodeByID (id);
+        auto result = fRep_->GetChildElementByID (id);
+        Ensure (result == nullptr or result.GetNodeType () == Node::eElementNT);
+        return result;
     }
     inline shared_ptr<Node::IRep> Node::Ptr::GetRep () const
     {

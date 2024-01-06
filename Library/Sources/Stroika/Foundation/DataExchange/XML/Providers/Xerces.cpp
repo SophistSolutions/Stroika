@@ -740,6 +740,12 @@ namespace {
         {
             RequireNotNull (n);
         }
+        virtual bool Equals (const IRep* rhs) const override
+        {
+            RequireNotNull (fNode_);
+            RequireNotNull (rhs);
+            return fNode_ == Debug::UncheckedDynamicCast<const XercesNodeRep_*> (rhs)->fNode_;
+        }
         virtual Node::Type GetNodeType () const override
         {
             AssertNotNull (fNode_);
@@ -925,6 +931,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
+#if 0
         virtual Node::Ptr ReplaceNode () override
         {
             RequireNotNull (fNode_);
@@ -942,6 +949,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
+#endif
         virtual Node::Ptr GetParentNode () const override
         {
             AssertNotNull (fNode_);
@@ -969,7 +977,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Node::Ptr GetChildNodeByID (const String& id) const override
+        virtual Node::Ptr GetChildElementByID (const String& id) const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER_
