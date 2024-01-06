@@ -27,8 +27,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
     }
     inline Node::NameWithNamespace::NameWithNamespace (const optional<URI>& ns, const String& name)
-        : fNamespace{ns}
-        , fName{name}
+        : fName{name}
+        , fNamespace{ns}
     {
     }
 
@@ -121,8 +121,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                     return p;
                 }
             }
-            return nullptr;
         }
+        return nullptr;
     }
     inline Node::Ptr Node::Ptr::InsertElement (const String& name, const Node::Ptr& afterNode)
     {
