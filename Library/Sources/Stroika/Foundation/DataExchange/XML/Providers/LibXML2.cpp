@@ -242,7 +242,12 @@ namespace {
 #if qDebug
             Require (ValidNewNodeName_ (name));
 #endif
-            xmlNodeSetName (fNode_, BAD_CAST name.AsUTF8 ().c_str ());
+            if (ns) {
+                AssertNotImplemented ();// see SetAttribtues - simple now...
+            }
+            else {
+                xmlNodeSetName (fNode_, BAD_CAST name.AsUTF8 ().c_str ());
+            }
         }
         virtual String GetValue () const override
         {
