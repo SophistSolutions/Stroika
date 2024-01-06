@@ -256,63 +256,67 @@ namespace {
             AssertNotNull (fNode_);
             xmlNodeSetContent (fNode_, BAD_CAST v.AsUTF8 ().c_str ());
         }
-        virtual void SetAttribute (const String& attrName, const String& v) override
+        virtual optional<String> GetAttribute (const optional<URI>& ns, const String& attrName) const override
         {
-            RequireNotNull (fNode_);
-            Require (GetNodeType () == Node::eElementNT);
-            // @todo handle namespaces on attributes
-            xmlNewProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str (), BAD_CAST v.AsUTF8 ().c_str ());
-        }
-        virtual optional<String> GetAttribute (const String& attrName) const override
-        {
-            // @todo handle ns properly..
-            auto r = xmlGetProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str ());
+            auto r = ns ? xmlGetNsProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str (), BAD_CAST ns->As<String> ().AsUTF8 ().c_str ())
+                        : xmlGetProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str ());
             if (r == nullptr) {
                 return nullopt;
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (r); });
             return libXMLString2String (r);
         }
-        virtual Node::Ptr InsertElement (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
+        virtual void SetAttribute (const optional<URI>& ns, const String& attrName, const optional<String>& v) override
         {
-            Require (afterNode == nullptr or this->GetChildren ().Contains (afterNode));
-            xmlNode*  newNode      = xmlNewNode (NULL, BAD_CAST name.AsUTF8 ().c_str ()); // @todo handle NS
-            NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : Debug::UncheckedDynamicCast<NodeRep_*> (afterNode.GetRep ().get ());
-            xmlAddNextSibling (Debug::UncheckedDynamicCast<NodeRep_&> (*afterNode.GetRep ()).fNode_, newNode);
-            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
+            RequireNotNull (fNode_);
+            Require (GetNodeType () == Node::eElementNT);
+            if (ns) {
+                // Lookup the argument ns and either add it to this node or use the existing one
+                xmlSetNsProp (fNode_, genNS2Use_ (fNode_, *ns), BAD_CAST attrName.AsUTF8 ().c_str (),
+                              v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
+            }
+            else {
+                xmlSetProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str (), v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
+            }
         }
-        virtual Node::Ptr AppendElement (const String& name, const optional<URI>& ns) override
+        virtual Node::Ptr InsertElement (const optional<URI>& ns, const String& name, const Node::Ptr& afterNode) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (name));
 #endif
-            xmlNode* newNode = xmlNewNode (NULL, BAD_CAST name.AsUTF8 ().c_str ()); // @todo handle NS
+            Require (afterNode == nullptr or this->GetChildren ().Contains (afterNode));
+            xmlNode*  newNode      = xmlNewNode (ns ? genNS2Use_ (fNode_, *ns) : nullptr, BAD_CAST name.AsUTF8 ().c_str ());
+            NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : Debug::UncheckedDynamicCast<NodeRep_*> (afterNode.GetRep ().get ());
+            if (afterNodeRep == nullptr) {
+                // unfortunately complicated - no prepend api (just append). Can say xmlAddPrevSibling for first child though whihc amounts
+                // to same thing (unless there is no first child)
+                if (fNode_->children == nullptr) {
+                    xmlAddChild (fNode_->parent, newNode); // append=prepend
+                }
+                else {
+                    xmlAddPrevSibling (fNode_->children, newNode);
+                }
+            }
+            else {
+                xmlAddNextSibling (afterNodeRep->fNode_, newNode);
+            }
+            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
+        }
+        virtual Node::Ptr AppendElement (const optional<URI>& ns, const String& name) override
+        {
+#if qDebug
+            Require (ValidNewNodeName_ (name));
+#endif
+            xmlNode* newNode = xmlNewNode (ns ? genNS2Use_ (fNode_, *ns) : nullptr, BAD_CAST name.AsUTF8 ().c_str ());
             xmlAddChild (fNode_, newNode);
             return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
         }
         virtual void DeleteNode () override
         {
-#if 0
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                DOMNode* selNode = fNode_;
-                ThrowIfNull (selNode);
-                DOMNode* parentNode = selNode->getParentNode ();
-                if (parentNode == nullptr) {
-                    // This happens if the selected node is an attribute
-                    if (fNode_ != nullptr) {
-                        const XMLCh* ln = selNode->getNodeName ();
-                        AssertNotNull (ln);
-                        DOMElement* de = dynamic_cast<DOMElement*> (fNode_);
-                        de->removeAttribute (ln);
-                    }
-                }
-                else {
-                    (void)parentNode->removeChild (selNode);
-                }
-            }
-            END_LIB_EXCEPTION_MAPPER_
-#endif
+            RequireNotNull (fNode_);
+            xmlUnlinkNode (fNode_);
+            xmlFreeNode (fNode_);
+            fNode_ = nullptr;
         }
         virtual Node::Ptr GetParentNode () const override
         {
@@ -336,6 +340,23 @@ namespace {
         virtual xmlNode* GetInternalTRep () override
         {
             return fNode_;
+        }
+        static xmlNsPtr genNS2Use_ (xmlNode* n, const URI& ns)
+        {
+            xmlNsPtr              ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> ().AsUTF8 ().c_str ());
+            basic_string<xmlChar> prefix2Try{BAD_CAST "a"};
+            while (ns2Use == nullptr) {
+                // Need to hang the namespace declaration someplace? Could do it just on this element (xmlNewNs)
+                // Or on the root doc (xmlNewGlobalNs).
+                // For now - do on DOC, so we end up with a more terse overall document.
+                // Also - sadly - must cons up SOME prefix, which doesn't conflict. No good way I can see todo that, so do a bad way.
+                // OK - can do still manually using docs root elt - maybe - but do this way for now... cuz xmlNewGlobalNs deprecated
+                ns2Use = xmlNewNs (n, BAD_CAST ns.As<String> ().AsUTF8 ().c_str (), prefix2Try.c_str ());
+                if (ns2Use == nullptr) {
+                    ++prefix2Try[0]; // if 'a' didn't work, try 'b' // @todo this could use better error handling, but pragmatically probably OK
+                }
+            }
+            return ns2Use;
         }
 
     private:
@@ -379,7 +400,7 @@ namespace {
         }
         DocRep_ (const DocRep_& from)
         {
-            AssertNotImplemented ();
+            fLibRep_ = xmlCopyDoc (from.fLibRep_, 1);
         }
         ~DocRep_ ()
         {

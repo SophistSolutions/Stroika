@@ -821,36 +821,15 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual void SetAttribute (const String& attrName, const String& v) override
-        {
-            Require (GetNodeType () == Node::eElementNT);
-            AssertNotNull (fNode_);
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                DOMElement* element = dynamic_cast<DOMElement*> (fNode_);
-                ThrowIfNull (element);
-                /*
-                 * For reasons that elude maybe (maybe because it was standard for XML early on)
-                 * all my attributes are free of namespaces. So why use setAttributeNS? Because otherwise
-                 * the XQilla code fails to match on the attribute names at all in its XPath stuff.
-                 * Considered copying the namespace from the parent element (fNode_->getNamespaceURI()),
-                 * but XQilla didnt like that either (maybe then I needed M: on xpath).
-                 * A differnt subclass object of DOMAttrNode is created - one that doesnt have a getLocalName,
-                 * or something like that. Anyhow - this appears to do the right thing for now...
-                 *      -- LGP 2007-06-13
-                 */
-                element->setAttributeNS (nullptr, attrName.As<u16string> ().c_str (), v.As<u16string> ().c_str ());
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
-        virtual optional<String> GetAttribute (const String& attrName) const override
+        virtual optional<String> GetAttribute (const optional<URI>& ns, const String& attrName) const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER_
             {
                 if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
-                    DOMElement*  elt = Debug::UncheckedDynamicCast<DOMElement*> (fNode_);
-                    const XMLCh* s   = elt->getAttribute (attrName.As<u16string> ().c_str ());
+                    DOMElement* elt = Debug::UncheckedDynamicCast<DOMElement*> (fNode_);
+                    const XMLCh* s = ns ? elt->getAttributeNS (ns->As<String> ().As<u16string> ().c_str (), attrName.As<u16string> ().c_str ())
+                                        : elt->getAttribute (attrName.As<u16string> ().c_str ());
                     AssertNotNull (s);
                     if (*s != '\0') {
                         return s;
@@ -860,7 +839,34 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Node::Ptr InsertElement (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode) override
+        virtual void SetAttribute (const optional<URI>& ns, const String& attrName, const optional<String>& v) override
+        {
+            Require (GetNodeType () == Node::eElementNT);
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                DOMElement* element = dynamic_cast<DOMElement*> (fNode_);
+                ThrowIfNull (element);
+                if (v) {
+                    /*
+                     * For reasons that elude maybe (maybe because it was standard for XML early on)
+                     * all my attributes are free of namespaces. So why use setAttributeNS? Because otherwise
+                     * the XQilla code fails to match on the attribute names at all in its XPath stuff.
+                     * Considered copying the namespace from the parent element (fNode_->getNamespaceURI()),
+                     * but XQilla didnt like that either (maybe then I needed M: on xpath).
+                     * A differnt subclass object of DOMAttrNode is created - one that doesnt have a getLocalName,
+                     * or something like that. Anyhow - this appears to do the right thing for now...
+                     *      -- LGP 2007-06-13
+                     */
+                    element->setAttributeNS (ns? ns->As<String> ().As<u16string> ().c_str (): nullptr, attrName.As<u16string> ().c_str (), v->As<u16string> ().c_str ());
+                }
+                else {
+                    element->removeAttributeNS (nullptr, attrName.As<u16string> ().c_str ());
+                }
+            }
+            END_LIB_EXCEPTION_MAPPER_
+        }
+        virtual Node::Ptr InsertElement (const optional<URI>& ns, const String& name, const Node::Ptr& afterNode) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (name));
@@ -886,7 +892,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Node::Ptr AppendElement (const String& name, const optional<URI>& ns) override
+        virtual Node::Ptr AppendElement (const optional<URI>& ns, const String& name) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (name));
@@ -931,25 +937,6 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-#if 0
-        virtual Node::Ptr ReplaceNode () override
-        {
-            RequireNotNull (fNode_);
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
-                ThrowIfNull (doc);
-                DOMNode* selNode = fNode_;
-                ThrowIfNull (selNode); // perhaps this should be an assertion?
-                DOMNode* parentNode = selNode->getParentNode ();
-                ThrowIfNull (parentNode);
-                DOMElement* n = doc->createElementNS (selNode->getNamespaceURI (), selNode->getNodeName ());
-                (void)parentNode->replaceChild (n, selNode);
-                return WrapImpl_ (n);
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
-#endif
         virtual Node::Ptr GetParentNode () const override
         {
             AssertNotNull (fNode_);
@@ -1001,17 +988,7 @@ namespace {
         {
             return fNode_;
         }
-
     private:
-        nonvirtual XercesDocRep_& GetAssociatedDoc_ () const
-        {
-            AssertNotNull (fNode_);
-            xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
-            AssertNotNull (doc);
-            void* docData = doc->getUserData (kXerces2XMLDBDocumentKey_);
-            AssertNotNull (docData);
-            return *reinterpret_cast<XercesDocRep_*> (docData);
-        }
         // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
         DOMNode* fNode_;
     };

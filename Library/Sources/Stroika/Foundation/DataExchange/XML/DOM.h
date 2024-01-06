@@ -58,6 +58,18 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         };
 
         /**
+         *  Note name argument slightly more flexible than just String so double conversion works ("" can be assigned to NameWithNamespace)
+         */
+        struct NameWithNamespace {
+            String        fName;
+            optional<URI> fNamespace;
+
+            template <Characters::IConvertibleToString NAME_TYPE>
+            NameWithNamespace (NAME_TYPE&& name);
+            NameWithNamespace (const optional<URI>& ns, const String& name);
+        };
+
+        /**
          *  \brief Node::Ptr is a smart pointer to a Node::IRep
          * 
          *  \note Before Stroika v3.0d5 this was simply called "Node", and now Node::Ptr
@@ -131,7 +143,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  \req GetNodeType () == Node::eElementNT
              */
-            nonvirtual void SetAttribute (const String& attrName, const String& v);
+            nonvirtual void SetAttribute (const String& attrName, const optional<String>& v);
 
         public:
             /**
@@ -164,16 +176,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
              */
             nonvirtual Ptr InsertElement (const String& name, const Ptr& afterNode);
-            nonvirtual Ptr InsertElement (const String& name, const optional<URI>& ns, const Ptr& afterNode);
+            nonvirtual Ptr InsertElement (const optional<URI>& ns, const String& name, const Ptr& afterNode);
 
         public:
             /**
-             * 
              *  \req GetNodeType () == Node::eElementNT
              * 
+             *  value overload just creates the node and calls SetValue() before returning it (so simple shorthand).
              */
-            nonvirtual Ptr AppendElement (const String& name, const optional<URI>& ns = nullopt);
-            nonvirtual Ptr AppendElement (const String& name, const optional<URI>& ns, const String& v);
+            nonvirtual Ptr AppendElement (const String& name);
+            nonvirtual Ptr AppendElement (const optional<URI>& ns, const String& name);
+            nonvirtual Ptr AppendElement (const optional<URI>& ns, const String& name, const String& value);
 
         public:
             /**
@@ -183,7 +196,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  Trivial, but I've found helpful in making certain uses more terse.
              */
-            nonvirtual void AppendElementIfNotEmpty (const String& name, const optional<URI>& ns, const optional<String>& v);
+            nonvirtual void AppendElementIfNotEmpty (const String& name, const optional<String>& v);
+            nonvirtual void AppendElementIfNotEmpty (const optional<URI>& ns, const String& name, const optional<String>& v);
 
         public:
             /**
@@ -194,6 +208,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+            * 
+            * 
+            *   @todo FIX so works with root elemeent too - not hard to detect and not hard to fix - delet the old and just do appendNode
+            * 
+            * 
              * creates a new (empty) node with same name (and namespace) as orig, and in the same position (but not root of document)
              * 
              *  \req Require (GetNodeType () == Node::eElementNT)
@@ -239,20 +258,20 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             [[deprecated ("Since Stroika v3.0d5 use InsertElement")]] inline Ptr InsertChild (const String& name, const optional<URI>& ns,
                                                                                               const Ptr& afterNode)
             {
-                return InsertElement (name, ns, afterNode);
+                return InsertElement (ns, name, afterNode);
             }
             [[deprecated ("Since Stroika v3.0d5 use AppendElement")]] inline Ptr AppendChild (const String& name, const optional<URI>& ns = nullopt)
             {
-                return AppendElement (name, ns);
+                return AppendElement (ns, name);
             }
             [[deprecated ("Since Stroika v3.0d5 use AppendElement")]] inline Ptr AppendChild (const String& name, const optional<URI>& ns, const String& v)
             {
-                return AppendElement (name, ns, v);
+                return AppendElement (ns, name, v);
             }
             [[deprecated ("Since Stroika v3.0d5 use AppendElementIfNotEmpty")]] inline void
             AppendChildIfNotEmpty (const String& name, const optional<URI>& ns, const String& v)
             {
-                return AppendElementIfNotEmpty (name, ns, v);
+                return AppendElementIfNotEmpty (ns, name, v);
             }
             [[deprecated ("Since Stroika v3.0d5 use ReplaceElement or create new Document")]] Ptr ReplaceNode ()
             {
@@ -278,25 +297,146 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual ~IRep () = default;
 
         public:
-            virtual bool             Equals (const IRep* rhs) const                         = 0;
-            virtual Type             GetNodeType () const                                   = 0;
-            virtual optional<URI>    GetNamespace () const                                  = 0;
-            virtual String           GetName () const                                       = 0;
-            virtual void             SetName (const String& name)                           = 0;
-            virtual String           GetValue () const                                      = 0;
-            virtual void             SetValue (const String& v)                             = 0;
-            virtual void             SetAttribute (const String& attrName, const String& v) = 0;
-            virtual optional<String> GetAttribute (const String& attrName) const            = 0;
+            virtual bool             Equals (const IRep* rhs) const                                                            = 0;
+            virtual Type             GetNodeType () const                                                                      = 0;
+            virtual optional<URI>    GetNamespace () const                                                                     = 0;
+            virtual String           GetName () const                                                                          = 0;
+            virtual void             SetName (const String& name)                                                              = 0;
+            virtual String           GetValue () const                                                                         = 0;
+            virtual void             SetValue (const String& v)                                                                = 0;
+            virtual optional<String> GetAttribute (const optional<URI>& ns, const String& attrName) const                      = 0;
+            virtual void             SetAttribute (const optional<URI>& ns, const String& attrName, const optional<String>& v) = 0;
             /**
              *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
              */
-            virtual Ptr           InsertElement (const String& name, const optional<URI>& ns, const Ptr& afterNode) = 0;
-            virtual Ptr           AppendElement (const String& name, const optional<URI>& ns)                       = 0;
+            virtual Ptr           InsertElement (const optional<URI>& ns, const String& name, const Ptr& afterNode) = 0;
+            virtual Ptr           AppendElement (const optional<URI>& ns, const String& name)                       = 0;
             virtual void          DeleteNode ()                                                                     = 0;
             virtual Ptr           GetParentNode () const                                                            = 0;
             virtual Iterable<Ptr> GetChildren () const                                                              = 0;
             // Redundant API, but provided since commonly used and can be optimized
             virtual Ptr GetChildElementByID (const String& id) const;
+        };
+    }
+
+    namespace Element {
+
+        using Node::NameWithNamespace;
+
+        // Todo - maybe introduce ElementPtr, wtih the extra methods that require you are an Element?
+        // @todo - and can simply Ptr api (docs at least) above. Maybe cast from Ptr to ElementPtr automatically maps non-elements to nullptr?? Simplifiication
+        // // NYI...
+        //???? --LGP 2024-01-06
+
+        /**
+         *  Simple wrapper on Node::Ptr API, but with the Ptr objects refer to Elements.
+         * 
+         *  If you assign a non-Element to an Element::Ptr, it automatically, silently becomes nullptr (like dynamic_cast).
+         */
+        struct Ptr : public Node::Ptr {
+        public:
+            /**
+             */
+            Ptr (const Node::Ptr& p);
+
+        public:
+            /**
+             */
+            nonvirtual NameWithNamespace GetName () const;
+
+        public:
+            /**
+             */
+            nonvirtual void SetName (const NameWithNamespace& name);
+
+        public:
+            /**
+             *  This is the value between the brackets <a>text</a>. Note that <a></a> is the same as <a/> - the empty string.
+             * 
+             *      \note before Stroika v3.0d5, the value API was VariantValue but that was always meaningless, and just treated as a String.
+             *
+             *      \note the 'String' value maybe implemented in XML in a variety of ways (entities, CDATA, etc).
+             */
+            nonvirtual String GetValue () const;
+
+        public:
+            /**
+             */
+            nonvirtual void SetValue (const String& v);
+
+        public:
+            /**
+             *  \req GetNodeType () == Node::eElementNT
+            // returns string value of attribute, and nullopt if doesn't exist
+             */
+            nonvirtual optional<String> GetAttribute (const NameWithNamespace& attrName) const;
+
+        public:
+            /**
+            // return true iff attribute exists on this node
+            // return true iff attribute exists on this node and equals (case sensative) value
+             */
+            nonvirtual bool HasAttribute (const NameWithNamespace& attrName) const;
+            nonvirtual bool HasAttribute (const NameWithNamespace& attrName, const String& value) const;
+
+        public:
+            /**
+             */
+            nonvirtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v);
+
+        public:
+            /**
+             *  \brief Insert Element (after argument node) inside of this 'Element'
+             * 
+             *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
+             */
+            nonvirtual Ptr Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode);
+
+        public:
+            /**
+             *  value overload just creates the node and calls SetValue() before returning it (so simple shorthand).
+             */
+            nonvirtual Ptr Append (const NameWithNamespace& eltName);
+            nonvirtual Ptr Append (const NameWithNamespace& eltName, const String& value);
+
+        public:
+            /**
+             *  \brief Trivial wrapper on AppendElement, but if v is missing or "", then this is a no-op.
+             * 
+             *  Trivial, but I've found helpful in making certain uses more terse.
+             */
+            nonvirtual Ptr AppendIfNotEmpty (const NameWithNamespace& eltName, const optional<String>& v);
+
+        public:
+            /**
+             * creates a new (empty) node with same name (and namespace) as orig, and in the same position (but not root of document)
+             * 
+             *  \req GetParent () != nullptr
+             * 
+             *  To replace the root element, just create a new Document;
+             * 
+             *  This can be used to delete all the children/content under a given node and is equivilent, except that it returns
+             *  a new NodePtr, and invalidates this.
+             */
+            nonvirtual Ptr ReplaceElement ();
+
+        public:
+            /**
+             *  Can return nullptr
+             */
+            nonvirtual Ptr GetParent () const;
+
+        public:
+            /**
+             *  note only returns sub-elements, so use Node::Ptr (inherited) GetChildren to get them all
+             */
+            nonvirtual Iterable<Ptr> GetChildren () const;
+
+        public:
+            /**
+             * can return a NULL Node Ptr if not found. Only examines this node's (direct) children
+             */
+            nonvirtual Ptr GetChildElementByID (const String& id) const;
         };
     }
 

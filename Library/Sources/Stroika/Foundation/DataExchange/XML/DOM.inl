@@ -18,6 +18,22 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     /*
      ********************************************************************************
+     **************** XML::DOM::Node::NameWithNamespace *****************************
+     ********************************************************************************
+     */
+    template <Characters::IConvertibleToString NAME_TYPE>
+    inline Node::NameWithNamespace::NameWithNamespace (NAME_TYPE&& name)
+        : fName{name}
+    {
+    }
+    inline Node::NameWithNamespace::NameWithNamespace (const optional<URI>& ns, const String& name)
+        : fNamespace{ns}
+        , fName{name}
+    {
+    }
+
+    /*
+     ********************************************************************************
      ****************************** XML::DOM::Node::Ptr *****************************
      ********************************************************************************
      */
@@ -69,23 +85,23 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         RequireNotNull (fRep_);
         fRep_->SetValue (v);
     }
-    inline void Node::Ptr::SetAttribute (const String& attrName, const String& v)
+    inline void Node::Ptr::SetAttribute (const String& attrName, const optional<String>& v)
     {
         RequireNotNull (fRep_);
         Require (GetNodeType () == Node::eElementNT);
-        fRep_->SetAttribute (attrName, v);
+        fRep_->SetAttribute (nullopt, attrName, v);
     }
     inline bool Node::Ptr::HasAttribute (const String& attrName) const
     {
         RequireNotNull (fRep_);
         Require (GetNodeType () == Node::eElementNT);
-        return fRep_->GetAttribute (attrName) != nullopt;
+        return fRep_->GetAttribute (nullopt, attrName) != nullopt;
     }
     inline bool Node::Ptr::HasAttribute (const String& attrName, const String& value) const
     {
         RequireNotNull (fRep_);
         Require (GetNodeType () == Node::eElementNT);
-        if (auto o = fRep_->GetAttribute (attrName)) {
+        if (auto o = fRep_->GetAttribute (nullopt, attrName)) {
             return *o == value;
         }
         return false;
@@ -94,7 +110,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         RequireNotNull (fRep_);
         Require (GetNodeType () == Node::eElementNT);
-        return fRep_->GetAttribute (attrName);
+        return fRep_->GetAttribute (nullopt, attrName);
     }
     inline Node::Ptr Node::Ptr::GetFirstAncestorNodeWithAttribute (const String& attrName) const
     {
@@ -110,35 +126,40 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
     inline Node::Ptr Node::Ptr::InsertElement (const String& name, const Node::Ptr& afterNode)
     {
-        RequireNotNull (fRep_);
-        Require (GetNodeType () == Node::eElementNT);
-        return fRep_->InsertElement (name, nullopt, afterNode);
+        return InsertElement (nullopt, name, afterNode);
     }
-    inline Node::Ptr Node::Ptr::InsertElement (const String& name, const optional<URI>& ns, const Node::Ptr& afterNode)
+    inline Node::Ptr Node::Ptr::InsertElement (const optional<URI>& ns, const String& name, const Node::Ptr& afterNode)
     {
         RequireNotNull (fRep_);
         Require (GetNodeType () == Node::eElementNT);
-        return fRep_->InsertElement (name, ns, afterNode);
+        return fRep_->InsertElement (ns, name, afterNode);
     }
-    inline Node::Ptr Node::Ptr::AppendElement (const String& name, const optional<URI>& ns)
+    inline Node::Ptr Node::Ptr::AppendElement (const String& name)
+    {
+        return AppendElement (nullopt, name);
+    }
+    inline Node::Ptr Node::Ptr::AppendElement (const optional<URI>& ns, const String& name)
     {
         RequireNotNull (fRep_);
         Require (GetNodeType () == Node::eElementNT);
-        return fRep_->AppendElement (name, ns);
+        return fRep_->AppendElement (ns, name);
     }
-    inline Node::Ptr Node::Ptr::AppendElement (const String& name, const optional<URI>& ns, const String& v)
+    inline Node::Ptr Node::Ptr::AppendElement (const optional<URI>& ns, const String& name, const String& v)
     {
-        Require (GetNodeType () == Node::eElementNT);
-        auto r = AppendElement (name, ns);
+        auto r = AppendElement (ns, name);
         r.SetValue (v);
         return r;
     }
-    inline void Node::Ptr::AppendElementIfNotEmpty (const String& name, const optional<URI>& ns, const optional<String>& v)
+    inline void Node::Ptr::AppendElementIfNotEmpty (const String& name, const optional<String>& v)
+    {
+        AppendElementIfNotEmpty (nullopt, name, v);
+    }
+    inline void Node::Ptr::AppendElementIfNotEmpty (const optional<URI>& ns, const String& name, const optional<String>& v)
     {
         RequireNotNull (fRep_);
         Require (GetNodeType () == Node::eElementNT);
         if (v != nullopt and not v->empty ()) {
-            fRep_->AppendElement (name, ns).SetValue (*v);
+            fRep_->AppendElement (ns, name).SetValue (*v);
         }
     }
     inline void Node::Ptr::DeleteNode ()
