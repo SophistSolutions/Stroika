@@ -211,7 +211,7 @@ namespace {
                 case XML_ELEMENT_NODE: {
                     xmlChar*                ns      = xmlNodeGetBase (fNode_->doc, fNode_);
                     [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (ns); });
-                    return NameWithNamespace{ns == nullptr ? optional<URI>{} : URI{libXMLString2String (ns)} , libXMLString2String (fNode_->name)};
+                    return NameWithNamespace{ns == nullptr ? optional<URI>{} : URI{libXMLString2String (ns)}, libXMLString2String (fNode_->name)};
                 }
                 default:
                     AssertNotReached ();
