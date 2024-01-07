@@ -18,22 +18,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     /*
      ********************************************************************************
-     **************** XML::DOM::Node::NameWithNamespace *****************************
-     ********************************************************************************
-     */
-    template <Characters::IConvertibleToString NAME_TYPE>
-    inline Node::NameWithNamespace::NameWithNamespace (NAME_TYPE&& name)
-        : fName{name}
-    {
-    }
-    inline Node::NameWithNamespace::NameWithNamespace (const optional<URI>& ns, const String& name)
-        : fName{name}
-        , fNamespace{ns}
-    {
-    }
-
-    /*
-     ********************************************************************************
      ****************************** XML::DOM::Node::Ptr *****************************
      ********************************************************************************
      */

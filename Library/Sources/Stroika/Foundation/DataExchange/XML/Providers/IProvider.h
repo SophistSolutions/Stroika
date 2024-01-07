@@ -24,8 +24,6 @@
 
 namespace Stroika::Foundation::DataExchange::XML::Providers {
 
-    using DOM::Node::NameWithNamespace;
-
     /**
      *  Abstract interface generally unused EXCEPT to compare that the ISchemaProvider POINTER EQUALS the IDOMProvider pointer.
      */

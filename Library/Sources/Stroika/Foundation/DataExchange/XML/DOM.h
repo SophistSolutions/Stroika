@@ -57,26 +57,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             eOtherNT
         };
 
-        /**
-         *  Note name argument slightly more flexible than just String so double conversion works ("" can be assigned to NameWithNamespace)
-         */
-        struct NameWithNamespace {
-            String        fName;
-            optional<URI> fNamespace;
-
-            template <Characters::IConvertibleToString NAME_TYPE>
-            NameWithNamespace (NAME_TYPE&& name);
-            NameWithNamespace (const optional<URI>& ns, const String& name);
-
-            bool operator== (const NameWithNamespace& rhs) const = default;
-#if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
-#endif
-            auto operator<=> (const NameWithNamespace& rhs) const = default;
-#if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
-#endif
-        };
+    
 
         /**
          *  \brief Node::Ptr is a smart pointer to a Node::IRep
@@ -304,8 +285,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     namespace Document {
         struct IRep;
-
-        using Node::NameWithNamespace;
 
         /**
          *  \brief Document::Ptr is create with Document::New, and is a smart pointer to a DOM document object.

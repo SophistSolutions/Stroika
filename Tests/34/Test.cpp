@@ -1476,7 +1476,6 @@ namespace {
     GTEST_TEST (Foundation_DataExchange_XML, DOM_Update)
     {
         // very early draft test...
-        using DOM::Node::NameWithNamespace;
         const Memory::BLOB kPersonalXML_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);
         const Memory::BLOB kPersonalXSD_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xsd);
         const Memory::BLOB kHealthFrameWorks_v3_xml      = Memory::BLOB::Attach (Resources_::TestFiles_HealthFrameWorks_v3_xml);

@@ -44,6 +44,24 @@ namespace Stroika::Foundation::DataExchange::XML {
         fNamespaces = namespaces;
     }
 
+
+    
+    /*
+     ********************************************************************************
+     *********************** XML::NameWithNamespace *********************************
+     ********************************************************************************
+     */
+    template <Characters::IConvertibleToString NAME_TYPE>
+    inline NameWithNamespace::NameWithNamespace (NAME_TYPE&& name)
+        : fName{name}
+    {
+    }
+    inline NameWithNamespace::NameWithNamespace (const optional<URI>& ns, const String& name)
+        : fName{name}
+        , fNamespace{ns}
+    {
+    }
+
 }
 
 #endif /*_Stroika_Foundation_DataExchange_XML_Namespace_inl_*/

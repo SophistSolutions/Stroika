@@ -37,7 +37,6 @@ using namespace Stroika::Foundation::Streams;
 
 using std::byte;
 
-using XML::DOM::Node::NameWithNamespace;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
