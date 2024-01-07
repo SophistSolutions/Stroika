@@ -798,7 +798,8 @@ namespace {
             {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 AssertNotNull (doc);
-                fNode_ = doc->renameNode (fNode_, ns == nullopt ? nullptr : ns->As<String> ().As<u16string> ().c_str (), name.As<u16string> ().c_str ());
+                fNode_ = doc->renameNode (fNode_, ns == nullopt ? nullptr : ns->As<String> ().As<u16string> ().c_str (),
+                                          name.As<u16string> ().c_str ());
                 AssertNotNull (fNode_);
             }
             END_LIB_EXCEPTION_MAPPER_

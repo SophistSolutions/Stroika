@@ -60,134 +60,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         RequireNotNull (fRep_);
         return fRep_->GetNodeType ();
     }
-    inline optional<URI> Node::Ptr::GetNamespace () const
-    {
-        RequireNotNull (fRep_);
-        return fRep_->GetNamespace ();
-    }
-    inline String Node::Ptr::GetName () const
-    {
-        RequireNotNull (fRep_);
-        return fRep_->GetName ();
-    }
-    inline void Node::Ptr::SetName (const String& name)
-    {
-        RequireNotNull (fRep_);
-        fRep_->SetName (nullopt, name);
-    }
-    inline String Node::Ptr::GetValue () const
-    {
-        RequireNotNull (fRep_);
-        return fRep_->GetValue ();
-    }
-    inline void Node::Ptr::SetValue (const String& v)
-    {
-        RequireNotNull (fRep_);
-        fRep_->SetValue (v);
-    }
-    inline void Node::Ptr::SetAttribute (const String& attrName, const optional<String>& v)
-    {
-        RequireNotNull (fRep_);
-        Require (GetNodeType () == Node::eElementNT);
-        fRep_->SetAttribute (nullopt, attrName, v);
-    }
-    inline bool Node::Ptr::HasAttribute (const String& attrName) const
-    {
-        RequireNotNull (fRep_);
-        Require (GetNodeType () == Node::eElementNT);
-        return fRep_->GetAttribute (nullopt, attrName) != nullopt;
-    }
-    inline bool Node::Ptr::HasAttribute (const String& attrName, const String& value) const
-    {
-        RequireNotNull (fRep_);
-        Require (GetNodeType () == Node::eElementNT);
-        if (auto o = fRep_->GetAttribute (nullopt, attrName)) {
-            return *o == value;
-        }
-        return false;
-    }
-    inline optional<String> Node::Ptr::GetAttribute (const String& attrName) const
-    {
-        RequireNotNull (fRep_);
-        Require (GetNodeType () == Node::eElementNT);
-        return fRep_->GetAttribute (nullopt, attrName);
-    }
-    inline Node::Ptr Node::Ptr::GetFirstAncestorNodeWithAttribute (const String& attrName) const
-    {
-        RequireNotNull (fRep_);
-        for (Node::Ptr p = *this; p != nullptr; p = p.GetParentNode ()) {
-            if (p.GetNodeType () == Type::eElementNT) {
-                if (p.HasAttribute (attrName)) {
-                    return p;
-                }
-            }
-        }
-        return nullptr;
-    }
-    inline Node::Ptr Node::Ptr::InsertElement (const String& name, const Node::Ptr& afterNode)
-    {
-        return InsertElement (nullopt, name, afterNode);
-    }
-    inline Node::Ptr Node::Ptr::InsertElement (const optional<URI>& ns, const String& name, const Node::Ptr& afterNode)
-    {
-        RequireNotNull (fRep_);
-        Require (GetNodeType () == Node::eElementNT);
-        return fRep_->InsertElement (ns, name, afterNode);
-    }
-    inline Node::Ptr Node::Ptr::AppendElement (const String& name)
-    {
-        return AppendElement (nullopt, name);
-    }
-    inline Node::Ptr Node::Ptr::AppendElement (const optional<URI>& ns, const String& name)
-    {
-        RequireNotNull (fRep_);
-        Require (GetNodeType () == Node::eElementNT);
-        return fRep_->AppendElement (ns, name);
-    }
-    inline Node::Ptr Node::Ptr::AppendElement (const optional<URI>& ns, const String& name, const String& v)
-    {
-        auto r = AppendElement (ns, name);
-        r.SetValue (v);
-        return r;
-    }
-    inline void Node::Ptr::AppendElementIfNotEmpty (const String& name, const optional<String>& v)
-    {
-        AppendElementIfNotEmpty (nullopt, name, v);
-    }
-    inline void Node::Ptr::AppendElementIfNotEmpty (const optional<URI>& ns, const String& name, const optional<String>& v)
-    {
-        RequireNotNull (fRep_);
-        Require (GetNodeType () == Node::eElementNT);
-        if (v != nullopt and not v->empty ()) {
-            fRep_->AppendElement (ns, name).SetValue (*v);
-        }
-    }
     inline void Node::Ptr::DeleteNode ()
     {
         RequireNotNull (fRep_);
         fRep_->DeleteNode ();
         fRep_ = nullptr;
-    }
-    inline Node::Ptr Node::Ptr::ReplaceElement ()
-    {
-        Require (GetNodeType () == Node::eElementNT);
-        AssertNotNull (fRep_);
-        /**
-         *  Disallow replacing the root element - create a new document instead.
-         * 
-         *  Basic algorithm:
-         *      o   Save parent node
-         *      o   Add new node just after this one (with same name/namespace)
-         *      o   Delete this node (one just 'replaced')
-         * 
-         *  Note - to avoid issues with temporarily having two nodes of the same name in list of children - may need to modify this logic?
-         */
-        Node::Ptr parent = this->GetParentNode ();
-        Require (parent != nullptr);                                        // create new Document for this case
-        Node::Ptr newNode = parent.InsertElement (this->GetName (), *this); // @todo clone NS as well!!!
-        this->DeleteNode ();
-        Ensure (newNode.GetParentNode () == parent);
-        return newNode;
     }
     inline Node::Ptr Node::Ptr::GetParentNode () const
     {
@@ -198,14 +75,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         AssertNotNull (fRep_);
         return fRep_->GetChildren ();
-    }
-    inline Node::Ptr Node::Ptr::GetChildElementByID (const String& id) const
-    {
-        RequireNotNull (fRep_);
-        Require (GetNodeType () == Node::eElementNT);
-        auto result = fRep_->GetChildElementByID (id);
-        Ensure (result == nullptr or result.GetNodeType () == Node::eElementNT);
-        return result;
     }
     inline shared_ptr<Node::IRep> Node::Ptr::GetRep () const
     {
@@ -305,10 +174,20 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          *  Note - to avoid issues with temporarily having two nodes of the same name in list of children - may need to modify this logic?
          */
         Element::Ptr parent = this->GetParent ();
-        Require (parent != nullptr);                                    // create new Document for this case
-        Element::Ptr newNode = parent.Insert (this->GetName (), *this); // @todo clone NS as well!!!
-        this->DeleteNode ();
+        Element::Ptr newNode{nullptr};
+        if (parent == nullptr) {
+            auto n = this->GetName ();
+            this->DeleteNode ();
+            // technically 'Append' is not right and we really should grab the 'next sibling' and insert before it...but that seems unlikely to matter --LGP 2024-01-06
+             newNode = parent.Append (n); 
+        
+        }
+        else {
+             newNode = parent.Insert (this->GetName (), *this); // @todo clone NS as well!!!
+            this->DeleteNode ();
+        }
         Ensure (newNode.GetParent () == parent);
+        *this = newNode;
         return newNode;
     }
     inline Element::Ptr Element::Ptr::GetParent () const

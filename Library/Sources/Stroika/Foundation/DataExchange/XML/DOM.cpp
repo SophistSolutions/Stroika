@@ -37,9 +37,10 @@ Node::Ptr Node::IRep::GetChildElementByID (const String& id) const
 {
     for (Node::Ptr c : this->GetChildren ()) {
         static const String kID_ = "id"s;
-        if (c.GetAttribute (kID_) == id) {
-            Ensure (c.GetNodeType () == Node::eElementNT);
-            return c;
+        if (Element::Ptr e = Element::Ptr{c}; e != nullptr) {
+            if (e.GetAttribute (kID_) == id) {
+                return e;
+            }
         }
     }
     return nullptr;
