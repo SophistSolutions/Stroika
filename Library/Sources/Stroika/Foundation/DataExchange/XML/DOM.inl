@@ -179,11 +179,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             auto n = this->GetName ();
             this->DeleteNode ();
             // technically 'Append' is not right and we really should grab the 'next sibling' and insert before it...but that seems unlikely to matter --LGP 2024-01-06
-             newNode = parent.Append (n); 
-        
+            newNode = parent.Append (n);
         }
         else {
-             newNode = parent.Insert (this->GetName (), *this); // @todo clone NS as well!!!
+            newNode = parent.Insert (this->GetName (), *this); // @todo clone NS as well!!!
             this->DeleteNode ();
         }
         Ensure (newNode.GetParent () == parent);
