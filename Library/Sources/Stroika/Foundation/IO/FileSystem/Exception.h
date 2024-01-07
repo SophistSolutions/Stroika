@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright(c) Sophist Solutions, Inc. 1990-2023.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #ifndef _Stroika_Foundation_IO_FileSystem_Exception_h_
 #define _Stroika_Foundation_IO_FileSystem_Exception_h_ 1
