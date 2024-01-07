@@ -68,13 +68,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             NameWithNamespace (NAME_TYPE&& name);
             NameWithNamespace (const optional<URI>& ns, const String& name);
 
-            bool operator== (const NameWithNamespace& rhs) const  = default;
+            bool operator== (const NameWithNamespace& rhs) const = default;
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
             auto operator<=> (const NameWithNamespace& rhs) const = default;
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
         };
 
