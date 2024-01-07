@@ -297,7 +297,7 @@ namespace {
                 xmlNewNode (eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : nullptr, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
             NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : Debug::UncheckedDynamicCast<NodeRep_*> (afterNode.GetRep ().get ());
             if (afterNodeRep == nullptr) {
-                // unfortunately complicated - no prepend api (just append). Can say xmlAddPrevSibling for first child though whihc amounts
+                // unfortunately complicated - no prepend api (just append). Can say xmlAddPrevSibling for first child though which amounts
                 // to same thing (unless there is no first child)
                 if (fNode_->children == nullptr) {
                     xmlAddChild (fNode_->parent, newNode); // append=prepend
@@ -398,7 +398,7 @@ namespace {
             byte                    buf[1024];
             while (auto n = in.Read (span{buf}).size ()) {
                 if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-                    xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but trnaslate to throw
+                    xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but trnaslate to throw
                                                             // return 1;
                 }
             }

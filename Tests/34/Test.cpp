@@ -1485,7 +1485,7 @@ namespace {
         {
             // DoWithEachXMLProvider_ factory trick doesn't work for this test cuz use alt CTOR for doc
             auto test1 = [] (DOM::Document::Ptr d) {
-                EXPECT_EQ (d.GetRootElement ().GetName () == NameWithNamespace{nullopt, "simpleElt"});
+                EXPECT_EQ (d.GetRootElement ().GetName () , NameWithNamespace{nullopt, "simpleElt"});
             };
             {
                 test1 (DOM::Document::New ({nullopt, "simpleElt"}));
