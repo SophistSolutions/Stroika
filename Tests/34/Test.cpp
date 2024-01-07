@@ -1491,7 +1491,7 @@ namespace {
             {
                 test1 (DOM::Document::New ({nullopt, "simpleElt"}));
 #if qHasFeature_libxml2
-               //YNI FULLY test1 (DOM::Document::New (XML::Providers::LibXML2::kDefaultProvider, NameWithNamespace{nullopt, "simpleElt"}));
+                test1 (DOM::Document::New (XML::Providers::LibXML2::kDefaultProvider, NameWithNamespace{nullopt, "simpleElt"}));
 #endif
 #if qHasFeature_Xerces
                 test1 (DOM::Document::New (XML::Providers::Xerces::kDefaultProvider, {nullopt, "simpleElt"}));

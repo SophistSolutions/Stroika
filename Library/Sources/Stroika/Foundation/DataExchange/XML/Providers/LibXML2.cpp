@@ -206,19 +206,9 @@ namespace {
         {
             AssertNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
-            switch (fNode_->type) {
-                case XML_ELEMENT_NODE: {
-                    _xmlEntity* e = reinterpret_cast<_xmlEntity*> (fNode_);
-                    return e->URI == nullptr ? optional<URI>{} : libXMLString2String (e->URI);
-                }
-                case XML_ATTRIBUTE_NODE: {
-                    _xmlAttr* e = reinterpret_cast<_xmlAttr*> (fNode_);
-                    return e->ns == nullptr ? optional<URI>{} : libXMLString2String (e->ns->href);
-                }
-                default:
-                    AssertNotReached ();
-                    return nullopt;
-            }
+             xmlChar* ns = xmlNodeGetBase (fNode_->doc, fNode_);
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (ns); });
+             return ns == nullptr ? optional<URI>{} : URI{libXMLString2String (ns)};
         }
         virtual String GetName () const override
         {
@@ -335,7 +325,7 @@ namespace {
         }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
-            AssertNotNull (fNode_);
+            RequireNotNull (fNode_);
             // No reference counting possible here because these notes - i THINK - are owned by document, and the linked list not
             // reference counted (elts) - so just count on no changes during iteration
             return Traversal::CreateGenerator<Node::Ptr> ([curChild = fNode_->children] () mutable -> optional<Node::Ptr> {
@@ -434,8 +424,14 @@ namespace {
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-            AssertNotImplemented ();
-            return {};
+            return Traversal::CreateGenerator<Node::Ptr> ([curChild = fLibRep_->children] () mutable -> optional<Node::Ptr> {
+                if (curChild == nullptr) {
+                    return optional<Node::Ptr>{};
+                }
+                Node::Ptr r = Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (curChild)};
+                ++curChild;
+                return r;
+            });
         }
         virtual void Validate (const Schema::Ptr& schema) const override
         {
