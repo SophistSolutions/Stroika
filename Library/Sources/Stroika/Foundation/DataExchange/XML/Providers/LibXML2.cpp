@@ -202,30 +202,20 @@ namespace {
                     return Node::eOtherNT;
             }
         }
-        virtual optional<URI> GetNamespace () const override
-        {
-            AssertNotNull (fNode_);
-            Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
-             xmlChar* ns = xmlNodeGetBase (fNode_->doc, fNode_);
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (ns); });
-             return ns == nullptr ? optional<URI>{} : URI{libXMLString2String (ns)};
-        }
-        virtual String GetName () const override
+        virtual NameWithNamespace GetName () const override
         {
             AssertNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
             switch (fNode_->type) {
+                case XML_ATTRIBUTE_NODE:
                 case XML_ELEMENT_NODE: {
-                    _xmlEntity* e = reinterpret_cast<_xmlEntity*> (fNode_);
-                    return libXMLString2String (e->name);
-                }
-                case XML_ATTRIBUTE_NODE: {
-                    _xmlAttr* a = reinterpret_cast<_xmlAttr*> (fNode_);
-                    return libXMLString2String (a->name);
+                    xmlChar*                ns      = xmlNodeGetBase (fNode_->doc, fNode_);
+                    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (ns); });
+                    return NameWithNamespace{ns == nullptr ? optional<URI>{} : URI{libXMLString2String (ns)} , libXMLString2String (fNode_->name)};
                 }
                 default:
                     AssertNotReached ();
-                    return {};
+                    return NameWithNamespace{""};
             }
         }
         virtual void SetName (const NameWithNamespace& name) override

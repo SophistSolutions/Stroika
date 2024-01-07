@@ -93,7 +93,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline auto Element::Ptr::GetName () const -> NameWithNamespace
     {
         Require (GetNodeType () == eElementNT); // cheaters never prosper
-        return NameWithNamespace{GetRep ()->GetNamespace (), GetRep ()->GetName ()};
+        return GetRep ()->GetName ();
     }
     inline void Element::Ptr::SetName (const NameWithNamespace& name)
     {

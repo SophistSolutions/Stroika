@@ -768,25 +768,15 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual optional<URI> GetNamespace () const override
-        {
-            AssertNotNull (fNode_);
-            Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                const XMLCh* n = fNode_->getNamespaceURI ();
-                return n == nullptr ? optional<URI>{} : URI{xercesString2String (n)};
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
-        virtual String GetName () const override
+        virtual NameWithNamespace GetName () const override
         {
             AssertNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT or GetNodeType () == Node::eAttributeNT);
             START_LIB_EXCEPTION_MAPPER_
             {
                 AssertNotNull (fNode_->getNodeName ());
-                return fNode_->getNodeName ();
+                const XMLCh* n = fNode_->getNamespaceURI ();
+                return NameWithNamespace{n == nullptr ? optional<URI>{} : URI{xercesString2String (n)}, fNode_->getNodeName ()};
             }
             END_LIB_EXCEPTION_MAPPER_
         }

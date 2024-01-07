@@ -151,23 +151,30 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual ~IRep () = default;
 
         public:
-            virtual bool             Equals (const IRep* rhs) const                                              = 0;
-            virtual Type             GetNodeType () const                                                        = 0;
-            virtual optional<URI>    GetNamespace () const                                                       = 0;
-            virtual String           GetName () const                                                            = 0;
-            virtual void             SetName (const NameWithNamespace& name)                                     = 0;
-            virtual String           GetValue () const                                                           = 0;
-            virtual void             SetValue (const String& v)                                                  = 0;
-            virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const                      = 0;
-            virtual void             SetAttribute (const NameWithNamespace& attrName, const optional<String>& v) = 0;
+            virtual bool Equals (const IRep* rhs) const = 0;
+            virtual Type GetNodeType () const           = 0;
+            // only allowed on element/attribute
+            virtual NameWithNamespace GetName () const = 0;
+            // only allowed on element/attribute
+            virtual void SetName (const NameWithNamespace& name) = 0;
+            // only allowed on element/attribute
+            virtual String GetValue () const = 0;
+            // only allowed on element/attribute
+            virtual void SetValue (const String& v) = 0;
+            // only allowed on element
+            virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const = 0;
+            // only allowed on element
+            virtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v) = 0;
             /**
              *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
              */
-            virtual Ptr           InsertElement (const NameWithNamespace& eltName, const Ptr& afterNode) = 0;
-            virtual Ptr           AppendElement (const NameWithNamespace& eltName)                       = 0;
-            virtual void          DeleteNode ()                                                          = 0;
-            virtual Ptr           GetParentNode () const                                                 = 0;
-            virtual Iterable<Ptr> GetChildren () const                                                   = 0;
+            // only allowed on element
+            virtual Ptr InsertElement (const NameWithNamespace& eltName, const Ptr& afterNode) = 0;
+            // only allowed on element
+            virtual Ptr           AppendElement (const NameWithNamespace& eltName) = 0;
+            virtual void          DeleteNode ()                                    = 0;
+            virtual Ptr           GetParentNode () const                           = 0;
+            virtual Iterable<Ptr> GetChildren () const                             = 0;
             // Redundant API, but provided since commonly used and can be optimized
             virtual Ptr GetChildElementByID (const String& id) const;
         };
