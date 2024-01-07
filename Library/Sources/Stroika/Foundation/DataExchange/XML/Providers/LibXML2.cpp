@@ -244,10 +244,10 @@ namespace {
 #endif
             if (ns) {
                 AssertNotImplemented (); // see SetAttribtues - simple now...
+                // NOT totally clear, but this seems to be it...
+                xmlNodeSetBase (fNode_, BAD_CAST ns->As<String> ().AsUTF8 ().c_str ());
             }
-            else {
-                xmlNodeSetName (fNode_, BAD_CAST name.AsUTF8 ().c_str ());
-            }
+            xmlNodeSetName (fNode_, BAD_CAST name.AsUTF8 ().c_str ());
         }
         virtual String GetValue () const override
         {
