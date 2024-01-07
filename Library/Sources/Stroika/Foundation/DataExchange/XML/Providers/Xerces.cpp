@@ -37,6 +37,8 @@ using namespace Stroika::Foundation::Streams;
 
 using std::byte;
 
+using XML::DOM::Node::NameWithNamespace;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -788,18 +790,18 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual void SetName (const optional<URI>& ns, const String& name) override
+        virtual void SetName (const NameWithNamespace& name) override
         {
             AssertNotNull (fNode_);
 #if qDebug
-            Require (ValidNewNodeName_ (name));
+            Require (ValidNewNodeName_ (name.fName));
 #endif
             START_LIB_EXCEPTION_MAPPER_
             {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 AssertNotNull (doc);
-                fNode_ = doc->renameNode (fNode_, ns == nullopt ? nullptr : ns->As<String> ().As<u16string> ().c_str (),
-                                          name.As<u16string> ().c_str ());
+                fNode_ = doc->renameNode (fNode_, name.fNamespace == nullopt ? nullptr : name.fNamespace->As<String> ().As<u16string> ().c_str (),
+                                          name.fName.As<u16string> ().c_str ());
                 AssertNotNull (fNode_);
             }
             END_LIB_EXCEPTION_MAPPER_
@@ -822,15 +824,16 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual optional<String> GetAttribute (const optional<URI>& ns, const String& attrName) const override
+        virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER_
             {
                 if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
                     DOMElement* elt = Debug::UncheckedDynamicCast<DOMElement*> (fNode_);
-                    const XMLCh* s = ns ? elt->getAttributeNS (ns->As<String> ().As<u16string> ().c_str (), attrName.As<u16string> ().c_str ())
-                                        : elt->getAttribute (attrName.As<u16string> ().c_str ());
+                    const XMLCh* s = attrName.fNamespace ? elt->getAttributeNS (attrName.fNamespace->As<String> ().As<u16string> ().c_str (),
+                                                                                attrName.fName.As<u16string> ().c_str ())
+                                                         : elt->getAttribute (attrName.fName.As<u16string> ().c_str ());
                     AssertNotNull (s);
                     if (*s != '\0') {
                         return s;
@@ -840,7 +843,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual void SetAttribute (const optional<URI>& ns, const String& attrName, const optional<String>& v) override
+        virtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v) override
         {
             Require (GetNodeType () == Node::eElementNT);
             AssertNotNull (fNode_);
@@ -859,26 +862,29 @@ namespace {
                      * or something like that. Anyhow - this appears to do the right thing for now...
                      *      -- LGP 2007-06-13
                      */
-                    element->setAttributeNS (ns ? ns->As<String> ().As<u16string> ().c_str () : nullptr, attrName.As<u16string> ().c_str (),
-                                             v->As<u16string> ().c_str ());
+                    element->setAttributeNS (attrName.fNamespace ? attrName.fNamespace->As<String> ().As<u16string> ().c_str () : nullptr,
+                                             attrName.fName.As<u16string> ().c_str (), v->As<u16string> ().c_str ());
                 }
                 else {
-                    element->removeAttributeNS (nullptr, attrName.As<u16string> ().c_str ());
+                    element->removeAttributeNS (attrName.fNamespace ? attrName.fNamespace->As<String> ().As<u16string> ().c_str () : nullptr,
+                                                attrName.fName.As<u16string> ().c_str ());
                 }
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Node::Ptr InsertElement (const optional<URI>& ns, const String& name, const Node::Ptr& afterNode) override
+        virtual Node::Ptr InsertElement (const NameWithNamespace& eltName, const Node::Ptr& afterNode) override
         {
 #if qDebug
-            Require (ValidNewNodeName_ (name));
+            Require (ValidNewNodeName_ (eltName.fName));
 #endif
             START_LIB_EXCEPTION_MAPPER_
             {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
-                DOMNode* child = doc->createElementNS ((ns == nullopt) ? fNode_->getNamespaceURI () : ns->As<String> ().As<u16string> ().c_str (),
-                                                       name.As<u16string> ().c_str ());
+                // unclear if we should set namespace to existing node namespace or nullptr here?
+                DOMNode* child = doc->createElementNS (
+                    (eltName.fNamespace == nullopt) ? fNode_->getNamespaceURI () : eltName.fNamespace->As<String> ().As<u16string> ().c_str (),
+                    eltName.fName.As<u16string> ().c_str ());
                 DOMNode* refChildNode = nullptr;
                 if (afterNode == nullptr) {
                     // this means PREPEND.
@@ -894,22 +900,22 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Node::Ptr AppendElement (const optional<URI>& ns, const String& name) override
+        virtual Node::Ptr AppendElement (const NameWithNamespace& eltName) override
         {
 #if qDebug
-            Require (ValidNewNodeName_ (name));
+            Require (ValidNewNodeName_ (eltName.fName));
 #endif
             START_LIB_EXCEPTION_MAPPER_
             {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 DOMNode*              child{};
-                if (ns) {
-                    u16string namespaceURI = ns->As<String> ().As<u16string> ();
-                    child                  = doc->createElementNS (namespaceURI.c_str (), name.As<u16string> ().c_str ());
+                if (eltName.fNamespace) {
+                    u16string namespaceURI = eltName.fNamespace->As<String> ().As<u16string> ();
+                    child                  = doc->createElementNS (namespaceURI.c_str (), eltName.fName.As<u16string> ().c_str ());
                 }
                 else {
-                    const XMLCh* namespaceURI = fNode_->getNamespaceURI ();
-                    child                     = doc->createElementNS (namespaceURI, name.As<u16string> ().c_str ());
+                    const XMLCh* namespaceURI = fNode_->getNamespaceURI (); //? or should be null?
+                    child                     = doc->createElementNS (namespaceURI, eltName.fName.As<u16string> ().c_str ());
                 }
                 DOMNode* childx = fNode_->appendChild (child);
                 ThrowIfNull (childx);
@@ -1053,16 +1059,17 @@ namespace {
 namespace {
     class XercesDocRep_ : public DataExchange::XML::DOM::Document::IRep {
     public:
-        XercesDocRep_ (const String& name, const optional<URI>& ns)
+        XercesDocRep_ (const NameWithNamespace& documentElementName)
         {
             [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
             START_LIB_EXCEPTION_MAPPER_
             {
                 MakeXMLDoc_ (fXMLDoc);
                 fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
-                DOMElement* n = ns == nullopt
-                                    ? fXMLDoc->createElement (name.As<u16string> ().c_str ())
-                                    : fXMLDoc->createElementNS (ns->As<String> ().As<u16string> ().c_str (), name.As<u16string> ().c_str ());
+                DOMElement* n = documentElementName.fNamespace == nullopt
+                                    ? fXMLDoc->createElement (documentElementName.fName.As<u16string> ().c_str ())
+                                    : fXMLDoc->createElementNS (documentElementName.fNamespace->As<String> ().As<u16string> ().c_str (),
+                                                                documentElementName.fName.As<u16string> ().c_str ());
                 AssertNotNull (n);
                 DOMElement* oldRoot = fXMLDoc->getDocumentElement ();
                 if (oldRoot == nullptr) {
@@ -1334,9 +1341,9 @@ shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const optio
     return make_shared<SchemaRep_> (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
 }
 
-shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const String& documentElementName, const optional<URI>& ns) const
+shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const
 {
-    return make_shared<XercesDocRep_> (documentElementName, ns);
+    return make_shared<XercesDocRep_> (documentElementName);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,

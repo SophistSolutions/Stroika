@@ -30,7 +30,7 @@ using namespace Stroika::Foundation::DataExchange::XML::DOM::Document;
 
 /*
  ********************************************************************************
- *********************************** Document ***********************************
+ ********************************* Node::IRep ***********************************
  ********************************************************************************
  */
 Node::Ptr Node::IRep::GetChildElementByID (const String& id) const
@@ -60,12 +60,12 @@ void Document::Ptr::Validate (const Schema::Ptr& schema) const
 
 /*
  ********************************************************************************
- ************************* DOM::Document::New ***********************************
+ *************************** DOM::Document::New *********************************
  ********************************************************************************
  */
-Document::Ptr Document::New (const Providers::IDOMProvider& p, const String& documentElementName, const optional<URI>& ns)
+Document::Ptr Document::New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName)
 {
-    return Document::Ptr{p.DocumentFactory (documentElementName, ns)};
+    return Document::Ptr{p.DocumentFactory (documentElementName)};
 }
 
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in)
@@ -89,10 +89,10 @@ Document::Ptr Document::New (const Providers::IDOMProvider& p, const String& in,
 }
 
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
-Document::Ptr Document::New (const String& documentElementName, const optional<URI>& ns)
+Document::Ptr Document::New (const NameWithNamespace& documentElementName)
 {
     static const XML::Providers::IDOMProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
-    return New (*kDefaultProvider_, documentElementName, ns);
+    return New (*kDefaultProvider_, documentElementName);
 }
 
 Document::Ptr Document::New (const Streams::InputStream::Ptr<byte>& in)

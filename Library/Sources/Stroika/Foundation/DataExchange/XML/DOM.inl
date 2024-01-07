@@ -98,7 +98,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline void Element::Ptr::SetName (const NameWithNamespace& name)
     {
         Require (GetNodeType () == eElementNT); // cheaters never prosper
-        GetRep ()->SetName (name.fNamespace, name.fName);
+        GetRep ()->SetName (name);
     }
     inline String Element::Ptr::GetValue () const
     {
@@ -113,17 +113,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline optional<String> Element::Ptr::GetAttribute (const NameWithNamespace& attrName) const
     {
         Require (GetNodeType () == eElementNT); // cheaters never prosper
-        return GetRep ()->GetAttribute (attrName.fNamespace, attrName.fName);
+        return GetRep ()->GetAttribute (attrName);
     }
     inline bool Element::Ptr::HasAttribute (const NameWithNamespace& attrName) const
     {
         Require (GetNodeType () == eElementNT); // cheaters never prosper
-        return GetRep ()->GetAttribute (attrName.fNamespace, attrName.fName) != nullopt;
+        return GetRep ()->GetAttribute (attrName) != nullopt;
     }
     inline bool Element::Ptr::HasAttribute (const NameWithNamespace& attrName, const String& value) const
     {
         Require (GetNodeType () == eElementNT); // cheaters never prosper
-        if (auto o = GetRep ()->GetAttribute (attrName.fNamespace, attrName.fName)) {
+        if (auto o = GetRep ()->GetAttribute (attrName)) {
             return *o == value;
         }
         return false;
@@ -131,17 +131,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline void Element::Ptr::SetAttribute (const NameWithNamespace& attrName, const optional<String>& v)
     {
         Require (GetNodeType () == eElementNT); // cheaters never prosper
-        GetRep ()->SetAttribute (attrName.fNamespace, attrName.fName, v);
+        GetRep ()->SetAttribute (attrName, v);
     }
     inline auto Element::Ptr::Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode) -> Ptr
     {
         Require (GetNodeType () == eElementNT); // cheaters never prosper
-        return GetRep ()->InsertElement (eltName.fNamespace, eltName.fName, afterNode);
+        return GetRep ()->InsertElement (eltName, afterNode);
     }
     inline Element::Ptr Element::Ptr::Append (const NameWithNamespace& eltName)
     {
         Require (GetNodeType () == eElementNT); // cheaters never prosper
-        return GetRep ()->AppendElement (eltName.fNamespace, eltName.fName);
+        return GetRep ()->AppendElement (eltName);
     }
     inline Element::Ptr Element::Ptr::Append (const NameWithNamespace& eltName, const String& v)
     {

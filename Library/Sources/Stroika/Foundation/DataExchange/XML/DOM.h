@@ -67,6 +67,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             template <Characters::IConvertibleToString NAME_TYPE>
             NameWithNamespace (NAME_TYPE&& name);
             NameWithNamespace (const optional<URI>& ns, const String& name);
+
+            bool operator== (const NameWithNamespace& rhs) const  = default;
+            auto operator<=> (const NameWithNamespace& rhs) const = default;
         };
 
         /**
@@ -148,23 +151,23 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual ~IRep () = default;
 
         public:
-            virtual bool             Equals (const IRep* rhs) const                                                            = 0;
-            virtual Type             GetNodeType () const                                                                      = 0;
-            virtual optional<URI>    GetNamespace () const                                                                     = 0;
-            virtual String           GetName () const                                                                          = 0;
-            virtual void             SetName (const optional<URI>& ns, const String& name)                                     = 0;
-            virtual String           GetValue () const                                                                         = 0;
-            virtual void             SetValue (const String& v)                                                                = 0;
-            virtual optional<String> GetAttribute (const optional<URI>& ns, const String& attrName) const                      = 0;
-            virtual void             SetAttribute (const optional<URI>& ns, const String& attrName, const optional<String>& v) = 0;
+            virtual bool             Equals (const IRep* rhs) const                                              = 0;
+            virtual Type             GetNodeType () const                                                        = 0;
+            virtual optional<URI>    GetNamespace () const                                                       = 0;
+            virtual String           GetName () const                                                            = 0;
+            virtual void             SetName (const NameWithNamespace& name)                                     = 0;
+            virtual String           GetValue () const                                                           = 0;
+            virtual void             SetValue (const String& v)                                                  = 0;
+            virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const                      = 0;
+            virtual void             SetAttribute (const NameWithNamespace& attrName, const optional<String>& v) = 0;
             /**
              *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
              */
-            virtual Ptr           InsertElement (const optional<URI>& ns, const String& name, const Ptr& afterNode) = 0;
-            virtual Ptr           AppendElement (const optional<URI>& ns, const String& name)                       = 0;
-            virtual void          DeleteNode ()                                                                     = 0;
-            virtual Ptr           GetParentNode () const                                                            = 0;
-            virtual Iterable<Ptr> GetChildren () const                                                              = 0;
+            virtual Ptr           InsertElement (const NameWithNamespace& eltName, const Ptr& afterNode) = 0;
+            virtual Ptr           AppendElement (const NameWithNamespace& eltName)                       = 0;
+            virtual void          DeleteNode ()                                                          = 0;
+            virtual Ptr           GetParentNode () const                                                 = 0;
+            virtual Iterable<Ptr> GetChildren () const                                                   = 0;
             // Redundant API, but provided since commonly used and can be optimized
             virtual Ptr GetChildElementByID (const String& id) const;
         };
@@ -289,6 +292,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     namespace Document {
         struct IRep;
 
+        using Node::NameWithNamespace;
+
         /**
          *  \brief Document::Ptr is create with Document::New, and is a smart pointer to a DOM document object.
          * 
@@ -368,13 +373,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          * @todo add overload taking String 'in' and parse using Streams::TextToByteReader
          */
-        Ptr New (const Providers::IDOMProvider& p, const String& documentElementName, const optional<URI>& ns);
+        Ptr New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName);
         Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in);
         Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReadingr);
         Ptr New (const Providers::IDOMProvider& p, const String& in);
         Ptr New (const Providers::IDOMProvider& p, const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
-        Ptr New (const String& documentElementName, const optional<URI>& ns);
+        Ptr New (const NameWithNamespace& documentElementName);
         Ptr New (const Streams::InputStream::Ptr<byte>& in);
         Ptr New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReadingr);
         Ptr New (const String& in);

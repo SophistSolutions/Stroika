@@ -24,6 +24,8 @@
 
 namespace Stroika::Foundation::DataExchange::XML::Providers {
 
+    using DOM::Node::NameWithNamespace;
+
     /**
      *  Abstract interface generally unused EXCEPT to compare that the ISchemaProvider POINTER EQUALS the IDOMProvider pointer.
      */
@@ -38,10 +40,10 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
                                                         const NamespaceDefinitionsList&          namespaceDefinitions) const = 0;
     };
     struct IDOMProvider : public virtual IProvider {
-        virtual ~IDOMProvider () = default;
-        virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const String& documentElementName, const optional<URI>& ns) const = 0;
+        virtual ~IDOMProvider ()                                                                                               = default;
+        virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const NameWithNamespace& documentElementName) const           = 0;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
-                                                                 const Schema::Ptr& schemaToValidateAgainstWhileReading) const     = 0;
+                                                                 const Schema::Ptr& schemaToValidateAgainstWhileReading) const = 0;
     };
     struct ISAXProvider : public virtual IProvider {
         virtual ~ISAXProvider ()                                = default;

@@ -1471,6 +1471,34 @@ namespace {
         });
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_Update)
+    {
+        // very early draft test...
+        using DOM::Node::NameWithNamespace;
+        const Memory::BLOB kPersonalXML_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);
+        const Memory::BLOB kPersonalXSD_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xsd);
+        const Memory::BLOB kHealthFrameWorks_v3_xml      = Memory::BLOB::Attach (Resources_::TestFiles_HealthFrameWorks_v3_xml);
+        const Memory::BLOB kReferenceContent_2012_03_xsd = Memory::BLOB::Attach (Resources_::TestFiles_ReferenceContent_2012_03_xsd);
+
+        {
+            // DoWithEachXMLProvider_ factory trick doesn't work for this test cuz use alt CTOR for doc
+            auto test1 = [] (DOM::Document::Ptr d) {
+                EXPECT_EQ (d.GetRootElement ().GetName () == NameWithNamespace{nullopt, "simpleElt"});
+            };
+            {
+                test1 (DOM::Document::New ({nullopt, "simpleElt"}));
+#if qHasFeature_libxml2
+                test1 (DOM::Document::New (XML::Providers::LibXML2::kDefaultProvider, NameWithNamespace{nullopt, "simpleElt"}));
+#endif
+#if qHasFeature_Xerces
+                test1 (DOM::Document::New (XML::Providers::Xerces::kDefaultProvider, NameWithNamespace{nullopt, "simpleElt"}));
+#endif
+            }
+        }
+    }
+}
 #endif
 #endif
 

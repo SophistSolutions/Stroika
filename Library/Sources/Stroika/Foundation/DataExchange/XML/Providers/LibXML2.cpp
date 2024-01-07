@@ -3,14 +3,14 @@
  */
 #include "../../../StroikaPreComp.h"
 
-#include "../../../Characters/CString/Utilities.h"
-#include "../../../Characters/String.h"
-#include "../../../DataExchange/BadFormatException.h"
-#include "../../../Debug/Trace.h"
-#include "../../../Execution/Throw.h"
-#include "../../../Memory/BlockAllocated.h"
-#include "../../../Memory/Common.h"
-#include "../../../Memory/MemoryAllocator.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Throw.h"
+#include "Stroika/Foundation/Memory/BlockAllocated.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Memory/MemoryAllocator.h"
 #include "Stroika/Foundation/Streams/ToSeekableInputStream.h"
 
 #include "LibXML2.h"
@@ -26,6 +26,8 @@ using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
 
 using std::byte;
+
+using XML::DOM::Node::NameWithNamespace;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -236,18 +238,18 @@ namespace {
                     return {};
             }
         }
-        virtual void SetName (const optional<URI>& ns, const String& name) override
+        virtual void SetName (const NameWithNamespace& name) override
         {
             AssertNotNull (fNode_);
 #if qDebug
-            Require (ValidNewNodeName_ (name));
+            Require (ValidNewNodeName_ (name.fName));
 #endif
-            if (ns) {
-                AssertNotImplemented (); // see SetAttribtues - simple now...
+            if (name.fNamespace) {
+                // see SetAttribtues - simple now...
                 // NOT totally clear, but this seems to be it...
-                xmlNodeSetBase (fNode_, BAD_CAST ns->As<String> ().AsUTF8 ().c_str ());
+                xmlNodeSetBase (fNode_, BAD_CAST name.fNamespace->As<String> ().AsUTF8 ().c_str ());
             }
-            xmlNodeSetName (fNode_, BAD_CAST name.AsUTF8 ().c_str ());
+            xmlNodeSetName (fNode_, BAD_CAST name.fName.AsUTF8 ().c_str ());
         }
         virtual String GetValue () const override
         {
@@ -261,36 +263,38 @@ namespace {
             AssertNotNull (fNode_);
             xmlNodeSetContent (fNode_, BAD_CAST v.AsUTF8 ().c_str ());
         }
-        virtual optional<String> GetAttribute (const optional<URI>& ns, const String& attrName) const override
+        virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const override
         {
-            auto r = ns ? xmlGetNsProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str (), BAD_CAST ns->As<String> ().AsUTF8 ().c_str ())
-                        : xmlGetProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str ());
+            auto r = attrName.fNamespace ? xmlGetNsProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (),
+                                                         BAD_CAST attrName.fNamespace->As<String> ().AsUTF8 ().c_str ())
+                                         : xmlGetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str ());
             if (r == nullptr) {
                 return nullopt;
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (r); });
             return libXMLString2String (r);
         }
-        virtual void SetAttribute (const optional<URI>& ns, const String& attrName, const optional<String>& v) override
+        virtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v) override
         {
             RequireNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT);
-            if (ns) {
+            if (attrName.fNamespace) {
                 // Lookup the argument ns and either add it to this node or use the existing one
-                xmlSetNsProp (fNode_, genNS2Use_ (fNode_, *ns), BAD_CAST attrName.AsUTF8 ().c_str (),
+                xmlSetNsProp (fNode_, genNS2Use_ (fNode_, *attrName.fNamespace), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
                               v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
             else {
-                xmlSetProp (fNode_, BAD_CAST attrName.AsUTF8 ().c_str (), v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
+                xmlSetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (), v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
         }
-        virtual Node::Ptr InsertElement (const optional<URI>& ns, const String& name, const Node::Ptr& afterNode) override
+        virtual Node::Ptr InsertElement (const NameWithNamespace& eltName, const Node::Ptr& afterNode) override
         {
 #if qDebug
-            Require (ValidNewNodeName_ (name));
+            Require (ValidNewNodeName_ (eltName.fName));
 #endif
             Require (afterNode == nullptr or this->GetChildren ().Contains (afterNode));
-            xmlNode*  newNode      = xmlNewNode (ns ? genNS2Use_ (fNode_, *ns) : nullptr, BAD_CAST name.AsUTF8 ().c_str ());
+            xmlNode* newNode =
+                xmlNewNode (eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : nullptr, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
             NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : Debug::UncheckedDynamicCast<NodeRep_*> (afterNode.GetRep ().get ());
             if (afterNodeRep == nullptr) {
                 // unfortunately complicated - no prepend api (just append). Can say xmlAddPrevSibling for first child though whihc amounts
@@ -307,12 +311,13 @@ namespace {
             }
             return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
         }
-        virtual Node::Ptr AppendElement (const optional<URI>& ns, const String& name) override
+        virtual Node::Ptr AppendElement (const NameWithNamespace& eltName) override
         {
 #if qDebug
-            Require (ValidNewNodeName_ (name));
+            Require (ValidNewNodeName_ (eltName.fName));
 #endif
-            xmlNode* newNode = xmlNewNode (ns ? genNS2Use_ (fNode_, *ns) : nullptr, BAD_CAST name.AsUTF8 ().c_str ());
+            xmlNode* newNode =
+                xmlNewNode (eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : nullptr, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
             xmlAddChild (fNode_, newNode);
             return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
         }
@@ -373,15 +378,15 @@ namespace {
 namespace {
     class DocRep_ : public ILibXML2DocRep {
     public:
-        DocRep_ (const String& name, const optional<URI>& ns)
+        DocRep_ (const NameWithNamespace& documentElementName)
         {
             // Roughly based on http://www.xmlsoft.org/examples/io2.c
-            xmlDocPtr  doc = xmlNewDoc (BAD_CAST "1.0");
-            xmlNodePtr n   = xmlNewNode (NULL, BAD_CAST name.AsUTF8 ().c_str ()); // @todo NOT clear what characterset/encoding to use here!
+            xmlDocPtr doc = xmlNewDoc (BAD_CAST "1.0");
+            xmlNodePtr n = xmlNewNode (NULL, BAD_CAST documentElementName.fName.AsUTF8 ().c_str ()); // @todo NOT clear what characterset/encoding to use here!
             xmlDocSetRootElement (doc, n);
             // AND not super clear how to create the namespace if needed?
-            if (ns) {
-                (void)xmlNewNs (n, BAD_CAST ns->As<String> ().AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
+            if (documentElementName.fNamespace) {
+                (void)xmlNewNs (n, BAD_CAST documentElementName.fNamespace->As<String> ().AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
             }
             fLibRep_ = doc;
         }
@@ -518,9 +523,9 @@ shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const opti
     return make_shared<SchemaRep_> (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
 }
 
-shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const String& documentElementName, const optional<URI>& ns) const
+shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const
 {
-    return make_shared<DocRep_> (documentElementName, ns);
+    return make_shared<DocRep_> (documentElementName);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
@@ -558,7 +563,7 @@ void Providers::LibXML2::Provider::SAXParse (const Streams::InputStream::Ptr<byt
         }
         while (auto n = useInput.Read (span{buf}).size ()) {
             if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-                xmlParserError (ctxt, "xmlParseChunk"); // todo read up on what this does but translate to throw
+                xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but translate to throw
             }
         }
         xmlParseChunk (ctxt, nullptr, 0, 1);
