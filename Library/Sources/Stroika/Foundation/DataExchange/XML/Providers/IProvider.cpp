@@ -19,11 +19,15 @@ using namespace Stroika::Foundation::DataExchange::XML;
 #if qStroika_Foundation_DataExchange_XML_SupportParsing and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportDOM
 const XML::Providers::IXMLProvider* XML::Providers::Private_::GetDefaultProvider_ ()
 {
-#if qHasFeature_Xerces
-    return &Xerces::kDefaultProvider;
-#endif
+    // Not sure which should be default yet? - Testing libxml2 now
+    // Xerces appears to have better schema validation.
+    // LibXML appears to have better xpath support.
+    // MAY implement INTEROP between them...
 #if qHasFeature_libxml2
     return &LibXML2::kDefaultProvider;
+#endif
+#if qHasFeature_Xerces
+    return &Xerces::kDefaultProvider;
 #endif
 }
 #endif
