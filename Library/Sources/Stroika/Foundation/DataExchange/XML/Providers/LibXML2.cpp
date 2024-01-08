@@ -217,8 +217,7 @@ namespace {
             switch (fNode_->type) {
                 case XML_ATTRIBUTE_NODE:
                 case XML_ELEMENT_NODE: {
-                    xmlChar*                ns      = xmlNodeGetBase (fNode_->doc, fNode_);
-                    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFree (ns); });
+                    const xmlChar* ns = fNode_->ns == nullptr ? nullptr : fNode_->ns->href;
                     return NameWithNamespace{ns == nullptr ? optional<URI>{} : URI{libXMLString2String (ns)}, libXMLString2String (fNode_->name)};
                 }
                 default:
@@ -233,6 +232,8 @@ namespace {
             Require (ValidNewNodeName_ (name.fName));
 #endif
             if (name.fNamespace) {
+                AssertNotReached (); // pretty sure this is wrong...
+                // see genNS2Use_
                 // see SetAttribtues - simple now...
                 // NOT totally clear, but this seems to be it...
                 xmlNodeSetBase (fNode_, BAD_CAST name.fNamespace->As<String> ().AsUTF8 ().c_str ());
@@ -331,20 +332,19 @@ namespace {
                     return optional<Node::Ptr>{};
                 }
                 Node::Ptr r = Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (curChild)};
-                ++curChild;
+                curChild    = curChild->next;
                 return r;
             });
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
-            // wag...
-            TraceContextBumper      ctx{"LibXML2::NodeRep_::Write"};
             xmlBufferPtr            xmlBuf  = xmlBufferCreate ();
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlBufferFree (xmlBuf); });
             if (int dumpRes = xmlNodeDump (xmlBuf, fNode_->doc, fNode_, 0, options.fPrettyPrint); dumpRes == -1) {
                 Execution::Throw (Execution::RuntimeErrorException{"failed dumping node to text"});
             }
             const xmlChar* t = xmlBufferContent (xmlBuf);
+            AssertNotNull (t);
             to.Write (span{reinterpret_cast<const byte*> (t), static_cast<size_t> (::strlen (reinterpret_cast<const char*> (t)))});
         }
         virtual xmlNode* GetInternalTRep () override
@@ -455,7 +455,7 @@ namespace {
                     return optional<Node::Ptr>{};
                 }
                 Node::Ptr r = Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (curChild)};
-                ++curChild;
+                curChild    = curChild->next;
                 return r;
             });
         }

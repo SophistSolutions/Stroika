@@ -112,6 +112,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  \warning Any modification of the DOM may invalidate live iterators or iterables, so refecth after each change
              */
             nonvirtual Iterable<Ptr> GetChildren () const;
 
@@ -276,6 +277,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              *  note only returns sub-elements, so use Node::Ptr (inherited) GetChildren to get them all
+             *
+             *  \warning Any modification of the DOM may invalidate live iterators or iterables, so refecth after each change
              */
             nonvirtual Iterable<Ptr> GetChildren () const;
 

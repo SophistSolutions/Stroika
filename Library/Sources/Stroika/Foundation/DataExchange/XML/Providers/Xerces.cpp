@@ -93,7 +93,7 @@ public:
 public:
     void DUMPCurMemStats ()
     {
-        TraceContextBumper          ctx{"MyXercesMemMgr_::DUMPCurMemStats"};
+        TraceContextBumper          ctx{"Xerces::MyXercesMemMgr_::DUMPCurMemStats"};
         [[maybe_unused]] lock_guard critSec{fLastSnapshot_CritSection};
         fAllocator.DUMPCurMemStats (fLastSnapshot);
         // now copy current map to prev for next time this gets called
@@ -137,7 +137,7 @@ namespace {
         virtual InputSource* resolveEntity (XMLResourceIdentifier* resourceIdentifier) override
         {
             // @todo consider exposting this API outside the module, and/or providing option to wget missing namespaces, or have option for where to fetch from?
-            TraceContextBumper ctx{"XMLDB::{}::MySchemaResolver_::resolveEntity"};
+            TraceContextBumper ctx{"Xerces::{}::MySchemaResolver_::resolveEntity"};
             RequireNotNull (resourceIdentifier);
             // Treat namespaces and publicids as higher-priority matchers
             for (auto i = fSourceComponents.begin (); i != fSourceComponents.end (); ++i) {
@@ -964,7 +964,6 @@ namespace {
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
-            TraceContextBumper ctx{"XercesNodeRep_::Write"};
             START_LIB_EXCEPTION_MAPPER_
             {
                 DoWrite2Stream_ (fNode_->getOwnerDocument (), fNode_, to, options);
@@ -1151,7 +1150,7 @@ namespace {
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
-            TraceContextBumper                             ctx{"DocRep_::Write"};
+            TraceContextBumper                             ctx{"Xerces::DocRep_::Write"};
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             AssertNotNull (fXMLDoc);
             START_LIB_EXCEPTION_MAPPER_
@@ -1178,7 +1177,7 @@ namespace {
         }
         virtual void Validate (const Schema::Ptr& schema) const override
         {
-            TraceContextBumper                             ctx{"DocRep_::Validate"};
+            TraceContextBumper                             ctx{"Xerces::DocRep_::Validate"};
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             RequireNotNull (schema);
             START_LIB_EXCEPTION_MAPPER_

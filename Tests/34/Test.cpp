@@ -129,10 +129,8 @@ namespace {
     GTEST_TEST (Foundation_DataExchange_XML, SAX_PARSER1)
     {
         TraceContextBumper ctx{"Test_1_SAXParser_"};
-        const wstring      kNSTest = L"Test-NAMESPACE";
-        //NYI
-        //Schema    gSchema     =   Schema (kNSTest);
-        wstring newDocXML = L"<PHRModel xmlns=\"" + wstring{kNSTest} +
+        const wstring      kNSTest   = L"Test-NAMESPACE";
+        wstring            newDocXML = L"<PHRModel xmlns=\"" + wstring{kNSTest} +
                             L"\">\n"
                             L"      <BasicInformation id=\"id=101\">\n"
                             L"              <ContactInfo>\n"
@@ -1432,13 +1430,13 @@ namespace {
         {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
             XML::SAXParse (mkdata_ (), &ctx);
-            EXPECT_TRUE (data.people.size () == 2);
-            EXPECT_TRUE (data.people[0].firstName == "Jim");
-            EXPECT_TRUE (data.people[0].lastName == "Smith");
-            EXPECT_TRUE (data.people[0].gender.fRep == "Male");
-            EXPECT_TRUE (data.people[1].firstName == "Fred");
-            EXPECT_TRUE (data.people[1].lastName == "Down");
-            EXPECT_TRUE (data.people[1].gender.fRep == "Female");
+            EXPECT_EQ (data.people.size (), 2);
+            EXPECT_EQ (data.people[0].firstName, "Jim");
+            EXPECT_EQ (data.people[0].lastName, "Smith");
+            EXPECT_EQ (data.people[0].gender.fRep, "Male");
+            EXPECT_EQ (data.people[1].firstName, "Fred");
+            EXPECT_EQ (data.people[1].lastName, "Down");
+            EXPECT_EQ (data.people[1].gender.fRep, "Female");
         }
     }
 }
@@ -1475,7 +1473,6 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, DOM_Update)
     {
-        // very early draft test...
         const Memory::BLOB kPersonalXML_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);
         const Memory::BLOB kPersonalXSD_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xsd);
         const Memory::BLOB kHealthFrameWorks_v3_xml      = Memory::BLOB::Attach (Resources_::TestFiles_HealthFrameWorks_v3_xml);
@@ -1497,26 +1494,25 @@ namespace {
 #endif
             }
         }
-        bool tmphackDidOnce = false;
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            DOM::Document::Ptr d   = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
-            String             tmp = d.Write ();
-            if (tmphackDidOnce) {
-                return;
-            }
-            else {
-                tmphackDidOnce = true; // avoid runnign libxml code - broken for now
-            }
-            DOM::Element::Ptr personelElt = d.GetRootElement ();
-            EXPECT_TRUE (personelElt.GetName ().fNamespace == nullopt and personelElt.GetName ().fName == "personnel");
+            DOM::Document::Ptr d           = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
+            String             tmp         = d.Write ();
+            DOM::Element::Ptr  personelElt = d.GetRootElement ();
+            EXPECT_EQ (personelElt.GetName ().fNamespace, nullopt);
+            EXPECT_EQ (personelElt.GetName ().fName, "personnel");
             EXPECT_EQ (personelElt.GetChildren ().size (), 6u);
             personelElt.GetChildren ().Apply ([] (DOM::Element::Ptr p) {
-                EXPECT_TRUE (p.GetName ().fNamespace == nullopt and p.GetName ().fName == "person");
+                EXPECT_EQ (p.GetName ().fNamespace, nullopt);
+                EXPECT_EQ (p.GetName ().fName, "person");
                 String id = Memory::ValueOf (p.GetAttribute ("id"));
-                DbgTrace (L"o=%s", Characters::ToString (p).c_str ());
+                //DbgTrace (L"o=%s", Characters::ToString (p).c_str ());
             });
             DOM::Element::Ptr{*personelElt.GetChildren ().Find ([] (DOM::Element::Ptr p) { return p.HasAttribute ("id", "three.worker"); })}.DeleteNode ();
             EXPECT_EQ (personelElt.GetChildren ().size (), 5u);
+            personelElt.GetChildren ().Apply ([] (DOM::Element::Ptr p) {
+                EXPECT_EQ (p.GetName ().fNamespace, nullopt);
+                EXPECT_EQ (p.GetName ().fName, "person");
+            });
         });
     }
 }
