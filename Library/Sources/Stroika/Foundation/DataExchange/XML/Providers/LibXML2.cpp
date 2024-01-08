@@ -334,8 +334,8 @@ namespace {
             if (int dumpRes = xmlNodeDump (xmlBuf, fNode_->doc, fNode_, 0, options.fPrettyPrint); dumpRes == -1) {
                 Execution::Throw (Execution::RuntimeErrorException{"failed dumping node to text"});
             }
-            const xmlChar*          t      = xmlBufferContent (xmlBuf);
-            to.Write (span{reinterpret_cast<const byte*> (t), static_cast<size_t> (::strlen (reinterpret_cast<const char*>(t)))});
+            const xmlChar* t = xmlBufferContent (xmlBuf);
+            to.Write (span{reinterpret_cast<const byte*> (t), static_cast<size_t> (::strlen (reinterpret_cast<const char*> (t)))});
         }
         virtual xmlNode* GetInternalTRep () override
         {
