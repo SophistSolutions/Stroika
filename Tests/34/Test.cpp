@@ -1499,24 +1499,24 @@ namespace {
         }
         bool tmphackDidOnce = false;
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            DOM::Document::Ptr d           = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
+            String             tmp         = d.Write ();
             if (tmphackDidOnce) {
                 return;
             }
             else {
                 tmphackDidOnce = true; // avoid runnign libxml code - broken for now
             }
-            DOM::Document::Ptr d           = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
-            String             tmp         = d.Write ();
-            DOM::Element::Ptr  personelElt = d.GetRootElement ();
+            DOM::Element::Ptr personelElt = d.GetRootElement ();
             EXPECT_TRUE (personelElt.GetName ().fNamespace == nullopt and personelElt.GetName ().fName == "personnel");
-            EXPECT_EQ (personelElt.GetChildren ().size (), 6);
+            EXPECT_EQ (personelElt.GetChildren ().size (), 6u);
             personelElt.GetChildren ().Apply ([] (DOM::Element::Ptr p) {
                 EXPECT_TRUE (p.GetName ().fNamespace == nullopt and p.GetName ().fName == "person");
                 String id = Memory::ValueOf (p.GetAttribute ("id"));
                 DbgTrace (L"o=%s", Characters::ToString (p).c_str ());
             });
             DOM::Element::Ptr{*personelElt.GetChildren ().Find ([] (DOM::Element::Ptr p) { return p.HasAttribute ("id", "three.worker"); })}.DeleteNode ();
-            EXPECT_EQ (personelElt.GetChildren ().size (), 5);
+            EXPECT_EQ (personelElt.GetChildren ().size (), 5u);
         });
     }
 }

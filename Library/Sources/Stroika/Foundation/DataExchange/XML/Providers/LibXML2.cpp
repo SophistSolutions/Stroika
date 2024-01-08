@@ -331,9 +331,11 @@ namespace {
             TraceContextBumper      ctx{"LibXML2::NodeRep_::Write"};
             xmlBufferPtr            xmlBuf  = xmlBufferCreate ();
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlBufferFree (xmlBuf); });
-            int                     dumpRes = xmlNodeDump (xmlBuf, fNode_->doc, fNode_, 0, true);
-            const xmlChar*          aa      = xmlBufferContent (xmlBuf);
-            to.Write (span{reinterpret_cast<const byte*> (aa), static_cast<size_t> (strlen ((const char*)aa))});
+            if (int dumpRes = xmlNodeDump (xmlBuf, fNode_->doc, fNode_, 0, options.fPrettyPrint); dumpRes == -1) {
+                Execution::Throw (Execution::RuntimeErrorException{"failed dumping node to text"});
+            }
+            const xmlChar*          t      = xmlBufferContent (xmlBuf);
+            to.Write (span{reinterpret_cast<const byte*> (t), static_cast<size_t> (::strlen (reinterpret_cast<const char*>(t)))});
         }
         virtual xmlNode* GetInternalTRep () override
         {
