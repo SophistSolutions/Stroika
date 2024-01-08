@@ -628,17 +628,7 @@ namespace {
                 // test going back and forth between TimePointSeconds and DateTime...
                 Time::TimePointSeconds ds = dso + now;
                 DateTime               dt{ds};
-                EXPECT_TRUE ((Math::NearlyEquals (dt, DateTime{dt.As<Time::TimePointSeconds> ()})));
-                // crazy large epsilon for now because we represent datetime to nearest second
-                // (note - failed once with clang++ on vm - could be something else slowed vm down - LGP 2018-04-17 - ignore for now)
-                // But even the 1.1 failed once (--LGP 2019-05-03) - so change to warning and use bigger number (2.1) for error check
-                // Failed again on (slowish) vm under VS2k17 - but rarely --LGP 2021-05-20
-                VerifyTestResultWarning (Math::NearlyEquals (dt.AsLocalTime ().As<Time::TimePointSeconds> ().time_since_epoch ().count (),
-                                                             ds.time_since_epoch ().count (), 1.1));
-                EXPECT_TRUE (Math::NearlyEquals (dt.AsLocalTime ().As<Time::TimePointSeconds> ().time_since_epoch ().count (),
-                                                 ds.time_since_epoch ().count (),
-                                                 7.5)); // failed once - with value 2.1 - 2023-11-10, so up this to 5 (sometimes run on slow machines)
-                // Failed once (after change to more jittery tickcount logic) on macos, so upped to 7.5 seconds --LGP 2023-11-23
+                EXPECT_NEAR (ds.time_since_epoch ().count (), dt.As<Time::TimePointSeconds> ().time_since_epoch ().count (), 1.1);
             }
         }
         {
@@ -649,7 +639,7 @@ namespace {
             };
             auto roundTripS = [] (String s) {
                 DateTime dt = DateTime::Parse (s, DateTime::kRFC1123Format);
-                EXPECT_TRUE (dt.Format (DateTime::kRFC1123Format) == s);
+                EXPECT_EQ (dt.Format (DateTime::kRFC1123Format), s);
             };
 
             // Parse eRFC1123
