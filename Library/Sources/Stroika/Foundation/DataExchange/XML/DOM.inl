@@ -181,7 +181,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline auto Element::Ptr::GetChildren () const -> Iterable<Ptr>
     {
         // return just the child elements - so simple filter
-        return this->Node::Ptr::GetChildren ().Map<Iterable<Ptr>> ([] (Node::Ptr p) -> optional<Ptr> { return Ptr{p}; });
+        return this->Node::Ptr::GetChildren ().Map<Iterable<Ptr>> (
+            [] (Node::Ptr p) -> optional<Ptr> { return Ptr{p} == nullptr ? optional<Ptr>{} : Ptr{p}; });
     }
     inline auto Element::Ptr::GetChildByID (const String& id) const -> Ptr
     {

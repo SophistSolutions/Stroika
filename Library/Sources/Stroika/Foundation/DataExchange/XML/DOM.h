@@ -57,8 +57,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             eOtherNT
         };
 
-    
-
         /**
          *  \brief Node::Ptr is a smart pointer to a Node::IRep
          * 
@@ -122,6 +120,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              */
             nonvirtual shared_ptr<IRep> GetRep () const;
 
+        public:
+            /**
+             */
+            nonvirtual Characters::String ToString () const;
+
         private:
             shared_ptr<IRep> fRep_;
 
@@ -158,10 +161,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             // only allowed on element
             virtual Ptr InsertElement (const NameWithNamespace& eltName, const Ptr& afterNode) = 0;
             // only allowed on element
-            virtual Ptr           AppendElement (const NameWithNamespace& eltName) = 0;
-            virtual void          DeleteNode ()                                    = 0;
-            virtual Ptr           GetParentNode () const                           = 0;
-            virtual Iterable<Ptr> GetChildren () const                             = 0;
+            virtual Ptr           AppendElement (const NameWithNamespace& eltName)                                              = 0;
+            virtual void          DeleteNode ()                                                                                 = 0;
+            virtual Ptr           GetParentNode () const                                                                        = 0;
+            virtual Iterable<Ptr> GetChildren () const                                                                          = 0;
+            virtual void          Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             // Redundant API, but provided since commonly used and can be optimized
             virtual Ptr GetChildElementByID (const String& id) const;
         };

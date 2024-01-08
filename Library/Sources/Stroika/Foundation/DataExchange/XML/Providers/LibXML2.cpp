@@ -325,6 +325,16 @@ namespace {
                 return r;
             });
         }
+        virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
+        {
+            // wag...
+            TraceContextBumper      ctx{"LibXML2::NodeRep_::Write"};
+            xmlBufferPtr            xmlBuf  = xmlBufferCreate ();
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlBufferFree (xmlBuf); });
+            int                     dumpRes = xmlNodeDump (xmlBuf, fNode_->doc, fNode_, 0, true);
+            const xmlChar*          aa      = xmlBufferContent (xmlBuf);
+            to.Write (span{reinterpret_cast<const byte*> (aa), static_cast<size_t> (strlen ((const char*)aa))});
+        }
         virtual xmlNode* GetInternalTRep () override
         {
             return fNode_;
