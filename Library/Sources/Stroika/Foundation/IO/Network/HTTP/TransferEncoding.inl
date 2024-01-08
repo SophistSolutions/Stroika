@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Configuration {
     // These names are chosen to exactly match the ones described in https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
     template <>
     constexpr EnumNames<IO::Network::HTTP::TransferEncoding> DefaultNames<IO::Network::HTTP::TransferEncoding>::k{
-        EnumNames<IO::Network::HTTP::TransferEncoding>::BasicArrayInitializer{{
+        {{
             {IO::Network::HTTP::TransferEncoding::eChunked, L"chunked"},
             {IO::Network::HTTP::TransferEncoding::eCompress, L"compress"},
             {IO::Network::HTTP::TransferEncoding::eDeflate, L"deflate"},
