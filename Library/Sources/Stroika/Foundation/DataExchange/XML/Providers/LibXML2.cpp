@@ -376,7 +376,7 @@ namespace {
 }
 
 namespace {
-    struct DocRep_ :  ILibXML2DocRep {
+    struct DocRep_ : ILibXML2DocRep {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif

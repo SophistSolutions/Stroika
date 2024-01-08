@@ -285,7 +285,6 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
 #endif
-
         }
         SchemaRep_ (const SchemaRep_&) = delete;
         virtual ~SchemaRep_ ()
@@ -1057,7 +1056,7 @@ namespace {
 }
 
 namespace {
-    struct DocRep_ :  DataExchange::XML::DOM::Document::IRep {
+    struct DocRep_ : DataExchange::XML::DOM::Document::IRep {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
@@ -1339,7 +1338,7 @@ Providers::Xerces::Provider::Provider ()
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
     fUseXercesMemoryManager_ = new MyXercesMemMgr_{};
     XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, fUseXercesMemoryManager_);
-    #else
+#else
     XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0);
 #endif
 }
