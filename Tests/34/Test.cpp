@@ -1553,6 +1553,27 @@ namespace {
             EXPECT_NO_THROW (d.Validate (schema));
             EXPECT_EQ (personelElt.GetChildren ().size (), 6u);
         });
+
+        // Namespace's content test
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            Schema::Ptr        wrongSchema       = schemaFactory (nullopt, kPersonalXSD_, {}, {});
+            static const URI   kNS_              = "http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/";
+            Schema::Ptr        schema            = schemaFactory (kNS_, kReferenceContent_2012_03_xsd, {}, {});
+            DOM::Document::Ptr d                 = domFactory (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), nullptr);
+            String             tmp               = d.Write ();
+            DOM::Element::Ptr  refContentDataElt = d.GetRootElement ();
+
+            EXPECT_EQ (refContentDataElt.GetName ().fNamespace, kNS_);
+            EXPECT_EQ (refContentDataElt.GetName ().fName, "ReferenceContentData");
+            // check schema validation
+            EXPECT_NO_THROW (d.Validate (schema));
+            EXPECT_THROW (d.Validate (wrongSchema), BadFormatException);
+
+            // grab 'concepts' Node, and try removing from it (and recheck validation) and then try adding to it and recheck validation
+            DOM::Element::Ptr conceptsElt = refContentDataElt.GetChild (NameWithNamespace{kNS_, "Concepts"});
+            EXPECT_EQ (conceptsElt.GetChildren ().size (), 459u);
+            // @todo rest of impl...
+        });
     }
 }
 #endif
