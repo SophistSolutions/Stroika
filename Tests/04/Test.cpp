@@ -90,9 +90,9 @@ namespace {
 namespace Stroika::Foundation::Configuration {
     template <>
     constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k{{{
-            {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
-            {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
-        }}};
+        {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
+        {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
+    }}};
 }
 namespace {
     void Test2_EnumNames_ ()

@@ -63,11 +63,11 @@ namespace Stroika::Frameworks::WebServer {
 namespace Stroika::Foundation::Configuration {
     template <>
     constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k{{{
-            {Frameworks::WebServer::Response::State::ePreparingHeaders, L"Preparing-Headers"},
-            {Frameworks::WebServer::Response::State::ePreparingBodyBeforeHeadersSent, L"Preparing-Body-Before-Headers-Sent"},
-            {Frameworks::WebServer::Response::State::ePreparingBodyAfterHeadersSent, L"Preparing-Body-After-Headers-Sent"},
-            {Frameworks::WebServer::Response::State::eCompleted, L"Completed"},
-        }}};
+        {Frameworks::WebServer::Response::State::ePreparingHeaders, L"Preparing-Headers"},
+        {Frameworks::WebServer::Response::State::ePreparingBodyBeforeHeadersSent, L"Preparing-Body-Before-Headers-Sent"},
+        {Frameworks::WebServer::Response::State::ePreparingBodyAfterHeadersSent, L"Preparing-Body-After-Headers-Sent"},
+        {Frameworks::WebServer::Response::State::eCompleted, L"Completed"},
+    }}};
 }
 
 #endif /*_Stroika_Frameworks_WebServer_Response_inl_*/
