@@ -58,6 +58,16 @@ String Node::Ptr::ToString () const
     return Streams::TextReader::New (m).ReadAll ();
 }
 
+auto Element::Ptr::GetChild (const NameWithNamespace& eltName) const -> Ptr
+{
+    for (Element::Ptr c : GetChildren ()) {
+        if (c.GetName () == eltName) {
+            return c;
+        }
+    }
+    return Ptr{nullptr};
+}
+
 /*
  ********************************************************************************
  *********************************** Document ***********************************

@@ -284,6 +284,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             * can return a NULL Node Ptr if not found. Only examines this node's (direct) children elements (not attributes)
+             */
+            nonvirtual Ptr GetChild (const NameWithNamespace& eltName) const;
+
+        public:
+            /**
              * can return a NULL Node Ptr if not found. Only examines this node's (direct) children
              */
             nonvirtual Ptr GetChildByID (const String& id) const;
