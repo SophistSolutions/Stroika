@@ -1503,7 +1503,7 @@ namespace {
                 return;
             }
             else {
-                tmphackDidOnce = true;  // avoid runnign libxml code - broken for now
+                tmphackDidOnce = true; // avoid runnign libxml code - broken for now
             }
             DOM::Document::Ptr d           = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
             String             tmp         = d.Write ();
