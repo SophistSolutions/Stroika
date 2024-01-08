@@ -100,7 +100,7 @@ AppTempFileManager::AppTempFileManager (const Options& options)
 AppTempFileManager::~AppTempFileManager ()
 {
     if (not fTmpDir_.empty ()) {
-        DbgTrace (L"AppTempFileManager::DTOR: clearing '%s'", Characters::ToString (fTmpDir_).c_str ());
+        DbgTrace (L"AppTempFileManager::DTOR: clearing %s", Characters::ToString (fTmpDir_).c_str ());
         try {
             remove_all (fTmpDir_);
         }
@@ -112,7 +112,7 @@ AppTempFileManager::~AppTempFileManager ()
 
 AppTempFileManager& AppTempFileManager::operator= (AppTempFileManager&& rhs)
 {
-    DbgTrace (L"AppTempFileManager::DTOR: clearing '%s'", Characters::ToString (fTmpDir_).c_str ());
+    DbgTrace (L"AppTempFileManager::DTOR: clearing %s", Characters::ToString (fTmpDir_).c_str ());
     remove_all (fTmpDir_);
     fTmpDir_ = move (rhs.fTmpDir_); // prevents rhs DTOR from doing anything
     Assert (rhs.fTmpDir_.empty ()); // cuz of this...

@@ -1183,10 +1183,10 @@ namespace {
             START_LIB_EXCEPTION_MAPPER_
             {
                 try {
-                    DbgTrace (L"Validating against target namespace '%s'", Characters::ToString (schema.GetTargetNamespace ()).c_str ());
+                    DbgTrace (L"Validating against schema (target namespace '%s')", Characters::ToString (schema.GetTargetNamespace ()).c_str ());
                     // As this CAN be expensive - especially if we need to externalize the file, and re-parse it!!! - just shortcut by
                     // checking the top-level DOM-node and assure that has the right namespace. At least quickie first check that works when
-                    // reading files (doesnt help in pre-save check, of course)
+                    // reading files (doesn't help in pre-save check, of course)
                     DOMNode* docNode = fXMLDoc->getDocumentElement ();
                     if (docNode == nullptr) [[unlikely]] {
                         Execution::Throw (BadFormatException{"No document", 0, 0, 0});
