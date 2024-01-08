@@ -852,6 +852,14 @@ String String::Remove (Character c) const
     return tmp;
 }
 
+String String::Remove (const String& subString) const
+{
+    if (auto o = this->Find (subString, CompareOptions::eWithCase)) {
+        return this->SubString (0, *o) + this->SubString (*o + subString.length ());
+    }
+    return *this;
+}
+
 optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) const
 {
     PeekSpanData pds = GetPeekSpanData<ASCII> ();

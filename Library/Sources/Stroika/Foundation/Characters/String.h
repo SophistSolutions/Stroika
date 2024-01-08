@@ -514,12 +514,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Remove the first occurence of Character 'c' from the string. Not an error if none
+         *  Remove the first occurence of Character 'c'/'/subString/ from the string. Not an error if none
          *  found. Doesn't modify this (const method) - returns resulting string.
          *
          *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
          */
         nonvirtual String Remove (Character c) const;
+        nonvirtual String Remove (const String& subString) const;
 
     public:
         /**
