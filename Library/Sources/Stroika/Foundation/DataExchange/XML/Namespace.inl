@@ -44,8 +44,6 @@ namespace Stroika::Foundation::DataExchange::XML {
         fNamespaces = namespaces;
     }
 
-
-    
     /*
      ********************************************************************************
      *********************** XML::NameWithNamespace *********************************
