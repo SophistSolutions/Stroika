@@ -1493,7 +1493,10 @@ namespace {
 #endif
             }
         }
+        // no namespace's content test
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            Schema::Ptr        schema      = schemaFactory (nullopt, kPersonalXSD_, {}, {});
+            Schema::Ptr        wrongSchema = schemaFactory (nullopt, kReferenceContent_2012_03_xsd, {}, {});
             DOM::Document::Ptr d           = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
             String             tmp         = d.Write ();
             DOM::Element::Ptr  personelElt = d.GetRootElement ();
@@ -1503,15 +1506,52 @@ namespace {
             personelElt.GetChildren ().Apply ([] (DOM::Element::Ptr p) {
                 EXPECT_EQ (p.GetName ().fNamespace, nullopt);
                 EXPECT_EQ (p.GetName ().fName, "person");
-                String id = Memory::ValueOf (p.GetAttribute ("id"));
+                String id                   = Memory::ValueOf (p.GetAttribute ("id"));
+                String testCanSerializeElts = Characters::ToString (p);
                 //DbgTrace (L"o=%s", Characters::ToString (p).c_str ());
             });
             DOM::Element::Ptr{*personelElt.GetChildren ().Find ([] (DOM::Element::Ptr p) { return p.HasAttribute ("id", "three.worker"); })}.DeleteNode ();
             EXPECT_EQ (personelElt.GetChildren ().size (), 5u);
+            {
+                // This should throw, but doesn't on libxml - less quality validation --LGP 2024-01-08
+                try {
+                    d.Validate (schema); // dangling link we must remove from manager
+                }
+                catch (...) {
+                }
+                DOM::Element::Ptr bigBoss         = personelElt.GetChildByID ("Big.Boss");
+                String            itsSubordinates = Memory::ValueOf (bigBoss.GetChild ("link").GetAttribute ("subordinates"));
+                EXPECT_TRUE (itsSubordinates.Contains ("three.worker")); // guy we deleted
+                bigBoss.GetChild ("link").SetAttribute ("subordinates", itsSubordinates.Remove ("three.worker"));
+                EXPECT_NO_THROW (d.Validate (schema));
+                DbgTrace (L"bigBoss=%s", Characters::ToString (bigBoss).c_str ());
+            }
             personelElt.GetChildren ().Apply ([] (DOM::Element::Ptr p) {
                 EXPECT_EQ (p.GetName ().fNamespace, nullopt);
                 EXPECT_EQ (p.GetName ().fName, "person");
             });
+            // check schema validation
+            EXPECT_NO_THROW (d.Validate (schema));
+            EXPECT_THROW (d.Validate (wrongSchema), BadFormatException);
+            // add an element
+            {
+                auto person2Add = personelElt.Append (NameWithNamespace{"person"});
+                person2Add.SetAttribute ("id", "somenewguy");
+                {
+                    auto hisName = person2Add.Append (NameWithNamespace{"name"});
+                    hisName.Append (NameWithNamespace{"family"}, "Jones");
+                    hisName.Append ("given", "Phreddy");
+                }
+                person2Add.Append (NameWithNamespace{"email"}, "phred@jones.com");
+                {
+                    auto link = person2Add.Append (NameWithNamespace{"link"});
+                    link.SetAttribute ("manager", "Big.Boss");
+                }
+                String testCanSerializeElts = Characters::ToString (person2Add);
+                DbgTrace (L"o=%s", Characters::ToString (person2Add).c_str ());
+            }
+            EXPECT_NO_THROW (d.Validate (schema));
+            EXPECT_EQ (personelElt.GetChildren ().size (), 6u);
         });
     }
 }
