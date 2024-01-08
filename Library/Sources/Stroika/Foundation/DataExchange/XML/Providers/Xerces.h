@@ -85,8 +85,10 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
                                const Schema::Ptr& schema) const override;
 
     private:
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         struct MyXercesMemMgr_;
-        MyXercesMemMgr_* fUseXercesMemoryManager{nullptr};
+        MyXercesMemMgr_* fUseXercesMemoryManager_{nullptr};
+#endif
     };
     inline const Provider kDefaultProvider;
 

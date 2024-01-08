@@ -45,6 +45,9 @@ namespace {
 
 namespace {
     struct SchemaRep_ : ILibXML2SchemaRep {
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+        static inline atomic<unsigned int> sLiveCnt{0};
+#endif
         SchemaRep_ (const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
                     const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
             : fTargetNamespace{targetNamespace}
@@ -59,11 +62,18 @@ namespace {
             fCompiledSchema = xmlSchemaParse (schemaParseContext);
             xmlSchemaFreeParserCtxt (schemaParseContext);
             Execution::ThrowIfNull (fCompiledSchema);
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+            ++sLiveCnt;
+#endif
         }
         SchemaRep_ (const SchemaRep_&) = delete;
         virtual ~SchemaRep_ ()
         {
             xmlSchemaFree (fCompiledSchema);
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+            Assert (sLiveCnt > 0);
+            --sLiveCnt;
+#endif
         }
         optional<URI>             fTargetNamespace;
         Sequence<SourceComponent> fSourceComponents;
@@ -366,7 +376,10 @@ namespace {
 }
 
 namespace {
-    class DocRep_ : public ILibXML2DocRep {
+    struct DocRep_ :  ILibXML2DocRep {
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+        static inline atomic<unsigned int> sLiveCnt{0};
+#endif
     public:
         DocRep_ (const NameWithNamespace& documentElementName)
         {
@@ -379,6 +392,9 @@ namespace {
                 (void)xmlNewNs (n, BAD_CAST documentElementName.fNamespace->As<String> ().AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
             }
             fLibRep_ = doc;
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+            ++sLiveCnt;
+#endif
         }
         DocRep_ (const Streams::InputStream::Ptr<byte>& in)
         {
@@ -397,15 +413,25 @@ namespace {
                 Execution::Throw (BadFormatException{"not well formed"sv}); // get good error message and throw that BadFormatException
             }
             fLibRep_ = ctxt->myDoc;
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+            ++sLiveCnt;
+#endif
         }
         DocRep_ (const DocRep_& from)
         {
             fLibRep_ = xmlCopyDoc (from.fLibRep_, 1);
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+            ++sLiveCnt;
+#endif
         }
         ~DocRep_ ()
         {
             AssertNotNull (fLibRep_);
             xmlFreeDoc (fLibRep_);
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+            Assert (sLiveCnt > 0);
+            --sLiveCnt;
+#endif
         }
         virtual xmlDoc* GetLibXMLDocRep () override
         {
@@ -506,8 +532,12 @@ Providers::LibXML2::Provider::Provider ()
 Providers::LibXML2::Provider::~Provider ()
 {
     TraceContextBumper ctx{"LibXML2::Provider::DTOR"};
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
+    Require (SchemaRep_::sLiveCnt == 0); // Check for leaks but better/clearer than memory leaks check below
+    Require (DocRep_::sLiveCnt == 0);    // ""
+#endif
     xmlCleanupParser ();
-#if qDebug
+#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
     xmlMemoryDump ();
 #endif
 }

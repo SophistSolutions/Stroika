@@ -1499,8 +1499,8 @@ namespace {
         }
         bool tmphackDidOnce = false;
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            DOM::Document::Ptr d           = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
-            String             tmp         = d.Write ();
+            DOM::Document::Ptr d   = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
+            String             tmp = d.Write ();
             if (tmphackDidOnce) {
                 return;
             }
