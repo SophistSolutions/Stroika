@@ -68,7 +68,7 @@ namespace {
         OptionsFile of{L"MyModule",
                        [] () -> ObjectVariantMapper {
                            ObjectVariantMapper mapper;
-                           mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                           mapper.AddClass<MyData_> ({
                                {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
                                {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
                            });
@@ -93,7 +93,7 @@ namespace {
             : fOptionsFile_{L"MyModule",
                             [] () -> ObjectVariantMapper {
                                 ObjectVariantMapper mapper;
-                                mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                                mapper.AddClass<MyData_> ({
                                     {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
                                     {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
                                 });

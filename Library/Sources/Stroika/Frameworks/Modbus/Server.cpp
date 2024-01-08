@@ -388,8 +388,7 @@ namespace {
                         DbgTrace (L"Processing kWriteSingleCoil_ (outputAddress: %d, value: %d) message with request-header=%s",
                                   outputAddress, value, Characters::ToString (requestHeader).c_str ());
 #endif
-                        serviceHandler->WriteCoils (initializer_list<KeyValuePair<CoilsDescriptorType::NameType, CoilsDescriptorType::ValueType>>{
-                            {zeroToOneBased (outputAddress), value == 0 ? false : true}});
+                        serviceHandler->WriteCoils ({{zeroToOneBased (outputAddress), value == 0 ? false : true}});
                         {
                             // Response ready - format, toNetwork, and write
                             out.WriteRaw (requestHeader);

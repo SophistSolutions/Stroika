@@ -1000,14 +1000,14 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
     ObjectVariantMapper mapper;
     mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> ());
     mapper.AddCommonType<optional<BlockDeviceKind>> ();
-    mapper.AddClass<IOStatsType> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<IOStatsType> ({
         {"Bytes"sv, StructFieldMetaInfo{&IOStatsType::fBytesTransfered}, StructFieldInfo::eOmitNullFields},
         {"Q-Length"sv, StructFieldMetaInfo{&IOStatsType::fQLength}, StructFieldInfo::eOmitNullFields},
         {"In-Use-%"sv, StructFieldMetaInfo{&IOStatsType::fInUsePercent}, StructFieldInfo::eOmitNullFields},
         {"Total-Transfers"sv, StructFieldMetaInfo{&IOStatsType::fTotalTransfers}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddCommonType<optional<IOStatsType>> ();
-    mapper.AddClass<DiskInfoType> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<DiskInfoType> ({
         {"Persistence-Volume-ID"sv, StructFieldMetaInfo{&DiskInfoType::fPersistenceVolumeID}, StructFieldInfo::eOmitNullFields},
         {"Device-Kind"sv, StructFieldMetaInfo{&DiskInfoType::fDeviceKind}, StructFieldInfo::eOmitNullFields},
         {"Size"sv, StructFieldMetaInfo{&DiskInfoType::fSizeInBytes}, StructFieldInfo::eOmitNullFields},
@@ -1019,7 +1019,7 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
     mapper.AddCommonType<optional<Set<String>>> ();
     mapper.AddCommonType<Set<filesystem::path>> ();
     mapper.AddCommonType<optional<Set<filesystem::path>>> ();
-    mapper.AddClass<MountedFilesystemInfoType> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<MountedFilesystemInfoType> ({
         {"Device-Kind"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fDeviceKind}, StructFieldInfo::eOmitNullFields},
         {"Filesystem-Type"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fFileSystemType}, StructFieldInfo::eOmitNullFields},
         {"Device-Name"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fDeviceOrVolumeName}, StructFieldInfo::eOmitNullFields},
@@ -1034,7 +1034,7 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
     });
     mapper.AddCommonType<Mapping<DynamicDiskIDType, DiskInfoType>> ();
     mapper.AddCommonType<Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>> ();
-    mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<Info> ({
         {"Disks"_k, StructFieldMetaInfo{&Info::fDisks}},
         {"Mounted-Filesystems"_k, StructFieldMetaInfo{&Info::fMountedFilesystems}},
     });

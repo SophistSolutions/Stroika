@@ -165,7 +165,7 @@ namespace Stroika::Foundation::DataExchange {
      *          });
      *
      *          // OR Equivalently
-     *          mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+     *          mapper.AddClass<SharedContactsConfig_> ({
      *              { "Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
      *              { "Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
      *              { "This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
@@ -513,7 +513,7 @@ namespace Stroika::Foundation::DataExchange {
          *          mapper.AddCommonType<IO::Network::URI> ();      // add default type mapper (using default URL parse)
          *
          *          // register each of your mappable (even private) types
-         *          mapper.AddClass<MyConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+         *          mapper.AddClass<MyConfig_> ({
          *              { "fURL1_", StructFieldMetaInfo{&SharedContactsConfig_::fURL1_} },        // use default parser
          *              // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for configuration files
          *              { "fURL2_", StructFieldMetaInfo{&SharedContactsConfig_::fURL2_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
@@ -551,10 +551,10 @@ namespace Stroika::Foundation::DataExchange {
          *              int  fVV2{};
          *          };
          *          ObjectVariantMapper mapper;
-         *          mapper.AddClass<BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+         *          mapper.AddClass<BaseObj_> ({
          *              {"fVV1", StructFieldMetaInfo{&BaseObj_, fVV1}},
          *          });
-         *          mapper.AddSubClass<Derived_, BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+         *          mapper.AddSubClass<Derived_, BaseObj_> ({
          *              {"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
          *          });
          *      \endcode

@@ -110,7 +110,7 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
 {
     ObjectVariantMapper mapper;
 
-    mapper.AddClass<Icon> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+    mapper.AddClass<Icon> ({
         {"Alive"sv, StructFieldMetaInfo{&Icon::fMimeType}},
         {"USN"sv, StructFieldMetaInfo{&Icon::fHorizontalPixels}},
         {"Server"sv, StructFieldMetaInfo{&Icon::fVerticalPixels}},
@@ -120,7 +120,7 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
     mapper.AddCommonType<Collection<Icon>> ();
     mapper.AddCommonType<optional<Collection<Icon>>> ();
 
-    mapper.AddClass<Service> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+    mapper.AddClass<Service> ({
         {"Alive"sv, StructFieldMetaInfo{&Service::fServiceType}},
         {"USN"sv, StructFieldMetaInfo{&Service::fServiceID}},
         {"Server"sv, StructFieldMetaInfo{&Service::fSCPDURL}},
@@ -133,7 +133,7 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
     mapper.AddCommonType<optional<String>> ();
     mapper.AddCommonType<optional<URI>> ();
 
-    mapper.AddClass<DeviceDescription> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+    mapper.AddClass<DeviceDescription> ({
         {"PresentationURL"sv, StructFieldMetaInfo{&DeviceDescription::fPresentationURL}},
         {"DeviceType"sv, StructFieldMetaInfo{&DeviceDescription::fDeviceType}},
         {"ManufactureName"sv, StructFieldMetaInfo{&DeviceDescription::fManufactureName}},
@@ -259,14 +259,14 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         registry.AddCommonType<URI> ();
         registry.AddCommonType<optional<URI>> ();
         registry.AddCommonReader_Simple<InternetMediaType> ([] (const String& s) { return InternetMediaType{s}; });
-        registry.AddCommonReader_Class<DeviceDescription::Icon> (initializer_list<ObjectReader::StructFieldInfo>{
+        registry.AddCommonReader_Class<DeviceDescription::Icon> ({
             {Name{"mimetype"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fMimeType}},
             {Name{"width"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fHorizontalPixels}},
             {Name{"height"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fVerticalPixels}},
             {Name{"depth"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fColorDepth}},
             {Name{"url"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fURL}},
         });
-        registry.AddCommonReader_Class<DeviceDescription::Service> (initializer_list<ObjectReader::StructFieldInfo>{
+        registry.AddCommonReader_Class<DeviceDescription::Service> ({
             {Name{"serviceType"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fServiceType}},
             {Name{"serviceId"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fServiceID}},
             {Name{"SCPDURL"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fSCPDURL}},
@@ -276,7 +276,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         registry.AddCommonType<optional<Collection<DeviceDescription::Icon>>> ();
         registry.AddCommonType<Collection<DeviceDescription::Service>> (Name{"service"});
         registry.AddCommonType<optional<Collection<DeviceDescription::Service>>> ();
-        registry.AddCommonReader_Class<DeviceDescription> (initializer_list<ObjectReader::StructFieldInfo>{
+        registry.AddCommonReader_Class<DeviceDescription> ({
             {Name{"presentationURL"sv}, StructFieldMetaInfo{&DeviceDescription::fPresentationURL}},
             {Name{"deviceType"sv}, StructFieldMetaInfo{&DeviceDescription::fDeviceType}},
             {Name{"manufacturer"sv}, StructFieldMetaInfo{&DeviceDescription::fManufactureName}},

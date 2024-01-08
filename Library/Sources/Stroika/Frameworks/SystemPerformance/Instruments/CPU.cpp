@@ -450,14 +450,14 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
     using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-    mapper.AddClass<Info::LoadAverage> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<Info::LoadAverage> ({
         {"1-minute"_k, StructFieldMetaInfo{&Info::LoadAverage::f1MinuteAve}},
         {"5-minute"_k, StructFieldMetaInfo{&Info::LoadAverage::f5MinuteAve}},
         {"15-minute"_k, StructFieldMetaInfo{&Info::LoadAverage::f15MinuteAve}},
     });
     mapper.AddCommonType<optional<Info::LoadAverage>> ();
 #endif
-    mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
+    mapper.AddClass<Info> ({
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
         {"Load-Average"_k, StructFieldMetaInfo{&Info::fLoadAverage}, StructFieldInfo::eOmitNullFields},
 #endif

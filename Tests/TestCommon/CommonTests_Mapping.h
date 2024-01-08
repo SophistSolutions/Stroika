@@ -329,7 +329,7 @@ namespace CommonTests {
                     for (int i = 0; i < 100; ++i) {
                         c.Add (i, i);
                     }
-                    EXPECT_TRUE (c.Keys ().length () == 100);
+                    EXPECT_EQ (c.Keys ().length (), 100);
 
                     using KT = typename ConcreteContainerType::key_type;
                     c.RetainAll (initializer_list<KT>{1, 3, 5});

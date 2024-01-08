@@ -570,7 +570,7 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
     mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Status> ());
     mapper.AddCommonType<Set<Interface::Status>> ();
     mapper.AddCommonType<optional<Set<Interface::Status>>> ();
-    mapper.AddClass<InterfaceInfo::Interface> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<InterfaceInfo::Interface> ({
         {"Interface-Internal-ID"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fInternalInterfaceID}},
         {"Friendly-Name"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fFriendlyName}},
         {"Description"sv, StructFieldMetaInfo{&InterfaceInfo::Interface::fDescription}, StructFieldInfo::eOmitNullFields},
@@ -582,7 +582,7 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
         // TODO ADD:
         //Containers::Set<InternetAddress>            fBindings;
     });
-    mapper.AddClass<IOStatistics> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<IOStatistics> ({
         {"Total-Bytes-Sent"sv, StructFieldMetaInfo{&IOStatistics::fTotalBytesSent}, StructFieldInfo::eOmitNullFields},
         {"Total-Bytes-Received"sv, StructFieldMetaInfo{&IOStatistics::fTotalBytesReceived}, StructFieldInfo::eOmitNullFields},
         {"Bytes-Per-Second-Sent"sv, StructFieldMetaInfo{&IOStatistics::fBytesPerSecondSent}, StructFieldInfo::eOmitNullFields},
@@ -598,14 +598,14 @@ const ObjectVariantMapper Instruments::Network::Instrument::kObjectVariantMapper
         {"Total-Errors"sv, StructFieldMetaInfo{&IOStatistics::fTotalErrors}, StructFieldInfo::eOmitNullFields},
         {"Total-Packets-Dropped"sv, StructFieldMetaInfo{&IOStatistics::fTotalPacketsDropped}, StructFieldInfo::eOmitNullFields},
     });
-    mapper.AddClass<InterfaceInfo> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<InterfaceInfo> ({
         {"Interface"sv, StructFieldMetaInfo{&InterfaceInfo::fInterface}},
         {"IO-Statistics"sv, StructFieldMetaInfo{&InterfaceInfo::fIOStatistics}},
     });
     mapper.AddCommonType<Collection<InterfaceInfo>> ();
     mapper.AddCommonType<optional<Collection<InterfaceInfo>>> ();
     mapper.AddCommonType<optional<IOStatistics>> ();
-    mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<Info> ({
         {"Interfaces"sv, StructFieldMetaInfo{&Info::fInterfaces}, StructFieldInfo::eOmitNullFields},
         {"Summary-IO-Statistics"sv, StructFieldMetaInfo{&Info::fSummaryIOStatistics}, StructFieldInfo::eOmitNullFields},
     });

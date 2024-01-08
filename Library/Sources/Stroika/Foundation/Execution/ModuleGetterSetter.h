@@ -38,7 +38,7 @@ namespace Stroika::Foundation ::Execution {
      *                      "MyModule",
      *                      [] () -> ObjectVariantMapper {
      *                          ObjectVariantMapper mapper;
-     *                          mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+     *                          mapper.AddClass<MyData_> ({
      *                              { "Enabled", StructFieldMetaInfo{&MyData_::fEnabled} },
      *                              { "Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt} },
      *                          });

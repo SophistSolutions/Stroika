@@ -52,7 +52,7 @@ ObjectVariantMapper Advertisement::kMapperGetter_ ()
     ObjectVariantMapper mapper;
     mapper.AddCommonType<Set<String>> ();
     mapper.AddCommonType<optional<Set<String>>> ();
-    mapper.AddClass<Advertisement> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+    mapper.AddClass<Advertisement> ({
         {"Alive"sv, StructFieldMetaInfo{&Advertisement::fAlive}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
         {"USN"sv, StructFieldMetaInfo{&Advertisement::fUSN}},
         {"Server"sv, StructFieldMetaInfo{&Advertisement::fServer}},

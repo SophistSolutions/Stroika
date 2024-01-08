@@ -456,19 +456,19 @@ namespace {
 const ObjectVariantMapper Instruments::Memory::Instrument::kObjectVariantMapper = [] () -> ObjectVariantMapper {
     using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
-    mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<Info::PhysicalRAMDetailsType> ({
         {"Available"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fAvailable}, StructFieldInfo::eOmitNullFields},
         {"Active"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fActive}, StructFieldInfo::eOmitNullFields},
         {"Inactive"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fInactive}, StructFieldInfo::eOmitNullFields},
         {"Free"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fFree}, StructFieldInfo::eOmitNullFields},
         {"OS-Reserved"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fOSReserved}, StructFieldInfo::eOmitNullFields},
     });
-    mapper.AddClass<Info::VirtualMemoryDetailsType> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<Info::VirtualMemoryDetailsType> ({
         {"Commit-Limit"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommitLimit}, StructFieldInfo::eOmitNullFields},
         {"Committed-Bytes"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommittedBytes}, StructFieldInfo::eOmitNullFields},
         {"Pagefile-Total-Size"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fPagefileTotalSize}, StructFieldInfo::eOmitNullFields},
     });
-    mapper.AddClass<Info::PagingDetailsType> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<Info::PagingDetailsType> ({
         {"Major-Faults-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsSinceBoot}, StructFieldInfo::eOmitNullFields},
         {"Minor-Faults-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsSinceBoot}, StructFieldInfo::eOmitNullFields},
         {"Page-Outs-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsSinceBoot}, StructFieldInfo::eOmitNullFields},
@@ -476,7 +476,7 @@ const ObjectVariantMapper Instruments::Memory::Instrument::kObjectVariantMapper 
         {"Minor-Faults-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsPerSecond}, StructFieldInfo::eOmitNullFields},
         {"Page-Outs-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsPerSecond}, StructFieldInfo::eOmitNullFields},
     });
-    mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<Info> ({
         {"Physical-Memory"sv, StructFieldMetaInfo{&Info::fPhysicalMemory}},
         {"Virtual-Memory"sv, StructFieldMetaInfo{&Info::fVirtualMemory}},
         {"Paging"sv, StructFieldMetaInfo{&Info::fPaging}},

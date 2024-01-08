@@ -311,7 +311,7 @@ namespace {
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
                      kInitList_
 #else
-                     initializer_list<URI>{URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, fred, URI{"http://www.cnn.com"}}
+                     {URI{"http://httpbin.org/get"}, URI{"http://www.google.com"}, fred, URI{"http://www.cnn.com"}}
 #endif
                 ) {
                     auto schemeAndAuthority = fred.GetSchemeAndAuthority ();

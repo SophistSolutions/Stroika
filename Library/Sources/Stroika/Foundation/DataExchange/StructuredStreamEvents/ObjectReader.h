@@ -204,7 +204,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *          using   namespace   ObjectReader;
      *          Registry mapper;
      *          mapper.AddCommonType<String> ();
-     *          mapper.AddClass<Person_> (initializer_list<StructFieldInfo> {
+     *          mapper.AddClass<Person_> ({
      *              { Name { "FirstName" }, StructFieldMetaInfo{&Person_::firstName} },
      *              { Name { "LastName" }, StructFieldMetaInfo{&Person_::lastName} },
      *          });
@@ -932,18 +932,18 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *      using   namespace   ObjectReader;
      *      Registry registry;
      *      registry.AddCommonType<String> ();
-     *      registry.AddClass<Person_> (initializer_list<Registry::StructFieldInfo> {
+     *      registry.AddClass<Person_> ({
      *          { Name { "FirstName" }, StructFieldMetaInfo{&Person_::firstName} },
      *          { Name { "LastName" }, StructFieldMetaInfo{&Person_::lastName} },
      *      });
      *      registry.AddCommonType<vector<Person_>> ();
      *      registry.Add<vector<Person_>> (Registry::ConvertReaderToFactory <vector<Person_>, RepeatedElementReader<vector<Person_>>> ());
-     *      registry.AddClass<Address_> (initializer_list<Registry::StructFieldInfo> {
+     *      registry.AddClass<Address_> ({
      *          { Name { "city" }, StructFieldMetaInfo{&Address_::city} },
      *          { Name { "state" }, StructFieldMetaInfo{&Address_::state} },
      *      });
      *      registry.Add<vector<Address_>> (Registry::ConvertReaderToFactory <vector<Address_>, RepeatedElementReader<vector<Address_>>> ());
-     *      registry.AddClass<Data_> (initializer_list<Registry::StructFieldInfo> {
+     *      registry.AddClass<Data_> ({
      *          { Name { "person" }, StructFieldMetaInfo{&Data_::people} },
      *          { Name { "address" }, StructFieldMetaInfo{&Data_::addresses} },
      *      });

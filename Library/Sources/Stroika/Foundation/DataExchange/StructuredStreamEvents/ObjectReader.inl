@@ -517,7 +517,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     void RangeReader<T>::Activated (Context& r)
     {
         Assert (fActualReader_ == nullptr);
-        fActualReader_ = Registry::MakeClassReader<RangeData_> (initializer_list<StructFieldInfo>{
+        fActualReader_ = Registry::MakeClassReader<RangeData_> ({
             {fPairNames.first, StructFieldMetaInfo{&RangeData_::fLowerBound}},
             {fPairNames.second, StructFieldMetaInfo{&RangeData_::fUpperBound}},
         }) (&fProxyValue_);

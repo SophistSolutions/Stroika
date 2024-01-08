@@ -1072,7 +1072,7 @@ namespace {
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ScanKindType> (ScanKindType_NAMES));
             mapper.AddCommonType<SpectrumType> ();
             mapper.AddCommonType<PersistenceScanAuxDataType> ();
-            mapper.AddClass<ScanDetails_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+            mapper.AddClass<ScanDetails_> ({
                 {"Scan-ID"sv, StructFieldMetaInfo{&ScanDetails_::fScanID}},
                 {"Scan-Start"sv, StructFieldMetaInfo{&ScanDetails_::fScanStart}},
                 {"Scan-End"sv, StructFieldMetaInfo{&ScanDetails_::fScanEnd}},

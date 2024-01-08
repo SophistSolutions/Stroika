@@ -78,7 +78,7 @@ optional<PortType> SchemeType::GetDefaultPort () const
 {
     // From http://www.iana.org/assignments/port-numbers
     static const Mapping<String, PortType> kPredefined_{String::EqualsComparer{eCaseInsensitive},
-                                                        initializer_list<Common::KeyValuePair<String, PortType>>{
+                                                        {
                                                             {"http"sv, static_cast<PortType> (80)},
                                                             {"https"sv, static_cast<PortType> (443)},
                                                             {"ldap"sv, static_cast<PortType> (389)},

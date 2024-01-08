@@ -210,7 +210,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
     };
 #if qPlatform_Linux
     // This counts on SIOCGIFHWADDR, which appears to be Linux specific
-    for (SocketAddress::FamilyType family : initializer_list<SocketAddress::FamilyType>{SocketAddress::INET, SocketAddress::INET6}) {
+    for (SocketAddress::FamilyType family : {SocketAddress::INET, SocketAddress::INET6}) {
         ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (family, Socket::DGRAM);
 
         char   buf[10 * 1024];

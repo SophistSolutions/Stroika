@@ -114,11 +114,11 @@ namespace {
         mapper.AddCommonType<Bijection<String, String>> ();
 
         // register each of your mappable (even private) types
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled}},
-            {L"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt}},
-            {L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID}},
-            {L"This-HR-ContactID-To-SharedContactID-Bijection", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID2}},
+        mapper.AddClass<SharedContactsConfig_> ({
+            {"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled}},
+            {"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt}},
+            {"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID}},
+            {"This-HR-ContactID-To-SharedContactID-Bijection", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID2}},
         });
 
         bool                  newEnabled = true;
@@ -184,7 +184,7 @@ namespace {
         ObjectVariantMapper mapper;
 
         // register each of your mappable (even private) types
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<SharedContactsConfig_> ({
             {L"Int1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
             {L"Int2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
             {L"Int3", StructFieldMetaInfo{&SharedContactsConfig_::fInt3}},
@@ -246,7 +246,7 @@ namespace {
         mapper.AddCommonType<Range<int>> ();
         mapper.AddCommonType<DiscreteRange<int>> ();
 
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<SharedContactsConfig_> ({
             {L"fIntRange", StructFieldMetaInfo{&SharedContactsConfig_::fIntRange}},
             {L"fDiscIntRange2", StructFieldMetaInfo{&SharedContactsConfig_::fDiscIntRange2}},
         });
@@ -316,7 +316,7 @@ namespace {
             ObjectVariantMapper mapper;
 
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations<Fred> (Fred_NAMES));
-            mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+            mapper.AddClass<SharedContactsConfig_> ({
                 {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
             });
 
@@ -346,7 +346,7 @@ namespace {
             ObjectVariantMapper mapper;
 
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Fred> (Bijection<Fred, String> (Fred_NAMES)));
-            mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+            mapper.AddClass<SharedContactsConfig_> ({
                 {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
             });
 
@@ -399,7 +399,7 @@ namespace {
         };
 
         ObjectVariantMapper mapper;
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<SharedContactsConfig_> ({
             {L"fDuration1", StructFieldMetaInfo{&SharedContactsConfig_::fDuration1}},
             {L"fDateTime1", StructFieldMetaInfo{&SharedContactsConfig_::fDateTime1}},
             {L"fDate1", StructFieldMetaInfo{&SharedContactsConfig_::fDate1}},
@@ -447,7 +447,7 @@ namespace {
         };
 
         ObjectVariantMapper mapper;
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<SharedContactsConfig_> ({
             {L"fVV1", StructFieldMetaInfo{&SharedContactsConfig_::fVV1}},
         });
 
@@ -519,7 +519,7 @@ namespace {
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<pair<int, String>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<tuple<int, String>> ());
 
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<SharedContactsConfig_> ({
             {L"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
             {L"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
             {L"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
@@ -583,10 +583,10 @@ namespace {
         };
 
         ObjectVariantMapper mapper;
-        mapper.AddClass<BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<BaseObj_> ({
             {L"fVV1", StructFieldMetaInfo{&BaseObj_::fVV1}},
         });
-        mapper.AddSubClass<Derived_, BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddSubClass<Derived_, BaseObj_> ({
             {L"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
         });
 
@@ -645,7 +645,7 @@ namespace {
         mapper.AddCommonType<Sequence<int>> ();
         mapper.AddCommonType<vector<int>> ();
 
-        mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+        mapper.AddClass<SharedContactsConfig_> ({
             {L"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
             {L"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
             {L"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
@@ -786,7 +786,7 @@ namespace {
             ObjectVariantMapper mapper;
 
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_EnumAsInt<Fred> ());
-            mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+            mapper.AddClass<SharedContactsConfig_> ({
                 {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
             });
 

@@ -29,7 +29,7 @@ optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream::Ptr<byte>& 
         //      using   namespace DataExchange::StructuredStreamEvents;
         Registry mapper;
         mapper.AddCommonType<String> ();
-        mapper.AddCommonReader_Class<Fault> (initializer_list<StructFieldInfo>{
+        mapper.AddCommonReader_Class<Fault> ({
             {Name{"faultcode"sv}, StructFieldMetaInfo{&Fault::faultcode}},
             {Name{"faultstring"sv}, StructFieldMetaInfo{&Fault::faultstring}},
         });

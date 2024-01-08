@@ -1745,13 +1745,13 @@ const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper
     mapper.AddCommonType<optional<MemorySizeType>> ();
     mapper.AddCommonType<optional<Time::Duration>> ();
     mapper.AddCommonType<optional<Mapping<String, String>>> ();
-    mapper.AddClass<ProcessType::TCPStats> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<ProcessType::TCPStats> ({
         {"Established"sv, StructFieldMetaInfo{&ProcessType::TCPStats::fEstablished}},
         {"Listening"sv, StructFieldMetaInfo{&ProcessType::TCPStats::fListening}},
         {"Other"sv, StructFieldMetaInfo{&ProcessType::TCPStats::fOther}},
     });
     mapper.AddCommonType<optional<ProcessType::TCPStats>> ();
-    mapper.AddClass<ProcessType> (initializer_list<StructFieldInfo>{
+    mapper.AddClass<ProcessType> ({
         {"Kernel-Process"sv, StructFieldMetaInfo{&ProcessType::fKernelProcess}, StructFieldInfo::eOmitNullFields},
         {"Parent-Process-ID"sv, StructFieldMetaInfo{&ProcessType::fParentProcessID}, StructFieldInfo::eOmitNullFields},
         {"Process-Name"sv, StructFieldMetaInfo{&ProcessType::fProcessName}, StructFieldInfo::eOmitNullFields},
