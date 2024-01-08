@@ -62,8 +62,7 @@ namespace Stroika::Frameworks::WebServer {
 
 namespace Stroika::Foundation::Configuration {
     template <>
-    constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k{
-        EnumNames<Frameworks::WebServer::Response::State>::BasicArrayInitializer{{
+    constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k{{{
             {Frameworks::WebServer::Response::State::ePreparingHeaders, L"Preparing-Headers"},
             {Frameworks::WebServer::Response::State::ePreparingBodyBeforeHeadersSent, L"Preparing-Body-Before-Headers-Sent"},
             {Frameworks::WebServer::Response::State::ePreparingBodyAfterHeadersSent, L"Preparing-Body-After-Headers-Sent"},

@@ -14,11 +14,10 @@ namespace Stroika::Foundation::IO::FileSystem::FileStream {
 
 namespace Stroika::Foundation::Configuration {
     template <>
-    constexpr EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> DefaultNames<IO::FileSystem::FileStream::AdoptFDPolicy>::k{
-        EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy>::BasicArrayInitializer{{
-            {IO::FileSystem::FileStream::AdoptFDPolicy::eCloseOnDestruction, L"Close-On-Destruction"},
-            {IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction, L"Disconnect-On-Destruction"},
-        }}};
+    constexpr EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> DefaultNames<IO::FileSystem::FileStream::AdoptFDPolicy>::k{{{
+        {IO::FileSystem::FileStream::AdoptFDPolicy::eCloseOnDestruction, L"Close-On-Destruction"},
+        {IO::FileSystem::FileStream::AdoptFDPolicy::eDisconnectOnDestruction, L"Disconnect-On-Destruction"},
+    }}};
 }
 
 #endif /*_Stroika_Foundation_IO_FileSystem_FileStream_inl_*/

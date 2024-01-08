@@ -30,7 +30,7 @@ namespace Stroika::Foundation::IO {
 
 namespace Stroika::Foundation::Configuration {
     template <>
-    constexpr EnumNames<IO::AccessMode> DefaultNames<IO::AccessMode>::k{EnumNames<IO::AccessMode>::BasicArrayInitializer{{
+    constexpr EnumNames<IO::AccessMode> DefaultNames<IO::AccessMode>::k{{{
         {IO::AccessMode::eNoAccess, L"No-Access"},
         {IO::AccessMode::eRead, L"Read"},
         {IO::AccessMode::eWrite, L"Write"},

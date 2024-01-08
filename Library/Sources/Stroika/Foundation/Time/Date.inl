@@ -440,12 +440,9 @@ namespace Stroika::Foundation::Time {
 
 namespace Stroika::Foundation::Configuration {
     template <>
-    constexpr EnumNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat> DefaultNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat>::k{
-        EnumNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat>::BasicArrayInitializer{{
-            {Stroika::Foundation::Time::Date::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped,
-             L"Current-Locale-With-Zeros-Stripped"},
-        }}};
-
+    constexpr EnumNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat> DefaultNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat>::k{{{
+        {Stroika::Foundation::Time::Date::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
+    }}};
 }
 
 namespace Stroika::Foundation::Traversal::RangeTraits {

@@ -287,11 +287,11 @@ namespace Stroika::Foundation::Configuration {
      *          namespace Stroika::Foundation::Configuration {
      *              template<>
      *              constexpr EnumNames<Priority> DefaultNames<Priority>::k{
-     *                  EnumNames<Priority>::BasicArrayInitializer{{
-     *                          {Priority::a, L"Debug"},
-     *                          {Priority::b, L"Info"},
-     *                          {Priority::eNotice, L"Notice"},
-     *                      }}};
+     *                  {{
+     *                      {Priority::a, L"Debug"},
+     *                      {Priority::b, L"Info"},
+     *                      {Priority::eNotice, L"Notice"},
+     *                  }}};
      *          }
      *
      *          // Then use

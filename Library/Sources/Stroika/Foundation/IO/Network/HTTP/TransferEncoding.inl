@@ -30,14 +30,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 namespace Stroika::Foundation::Configuration {
     // These names are chosen to exactly match the ones described in https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
     template <>
-    constexpr EnumNames<IO::Network::HTTP::TransferEncoding> DefaultNames<IO::Network::HTTP::TransferEncoding>::k{
-        {{
-            {IO::Network::HTTP::TransferEncoding::eChunked, L"chunked"},
-            {IO::Network::HTTP::TransferEncoding::eCompress, L"compress"},
-            {IO::Network::HTTP::TransferEncoding::eDeflate, L"deflate"},
-            {IO::Network::HTTP::TransferEncoding::eGZip, L"gzip"},
-            {IO::Network::HTTP::TransferEncoding::eIdentity, L"identity"},
-        }}};
+    constexpr EnumNames<IO::Network::HTTP::TransferEncoding> DefaultNames<IO::Network::HTTP::TransferEncoding>::k{{{
+        {IO::Network::HTTP::TransferEncoding::eChunked, L"chunked"},
+        {IO::Network::HTTP::TransferEncoding::eCompress, L"compress"},
+        {IO::Network::HTTP::TransferEncoding::eDeflate, L"deflate"},
+        {IO::Network::HTTP::TransferEncoding::eGZip, L"gzip"},
+        {IO::Network::HTTP::TransferEncoding::eIdentity, L"identity"},
+    }}};
 }
 
 #endif /*_Stroika_Foundation_IO_Network_HTTP_TransferEncoding_inl_*/

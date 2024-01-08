@@ -244,20 +244,18 @@ namespace Stroika::Foundation::Configuration {
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <>
-    constexpr EnumNames<Execution::WaitableEvent::ResetType> DefaultNames<Execution::WaitableEvent::ResetType>::k{
-        EnumNames<Execution::WaitableEvent::ResetType>::BasicArrayInitializer{{
-            {Execution::WaitableEvent::ResetType::eAutoReset, L"AutoReset"},
-            {Execution::WaitableEvent::ResetType::eManualReset, L"ManualReset"},
-        }}};
+    constexpr EnumNames<Execution::WaitableEvent::ResetType> DefaultNames<Execution::WaitableEvent::ResetType>::k{{{
+        {Execution::WaitableEvent::ResetType::eAutoReset, L"AutoReset"},
+        {Execution::WaitableEvent::ResetType::eManualReset, L"ManualReset"},
+    }}};
     DISABLE_COMPILER_MSC_WARNING_END (4996);
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <>
-    constexpr EnumNames<Execution::WaitableEvent::WaitStatus> DefaultNames<Execution::WaitableEvent::WaitStatus>::k{
-        EnumNames<Execution::WaitableEvent::WaitStatus>::BasicArrayInitializer{{
-            {Execution::WaitableEvent::WaitStatus::eTimeout, L"Timeout"},
-            {Execution::WaitableEvent::WaitStatus::eTriggered, L"Triggered"},
-        }}};
+    constexpr EnumNames<Execution::WaitableEvent::WaitStatus> DefaultNames<Execution::WaitableEvent::WaitStatus>::k{{{
+        {Execution::WaitableEvent::WaitStatus::eTimeout, L"Timeout"},
+        {Execution::WaitableEvent::WaitStatus::eTriggered, L"Triggered"},
+    }}};
 }
 
 #endif /*_Stroika_Foundation_Execution_WaitableEvent_inl_*/

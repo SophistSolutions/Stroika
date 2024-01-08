@@ -417,14 +417,14 @@ namespace Stroika::Foundation::Execution {
 
 namespace Stroika::Foundation::Configuration {
     template <>
-    constexpr EnumNames<Execution::Thread::Status> DefaultNames<Execution::Thread::Status>::k{EnumNames<Execution::Thread::Status>::BasicArrayInitializer{{
+    constexpr EnumNames<Execution::Thread::Status> DefaultNames<Execution::Thread::Status>::k{{{
         {Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running"},
         {Execution::Thread::Status::eRunning, L"Running"},
         {Execution::Thread::Status::eAborting, L"Aborting"},
         {Execution::Thread::Status::eCompleted, L"Completed"},
     }}};
     template <>
-    constexpr EnumNames<Execution::Thread::Priority> DefaultNames<Execution::Thread::Priority>::k{EnumNames<Execution::Thread::Priority>::BasicArrayInitializer{{
+    constexpr EnumNames<Execution::Thread::Priority> DefaultNames<Execution::Thread::Priority>::k{{{
         {Execution::Thread::Priority::eLowest, L"Lowest"},
         {Execution::Thread::Priority::eBelowNormal, L"Below-Normal"},
         {Execution::Thread::Priority::eNormal, L"Normal"},
