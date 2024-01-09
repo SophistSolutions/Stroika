@@ -19,6 +19,7 @@ Objs	=	\
 	$(ObjDir)Common${OBJ_SUFFIX}\
 	$(ObjDir)DOM${OBJ_SUFFIX}\
 	$(ObjDir)Namespace${OBJ_SUFFIX}\
+	$(ObjDir)Resource${OBJ_SUFFIX}\
 	$(ObjDir)SAXReader${OBJ_SUFFIX}\
 	$(ObjDir)SerializationConfiguration${OBJ_SUFFIX}\
 	$(ObjDir)Schema${OBJ_SUFFIX}\

@@ -75,7 +75,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
         Provider (const Provider&) = delete;
         ~Provider ();
 
-        virtual shared_ptr<Schema::IRep> SchemaFactory (const BLOB& schemaData, const Sequence<Schema::SourceComponent>& sourceComponents) const override;
+        virtual shared_ptr<Schema::IRep> SchemaFactory (const BLOB& schemaData, const Resource::ResolverPtr& resolver) const override;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const NameWithNamespace& documentElementName) const override;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                  const Schema::Ptr& schemaToValidateAgainstWhileReading) const override;

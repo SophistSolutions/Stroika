@@ -25,17 +25,9 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
         : fRep_{s}
     {
     }
-    inline Sequence<SourceComponent> Ptr::GetSourceComponents () const
-    {
-        return fRep_->GetSourceComponents ();
-    }
     inline optional<URI> Ptr::GetTargetNamespace () const
     {
         return fRep_->GetTargetNamespace ();
-    }
-    inline NamespaceDefinitionsList Ptr::GetNamespaceDefinitions () const
-    {
-        return fRep_->GetNamespaceDefinitions ();
     }
     inline shared_ptr<IRep> Ptr::GetRep () const
     {

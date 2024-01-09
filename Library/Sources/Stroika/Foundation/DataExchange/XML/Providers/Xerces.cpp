@@ -127,11 +127,11 @@ public:
 namespace {
     struct MySchemaResolver_ : public XMLEntityResolver {
     private:
-        Sequence<Schema::SourceComponent> fSourceComponents;
+        Resource::ResolverPtr fResolver_;
 
     public:
-        MySchemaResolver_ (const Sequence<Schema::SourceComponent>& sourceComponents)
-            : fSourceComponents{sourceComponents}
+        MySchemaResolver_ (const Resource::ResolverPtr& resolver)
+            : fResolver_{resolver}
         {
         }
         virtual InputSource* resolveEntity (XMLResourceIdentifier* resourceIdentifier) override
@@ -139,30 +139,12 @@ namespace {
             // @todo consider exposting this API outside the module, and/or providing option to wget missing namespaces, or have option for where to fetch from?
             TraceContextBumper ctx{"Xerces::{}::MySchemaResolver_::resolveEntity"};
             RequireNotNull (resourceIdentifier);
-            // Treat namespaces and publicids as higher-priority matchers
-            for (auto i = fSourceComponents.begin (); i != fSourceComponents.end (); ++i) {
-                if (resourceIdentifier->getNameSpace () != nullptr and i->fNamespace and resourceIdentifier->getNameSpace () == i->fNamespace) {
-                    return mkMemInputSrc_ (i->fBLOB);
-                }
-                if (resourceIdentifier->getPublicId () != nullptr and i->fPublicID and resourceIdentifier->getPublicId () == i->fPublicID) {
-                    return mkMemInputSrc_ (i->fBLOB);
-                }
-            }
-            for (auto i = fSourceComponents.begin (); i != fSourceComponents.end (); ++i) {
-                if (resourceIdentifier->getSystemId () != nullptr and i->fSystemID and resourceIdentifier->getSystemId () == i->fSystemID) {
-                    return mkMemInputSrc_ (i->fBLOB);
-                }
-            }
-            for (auto i = fSourceComponents.begin (); i != fSourceComponents.end (); ++i) {
-                String itemSysID;
-                if (const XMLCh* s = resourceIdentifier->getSystemId (); itemSysID != nullptr) {
-                    itemSysID = String{s};
-                    if (optional<size_t> rr = itemSysID.RFind ('/')) {
-                        itemSysID = itemSysID.SubString (*rr + 1);
-                    }
-                }
-                if (i->fSystemID and i->fSystemID == itemSysID) {
-                    return mkMemInputSrc_ (i->fBLOB);
+
+            if (fResolver_ != nullptr) {
+                if (auto o = fResolver_.Lookup (Resource::Name{.fNamespace = xercesString2String (resourceIdentifier->getNameSpace ()),
+                                                               .fPublicID  = xercesString2String (resourceIdentifier->getPublicId ()),
+                                                               .fSystemID  = xercesString2String (resourceIdentifier->getSystemId ())})) {
+                    return mkMemInputSrc_ (o->fData);
                 }
             }
             return nullptr;
@@ -244,9 +226,10 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const Memory::BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents)
+        SchemaRep_ (const Memory::BLOB& schemaData, const Resource::ResolverPtr& resolver)
             : fTargetNamespace{}
-            , fSourceComponents{sourceComponents}
+            , fResolver{resolver}
+            , fSchemaData{schemaData}
         {
             AssertNotNull (XMLPlatformUtils::fgMemoryManager);
             XMLGrammarPoolImpl* grammarPool = new (XMLPlatformUtils::fgMemoryManager) XMLGrammarPoolImpl{XMLPlatformUtils::fgMemoryManager};
@@ -254,7 +237,7 @@ namespace {
                 Require (not schemaData.empty ()); // checked above
                 MemBufInputSource mis{reinterpret_cast<const XMLByte*> (schemaData.begin ()), schemaData.GetSize (), u""};
 
-                MySchemaResolver_ mySchemaResolver{sourceComponents};
+                MySchemaResolver_ mySchemaResolver{resolver};
                 // Directly construct SAX2XMLReaderImpl so we can use XMLEntityResolver - which passes along namespace (regular
                 // EntityResolve just passes systemID
                 //      shared_ptr<SAX2XMLReader>   reader = shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, grammarPool));
@@ -294,8 +277,8 @@ namespace {
 #endif
         }
         optional<URI>                       fTargetNamespace;
-        Sequence<SourceComponent>           fSourceComponents;
-        NamespaceDefinitionsList            fNamespaceDefinitions;
+        Resource::ResolverPtr               fResolver;
+        Memory::BLOB                        fSchemaData;
         xercesc_3_2::XMLGrammarPool*        fCachedGrammarPool{nullptr};
         Map2StroikaExceptionsErrorReporter_ fErrorReporter_;
 
@@ -305,16 +288,16 @@ namespace {
         }
         virtual optional<URI> GetTargetNamespace () const override
         {
-            return fTargetNamespace; // should get from READING the schema itself! I THINK --LGP 2023-12-18
+            return fTargetNamespace;
         }
-        virtual NamespaceDefinitionsList GetNamespaceDefinitions () const override
+        virtual Memory::BLOB GetData () override
         {
-            AssertNotImplemented (); // not sure useful/maybe remove
-            return NamespaceDefinitionsList{};
+            return fSchemaData;
         }
-        virtual Sequence<SourceComponent> GetSourceComponents () override
+        // not super useful, except if you want to clone
+        virtual Resource::ResolverPtr GetResolver () override
         {
-            return fSourceComponents;
+            return fResolver;
         }
         virtual xercesc_3_2::XMLGrammarPool* GetCachedGrammarPool () override
         {
@@ -1352,9 +1335,9 @@ Providers::Xerces::Provider::~Provider ()
 #endif
 }
 
-shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const BLOB& schemaData, const Sequence<Schema::SourceComponent>& sourceComponents) const
+shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const BLOB& schemaData, const Resource::ResolverPtr& resolver) const
 {
-    return make_shared<SchemaRep_> (schemaData, sourceComponents);
+    return make_shared<SchemaRep_> (schemaData, resolver);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const

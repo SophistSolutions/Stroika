@@ -48,18 +48,16 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const Memory::BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents)
-            : fTargetNamespace{}
-            , fSourceComponents{sourceComponents}
+        SchemaRep_ (const Memory::BLOB& schemaData, const Resource::ResolverPtr& resolver)
+            : fResolver_{resolver}
+            , fSchemaData{schemaData}
         {
+            // @todo - pay attention to argument resolver in parsing schema!!! (lowpri til we have one that needs it)
             xmlSchemaParserCtxt* schemaParseContext =
                 xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (schemaData.data ()), static_cast<int> (schemaData.size ()));
             fCompiledSchema = xmlSchemaParse (schemaParseContext);
             xmlSchemaFreeParserCtxt (schemaParseContext);
             Execution::ThrowIfNull (fCompiledSchema);
-            if (fCompiledSchema->targetNamespace != nullptr) {
-                fTargetNamespace = URI{libXMLString2String (fCompiledSchema->targetNamespace)};
-            }
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
 #endif
@@ -73,9 +71,8 @@ namespace {
             --sLiveCnt;
 #endif
         }
-        optional<URI>             fTargetNamespace;
-        Sequence<SourceComponent> fSourceComponents;
-        NamespaceDefinitionsList  fNamespaceDefinitions;
+        Resource::ResolverPtr     fResolver_{nullptr};
+        Memory::BLOB              fSchemaData;
         xmlSchema*                fCompiledSchema{nullptr};
 
         virtual const Providers::ISchemaProvider* GetProvider () const override
@@ -84,16 +81,20 @@ namespace {
         }
         virtual optional<URI> GetTargetNamespace () const override
         {
-            return fTargetNamespace; // should get from READING the schema itself! I THINK --LGP 2023-12-18
+            Assert (fCompiledSchema != nullptr);
+            if (fCompiledSchema->targetNamespace != nullptr) {
+                return URI{libXMLString2String (fCompiledSchema->targetNamespace)};
+            }
+            return nullopt;
         }
-        virtual NamespaceDefinitionsList GetNamespaceDefinitions () const override
+        virtual Memory::BLOB GetData () override
         {
-            AssertNotImplemented (); // not sure what this is useful for, and needs clearer definition (is wtih respect to root element - namespace prefixes on it and default)
-            return NamespaceDefinitionsList{};
+            return fSchemaData;
         }
-        virtual Sequence<SourceComponent> GetSourceComponents () override
+        // not super useful, except if you want to clone
+        virtual Resource::ResolverPtr GetResolver () override
         {
-            return fSourceComponents;
+            return fResolver_;
         }
         virtual xmlSchema* GetSchemaLibRep () override
         {
@@ -552,9 +553,9 @@ Providers::LibXML2::Provider::~Provider ()
 #endif
 }
 
-shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const BLOB& schemaData, const Sequence<Schema::SourceComponent>& sourceComponents) const
+shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const BLOB& schemaData, const Resource::ResolverPtr& resolver) const
 {
-    return make_shared<SchemaRep_> (schemaData, sourceComponents);
+    return make_shared<SchemaRep_> (schemaData, resolver);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const

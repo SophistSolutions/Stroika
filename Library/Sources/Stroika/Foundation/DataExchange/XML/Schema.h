@@ -14,6 +14,7 @@
 
 #include "Common.h"
 #include "Namespace.h"
+#include "Resource.h"
 
 /**
  *  \file
@@ -34,29 +35,18 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
 namespace Stroika::Foundation::DataExchange::XML::Schema {
 
     /**
-     * This is a named BLOB which is used to define a Schema. The BLOB can be named by a variety of
-     * types of names (depending on the type of BLOB).
-     * 
-     *      // @todo CLEANUP DOCS ON SOURCE COMPNENT - FOR NOW I THINK ITS TREATED AS RAW TEXT TO BE PARSED AS XML as an XML FILE.
-     */
-    class SourceComponent {
-    public:
-        BLOB             fBLOB;
-        optional<URI>    fNamespace;
-        optional<String> fPublicID;
-        optional<String> fSystemID;
-    };
-
-    /**
      *  There is more internally to a SchemaRep (perhaps should add method to extract it as a DOM)?
      * 
      *  But mostly, used for internal private data, and that is captured with dynamic_cast, but privately internally
      */
     struct IRep {
-        virtual const Providers::ISchemaProvider* GetProvider () const             = 0;
-        virtual optional<URI>                     GetTargetNamespace () const      = 0;
-        virtual NamespaceDefinitionsList          GetNamespaceDefinitions () const = 0;
-        virtual Sequence<SourceComponent>         GetSourceComponents ()           = 0;
+        virtual const Providers::ISchemaProvider* GetProvider () const        = 0;
+        virtual optional<URI>                     GetTargetNamespace () const = 0;
+        //    virtual NamespaceDefinitionsList          GetNamespaceDefinitions () const = 0;
+        // not super useful, except if you want to clone
+        virtual Memory::BLOB GetData () = 0;
+        // not super useful, except if you want to clone
+        virtual Resource::ResolverPtr GetResolver () = 0;
     };
 
     /**
@@ -76,13 +66,9 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
     public:
         /**
          */
-        nonvirtual Sequence<SourceComponent> GetSourceComponents () const;
-
-    public:
-        /**
-         */
         nonvirtual optional<URI> GetTargetNamespace () const;
 
+#if 0
     public:
         /**
         * @todo  better document - and not sure if/what this is useful for (xpath queries???) - PROBABLY LOSE IT
@@ -91,6 +77,7 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
         * PRE=DEPRECATED??? - maybe almost deprecated???
          */
         nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const;
+#endif
 
     public:
         /**
@@ -122,9 +109,9 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
      * 
      *  @todo consider why we have targetNamespace as argument to New () -since it can be and should be parsted out of the document!
      */
-    Ptr New (const Providers::ISchemaProvider& p, const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents = {});
+    Ptr New (const Providers::ISchemaProvider& p, const BLOB& schemaData, const Resource::ResolverPtr& resolver = nullptr);
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
-    Ptr New (const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents = {});
+    Ptr New (const BLOB& schemaData, const Resource::ResolverPtr& resolver = nullptr);
 #endif
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing
