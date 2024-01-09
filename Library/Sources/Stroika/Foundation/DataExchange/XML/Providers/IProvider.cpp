@@ -23,11 +23,11 @@ const XML::Providers::IXMLProvider* XML::Providers::Private_::GetDefaultProvider
     // Xerces appears to have better schema validation.
     // LibXML appears to have better xpath support.
     // MAY implement INTEROP between them...
-#if qHasFeature_libxml2
-    return &LibXML2::kDefaultProvider;
-#endif
 #if qHasFeature_Xerces
     return &Xerces::kDefaultProvider;
+#endif
+#if qHasFeature_libxml2
+    return &LibXML2::kDefaultProvider;
 #endif
 }
 #endif
