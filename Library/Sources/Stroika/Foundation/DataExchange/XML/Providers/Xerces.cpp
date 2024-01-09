@@ -244,12 +244,11 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const Memory::BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
+        SchemaRep_ (const Memory::BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
             : fTargetNamespace{}
             , fSourceComponents{sourceComponents}
             , fNamespaceDefinitions{namespaceDefinitions}
         {
-            Memory::BLOB schemaData = targetNamespaceData;
             AssertNotNull (XMLPlatformUtils::fgMemoryManager);
             XMLGrammarPoolImpl* grammarPool = new (XMLPlatformUtils::fgMemoryManager) XMLGrammarPoolImpl{XMLPlatformUtils::fgMemoryManager};
             try {
@@ -273,7 +272,6 @@ namespace {
                 xercesc_3_2::Grammar* g = reader->loadGrammar (mis, Grammar::SchemaGrammarType, true);
                 AssertNotNull (g);
                 const XMLCh* ts = g->getTargetNamespace ();
-                DbgTrace ("ts = %s", ts);
                 if (ts and *ts) {
                     fTargetNamespace = URI{xercesString2String (ts)};
                 }
@@ -1354,11 +1352,10 @@ Providers::Xerces::Provider::~Provider ()
 #endif
 }
 
-shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const BLOB&                              targetNamespaceData,
-                                                                     const Sequence<Schema::SourceComponent>& sourceComponents,
-                                                                     const NamespaceDefinitionsList&          namespaceDefinitions) const
+shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const BLOB& schemaData, const Sequence<Schema::SourceComponent>& sourceComponents,
+                                                                     const NamespaceDefinitionsList& namespaceDefinitions) const
 {
-    return make_shared<SchemaRep_> (targetNamespaceData, sourceComponents, namespaceDefinitions);
+    return make_shared<SchemaRep_> (schemaData, sourceComponents, namespaceDefinitions);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const

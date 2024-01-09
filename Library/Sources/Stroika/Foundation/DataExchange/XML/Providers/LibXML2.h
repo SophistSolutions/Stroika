@@ -61,7 +61,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
         Provider (const Provider&) = delete;
         ~Provider ();
 
-        virtual shared_ptr<Schema::IRep> SchemaFactory (const BLOB& targetNamespaceData, const Sequence<Schema::SourceComponent>& sourceComponents,
+        virtual shared_ptr<Schema::IRep> SchemaFactory (const BLOB& schemaData, const Sequence<Schema::SourceComponent>& sourceComponents,
                                                         const NamespaceDefinitionsList& namespaceDefinitions) const override;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const NameWithNamespace& documentElementName) const override;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const Streams::InputStream::Ptr<byte>& in,

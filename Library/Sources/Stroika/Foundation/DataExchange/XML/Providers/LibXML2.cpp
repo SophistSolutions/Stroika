@@ -552,11 +552,10 @@ Providers::LibXML2::Provider::~Provider ()
 #endif
 }
 
-shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const BLOB&                              targetNamespaceData,
-                                                                      const Sequence<Schema::SourceComponent>& sourceComponents,
-                                                                      const NamespaceDefinitionsList&          namespaceDefinitions) const
+shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const BLOB& schemaData, const Sequence<Schema::SourceComponent>& sourceComponents,
+                                                                      const NamespaceDefinitionsList& namespaceDefinitions) const
 {
-    return make_shared<SchemaRep_> (targetNamespaceData, sourceComponents, namespaceDefinitions);
+    return make_shared<SchemaRep_> (schemaData, sourceComponents, namespaceDefinitions);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const

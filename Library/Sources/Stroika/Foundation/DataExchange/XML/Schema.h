@@ -118,11 +118,10 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
      * 
      *  @todo consider why we have targetNamespace as argument to New () -since it can be and should be parsted out of the document!
      */
-    Ptr New (const Providers::ISchemaProvider& p, const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents = {},
+    Ptr New (const Providers::ISchemaProvider& p, const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents = {},
              const NamespaceDefinitionsList& namespaceDefinitions = {});
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
-    Ptr New (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents = {},
-             const NamespaceDefinitionsList& namespaceDefinitions = {});
+    Ptr New (const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});
 #endif
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing
