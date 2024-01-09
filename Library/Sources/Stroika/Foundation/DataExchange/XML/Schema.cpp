@@ -25,12 +25,12 @@ using namespace Stroika::Foundation::DataExchange::XML::Schema;
  ********************************* Schema::New **********************************
  ********************************************************************************
  */
-
 Ptr Schema::New (const Providers::ISchemaProvider& p, const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
                  const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
 {
     return Ptr{p.SchemaFactory (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions)};
 }
+
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
 Ptr Schema::New (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents,
                  const NamespaceDefinitionsList& namespaceDefinitions)
@@ -42,13 +42,13 @@ Ptr Schema::New (const optional<URI>& targetNamespace, const BLOB& targetNamespa
 
 /*
  ********************************************************************************
- ************************************** ValidateFile ****************************
+ ************************************ ValidateFile ******************************
  ********************************************************************************
  */
 #if qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing
 void DataExchange::XML::Schema::ValidateFile (const filesystem::path& externalFileName, const Ptr& schema)
 {
-    SAXParse (*dynamic_cast < const Providers::ISAXProvider * >(schema.GetRep ()->GetProvider ()),
+    SAXParse (*Debug::UncheckedDynamicCast<const Providers::ISAXProvider*> (schema.GetRep ()->GetProvider ()),
               IO::FileSystem::FileInputStream::New (externalFileName), nullptr, schema);
 }
 #endif

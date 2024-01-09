@@ -133,8 +133,8 @@ namespace {
                     // Crazy way to decode attribute arguments - I would have never guessed --
                     // https://stackoverflow.com/questions/2075894/how-to-get-the-name-and-value-of-attributes-from-xml-when-using-libxml2-sax-pars
                     auto ai = attributes;
-                    for (int i = 0; i < nb_attributes; i++) {
-                        // @todo fix must grab namespace
+                    for (int i = 0; i < nb_attributes; ++i) {
+                        // @todo fix must grab namespace, probably from namespaces, but will take some research to figure out how!!!
                         attrs.Add (Name{"", libXMLString2String (ai[0]), Name::eAttribute},
                                    libXMLString2String (ai[3], static_cast<int> (ai[4] - ai[3])));
                         ai += 5;
