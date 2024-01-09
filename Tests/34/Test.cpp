@@ -90,9 +90,8 @@ namespace {
         using SourceComponent = XML::Schema::SourceComponent;
         test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                   const Schema::Ptr& schema) { XML::SAXParse (in, callback, schema); },
-              [] (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents,
-                  const NamespaceDefinitionsList& namespaceDefinitions) {
-                  return XML::Schema::New (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
+              [] (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions) {
+                  return XML::Schema::New (targetNamespaceData, sourceComponents, namespaceDefinitions);
               },
               [] (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading) {
                   return XML::DOM::Document::New (in, schemaToValidateAgainstWhileReading);
@@ -100,10 +99,8 @@ namespace {
 #if qHasFeature_libxml2
         test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                   const Schema::Ptr& schema) { XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, in, callback, schema); },
-              [] (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents,
-                  const NamespaceDefinitionsList& namespaceDefinitions) {
-                  return XML::Schema::New (XML::Providers::LibXML2::kDefaultProvider, targetNamespace, targetNamespaceData,
-                                           sourceComponents, namespaceDefinitions);
+              [] (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions) {
+                  return XML::Schema::New (XML::Providers::LibXML2::kDefaultProvider, targetNamespaceData, sourceComponents, namespaceDefinitions);
               },
               [] (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading) {
                   return XML::DOM::Document::New (XML::Providers::LibXML2::kDefaultProvider, in, schemaToValidateAgainstWhileReading);
@@ -112,10 +109,8 @@ namespace {
 #if qHasFeature_Xerces
         test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                   const Schema::Ptr& schema) { XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, in, callback, schema); },
-              [] (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents,
-                  const NamespaceDefinitionsList& namespaceDefinitions) {
-                  return XML::Schema::New (XML::Providers::Xerces::kDefaultProvider, targetNamespace, targetNamespaceData, sourceComponents,
-                                           namespaceDefinitions);
+              [] (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions) {
+                  return XML::Schema::New (XML::Providers::Xerces::kDefaultProvider, targetNamespaceData, sourceComponents, namespaceDefinitions);
               },
               [] (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading) {
                   return XML::DOM::Document::New (XML::Providers::Xerces::kDefaultProvider, in, schemaToValidateAgainstWhileReading);
@@ -254,16 +249,16 @@ namespace {
         const Memory::BLOB kSampleCCR_   = Memory::BLOB::Attach (Resources_::TestFiles_SampleCCR_ccr);
 
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr personalSchema = schemaFactory (nullopt, kPersonalXSD_, {}, {});
+            Schema::Ptr personalSchema = schemaFactory (kPersonalXSD_, {}, {});
             saxParser (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr, personalSchema);
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr ccrSchema = schemaFactory (nullopt, kCCR_XSD_, {}, {});
+            Schema::Ptr ccrSchema = schemaFactory (kCCR_XSD_, {}, {});
             saxParser (kSampleCCR_.As<InputStream::Ptr<byte>> (), nullptr, ccrSchema);
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr                       personalSchema = schemaFactory (nullopt, kPersonalXSD_, {}, {});
-            Schema::Ptr                       ccrSchema      = schemaFactory (nullopt, kCCR_XSD_, {}, {});
+            Schema::Ptr                       personalSchema = schemaFactory (kPersonalXSD_, {}, {});
+            Schema::Ptr                       ccrSchema      = schemaFactory (kCCR_XSD_, {}, {});
             StructuredStreamEvents::IConsumer ignoreData;
             EXPECT_THROW (saxParser (kSampleCCR_.As<InputStream::Ptr<byte>> (), nullptr, personalSchema), BadFormatException);
             EXPECT_THROW (saxParser (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr, ccrSchema), BadFormatException);
@@ -1454,16 +1449,15 @@ namespace {
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr        personalSchema = schemaFactory (nullopt, kPersonalXSD_, {}, {});
+            Schema::Ptr        personalSchema = schemaFactory (kPersonalXSD_, {}, {});
             DOM::Document::Ptr d              = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), personalSchema);
             String             tmp            = d.Write ();
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr schema     = schemaFactory (IO::Network::URI{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"},
-                                                    kReferenceContent_2012_03_xsd, {}, {});
-            DOM::Document::Ptr d   = domFactory (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), schema);
-            String             tmp = d.Write ();
+            Schema::Ptr        schema = schemaFactory (kReferenceContent_2012_03_xsd, {}, {});
+            DOM::Document::Ptr d      = domFactory (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), schema);
+            String             tmp    = d.Write ();
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         });
     }
@@ -1495,8 +1489,8 @@ namespace {
         }
         // no namespace's content test
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr        schema      = schemaFactory (nullopt, kPersonalXSD_, {}, {});
-            Schema::Ptr        wrongSchema = schemaFactory (nullopt, kReferenceContent_2012_03_xsd, {}, {});
+            Schema::Ptr        schema      = schemaFactory (kPersonalXSD_, {}, {});
+            Schema::Ptr        wrongSchema = schemaFactory (kReferenceContent_2012_03_xsd, {}, {});
             DOM::Document::Ptr d           = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
             String             tmp         = d.Write ();
             DOM::Element::Ptr  personelElt = d.GetRootElement ();
@@ -1556,9 +1550,9 @@ namespace {
 
         // Namespace's content test
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr        wrongSchema       = schemaFactory (nullopt, kPersonalXSD_, {}, {});
+            Schema::Ptr        wrongSchema       = schemaFactory (kPersonalXSD_, {}, {});
             static const URI   kNS_              = "http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/";
-            Schema::Ptr        schema            = schemaFactory (kNS_, kReferenceContent_2012_03_xsd, {}, {});
+            Schema::Ptr        schema            = schemaFactory (kReferenceContent_2012_03_xsd, {}, {});
             DOM::Document::Ptr d                 = domFactory (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), nullptr);
             String             tmp               = d.Write ();
             DOM::Element::Ptr  refContentDataElt = d.GetRootElement ();

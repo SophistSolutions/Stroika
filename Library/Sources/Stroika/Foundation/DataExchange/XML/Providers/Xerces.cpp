@@ -244,22 +244,17 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
-                    const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
-            : fTargetNamespace{targetNamespace}
+        SchemaRep_ (const Memory::BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
+            : fTargetNamespace{}
             , fSourceComponents{sourceComponents}
             , fNamespaceDefinitions{namespaceDefinitions}
         {
-            if (targetNamespace) {
-                fSourceComponents.push_back (SourceComponent{.fBLOB = targetNamespaceData, .fNamespace = *targetNamespace});
-            }
             Memory::BLOB schemaData = targetNamespaceData;
             AssertNotNull (XMLPlatformUtils::fgMemoryManager);
             XMLGrammarPoolImpl* grammarPool = new (XMLPlatformUtils::fgMemoryManager) XMLGrammarPoolImpl{XMLPlatformUtils::fgMemoryManager};
             try {
                 Require (not schemaData.empty ()); // checked above
-                MemBufInputSource mis{reinterpret_cast<const XMLByte*> (schemaData.begin ()), schemaData.GetSize (),
-                                      (targetNamespace == nullopt ? u16string{} : targetNamespace->As<String> ().As<u16string> ()).c_str ()};
+                MemBufInputSource mis{reinterpret_cast<const XMLByte*> (schemaData.begin ()), schemaData.GetSize (), u""};
 
                 MySchemaResolver_ mySchemaResolver{sourceComponents};
                 // Directly construct SAX2XMLReaderImpl so we can use XMLEntityResolver - which passes along namespace (regular
@@ -275,7 +270,13 @@ namespace {
                 // Reset fgXercesCacheGrammarFromParse to TRUE so we actually load the XSD here
                 reader->setFeature (XMLUni::fgXercesCacheGrammarFromParse, true);
                 reader->setErrorHandler (&fErrorReporter_);
-                reader->loadGrammar (mis, Grammar::SchemaGrammarType, true);
+                xercesc_3_2::Grammar* g = reader->loadGrammar (mis, Grammar::SchemaGrammarType, true);
+                AssertNotNull (g);
+                const XMLCh* ts = g->getTargetNamespace ();
+                DbgTrace ("ts = %s", ts);
+                if (ts and *ts) {
+                    fTargetNamespace = URI{xercesString2String (ts)};
+                }
             }
             catch (...) {
                 delete grammarPool;
@@ -1353,11 +1354,11 @@ Providers::Xerces::Provider::~Provider ()
 #endif
 }
 
-shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
+shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const BLOB&                              targetNamespaceData,
                                                                      const Sequence<Schema::SourceComponent>& sourceComponents,
                                                                      const NamespaceDefinitionsList&          namespaceDefinitions) const
 {
-    return make_shared<SchemaRep_> (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
+    return make_shared<SchemaRep_> (targetNamespaceData, sourceComponents, namespaceDefinitions);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const

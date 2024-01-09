@@ -100,6 +100,10 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
          * 
          *  Each of these conversions may take specific parameters, not yet specified / allowed here. The reason for the template
          *  is to allow for the clean notation of refering to all of them as schema.As<waht-i-want> (...optional but usually omitted params);
+         * 
+         *  \note NYI - tricky - cuz must handle subsidiary documents (includes) - and probably define soemthing like SchemaSource or ResolvedSchemaSource
+         *        and tools to map (do all the #includes) from a stream with a resolver to ResolvedScehmaSource and then use that to clone/deserialize?
+         *        Or maybe just something like that?
          */
         template <typename AS_T>
         AS_T As ()
@@ -114,10 +118,10 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
      * 
      *  @todo consider why we have targetNamespace as argument to New () -since it can be and should be parsted out of the document!
      */
-    Ptr New (const Providers::ISchemaProvider& p, const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
-             const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});
+    Ptr New (const Providers::ISchemaProvider& p, const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents = {},
+             const NamespaceDefinitionsList& namespaceDefinitions = {});
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
-    Ptr New (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents = {},
+    Ptr New (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents = {},
              const NamespaceDefinitionsList& namespaceDefinitions = {});
 #endif
 

@@ -33,9 +33,8 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
 
     struct ISchemaProvider : public virtual IProvider {
         virtual ~ISchemaProvider ()                                                                                 = default;
-        virtual shared_ptr<Schema::IRep> SchemaFactory (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
-                                                        const Sequence<Schema::SourceComponent>& sourceComponents,
-                                                        const NamespaceDefinitionsList&          namespaceDefinitions) const = 0;
+        virtual shared_ptr<Schema::IRep> SchemaFactory (const BLOB& targetNamespaceData, const Sequence<Schema::SourceComponent>& sourceComponents,
+                                                        const NamespaceDefinitionsList& namespaceDefinitions) const = 0;
     };
     struct IDOMProvider : public virtual IProvider {
         virtual ~IDOMProvider ()                                                                                               = default;

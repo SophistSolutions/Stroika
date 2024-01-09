@@ -9,6 +9,7 @@
 static_assert (qHasFeature_libxml2, "Don't include this file if qHasFeature_libxml2 not set");
 
 #include <libxml/parser.h>
+#include <libxml/schemasInternals.h>
 #include <libxml/xmlschemas.h>
 
 #include "Stroika/Foundation//DataExchange/XML/Common.h"
@@ -60,9 +61,8 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
         Provider (const Provider&) = delete;
         ~Provider ();
 
-        virtual shared_ptr<Schema::IRep>        SchemaFactory (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
-                                                               const Sequence<Schema::SourceComponent>& sourceComponents,
-                                                               const NamespaceDefinitionsList&          namespaceDefinitions) const override;
+        virtual shared_ptr<Schema::IRep> SchemaFactory (const BLOB& targetNamespaceData, const Sequence<Schema::SourceComponent>& sourceComponents,
+                                                        const NamespaceDefinitionsList& namespaceDefinitions) const override;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const NameWithNamespace& documentElementName) const override;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                  const Schema::Ptr& schemaToValidateAgainstWhileReading) const override;

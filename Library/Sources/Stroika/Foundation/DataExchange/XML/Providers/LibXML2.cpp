@@ -48,20 +48,19 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const optional<URI>& targetNamespace, const Memory::BLOB& targetNamespaceData,
-                    const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
-            : fTargetNamespace{targetNamespace}
+        SchemaRep_ (const Memory::BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
+            : fTargetNamespace{}
             , fSourceComponents{sourceComponents}
             , fNamespaceDefinitions{namespaceDefinitions}
         {
-            if (targetNamespace) {
-                fSourceComponents.push_back (SourceComponent{.fBLOB = targetNamespaceData, .fNamespace = *targetNamespace});
-            }
-            xmlSchemaParserCtxt* schemaParseContext = xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (targetNamespaceData.data ()),
-                                                                                 static_cast<int> (targetNamespaceData.size ()));
+            xmlSchemaParserCtxt* schemaParseContext =
+                xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (schemaData.data ()), static_cast<int> (schemaData.size ()));
             fCompiledSchema = xmlSchemaParse (schemaParseContext);
             xmlSchemaFreeParserCtxt (schemaParseContext);
             Execution::ThrowIfNull (fCompiledSchema);
+            if (fCompiledSchema->targetNamespace != nullptr) {
+                fTargetNamespace = URI{libXMLString2String (fCompiledSchema->targetNamespace)};
+            }
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
 #endif
@@ -553,11 +552,11 @@ Providers::LibXML2::Provider::~Provider ()
 #endif
 }
 
-shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const optional<URI>& targetNamespace, const BLOB& targetNamespaceData,
+shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const BLOB&                              targetNamespaceData,
                                                                       const Sequence<Schema::SourceComponent>& sourceComponents,
                                                                       const NamespaceDefinitionsList&          namespaceDefinitions) const
 {
-    return make_shared<SchemaRep_> (targetNamespace, targetNamespaceData, sourceComponents, namespaceDefinitions);
+    return make_shared<SchemaRep_> (targetNamespaceData, sourceComponents, namespaceDefinitions);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const

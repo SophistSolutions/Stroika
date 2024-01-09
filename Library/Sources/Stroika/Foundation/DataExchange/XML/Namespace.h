@@ -22,7 +22,7 @@ namespace Stroika::Foundation::DataExchange::XML {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      * 
-     *  /// @todo redo URI using URI class
+     *  \note similar to NameWithNamespace, the 'meaning' of prefixes used in xml, and their associated namepace (or when missing prefix the default namespace)
      */
     struct NamespaceDefinition {
         NamespaceDefinition (const URI& uri, const optional<String>& prefix = {});
@@ -64,12 +64,14 @@ namespace Stroika::Foundation::DataExchange::XML {
     public:
         nonvirtual void Add (const URI& uri, const optional<String>& prefix = {});
 
-    private:
+    private: // sb mapping<prefix -> URI>
         Sequence<NamespaceDefinition> fNamespaces;
     };
 
     /**
      *  Note name argument slightly more flexible than just String so double conversion works ("" can be assigned to NameWithNamespace)
+     * 
+     *  \note similar to NamespaceDefinition, but this refers to elements which may or may not have an associated namespace.
      */
     struct NameWithNamespace {
         String        fName;
