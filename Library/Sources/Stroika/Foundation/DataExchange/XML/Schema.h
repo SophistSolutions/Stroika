@@ -85,6 +85,10 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
 
     public:
         /**
+        * @todo  better document - and not sure if/what this is useful for (xpath queries???) - PROBABLY LOSE IT
+        * and does it make sense with respect to whole doc, particular elt or just root doc elt???Note these are NOT same as TargetNamespace ()
+        * 
+        * PRE=DEPRECATED??? - maybe almost deprecated???
          */
         nonvirtual NamespaceDefinitionsList GetNamespaceDefinitions () const;
 
@@ -118,10 +122,9 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
      * 
      *  @todo consider why we have targetNamespace as argument to New () -since it can be and should be parsted out of the document!
      */
-    Ptr New (const Providers::ISchemaProvider& p, const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents = {},
-             const NamespaceDefinitionsList& namespaceDefinitions = {});
+    Ptr New (const Providers::ISchemaProvider& p, const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents = {});
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
-    Ptr New (const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents = {}, const NamespaceDefinitionsList& namespaceDefinitions = {});
+    Ptr New (const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents = {});
 #endif
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing

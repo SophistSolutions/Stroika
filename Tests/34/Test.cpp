@@ -90,8 +90,8 @@ namespace {
         using SourceComponent = XML::Schema::SourceComponent;
         test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                   const Schema::Ptr& schema) { XML::SAXParse (in, callback, schema); },
-              [] (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions) {
-                  return XML::Schema::New (targetNamespaceData, sourceComponents, namespaceDefinitions);
+              [] (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents) {
+                  return XML::Schema::New (targetNamespaceData, sourceComponents);
               },
               [] (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading) {
                   return XML::DOM::Document::New (in, schemaToValidateAgainstWhileReading);
@@ -99,8 +99,8 @@ namespace {
 #if qHasFeature_libxml2
         test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                   const Schema::Ptr& schema) { XML::SAXParse (XML::Providers::LibXML2::kDefaultProvider, in, callback, schema); },
-              [] (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions) {
-                  return XML::Schema::New (XML::Providers::LibXML2::kDefaultProvider, targetNamespaceData, sourceComponents, namespaceDefinitions);
+              [] (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents) {
+                  return XML::Schema::New (XML::Providers::LibXML2::kDefaultProvider, targetNamespaceData, sourceComponents);
               },
               [] (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading) {
                   return XML::DOM::Document::New (XML::Providers::LibXML2::kDefaultProvider, in, schemaToValidateAgainstWhileReading);
@@ -109,8 +109,8 @@ namespace {
 #if qHasFeature_Xerces
         test ([] (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,
                   const Schema::Ptr& schema) { XML::SAXParse (XML::Providers::Xerces::kDefaultProvider, in, callback, schema); },
-              [] (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions) {
-                  return XML::Schema::New (XML::Providers::Xerces::kDefaultProvider, targetNamespaceData, sourceComponents, namespaceDefinitions);
+              [] (const BLOB& targetNamespaceData, const Sequence<SourceComponent>& sourceComponents) {
+                  return XML::Schema::New (XML::Providers::Xerces::kDefaultProvider, targetNamespaceData, sourceComponents);
               },
               [] (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading) {
                   return XML::DOM::Document::New (XML::Providers::Xerces::kDefaultProvider, in, schemaToValidateAgainstWhileReading);
@@ -176,7 +176,7 @@ namespace {
             }
             virtual void EndDocument () override
             {
-                EXPECT_TRUE (fEltDepthCount == 0);
+                EXPECT_EQ (fEltDepthCount, 0u);
             }
             virtual void StartElement (const StructuredStreamEvents::Name&                                   name,
                                        [[maybe_unused]] const Mapping<StructuredStreamEvents::Name, String>& attributes) override
@@ -188,7 +188,7 @@ namespace {
             }
             virtual void EndElement (const StructuredStreamEvents::Name& name) override
             {
-                EXPECT_TRUE (fEltStack.back () == Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
+                EXPECT_EQ (fEltStack.back (), Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
                 fEltStack.pop_back ();
                 fEltDepthCount--;
             }
@@ -218,7 +218,7 @@ namespace {
             }
             virtual void EndDocument () override
             {
-                EXPECT_TRUE (fEltDepthCount == 0);
+                EXPECT_EQ (fEltDepthCount, 0u);
             }
             virtual void StartElement (const StructuredStreamEvents::Name&                                   name,
                                        [[maybe_unused]] const Mapping<StructuredStreamEvents::Name, String>& attributes) override
@@ -228,7 +228,7 @@ namespace {
             }
             virtual void EndElement (const StructuredStreamEvents::Name& name) override
             {
-                EXPECT_TRUE (fEltStack.back () == Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
+                EXPECT_EQ (fEltStack.back (), Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
                 fEltStack.pop_back ();
                 fEltDepthCount--;
             }
@@ -249,16 +249,16 @@ namespace {
         const Memory::BLOB kSampleCCR_   = Memory::BLOB::Attach (Resources_::TestFiles_SampleCCR_ccr);
 
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr personalSchema = schemaFactory (kPersonalXSD_, {}, {});
+            Schema::Ptr personalSchema = schemaFactory (kPersonalXSD_, {});
             saxParser (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr, personalSchema);
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr ccrSchema = schemaFactory (kCCR_XSD_, {}, {});
+            Schema::Ptr ccrSchema = schemaFactory (kCCR_XSD_, {});
             saxParser (kSampleCCR_.As<InputStream::Ptr<byte>> (), nullptr, ccrSchema);
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr                       personalSchema = schemaFactory (kPersonalXSD_, {}, {});
-            Schema::Ptr                       ccrSchema      = schemaFactory (kCCR_XSD_, {}, {});
+            Schema::Ptr                       personalSchema = schemaFactory (kPersonalXSD_, {});
+            Schema::Ptr                       ccrSchema      = schemaFactory (kCCR_XSD_, {});
             StructuredStreamEvents::IConsumer ignoreData;
             EXPECT_THROW (saxParser (kSampleCCR_.As<InputStream::Ptr<byte>> (), nullptr, personalSchema), BadFormatException);
             EXPECT_THROW (saxParser (kPersonalXML_.As<InputStream::Ptr<byte>> (), nullptr, ccrSchema), BadFormatException);
@@ -328,25 +328,25 @@ namespace {
                 registry, make_shared<ObjectReader::ReadDownToReader> (
                               make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar), Name{"Appointment"})};
             saxParser (mkdata_ (), &ctx, nullptr);
-            EXPECT_TRUE (calendar.size () == 2);
-            EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
-            EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
-            EXPECT_TRUE (*calendar[0].withWhom.middleName == "Up");
-            EXPECT_TRUE ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year{2005}, Time::June, Time::DayOfMonth{1}}));
-            EXPECT_TRUE (calendar[1].withWhom.firstName == "Fred");
-            EXPECT_TRUE (calendar[1].withWhom.lastName == "Down");
+            EXPECT_EQ (calendar.size (), 2);
+            EXPECT_EQ (calendar[0].withWhom.firstName, "Jim");
+            EXPECT_EQ (calendar[0].withWhom.lastName, "Smith");
+            EXPECT_EQ (*calendar[0].withWhom.middleName, "Up");
+            EXPECT_TRUE (calendar[0].when and calendar[0].when->GetDate () == (Time::Date{Time::Year{2005}, Time::June, Time::DayOfMonth{1}}));
+            EXPECT_EQ (calendar[1].withWhom.firstName, "Fred");
+            EXPECT_EQ (calendar[1].withWhom.lastName, "Down");
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             vector<Appointment_> calendar;
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar))};
             saxParser (mkdata_ (), &ctx, nullptr);
-            EXPECT_TRUE (calendar.size () == 2);
-            EXPECT_TRUE (calendar[0].withWhom.firstName == "Jim");
-            EXPECT_TRUE (calendar[0].withWhom.lastName == "Smith");
-            EXPECT_TRUE (*calendar[0].withWhom.middleName == "Up");
+            EXPECT_EQ (calendar.size (), 2);
+            EXPECT_EQ (calendar[0].withWhom.firstName, "Jim");
+            EXPECT_EQ (calendar[0].withWhom.lastName, "Smith");
+            EXPECT_EQ (*calendar[0].withWhom.middleName, "Up");
             EXPECT_TRUE ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
-            EXPECT_TRUE (calendar[1].withWhom.firstName == "Fred");
-            EXPECT_TRUE (calendar[1].withWhom.lastName == "Down");
+            EXPECT_EQ (calendar[1].withWhom.firstName, "Fred");
+            EXPECT_EQ (calendar[1].withWhom.lastName, "Down");
         });
     }
 }
@@ -400,11 +400,11 @@ namespace {
             DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
                 people.clear (); // cuz run multiple times
                 saxParser (mkdata_ (), &ctx, nullptr);
-                EXPECT_TRUE (people.size () == 2);
-                EXPECT_TRUE (people[0].firstName == "Jim");
-                EXPECT_TRUE (people[0].lastName == "Smith");
-                EXPECT_TRUE (people[1].firstName == "Fred");
-                EXPECT_TRUE (people[1].lastName == "Down");
+                EXPECT_EQ (people.size (), 2);
+                EXPECT_EQ (people[0].firstName, "Jim");
+                EXPECT_EQ (people[0].lastName, "Smith");
+                EXPECT_EQ (people[1].firstName, "Fred");
+                EXPECT_EQ (people[1].lastName, "Down");
             });
         }
 
@@ -415,7 +415,7 @@ namespace {
             ObjectReader::IConsumerDelegateToContext ctx{
                 newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name{"envelope2"})};
             saxParser (mkdata_ (), &ctx, nullptr);
-            EXPECT_TRUE (people2 == people);
+            EXPECT_EQ (people2, people);
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             Sequence<Person_>      people3; // use sequence instead of vector
@@ -424,7 +424,7 @@ namespace {
             ObjectReader::IConsumerDelegateToContext ctx{
                 newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name{"envelope2"})};
             saxParser (mkdata_ (), &ctx, nullptr);
-            EXPECT_TRUE (people3.As<vector<Person_>> () == people);
+            EXPECT_EQ (people3.As<vector<Person_>> (), people);
         });
     }
 }
@@ -494,11 +494,11 @@ namespace {
                                                                  Name{"RetrievePropertiesResponse"}, Name{"returnval"})};
         XML::SAXParse (mkdata_ (), &ctx);
 
-        EXPECT_TRUE (objsContent.size () == 2);
-        EXPECT_TRUE (objsContent[0].obj.type == "VirtualMachine");
-        EXPECT_TRUE (objsContent[0].obj.value == "8");
-        EXPECT_TRUE (objsContent[1].obj.type == "VirtualMachine");
-        EXPECT_TRUE (objsContent[1].obj.value == "9");
+        EXPECT_EQ (objsContent.size (), 2);
+        EXPECT_EQ (objsContent[0].obj.type, "VirtualMachine");
+        EXPECT_EQ (objsContent[0].obj.value, "8");
+        EXPECT_EQ (objsContent[1].obj.type, "VirtualMachine");
+        EXPECT_EQ (objsContent[1].obj.value, "9");
     }
 }
 
@@ -529,8 +529,8 @@ namespace {
         Person_                                  p;
         ObjectReader::IConsumerDelegateToContext tmp{mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p))};
         XML::SAXParse (mkdata_ (), &tmp);
-        EXPECT_TRUE (p.firstName == "Jim");
-        EXPECT_TRUE (p.lastName == "Smith");
+        EXPECT_EQ (p.firstName, "Jim");
+        EXPECT_EQ (p.lastName, "Smith");
     }
 }
 
@@ -612,20 +612,20 @@ namespace {
         {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
             XML::SAXParse (mkdata_ (), &ctx);
-            EXPECT_TRUE (data.people.size () == 2);
-            EXPECT_TRUE (data.people[0].firstName == "Jim");
-            EXPECT_TRUE (data.people[0].lastName == "Smith");
-            EXPECT_TRUE (data.people[0].gender == GenderType_::Male);
-            EXPECT_TRUE (data.people[1].firstName == "Fred");
-            EXPECT_TRUE (data.people[1].lastName == "Down");
+            EXPECT_EQ (data.people.size (), 2);
+            EXPECT_EQ (data.people[0].firstName, "Jim");
+            EXPECT_EQ (data.people[0].lastName, "Smith");
+            EXPECT_EQ (data.people[0].gender, GenderType_::Male);
+            EXPECT_EQ (data.people[1].firstName, "Fred");
+            EXPECT_EQ (data.people[1].lastName, "Down");
             EXPECT_TRUE (not data.people[1].gender.has_value ());
-            EXPECT_TRUE (data.addresses.size () == 3);
-            EXPECT_TRUE (data.addresses[0].city == "Boston");
-            EXPECT_TRUE (data.addresses[0].state == "MA");
-            EXPECT_TRUE (data.addresses[1].city == "New York");
-            EXPECT_TRUE (data.addresses[1].state == "NY");
-            EXPECT_TRUE (data.addresses[2].city == "Albany");
-            EXPECT_TRUE (data.addresses[2].state == "NY");
+            EXPECT_EQ (data.addresses.size (), 3);
+            EXPECT_EQ (data.addresses[0].city, "Boston");
+            EXPECT_EQ (data.addresses[0].state, "MA");
+            EXPECT_EQ (data.addresses[1].city, "New York");
+            EXPECT_EQ (data.addresses[1].state, "NY");
+            EXPECT_EQ (data.addresses[2].city, "Albany");
+            EXPECT_EQ (data.addresses[2].state, "NY");
         }
     }
 }
@@ -656,7 +656,6 @@ namespace {
             virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
             {
                 using namespace ObjectReader;
-                DISABLE_COMPILER_MSC_WARNING_START (4573)
                 static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
                     using KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
                     return Registry::MakeClassReader<KVPType_> ({
@@ -664,7 +663,6 @@ namespace {
                         {Name{Name::eValue}, StructFieldMetaInfo{&KVPType_::fValue}},
                     });
                 }();
-                DISABLE_COMPILER_MSC_WARNING_END (4573)
                 return make_shared<RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>>> (fValuePtr_, sEltReader_);
             }
             static ObjectReader::ReaderFromVoidStarFactory AsFactory ()
@@ -757,10 +755,10 @@ namespace {
 
         ObjectReader::Registry registry;
         registry.AddCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
-            pair<TunerNumberType_, String>{TunerNumberType_::eT1, "1"},
-            pair<TunerNumberType_, String>{TunerNumberType_::eT2, "2"},
-            pair<TunerNumberType_, String>{TunerNumberType_::eT3, "3"},
-            pair<TunerNumberType_, String>{TunerNumberType_::eT4, "4"},
+            {TunerNumberType_::eT1, "1"},
+            {TunerNumberType_::eT2, "2"},
+            {TunerNumberType_::eT3, "3"},
+            {TunerNumberType_::eT4, "4"},
         });
         registry.AddCommonType<optional<TunerNumberType_>> ();
         registry.AddCommonType<WaveNumberType_> ();
@@ -798,7 +796,7 @@ namespace {
             EXPECT_TRUE (Math::NearlyEquals (*data.OpticsTemperature, 0.86115019791435543));
             EXPECT_TRUE ((data.LaserTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1}));
             EXPECT_TRUE (Math::NearlyEquals (*data.LaserTemperatures.Lookup (TunerNumberType_::eT1), 20.899877489241646));
-            EXPECT_TRUE ((data.LaserCurrents.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1}));
+            EXPECT_EQ (data.LaserCurrents.Keys (), (Set<TunerNumberType_>{TunerNumberType_::eT1}));
             EXPECT_TRUE (Math::NearlyEquals (*data.LaserCurrents.Lookup (TunerNumberType_::eT1), 0.86871794871794872));
             EXPECT_TRUE ((data.MirrorTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT2}));
             EXPECT_TRUE (Math::NearlyEquals (*data.MirrorTemperatures.Lookup (TunerNumberType_::eT2), 0.86115019791435543));
@@ -854,7 +852,7 @@ namespace {
                 XML::SAXParse (mkdata_ (), &consumerCallback);
                 DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
             }
-            EXPECT_TRUE ((data == Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
+            EXPECT_EQ (data, (Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
         }
         const Name kAlarmName_ = Name{"Alarm"};
         registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kAlarmName_));
@@ -867,7 +865,7 @@ namespace {
                 XML::SAXParse (mkdata_ (), &consumerCallback);
                 DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
             }
-            EXPECT_TRUE ((data == Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
+            EXPECT_EQ (data, (Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
         }
         const Name kWrongAlarmName_ = Name{"xxxAlarm"};
         registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kWrongAlarmName_));
@@ -880,7 +878,7 @@ namespace {
                 XML::SAXParse (mkdata_ (), &consumerCallback);
                 DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
             }
-            EXPECT_TRUE ((data == Set<AlarmType_>{}));
+            EXPECT_EQ (data, (Set<AlarmType_>{}));
         }
     }
 }
@@ -955,7 +953,6 @@ namespace {
             virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
             {
                 using namespace ObjectReader;
-                DISABLE_COMPILER_MSC_WARNING_START (4573)
                 static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
                     using KVPType_ = SpectrumType_::value_type;
                     return Registry::MakeClassReader<KVPType_> ({
@@ -963,7 +960,6 @@ namespace {
                         {Name{"intensity", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
                     });
                 }();
-                DISABLE_COMPILER_MSC_WARNING_END (4573)
                 return make_shared<RepeatedElementReader<SpectrumType_>> (fValuePtr_, sEltReader_);
             }
             static ObjectReader::ReaderFromVoidStarFactory AsFactory ()
@@ -1030,9 +1026,9 @@ namespace {
                 DbgTrace (L"RawSpectrum=%s", Characters::ToString (*data.RawSpectrum).c_str ());
             }
             DbgTrace (L"AuxData=%s", Characters::ToString (data.AuxData).c_str ());
-            EXPECT_TRUE (data.ScanID == 8320);
-            EXPECT_TRUE (data.ScanStart == DateTime::Parse ("2016-07-28T20:14:30Z", DateTime::kISO8601Format));
-            EXPECT_TRUE (data.ScanEnd == DateTime::Parse ("2016-07-28T20:14:44Z", DateTime::kISO8601Format));
+            EXPECT_EQ (data.ScanID, 8320u);
+            EXPECT_EQ (data.ScanStart, DateTime::Parse ("2016-07-28T20:14:30Z", DateTime::kISO8601Format));
+            EXPECT_EQ (data.ScanEnd, DateTime::Parse ("2016-07-28T20:14:44Z", DateTime::kISO8601Format));
             EXPECT_TRUE (not data.ScanLabel.has_value ());
             EXPECT_TRUE ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_>{pair<WaveNumberType_, IntensityType_>{901.5, 0},
                                                                                        pair<WaveNumberType_, IntensityType_>{902.5, 1}}));
@@ -1078,7 +1074,7 @@ namespace {
             ObjectReader::IConsumerDelegateToContext ctx{
                 registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{"Values"})};
             XML::SAXParse (mkdata_ (), &ctx);
-            EXPECT_TRUE (values.valueMissing == 999);
+            EXPECT_EQ (values.valueMissing, 999);
             EXPECT_TRUE (Math::NearlyEquals (values.valueExplicitGood, 3.0));
             EXPECT_TRUE (isnan (values.valueExplicitNAN1));
             EXPECT_TRUE (isnan (values.valueExplicitNAN2));
@@ -1259,7 +1255,7 @@ namespace {
             //consumerCallback.fContext.fTraceThisReader = true;
             XML::SAXParse (mkdata_ (), &consumerCallback);
             DbgTrace (L"Tuners=%s", Characters::ToString (data.Tuners).c_str ());
-            EXPECT_TRUE ((data.Tuners.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2}));
+            EXPECT_EQ (data.Tuners.Keys (), (Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2}));
             EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorOperationFrequency, 40.0));
             EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT1)->MirrorResonantFrequency, 150.0));
             EXPECT_TRUE (Math::NearlyEquals (*data.Tuners.Lookup (TunerNumberType_::eT2)->MirrorOperationFrequency, 41.0));
@@ -1357,13 +1353,13 @@ namespace {
         {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
             XML::SAXParse (mkdata_ (), &ctx);
-            EXPECT_TRUE (data.people.size () == 2);
-            EXPECT_TRUE (data.people[0].firstName == "Jim");
-            EXPECT_TRUE (data.people[0].lastName == "Smith");
-            EXPECT_TRUE (data.people[0].gender == GenderType_::Male);
-            EXPECT_TRUE (data.people[1].firstName == "Fred");
-            EXPECT_TRUE (data.people[1].lastName == "Down");
-            EXPECT_TRUE (data.people[1].gender == GenderType_::Female);
+            EXPECT_EQ (data.people.size (), 2);
+            EXPECT_EQ (data.people[0].firstName, "Jim");
+            EXPECT_EQ (data.people[0].lastName, "Smith");
+            EXPECT_EQ (data.people[0].gender, GenderType_::Male);
+            EXPECT_EQ (data.people[1].firstName, "Fred");
+            EXPECT_EQ (data.people[1].lastName, "Down");
+            EXPECT_EQ (data.people[1].gender, GenderType_::Female);
         }
     }
 }
@@ -1449,13 +1445,13 @@ namespace {
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr        personalSchema = schemaFactory (kPersonalXSD_, {}, {});
+            Schema::Ptr        personalSchema = schemaFactory (kPersonalXSD_, {});
             DOM::Document::Ptr d              = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), personalSchema);
             String             tmp            = d.Write ();
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
         });
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr        schema = schemaFactory (kReferenceContent_2012_03_xsd, {}, {});
+            Schema::Ptr        schema = schemaFactory (kReferenceContent_2012_03_xsd, {});
             DOM::Document::Ptr d      = domFactory (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), schema);
             String             tmp    = d.Write ();
             DbgTrace (L"tmp=%s", Characters::ToString (tmp).As<wstring> ().c_str ());
@@ -1489,8 +1485,8 @@ namespace {
         }
         // no namespace's content test
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr        schema      = schemaFactory (kPersonalXSD_, {}, {});
-            Schema::Ptr        wrongSchema = schemaFactory (kReferenceContent_2012_03_xsd, {}, {});
+            Schema::Ptr        schema      = schemaFactory (kPersonalXSD_, {});
+            Schema::Ptr        wrongSchema = schemaFactory (kReferenceContent_2012_03_xsd, {});
             DOM::Document::Ptr d           = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
             String             tmp         = d.Write ();
             DOM::Element::Ptr  personelElt = d.GetRootElement ();
@@ -1550,9 +1546,9 @@ namespace {
 
         // Namespace's content test
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
-            Schema::Ptr        wrongSchema       = schemaFactory (kPersonalXSD_, {}, {});
+            Schema::Ptr        wrongSchema       = schemaFactory (kPersonalXSD_, {});
             static const URI   kNS_              = "http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/";
-            Schema::Ptr        schema            = schemaFactory (kReferenceContent_2012_03_xsd, {}, {});
+            Schema::Ptr        schema            = schemaFactory (kReferenceContent_2012_03_xsd, {});
             DOM::Document::Ptr d                 = domFactory (kHealthFrameWorks_v3_xml.As<Streams::InputStream::Ptr<byte>> (), nullptr);
             String             tmp               = d.Write ();
             DOM::Element::Ptr  refContentDataElt = d.GetRootElement ();

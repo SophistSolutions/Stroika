@@ -48,10 +48,9 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const Memory::BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
+        SchemaRep_ (const Memory::BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents)
             : fTargetNamespace{}
             , fSourceComponents{sourceComponents}
-            , fNamespaceDefinitions{namespaceDefinitions}
         {
             xmlSchemaParserCtxt* schemaParseContext =
                 xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (schemaData.data ()), static_cast<int> (schemaData.size ()));
@@ -89,7 +88,8 @@ namespace {
         }
         virtual NamespaceDefinitionsList GetNamespaceDefinitions () const override
         {
-            return fNamespaceDefinitions;
+            AssertNotImplemented (); // not sure what this is useful for, and needs clearer definition (is wtih respect to root element - namespace prefixes on it and default)
+            return NamespaceDefinitionsList{};
         }
         virtual Sequence<SourceComponent> GetSourceComponents () override
         {
@@ -552,10 +552,9 @@ Providers::LibXML2::Provider::~Provider ()
 #endif
 }
 
-shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const BLOB& schemaData, const Sequence<Schema::SourceComponent>& sourceComponents,
-                                                                      const NamespaceDefinitionsList& namespaceDefinitions) const
+shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const BLOB& schemaData, const Sequence<Schema::SourceComponent>& sourceComponents) const
 {
-    return make_shared<SchemaRep_> (schemaData, sourceComponents, namespaceDefinitions);
+    return make_shared<SchemaRep_> (schemaData, sourceComponents);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const

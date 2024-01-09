@@ -244,10 +244,9 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const Memory::BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
+        SchemaRep_ (const Memory::BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents)
             : fTargetNamespace{}
             , fSourceComponents{sourceComponents}
-            , fNamespaceDefinitions{namespaceDefinitions}
         {
             AssertNotNull (XMLPlatformUtils::fgMemoryManager);
             XMLGrammarPoolImpl* grammarPool = new (XMLPlatformUtils::fgMemoryManager) XMLGrammarPoolImpl{XMLPlatformUtils::fgMemoryManager};
@@ -310,7 +309,8 @@ namespace {
         }
         virtual NamespaceDefinitionsList GetNamespaceDefinitions () const override
         {
-            return fNamespaceDefinitions;
+            AssertNotImplemented (); // not sure useful/maybe remove
+            return NamespaceDefinitionsList{};
         }
         virtual Sequence<SourceComponent> GetSourceComponents () override
         {
@@ -1352,10 +1352,9 @@ Providers::Xerces::Provider::~Provider ()
 #endif
 }
 
-shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const BLOB& schemaData, const Sequence<Schema::SourceComponent>& sourceComponents,
-                                                                     const NamespaceDefinitionsList& namespaceDefinitions) const
+shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const BLOB& schemaData, const Sequence<Schema::SourceComponent>& sourceComponents) const
 {
-    return make_shared<SchemaRep_> (schemaData, sourceComponents, namespaceDefinitions);
+    return make_shared<SchemaRep_> (schemaData, sourceComponents);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const

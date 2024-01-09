@@ -25,17 +25,16 @@ using namespace Stroika::Foundation::DataExchange::XML::Schema;
  ********************************* Schema::New **********************************
  ********************************************************************************
  */
-Ptr Schema::New (const Providers::ISchemaProvider& p, const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents,
-                 const NamespaceDefinitionsList& namespaceDefinitions)
+Ptr Schema::New (const Providers::ISchemaProvider& p, const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents)
 {
-    return Ptr{p.SchemaFactory (schemaData, sourceComponents, namespaceDefinitions)};
+    return Ptr{p.SchemaFactory (schemaData, sourceComponents)};
 }
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
-Ptr Schema::New (const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents, const NamespaceDefinitionsList& namespaceDefinitions)
+Ptr Schema::New (const BLOB& schemaData, const Sequence<SourceComponent>& sourceComponents)
 {
     static const XML::Providers::ISchemaProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
-    return New (*kDefaultProvider_, schemaData, sourceComponents, namespaceDefinitions);
+    return New (*kDefaultProvider_, schemaData, sourceComponents);
 }
 #endif
 
