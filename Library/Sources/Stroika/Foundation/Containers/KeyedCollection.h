@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers {
      *  KeyedCollection can be templated with a KeyExtractorType that allows it to be used with default construction
      *  and no keyextractor specfied.
      * 
-     *  But the default definition - using std::function - requires the constructor to provide an extracctor function
+     *  But the default definition - using std::function - requires the constructor to provide an extractor function
      *  since the default for this std::function is not callable.
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
@@ -265,6 +265,9 @@ namespace Stroika::Foundation::Containers {
         ;
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
+        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+        KeyedCollection (const KeyExtractorType& keyExtractor, ITERABLE_OF_ADDABLE&& src)
+            requires (IEqualsComparer<KEY_TYPE, equal_to<KEY_TYPE>>);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
             requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);

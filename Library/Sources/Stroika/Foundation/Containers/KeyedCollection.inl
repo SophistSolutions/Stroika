@@ -70,6 +70,15 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const KeyExtractorType& keyExtractor, ITERABLE_OF_ADDABLE&& src)
+        requires (IEqualsComparer<KEY_TYPE, equal_to<KEY_TYPE>>)
+        : KeyedCollection{keyExtractor, equal_to<KEY_TYPE>{}}
+    {
+        AddAll (src);
+        _AssertRepValidType ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
