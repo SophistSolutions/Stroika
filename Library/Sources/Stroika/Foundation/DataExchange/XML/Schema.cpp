@@ -48,6 +48,7 @@ Ptr Schema::New (const optional<URI>& targetNamespace, const BLOB& targetNamespa
 #if qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing
 void DataExchange::XML::Schema::ValidateFile (const filesystem::path& externalFileName, const Ptr& schema)
 {
-    SAXParse (IO::FileSystem::FileInputStream::New (externalFileName), nullptr, schema);
+    SAXParse (*dynamic_cast < const Providers::ISAXProvider * >(schema.GetRep ()->GetProvider ()),
+              IO::FileSystem::FileInputStream::New (externalFileName), nullptr, schema);
 }
 #endif
