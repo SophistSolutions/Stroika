@@ -29,7 +29,13 @@ namespace Stroika::Foundation::DataExchange::XML::Resource {
         optional<String> fSystemID;
 
         bool operator== (const Name&) const  = default;
+#if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+#endif
         auto operator<=> (const Name&) const = default;
+#if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
+#endif
 
         /**
          */
@@ -48,6 +54,7 @@ namespace Stroika::Foundation::DataExchange::XML::Resource {
     /**
      */
     struct IResolverRep {
+        virtual ~IResolverRep () = default;
         /*
          *  return nullopt if not found
          */
