@@ -134,7 +134,9 @@ namespace {
                     // https://stackoverflow.com/questions/2075894/how-to-get-the-name-and-value-of-attributes-from-xml-when-using-libxml2-sax-pars
                     auto ai = attributes;
                     for (int i = 0; i < nb_attributes; i++) {
-                        attrs.Add (libXMLString2String (ai[0]), libXMLString2String (ai[3], static_cast<int> (ai[4] - ai[3])));
+                        // @todo fix must grab namespace
+                        attrs.Add (Name{"", libXMLString2String (ai[0]), Name::eAttribute},
+                                   libXMLString2String (ai[3], static_cast<int> (ai[4] - ai[3])));
                         ai += 5;
                     }
                 }
