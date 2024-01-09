@@ -71,9 +71,9 @@ namespace {
             --sLiveCnt;
 #endif
         }
-        Resource::ResolverPtr     fResolver_{nullptr};
-        Memory::BLOB              fSchemaData;
-        xmlSchema*                fCompiledSchema{nullptr};
+        Resource::ResolverPtr fResolver_{nullptr};
+        Memory::BLOB          fSchemaData;
+        xmlSchema*            fCompiledSchema{nullptr};
 
         virtual const Providers::ISchemaProvider* GetProvider () const override
         {
