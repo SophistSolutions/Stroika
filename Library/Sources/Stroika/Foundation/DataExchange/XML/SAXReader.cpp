@@ -46,12 +46,19 @@ void XML::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamE
 void XML::SAXParse (const Providers::ISAXProvider& saxProvider, const Streams::InputStream::Ptr<byte>& in,
                     StructuredStreamEvents::IConsumer* callback, const Schema::Ptr& schema, Execution::ProgressMonitor::Updater progress)
 {
-    Require (schema == nullptr or static_cast<const Providers::IProvider*> (schema.GetRep ()->GetProvider ()) == &saxProvider); // SAX provider must match Scehma provider
+    Schema::Ptr useSchema = schema;
+    if (useSchema != nullptr) {
+        if (static_cast<const Providers::IProvider*> (schema.GetRep ()->GetProvider ()) != &saxProvider) {
+            WeakAsserteNotReached (); // not necessarily a bug, but if this is done regularly, fix so they match
+            useSchema = useSchema.As<Schema::Ptr> (
+                *dynamic_cast<const Providers::ISchemaProvider*> (static_cast<const Providers::IProvider*> (&saxProvider)));
+        }
+    }
     if (progress == nullptr) {
-        saxProvider.SAXParse (in, callback, schema);
+        saxProvider.SAXParse (in, callback, useSchema);
     }
     else {
         // IF progress provided, wrap 'in' in magic to handle progress
-        saxProvider.SAXParse (Execution::MakeInputStreamWithProgress (in, progress), callback, schema);
+        saxProvider.SAXParse (Execution::MakeInputStreamWithProgress (in, progress), callback, useSchema);
     }
 }

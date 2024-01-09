@@ -185,7 +185,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          *      \todo   Maybe add GetNamespaceDefinitions () to return a NamespaceDefinitionsList object with the prefixes
          *              default, and namespace URIs for this particular element. But so far no need.
          */
-        struct Ptr : Node::Ptr {
+        class Ptr : public Node::Ptr {
         public:
             /**
              */
@@ -365,7 +365,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-            * @@todo  - what happens if we rename this operator-> - IO think chaining works nicely then. maybe use that trick thoguhotu Stroika if it works here.
+            * @@todo  - what happens if we rename this operator-> - IO think chaining works nicely then. maybe use that trick throughout Stroika if it works here.
              */
             nonvirtual shared_ptr<IRep> GetRep () const;
 
@@ -378,7 +378,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          *  Use the optionally provided stream to deserialize the document from (or create an empty one with a single root documentElement given by name/ns args).
          * 
-         *  \note String in overload is trivial wrapper on Streams::TextToByteReader{}, in case you want adjust paramters.
+         *  \note String in overload is trivial wrapper on Streams::TextToByteReader{}, in case you want adjust parameters.
          * 
          * @todo add overload taking String 'in' and parse using Streams::TextToByteReader
          *  @todo consider adding 'Resolver' argument - so missing #includes get loaded.

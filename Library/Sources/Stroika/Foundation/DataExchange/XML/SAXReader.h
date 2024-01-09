@@ -28,10 +28,7 @@ namespace Stroika::Foundation::DataExchange::XML {
      *
      *  @see ObjectReaderRegistry for examples of one way to use this
      * 
-     *  \req saxProvider must match Schema's Provider (if both used). By default this will work fine. Future versions may lift this
-     *       requirement).
-     * 
-     *  @todo consider adding 'Resolver' argument - so missing #includes get loaded.
+     *  \note though we support using incompatible schema/saxProvider pairs, doing so incurs a significant performance penalty.
      */
     void SAXParse (const Providers::ISAXProvider& saxProvider, const Streams::InputStream::Ptr<byte>& in,
                    StructuredStreamEvents::IConsumer* callback = nullptr, const Schema::Ptr& schema = nullptr,

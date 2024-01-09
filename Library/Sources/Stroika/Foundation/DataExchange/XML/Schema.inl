@@ -9,6 +9,8 @@
  ********************************************************************************
  */
 
+#include "../../Streams/TextReader.h"
+
 #include "Providers/IProvider.h"
 
 namespace Stroika::Foundation::DataExchange::XML::Schema {
@@ -33,6 +35,29 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
     {
         return fRep_;
     }
+    template <>
+    XML::DOM::Document::Ptr Ptr::As ();
+    template <typename AS_T>
+    AS_T Ptr::As ()
+        requires (same_as<AS_T, String> or same_as<AS_T, XML::DOM::Document::Ptr> or same_as<AS_T, Memory::BLOB>)
+    {
+        if constexpr (same_as<AS_T, String>) {
+            return Streams::TextReader::New (fRep_->GetData ()).ReadAll ();
+        }
+        else if constexpr (same_as<AS_T, Memory::BLOB>) {
+            return fRep_->GetData ();
+        }
+    }
+    template <typename AS_T>
+    AS_T Ptr::As (const Providers::ISchemaProvider& p)
+        requires (same_as<AS_T, XML::Schema::Ptr>)
+    {
+        if constexpr (same_as<AS_T, XML::Schema::Ptr>) {
+            return New (p, fRep_->GetData (), fRep_->GetResolver ());
+        }
+    }
+    template <>
+    XML::DOM::Document::Ptr Ptr::As (const Providers::IDOMProvider& p);
 
 }
 

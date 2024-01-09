@@ -6,6 +6,7 @@
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/IO/FileSystem/PathName.h"
 
+#include "DOM.h"
 #include "SAXReader.h"
 #include "Schema.h"
 
@@ -19,6 +20,22 @@ using namespace Stroika::Foundation::DataExchange::XML::Schema;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+/*
+ ********************************************************************************
+ ********************************* Schema::Ptr **********************************
+ ********************************************************************************
+ */
+template <>
+XML::DOM::Document::Ptr Ptr::As ()
+{
+    return DOM::Document::New (fRep_->GetData ());
+}
+template <>
+XML::DOM::Document::Ptr Schema::Ptr::As (const Providers::IDOMProvider& p)
+{
+    return DOM::Document::New (p, fRep_->GetData ());
+}
 
 /*
  ********************************************************************************
