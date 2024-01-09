@@ -28,7 +28,7 @@ namespace Stroika::Foundation::DataExchange::XML::Resource {
         optional<String> fPublicID;
         optional<String> fSystemID;
 
-        bool operator== (const Name&) const  = default;
+        bool operator== (const Name&) const = default;
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif

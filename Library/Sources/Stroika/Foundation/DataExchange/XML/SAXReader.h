@@ -30,6 +30,8 @@ namespace Stroika::Foundation::DataExchange::XML {
      * 
      *  \req saxProvider must match Schema's Provider (if both used). By default this will work fine. Future versions may lift this
      *       requirement).
+     * 
+     *  @todo consider adding 'Resolver' argument - so missing #includes get loaded.
      */
     void SAXParse (const Providers::ISAXProvider& saxProvider, const Streams::InputStream::Ptr<byte>& in,
                    StructuredStreamEvents::IConsumer* callback = nullptr, const Schema::Ptr& schema = nullptr,

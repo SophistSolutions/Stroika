@@ -180,6 +180,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          *  Simple wrapper on Node::Ptr API, but with the Ptr objects refer to Elements.
          * 
          *  If you assign a non-Element to an Element::Ptr, it automatically, silently becomes nullptr (like dynamic_cast).
+         * 
+         *  TODO:
+         *      \todo   Maybe add GetNamespaceDefinitions () to return a NamespaceDefinitionsList object with the prefixes
+         *              default, and namespace URIs for this particular element. But so far no need.
          */
         struct Ptr : Node::Ptr {
         public:
@@ -377,6 +381,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          *  \note String in overload is trivial wrapper on Streams::TextToByteReader{}, in case you want adjust paramters.
          * 
          * @todo add overload taking String 'in' and parse using Streams::TextToByteReader
+         *  @todo consider adding 'Resolver' argument - so missing #includes get loaded.
          */
         Ptr New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName);
         Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in);
