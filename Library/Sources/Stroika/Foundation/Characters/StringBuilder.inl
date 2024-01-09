@@ -259,6 +259,13 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <typename OPTIONS>
+    inline void StringBuilder<OPTIONS>::ShrinkTo (size_t sz) noexcept
+    {
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
+        Require (sz <= this->size ());
+        fData_.resize (sz);
+    }
+    template <typename OPTIONS>
     inline void StringBuilder<OPTIONS>::clear () noexcept
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};

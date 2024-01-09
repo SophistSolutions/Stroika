@@ -190,6 +190,12 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  Change the size of this object to sz = where sz must be <= size()
+         */
+        nonvirtual void ShrinkTo (size_t sz) noexcept;
+
+    public:
+        /**
          * Only specifically specialized variants are supported. Convert String losslessly into a
          *      o   String or
          *      o   wstring
