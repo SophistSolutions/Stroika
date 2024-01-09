@@ -556,8 +556,7 @@ namespace {
 }
 
 namespace {
-    void DoWrite2Stream_ (const xercesc::DOMDocument* doc, xercesc::DOMNode* node2Write, const Streams::OutputStream::Ptr<byte>& to,
-                          const SerializationOptions& options)
+    void DoWrite2Stream_ (xercesc::DOMNode* node2Write, const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options)
     {
         AutoRelease_<DOMLSOutput> theOutputDesc = GetDOMIMPL_ ().createLSOutput ();
         theOutputDesc->setEncoding (XMLUni::fgUTF8EncodingString);
@@ -583,12 +582,7 @@ namespace {
         };
         myOutputter dest{to};
         theOutputDesc->setByteStream (&dest);
-        Assert (doc->getXmlStandalone ());
         writer->write (node2Write, theOutputDesc);
-    }
-    void DoWrite2Stream_ (xercesc::DOMDocument* doc, const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options)
-    {
-        DoWrite2Stream_ (doc, doc, to, options);
     }
     // Currently unused but maybe needed again if we support 'moving' nodes from one doc to another
     DOMNode* RecursivelySetNamespace_ (DOMNode* n, const XMLCh* namespaceURI)
@@ -948,7 +942,7 @@ namespace {
         {
             START_LIB_EXCEPTION_MAPPER_
             {
-                DoWrite2Stream_ (fNode_->getOwnerDocument (), fNode_, to, options);
+                DoWrite2Stream_ (fNode_, to, options);
             }
             END_LIB_EXCEPTION_MAPPER_
         }
