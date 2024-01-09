@@ -492,7 +492,16 @@ namespace {
             int r = xmlSchemaValidateDoc (validateCtx, fLibRep_);
             if (r != 0) {
                 Assert (not validationCB.msg.empty ()); // guessing we only get validation error if error callback called?
-                Execution::Throw (BadFormatException{validationCB.msg});
+                optional<unsigned int> lineNumber;
+                optional<unsigned int> columnNumber;
+                optional<uint64_t>     fileOffset;
+                if (const xmlError* err = xmlGetLastError ()) {
+                    lineNumber = static_cast<unsigned int> (err->line);
+                    if (static_cast<unsigned int> (err->int2) != 0) {
+                        columnNumber = static_cast<unsigned int> (err->int2);
+                    }
+                }
+                Execution::Throw (BadFormatException{validationCB.msg, lineNumber, columnNumber, fileOffset});
             }
         }
         xmlDoc*                                                        fLibRep_{nullptr};
