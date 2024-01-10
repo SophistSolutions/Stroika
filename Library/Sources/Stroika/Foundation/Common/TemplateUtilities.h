@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <type_traits>
+#include <variant>
 
 /**
  *  \file
@@ -75,6 +76,12 @@ namespace Stroika::Foundation::Common {
      */
     template <typename T>
     using UnsignedOfIf = typename conditional_t<is_integral_v<T>, Common::LazyType<make_unsigned_t, T>, Identity<T>>::type;
+
+    /**
+     *  Utility to map from an std::variant<...> and map a TYPE to its underlying index in the given variant
+     */
+    template <typename VARIANT_VALUE, typename T>
+    constexpr size_t variant_index ();
 
 }
 

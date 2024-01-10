@@ -1621,12 +1621,13 @@ namespace {
         const Memory::BLOB kReferenceContent_2012_03_xsd = Memory::BLOB::Attach (Resources_::TestFiles_ReferenceContent_2012_03_xsd);
 
         {
+            using namespace XML::DOM;
             // old did xerces support so far
-            DOM::Document::Ptr d = DOM::Document::New (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> ());
+            Document::Ptr d = Document::New (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> ());
             {
-                auto n = d.GetRootElement ().LookupOne (DOM::XPath::Expression{"person"});
+                auto n = d.GetRootElement ().LookupOne (XPath::Expression{"person"}); // maybe rename LookupOne here to LookupElement()
                 DbgTrace (L"n=%s", Characters::ToString (n).c_str ());
-                auto n2 = d.GetRootElement ().LookupOne (DOM::XPath::Expression{"person/name"});
+                auto n2 = d.GetRootElement ().LookupOne (XPath::Expression{"person/name"});
                 DbgTrace (L"n2=%s", Characters::ToString (n2).c_str ());
             }
         }

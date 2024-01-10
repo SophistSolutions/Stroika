@@ -962,8 +962,16 @@ namespace {
             AutoRelease_<DOMXPathNSResolver> resolver =
                 doc->createNSResolver (fNode_); // gets namespace/prefixes from this node - WRONG - instead have PARAM to this function todo that
             // and have method of NODE to extract that list of bindings (we already have/had the method but disabled/lost and never impelmetned anyhow).
-            AutoRelease_<DOMXPathExpression> expr       = doc->createExpression (e.fRep->fExpression.As<u16string> ().c_str (), resolver);
-            AutoRelease_<xercesc_3_2::DOMXPathResult> r = expr->evaluate (fNode_, DOMXPathResult::FIRST_ORDERED_NODE_TYPE, nullptr);
+            AutoRelease_<DOMXPathExpression> expr = doc->createExpression (e.fRep->fExpression.As<u16string> ().c_str (), resolver);
+            DOMXPathResult::ResultType       rt{};
+            switch (e.fRep->fResultTypeIndex) {
+                case XPath::ResultTypeIndex_v<Node::Ptr>:
+                    rt = DOMXPathResult::FIRST_ORDERED_NODE_TYPE;
+                    break;
+                default:
+                    AssertNotImplemented ();
+            }
+            AutoRelease_<xercesc_3_2::DOMXPathResult> r = expr->evaluate (fNode_, rt, nullptr);
             switch (r->getResultType ()) {
                 case DOMXPathResult::NUMBER_TYPE:
                     return XPath::Result{r->getNumberValue ()};

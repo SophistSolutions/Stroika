@@ -8,6 +8,7 @@
 
 #include <variant>
 
+#include "../../Common/TemplateUtilities.h"
 #include "../../Execution/Exceptions.h"
 #include "../../Streams/InputStream.h"
 #include "../../Streams/OutputStream.h"
@@ -42,10 +43,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
 
     namespace XPath {
+
         /**
-           * Probably incomplete - see https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html#ab718aec450c5438e0cc3a6920044a0c1
-           */
+         * Probably incomplete - see https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html#ab718aec450c5438e0cc3a6920044a0c1
+         */
         using Result = variant<bool, int, double, String, Node::Ptr>;
+
+        /**
+         *  Some APIs (like Expression) need to know the index - not just the type itself, and this maps.
+         */
+        template <typename T>
+        constexpr uint8_t ResultTypeIndex_v = static_cast<uint8_t> (Common::variant_index<Result, T> ());
 
         /**
          *  This def is provider independent, but since implemetned with a shared_ptr and immutable, the reps can maintain a cache of mappings
@@ -55,14 +63,15 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             struct IRep {
                 String                   fExpression;
                 NamespaceDefinitionsList fNamespaces; // prefixes available to use in expression
-                unsigned int        fResultTypeIndex;   // index into 'Result' variant expected. REJECT other values - required by Xerces XPATH API, and not a biggie (why wouldn't you know?)
+                uint8_t fResultTypeIndex; // index into 'Result' variant expected. REJECT other values - required by Xerces XPATH API, and not a biggie (why wouldn't you know?)
             };
-            Expression (const String& e)
-                : fRep (make_shared<IRep> (e))
+            Expression (const String& e, const NamespaceDefinitionsList& ns = {}, uint8_t resultTypeIndex = ResultTypeIndex_v<Node::Ptr>)
+                : fRep (make_shared<IRep> (e, ns, resultTypeIndex))
             {
             }
             shared_ptr<IRep> fRep;
         };
+
     }
 
     /**

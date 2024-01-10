@@ -44,6 +44,30 @@ namespace Stroika::Foundation::Common {
         return reinterpret_cast<T&> (sStorage_);
     }
 
+
+    namespace Private_ {
+        template <typename VariantType, typename T, std::size_t index = 0>
+        constexpr std::size_t variant_index ()
+        {
+            // From https://stackoverflow.com/questions/52303316/get-index-by-type-in-stdvariant/66386518#66386518
+            static_assert (std::variant_size_v<VariantType> > index, "Type not found in variant");
+            if constexpr (index == std::variant_size_v<VariantType>) {
+                return index;
+            }
+            else if constexpr (std::is_same_v<std::variant_alternative_t<index, VariantType>, T>) {
+                return index;
+            }
+            else {
+                return variant_index<VariantType, T, index + 1> ();
+            }
+        }
+    }
+    template <typename VARIANT_VALUE, typename T>
+    constexpr std::size_t variant_index ()
+    {
+        return Private_::variant_index<VARIANT_VALUE, T> ();
+    }
+
 }
 
 #endif /*_Stroika_Foundation_Common_TemplateUtilities_inl_*/
