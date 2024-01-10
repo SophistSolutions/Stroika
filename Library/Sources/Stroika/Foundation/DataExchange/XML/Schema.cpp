@@ -26,11 +26,13 @@ using namespace Stroika::Foundation::DataExchange::XML::Schema;
  ********************************* Schema::Ptr **********************************
  ********************************************************************************
  */
+    #if qStroika_Foundation_DataExchange_XML_SupportDOM
 template <>
 XML::DOM::Document::Ptr Ptr::As ()
 {
     return DOM::Document::New (fRep_->GetData ());
 }
+#endif
 template <>
 XML::DOM::Document::Ptr Schema::Ptr::As (const Providers::IDOMProvider& p)
 {

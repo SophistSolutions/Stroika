@@ -35,12 +35,18 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
     {
         return fRep_;
     }
+    #if qStroika_Foundation_DataExchange_XML_SupportDOM
     template <>
     XML::DOM::Document::Ptr Ptr::As ();
+                #endif
     template <typename AS_T>
     AS_T Ptr::As ()
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        requires (same_as<AS_T, String> or same_as<AS_T, XML::DOM::Document::Ptr> or same_as<AS_T, Memory::BLOB>)
+        requires (same_as<AS_T, String> 
+        #if qStroika_Foundation_DataExchange_XML_SupportDOM
+                or same_as<AS_T, XML::DOM::Document::Ptr> 
+                #endif
+                 or same_as<AS_T, Memory::BLOB>)
 #endif
     {
         if constexpr (same_as<AS_T, String>) {
