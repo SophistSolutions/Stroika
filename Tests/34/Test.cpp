@@ -1365,7 +1365,7 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, T14_SAXObjectReader_CustomSimpleType_)
     {
-        // Custom Type will require a custom reader, but thats easy to do for most simple types
+        // Custom Type will require a custom reader, but that is easy to do for most simple types
         // Use MakeCommonReader_SimpleStringish for this type
         struct GenderType_ {
             String fRep;
