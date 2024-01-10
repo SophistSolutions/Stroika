@@ -28,6 +28,30 @@ using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::DataExchange::XML::DOM;
 using namespace Stroika::Foundation::DataExchange::XML::DOM::Document;
 
+namespace {
+    struct XPathExpRep_ : XPath::Expression ::IRep {
+        String                     fExpression_;
+        XPath::Expression::Options fOptions_;
+        XPathExpRep_ (const String& e, const XPath::Expression::Options& o)
+            : fExpression_{e}
+            , fOptions_{o}
+        {
+        }
+        virtual String GetExpression () const override
+        {
+            return fExpression_;
+        }
+        virtual XPath::Expression::Options GetOptions () const override
+        {
+            return fOptions_;
+        }
+    };
+}
+XPath::Expression::Expression (const String& e, const Options& o)
+    : fRep_{make_shared<XPathExpRep_> (e, o)}
+{
+}
+
 /*
  ********************************************************************************
  ********************************* Node::IRep ***********************************

@@ -18,6 +18,24 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     /*
      ********************************************************************************
+     ************************ XML::DOM::XPath::Expression ***************************
+     ********************************************************************************
+     */
+    inline String XPath::Expression::GetExpression () const
+    {
+        return fRep_->GetExpression ();
+    }
+    inline auto XPath::Expression::GetOptions () const -> Options
+    {
+        return fRep_->GetOptions ();
+    }
+    inline auto XPath::Expression::GetRep () const -> shared_ptr<const IRep>
+    {
+        return fRep_;
+    }
+
+    /*
+     ********************************************************************************
      ****************************** XML::DOM::Node::Ptr *****************************
      ********************************************************************************
      */

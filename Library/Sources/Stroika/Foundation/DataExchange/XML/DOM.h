@@ -42,12 +42,18 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         class Ptr;
     }
 
+    namespace Element {
+        class Ptr;
+    }
+
     namespace XPath {
 
         /**
          * Probably incomplete - see https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html#ab718aec450c5438e0cc3a6920044a0c1
+         * 
+         *  @todo unclear if we ever return Nodes other than Element::Ptr - so for now just say Element::Ptr, but maybe expand list later.
          */
-        using Result = variant<bool, int, double, String, Node::Ptr>;
+        using Result = variant<bool, int, double, String, Element::Ptr>;
 
         /**
          *  Some APIs (like Expression) need to know the index - not just the type itself, and this maps.
@@ -56,20 +62,55 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         constexpr uint8_t ResultTypeIndex_v = static_cast<uint8_t> (Common::variant_index<Result, T> ());
 
         /**
-         *  This def is provider independent, but since implemetned with a shared_ptr and immutable, the reps can maintain a cache of mappings
+         *  This def is provider independent, but since implemetned with a shared_ptr and immutable, the providers can maintain a cache of mappings
          *  of expressions to internal compiled version of expression.
+         * 
+         *  So - it behaves rather obviously - except that if you copy an expression, you KNOW the underlying data wont change so can cache dervied values (like a compiled expression).
          */
-        struct Expression {
-            struct IRep {
-                String                   fExpression;
-                NamespaceDefinitionsList fNamespaces; // prefixes available to use in expression
-                uint8_t fResultTypeIndex; // index into 'Result' variant expected. REJECT other values - required by Xerces XPATH API, and not a biggie (why wouldn't you know?)
+        class Expression {
+        public:
+            /**
+             *  Xerces seems to have a bunch more options controlling things like order of results returend. Look into this...
+             */
+            struct Options {
+                /**
+                 * prefixes available to use in expression
+                 */
+                NamespaceDefinitionsList fNamespaces;
+
+                /**
+                 * index into 'Result' variant expected. REJECT other values - required by Xerces XPATH API, and not a biggie (why wouldn't you know?)
+                 */
+                optional<uint8_t> fResultTypeIndex{ResultTypeIndex_v<Element::Ptr>};
             };
-            Expression (const String& e, const NamespaceDefinitionsList& ns = {}, uint8_t resultTypeIndex = ResultTypeIndex_v<Node::Ptr>)
-                : fRep (make_shared<IRep> (e, ns, resultTypeIndex))
-            {
-            }
-            shared_ptr<IRep> fRep;
+
+        public:
+            Expression (const String& e, const Options& o = {});
+
+        public:
+            struct IRep {
+                virtual ~IRep ()                       = default;
+                virtual String  GetExpression () const = 0;
+                virtual Options GetOptions () const    = 0;
+            };
+
+        public:
+            /**
+             * The text of the expression
+             */
+            nonvirtual String GetExpression () const;
+
+        public:
+            /**
+             * Get options (like prefix to namespace map, etc)
+             */
+            nonvirtual Options GetOptions () const;
+
+        public:
+            nonvirtual shared_ptr<const IRep> GetRep () const;
+
+        private:
+            shared_ptr<const IRep> fRep_;
         };
 
     }
@@ -208,7 +249,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual void          Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             // Redundant API, but provided since commonly used and can be optimized
             virtual Ptr                                GetChildElementByID (const String& id) const;
-            virtual optional<XPath::Result>            LookupOne (const XPath::Expression& e) = 0;
+            virtual optional<XPath::Result>            LookupOne (const XPath::Expression& e) = 0;  /// maybe lose this and do LookupOne/LookupAll etc in Ptr wrapper?
             virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e)    = 0;
         };
     }

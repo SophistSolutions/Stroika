@@ -958,38 +958,42 @@ namespace {
         }
         virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) override
         {
-            xercesc_3_2::DOMDocument*        doc = fNode_->getOwnerDocument ();
-            AutoRelease_<DOMXPathNSResolver> resolver =
-                doc->createNSResolver (fNode_); // gets namespace/prefixes from this node - WRONG - instead have PARAM to this function todo that
-            // and have method of NODE to extract that list of bindings (we already have/had the method but disabled/lost and never impelmetned anyhow).
-            AutoRelease_<DOMXPathExpression> expr = doc->createExpression (e.fRep->fExpression.As<u16string> ().c_str (), resolver);
-            DOMXPathResult::ResultType       rt{};
-            switch (e.fRep->fResultTypeIndex) {
-                case XPath::ResultTypeIndex_v<Node::Ptr>:
-                    rt = DOMXPathResult::FIRST_ORDERED_NODE_TYPE;
-                    break;
-                default:
-                    AssertNotImplemented ();
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                xercesc_3_2::DOMDocument*        doc = fNode_->getOwnerDocument ();
+                AutoRelease_<DOMXPathNSResolver> resolver =
+                    doc->createNSResolver (fNode_); // gets namespace/prefixes from this node - WRONG - instead have PARAM to this function todo that
+                // and have method of NODE to extract that list of bindings (we already have/had the method but disabled/lost and never impelmetned anyhow).
+                AutoRelease_<DOMXPathExpression> expr = doc->createExpression (e.GetExpression ().As<u16string> ().c_str (), resolver);
+                DOMXPathResult::ResultType       rt{};
+                switch (e.GetOptions ().fResultTypeIndex.value_or (DOMXPathResult::ANY_TYPE)) {
+                    case XPath::ResultTypeIndex_v<Element::Ptr>:
+                        rt = DOMXPathResult::FIRST_ORDERED_NODE_TYPE; // unsure - maybe need another exprssion hint param about first , and ordering etc???
+                        break;
+                    default:
+                        AssertNotImplemented ();
+                }
+                AutoRelease_<xercesc_3_2::DOMXPathResult> r = expr->evaluate (fNode_, rt, nullptr);
+                switch (r->getResultType ()) {
+                    case DOMXPathResult::NUMBER_TYPE:
+                        return XPath::Result{r->getNumberValue ()};
+                    case DOMXPathResult::BOOLEAN_TYPE:
+                        return XPath::Result{r->getBooleanValue ()};
+                    case DOMXPathResult::STRING_TYPE:
+                        return XPath::Result{xercesString2String (r->getStringValue ())};
+                    case DOMXPathResult::ANY_UNORDERED_NODE_TYPE:
+                    case DOMXPathResult::FIRST_ORDERED_NODE_TYPE:
+                    case DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE:
+                    case DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE:
+                    case DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE:
+                    case DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE:
+                        return XPath::Result{Node::Ptr{WrapImpl_ (r->getNodeValue ())}};
+                    default:
+                        AssertNotImplemented ();
+                }
+                return nullopt;
             }
-            AutoRelease_<xercesc_3_2::DOMXPathResult> r = expr->evaluate (fNode_, rt, nullptr);
-            switch (r->getResultType ()) {
-                case DOMXPathResult::NUMBER_TYPE:
-                    return XPath::Result{r->getNumberValue ()};
-                case DOMXPathResult::BOOLEAN_TYPE:
-                    return XPath::Result{r->getBooleanValue ()};
-                case DOMXPathResult::STRING_TYPE:
-                    return XPath::Result{xercesString2String (r->getStringValue ())};
-                case DOMXPathResult::ANY_UNORDERED_NODE_TYPE:
-                case DOMXPathResult::FIRST_ORDERED_NODE_TYPE:
-                case DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE:
-                case DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE:
-                case DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE:
-                case DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE:
-                    return XPath::Result{Node::Ptr{WrapImpl_ (r->getNodeValue ())}};
-                default:
-                    AssertNotImplemented ();
-            }
-            return nullopt;
+            END_LIB_EXCEPTION_MAPPER_
         }
         virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) override
         {

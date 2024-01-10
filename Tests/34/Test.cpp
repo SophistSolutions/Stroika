@@ -1629,6 +1629,10 @@ namespace {
                 DbgTrace (L"n=%s", Characters::ToString (n).c_str ());
                 auto n2 = d.GetRootElement ().LookupOne (XPath::Expression{"person/name"});
                 DbgTrace (L"n2=%s", Characters::ToString (n2).c_str ());
+                //auto n3 = d.GetRootElement ().LookupOne (XPath::Expression{"/person/name"});  // surprisingly fails on Xerces
+                //DbgTrace (L"n3=%s", Characters::ToString (n3).c_str ());
+                auto n4 = d.GetRootElement ().LookupOne (XPath::Expression{"//person/name"});
+                DbgTrace (L"n4=%s", Characters::ToString (n4).c_str ());
             }
         }
         // no namespace's content test
