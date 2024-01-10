@@ -39,9 +39,9 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
     XML::DOM::Document::Ptr Ptr::As ();
     template <typename AS_T>
     AS_T Ptr::As ()
-            #if ! qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         requires (same_as<AS_T, String> or same_as<AS_T, XML::DOM::Document::Ptr> or same_as<AS_T, Memory::BLOB>)
-        #endif
+#endif
     {
         if constexpr (same_as<AS_T, String>) {
             return Streams::TextReader::New (fRep_->GetData ()).ReadAll ();
