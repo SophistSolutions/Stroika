@@ -87,13 +87,19 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
          */
         template <typename AS_T>
         nonvirtual AS_T As ()
-            requires (same_as<AS_T, String> or same_as<AS_T, XML::DOM::Document::Ptr> or same_as<AS_T, Memory::BLOB>);
+        #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            requires (same_as<AS_T, String> or same_as<AS_T, XML::DOM::Document::Ptr> or same_as<AS_T, Memory::BLOB>)
+            #endif
+            ;
         template <typename AS_T>
         nonvirtual AS_T As (const Providers::ISchemaProvider& p)
             requires (same_as<AS_T, XML::Schema::Ptr>);
         template <typename AS_T>
         nonvirtual AS_T As (const Providers::IDOMProvider& p)
-            requires (same_as<AS_T, XML::DOM::Document::Ptr>);
+        #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            requires (same_as<AS_T, XML::DOM::Document::Ptr>)
+            #endif
+            ;
 
     private:
         shared_ptr<IRep> fRep_;
