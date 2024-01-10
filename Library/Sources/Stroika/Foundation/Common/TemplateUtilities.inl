@@ -44,7 +44,6 @@ namespace Stroika::Foundation::Common {
         return reinterpret_cast<T&> (sStorage_);
     }
 
-
     namespace Private_ {
         template <typename VariantType, typename T, std::size_t index = 0>
         constexpr std::size_t variant_index ()
