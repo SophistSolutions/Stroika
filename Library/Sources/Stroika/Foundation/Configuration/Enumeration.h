@@ -21,12 +21,6 @@
  *
  * TODO:
  *
- *      @todo   Figure out why we need todo
- *              Configuration::EnumNames<AccessMode>::BasicArrayInitializer arg to CTOR - see
- *                  constexpr   ....EnumNames<IO::AccessMode>::BasicArrayInitializer
- *
- *              This is needlessly baroque/confusing how we create...
- *
  *      @todo   https://stroika.atlassian.net/browse/STK-549 - RequireItemsOrderedByEnumValue and
  *              static_cast usage confusion.
  *

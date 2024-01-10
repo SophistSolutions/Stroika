@@ -1096,13 +1096,12 @@ namespace Stroika::Foundation::Configuration {
     // for ToString ()
     template <>
     constexpr EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_>
-        DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_>::k{
-            EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_>::BasicArrayInitializer{{
-                {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT1, L"eT1"},
-                {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT2, L"eT2"},
-                {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT3, L"eT3"},
-                {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT4, L"eT4"},
-            }}};
+        DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_>::k{{{
+            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT1, L"eT1"},
+            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT2, L"eT2"},
+            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT3, L"eT3"},
+            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_Support_::TunerNumberType_::eT4, L"eT4"},
+        }}};
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\"")
 }
 namespace {

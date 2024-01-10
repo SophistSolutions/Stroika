@@ -1017,7 +1017,7 @@ namespace {
             Sample,
             Stroika_Define_Enum_Bounds (Background, Sample)
         };
-        constexpr Configuration::EnumNames<ScanKindType> ScanKindType_NAMES{Configuration::EnumNames<ScanKindType>::BasicArrayInitializer{{
+        constexpr Configuration::EnumNames<ScanKindType> ScanKindType_NAMES{{{
             {ScanKindType::Background, L"Background"},
             {ScanKindType::Reference, L"Reference"},
             {ScanKindType::Sample, L"Sample"},
