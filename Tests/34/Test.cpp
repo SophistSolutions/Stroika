@@ -1560,7 +1560,55 @@ namespace {
             // grab 'concepts' Node, and try removing from it (and recheck validation) and then try adding to it and recheck validation
             DOM::Element::Ptr conceptsElt = refContentDataElt.GetChild (NameWithNamespace{kNS_, "Concepts"});
             EXPECT_EQ (conceptsElt.GetChildren ().size (), 459u);
-            // @todo rest of impl...
+
+            {
+                DOM::Element::Ptr c = conceptsElt.GetChildren ().FirstValue (); // delete a fairly random concept (not in xml file order)
+                //DbgTrace (L"deleting %s", Characters::ToString (c).c_str ());
+                c.DeleteNode ();
+            }
+            EXPECT_EQ (conceptsElt.GetChildren ().size (), 458u);
+            EXPECT_NO_THROW (d.Validate (schema));
+
+            // add an element
+            {
+                /*
+                    ConceptDetails>
+                        <PrimaryKey Type="UMLS">C1547289</PrimaryKey>
+                        <Priority>5</Priority>
+                        <Categories>
+                            <Category>Activity</Category>
+                        </Categories>
+                        <Terms>
+                            <Term Priority="9">Tobacco - Chewed</Term>
+                        </Terms>
+                    </ConceptDetails>     
+                *
+                * NOTE:
+                *       When appending, if NS not specified, its copied from parent node (elt appending to).
+                * 
+                *   TBD about attributes - https://stroika.atlassian.net/browse/STK-999
+                */
+                auto concept2Add = conceptsElt.Append (NameWithNamespace{kNS_, "ConceptDetails"});
+                {
+                    auto primaryKey = concept2Add.Append (NameWithNamespace{"PrimaryKey"}, "C1547289");
+                    // Using kNS_ in the SetAttribute call will produce schema validation failure with libxml2 - https://stroika.atlassian.net/browse/STK-999
+                    primaryKey.SetAttribute (NameWithNamespace{"Type"}, "UMLS");
+                }
+                concept2Add.Append (NameWithNamespace{"Priority"}, "5");
+                concept2Add.Append (NameWithNamespace{"Categories"}).Append (NameWithNamespace{"Category"}, "Activity");
+                {
+                    auto terms = concept2Add.Append (NameWithNamespace{"Terms"});
+                    {
+                        auto term = terms.Append (NameWithNamespace{"Term"}, "Tobacco - Chewed");
+                        term.SetAttribute (NameWithNamespace{"Priority"}, "9");
+                    }
+                }
+                String testCanSerializeElts = Characters::ToString (concept2Add);
+                //DbgTrace (L"o=%s", Characters::ToString (concept2Add).c_str ());
+            }
+            EXPECT_EQ (conceptsElt.GetChildren ().size (), 459u);
+            EXPECT_NO_THROW (d.Validate (schema));
+            //d.Write (IO::FileSystem::FileOutputStream::New (IO::FileSystem::ToPath (Characters::Format (L"c:/temp/foo%d.xml", ++i))));
         });
     }
 }

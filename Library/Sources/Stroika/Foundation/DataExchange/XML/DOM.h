@@ -189,7 +189,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              */
-            Ptr (const Node::Ptr& p);
+            Ptr (const Node::Ptr& p = nullptr);
 
         public:
             /**

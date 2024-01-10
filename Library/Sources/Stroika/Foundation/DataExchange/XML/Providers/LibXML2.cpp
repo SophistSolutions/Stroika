@@ -275,6 +275,11 @@ namespace {
                               v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
             else {
+#if 0
+                // Using kNS_ in the xmlSetNsProp call will produce schema validation failure with libxml2 - https://stroika.atlassian.net/browse/STK-999
+                xmlSetNsProp (fNode_, fNode_->ns, BAD_CAST attrName.fName.AsUTF8 ().c_str (),
+                              v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
+#endif
                 xmlSetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (), v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
         }
@@ -284,8 +289,9 @@ namespace {
             Require (ValidNewNodeName_ (eltName.fName));
 #endif
             Require (afterNode == nullptr or this->GetChildren ().Contains (afterNode));
-            xmlNode* newNode =
-                xmlNewNode (eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : nullptr, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
+            // when adding a child, if no NS specified, copy parents
+            xmlNs*    useNS        = eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : fNode_->ns;
+            xmlNode*  newNode      = xmlNewNode (useNS, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
             NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : Debug::UncheckedDynamicCast<NodeRep_*> (afterNode.GetRep ().get ());
             if (afterNodeRep == nullptr) {
                 // unfortunately complicated - no prepend api (just append). Can say xmlAddPrevSibling for first child though which amounts
@@ -307,8 +313,9 @@ namespace {
 #if qDebug
             Require (ValidNewNodeName_ (eltName.fName));
 #endif
-            xmlNode* newNode =
-                xmlNewNode (eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : nullptr, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
+            // when adding a child, if no NS specified, copy parents
+            xmlNs*   useNS   = eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : fNode_->ns;
+            xmlNode* newNode = xmlNewNode (useNS, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
             xmlAddChild (fNode_, newNode);
             return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
         }
