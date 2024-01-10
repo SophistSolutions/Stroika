@@ -36,6 +36,35 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         optional<unsigned int> fIndent{};
     };
 
+    namespace Node {
+        class IRep;
+        class Ptr;
+    }
+
+    namespace XPath {
+        /**
+           * Probably incomplete - see https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html#ab718aec450c5438e0cc3a6920044a0c1
+           */
+        using Result = variant<bool, int, double, String, Node::Ptr>;
+
+        /**
+         *  This def is provider independent, but since implemetned with a shared_ptr and immutable, the reps can maintain a cache of mappings
+         *  of expressions to internal compiled version of expression.
+         */
+        struct Expression {
+            struct IRep {
+                String                   fExpression;
+                NamespaceDefinitionsList fNamespaces; // prefixes available to use in expression
+                unsigned int        fResultTypeIndex;   // index into 'Result' variant expected. REJECT other values - required by Xerces XPATH API, and not a biggie (why wouldn't you know?)
+            };
+            Expression (const String& e)
+                : fRep (make_shared<IRep> (e))
+            {
+            }
+            shared_ptr<IRep> fRep;
+        };
+    }
+
     /**
      * NB: A Node can be EITHER an ELEMENT or an ATTRIBUTE (mostly). Nodes are 'internal' to a Document, and are always somehow contained in some document).
      *  Nodes have an abstract IRep, the the Ptr object is just a 'smart pointer' to that IRep.
@@ -46,8 +75,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
      *  But Nodes can be accessed, created, update etc, once you start with a Document::Ptr.
      */
     namespace Node {
-        class IRep;
-        class Ptr;
 
         /**
          *  Prior to Stroika v3.0d5, this was Node::NodeType
@@ -59,11 +86,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             eCommentNT,
             eOtherNT
         };
-
-        /**
-        // Probably incomplete - see https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html#ab718aec450c5438e0cc3a6920044a0c1
-         */
-        using XPathResult = variant<bool, int, double, String, Node::Ptr>;
 
         /**
          *  \brief Node::Ptr is a smart pointer to a Node::IRep
@@ -176,9 +198,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual Iterable<Ptr> GetChildren () const                                                                          = 0;
             virtual void          Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             // Redundant API, but provided since commonly used and can be optimized
-            virtual Ptr                              GetChildElementByID (const String& id) const;
-            virtual optional<XPathResult>            LookupOne (const String& xpath) = 0;
-            virtual Traversal::Iterator<XPathResult> Lookup (const String& xpath)    = 0;
+            virtual Ptr                                GetChildElementByID (const String& id) const;
+            virtual optional<XPath::Result>            LookupOne (const XPath::Expression& e) = 0;
+            virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e)    = 0;
         };
     }
 
@@ -309,10 +331,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             nonvirtual Ptr GetChildByID (const String& id) const;
 
         public:
-            nonvirtual optional<XPathResult> LookupOne (const String& xpath) const;
+            nonvirtual optional<XPath::Result> LookupOne (const XPath::Expression& e) const;
 
         public:
-            nonvirtual Traversal::Iterator<XPathResult> Lookup (const String& xpath) const;
+            nonvirtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) const;
         };
     }
 

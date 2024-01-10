@@ -188,13 +188,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return Element::Ptr{GetRep ()->GetChildElementByID (id)};
     }
-    inline auto Element::Ptr::LookupOne (const String& xpath) const -> optional<Node::XPathResult>
+    inline auto Element::Ptr::LookupOne (const XPath::Expression& e) const -> optional<XPath::Result>
     {
-        return GetRep ()->LookupOne (xpath);
+        return GetRep ()->LookupOne (e);
     }
-    inline auto Element::Ptr::Lookup (const String& xpath) const -> Traversal::Iterator<Node::XPathResult>
+    inline auto Element::Ptr::Lookup (const XPath::Expression& e) const -> Traversal::Iterator<XPath::Result>
     {
-        return GetRep ()->Lookup (xpath);
+        return GetRep ()->Lookup (e);
     }
 
     /*

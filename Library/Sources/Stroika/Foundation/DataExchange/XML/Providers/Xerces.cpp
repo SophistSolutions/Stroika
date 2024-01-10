@@ -956,36 +956,36 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual optional<Node::XPathResult> LookupOne (const String& xpath) override
+        virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) override
         {
             xercesc_3_2::DOMDocument*        doc = fNode_->getOwnerDocument ();
             AutoRelease_<DOMXPathNSResolver> resolver =
                 doc->createNSResolver (fNode_); // gets namespace/prefixes from this node - WRONG - instead have PARAM to this function todo that
             // and have method of NODE to extract that list of bindings (we already have/had the method but disabled/lost and never impelmetned anyhow).
-            AutoRelease_<DOMXPathExpression>          expr = doc->createExpression (xpath.As<u16string> ().c_str (), resolver);
-            AutoRelease_<xercesc_3_2::DOMXPathResult> r    = expr->evaluate (fNode_, DOMXPathResult::FIRST_ORDERED_NODE_TYPE, nullptr);
+            AutoRelease_<DOMXPathExpression> expr       = doc->createExpression (e.fRep->fExpression.As<u16string> ().c_str (), resolver);
+            AutoRelease_<xercesc_3_2::DOMXPathResult> r = expr->evaluate (fNode_, DOMXPathResult::FIRST_ORDERED_NODE_TYPE, nullptr);
             switch (r->getResultType ()) {
                 case DOMXPathResult::NUMBER_TYPE:
-                    return Node::XPathResult{r->getNumberValue ()};
+                    return XPath::Result{r->getNumberValue ()};
                 case DOMXPathResult::BOOLEAN_TYPE:
-                    return Node::XPathResult{r->getBooleanValue ()};
+                    return XPath::Result{r->getBooleanValue ()};
                 case DOMXPathResult::STRING_TYPE:
-                    return Node::XPathResult{xercesString2String (r->getStringValue ())};
+                    return XPath::Result{xercesString2String (r->getStringValue ())};
                 case DOMXPathResult::ANY_UNORDERED_NODE_TYPE:
                 case DOMXPathResult::FIRST_ORDERED_NODE_TYPE:
                 case DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE:
                 case DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE:
                 case DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE:
                 case DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE:
-                    return Node::XPathResult{Node::Ptr{WrapImpl_ (r->getNodeValue ())}};
+                    return XPath::Result{Node::Ptr{WrapImpl_ (r->getNodeValue ())}};
                 default:
                     AssertNotImplemented ();
             }
             return nullopt;
         }
-        virtual Traversal::Iterator<Node::XPathResult> Lookup (const String& xpath) override
+        virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) override
         {
-            return Traversal::Iterator<Node::XPathResult>{};
+            return Traversal::Iterator<XPath::Result>{};
         }
         virtual Node::Ptr GetChildElementByID (const String& id) const override
         {
