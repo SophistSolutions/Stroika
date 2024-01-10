@@ -11,6 +11,7 @@ static_assert (qHasFeature_Xerces, "Don't include this file if qHasFeature_Xerce
 // avoid namespace conflict with some Xerces code
 #undef Assert
 #include <xercesc/dom/DOM.hpp>
+#include <xercesc/dom/DOMXPathEvaluator.hpp>
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
 #include <xercesc/framework/MemBufFormatTarget.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>

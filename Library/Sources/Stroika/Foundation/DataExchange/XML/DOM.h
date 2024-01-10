@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <variant>
+
 #include "../../Execution/Exceptions.h"
 #include "../../Streams/InputStream.h"
 #include "../../Streams/OutputStream.h"
@@ -45,6 +47,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
      */
     namespace Node {
         class IRep;
+        class Ptr;
 
         /**
          *  Prior to Stroika v3.0d5, this was Node::NodeType
@@ -56,6 +59,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             eCommentNT,
             eOtherNT
         };
+
+        /**
+        // Probably incomplete - see https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html#ab718aec450c5438e0cc3a6920044a0c1
+         */
+        using XPathResult = variant<bool, int, double, String, Node::Ptr>;
 
         /**
          *  \brief Node::Ptr is a smart pointer to a Node::IRep
@@ -168,7 +176,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual Iterable<Ptr> GetChildren () const                                                                          = 0;
             virtual void          Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             // Redundant API, but provided since commonly used and can be optimized
-            virtual Ptr GetChildElementByID (const String& id) const;
+            virtual Ptr                              GetChildElementByID (const String& id) const;
+            virtual optional<XPathResult>            LookupOne (const String& xpath) = 0;
+            virtual Traversal::Iterator<XPathResult> Lookup (const String& xpath)    = 0;
         };
     }
 
@@ -297,6 +307,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * can return a NULL Node Ptr if not found. Only examines this node's (direct) children
              */
             nonvirtual Ptr GetChildByID (const String& id) const;
+
+        public:
+            nonvirtual optional<XPathResult> LookupOne (const String& xpath) const;
+
+        public:
+            nonvirtual Traversal::Iterator<XPathResult> Lookup (const String& xpath) const;
         };
     }
 

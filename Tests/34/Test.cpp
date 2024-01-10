@@ -1611,6 +1611,37 @@ namespace {
         });
     }
 }
+
+namespace {
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_XPath)
+    {
+        const Memory::BLOB kPersonalXML_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);
+        const Memory::BLOB kPersonalXSD_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xsd);
+        const Memory::BLOB kHealthFrameWorks_v3_xml      = Memory::BLOB::Attach (Resources_::TestFiles_HealthFrameWorks_v3_xml);
+        const Memory::BLOB kReferenceContent_2012_03_xsd = Memory::BLOB::Attach (Resources_::TestFiles_ReferenceContent_2012_03_xsd);
+
+        {
+            // old did xerces support so far
+            DOM::Document::Ptr d = DOM::Document::New (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> ());
+            {
+                auto n = d.GetRootElement ().LookupOne ("person");
+                DbgTrace (L"n=%s", Characters::ToString (get<DOM::Node::Ptr> (*n)).c_str ());
+                auto n2 = d.GetRootElement ().LookupOne ("person/name");
+                DbgTrace (L"n2=%s", Characters::ToString (get<DOM::Node::Ptr> (*n2)).c_str ());
+            }
+        }
+        // no namespace's content test
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            Schema::Ptr        schema      = schemaFactory (kPersonalXSD_, nullptr);
+            Schema::Ptr        wrongSchema = schemaFactory (kReferenceContent_2012_03_xsd, nullptr);
+            DOM::Document::Ptr d           = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
+            
+
+        });
+
+        
+    }
+}
 #endif
 #endif
 

@@ -356,6 +356,14 @@ namespace {
             AssertNotNull (t);
             to.Write (span{reinterpret_cast<const byte*> (t), static_cast<size_t> (::strlen (reinterpret_cast<const char*> (t)))});
         }
+        virtual optional<Node::XPathResult> LookupOne (const String& xpath) override
+        {
+            return nullopt;
+        }
+        virtual Traversal::Iterator<Node::XPathResult> Lookup (const String& xpath) override
+        {
+            return Traversal::Iterator<Node::XPathResult>{};
+        }
         virtual xmlNode* GetInternalTRep () override
         {
             return fNode_;

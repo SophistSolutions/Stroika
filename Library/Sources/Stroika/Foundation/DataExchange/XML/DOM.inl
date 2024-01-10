@@ -186,8 +186,15 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
     inline auto Element::Ptr::GetChildByID (const String& id) const -> Ptr
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         return Element::Ptr{GetRep ()->GetChildElementByID (id)};
+    }
+    inline auto Element::Ptr::LookupOne (const String& xpath) const -> optional<Node::XPathResult>
+    {
+        return GetRep ()->LookupOne (xpath);
+    }
+    inline auto Element::Ptr::Lookup (const String& xpath) const -> Traversal::Iterator<Node::XPathResult>
+    {
+        return GetRep ()->Lookup (xpath);
     }
 
     /*

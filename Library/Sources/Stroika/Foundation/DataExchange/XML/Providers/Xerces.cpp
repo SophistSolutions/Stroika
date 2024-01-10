@@ -69,8 +69,8 @@ namespace {
 
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
 /*
- *  A helpful class to isolete Xerces (etc) memory management calls. Could be the basis
- *  of future perfomance/memory optimizations, but for now, just a helpful debugging/tracking
+ *  A helpful class to isolate Xerces (etc) memory management calls. Could be the basis
+ *  of future performance/memory optimizations, but for now, just a helpful debugging/tracking
  *  class.
  */
 struct Provider::MyXercesMemMgr_ : public MemoryManager {
@@ -81,7 +81,10 @@ public:
     }
     ~MyXercesMemMgr_ ()
     {
-        Assert (fAllocator.GetSnapshot ().fAllocations.empty ()); // else we have a memory leak
+#if qDebug
+        auto snapshot = fAllocator.GetSnapshot ();
+        Assert (snapshot.fAllocations.empty ()); // else we have a memory leak which can be perused here in the debugger
+#endif
     }
 
 public:
@@ -952,6 +955,37 @@ namespace {
                 DoWrite2Stream_ (fNode_, to, options);
             }
             END_LIB_EXCEPTION_MAPPER_
+        }
+        virtual optional<Node::XPathResult> LookupOne (const String& xpath) override
+        {
+            xercesc_3_2::DOMDocument*        doc = fNode_->getOwnerDocument ();
+            AutoRelease_<DOMXPathNSResolver> resolver =
+                doc->createNSResolver (fNode_); // gets namespace/prefixes from this node - WRONG - instead have PARAM to this function todo that
+            // and have method of NODE to extract that list of bindings (we already have/had the method but disabled/lost and never impelmetned anyhow).
+            AutoRelease_<DOMXPathExpression>          expr = doc->createExpression (xpath.As<u16string> ().c_str (), resolver);
+            AutoRelease_<xercesc_3_2::DOMXPathResult> r    = expr->evaluate (fNode_, DOMXPathResult::FIRST_ORDERED_NODE_TYPE, nullptr);
+            switch (r->getResultType ()) {
+                case DOMXPathResult::NUMBER_TYPE:
+                    return Node::XPathResult{r->getNumberValue ()};
+                case DOMXPathResult::BOOLEAN_TYPE:
+                    return Node::XPathResult{r->getBooleanValue ()};
+                case DOMXPathResult::STRING_TYPE:
+                    return Node::XPathResult{xercesString2String (r->getStringValue ())};
+                case DOMXPathResult::ANY_UNORDERED_NODE_TYPE:
+                case DOMXPathResult::FIRST_ORDERED_NODE_TYPE:
+                case DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE:
+                case DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE:
+                case DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE:
+                case DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE:
+                    return Node::XPathResult{Node::Ptr{WrapImpl_ (r->getNodeValue ())}};
+                default:
+                    AssertNotImplemented ();
+            }
+            return nullopt;
+        }
+        virtual Traversal::Iterator<Node::XPathResult> Lookup (const String& xpath) override
+        {
+            return Traversal::Iterator<Node::XPathResult>{};
         }
         virtual Node::Ptr GetChildElementByID (const String& id) const override
         {
