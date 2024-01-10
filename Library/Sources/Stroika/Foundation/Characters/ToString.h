@@ -48,6 +48,7 @@ namespace Stroika::Foundation::Characters {
      *      o   is_enum<T>
      *      o   std::exception
      *      o   std::tuple
+     *      o   std::variant
      *      o   std::pair
      *      o   std::optional
      *      o   std::wstring

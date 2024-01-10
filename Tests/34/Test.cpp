@@ -1625,9 +1625,10 @@ namespace {
             DOM::Document::Ptr d = DOM::Document::New (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> ());
             {
                 auto n = d.GetRootElement ().LookupOne ("person");
-                DbgTrace (L"n=%s", Characters::ToString (get<DOM::Node::Ptr> (*n)).c_str ());
+                DbgTrace (L"n=%s", Characters::ToString (n).c_str ());
+//                DbgTrace (L"n=%s", Characters::ToString (get<DOM::Node::Ptr> (*n)).c_str ());
                 auto n2 = d.GetRootElement ().LookupOne ("person/name");
-                DbgTrace (L"n2=%s", Characters::ToString (get<DOM::Node::Ptr> (*n2)).c_str ());
+                DbgTrace (L"n2=%s", Characters::ToString (n2).c_str ());
             }
         }
         // no namespace's content test
@@ -1635,11 +1636,7 @@ namespace {
             Schema::Ptr        schema      = schemaFactory (kPersonalXSD_, nullptr);
             Schema::Ptr        wrongSchema = schemaFactory (kReferenceContent_2012_03_xsd, nullptr);
             DOM::Document::Ptr d           = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
-            
-
         });
-
-        
     }
 }
 #endif
