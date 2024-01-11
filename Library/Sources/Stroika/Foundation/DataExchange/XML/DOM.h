@@ -83,9 +83,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                  */
                 optional<uint8_t> fResultTypeIndex{ResultTypeIndex_v<Element::Ptr>};
             };
+            static inline const Options kDefaultOptions{.fNamespaces = {}, .fResultTypeIndex = ResultTypeIndex_v<Element::Ptr>};
 
         public:
-            Expression (const String& e, const Options& o = {});
+            Expression (const String& e, const Options& o = kDefaultOptions);
 
         public:
             struct IRep {
@@ -248,9 +249,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual Iterable<Ptr> GetChildren () const                                                                          = 0;
             virtual void          Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             // Redundant API, but provided since commonly used and can be optimized
-            virtual Ptr                                GetChildElementByID (const String& id) const;
-            virtual optional<XPath::Result>            LookupOne (const XPath::Expression& e) = 0;  /// maybe lose this and do LookupOne/LookupAll etc in Ptr wrapper?
-            virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e)    = 0;
+            virtual Ptr GetChildElementByID (const String& id) const;
+            virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) = 0; /// maybe lose this and do LookupOne/LookupAll etc in Ptr wrapper?
+            virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) = 0;
         };
     }
 
