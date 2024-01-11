@@ -1623,16 +1623,19 @@ namespace {
         {
             using namespace XML::DOM;
             // old did xerces support so far
-            Document::Ptr d = Document::New (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> ());
+            Document::Ptr d = Document::New (XML::Providers::Xerces::kDefaultProvider, kPersonalXML_.As<Streams::InputStream::Ptr<byte>> ());
             {
-                auto n = d.GetRootElement ().LookupOne (XPath::Expression{"person"}); // maybe rename LookupOne here to LookupElement()
-                DbgTrace (L"n=%s", Characters::ToString (n).c_str ());
+                auto n1 = d.GetRootElement ().LookupOne (XPath::Expression{"person"}); // maybe rename LookupOne here to LookupElement()
+                DbgTrace (L"n1=%s", Characters::ToString (n1).c_str ());
+                EXPECT_EQ (get<DOM::Element::Ptr> (*n1).GetName (), "person");
                 auto n2 = d.GetRootElement ().LookupOne (XPath::Expression{"person/name"});
                 DbgTrace (L"n2=%s", Characters::ToString (n2).c_str ());
+                EXPECT_EQ (get<DOM::Element::Ptr> (*n2).GetName (), "name");
                 //auto n3 = d.GetRootElement ().LookupOne (XPath::Expression{"/person/name"});  // surprisingly fails on Xerces
                 //DbgTrace (L"n3=%s", Characters::ToString (n3).c_str ());
                 auto n4 = d.GetRootElement ().LookupOne (XPath::Expression{"//person/name"});
                 DbgTrace (L"n4=%s", Characters::ToString (n4).c_str ());
+                EXPECT_EQ (get<DOM::Element::Ptr> (*n4).GetName (), "name");
             }
         }
         // no namespace's content test
