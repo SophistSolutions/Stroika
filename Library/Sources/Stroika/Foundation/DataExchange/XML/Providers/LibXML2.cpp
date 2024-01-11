@@ -387,7 +387,7 @@ namespace {
         }
 
     private:
-        // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
+        // must carefully think out mem management here - cuz not ref counted - around as long as owning doc...
         xmlNode* fNode_;
     };
 }
