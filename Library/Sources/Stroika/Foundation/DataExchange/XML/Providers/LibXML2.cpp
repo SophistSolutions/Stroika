@@ -183,7 +183,11 @@ namespace {
 }
 
 namespace {
-    class NodeRep_ : public ILibXML2NodeRep, Memory::UseBlockAllocationIfAppropriate<NodeRep_> {
+    Node::Ptr WrapLibXML2NodeInStroikaNode_ (xmlNode* n);
+}
+
+namespace {
+    struct NodeRep_ : ILibXML2NodeRep, Memory::UseBlockAllocationIfAppropriate<NodeRep_> {
     public:
         NodeRep_ (xmlNode* n)
             : fNode_{n}
@@ -194,7 +198,7 @@ namespace {
         {
             RequireNotNull (fNode_);
             RequireNotNull (rhs);
-            return fNode_ == Debug::UncheckedDynamicCast<const NodeRep_*> (rhs)->fNode_;
+            return fNode_ == dynamic_cast<const NodeRep_*> (rhs)->fNode_;
         }
         virtual Node::Type GetNodeType () const override
         {
@@ -254,6 +258,74 @@ namespace {
             AssertNotNull (fNode_);
             xmlNodeSetContent (fNode_, BAD_CAST v.AsUTF8 ().c_str ());
         }
+        virtual void DeleteNode () override
+        {
+            RequireNotNull (fNode_);
+            xmlUnlinkNode (fNode_);
+            xmlFreeNode (fNode_);
+            fNode_ = nullptr;
+        }
+        virtual Node::Ptr GetParentNode () const override
+        {
+            RequireNotNull (fNode_);
+            if (fNode_->parent == nullptr) {
+                return Node::Ptr{nullptr};
+            }
+            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (fNode_->parent)};
+        }
+        virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
+        {
+            xmlBufferPtr            xmlBuf  = xmlBufferCreate ();
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlBufferFree (xmlBuf); });
+            if (int dumpRes = xmlNodeDump (xmlBuf, fNode_->doc, fNode_, 0, options.fPrettyPrint); dumpRes == -1) {
+                Execution::Throw (Execution::RuntimeErrorException{"failed dumping node to text"});
+            }
+            const xmlChar* t = xmlBufferContent (xmlBuf);
+            AssertNotNull (t);
+            to.Write (span{reinterpret_cast<const byte*> (t), static_cast<size_t> (::strlen (reinterpret_cast<const char*> (t)))});
+        }
+        virtual xmlNode* GetInternalTRep () override
+        {
+            return fNode_;
+        }
+        static xmlNsPtr genNS2Use_ (xmlNode* n, const URI& ns)
+        {
+            xmlNsPtr              ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> ().AsUTF8 ().c_str ());
+            basic_string<xmlChar> prefix2Try{BAD_CAST "a"};
+            while (ns2Use == nullptr) {
+                // Need to hang the namespace declaration someplace? Could do it just on this element (xmlNewNs)
+                // Or on the root doc (xmlNewGlobalNs).
+                // For now - do on DOC, so we end up with a more terse overall document.
+                // Also - sadly - must cons up SOME prefix, which doesn't conflict. No good way I can see todo that, so do a bad way.
+                // OK - can do still manually using docs root elt - maybe - but do this way for now... cuz xmlNewGlobalNs deprecated
+                ns2Use = xmlNewNs (n, BAD_CAST ns.As<String> ().AsUTF8 ().c_str (), prefix2Try.c_str ());
+                if (ns2Use == nullptr) {
+                    ++prefix2Try[0]; // if 'a' didn't work, try 'b' // @todo this could use better error handling, but pragmatically probably OK
+                }
+            }
+            return ns2Use;
+        }
+        // must carefully think out mem management here - cuz not ref counted - around as long as owning doc...
+        xmlNode* fNode_;
+    };
+}
+
+namespace {
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
+    struct ElementRep_ : Element::IRep, Memory::InheritAndUseBlockAllocationIfAppropriate<ElementRep_, NodeRep_> {
+        using inherited = Memory::InheritAndUseBlockAllocationIfAppropriate<ElementRep_, NodeRep_>;
+        ElementRep_ (xmlNode* n)
+            : inherited{n}
+        {
+            RequireNotNull (n);
+            Require (n->type == XML_ELEMENT_NODE);
+        }
+        virtual Node::Type GetNodeType () const override
+        {
+            AssertNotNull (fNode_);
+            Assert (fNode_->type == XML_ELEMENT_NODE);
+            return Node::eElementNT;
+        }
         virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const override
         {
             auto r = attrName.fNamespace ? xmlGetNsProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (),
@@ -283,7 +355,7 @@ namespace {
                 xmlSetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (), v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
         }
-        virtual Node::Ptr InsertElement (const NameWithNamespace& eltName, const Node::Ptr& afterNode) override
+        virtual Element::Ptr InsertElement (const NameWithNamespace& eltName, const Element::Ptr& afterNode) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (eltName.fName));
@@ -292,7 +364,7 @@ namespace {
             // when adding a child, if no NS specified, copy parents
             xmlNs*    useNS        = eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : fNode_->ns;
             xmlNode*  newNode      = xmlNewNode (useNS, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
-            NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : Debug::UncheckedDynamicCast<NodeRep_*> (afterNode.GetRep ().get ());
+            NodeRep_* afterNodeRep = afterNode == nullptr ? nullptr : dynamic_cast<NodeRep_*> (afterNode.GetRep ().get ());
             if (afterNodeRep == nullptr) {
                 // unfortunately complicated - no prepend api (just append). Can say xmlAddPrevSibling for first child though which amounts
                 // to same thing (unless there is no first child)
@@ -308,7 +380,7 @@ namespace {
             }
             return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
         }
-        virtual Node::Ptr AppendElement (const NameWithNamespace& eltName) override
+        virtual Element::Ptr AppendElement (const NameWithNamespace& eltName) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (eltName.fName));
@@ -318,18 +390,6 @@ namespace {
             xmlNode* newNode = xmlNewNode (useNS, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
             xmlAddChild (fNode_, newNode);
             return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
-        }
-        virtual void DeleteNode () override
-        {
-            RequireNotNull (fNode_);
-            xmlUnlinkNode (fNode_);
-            xmlFreeNode (fNode_);
-            fNode_ = nullptr;
-        }
-        virtual Node::Ptr GetParentNode () const override
-        {
-            RequireNotNull (fNode_);
-            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (fNode_->parent)};
         }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
@@ -345,17 +405,6 @@ namespace {
                 return r;
             });
         }
-        virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
-        {
-            xmlBufferPtr            xmlBuf  = xmlBufferCreate ();
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlBufferFree (xmlBuf); });
-            if (int dumpRes = xmlNodeDump (xmlBuf, fNode_->doc, fNode_, 0, options.fPrettyPrint); dumpRes == -1) {
-                Execution::Throw (Execution::RuntimeErrorException{"failed dumping node to text"});
-            }
-            const xmlChar* t = xmlBufferContent (xmlBuf);
-            AssertNotNull (t);
-            to.Write (span{reinterpret_cast<const byte*> (t), static_cast<size_t> (::strlen (reinterpret_cast<const char*> (t)))});
-        }
         virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) override
         {
             return nullopt;
@@ -364,32 +413,16 @@ namespace {
         {
             return Traversal::Iterator<XPath::Result>{};
         }
-        virtual xmlNode* GetInternalTRep () override
-        {
-            return fNode_;
-        }
-        static xmlNsPtr genNS2Use_ (xmlNode* n, const URI& ns)
-        {
-            xmlNsPtr              ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> ().AsUTF8 ().c_str ());
-            basic_string<xmlChar> prefix2Try{BAD_CAST "a"};
-            while (ns2Use == nullptr) {
-                // Need to hang the namespace declaration someplace? Could do it just on this element (xmlNewNs)
-                // Or on the root doc (xmlNewGlobalNs).
-                // For now - do on DOC, so we end up with a more terse overall document.
-                // Also - sadly - must cons up SOME prefix, which doesn't conflict. No good way I can see todo that, so do a bad way.
-                // OK - can do still manually using docs root elt - maybe - but do this way for now... cuz xmlNewGlobalNs deprecated
-                ns2Use = xmlNewNs (n, BAD_CAST ns.As<String> ().AsUTF8 ().c_str (), prefix2Try.c_str ());
-                if (ns2Use == nullptr) {
-                    ++prefix2Try[0]; // if 'a' didn't work, try 'b' // @todo this could use better error handling, but pragmatically probably OK
-                }
-            }
-            return ns2Use;
-        }
-
-    private:
-        // must carefully think out mem management here - cuz not ref counted - around as long as owning doc...
-        xmlNode* fNode_;
     };
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
+}
+
+namespace {
+    Node::Ptr WrapLibXML2NodeInStroikaNode_ (xmlNode* n)
+    {
+        RequireNotNull (n);
+        return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (n)};
+    }
 }
 
 namespace {

@@ -59,7 +59,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::Xerces {
 
     /**
      */
-    struct IXercesNodeRep : DOM::Node::IRep {
+    struct IXercesNodeRep : virtual DOM::Node::IRep {
         virtual xercesc_3_2::DOMNode* GetInternalTRep () = 0;
     };
 

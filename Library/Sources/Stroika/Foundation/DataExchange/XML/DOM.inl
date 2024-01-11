@@ -62,6 +62,26 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         RequireNotNull (fRep_);
         return fRep_->GetNodeType ();
     }
+    inline auto Node::Ptr::GetName () const -> NameWithNamespace
+    {
+        Require (GetNodeType () == eAttributeNT or GetNodeType () == eElementNT);
+        return GetRep ()->GetName ();
+    }
+    inline void Node::Ptr::SetName (const NameWithNamespace& name)
+    {
+        Require (GetNodeType () == eAttributeNT or GetNodeType () == eElementNT);
+        GetRep ()->SetName (name);
+    }
+    inline String Node::Ptr::GetValue () const
+    {
+        Require (GetNodeType () == eAttributeNT or GetNodeType () == eElementNT);
+        return GetRep ()->GetValue ();
+    }
+    inline void Node::Ptr::SetValue (const String& v)
+    {
+        Require (GetNodeType () == eAttributeNT or GetNodeType () == eElementNT);
+        return GetRep ()->SetValue (v);
+    }
     inline void Node::Ptr::DeleteNode ()
     {
         RequireNotNull (fRep_);
@@ -72,11 +92,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         AssertNotNull (fRep_);
         return fRep_->GetParentNode ();
-    }
-    inline Iterable<Node::Ptr> Node::Ptr::GetChildren () const
-    {
-        AssertNotNull (fRep_);
-        return fRep_->GetChildren ();
     }
     inline shared_ptr<Node::IRep> Node::Ptr::GetRep () const
     {
@@ -91,26 +106,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline Element::Ptr::Ptr (const Node::Ptr& p)
         : Node::Ptr{p != nullptr and p.GetNodeType () == Node::eElementNT ? p : nullptr}
     {
-    }
-    inline auto Element::Ptr::GetName () const -> NameWithNamespace
-    {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
-        return GetRep ()->GetName ();
-    }
-    inline void Element::Ptr::SetName (const NameWithNamespace& name)
-    {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
-        GetRep ()->SetName (name);
-    }
-    inline String Element::Ptr::GetValue () const
-    {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
-        return GetRep ()->GetValue ();
-    }
-    inline void Element::Ptr::SetValue (const String& v)
-    {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
-        return GetRep ()->SetValue (v);
     }
     inline optional<String> Element::Ptr::GetAttribute (const NameWithNamespace& attrName) const
     {
@@ -162,7 +157,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         }
         return Element::Ptr{nullptr};
     }
-    inline Element::Ptr Element::Ptr::ReplaceElement ()
+    inline Element::Ptr Element::Ptr::Replace ()
     {
         Require (GetNodeType () == eElementNT); // cheaters never prosper
         /**
@@ -196,11 +191,18 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         Require (GetNodeType () == eElementNT); // cheaters never prosper
         return Element::Ptr{GetRep ()->GetParentNode ()};
     }
-    inline auto Element::Ptr::GetChildren () const -> Iterable<Ptr>
+    inline auto Element::Ptr::GetChildNodes () const -> Iterable<Node::Ptr>
     {
-        // return just the child elements - so simple filter
-        return this->Node::Ptr::GetChildren ().Map<Iterable<Ptr>> (
-            [] (Node::Ptr p) -> optional<Ptr> { return Ptr{p} == nullptr ? optional<Ptr>{} : Ptr{p}; });
+        AssertNotNull (GetRep ());
+        return GetRep ()->GetChildren ();
+    }
+    inline auto Element::Ptr::GetChildElements () const -> Iterable<Ptr>
+    {
+        AssertNotNull (GetRep ());
+        return GetRep ()->GetChildren ().Map<Iterable<Ptr>> ([] (Node::Ptr p) -> optional<Ptr> {
+            Ptr eltNode{p};
+            return eltNode == nullptr ? optional<Ptr>{} : eltNode;
+        });
     }
     inline auto Element::Ptr::GetChildByID (const String& id) const -> Ptr
     {
@@ -213,6 +215,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline auto Element::Ptr::Lookup (const XPath::Expression& e) const -> Traversal::Iterator<XPath::Result>
     {
         return GetRep ()->Lookup (e);
+    }
+    inline auto Element::Ptr::GetRep () const -> shared_ptr<IRep>
+    {
+        return dynamic_pointer_cast<IRep> (Node::Ptr::GetRep ());
     }
 
     /*

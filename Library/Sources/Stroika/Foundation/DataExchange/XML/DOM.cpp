@@ -54,10 +54,10 @@ XPath::Expression::Expression (const String& e, const Options& o)
 
 /*
  ********************************************************************************
- ********************************* Node::IRep ***********************************
+ ********************************* Element::IRep ***********************************
  ********************************************************************************
  */
-Node::Ptr Node::IRep::GetChildElementByID (const String& id) const
+Element::Ptr Element::IRep::GetChildElementByID (const String& id) const
 {
     for (Node::Ptr c : this->GetChildren ()) {
         static const String kID_ = "id"s;
@@ -67,7 +67,7 @@ Node::Ptr Node::IRep::GetChildElementByID (const String& id) const
             }
         }
     }
-    return nullptr;
+    return Element::Ptr{nullptr};
 }
 
 /*
@@ -84,7 +84,7 @@ String Node::Ptr::ToString () const
 
 auto Element::Ptr::GetChild (const NameWithNamespace& eltName) const -> Ptr
 {
-    for (Element::Ptr c : GetChildren ()) {
+    for (Element::Ptr c : GetChildElements ()) {
         if (c.GetName () == eltName) {
             return c;
         }

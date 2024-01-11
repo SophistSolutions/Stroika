@@ -49,7 +49,7 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
 
     /**
      */
-    struct ILibXML2NodeRep : DOM::Node::IRep {
+    struct ILibXML2NodeRep : virtual DOM::Node::IRep {
         virtual xmlNode* GetInternalTRep () = 0;
     };
 

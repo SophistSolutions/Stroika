@@ -654,7 +654,7 @@ namespace {
         return node->getTextContent ();
     }
 
-    Node::Ptr WrapImpl_ (DOMNode* n);
+    Node::Ptr WrapXercesNodeInStroikaNode_ (DOMNode* n);
 }
 
 namespace {
@@ -689,7 +689,7 @@ namespace {
         }
         virtual Node::Ptr Current () const override
         {
-            return WrapImpl_ (fCurNode_);
+            return WrapXercesNodeInStroikaNode_ (fCurNode_);
         }
         virtual size_t GetLength () const override
         {
@@ -714,9 +714,8 @@ namespace {
 }
 
 namespace {
-    class XercesNodeRep_ : public IXercesNodeRep, Memory::UseBlockAllocationIfAppropriate<XercesNodeRep_> {
-    public:
-        XercesNodeRep_ (DOMNode* n)
+    struct NodeRep_ : IXercesNodeRep, Memory::UseBlockAllocationIfAppropriate<NodeRep_> {
+        NodeRep_ (DOMNode* n)
             : fNode_{n}
         {
             RequireNotNull (n);
@@ -725,7 +724,7 @@ namespace {
         {
             RequireNotNull (fNode_);
             RequireNotNull (rhs);
-            return fNode_ == Debug::UncheckedDynamicCast<const XercesNodeRep_*> (rhs)->fNode_;
+            return fNode_ == dynamic_cast<const NodeRep_*> (rhs)->fNode_;
         }
         virtual Node::Type GetNodeType () const override
         {
@@ -793,6 +792,71 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
+        virtual void DeleteNode () override
+        {
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                DOMNode* selNode = fNode_;
+                ThrowIfNull (selNode);
+                DOMNode* parentNode = selNode->getParentNode ();
+                if (parentNode == nullptr) {
+                    // This happens if the selected node is an attribute
+                    if (fNode_ != nullptr) {
+                        const XMLCh* ln = selNode->getNodeName ();
+                        AssertNotNull (ln);
+                        DOMElement* de = dynamic_cast<DOMElement*> (fNode_);
+                        de->removeAttribute (ln);
+                    }
+                }
+                else {
+                    (void)parentNode->removeChild (selNode);
+                }
+            }
+            END_LIB_EXCEPTION_MAPPER_
+        }
+        virtual Node::Ptr GetParentNode () const override
+        {
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                auto p = fNode_->getParentNode ();
+                return p == nullptr ? nullptr : WrapXercesNodeInStroikaNode_ (p);
+            }
+            END_LIB_EXCEPTION_MAPPER_
+        }
+        virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
+        {
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                DoWrite2Stream_ (fNode_, to, options);
+            }
+            END_LIB_EXCEPTION_MAPPER_
+        }
+        virtual xercesc_3_2::DOMNode* GetInternalTRep () override
+        {
+            return fNode_;
+        }
+        // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
+        DOMNode* fNode_;
+    };
+}
+
+namespace {
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
+    struct ElementRep_ : Element::IRep, Memory::InheritAndUseBlockAllocationIfAppropriate<ElementRep_, NodeRep_> {
+        using inherited = Memory::InheritAndUseBlockAllocationIfAppropriate<ElementRep_, NodeRep_>;
+        ElementRep_ (DOMNode* n)
+            : inherited{n}
+        {
+            RequireNotNull (n);
+            Require (n->getNodeType () == DOMNode::ELEMENT_NODE);
+        }
+        virtual Node::Type GetNodeType () const override
+        {
+            AssertNotNull (fNode_);
+            Assert (fNode_->getNodeType () == DOMNode::ELEMENT_NODE);
+            return Node::eElementNT;
+        }
         virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const override
         {
             AssertNotNull (fNode_);
@@ -848,7 +912,7 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Node::Ptr InsertElement (const NameWithNamespace& eltName, const Node::Ptr& afterNode) override
+        virtual Element::Ptr InsertElement (const NameWithNamespace& eltName, const Element::Ptr& afterNode) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (eltName.fName));
@@ -868,15 +932,15 @@ namespace {
                     refChildNode = fNode_->getFirstChild ();
                 }
                 else {
-                    refChildNode = Debug::UncheckedDynamicCast<XercesNodeRep_&> (*afterNode.GetRep ()).GetInternalTRep ()->getNextSibling ();
+                    refChildNode = dynamic_cast<NodeRep_&> (*afterNode.GetRep ()).GetInternalTRep ()->getNextSibling ();
                 }
                 DOMNode* childx = fNode_->insertBefore (child, refChildNode);
                 ThrowIfNull (childx);
-                return WrapImpl_ (childx);
+                return WrapXercesNodeInStroikaNode_ (childx);
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual Node::Ptr AppendElement (const NameWithNamespace& eltName) override
+        virtual Element::Ptr AppendElement (const NameWithNamespace& eltName) override
         {
 #if qDebug
             Require (ValidNewNodeName_ (eltName.fName));
@@ -895,39 +959,7 @@ namespace {
                 }
                 DOMNode* childx = fNode_->appendChild (child);
                 ThrowIfNull (childx);
-                return WrapImpl_ (childx);
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
-        virtual void DeleteNode () override
-        {
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                DOMNode* selNode = fNode_;
-                ThrowIfNull (selNode);
-                DOMNode* parentNode = selNode->getParentNode ();
-                if (parentNode == nullptr) {
-                    // This happens if the selected node is an attribute
-                    if (fNode_ != nullptr) {
-                        const XMLCh* ln = selNode->getNodeName ();
-                        AssertNotNull (ln);
-                        DOMElement* de = dynamic_cast<DOMElement*> (fNode_);
-                        de->removeAttribute (ln);
-                    }
-                }
-                else {
-                    (void)parentNode->removeChild (selNode);
-                }
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
-        virtual Node::Ptr GetParentNode () const override
-        {
-            AssertNotNull (fNode_);
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                auto p = fNode_->getParentNode ();
-                return p == nullptr ? nullptr : WrapImpl_ (p);
+                return WrapXercesNodeInStroikaNode_ (childx);
             }
             END_LIB_EXCEPTION_MAPPER_
         }
@@ -945,14 +977,6 @@ namespace {
                         ++sni;
                         return r;
                     });
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
-        virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
-        {
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                DoWrite2Stream_ (fNode_, to, options);
             }
             END_LIB_EXCEPTION_MAPPER_
         }
@@ -987,7 +1011,7 @@ namespace {
                     case DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE:
                     case DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE:
                     case DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE:
-                        return XPath::Result{Node::Ptr{WrapImpl_ (r->getNodeValue ())}};
+                        return XPath::Result{Node::Ptr{WrapXercesNodeInStroikaNode_ (r->getNodeValue ())}};
                     default:
                         AssertNotImplemented ();
                 }
@@ -999,7 +1023,7 @@ namespace {
         {
             return Traversal::Iterator<XPath::Result>{};
         }
-        virtual Node::Ptr GetChildElementByID (const String& id) const override
+        virtual Element::Ptr GetChildElementByID (const String& id) const override
         {
             AssertNotNull (fNode_);
             START_LIB_EXCEPTION_MAPPER_
@@ -1011,23 +1035,16 @@ namespace {
                         const XMLCh* s   = elt->getAttribute (u"id");
                         AssertNotNull (s);
                         if (CString::Equals (s, id.As<u16string> ().c_str ())) {
-                            return WrapImpl_ (i);
+                            return WrapXercesNodeInStroikaNode_ (i);
                         }
                     }
                 }
-                return nullptr;
+                return Element::Ptr{nullptr};
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual xercesc_3_2::DOMNode* GetInternalTRep () override
-        {
-            return fNode_;
-        }
-
-    private:
-        // must carefully think out mem managment here - cuz not ref counted - around as long as owning doc...
-        DOMNode* fNode_;
     };
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 }
 
 namespace {
@@ -1177,17 +1194,6 @@ namespace {
             --sLiveCnt;
 #endif
         }
-        virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
-        {
-            TraceContextBumper                             ctx{"Xerces::DocRep_::Write"};
-            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-            AssertNotNull (fXMLDoc);
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                DoWrite2Stream_ (fXMLDoc.get (), to, options);
-            }
-            END_LIB_EXCEPTION_MAPPER_
-        }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -1202,6 +1208,17 @@ namespace {
                     ++sni;
                     return r;
                 });
+            END_LIB_EXCEPTION_MAPPER_
+        }
+        virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
+        {
+            TraceContextBumper                             ctx{"Xerces::DocRep_::Write"};
+            AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            AssertNotNull (fXMLDoc);
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                DoWrite2Stream_ (fXMLDoc.get (), to, options);
+            }
             END_LIB_EXCEPTION_MAPPER_
         }
         virtual void Validate (const Schema::Ptr& schema) const override
@@ -1300,11 +1317,10 @@ namespace {
 }
 
 namespace {
-
-    Node::Ptr WrapImpl_ (DOMNode* n)
+    Node::Ptr WrapXercesNodeInStroikaNode_ (DOMNode* n)
     {
         RequireNotNull (n);
-        return Node::Ptr{make_shared<XercesNodeRep_> (n)};
+        return Node::Ptr{make_shared<NodeRep_> (n)};
     }
 }
 

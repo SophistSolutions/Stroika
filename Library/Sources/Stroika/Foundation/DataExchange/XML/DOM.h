@@ -38,7 +38,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     };
 
     namespace Node {
-        class IRep;
+        struct IRep;
         class Ptr;
     }
 
@@ -180,6 +180,36 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  \req GetNodeType == eAttributeNT or eElementNT
+             */
+            nonvirtual NameWithNamespace GetName () const;
+
+        public:
+            /**
+             *  \req GetNodeType == eAttributeNT or eElementNT
+             */
+            nonvirtual void SetName (const NameWithNamespace& name);
+
+        public:
+            /**
+             *  This is the value between the brackets <a>text</a>. Note that <a></a> is the same as <a/> - the empty string.
+             * 
+             *      \note before Stroika v3.0d5, the value API was VariantValue but that was always meaningless, and just treated as a String.
+             *
+             *      \note the 'String' value maybe implemented in XML in a variety of ways (entities, CDATA, etc).
+             *
+             *  \req GetNodeType == eAttributeNT or eElementNT
+             */
+            nonvirtual String GetValue () const;
+
+        public:
+            /**
+             *  \req GetNodeType == eAttributeNT or eElementNT
+             */
+            nonvirtual void SetValue (const String& v);
+
+        public:
+            /**
              *  \req *this != nullptr
              *  \ens *this == nullptr
              */
@@ -193,12 +223,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             *  \warning Any modification of the DOM may invalidate live iterators or iterables, so refecth after each change
-             */
-            nonvirtual Iterable<Ptr> GetChildren () const;
-
-        public:
-            /**
              */
             nonvirtual shared_ptr<IRep> GetRep () const;
 
@@ -209,55 +233,36 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         private:
             shared_ptr<IRep> fRep_;
-
-        private:
-            friend class IRep;
         };
 
         /**
-         *  Consider breaking IRep into Node::IRep and Element::IRep (sucblass) - 3/4 of this only makes sense for elements!
+         *  DOM Nodes are typically 'elements', but can also be 'text' nodes, or comments, or attributes, etc...
          */
-        class IRep {
-        public:
+        struct IRep {
             IRep ()          = default;
             virtual ~IRep () = default;
 
-        public:
             virtual bool Equals (const IRep* rhs) const = 0;
             virtual Type GetNodeType () const           = 0;
-            // only allowed on element/attribute
+            // GetName () only allowed on element/attribute
             virtual NameWithNamespace GetName () const = 0;
-            // only allowed on element/attribute
+            // SetName () only allowed on element/attribute
             virtual void SetName (const NameWithNamespace& name) = 0;
-            // only allowed on element/attribute
+            // GetValue () only allowed on element/attribute
             virtual String GetValue () const = 0;
-            // only allowed on element/attribute
-            virtual void SetValue (const String& v) = 0;
-            // only allowed on element
-            virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const = 0;
-            // only allowed on element
-            virtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v) = 0;
-            /**
-             *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
-             */
-            // only allowed on element
-            virtual Ptr InsertElement (const NameWithNamespace& eltName, const Ptr& afterNode) = 0;
-            // only allowed on element
-            virtual Ptr           AppendElement (const NameWithNamespace& eltName)                                              = 0;
-            virtual void          DeleteNode ()                                                                                 = 0;
-            virtual Ptr           GetParentNode () const                                                                        = 0;
-            virtual Iterable<Ptr> GetChildren () const                                                                          = 0;
-            virtual void          Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
-            // Redundant API, but provided since commonly used and can be optimized
-            virtual Ptr GetChildElementByID (const String& id) const;
-            virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) = 0; /// maybe lose this and do LookupOne/LookupAll etc in Ptr wrapper?
-            virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) = 0;
+            // SetValue () only allowed on element/attribute
+            virtual void SetValue (const String& v)                                                                    = 0;
+            virtual void DeleteNode ()                                                                                 = 0;
+            virtual Ptr  GetParentNode () const                                                                        = 0;
+            virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
         };
     }
 
     namespace Element {
 
         using namespace Node;
+
+        struct IRep;
 
         /**
          *  Simple wrapper on Node::Ptr API, but with the Ptr objects refer to Elements.
@@ -273,31 +278,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              */
             Ptr (const Node::Ptr& p = nullptr);
-
-        public:
-            /**
-             */
-            nonvirtual NameWithNamespace GetName () const;
-
-        public:
-            /**
-             */
-            nonvirtual void SetName (const NameWithNamespace& name);
-
-        public:
-            /**
-             *  This is the value between the brackets <a>text</a>. Note that <a></a> is the same as <a/> - the empty string.
-             * 
-             *      \note before Stroika v3.0d5, the value API was VariantValue but that was always meaningless, and just treated as a String.
-             *
-             *      \note the 'String' value maybe implemented in XML in a variety of ways (entities, CDATA, etc).
-             */
-            nonvirtual String GetValue () const;
-
-        public:
-            /**
-             */
-            nonvirtual void SetValue (const String& v);
 
         public:
             /**
@@ -353,7 +333,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  Note - this CAN be used to replace the document root.
              */
-            nonvirtual Ptr ReplaceElement ();
+            nonvirtual Ptr Replace ();
 
         public:
             /**
@@ -367,7 +347,15 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *
              *  \warning Any modification of the DOM may invalidate live iterators or iterables, so refecth after each change
              */
-            nonvirtual Iterable<Ptr> GetChildren () const;
+            nonvirtual Iterable<Node::Ptr> GetChildNodes () const;
+
+        public:
+            /**
+             *  note only returns sub-elements, so use Node::Ptr (inherited) GetChildren to get them all
+             *
+             *  \warning Any modification of the DOM may invalidate live iterators or iterables, so refecth after each change
+             */
+            nonvirtual Iterable<Ptr> GetChildElements () const;
 
         public:
             /**
@@ -386,7 +374,31 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             nonvirtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) const;
+
+        public:
+            /**
+             */
+            nonvirtual shared_ptr<IRep> GetRep () const;
         };
+
+        /**
+         *  Elements are special nodes, that may contain sub-nodes.
+         */
+        struct IRep : virtual Node::IRep {
+            virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const                      = 0;
+            virtual void             SetAttribute (const NameWithNamespace& attrName, const optional<String>& v) = 0;
+            /**
+             *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'GetChildren()'
+             */
+            virtual Ptr                 InsertElement (const NameWithNamespace& eltName, const Ptr& afterNode) = 0;
+            virtual Ptr                 AppendElement (const NameWithNamespace& eltName)                       = 0;
+            virtual Iterable<Node::Ptr> GetChildren () const                                                   = 0;
+            // Redundant API, but provided since commonly used and can be optimized
+            virtual Ptr GetChildElementByID (const String& id) const;
+            virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) = 0; /// maybe lose this and do LookupOne/LookupAll etc in Ptr wrapper?
+            virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) = 0;
+        };
+
     }
 
     namespace Document {
