@@ -12,7 +12,7 @@ endif
 # have to be built before the samples etc...
 .NOTPARALLEL:
 
-.PHONY:	tests documentation all check clobber libraries apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
+.PHONY:	tests documentation all check distclean clobber libraries apply-configuration-if-needed_ check-prerequisite-tools apply-configurations apply-configuration
 
 
 SHELL=/bin/bash
@@ -47,6 +47,7 @@ help:
 	@$(ECHO) "    check:                       -    Checks everything was built properly"
 	@$(ECHO) "    clean:"
 	@$(ECHO) "    clobber:"
+	@$(ECHO) "    distclean:"
 	@$(ECHO) "    reconfigure:                 -    Rebuild configuration files from the command-lines that built them before"
 	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
 	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
@@ -120,6 +121,13 @@ else
 	@$(MAKE) --directory Samples --no-print-directory check MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
+distclean:
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika $(call FUNCTION_CAPITALIZE_WORD,$@):"
+ifneq ($(CONFIGURATION),)
+	$(error "make distclean applies to all configurations - and deletes all configurations")
+endif
+	@rm -rf Builds/ ConfigurationFiles/ IntermediateFiles/
+	@$(MAKE) --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 clean clobber:
 ifeq ($(CONFIGURATION),)
