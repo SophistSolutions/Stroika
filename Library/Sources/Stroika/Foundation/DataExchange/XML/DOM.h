@@ -243,8 +243,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             IRep ()          = default;
             virtual ~IRep () = default;
 
-            virtual bool Equals (const IRep* rhs) const = 0;
-            virtual Type GetNodeType () const           = 0;
+            virtual const Providers::IDOMProvider* GetProvider () const           = 0;
+            virtual bool                           Equals (const IRep* rhs) const = 0;
+            virtual Type                           GetNodeType () const           = 0;
             // GetName () only allowed on element/attribute
             virtual NameWithNamespace GetName () const = 0;
             // SetName () only allowed on element/attribute
@@ -505,7 +506,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         /**
          */
         struct IRep {
-            virtual ~IRep () = default;
+            virtual ~IRep ()                                            = default;
+            virtual const Providers::IDOMProvider* GetProvider () const = 0;
             virtual void                Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             virtual Iterable<Node::Ptr> GetChildren () const                                                                          = 0;
             virtual void                Validate (const Schema::Ptr& schema) const                                                    = 0;

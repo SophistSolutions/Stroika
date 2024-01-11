@@ -194,6 +194,10 @@ namespace {
         {
             RequireNotNull (n);
         }
+        virtual const Providers::IDOMProvider* GetProvider () const override
+        {
+            return &Providers::LibXML2::kDefaultProvider;
+        }
         virtual bool Equals (const IRep* rhs) const override
         {
             RequireNotNull (fNode_);
@@ -487,6 +491,10 @@ namespace {
             Assert (sLiveCnt > 0);
             --sLiveCnt;
 #endif
+        }
+        virtual const Providers::IDOMProvider* GetProvider () const override
+        {
+            return &Providers::LibXML2::kDefaultProvider;
         }
         virtual xmlDoc* GetLibXMLDocRep () override
         {
