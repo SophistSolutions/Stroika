@@ -277,7 +277,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              */
-            Ptr (const Node::Ptr& p = nullptr);
+            Ptr (nullptr_t);
+            Ptr (const Node::Ptr& p);
+            Ptr (const shared_ptr<IRep>& p);
 
         public:
             /**
@@ -402,6 +404,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
 
     namespace Document {
+
         struct IRep;
 
         /**
@@ -505,6 +508,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual Iterable<Node::Ptr> GetChildren () const                                                                          = 0;
             virtual void                Validate (const Schema::Ptr& schema) const                                                    = 0;
         };
+
     }
 
 }

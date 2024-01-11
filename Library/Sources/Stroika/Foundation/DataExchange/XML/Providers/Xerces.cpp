@@ -654,7 +654,8 @@ namespace {
         return node->getTextContent ();
     }
 
-    Node::Ptr WrapXercesNodeInStroikaNode_ (DOMNode* n);
+    Node::Ptr    WrapXercesNodeInStroikaNode_ (DOMNode* n);
+    Element::Ptr WrapXercesNodeInStroikaNode_ (DOMElement* n);
 }
 
 namespace {
@@ -1070,7 +1071,7 @@ namespace {
         {
             shared_ptr<IXercesSchemaRep> accessSchema = dynamic_pointer_cast<IXercesSchemaRep> (schema.GetRep ());
             if (accessSchema != nullptr) {
-                fParser = make_shared<XercesDOMParser> (nullptr, XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ());
+                fParser = Memory::MakeSharedPtr<XercesDOMParser> (nullptr, XMLPlatformUtils::fgMemoryManager, accessSchema->GetCachedGrammarPool ());
                 fParser->cacheGrammarFromParse (false);
                 fParser->useCachedGrammarInParse (true);
                 fParser->setDoSchema (true);
@@ -1079,7 +1080,7 @@ namespace {
                 fParser->setIdentityConstraintChecking (true);
             }
             else {
-                fParser = make_shared<XercesDOMParser> ();
+                fParser = Memory::MakeSharedPtr<XercesDOMParser> ();
             }
             fParser->setDoNamespaces (true);
             fParser->setErrorHandler (&myErrReporter);
@@ -1320,7 +1321,17 @@ namespace {
     Node::Ptr WrapXercesNodeInStroikaNode_ (DOMNode* n)
     {
         RequireNotNull (n);
-        return Node::Ptr{make_shared<NodeRep_> (n)};
+        if (n->getNodeType () == DOMNode::ELEMENT_NODE) {
+            return Node::Ptr{Memory::MakeSharedPtr<ElementRep_> (n)};
+        }
+        else {
+            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (n)};
+        }
+    }
+    Element::Ptr WrapXercesNodeInStroikaNode_ (DOMElement* n)
+    {
+        RequireNotNull (n);
+        return Element::Ptr{Memory::MakeSharedPtr<ElementRep_> (n)};
     }
 }
 
@@ -1400,18 +1411,18 @@ Providers::Xerces::Provider::~Provider ()
 
 shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const BLOB& schemaData, const Resource::ResolverPtr& resolver) const
 {
-    return make_shared<SchemaRep_> (schemaData, resolver);
+    return Memory::MakeSharedPtr<SchemaRep_> (schemaData, resolver);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const
 {
-    return make_shared<DocRep_> (documentElementName);
+    return Memory::MakeSharedPtr<DocRep_> (documentElementName);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                               const Schema::Ptr& schemaToValidateAgainstWhileReading) const
 {
-    return make_shared<DocRep_> (in, schemaToValidateAgainstWhileReading);
+    return Memory::MakeSharedPtr<DocRep_> (in, schemaToValidateAgainstWhileReading);
 }
 
 void Providers::Xerces::Provider::SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,

@@ -103,23 +103,30 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
      ************************* XML::DOM::Element::Ptr *******************************
      ********************************************************************************
      */
+    inline Element::Ptr::Ptr (nullptr_t)
+        : Node::Ptr{nullptr}
+    {
+    }
     inline Element::Ptr::Ptr (const Node::Ptr& p)
         : Node::Ptr{p != nullptr and p.GetNodeType () == Node::eElementNT ? p : nullptr}
     {
+        Require (GetRep () == nullptr or GetNodeType () == eElementNT);
+    }
+    inline Element::Ptr::Ptr (const shared_ptr<IRep>& rep)
+        : Node::Ptr{rep}
+    {
+        Require (GetRep () == nullptr or GetNodeType () == eElementNT);
     }
     inline optional<String> Element::Ptr::GetAttribute (const NameWithNamespace& attrName) const
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         return GetRep ()->GetAttribute (attrName);
     }
     inline bool Element::Ptr::HasAttribute (const NameWithNamespace& attrName) const
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         return GetRep ()->GetAttribute (attrName) != nullopt;
     }
     inline bool Element::Ptr::HasAttribute (const NameWithNamespace& attrName, const String& value) const
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         if (auto o = GetRep ()->GetAttribute (attrName)) {
             return *o == value;
         }
@@ -127,29 +134,24 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
     inline void Element::Ptr::SetAttribute (const NameWithNamespace& attrName, const optional<String>& v)
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         GetRep ()->SetAttribute (attrName, v);
     }
     inline auto Element::Ptr::Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode) -> Ptr
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         return GetRep ()->InsertElement (eltName, afterNode);
     }
     inline Element::Ptr Element::Ptr::Append (const NameWithNamespace& eltName)
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         return GetRep ()->AppendElement (eltName);
     }
     inline Element::Ptr Element::Ptr::Append (const NameWithNamespace& eltName, const String& v)
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         auto r = Append (eltName);
         r.SetValue (v);
         return r;
     }
     inline Element::Ptr Element::Ptr::AppendIfNotEmpty (const NameWithNamespace& eltName, const optional<String>& v)
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         if (v) {
             auto r = Append (eltName);
             r.SetValue (*v);
@@ -159,7 +161,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
     inline Element::Ptr Element::Ptr::Replace ()
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         /**
          *  Disallow replacing the root element - create a new document instead. (@todo fix a nd allow docRoot)
          * 
@@ -188,7 +189,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
     inline Element::Ptr Element::Ptr::GetParent () const
     {
-        Require (GetNodeType () == eElementNT); // cheaters never prosper
         return Element::Ptr{GetRep ()->GetParentNode ()};
     }
     inline auto Element::Ptr::GetChildNodes () const -> Iterable<Node::Ptr>

@@ -271,7 +271,7 @@ namespace {
             if (fNode_->parent == nullptr) {
                 return Node::Ptr{nullptr};
             }
-            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (fNode_->parent)};
+            return WrapLibXML2NodeInStroikaNode_ (fNode_->parent);
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
@@ -378,7 +378,7 @@ namespace {
             else {
                 xmlAddNextSibling (afterNodeRep->fNode_, newNode);
             }
-            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
+            return WrapLibXML2NodeInStroikaNode_ (newNode);
         }
         virtual Element::Ptr AppendElement (const NameWithNamespace& eltName) override
         {
@@ -389,7 +389,7 @@ namespace {
             xmlNs*   useNS   = eltName.fNamespace ? genNS2Use_ (fNode_, *eltName.fNamespace) : fNode_->ns;
             xmlNode* newNode = xmlNewNode (useNS, BAD_CAST eltName.fName.AsUTF8 ().c_str ());
             xmlAddChild (fNode_, newNode);
-            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (newNode)};
+            return WrapLibXML2NodeInStroikaNode_ (newNode);
         }
         virtual Iterable<Node::Ptr> GetChildren () const override
         {
@@ -400,7 +400,7 @@ namespace {
                 if (curChild == nullptr) {
                     return optional<Node::Ptr>{};
                 }
-                Node::Ptr r = Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (curChild)};
+                Node::Ptr r = WrapLibXML2NodeInStroikaNode_ (curChild);
                 curChild    = curChild->next;
                 return r;
             });
@@ -421,7 +421,12 @@ namespace {
     Node::Ptr WrapLibXML2NodeInStroikaNode_ (xmlNode* n)
     {
         RequireNotNull (n);
-        return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (n)};
+        if (n->type == XML_ELEMENT_NODE) {
+            return Node::Ptr{Memory::MakeSharedPtr<ElementRep_> (n)};
+        }
+        else {
+            return Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (n)};
+        }
     }
 }
 
@@ -504,7 +509,7 @@ namespace {
                 if (curChild == nullptr) {
                     return optional<Node::Ptr>{};
                 }
-                Node::Ptr r = Node::Ptr{Memory::MakeSharedPtr<NodeRep_> (curChild)};
+                Node::Ptr r = WrapLibXML2NodeInStroikaNode_ (curChild);
                 curChild    = curChild->next;
                 return r;
             });
@@ -603,18 +608,18 @@ Providers::LibXML2::Provider::~Provider ()
 
 shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const BLOB& schemaData, const Resource::ResolverPtr& resolver) const
 {
-    return make_shared<SchemaRep_> (schemaData, resolver);
+    return Memory::MakeSharedPtr<SchemaRep_> (schemaData, resolver);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const
 {
-    return make_shared<DocRep_> (documentElementName);
+    return Memory::MakeSharedPtr<DocRep_> (documentElementName);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                                const Schema::Ptr& schemaToValidateAgainstWhileReading) const
 {
-    auto r = make_shared<DocRep_> (in);
+    auto r = Memory::MakeSharedPtr<DocRep_> (in);
     if (schemaToValidateAgainstWhileReading != nullptr) {
         r->Validate (schemaToValidateAgainstWhileReading);
     }
