@@ -1,0 +1,22 @@
+diff -r -c ORIGs/src/xercesc/util/XMLString.hpp CURRENT/src/xercesc/util/XMLString.hpp
+*** ORIGs/src/xercesc/util/XMLString.hpp	2024-01-11 09:48:20.782608633 -0500
+--- CURRENT/src/xercesc/util/XMLString.hpp	2024-01-11 09:50:53.944963486 -0500
+***************
+*** 1454,1460 ****
+                                  , const XMLCh* const srcStr
+                                  , const XMLSize_t    count)
+  {
+!     memmove(targetStr, srcStr, count * sizeof(XMLCh));
+  }
+  
+  inline XMLSize_t XMLString::stringLen(const XMLCh* const src)
+--- 1454,1462 ----
+                                  , const XMLCh* const srcStr
+                                  , const XMLSize_t    count)
+  {
+!     if (count != 0) {
+!       memmove(targetStr, srcStr, count * sizeof(XMLCh));
+!     }
+  }
+  
+  inline XMLSize_t XMLString::stringLen(const XMLCh* const src)
