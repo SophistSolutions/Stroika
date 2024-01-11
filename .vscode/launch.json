@@ -8,14 +8,15 @@
       "name": "(gdb-UNIX) Launch EXE",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test36",
+      "program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Tests/Test34",
       //"program": "${workspaceFolder}/Builds/${command:cpptools.activeConfigName}/Samples-SystemPerformanceClient/SystemPerformanceClient",
       "args": ["-m"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
       "environment": [
+        // Looks good but doesn't appear to work - 
         {"name": "UBSAN_OPTIONS","value":"halt_on_error=1"},
-        {"name": "ASAN_OPTIONS","value":"halt_on_error=1"},
+        {"name": "ASAN_OPTIONS","value":"abort_on_error=1"},
        ],
       "externalConsole": false,
       "MIMode": "gdb",
@@ -23,6 +24,12 @@
         {
           "description": "Enable pretty-printing for gdb",
           "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          // attempt, but not quite right...
+          "description": "break on ubsan failures",
+          "text": "-break __ubsan::ScopedReport::~ScopedReport",
           "ignoreFailures": true
         }
       ],
@@ -52,6 +59,7 @@
         "moduleLoad": false,
         "trace": true
       },
+      // @todo figugre out how to get array workign with visualizerFile (maybe need newer vscode) - so can include .natvis for frameworks
       "visualizerFile": "${workspaceFolder}/Library/Projects/VisualStudio.Net-2022/VisualStudio-Stroika-Foundation-Debugger-Template.natvis"
     },
     {
