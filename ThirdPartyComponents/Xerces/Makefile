@@ -88,7 +88,11 @@ endif
 endif
 
 ifneq ($(CONFIGURATION),)
-CMAKE_CURRENT_SOURCE_DIR:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
+# Used to use
+#		CMAKE_CURRENT_SOURCE_DIR:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
+#		which allows changes per platofrm, but goes away on make clean (so debugger doesnt see sources)
+#		Using CURRENT folder maybe better
+CMAKE_CURRENT_SOURCE_DIR:=${StroikaRoot}/ThirdPartyComponents/Xerces/CURRENT/
 CMAKE_CURRENT_SOURCE_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_CURRENT_SOURCE_DIR) )
 CMAKE_CURRENT_SOURCE_DIR:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(CMAKE_CURRENT_SOURCE_DIR))
 endif
@@ -122,10 +126,8 @@ else
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PRODUCED_OUTPUT_ARTIFACTS)
-ifneq ($(QUICK_BUILD), 1)
 	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CURRENT
-endif
+	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))  check
 endif
 
@@ -137,7 +139,6 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 	@$(MAKE) --no-print-directory doBuilds_
 
 
@@ -175,7 +176,7 @@ $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
 
-ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
+ORIGs CURRENT:	$(ZIPPEDFILE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "Xerces ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
