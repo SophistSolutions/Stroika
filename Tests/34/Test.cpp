@@ -1489,16 +1489,18 @@ namespace {
             DOM::Element::Ptr  personelElt = d.GetRootElement ();
             EXPECT_EQ (personelElt.GetName ().fNamespace, nullopt);
             EXPECT_EQ (personelElt.GetName ().fName, "personnel");
-            EXPECT_EQ (personelElt.GetChildren ().size (), 6u);
-            personelElt.GetChildren ().Apply ([] (DOM::Element::Ptr p) {
+            EXPECT_EQ (personelElt.GetChildElements ().size (), 6u);
+            personelElt.GetChildElements ().Apply ([] (DOM::Element::Ptr p) {
                 EXPECT_EQ (p.GetName ().fNamespace, nullopt);
                 EXPECT_EQ (p.GetName ().fName, "person");
                 String id                   = Memory::ValueOf (p.GetAttribute ("id"));
                 String testCanSerializeElts = Characters::ToString (p);
                 //DbgTrace (L"o=%s", Characters::ToString (p).c_str ());
             });
-            DOM::Element::Ptr{*personelElt.GetChildren ().Find ([] (DOM::Element::Ptr p) { return p.HasAttribute ("id", "three.worker"); })}.DeleteNode ();
-            EXPECT_EQ (personelElt.GetChildren ().size (), 5u);
+            DOM::Element::Ptr{*personelElt.GetChildElements ().Find ([] (DOM::Element::Ptr p) {
+                return p.HasAttribute ("id", "three.worker");
+            })}.Delete ();
+            EXPECT_EQ (personelElt.GetChildElements ().size (), 5u);
             {
                 // This should throw, but doesn't on libxml - less quality validation --LGP 2024-01-08
                 try {
@@ -1513,7 +1515,7 @@ namespace {
                 EXPECT_NO_THROW (d.Validate (schema));
                 DbgTrace (L"bigBoss=%s", Characters::ToString (bigBoss).c_str ());
             }
-            personelElt.GetChildren ().Apply ([] (DOM::Element::Ptr p) {
+            personelElt.GetChildElements ().Apply ([] (DOM::Element::Ptr p) {
                 EXPECT_EQ (p.GetName ().fNamespace, nullopt);
                 EXPECT_EQ (p.GetName ().fName, "person");
             });
@@ -1538,7 +1540,7 @@ namespace {
                 DbgTrace (L"o=%s", Characters::ToString (person2Add).c_str ());
             }
             EXPECT_NO_THROW (d.Validate (schema));
-            EXPECT_EQ (personelElt.GetChildren ().size (), 6u);
+            EXPECT_EQ (personelElt.GetChildElements ().size (), 6u);
         });
 
         // Namespace's content test
@@ -1558,14 +1560,14 @@ namespace {
 
             // grab 'concepts' Node, and try removing from it (and recheck validation) and then try adding to it and recheck validation
             DOM::Element::Ptr conceptsElt = refContentDataElt.GetChild (NameWithNamespace{kNS_, "Concepts"});
-            EXPECT_EQ (conceptsElt.GetChildren ().size (), 459u);
+            EXPECT_EQ (conceptsElt.GetChildElements ().size (), 459u);
 
             {
-                DOM::Element::Ptr c = conceptsElt.GetChildren ().FirstValue (); // delete a fairly random concept (not in xml file order)
+                DOM::Element::Ptr c = conceptsElt.GetChildElements ().FirstValue (); // delete a fairly random concept (not in xml file order)
                 //DbgTrace (L"deleting %s", Characters::ToString (c).c_str ());
-                c.DeleteNode ();
+                c.Delete ();
             }
-            EXPECT_EQ (conceptsElt.GetChildren ().size (), 458u);
+            EXPECT_EQ (conceptsElt.GetChildElements ().size (), 458u);
             EXPECT_NO_THROW (d.Validate (schema));
 
             // add an element
@@ -1605,7 +1607,7 @@ namespace {
                 String testCanSerializeElts = Characters::ToString (concept2Add);
                 //DbgTrace (L"o=%s", Characters::ToString (concept2Add).c_str ());
             }
-            EXPECT_EQ (conceptsElt.GetChildren ().size (), 459u);
+            EXPECT_EQ (conceptsElt.GetChildElements ().size (), 459u);
             EXPECT_NO_THROW (d.Validate (schema));
             //d.Write (IO::FileSystem::FileOutputStream::New (IO::FileSystem::ToPath (Characters::Format (L"c:/temp/foo%d.xml", ++i))));
         });

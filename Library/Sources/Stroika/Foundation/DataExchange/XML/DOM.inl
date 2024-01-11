@@ -82,7 +82,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         Require (GetNodeType () == eAttributeNT or GetNodeType () == eElementNT);
         return GetRep ()->SetValue (v);
     }
-    inline void Node::Ptr::DeleteNode ()
+    inline void Node::Ptr::Delete ()
     {
         RequireNotNull (fRep_);
         fRep_->DeleteNode ();
@@ -175,13 +175,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         Element::Ptr newNode{nullptr};
         if (parent == nullptr) {
             auto n = this->GetName ();
-            this->DeleteNode ();
+            this->Delete ();
             // technically 'Append' is not right and we really should grab the 'next sibling' and insert before it...but that seems unlikely to matter --LGP 2024-01-06
             newNode = parent.Append (n);
         }
         else {
             newNode = parent.Insert (this->GetName (), *this); // @todo clone NS as well!!!
-            this->DeleteNode ();
+            this->Delete ();
         }
         Ensure (newNode.GetParent () == parent);
         *this = newNode;
