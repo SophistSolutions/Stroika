@@ -145,6 +145,11 @@ namespace Stroika::Foundation::Memory {
      * 
      *  @todo - somewhat confusing implmentation - not sure why cannot be simpler?? -- LGP 2023-12-25
      * // couldn't get concepots working for this - on g++
+     * 
+
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.cpp(1048): error C2385: ambiguous access of 'delete'
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.cpp(1048): note: could be the 'delete' in base 'Stroika::Foundation::Memory::BlockAllocationUseHelper<`anonymous namespace'::NodeRep_>'
+1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.cpp(1048): note: or could be the 'delete' in base 'Stroika:
      */
     template <typename DERIVED, typename BASE_REP, bool andTrueCheck = true>
     struct InheritAndUseBlockAllocationIfAppropriate : BASE_REP {
