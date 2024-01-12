@@ -989,7 +989,7 @@ namespace {
         {
             START_LIB_EXCEPTION_MAPPER_
             {
-                xercesc_3_2::DOMDocument*        doc = fNode_->getOwnerDocument ();
+                xercesc_3_2::DOMDocument* doc = fNode_->getOwnerDocument ();
                 /*
                  *  Note (possible optimization) - the combination of doc and e.fNamespaces could be used as a KEY to CACHE the resolver/expr objects
                  */
@@ -1031,6 +1031,7 @@ namespace {
         }
         virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) override
         {
+            AssertNotImplemented ();
             return Traversal::Iterator<XPath::Result>{};
         }
         virtual Element::Ptr GetChildElementByID (const String& id) const override
