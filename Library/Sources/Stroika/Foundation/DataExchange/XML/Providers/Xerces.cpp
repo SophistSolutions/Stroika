@@ -1032,8 +1032,10 @@ namespace {
                     case DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE:
                     case DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE:
                     case DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE:
-                    case DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE:
-                        return XPath::Result{Node::Ptr{WrapXercesNodeInStroikaNode_ (r->getNodeValue ())}};
+                    case DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE: {
+                        auto n = r->getNodeValue ();
+                        return n == nullptr ? optional<XPath::Result>{} : XPath::Result{Node::Ptr{WrapXercesNodeInStroikaNode_ (n)}};
+                    }
                     default:
                         AssertNotImplemented ();
                 }
@@ -1086,7 +1088,7 @@ namespace {
             {
                 for (DOMNode* i = fNode_->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
                     if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
-                        DOMElement*  elt = Debug::UncheckedDynamicCast < DOMElement* > (i);
+                        DOMElement*  elt = Debug::UncheckedDynamicCast<DOMElement*> (i);
                         const XMLCh* s   = elt->getAttribute (u"id");
                         AssertNotNull (s);
                         if (CString::Equals (s, id.As<u16string> ().c_str ())) {

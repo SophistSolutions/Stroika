@@ -1625,23 +1625,22 @@ namespace {
             using namespace XML::DOM;
             Document::Ptr d = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
             {
+                // read https://www.w3schools.com/xml/xpath_syntax.asp tutorial - basics
                 auto n1 = d.GetRootElement ().LookupOne (XPath::Expression{"person"}); // maybe rename LookupOne here to LookupElement()
                 DbgTrace (L"n1=%s", Characters::ToString (n1).c_str ());
                 EXPECT_EQ (get<DOM::Element::Ptr> (*n1).GetName (), "person");
                 auto n2 = d.GetRootElement ().LookupOne (XPath::Expression{"person/name"});
                 DbgTrace (L"n2=%s", Characters::ToString (n2).c_str ());
                 EXPECT_EQ (get<DOM::Element::Ptr> (*n2).GetName (), "name");
-// reread https://www.w3schools.com/xml/xpath_syntax.asp tutorial - I think this is a ME bug, not xerces...
-#if 0
-                if (d.GetRep ()->GetProvider () != &XML::Providers::Xerces::kDefaultProvider) {
-                    auto n3 = d.GetRootElement ().LookupOne (XPath::Expression{"/person/name"});  // surprisingly fails on Xerces - if only xerces doing
-                    // // portable code check if d->GetREp()->GetProvider () == &Providers::Xerces::kDefaultProvider
-                    DbgTrace (L"n3=%s", Characters::ToString (n3).c_str ());
-                }
-#endif
-                auto n4 = d.GetRootElement ().LookupOne (XPath::Expression{"//person/name"});
+                auto n3 = d.GetRootElement ().LookupOne (XPath::Expression{"/personnel/person/name"}); // surprisingly fails on Xerces - if only xerces doing
+                DbgTrace (L"n3=%s", Characters::ToString (n3).c_str ());
+                EXPECT_EQ (get<DOM::Element::Ptr> (*n3).GetName (), "name");
+                auto n4 = d.GetRootElement ().LookupOne (XPath::Expression{"/person/name"}); // '/' means start at root of document, not context node, and root of document is personnel
                 DbgTrace (L"n4=%s", Characters::ToString (n4).c_str ());
-                EXPECT_EQ (get<DOM::Element::Ptr> (*n4).GetName (), "name");
+                EXPECT_EQ (n4 , nullopt);
+                auto n5 = d.GetRootElement ().LookupOne (XPath::Expression{"//person/name"});
+                DbgTrace (L"n5=%s", Characters::ToString (n5).c_str ());
+                EXPECT_EQ (get<DOM::Element::Ptr> (*n5).GetName (), "name");
             }
         });
     }

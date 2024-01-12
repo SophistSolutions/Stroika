@@ -443,6 +443,9 @@ namespace {
             }
             static optional<XPath::Result> ToResult (xmlNode* n)
             {
+                if (n == nullptr) [[unlikely]] {
+                    return nullopt;
+                }
                 // for now only support elements...
                 switch (n->type) {
                     case XML_ELEMENT_NODE: {
