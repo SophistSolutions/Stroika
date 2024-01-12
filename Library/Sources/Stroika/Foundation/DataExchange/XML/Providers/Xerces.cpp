@@ -1070,16 +1070,29 @@ namespace {
             shared_ptr<AutoRelease_<xercesc_3_2::DOMXPathResult>> r =
                 make_shared<AutoRelease_<xercesc_3_2::DOMXPathResult>> ((*xpHelp->expr)->evaluate (fNode_, xpHelp->rt, nullptr));
             Assert (not e.GetOptions ().fSnapshot);
-            return Traversal::CreateGenerator<XPath::Result> ([xpHelp, r, firstTime = true] () mutable -> optional<XPath::Result> {
-                if (firstTime) {
-                    firstTime = false;
+            if (xpHelp->rt == DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE or xpHelp->rt == DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE) [[unlikely]] {
+                return Traversal::CreateGenerator<XPath::Result> ([xpHelp, r, firstTime = true] () mutable -> optional<XPath::Result> {
+                    if (firstTime) {
+                        firstTime = false;
+                        return XPathQueryHelper_::ToResult_ (*r);
+                    }
+                    if ((*r)->iterateNext () == false) {
+                        return nullopt;
+                    }
                     return XPathQueryHelper_::ToResult_ (*r);
-                }
-                if ((*r)->iterateNext () == false) {
-                    return nullopt;
-                }
-                return XPathQueryHelper_::ToResult_ (*r);
-            });
+                });
+            }
+            if (xpHelp->rt == DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE or xpHelp->rt == DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE)  [[likely]] {
+                return Traversal::CreateGenerator<XPath::Result> ([xpHelp, r, snapIdx = 0] () mutable -> optional<XPath::Result> {
+                    if (not (*r)->snapshotItem (snapIdx)) {
+                        return nullopt;
+                    }
+                    ++snapIdx;
+                    return XPathQueryHelper_::ToResult_ (*r);
+                });
+            }
+            AssertNotImplemented ();
+            return Traversal::Iterable<XPath::Result>{};
         }
         virtual Element::Ptr GetChildElementByID (const String& id) const override
         {

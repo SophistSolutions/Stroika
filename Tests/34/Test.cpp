@@ -326,7 +326,7 @@ namespace {
                 registry, make_shared<ObjectReader::ReadDownToReader> (
                               make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar), Name{"Appointment"})};
             saxParser (mkdata_ (), &ctx, nullptr);
-            EXPECT_EQ (calendar.size (), 2);
+            EXPECT_EQ (calendar.size (), 2u);
             EXPECT_EQ (calendar[0].withWhom.firstName, "Jim");
             EXPECT_EQ (calendar[0].withWhom.lastName, "Smith");
             EXPECT_EQ (*calendar[0].withWhom.middleName, "Up");
@@ -338,7 +338,7 @@ namespace {
             vector<Appointment_> calendar;
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar))};
             saxParser (mkdata_ (), &ctx, nullptr);
-            EXPECT_EQ (calendar.size (), 2);
+            EXPECT_EQ (calendar.size (), 2u);
             EXPECT_EQ (calendar[0].withWhom.firstName, "Jim");
             EXPECT_EQ (calendar[0].withWhom.lastName, "Smith");
             EXPECT_EQ (*calendar[0].withWhom.middleName, "Up");
@@ -398,7 +398,7 @@ namespace {
             DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
                 people.clear (); // cuz run multiple times
                 saxParser (mkdata_ (), &ctx, nullptr);
-                EXPECT_EQ (people.size (), 2);
+                EXPECT_EQ (people.size (), 2u);
                 EXPECT_EQ (people[0].firstName, "Jim");
                 EXPECT_EQ (people[0].lastName, "Smith");
                 EXPECT_EQ (people[1].firstName, "Fred");
@@ -492,7 +492,7 @@ namespace {
                                                                  Name{"RetrievePropertiesResponse"}, Name{"returnval"})};
         XML::SAXParse (mkdata_ (), &ctx);
 
-        EXPECT_EQ (objsContent.size (), 2);
+        EXPECT_EQ (objsContent.size (), 2u);
         EXPECT_EQ (objsContent[0].obj.type, "VirtualMachine");
         EXPECT_EQ (objsContent[0].obj.value, "8");
         EXPECT_EQ (objsContent[1].obj.type, "VirtualMachine");
@@ -610,14 +610,14 @@ namespace {
         {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
             XML::SAXParse (mkdata_ (), &ctx);
-            EXPECT_EQ (data.people.size (), 2);
+            EXPECT_EQ (data.people.size (), 2u);
             EXPECT_EQ (data.people[0].firstName, "Jim");
             EXPECT_EQ (data.people[0].lastName, "Smith");
             EXPECT_EQ (data.people[0].gender, GenderType_::Male);
             EXPECT_EQ (data.people[1].firstName, "Fred");
             EXPECT_EQ (data.people[1].lastName, "Down");
             EXPECT_TRUE (not data.people[1].gender.has_value ());
-            EXPECT_EQ (data.addresses.size (), 3);
+            EXPECT_EQ (data.addresses.size (), 3u);
             EXPECT_EQ (data.addresses[0].city, "Boston");
             EXPECT_EQ (data.addresses[0].state, "MA");
             EXPECT_EQ (data.addresses[1].city, "New York");
@@ -1350,7 +1350,7 @@ namespace {
         {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
             XML::SAXParse (mkdata_ (), &ctx);
-            EXPECT_EQ (data.people.size (), 2);
+            EXPECT_EQ (data.people.size (), 2u);
             EXPECT_EQ (data.people[0].firstName, "Jim");
             EXPECT_EQ (data.people[0].lastName, "Smith");
             EXPECT_EQ (data.people[0].gender, GenderType_::Male);
@@ -1417,7 +1417,7 @@ namespace {
         {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
             XML::SAXParse (mkdata_ (), &ctx);
-            EXPECT_EQ (data.people.size (), 2);
+            EXPECT_EQ (data.people.size (), 2u);
             EXPECT_EQ (data.people[0].firstName, "Jim");
             EXPECT_EQ (data.people[0].lastName, "Smith");
             EXPECT_EQ (data.people[0].gender.fRep, "Male");
@@ -1624,15 +1624,16 @@ namespace {
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             using namespace XML::DOM;
             Document::Ptr d = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
+            // Basic XPath
             {
                 // read https://www.w3schools.com/xml/xpath_syntax.asp tutorial - basics
-                auto n1 = d.GetRootElement ().LookupOne (XPath::Expression{"person"}); // maybe rename LookupOne here to LookupElement()
+                auto n1 = d.GetRootElement ().LookupOne (XPath::Expression{"person"});
                 DbgTrace (L"n1=%s", Characters::ToString (n1).c_str ());
                 EXPECT_EQ (get<DOM::Element::Ptr> (*n1).GetName (), "person");
                 auto n2 = d.GetRootElement ().LookupOne (XPath::Expression{"person/name"});
                 DbgTrace (L"n2=%s", Characters::ToString (n2).c_str ());
                 EXPECT_EQ (get<DOM::Element::Ptr> (*n2).GetName (), "name");
-                auto n3 = d.GetRootElement ().LookupOne (XPath::Expression{"/personnel/person/name"}); // surprisingly fails on Xerces - if only xerces doing
+                auto n3 = d.GetRootElement ().LookupOne (XPath::Expression{"/personnel/person/name"});
                 DbgTrace (L"n3=%s", Characters::ToString (n3).c_str ());
                 EXPECT_EQ (get<DOM::Element::Ptr> (*n3).GetName (), "name");
                 auto n4 = d.GetRootElement ().LookupOne (XPath::Expression{"/person/name"}); // '/' means start at root of document, not context node, and root of document is personnel
@@ -1642,6 +1643,21 @@ namespace {
                 DbgTrace (L"n5=%s", Characters::ToString (n5).c_str ());
                 EXPECT_EQ (get<DOM::Element::Ptr> (*n5).GetName (), "name");
             }
+            // Iterator XPath
+            {
+                auto n1 = d.GetRootElement ().Lookup (XPath::Expression{"person"}); 
+                //DbgTrace (L"n1=%s", Characters::ToString (n1).c_str ());
+                EXPECT_EQ (n1.size (), 6u);
+                auto n2 = d.GetRootElement ().Lookup (XPath::Expression{"person/name"});
+                EXPECT_EQ (n2.size (), 6u);
+                auto n3 = d.GetRootElement ().Lookup (XPath::Expression{"/personnel/person/name"});
+                EXPECT_EQ (n3.size (), 6u);
+                auto n4 = d.GetRootElement ().Lookup (XPath::Expression{"/person/name"}); // see similar case above
+                EXPECT_EQ (n4.size (), 0u);
+                auto n5 = d.GetRootElement ().Lookup (XPath::Expression{"//person/name"});
+                EXPECT_EQ (n5.size (), 6u);
+            }
+            // @todo test cases where we make modifications to the document from data in Lookup, but use fancier XPath to select a particular node
         });
     }
 }
