@@ -1637,7 +1637,7 @@ namespace {
                 EXPECT_EQ (get<DOM::Element::Ptr> (*n3).GetName (), "name");
                 auto n4 = d.GetRootElement ().LookupOne (XPath::Expression{"/person/name"}); // '/' means start at root of document, not context node, and root of document is personnel
                 DbgTrace (L"n4=%s", Characters::ToString (n4).c_str ());
-                EXPECT_EQ (n4 , nullopt);
+                EXPECT_EQ (n4, nullopt);
                 auto n5 = d.GetRootElement ().LookupOne (XPath::Expression{"//person/name"});
                 DbgTrace (L"n5=%s", Characters::ToString (n5).c_str ());
                 EXPECT_EQ (get<DOM::Element::Ptr> (*n5).GetName (), "name");
