@@ -421,7 +421,7 @@ namespace {
                 Require (ni.fPrefix); // libxml2 doesn't appear to support this - maybe a bad idea - maybe Stroika API shoudln't either?
                 xmlXPathRegisterNs (xpathCtx, BAD_CAST ni.fPrefix->AsUTF8 ().c_str (), BAD_CAST ni.fURI.As<String> ().AsUTF8 ().c_str ());
             }
-            xpathCtx->node = fNode_;
+            xpathCtx->node           = fNode_;
             xmlXPathObject* xpathObj = xmlXPathEvalExpression (BAD_CAST e.GetExpression ().AsUTF8 ().c_str (), xpathCtx);
             Execution::ThrowIfNull (xpathObj);
             [[maybe_unused]] auto&& cleanup2  = Execution::Finally ([&] () noexcept { xmlXPathFreeObject (xpathObj); });
@@ -430,13 +430,13 @@ namespace {
             for (size_t i = 0; i < size; ++i) {
                 Assert (resultSet->nodeTab[i]);
                 if (resultSet->nodeTab[i]->type == XML_NAMESPACE_DECL) {
-                    xmlNsPtr  ns  = (xmlNsPtr)resultSet->nodeTab[i];
+                    xmlNsPtr   ns  = (xmlNsPtr)resultSet->nodeTab[i];
                     xmlNodePtr cur = (xmlNodePtr)ns->next;
                     if (cur->ns) {
                         //fprintf (output, "= namespace \"%s\"=\"%s\" for node %s:%s\n", ns->prefix, ns->href, cur->ns->href, cur->name);
                     }
                     else {
-                       // fprintf (output, "= namespace \"%s\"=\"%s\" for node %s\n", ns->prefix, ns->href, cur->name);
+                        // fprintf (output, "= namespace \"%s\"=\"%s\" for node %s\n", ns->prefix, ns->href, cur->name);
                     }
                 }
                 else if (resultSet->nodeTab[i]->type == XML_ELEMENT_NODE) {
@@ -451,8 +451,8 @@ namespace {
                     return WrapLibXML2NodeInStroikaNode_ (cur);
                 }
                 else {
-                  [[maybe_unused]]  xmlNodePtr cur = resultSet->nodeTab[i];
-                   // fprintf (output, "= node \"%s\": type %d\n", cur->name, cur->type);
+                    [[maybe_unused]] xmlNodePtr cur = resultSet->nodeTab[i];
+                    // fprintf (output, "= node \"%s\": type %d\n", cur->name, cur->type);
                 }
             }
             return nullopt;

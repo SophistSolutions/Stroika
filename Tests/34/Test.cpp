@@ -1617,13 +1617,13 @@ namespace {
 namespace {
     GTEST_TEST (Foundation_DataExchange_XML, DOM_XPath)
     {
-        const Memory::BLOB kPersonalXML_                 = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);
-        const Memory::BLOB kHealthFrameWorks_v3_xml      = Memory::BLOB::Attach (Resources_::TestFiles_HealthFrameWorks_v3_xml);
+        const Memory::BLOB kPersonalXML_            = Memory::BLOB::Attach (Resources_::TestFiles_personal_xml);
+        const Memory::BLOB kHealthFrameWorks_v3_xml = Memory::BLOB::Attach (Resources_::TestFiles_HealthFrameWorks_v3_xml);
 
         // no namespace's content test
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             using namespace XML::DOM;
-            Document::Ptr d = domFactory ( kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
+            Document::Ptr d = domFactory (kPersonalXML_.As<Streams::InputStream::Ptr<byte>> (), nullptr);
             {
                 auto n1 = d.GetRootElement ().LookupOne (XPath::Expression{"person"}); // maybe rename LookupOne here to LookupElement()
                 DbgTrace (L"n1=%s", Characters::ToString (n1).c_str ());
@@ -1631,14 +1631,14 @@ namespace {
                 auto n2 = d.GetRootElement ().LookupOne (XPath::Expression{"person/name"});
                 DbgTrace (L"n2=%s", Characters::ToString (n2).c_str ());
                 EXPECT_EQ (get<DOM::Element::Ptr> (*n2).GetName (), "name");
-                // reread https://www.w3schools.com/xml/xpath_syntax.asp tutorial - I think this is a ME bug, not xerces...
-                #if 0
+// reread https://www.w3schools.com/xml/xpath_syntax.asp tutorial - I think this is a ME bug, not xerces...
+#if 0
                 if (d.GetRep ()->GetProvider () != &XML::Providers::Xerces::kDefaultProvider) {
                     auto n3 = d.GetRootElement ().LookupOne (XPath::Expression{"/person/name"});  // surprisingly fails on Xerces - if only xerces doing
                     // // portable code check if d->GetREp()->GetProvider () == &Providers::Xerces::kDefaultProvider
                     DbgTrace (L"n3=%s", Characters::ToString (n3).c_str ());
                 }
-                #endif
+#endif
                 auto n4 = d.GetRootElement ().LookupOne (XPath::Expression{"//person/name"});
                 DbgTrace (L"n4=%s", Characters::ToString (n4).c_str ());
                 EXPECT_EQ (get<DOM::Element::Ptr> (*n4).GetName (), "name");
