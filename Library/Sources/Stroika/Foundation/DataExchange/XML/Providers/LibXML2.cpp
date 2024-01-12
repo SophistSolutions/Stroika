@@ -412,7 +412,7 @@ namespace {
         struct XPathLookupHelper_ {
             xmlXPathContext* fCtx{nullptr};
             xmlXPathObject*  fResultNodeList{nullptr};
-            XPathLookupHelper_ () = delete;
+            XPathLookupHelper_ ()                          = delete;
             XPathLookupHelper_ (const XPathLookupHelper_&) = delete;
             XPathLookupHelper_ (xmlDoc* doc, xmlNode* contextNode, const XPath::Expression& e)
             {
@@ -425,7 +425,7 @@ namespace {
                         Require (ni.fPrefix); // libxml2 doesn't appear to support this - maybe a bad idea - maybe Stroika API shoudln't either?
                         xmlXPathRegisterNs (fCtx, BAD_CAST ni.fPrefix->AsUTF8 ().c_str (), BAD_CAST ni.fURI.As<String> ().AsUTF8 ().c_str ());
                     }
-                    fCtx->node               = contextNode;
+                    fCtx->node      = contextNode;
                     fResultNodeList = xmlXPathEvalExpression (BAD_CAST e.GetExpression ().AsUTF8 ().c_str (), fCtx);
                     Execution::ThrowIfNull (fResultNodeList);
                 }
@@ -434,14 +434,14 @@ namespace {
                     Execution::ReThrow ();
                 }
             }
-            ~XPathLookupHelper_()
+            ~XPathLookupHelper_ ()
             {
                 AssertNotNull (fCtx);
                 xmlXPathFreeContext (fCtx);
                 AssertNotNull (fResultNodeList);
                 xmlXPathFreeObject (fResultNodeList);
             }
-            static optional<XPath::Result> ToResult(xmlNode* n)
+            static optional<XPath::Result> ToResult (xmlNode* n)
             {
                 // for now only support elements...
                 switch (n->type) {
@@ -451,14 +451,14 @@ namespace {
                 }
                 return nullopt;
             }
-        } ;
+        };
         virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) override
         {
             RequireNotNull (fNode_);
             AssertNotNull (fNode_->doc);
-            XPathLookupHelper_      helper{fNode_->doc, fNode_, e};
+            XPathLookupHelper_ helper{fNode_->doc, fNode_, e};
             xmlNodeSet*        resultSet = helper.fResultNodeList->nodesetval;
-            size_t                  size      = (resultSet) ? resultSet->nodeNr : 0;
+            size_t             size      = (resultSet) ? resultSet->nodeNr : 0;
             if (size > 0) {
                 return XPathLookupHelper_::ToResult (resultSet->nodeTab[0]);
             }
@@ -466,16 +466,16 @@ namespace {
         }
         virtual Traversal::Iterable<XPath::Result> Lookup (const XPath::Expression& e) override
         {
-            // Could use generator, but little point since libxml2 has already done all the work inside 
+            // Could use generator, but little point since libxml2 has already done all the work inside
             // xmlXPathEvalExpression, and we'd just save the wrapping in Stroika Node::Rep object/shared_ptr
             // For now, KISS
             // So essentially treat as if e.GetOptions().fSnapshot == true
             // @todo - see if anything needed to support fOrdering???
             RequireNotNull (fNode_);
             AssertNotNull (fNode_->doc);
-            XPathLookupHelper_ helper{fNode_->doc, fNode_, e};
-            xmlNodeSet*        resultSet = helper.fResultNodeList->nodesetval;
-            size_t             size      = (resultSet) ? resultSet->nodeNr : 0;
+            XPathLookupHelper_      helper{fNode_->doc, fNode_, e};
+            xmlNodeSet*             resultSet = helper.fResultNodeList->nodesetval;
+            size_t                  size      = (resultSet) ? resultSet->nodeNr : 0;
             Sequence<XPath::Result> r;
             for (size_t i = 0; i < size; ++i) {
                 r += Memory::ValueOf (XPathLookupHelper_::ToResult (resultSet->nodeTab[0]));
@@ -490,7 +490,7 @@ namespace {
     Node::Ptr WrapLibXML2NodeInStroikaNode_ (xmlNode* n)
     {
         RequireNotNull (n);
-        if (n->type == XML_ELEMENT_NODE) {
+        if (n->type == XML_ELEMENT_NODE) [[likely]] {
             return Node::Ptr{Memory::MakeSharedPtr<ElementRep_> (n)};
         }
         else {

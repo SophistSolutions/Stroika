@@ -1070,36 +1070,36 @@ namespace {
             Assert (not e.GetOptions ().fSnapshot);
             return Traversal::CreateGenerator<XPath::Result> ([xpHelp, r, firstTime = true] () mutable -> optional<XPath::Result> {
                 if (firstTime) {
-                    firstTime                 = false;
+                    firstTime = false;
                     return XPathQueryHelper_::ToResult_ (*r);
                 }
                 if ((*r)->iterateNext () == false) {
                     return nullopt;
                 }
                 return XPathQueryHelper_::ToResult_ (*r);
-        });
-    } virtual Element::Ptr GetChildElementByID (const String& id) const override
-    {
-        AssertNotNull (fNode_);
-        START_LIB_EXCEPTION_MAPPER_
+            });
+        }
+        virtual Element::Ptr GetChildElementByID (const String& id) const override
         {
-            for (DOMNode* i = fNode_->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
-                if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
-                    AssertMember (i, DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                    DOMElement*  elt = reinterpret_cast<DOMElement*> (i);
-                    const XMLCh* s   = elt->getAttribute (u"id");
-                    AssertNotNull (s);
-                    if (CString::Equals (s, id.As<u16string> ().c_str ())) {
-                        return WrapXercesNodeInStroikaNode_ (i);
+            AssertNotNull (fNode_);
+            START_LIB_EXCEPTION_MAPPER_
+            {
+                for (DOMNode* i = fNode_->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
+                    if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
+                        DOMElement*  elt = Debug::UncheckedDynamicCast < DOMElement* > (i);
+                        const XMLCh* s   = elt->getAttribute (u"id");
+                        AssertNotNull (s);
+                        if (CString::Equals (s, id.As<u16string> ().c_str ())) {
+                            return WrapXercesNodeInStroikaNode_ (elt);
+                        }
                     }
                 }
+                return Element::Ptr{nullptr};
             }
-            return Element::Ptr{nullptr};
+            END_LIB_EXCEPTION_MAPPER_
         }
-        END_LIB_EXCEPTION_MAPPER_
-    }
-};
-DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
+    };
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 }
 
 namespace {
