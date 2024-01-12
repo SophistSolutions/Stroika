@@ -212,7 +212,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return GetRep ()->LookupOne (e);
     }
-    inline auto Element::Ptr::Lookup (const XPath::Expression& e) const -> Traversal::Iterator<XPath::Result>
+    inline auto Element::Ptr::Lookup (const XPath::Expression& e) const -> Traversal::Iterable<XPath::Result>
     {
         return GetRep ()->Lookup (e);
     }

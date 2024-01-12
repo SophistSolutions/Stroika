@@ -985,29 +985,41 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) override
-        {
-            START_LIB_EXCEPTION_MAPPER_
+        struct XPathQueryHelper_ {
+            optional<AutoRelease_<DOMXPathNSResolver>> resolver;
+            DOMXPathResult::ResultType                 rt{};
+            optional<AutoRelease_<DOMXPathExpression>> expr;
+            XPathQueryHelper_ (DOMNode* n, const XPath::Expression& e, bool firstOnly)
             {
-                xercesc_3_2::DOMDocument* doc = fNode_->getOwnerDocument ();
-                /*
-                 *  Note (possible optimization) - the combination of doc and e.fNamespaces could be used as a KEY to CACHE the resolver/expr objects
-                 */
-                AutoRelease_<DOMXPathNSResolver> resolver = doc->createNSResolver (nullptr);
+                xercesc_3_2::DOMDocument* doc = n->getOwnerDocument ();
+                resolver.emplace (doc->createNSResolver (nullptr));
                 for (NamespaceDefinition ni : e.GetOptions ().fNamespaces.GetNamespaces ()) {
-                    resolver->addNamespaceBinding (ni.fPrefix.value_or ("").As<u16string> ().c_str (),
-                                                   ni.fURI.As<String> ().As<u16string> ().c_str ());
+                    (*resolver)->addNamespaceBinding (ni.fPrefix.value_or ("").As<u16string> ().c_str (),
+                                                      ni.fURI.As<String> ().As<u16string> ().c_str ());
                 }
-                AutoRelease_<DOMXPathExpression> expr = doc->createExpression (e.GetExpression ().As<u16string> ().c_str (), resolver);
-                DOMXPathResult::ResultType       rt{};
+                expr.emplace (doc->createExpression (e.GetExpression ().As<u16string> ().c_str (), *resolver));
                 switch (e.GetOptions ().fResultTypeIndex.value_or (DOMXPathResult::ANY_TYPE)) {
-                    case XPath::ResultTypeIndex_v<Element::Ptr>:
-                        rt = DOMXPathResult::FIRST_ORDERED_NODE_TYPE; // unsure - maybe need another exprssion hint param about first , and ordering etc???
-                        break;
+                    case XPath::ResultTypeIndex_v<Element::Ptr>: {
+                        auto o = e.GetOptions ();
+                        if (firstOnly) {
+                            rt = e.GetOptions ().fOrdered ? DOMXPathResult::FIRST_ORDERED_NODE_TYPE : DOMXPathResult::ANY_UNORDERED_NODE_TYPE;
+                        }
+                        else if (o.fSnapshot) {
+                            rt = e.GetOptions ().fOrdered ? DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE : DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE;
+                        }
+                        else {
+                            // Would make sense given docs, but appears unsupported by Xerces... --LGP 2024-01-12
+                            //          rt = e.GetOptions ().fOrdered ? DOMXPathResult::ORDERED_NODE_ITERATOR_TYPE : DOMXPathResult::UNORDERED_NODE_ITERATOR_TYPE;
+                            rt = e.GetOptions ().fOrdered ? DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE : DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE;
+                        }
+                    } break;
                     default:
                         AssertNotImplemented ();
                 }
-                AutoRelease_<xercesc_3_2::DOMXPathResult> r = expr->evaluate (fNode_, rt, nullptr);
+            }
+            static optional<XPath::Result> ToResult_ (const xercesc_3_2::DOMXPathResult* r)
+            {
+                RequireNotNull (r);
                 switch (r->getResultType ()) {
                     case DOMXPathResult::NUMBER_TYPE:
                         return XPath::Result{r->getNumberValue ()};
@@ -1027,35 +1039,67 @@ namespace {
                 }
                 return nullopt;
             }
-            END_LIB_EXCEPTION_MAPPER_
-        }
-        virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) override
+        };
+        virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) override
         {
-            AssertNotImplemented ();
-            return Traversal::Iterator<XPath::Result>{};
-        }
-        virtual Element::Ptr GetChildElementByID (const String& id) const override
-        {
-            AssertNotNull (fNode_);
+            if constexpr (false) {
+                // quickie impl just to test Lookup Code
+                for (auto i : Lookup (e)) {
+                    return i;
+                }
+                return nullopt;
+            }
             START_LIB_EXCEPTION_MAPPER_
             {
-                for (DOMNode* i = fNode_->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
-                    if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
-                        AssertMember (i, DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
-                        DOMElement*  elt = reinterpret_cast<DOMElement*> (i);
-                        const XMLCh* s   = elt->getAttribute (u"id");
-                        AssertNotNull (s);
-                        if (CString::Equals (s, id.As<u16string> ().c_str ())) {
-                            return WrapXercesNodeInStroikaNode_ (i);
-                        }
-                    }
-                }
-                return Element::Ptr{nullptr};
+                XPathQueryHelper_                         xpHelp{fNode_, e, true};
+                AutoRelease_<xercesc_3_2::DOMXPathResult> r = (*xpHelp.expr)->evaluate (fNode_, xpHelp.rt, nullptr);
+                return XPathQueryHelper_::ToResult_ (r);
             }
             END_LIB_EXCEPTION_MAPPER_
         }
-    };
-    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
+        virtual Traversal::Iterable<XPath::Result> Lookup (const XPath::Expression& e) override
+        {
+            if (e.GetOptions ().fSnapshot) {
+                XPath::Expression::Options e2o = e.GetOptions ();
+                e2o.fSnapshot                  = false;
+                return Sequence<XPath::Result>{this->Lookup (XPath::Expression{e.GetExpression (), e2o})};
+            }
+            shared_ptr<XPathQueryHelper_>                         xpHelp = make_shared<XPathQueryHelper_> (fNode_, e, false);
+            shared_ptr<AutoRelease_<xercesc_3_2::DOMXPathResult>> r =
+                make_shared<AutoRelease_<xercesc_3_2::DOMXPathResult>> ((*xpHelp->expr)->evaluate (fNode_, xpHelp->rt, nullptr));
+            Assert (not e.GetOptions ().fSnapshot);
+            return Traversal::CreateGenerator<XPath::Result> ([xpHelp, r, firstTime = true] () mutable -> optional<XPath::Result> {
+                if (firstTime) {
+                    firstTime                 = false;
+                    return XPathQueryHelper_::ToResult_ (*r);
+                }
+                if ((*r)->iterateNext () == false) {
+                    return nullopt;
+                }
+                return XPathQueryHelper_::ToResult_ (*r);
+        });
+    } virtual Element::Ptr GetChildElementByID (const String& id) const override
+    {
+        AssertNotNull (fNode_);
+        START_LIB_EXCEPTION_MAPPER_
+        {
+            for (DOMNode* i = fNode_->getFirstChild (); i != nullptr; i = i->getNextSibling ()) {
+                if (i->getNodeType () == DOMNode::ELEMENT_NODE) {
+                    AssertMember (i, DOMElement); // assert and then reinterpret_cast() because else dynamic_cast is 'slowish'
+                    DOMElement*  elt = reinterpret_cast<DOMElement*> (i);
+                    const XMLCh* s   = elt->getAttribute (u"id");
+                    AssertNotNull (s);
+                    if (CString::Equals (s, id.As<u16string> ().c_str ())) {
+                        return WrapXercesNodeInStroikaNode_ (i);
+                    }
+                }
+            }
+            return Element::Ptr{nullptr};
+        }
+        END_LIB_EXCEPTION_MAPPER_
+    }
+};
+DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 }
 
 namespace {

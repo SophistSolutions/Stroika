@@ -409,59 +409,78 @@ namespace {
                 return r;
             });
         }
+        struct XPathLookupHelper_ {
+            xmlXPathContext* fCtx{nullptr};
+            xmlXPathObject*  fResultNodeList{nullptr};
+            XPathLookupHelper_ () = delete;
+            XPathLookupHelper_ (const XPathLookupHelper_&) = delete;
+            XPathLookupHelper_ (xmlDoc* doc, xmlNode* contextNode, const XPath::Expression& e)
+            {
+                // based on code from http://www.xmlsoft.org/examples/xpath1.c
+                RequireNotNull (doc);
+                fCtx = xmlXPathNewContext (doc);
+                Execution::ThrowIfNull (fCtx);
+                try {
+                    for (NamespaceDefinition ni : e.GetOptions ().fNamespaces.GetNamespaces ()) {
+                        Require (ni.fPrefix); // libxml2 doesn't appear to support this - maybe a bad idea - maybe Stroika API shoudln't either?
+                        xmlXPathRegisterNs (fCtx, BAD_CAST ni.fPrefix->AsUTF8 ().c_str (), BAD_CAST ni.fURI.As<String> ().AsUTF8 ().c_str ());
+                    }
+                    fCtx->node               = contextNode;
+                    fResultNodeList = xmlXPathEvalExpression (BAD_CAST e.GetExpression ().AsUTF8 ().c_str (), fCtx);
+                    Execution::ThrowIfNull (fResultNodeList);
+                }
+                catch (...) {
+                    xmlXPathFreeContext (fCtx);
+                    Execution::ReThrow ();
+                }
+            }
+            ~XPathLookupHelper_()
+            {
+                AssertNotNull (fCtx);
+                xmlXPathFreeContext (fCtx);
+                AssertNotNull (fResultNodeList);
+                xmlXPathFreeObject (fResultNodeList);
+            }
+            static optional<XPath::Result> ToResult(xmlNode* n)
+            {
+                // for now only support elements...
+                switch (n->type) {
+                    case XML_ELEMENT_NODE: {
+                        return WrapLibXML2NodeInStroikaNode_ (n);
+                    }
+                }
+                return nullopt;
+            }
+        } ;
         virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) override
         {
-            // based on code from http://www.xmlsoft.org/examples/xpath1.c
             RequireNotNull (fNode_);
             AssertNotNull (fNode_->doc);
-            xmlXPathContext* xpathCtx = xmlXPathNewContext (fNode_->doc);
-            Execution::ThrowIfNull (xpathCtx);
-            [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([&] () noexcept { xmlXPathFreeContext (xpathCtx); });
-            for (NamespaceDefinition ni : e.GetOptions ().fNamespaces.GetNamespaces ()) {
-                Require (ni.fPrefix); // libxml2 doesn't appear to support this - maybe a bad idea - maybe Stroika API shoudln't either?
-                xmlXPathRegisterNs (xpathCtx, BAD_CAST ni.fPrefix->AsUTF8 ().c_str (), BAD_CAST ni.fURI.As<String> ().AsUTF8 ().c_str ());
-            }
-            xpathCtx->node           = fNode_;
-            xmlXPathObject* xpathObj = xmlXPathEvalExpression (BAD_CAST e.GetExpression ().AsUTF8 ().c_str (), xpathCtx);
-            Execution::ThrowIfNull (xpathObj);
-            [[maybe_unused]] auto&& cleanup2  = Execution::Finally ([&] () noexcept { xmlXPathFreeObject (xpathObj); });
-            xmlNodeSet*             resultSet = xpathObj->nodesetval;
+            XPathLookupHelper_      helper{fNode_->doc, fNode_, e};
+            xmlNodeSet*        resultSet = helper.fResultNodeList->nodesetval;
             size_t                  size      = (resultSet) ? resultSet->nodeNr : 0;
-            for (size_t i = 0; i < size; ++i) {
-                Assert (resultSet->nodeTab[i]);
-                if (resultSet->nodeTab[i]->type == XML_NAMESPACE_DECL) {
-                    xmlNsPtr   ns  = (xmlNsPtr)resultSet->nodeTab[i];
-                    xmlNodePtr cur = (xmlNodePtr)ns->next;
-                    if (cur->ns) {
-                        //fprintf (output, "= namespace \"%s\"=\"%s\" for node %s:%s\n", ns->prefix, ns->href, cur->ns->href, cur->name);
-                    }
-                    else {
-                        // fprintf (output, "= namespace \"%s\"=\"%s\" for node %s\n", ns->prefix, ns->href, cur->name);
-                    }
-                }
-                else if (resultSet->nodeTab[i]->type == XML_ELEMENT_NODE) {
-                    xmlNodePtr cur = resultSet->nodeTab[i];
-                    if (cur->ns) {
-                        //fprintf (output, "= element node \"%s:%s\"\n", cur->ns->href, cur->name);
-                    }
-                    else {
-                        //fprintf (output, "= element node \"%s\"\n", cur->name);
-                    }
-                    // For now only return the first element
-                    return WrapLibXML2NodeInStroikaNode_ (cur);
-                }
-                else {
-                    [[maybe_unused]] xmlNodePtr cur = resultSet->nodeTab[i];
-                    // fprintf (output, "= node \"%s\": type %d\n", cur->name, cur->type);
-                }
+            if (size > 0) {
+                return XPathLookupHelper_::ToResult (resultSet->nodeTab[0]);
             }
             return nullopt;
         }
-        virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) override
+        virtual Traversal::Iterable<XPath::Result> Lookup (const XPath::Expression& e) override
         {
-            // SEE http://www.xmlsoft.org/examples/xpath1.c
-            AssertNotImplemented ();
-            return Traversal::Iterator<XPath::Result>{};
+            // Could use generator, but little point since libxml2 has already done all the work inside 
+            // xmlXPathEvalExpression, and we'd just save the wrapping in Stroika Node::Rep object/shared_ptr
+            // For now, KISS
+            // So essentially treat as if e.GetOptions().fSnapshot == true
+            // @todo - see if anything needed to support fOrdering???
+            RequireNotNull (fNode_);
+            AssertNotNull (fNode_->doc);
+            XPathLookupHelper_ helper{fNode_->doc, fNode_, e};
+            xmlNodeSet*        resultSet = helper.fResultNodeList->nodesetval;
+            size_t             size      = (resultSet) ? resultSet->nodeNr : 0;
+            Sequence<XPath::Result> r;
+            for (size_t i = 0; i < size; ++i) {
+                r += Memory::ValueOf (XPathLookupHelper_::ToResult (resultSet->nodeTab[0]));
+            }
+            return r;
         }
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning

@@ -86,6 +86,16 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                  * index into 'Result' variant expected. REJECT other values - required by Xerces XPATH API, and not a biggie (why wouldn't you know?)
                  */
                 optional<uint8_t> fResultTypeIndex{ResultTypeIndex_v<Element::Ptr>};
+
+                /**
+                 *  Caller cares (or does not) about order of elements returned (not sure what ordering is defined - depth first or breadth first?
+                 */
+                bool fOrdered{false};
+
+                /**
+                 *  Snapshot less efficient, but safer in light of modifications to the node tree (but still not clearly defined what modifications allowed and what not?).
+                 */
+                bool fSnapshot{false};
             };
             static inline const Options kDefaultOptions{.fNamespaces = {}, .fResultTypeIndex = ResultTypeIndex_v<Element::Ptr>};
 
@@ -379,10 +389,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             nonvirtual Ptr GetChildByID (const String& id) const;
 
         public:
+            /**
+             *  \note same as Lookup(), but returns 0 or 1 result, instead of iterable of all of them (so ignores e.GetOptions.fSnapshot).
+             *  Often more performant and easier to use (if you know zero or one matching element).
+             */
             nonvirtual optional<XPath::Result> LookupOne (const XPath::Expression& e) const;
 
         public:
-            nonvirtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) const;
+            /**
+             *  PROBABLY quite unsafe to modify DOM while holding this result etc... Needs work on whehn/what is allowed.
+             */
+            nonvirtual Traversal::Iterable<XPath::Result> Lookup (const XPath::Expression& e) const;
 
         public:
             /**
@@ -405,7 +422,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             // Redundant API, but provided since commonly used and can be optimized
             virtual Ptr GetChildElementByID (const String& id) const;
             virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) = 0; /// maybe lose this and do LookupOne/LookupAll etc in Ptr wrapper?
-            virtual Traversal::Iterator<XPath::Result> Lookup (const XPath::Expression& e) = 0;
+            virtual Traversal::Iterable<XPath::Result> Lookup (const XPath::Expression& e) = 0;
         };
 
     }
