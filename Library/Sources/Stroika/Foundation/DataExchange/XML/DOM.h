@@ -97,7 +97,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                  */
                 bool fSnapshot{false};
             };
-            static inline const Options kDefaultOptions{.fNamespaces = {}, .fResultTypeIndex = ResultTypeIndex_v<Element::Ptr>};
+            static inline const Options kDefaultOptions{.fNamespaces = {}, .fResultTypeIndex = ResultTypeIndex_v<Element::Ptr>, .fOrdered = false, .fSnapshot = false};
 
         public:
             Expression (const String& e, const Options& o = kDefaultOptions);
