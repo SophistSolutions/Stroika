@@ -71,6 +71,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              *  Xerces seems to have a bunch more options controlling things like order of results returend. Look into this...
+             * 
+             *      See https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html for other possible options:
+             *          >   bool fSnapshot (if true modifications not seen)
+             *          >   bool fOrdred;   // if true gets first in ?? order, else random order.
              */
             struct Options {
                 /**

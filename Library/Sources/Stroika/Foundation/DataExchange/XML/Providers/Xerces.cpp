@@ -990,9 +990,14 @@ namespace {
             START_LIB_EXCEPTION_MAPPER_
             {
                 xercesc_3_2::DOMDocument*        doc = fNode_->getOwnerDocument ();
-                AutoRelease_<DOMXPathNSResolver> resolver =
-                    doc->createNSResolver (fNode_); // gets namespace/prefixes from this node - WRONG - instead have PARAM to this function todo that
-                // and have method of NODE to extract that list of bindings (we already have/had the method but disabled/lost and never impelmetned anyhow).
+                /*
+                 *  Note (possible optimization) - the combination of doc and e.fNamespaces could be used as a KEY to CACHE the resolver/expr objects
+                 */
+                AutoRelease_<DOMXPathNSResolver> resolver = doc->createNSResolver (nullptr);
+                for (NamespaceDefinition ni : e.GetOptions ().fNamespaces.GetNamespaces ()) {
+                    resolver->addNamespaceBinding (ni.fPrefix.value_or ("").As<u16string> ().c_str (),
+                                                   ni.fURI.As<String> ().As<u16string> ().c_str ());
+                }
                 AutoRelease_<DOMXPathExpression> expr = doc->createExpression (e.GetExpression ().As<u16string> ().c_str (), resolver);
                 DOMXPathResult::ResultType       rt{};
                 switch (e.GetOptions ().fResultTypeIndex.value_or (DOMXPathResult::ANY_TYPE)) {
