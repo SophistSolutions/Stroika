@@ -1691,10 +1691,11 @@ namespace {
                 //DbgTrace (L"mrManager2a=%s", Characters::ToString (mrManager2a).c_str ());
                 EXPECT_EQ (mrManager2a.GetValue ("email"), "alpha@beta.com"); // because changed in previous test
                 EXPECT_EQ (mrManager2a.GetValue ("name/family"), "Boss");
+                mrManager2a.SetValue ("name/family", "Bossy");
                 auto mrManager3 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person[@id='Big.Boss']"});
                 //DbgTrace (L"mrManager3=%s", Characters::ToString (mrManager3).c_str ());
                 EXPECT_EQ (mrManager3.GetValue ("email"), "alpha@beta.com");
-                EXPECT_EQ (mrManager3.GetValue ("name/family"), "Boss");
+                EXPECT_EQ (mrManager3.GetValue ("name/family"), "Bossy");
             }
             catch (const XML::DOM::XPath::XPathExpressionNotSupported&) {
                 Assert (d.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider); // sadly Xerces 3.2 doesn't support [

@@ -68,10 +68,6 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         inline const XPathExpressionNotSupported XPathExpressionNotSupported::kThe;
 
         /**
-         * Probably incomplete - see https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html#ab718aec450c5438e0cc3a6920044a0c1
-         * 
-         *  unclear if we ever return Nodes other than Element::Ptr (e.g. attributes). But seems could be useful todo XPath query gathering attributes, so include
-         * 
          *  \note the default value is an empty (nullptr) Node::Ptr
          */
         using Result = variant<Node::Ptr, bool, int, double, String>;
@@ -95,7 +91,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *      See https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html for other possible options:
              *          >   bool fSnapshot (if true modifications not seen)
-             *          >   bool fOrdred;   // if true gets first in ?? order, else random order.
+             *          >   bool fOrdered;   // if true gets first in ?? order, else random order.
              */
             struct Options {
                 /**
@@ -181,18 +177,18 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          *  \note Before Stroika v3.0d5 this was simply called "Node", and now Node::Ptr
          * 
-         *   Nodes are not created directly, but either via Node::Ptr methods, or Document::Ptr methods (because nodes are always associated with some document).
+         *  Nodes are not created directly, but either via Node::Ptr methods, or Document::Ptr methods (because nodes are always associated with some document).
          * 
          *  Node::Ptr maybe nullptr (default constructed, assigned nullptr, or rendered null by a call to DeleteNode). Calling other methods (like GetName () etc)
          *  while nullptr is a requires failure.
          * 
-         *  \note Older XMLDB InsertNode/AppendNode APIs - we had some APIs which more genreally operated on Nodes andding them and probably allowed moving them.
-         *        I couldnt think of any cases where I needed that, and it made it harder to port to other libraries, so I removed those APIs (til I see there utility again).
+         *  \note Older XMLDB InsertNode/AppendNode APIs - we had some APIs which more generally operated on Nodes adding them and probably allowed moving them.
+         *        I couldn't think of any cases where I needed that, and it made it harder to port to other libraries, so I removed those APIs (til I see there utility again).
          *        And then - need to better document just what they do/are for (so can do portable).
          * 
-         *          SImilarly for Document::SetRootElement. (thats the only place this AppendNode code used). If we need SetRootElement, we need AppendNode.
+         *          Similarly for Document::SetRootElement. (thats the only place this AppendNode code used). If we need SetRootElement, we need AppendNode.
          *          But that seems to create lots of magic about being careful about tranplating nodes from one document to another. Not sure that was ever done properly and want to avoid
-         *          learnign how todo with each librariy. For now hope note needed.--LGP 2023-12-16
+         *          learning how todo with each backend provider/library. For now hope note needed.--LGP 2023-12-16
          */
         class Ptr {
         public:
