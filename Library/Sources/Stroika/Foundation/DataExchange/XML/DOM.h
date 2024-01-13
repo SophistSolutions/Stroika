@@ -49,6 +49,16 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     namespace XPath {
 
         /**
+         *  Notes about XPath support:
+         * 
+         *  Tutorial/Syntax:
+         *      https://www.w3schools.com/xml/xpath_syntax.asp
+         * 
+         *  Xerces Limitations (as of Xerces 3.2 - 2024-01)
+         *      o   No [] support (so p/n[@f='3'] not supported, for example)
+         */
+
+        /**
          *  For example, Xerces 3.2 doesn't support [] in expressions
          */
         struct XPathExpressionNotSupported : Execution::RuntimeErrorException<> {
@@ -56,12 +66,15 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             static const XPathExpressionNotSupported kThe;
         };
         inline const XPathExpressionNotSupported XPathExpressionNotSupported::kThe;
+
         /**
          * Probably incomplete - see https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html#ab718aec450c5438e0cc3a6920044a0c1
          * 
-         *  @todo unclear if we ever return Nodes other than Element::Ptr - so for now just say Element::Ptr, but maybe expand list later.
+         *  unclear if we ever return Nodes other than Element::Ptr (e.g. attributes). But seems could be useful todo XPath query gathering attributes, so include
+         * 
+         *  \note the default value is an empty (nullptr) Node::Ptr
          */
-        using Result = variant<bool, int, double, String, Element::Ptr>;
+        using Result = variant<Node::Ptr, bool, int, double, String>;
 
         /**
          *  Some APIs (like Expression) need to know the index - not just the type itself, and this maps.
@@ -93,7 +106,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                 /**
                  * index into 'Result' variant expected. REJECT other values - required by Xerces XPATH API, and not a biggie (why wouldn't you know?)
                  */
-                optional<uint8_t> fResultTypeIndex{ResultTypeIndex_v<Element::Ptr>};
+                optional<uint8_t> fResultTypeIndex{ResultTypeIndex_v<Node::Ptr>};
 
                 /**
                  *  Caller cares (or does not) about order of elements returned (not sure what ordering is defined - depth first or breadth first?
@@ -106,10 +119,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                 bool fSnapshot{false};
             };
             static inline const Options kDefaultOptions{
-                .fNamespaces = {}, .fResultTypeIndex = ResultTypeIndex_v<Element::Ptr>, .fOrdered = false, .fSnapshot = false};
+                .fNamespaces = {}, .fResultTypeIndex = ResultTypeIndex_v<Node::Ptr>, .fOrdered = false, .fSnapshot = false};
 
         public:
-            Expression (const String& e, const Options& o = kDefaultOptions);
+            Expression (String&& e, const Options& o);
+            template <Characters::IConvertibleToString ST>
+            Expression (ST&& e, const Options& o = kDefaultOptions);
 
         public:
             struct IRep {
@@ -221,6 +236,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *      \note before Stroika v3.0d5, the value API was VariantValue but that was always meaningless, and just treated as a String.
              *
              *      \note the 'String' value maybe implemented in XML in a variety of ways (entities, CDATA, etc).
+             * 
+             *  The /0 overload looks at 'this node'. The overload taking an XPath::Expression looks at the first selected node (using this node as context)
+             *  Either way, the result is a node, and its text is returned. For XPath case, if no node is returned, the return value is nullopt.
              *
              *  \req GetNodeType == eAttributeNT or eElementNT
              */
@@ -301,10 +319,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         class Ptr : public Node::Ptr {
         public:
             /**
+             *  for XPath::Result overload, require XPath produced right type (not string etc) - but allow for nullptr
              */
             Ptr () = default;
             Ptr (nullptr_t);
             Ptr (const Node::Ptr& p);
+            Ptr (const XPath::Result& p);
             Ptr (const shared_ptr<IRep>& p);
 
         public:
@@ -326,6 +346,31 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  Note - setting the attribute to nullopt is equivalent to deleting the attribute
              */
             nonvirtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v);
+
+        public:
+            nonvirtual optional<String> GetID () const;
+
+        public:
+            /**
+             *  This is the value between the brackets <a>text</a>. Note that <a></a> is the same as <a/> - the empty string.
+             * 
+             *      \note before Stroika v3.0d5, the value API was VariantValue but that was always meaningless, and just treated as a String.
+             *
+             *      \note the 'String' value maybe implemented in XML in a variety of ways (entities, CDATA, etc).
+             * 
+             *  The /0 overload looks at 'this node'. The overload taking an XPath::Expression looks at the first selected node (using this node as context)
+             *  Either way, the resueAttributeNT or eElementNT
+             */
+            using Node::Ptr::GetValue;
+            nonvirtual optional<String> GetValue (const XPath::Expression& e) const;
+
+        public:
+            /**
+             *  For now, SetValue(e,v) - must  finds an Element (or Attribute) node at 'e' - otherwise throws runtime exception,
+             *  cuz no way to know in general where to add what element (could do in some specific cases maybe - like simple QName or @QName expression).
+             */
+            using Node::Ptr::SetValue;
+            nonvirtual void SetValue (const XPath::Expression& e, const String& v);
 
         public:
             /**
@@ -402,7 +447,14 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  \note same as Lookup(), but returns 0 or 1 result, instead of iterable of all of them (so ignores e.GetOptions.fSnapshot).
              *  Often more performant and easier to use (if you know zero or one matching element).
              */
-            nonvirtual optional<XPath::Result> LookupOne (const XPath::Expression& e) const;
+            nonvirtual Element::Ptr LookupOneElement (const XPath::Expression& e) const;
+
+        public:
+            /**
+             *  \note same as Lookup(), but returns 0 or 1 result, instead of iterable of all of them (so ignores e.GetOptions.fSnapshot).
+             *  Often more performant and easier to use (if you know zero or one matching element).
+             */
+            nonvirtual Node::Ptr LookupOneNode (const XPath::Expression& e) const;
 
         public:
             /**
@@ -430,7 +482,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             virtual Iterable<Node::Ptr> GetChildren () const                                                   = 0;
             // Redundant API, but provided since commonly used and can be optimized
             virtual Ptr GetChildElementByID (const String& id) const;
-            virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) = 0; /// maybe lose this and do LookupOne/LookupAll etc in Ptr wrapper?
+            // LookupOne returns zero or one results (nullopt or XPath::Result)
+            virtual optional<XPath::Result> LookupOne (const XPath::Expression& e) = 0;
+            // Lookup returns full iterator of all results (whether live or snapshot depends on params in e)
             virtual Traversal::Iterable<XPath::Result> Lookup (const XPath::Expression& e) = 0;
         };
 

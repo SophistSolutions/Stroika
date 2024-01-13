@@ -34,7 +34,7 @@ using namespace Stroika::Foundation::DataExchange::XML::DOM::Document;
  ********************************************************************************
  */
 XPath::XPathExpressionNotSupported::XPathExpressionNotSupported ()
-    : Execution::RuntimeErrorException<> ("XPath implementation doesn't support that XML expression")
+    : Execution::RuntimeErrorException<> ("XPath implementation doesn't support that XML expression"_k)
 {
 }
 
@@ -47,8 +47,8 @@ namespace {
     struct XPathExpRep_ : XPath::Expression ::IRep {
         String                     fExpression_;
         XPath::Expression::Options fOptions_;
-        XPathExpRep_ (const String& e, const XPath::Expression::Options& o)
-            : fExpression_{e}
+        XPathExpRep_ (String&& e, const XPath::Expression::Options& o)
+            : fExpression_{move (e)}
             , fOptions_{o}
         {
         }
@@ -62,8 +62,8 @@ namespace {
         }
     };
 }
-XPath::Expression::Expression (const String& e, const Options& o)
-    : fRep_{make_shared<XPathExpRep_> (e, o)}
+XPath::Expression::Expression (String&& e, const Options& o)
+    : fRep_{make_shared<XPathExpRep_> (move (e), o)}
 {
 }
 
@@ -92,6 +92,9 @@ Element::Ptr Element::IRep::GetChildElementByID (const String& id) const
  */
 String Node::Ptr::ToString () const
 {
+    if (GetRep () == nullptr) {
+        return "nullptr"sv;
+    }
     Streams::MemoryStream::Ptr m = Streams::MemoryStream::New<byte> ();
     GetRep ()->Write (m, DOM::SerializationOptions{});
     return Streams::TextReader::New (m).ReadAll ();

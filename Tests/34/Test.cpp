@@ -1627,21 +1627,21 @@ namespace {
             // Basic XPath
             {
                 // read https://www.w3schools.com/xml/xpath_syntax.asp tutorial - basics
-                auto n1 = d.GetRootElement ().LookupOne (XPath::Expression{"person"});
+                auto n1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person"});
                 DbgTrace (L"n1=%s", Characters::ToString (n1).c_str ());
-                EXPECT_EQ (get<DOM::Element::Ptr> (*n1).GetName (), "person");
-                auto n2 = d.GetRootElement ().LookupOne (XPath::Expression{"person/name"});
+                EXPECT_EQ (n1.GetName (), "person");
+                auto n2 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person/name"});
                 DbgTrace (L"n2=%s", Characters::ToString (n2).c_str ());
-                EXPECT_EQ (get<DOM::Element::Ptr> (*n2).GetName (), "name");
-                auto n3 = d.GetRootElement ().LookupOne (XPath::Expression{"/personnel/person/name"});
+                EXPECT_EQ (n2.GetName (), "name");
+                auto n3 = d.GetRootElement ().LookupOneElement (XPath::Expression{"/personnel/person/name"});
                 DbgTrace (L"n3=%s", Characters::ToString (n3).c_str ());
-                EXPECT_EQ (get<DOM::Element::Ptr> (*n3).GetName (), "name");
-                auto n4 = d.GetRootElement ().LookupOne (XPath::Expression{"/person/name"}); // '/' means start at root of document, not context node, and root of document is personnel
+                EXPECT_EQ (n3.GetName (), "name");
+                auto n4 = d.GetRootElement ().LookupOneElement (XPath::Expression{"/person/name"}); // '/' means start at root of document, not context node, and root of document is personnel
                 DbgTrace (L"n4=%s", Characters::ToString (n4).c_str ());
-                EXPECT_EQ (n4, nullopt);
-                auto n5 = d.GetRootElement ().LookupOne (XPath::Expression{"//person/name"});
+                EXPECT_EQ (n4, nullptr);
+                auto n5 = d.GetRootElement ().LookupOneElement (XPath::Expression{"//person/name"});
                 DbgTrace (L"n5=%s", Characters::ToString (n5).c_str ());
-                EXPECT_EQ (get<DOM::Element::Ptr> (*n5).GetName (), "name");
+                EXPECT_EQ (n5.GetName (), "name");
             }
             // Iterator XPath
             {
@@ -1657,21 +1657,50 @@ namespace {
                 auto n5 = d.GetRootElement ().Lookup (XPath::Expression{"//person/name"});
                 EXPECT_EQ (n5.size (), 6u);
             }
-// @todo test cases where we make modifications to the document from data in Lookup, but use fancier XPath to select a particular node
+            // Test Updating DOM using results from XPath lookups
+            {
+                // Workaround lack of XPath predicates with Stroika Iterable filter functions
+                Element::Ptr mrManager{Memory::ValueOf(d.GetRootElement ().Lookup (XPath::Expression{"person"}).First ([] (XPath::Result n) -> bool {
+                    Element::Ptr e = n;
+                    return e != nullptr and e.GetID () == "Big.Boss";
+                }))};
+                EXPECT_EQ (mrManager.GetValue ("email"), "chief@foo.com"_k);
+                mrManager.SetValue ("email", "alpha@beta.com");
+                Element::Ptr mrManager2{Memory::ValueOf (d.GetRootElement ().Lookup (XPath::Expression{"person"}).First ([] (XPath::Result n) {
+                    Element::Ptr e = n;
+                    return e != nullptr and e.GetValue ("email") == "alpha@beta.com"_k;
+                }))};
+                EXPECT_EQ (mrManager2.GetID (), "Big.Boss"_k);
+            }
+            #if 0
+            // (DOM Update/XPath code that doesn't work on Xerces)
             try {
-                /// add getValue overload that gets value of named xpath elt, and add this to assert here @todo
-                auto mrManager = d.GetRootElement ().LookupOne (XPath::Expression{"person/link/@subordinates"});
-                DbgTrace (L"mrManager=%s", Characters::ToString (mrManager).c_str ());
-                auto mrManager2 = d.GetRootElement ().LookupOne (XPath::Expression{"person/link[@subordinates]"});
-                DbgTrace (L"mrManager2=%s", Characters::ToString (mrManager2).c_str ());
-                auto mrManager2a = d.GetRootElement ().LookupOne (XPath::Expression{"person[link/@subordinates]"});
+                {
+                    Element::Ptr mrManager2 = d.GetRootElement ().Lookup (XPath::Expression{"person"}).FirstValue ([] (XPath::Result n) {
+                        Element::Ptr e = n;
+                        return e != nullptr and e.GetValue ("email") == "alpha@beta.com"_k;
+                    });
+                    EXPECT_EQ (mrManager2.GetValue ("@id"), "Big.Boss"_k);
+                }
+                auto mrManager1Subordinates = d.GetRootElement ().LookupOneNode (XPath::Expression{"person/link/@subordinates"});
+                DbgTrace (L"mrManager1Subordinates=%s", Characters::ToString (mrManager1Subordinates).c_str ());
+                EXPECT_EQ (mrManager1Subordinates.GetValue (), "one.worker two.worker three.worker four.worker five.worker");
+                Element::Ptr mrManager2Link = d.GetRootElement ().LookupOneElement (XPath::Expression{"person/link[@subordinates]"});
+                DbgTrace (L"mrManager2Link=%s", Characters::ToString (mrManager2Link).c_str ());
+                EXPECT_EQ (mrManager2Link.GetValue ("@subordinates"), "one.worker two.worker three.worker four.worker five.worker");
+                auto mrManager2a = d.GetRootElement ().LookupOneElement (XPath::Expression{"person[link/@subordinates]"});
                 DbgTrace (L"mrManager2a=%s", Characters::ToString (mrManager2a).c_str ());
-                auto mrManager3 = d.GetRootElement ().LookupOne (XPath::Expression{"person[@id='Big.Boss']"});
+                EXPECT_EQ (mrManager2a.GetValue ("email"), "chief@foo.com");
+                EXPECT_EQ (mrManager2a.GetValue ("name/family"), "Boss");
+                auto mrManager3 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person[@id='Big.Boss']"});
                 DbgTrace (L"mrManager3=%s", Characters::ToString (mrManager3).c_str ());
+                EXPECT_EQ (mrManager3.GetValue ("email"), "chief@foo.com");
+                EXPECT_EQ (mrManager3.GetValue ("name/family"), "Boss");
             }
             catch (const XML::DOM::XPath::XPathExpressionNotSupported&) {
                 Assert (d.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider); // sadly Xerces 3.2 doesn't support [
             }
+            #endif
         });
     }
 }

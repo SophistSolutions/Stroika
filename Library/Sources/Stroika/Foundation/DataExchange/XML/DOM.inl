@@ -21,6 +21,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
      ************************ XML::DOM::XPath::Expression ***************************
      ********************************************************************************
      */
+    template <Characters::IConvertibleToString ST>
+    inline XPath::Expression::Expression (ST&& e, const Options& o)
+        : Expression{String{e}, o}
+    {
+    }
     inline String XPath::Expression::GetExpression () const
     {
         return fRep_->GetExpression ();
@@ -117,6 +122,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         Require (GetRep () == nullptr or GetNodeType () == eElementNT);
     }
+    inline Element::Ptr::Ptr (const XPath::Result& r)
+        : Node::Ptr{get<Node::Ptr> (r)}
+    {
+        Require (GetRep () == nullptr or GetNodeType () == eElementNT);
+    }
     inline optional<String> Element::Ptr::GetAttribute (const NameWithNamespace& attrName) const
     {
         return GetRep ()->GetAttribute (attrName);
@@ -135,6 +145,33 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline void Element::Ptr::SetAttribute (const NameWithNamespace& attrName, const optional<String>& v)
     {
         GetRep ()->SetAttribute (attrName, v);
+    }
+    inline optional<String> Element::Ptr::GetID () const
+    {
+        return GetRep ()->GetAttribute ("id"sv);
+    }
+    inline optional<String> Element::Ptr::GetValue (const XPath::Expression& e) const
+    {
+        Require (e.GetOptions ().fResultTypeIndex == XPath::ResultTypeIndex_v<Node::Ptr>);
+        if (optional<XPath::Result> o = GetRep ()->LookupOne (e)) {
+            Node::Ptr ee = get<Node::Ptr> (*o);
+            if (ee != nullptr) {
+                return ee.GetValue ();
+            }
+        }
+        return nullopt;
+    }
+    inline void Element::Ptr::SetValue (const XPath::Expression& e, const String& v)
+    {
+        Require (e.GetOptions ().fResultTypeIndex == XPath::ResultTypeIndex_v<Node::Ptr>);
+        if (optional<XPath::Result> o = GetRep ()->LookupOne (e)) {
+            Node::Ptr ee = get<Node::Ptr> (*o);
+            if (ee != nullptr) {
+                ee.SetValue (v);
+                return;
+            }
+        }
+        Execution::Throw (Execution::RuntimeErrorException<> ("Node not found relative to given element"));
     }
     inline auto Element::Ptr::Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode) -> Ptr
     {
@@ -208,9 +245,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return Element::Ptr{GetRep ()->GetChildElementByID (id)};
     }
-    inline auto Element::Ptr::LookupOne (const XPath::Expression& e) const -> optional<XPath::Result>
+    inline auto Element::Ptr::LookupOneElement (const XPath::Expression& e) const -> Element::Ptr
     {
-        return GetRep ()->LookupOne (e);
+        return Element::Ptr{LookupOneNode (e)};
+    }
+    inline auto Element::Ptr::LookupOneNode (const XPath::Expression& e) const -> Node::Ptr
+    {
+        Require (e.GetOptions ().fResultTypeIndex == XPath::ResultTypeIndex_v<Node::Ptr>);
+        if (auto o = GetRep ()->LookupOne (e)) {
+            return get<Node::Ptr> (*o);
+        }
+        return Node::Ptr{};
     }
     inline auto Element::Ptr::Lookup (const XPath::Expression& e) const -> Traversal::Iterable<XPath::Result>
     {

@@ -1002,12 +1002,12 @@ namespace {
                 try {
                     expr.emplace (doc->createExpression (e.GetExpression ().As<u16string> ().c_str (), *resolver));
                 }
-                catch (const xercesc_3_2::DOMXPathException& e) {
+                catch (const xercesc_3_2::DOMXPathException&) {
                     // MANY basic things are not supported in Xerces XPath - like a[1] - brackets not supported.
                     Execution::Throw (XPath::XPathExpressionNotSupported::kThe);
                 }
                 switch (e.GetOptions ().fResultTypeIndex.value_or (DOMXPathResult::ANY_TYPE)) {
-                    case XPath::ResultTypeIndex_v<Element::Ptr>: {
+                    case XPath::ResultTypeIndex_v<Node::Ptr>: {
                         auto o = e.GetOptions ();
                         if (firstOnly) {
                             rt = e.GetOptions ().fOrdered ? DOMXPathResult::FIRST_ORDERED_NODE_TYPE : DOMXPathResult::ANY_UNORDERED_NODE_TYPE;

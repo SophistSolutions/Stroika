@@ -446,8 +446,9 @@ namespace {
                 if (n == nullptr) [[unlikely]] {
                     return nullopt;
                 }
-                // for now only support elements...
+                // for now only support elements/attributes...
                 switch (n->type) {
+                    case XML_ATTRIBUTE_NODE:
                     case XML_ELEMENT_NODE: {
                         return WrapLibXML2NodeInStroikaNode_ (n);
                     }
