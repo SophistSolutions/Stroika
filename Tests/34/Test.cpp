@@ -1689,7 +1689,7 @@ namespace {
                 EXPECT_EQ (mrManager2Link.GetValue ("@subordinates"), "one.worker two.worker three.worker four.worker five.worker");
                 auto mrManager2a = d.GetRootElement ().LookupOneElement (XPath::Expression{"person[link/@subordinates]"});
                 //DbgTrace (L"mrManager2a=%s", Characters::ToString (mrManager2a).c_str ());
-                EXPECT_EQ (mrManager2a.GetValue ("email"), "alpha@beta.com");   // because changed in previous test
+                EXPECT_EQ (mrManager2a.GetValue ("email"), "alpha@beta.com"); // because changed in previous test
                 EXPECT_EQ (mrManager2a.GetValue ("name/family"), "Boss");
                 auto mrManager3 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person[@id='Big.Boss']"});
                 //DbgTrace (L"mrManager3=%s", Characters::ToString (mrManager3).c_str ());
