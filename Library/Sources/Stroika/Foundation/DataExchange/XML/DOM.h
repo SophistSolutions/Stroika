@@ -49,6 +49,14 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     namespace XPath {
 
         /**
+         *  For example, Xerces 3.2 doesn't support [] in expressions
+         */
+        struct XPathExpressionNotSupported : Execution::RuntimeErrorException<> {
+            XPathExpressionNotSupported ();
+            static const XPathExpressionNotSupported kThe;
+        };
+        inline const XPathExpressionNotSupported XPathExpressionNotSupported::kThe;
+        /**
          * Probably incomplete - see https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html#ab718aec450c5438e0cc3a6920044a0c1
          * 
          *  @todo unclear if we ever return Nodes other than Element::Ptr - so for now just say Element::Ptr, but maybe expand list later.

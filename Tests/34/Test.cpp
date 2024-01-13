@@ -1645,7 +1645,7 @@ namespace {
             }
             // Iterator XPath
             {
-                auto n1 = d.GetRootElement ().Lookup (XPath::Expression{"person"}); 
+                auto n1 = d.GetRootElement ().Lookup (XPath::Expression{"person"});
                 //DbgTrace (L"n1=%s", Characters::ToString (n1).c_str ());
                 EXPECT_EQ (n1.size (), 6u);
                 auto n2 = d.GetRootElement ().Lookup (XPath::Expression{"person/name"});
@@ -1657,7 +1657,21 @@ namespace {
                 auto n5 = d.GetRootElement ().Lookup (XPath::Expression{"//person/name"});
                 EXPECT_EQ (n5.size (), 6u);
             }
-            // @todo test cases where we make modifications to the document from data in Lookup, but use fancier XPath to select a particular node
+// @todo test cases where we make modifications to the document from data in Lookup, but use fancier XPath to select a particular node
+            try {
+                /// add getValue overload that gets value of named xpath elt, and add this to assert here @todo
+                auto mrManager = d.GetRootElement ().LookupOne (XPath::Expression{"person/link/@subordinates"});
+                DbgTrace (L"mrManager=%s", Characters::ToString (mrManager).c_str ());
+                auto mrManager2 = d.GetRootElement ().LookupOne (XPath::Expression{"person/link[@subordinates]"});
+                DbgTrace (L"mrManager2=%s", Characters::ToString (mrManager2).c_str ());
+                auto mrManager2a = d.GetRootElement ().LookupOne (XPath::Expression{"person[link/@subordinates]"});
+                DbgTrace (L"mrManager2a=%s", Characters::ToString (mrManager2a).c_str ());
+                auto mrManager3 = d.GetRootElement ().LookupOne (XPath::Expression{"person[@id='Big.Boss']"});
+                DbgTrace (L"mrManager3=%s", Characters::ToString (mrManager3).c_str ());
+            }
+            catch (const XML::DOM::XPath::XPathExpressionNotSupported&) {
+                Assert (d.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider); // sadly Xerces 3.2 doesn't support [
+            }
         });
     }
 }

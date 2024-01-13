@@ -28,6 +28,21 @@ using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::DataExchange::XML::DOM;
 using namespace Stroika::Foundation::DataExchange::XML::DOM::Document;
 
+/*
+ ********************************************************************************
+ ********************** XPath::XPathExpressionNotSupported **********************
+ ********************************************************************************
+ */
+XPath::XPathExpressionNotSupported::XPathExpressionNotSupported ()
+    : Execution::RuntimeErrorException<> ("XPath implementation doesn't support that XML expression")
+{
+}
+
+/*
+ ********************************************************************************
+ ************************** XPath::Expression ***********************************
+ ********************************************************************************
+ */
 namespace {
     struct XPathExpRep_ : XPath::Expression ::IRep {
         String                     fExpression_;
@@ -54,7 +69,7 @@ XPath::Expression::Expression (const String& e, const Options& o)
 
 /*
  ********************************************************************************
- ********************************* Element::IRep ***********************************
+ ****************************** Element::IRep ***********************************
  ********************************************************************************
  */
 Element::Ptr Element::IRep::GetChildElementByID (const String& id) const

@@ -5,6 +5,8 @@
 
 #include <fstream>
 
+#include <xercesc/validators/schema/identity/XPathException.hpp>
+
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -997,7 +999,13 @@ namespace {
                     (*resolver)->addNamespaceBinding (ni.fPrefix.value_or ("").As<u16string> ().c_str (),
                                                       ni.fURI.As<String> ().As<u16string> ().c_str ());
                 }
-                expr.emplace (doc->createExpression (e.GetExpression ().As<u16string> ().c_str (), *resolver));
+                try {
+                    expr.emplace (doc->createExpression (e.GetExpression ().As<u16string> ().c_str (), *resolver));
+                }
+                catch (const xercesc_3_2::DOMXPathException& e) {
+                    // MANY basic things are not supported in Xerces XPath - like a[1] - brackets not supported.
+                    Execution::Throw (XPath::XPathExpressionNotSupported::kThe);
+                }
                 switch (e.GetOptions ().fResultTypeIndex.value_or (DOMXPathResult::ANY_TYPE)) {
                     case XPath::ResultTypeIndex_v<Element::Ptr>: {
                         auto o = e.GetOptions ();
@@ -1082,9 +1090,9 @@ namespace {
                     return XPathQueryHelper_::ToResult_ (*r);
                 });
             }
-            if (xpHelp->rt == DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE or xpHelp->rt == DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE)  [[likely]] {
+            if (xpHelp->rt == DOMXPathResult::UNORDERED_NODE_SNAPSHOT_TYPE or xpHelp->rt == DOMXPathResult::ORDERED_NODE_SNAPSHOT_TYPE) [[likely]] {
                 return Traversal::CreateGenerator<XPath::Result> ([xpHelp, r, snapIdx = 0] () mutable -> optional<XPath::Result> {
-                    if (not (*r)->snapshotItem (snapIdx)) {
+                    if (not(*r)->snapshotItem (snapIdx)) {
                         return nullopt;
                     }
                     ++snapIdx;
