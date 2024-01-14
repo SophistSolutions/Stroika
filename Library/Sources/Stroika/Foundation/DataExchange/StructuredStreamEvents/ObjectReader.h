@@ -519,6 +519,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
     public:
         /**
+         *  NOTE that this may be called zero or more times between Activated and Deactivating, and generally
+         *  all the text should be accumulated. Callers may split incoming text into arbitrarily many pieces.
          */
         virtual void HandleTextInside (const String& text);
 
@@ -545,7 +547,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
     /**
      *  This concrete class is used to capture the state of an ongoing StructuredStreamParse/transformation. Logically, it
-     *  mainstains the 'stack' you would have in constructing a recursive decent object mapping.
+     *  maintains the 'stack' you would have in constructing a recursive decent object mapping.
      *
      *  \note   Important Design Principle for Reader
      *
