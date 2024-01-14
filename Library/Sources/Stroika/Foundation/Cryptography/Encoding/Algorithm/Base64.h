@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
     }
     [[deprecated ("Since Stroika v3.0d5 use Base64::Decode")]] inline void DecodeBase64 (const string& s, const Streams::OutputStream::Ptr<byte>& out)
     {
-        Base64::Decode (s), out;
+        Base64::Decode (s, out);
     }
 
     using Base64::LineBreak; // deprecated
