@@ -250,7 +250,7 @@ namespace {
                             dataValueString = dataValueString.SubString (i + 1);
                         }
                     }
-                    BLOB resultBLOB = Cryptography::Encoding::Algorithm::DecodeBase64 (dataValueString.AsUTF8 ());
+                    BLOB resultBLOB = Cryptography::Encoding::Algorithm::Base64::Decode (dataValueString.AsUTF8 ());
                     EXPECT_TRUE (resultBLOB == roundTripTestData);
                 }
             }
@@ -286,7 +286,7 @@ namespace {
                             dataValueString = dataValueString.SubString (i + 1);
                         }
                     }
-                    BLOB resultBLOB = Cryptography::Encoding::Algorithm::DecodeBase64 (dataValueString.AsUTF8 ());
+                    BLOB resultBLOB = Cryptography::Encoding::Algorithm::Base64::Decode (dataValueString.AsUTF8 ());
                     EXPECT_TRUE (resultBLOB == roundTripTestData);
                 }
             }

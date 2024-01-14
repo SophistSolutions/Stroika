@@ -459,7 +459,7 @@ Memory::BLOB VariantValue::AsBLOB_ () const
             return v->fVal;
         }
         default: {
-            return Cryptography::Encoding::Algorithm::DecodeBase64 (As<String> ());
+            return Cryptography::Encoding::Algorithm::Base64::Decode (As<String> ());
         }
     }
 }
@@ -722,7 +722,7 @@ String VariantValue::AsString_ () const
         case Type::eBLOB: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
             AssertNotNull (v);
-            return String{Cryptography::Encoding::Algorithm::EncodeBase64 (v->fVal)};
+            return String{Cryptography::Encoding::Algorithm::Base64::Encode (v->fVal)};
         }
         case Type::eInteger: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<IntegerType_>*> (fVal_.get ());

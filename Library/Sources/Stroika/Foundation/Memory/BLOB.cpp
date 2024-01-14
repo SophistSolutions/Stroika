@@ -189,7 +189,7 @@ BLOB BLOB::FromHex (const Characters::String& s)
 
 BLOB BLOB::FromBase64 (span<const char> s)
 {
-    return Cryptography::Encoding::Algorithm::DecodeBase64 (s);
+    return Cryptography::Encoding::Algorithm::Base64::Decode (s);
 }
 
 BLOB BLOB::FromBase64 (const Characters::String& s)
@@ -338,7 +338,7 @@ Characters::String Stroika::Foundation::Memory::BLOB::AsHex (size_t maxBytesToSh
 template <>
 Characters::String Stroika::Foundation::Memory::BLOB::AsBase64 () const
 {
-    return Cryptography::Encoding::Algorithm::EncodeBase64 (*this);
+    return Cryptography::Encoding::Algorithm::Base64::Encode (*this);
 }
 
 BLOB BLOB::Repeat (unsigned int count) const

@@ -274,7 +274,7 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          *  @see Characters::ToString()
-         *  Return a debug-friendly, display version of the current variant. This is not guaranteed parseable or usable except for debugging.
+         *  Return a debug-friendly, display version of the current variant. This is not guaranteed parsable or usable except for debugging.
          */
         nonvirtual String ToString () const;
 
@@ -304,17 +304,18 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \note   About As<String> () and As<wstring> ()
          *          Conversion to these types is ALWAYS supported, no matter what the source type.
-         *          Coersion of Date/DateTime values uses ISO8601 format.
-         *          Coersion of array and map values is vaguely json-ish in format, readable, but not intended
+         *          Coercion of Date/DateTime values uses ISO8601 format.
+         *          Coercion of array and map values is vaguely json-ish in format, readable, but not intended
          *          to be regular enough to be parsable.
          *
          *  \note   About As<bool> ()
-         *          Coerences String value 'true' - case sensative - to true, and any integer or unsigned intger value
+         *          Coerces String value 'true' - case sensitive - to true, and any integer or unsigned integer value
          *          to true if non-zero.
          *
          *  \note   About As<Memory::BLOB> ()
          *          If type=eBLOB, return that. If type = null, return empty blob.
          *          Else, converts any type to String, and use base64 conversion.
+         *          Similarly - for As<String> on types that are eBLOB - they are decoded as Base64.
          *
          *  \note   About As<Date> (), About As<DateTime> ()
          *          Null maps to empty Date.DateTime; 

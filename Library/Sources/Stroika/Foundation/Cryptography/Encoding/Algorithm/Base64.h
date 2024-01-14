@@ -32,21 +32,60 @@
  *
  */
 
-namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
+namespace Stroika::Foundation::Cryptography::Encoding::Algorithm::Base64 {
 
-    Memory::BLOB DecodeBase64 (span<const char> s);
-    Memory::BLOB DecodeBase64 (const string& s);
-    Memory::BLOB DecodeBase64 (const u8string& s);
-    Memory::BLOB DecodeBase64 (const Characters::String& s);
-    void         DecodeBase64 (const string& s, const Streams::OutputStream::Ptr<byte>& out);
+    Memory::BLOB Decode (span<const char> s);
+    Memory::BLOB Decode (const string& s);
+    Memory::BLOB Decode (const u8string& s);
+    Memory::BLOB Decode (const Characters::String& s);
+    void         Decode (const string& s, const Streams::OutputStream::Ptr<byte>& out);
 
     enum class LineBreak : uint8_t {
         eLF_LB,
         eCRLF_LB,
         eAuto_LB = eCRLF_LB
     };
-    string EncodeBase64 (const Streams::InputStream::Ptr<byte>& from, LineBreak lb = LineBreak::eAuto_LB);
-    string EncodeBase64 (const Memory::BLOB& from, LineBreak lb = LineBreak::eAuto_LB);
+    struct Options {
+        LineBreak fLineBreak{LineBreak::eAuto_LB};
+    };
+    string Encode (const Streams::InputStream::Ptr<byte>& from, const Options& o = {});
+    string Encode (const Memory::BLOB& from, const Options& o = {});
+
+}
+
+namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
+
+    [[deprecated ("Since Stroika v3.0d5 use Base64::Decode")]] inline Memory::BLOB DecodeBase64 (span<const char> s)
+    {
+        return Base64::Decode (s);
+    }
+    [[deprecated ("Since Stroika v3.0d5 use Base64::Decode")]] inline Memory::BLOB DecodeBase64 (const string& s)
+    {
+        return Base64::Decode (s);
+    }
+    [[deprecated ("Since Stroika v3.0d5 use Base64::Decode")]] inline Memory::BLOB DecodeBase64 (const u8string& s)
+    {
+        return Base64::Decode (s);
+    }
+    [[deprecated ("Since Stroika v3.0d5 use Base64::Decode")]] inline Memory::BLOB DecodeBase64 (const Characters::String& s)
+    {
+        return Base64::Decode (s);
+    }
+    [[deprecated ("Since Stroika v3.0d5 use Base64::Decode")]] inline void DecodeBase64 (const string& s, const Streams::OutputStream::Ptr<byte>& out)
+    {
+        Base64::Decode (s), out;
+    }
+
+    using Base64::LineBreak; // deprecated
+    [[deprecated ("Since Stroika v3.0d5 use Base64::Encode")]] inline string EncodeBase64 (const Streams::InputStream::Ptr<byte>& from,
+                                                                                           LineBreak lb = LineBreak::eAuto_LB)
+    {
+        return Base64::Encode (from, Base64::Options{.fLineBreak = lb});
+    }
+    [[deprecated ("Since Stroika v3.0d5 use Base64::Encode")]] inline string EncodeBase64 (const Memory::BLOB& from, LineBreak lb = LineBreak::eAuto_LB)
+    {
+        return Base64::Encode (from, Base64::Options{.fLineBreak = lb});
+    }
 
 }
 

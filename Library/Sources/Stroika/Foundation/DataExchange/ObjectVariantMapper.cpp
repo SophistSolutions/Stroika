@@ -301,12 +301,13 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Memory::BLO
 {
     // No super obvious way to convert BLOB to/from JSON, but base64 encoding appears the best default
     // Note - callers can easily replace this converter
+    // Note also - https://blog.kevinalbs.com/base122 - 33% increase - maybe base-122 better, but doesnt seem widely supported.
     using T                                  = Memory::BLOB;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue{String{Cryptography::Encoding::Algorithm::EncodeBase64 (*fromObjOfTypeT)}};
+        return VariantValue{String{Cryptography::Encoding::Algorithm::Base64::Encode (*fromObjOfTypeT)}};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
-        *intoObjOfTypeT = Cryptography::Encoding::Algorithm::DecodeBase64 (d.As<String> ());
+        *intoObjOfTypeT = Cryptography::Encoding::Algorithm::Base64::Decode (d.As<String> ());
     };
     return TypeMappingDetails{typeid (T), fromObjectMapper, toObjectMapper};
 }

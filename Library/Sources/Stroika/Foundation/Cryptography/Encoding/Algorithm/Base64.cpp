@@ -134,13 +134,13 @@ namespace {
     }
 }
 
-Memory::BLOB Algorithm::DecodeBase64 (const Characters::String& s)
+Memory::BLOB Algorithm::Base64::Decode (const Characters::String& s)
 {
     //@todo - improve/fix this
-    return DecodeBase64 (s.AsUTF8<string> ());
+    return Decode (s.AsUTF8<string> ());
 }
 
-Memory::BLOB Algorithm::DecodeBase64 (span<const char> s)
+Memory::BLOB Algorithm::Base64::Decode (span<const char> s)
 {
     if (s.empty ()) {
         return Memory::BLOB{};
@@ -154,7 +154,7 @@ Memory::BLOB Algorithm::DecodeBase64 (span<const char> s)
     return Memory::BLOB{buf1.begin (), buf1.begin () + r};
 }
 
-Memory::BLOB Algorithm::DecodeBase64 (const string& s)
+Memory::BLOB Algorithm::Base64::Decode (const string& s)
 {
     if (s.empty ()) {
         return Memory::BLOB{};
@@ -168,7 +168,7 @@ Memory::BLOB Algorithm::DecodeBase64 (const string& s)
     return Memory::BLOB{buf1.begin (), buf1.begin () + r};
 }
 
-Memory::BLOB Algorithm::DecodeBase64 (const u8string& s)
+Memory::BLOB Algorithm::Base64::Decode (const u8string& s)
 {
     if (s.empty ()) {
         return Memory::BLOB{};
@@ -182,15 +182,15 @@ Memory::BLOB Algorithm::DecodeBase64 (const u8string& s)
     return Memory::BLOB{buf1.begin (), buf1.begin () + r};
 }
 
-void Algorithm::DecodeBase64 (const string& s, const Streams::OutputStream::Ptr<byte>& out)
+void Algorithm::Base64::Decode (const string& s, const Streams::OutputStream::Ptr<byte>& out)
 {
     // QUICKIE implementation...
-    out.Write (DecodeBase64 (s));
+    out.Write (Decode (s));
 }
 
 /*
  ********************************************************************************
- ************************** Algorithm::EncodeBase64 *****************************
+ ************************ Algorithm::Base64::Encode *****************************
  ********************************************************************************
  */
 namespace {
@@ -302,7 +302,7 @@ namespace {
     }
 }
 
-string Algorithm::EncodeBase64 (const Streams::InputStream::Ptr<byte>& from, LineBreak lb)
+string Algorithm::Base64::Encode (const Streams::InputStream::Ptr<byte>& from, const Options& options)
 {
 #if 0
     // Use look doing multiple base64_encode_block_() calls!
@@ -313,7 +313,7 @@ string Algorithm::EncodeBase64 (const Streams::InputStream::Ptr<byte>& from, Lin
     const byte*  end   = bytes.end ();
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
-    base64_encodestate state{lb};
+    base64_encodestate state{options.fLineBreak};
     size_t             srcLen  = end - start;
     size_t             bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
@@ -340,13 +340,13 @@ string Algorithm::EncodeBase64 (const Streams::InputStream::Ptr<byte>& from, Lin
 #endif
 }
 
-string Algorithm::EncodeBase64 (const Memory::BLOB& from, LineBreak lb)
+string Algorithm::Base64::Encode (const Memory::BLOB& from, const Options& options)
 {
     const byte* start = from.begin ();
     const byte* end   = from.end ();
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
-    base64_encodestate state{lb};
+    base64_encodestate state{options.fLineBreak};
     size_t             srcLen  = end - start;
     size_t             bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!

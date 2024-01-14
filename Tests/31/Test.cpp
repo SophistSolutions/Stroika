@@ -117,11 +117,14 @@ namespace {
             namespace {
                 inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
                 {
+                    using namespace Encoding::Algorithm;
 #if qPlatform_Windows && qHasFeature_ATLMFC
-                    EXPECT_TRUE (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
-                                                                    LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
-                    EXPECT_TRUE (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}), LineBreak::eLF_LB) ==
-                                 EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
+                    EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
+                                               (Base64::Options{.fLineBreak = Base64::LineBreak::eCRLF_LB})),
+                               EncodeBase64_ATL_ (bytes, Base64::LineBreak::eCRLF_LB));
+                    EXPECT_EQ (Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}),
+                                               (Base64::Options{.fLineBreak = Base64::LineBreak::eLF_LB})),
+                               EncodeBase64_ATL_ (bytes, Base64::LineBreak::eLF_LB));
 #endif
                 }
                 inline void VERIFY_ATL_DECODE_ ()
@@ -135,17 +138,17 @@ namespace {
             namespace {
                 void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<byte>& bytes)
                 {
-                    EXPECT_TRUE (Encoding::Algorithm::DecodeBase64 (
-                                     Encoding::Algorithm::EncodeBase64 (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}))) == bytes);
+                    EXPECT_TRUE (Encoding::Algorithm::Base64::Decode (
+                                     Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{bytes}))) == bytes);
                 }
             }
 
             namespace {
                 void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<byte>& originalUnEncodedBytes)
                 {
-                    EXPECT_TRUE (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedSpanInputStream::New<byte> (span{originalUnEncodedBytes})) ==
+                    EXPECT_TRUE (Encoding::Algorithm::Base64::Encode (ExternallyOwnedSpanInputStream::New<byte> (span{originalUnEncodedBytes})) ==
                                  base64EncodedString);
-                    EXPECT_TRUE (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
+                    EXPECT_TRUE (Encoding::Algorithm ::Base64::Decode (base64EncodedString) == originalUnEncodedBytes);
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
                 }
