@@ -13,7 +13,6 @@
 #include "../../Streams/MemoryStream.h"
 #include "../../Streams/TextReader.h"
 
-#if qHasFeature_Xerces
 namespace Stroika::Foundation::DataExchange::XML::DOM {
 
     /*
@@ -199,14 +198,15 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline Element::Ptr Element::Ptr::Replace ()
     {
         /**
-         *  Disallow replacing the root element - create a new document instead. (@todo fix a nd allow docRoot)
-         * 
          *  Basic algorithm:
-         *      o   Save parent node
-         *      o   Add new node just after this one (with same name/namespace)
-         *      o   Delete this node (one just 'replaced')
+         *      o   If Root of document (no parent node)
+         *          o   Delete this
+         *          o   Append (this loses relative position of nodes, which we may want to fix, but should generally work OK)
+         *      o   If middling (not root) node
+         *          o   Add new node just after this one (with same name/namespace)
+         *          o   Delete this node (one just 'replaced')
+         *          Note - to avoid issues with temporarily having two nodes of the same name in list of children - may need to modify this logic?
          * 
-         *  Note - to avoid issues with temporarily having two nodes of the same name in list of children - may need to modify this logic?
          */
         Element::Ptr parent = this->GetParent ();
         Element::Ptr newNode{nullptr};
@@ -217,7 +217,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             newNode = parent.Append (n);
         }
         else {
-            newNode = parent.Insert (this->GetName (), *this); // @todo clone NS as well!!!
+            newNode = parent.Insert (this->GetName (), *this);
             this->Delete ();
         }
         Ensure (newNode.GetParent () == parent);
@@ -312,6 +312,5 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
 
 }
-#endif
 
 #endif
