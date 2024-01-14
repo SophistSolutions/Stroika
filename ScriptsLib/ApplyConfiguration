@@ -334,7 +334,7 @@ sub WriteStroikaConfigMakeHeader
 
 	print (OUT "\n\n");
 	print (OUT "# Extra dynamically computed link(cppflags) lines\n");
-	if (not ($PkgConfigNames eq "")) {
+	if (not (trim($PkgConfigNames) eq "")) {
 		my $extraPkgConfigArgs = "";
 		# This msvc-syntax hack FIXES libxml2, but BREAKS GoogleTest, that already generates in the right format for windows.
 		# Not sure if I want to go with patching .pc files, or this trick. Must see what others do - so leave this out for now--LGP 2023-12-21
