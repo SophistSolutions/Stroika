@@ -13,35 +13,25 @@ namespace Stroika::Foundation::DataExchange::XML {
 
     /*
      ********************************************************************************
-     ******************************** NamespaceDefinition ***************************
+     ******************************* NamespaceDefinitions ***************************
      ********************************************************************************
      */
-    inline NamespaceDefinition::NamespaceDefinition (const URI& uri, const optional<String>& prefix)
-        : fURI{uri}
-        , fPrefix{prefix}
+    inline NamespaceDefinitions::NamespaceDefinitions (const optional<URI>& defaultNamespace, const Mapping<String, URI>& prefixedNamepsaces)
+        : fDefaultNamespace_{defaultNamespace}
+        , fPrefixedNS_{prefixedNamepsaces}
     {
     }
-
-    /*
-     ********************************************************************************
-     *************************** NamespaceDefinitionsList ***************************
-     ********************************************************************************
-     */
-    inline NamespaceDefinitionsList::NamespaceDefinitionsList (const vector<NamespaceDefinition>& namespaces)
-        : fNamespaces (namespaces)
+    inline NamespaceDefinitions::NamespaceDefinitions (const Mapping<String, URI>& prefixedNamepsaces)
+        : fPrefixedNS_{prefixedNamepsaces}
     {
     }
-    inline bool NamespaceDefinitionsList::empty () const
+    inline optional<URI> NamespaceDefinitions::GetDefaultNamespace () const
     {
-        return fNamespaces.empty ();
+        return fDefaultNamespace_;
     }
-    inline Sequence<NamespaceDefinition> NamespaceDefinitionsList::GetNamespaces () const
+    inline Mapping<String, URI> NamespaceDefinitions::GetPrefixedNamespaces () const
     {
-        return fNamespaces;
-    }
-    inline void NamespaceDefinitionsList::SetNamespaces (const Sequence<NamespaceDefinition>& namespaces)
-    {
-        fNamespaces = namespaces;
+        return fPrefixedNS_.value_or (Mapping<String, URI>{});
     }
 
     /*

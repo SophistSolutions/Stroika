@@ -43,7 +43,6 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
     struct IRep {
         virtual const Providers::ISchemaProvider* GetProvider () const        = 0;
         virtual optional<URI>                     GetTargetNamespace () const = 0;
-        //    virtual NamespaceDefinitionsList          GetNamespaceDefinitions () const = 0;
         // not super useful, except if you want to clone
         virtual Memory::BLOB GetData () = 0;
         // not super useful, except if you want to clone

@@ -79,33 +79,31 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         constexpr uint8_t ResultTypeIndex_v = static_cast<uint8_t> (Common::variant_index<Result, T> ());
 
         /**
-         *  This def is provider independent, but since implemetned with a shared_ptr and immutable, the providers can maintain a cache of mappings
-         *  of expressions to internal compiled version of expression.
+         *  Expression is provider independent, but since it is implemented with a shared_ptr and immutable,
+         *  the providers can maintain a cache of mappings of expressions to internal compiled version of expression.
          * 
-         *  So - it behaves rather obviously - except that if you copy an expression, you KNOW the underlying data wont change so can cache dervied values (like a compiled expression).
+         *  So - it behaves rather obviously - except that if you copy an expression, you KNOW the underlying data wont
+         *  change so can cache derived values (like a compiled expression).
+         * 
+         *  \note As of 2024-01-15, LibXML2 XPath doesn't support default namespace for XPath, so use explicit namespace prefixes.
          */
         class Expression {
         public:
             /**
-             *  Xerces seems to have a bunch more options controlling things like order of results returend. Look into this...
-             * 
-             *      See https://xerces.apache.org/xerces-c/apiDocs-3/classDOMXPathResult.html for other possible options:
-             *          >   bool fSnapshot (if true modifications not seen)
-             *          >   bool fOrdered;   // if true gets first in ?? order, else random order.
              */
             struct Options {
                 /**
                  * prefixes available to use in expression
                  */
-                NamespaceDefinitionsList fNamespaces;
+                NamespaceDefinitions fNamespaces;
 
                 /**
-                 * index into 'Result' variant expected. REJECT other values - required by Xerces XPATH API, and not a biggie (why wouldn't you know?)
+                 * index into 'Result' variant expected. REJECT other values - required by Xerces XPATH API, defaults to Node::Ptr
                  */
                 optional<uint8_t> fResultTypeIndex{ResultTypeIndex_v<Node::Ptr>};
 
                 /**
-                 *  Caller cares (or does not) about order of elements returned (not sure what ordering is defined - depth first or breadth first?
+                 *  Caller cares (or does not) about order of elements returned (not sure what ordering is defined - depth first or breadth first?)
                  */
                 bool fOrdered{false};
 

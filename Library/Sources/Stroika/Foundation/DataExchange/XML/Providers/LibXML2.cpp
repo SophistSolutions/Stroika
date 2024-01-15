@@ -421,9 +421,13 @@ namespace {
                 fCtx = xmlXPathNewContext (doc);
                 Execution::ThrowIfNull (fCtx);
                 try {
-                    for (NamespaceDefinition ni : e.GetOptions ().fNamespaces.GetNamespaces ()) {
-                        Require (ni.fPrefix); // libxml2 doesn't appear to support this - maybe a bad idea - maybe Stroika API shoudln't either?
-                        xmlXPathRegisterNs (fCtx, BAD_CAST ni.fPrefix->AsUTF8 ().c_str (), BAD_CAST ni.fURI.As<String> ().AsUTF8 ().c_str ());
+                    auto namespaceDefs = e.GetOptions ().fNamespaces;
+                    if (namespaceDefs.GetDefaultNamespace ()) {
+                        // According to https://gitlab.gnome.org/GNOME/libxml2/-/issues/585, this is XPath 2 feature NYI in libxml2
+                        Execution::Throw (XPath::XPathExpressionNotSupported::kThe);
+                    }
+                    for (Common::KeyValuePair ni : namespaceDefs.GetPrefixedNamespaces ()) {
+                        xmlXPathRegisterNs (fCtx, BAD_CAST ni.fKey.AsUTF8 ().c_str (), BAD_CAST ni.fValue.As<String> ().AsUTF8 ().c_str ());
                     }
                     fCtx->node      = contextNode;
                     fResultNodeList = xmlXPathEvalExpression (BAD_CAST e.GetExpression ().AsUTF8 ().c_str (), fCtx);

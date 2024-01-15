@@ -995,9 +995,12 @@ namespace {
             {
                 xercesc_3_2::DOMDocument* doc = n->getOwnerDocument ();
                 resolver.emplace (doc->createNSResolver (nullptr));
-                for (NamespaceDefinition ni : e.GetOptions ().fNamespaces.GetNamespaces ()) {
-                    (*resolver)->addNamespaceBinding (ni.fPrefix.value_or ("").As<u16string> ().c_str (),
-                                                      ni.fURI.As<String> ().As<u16string> ().c_str ());
+                auto namespaceDefs = e.GetOptions ().fNamespaces;
+                if (namespaceDefs.GetDefaultNamespace ()) {
+                    (*resolver)->addNamespaceBinding (u"", namespaceDefs.GetDefaultNamespace ()->As<String> ().As<u16string> ().c_str ());
+                }
+                for (Common::KeyValuePair ni : namespaceDefs.GetPrefixedNamespaces ()) {
+                    (*resolver)->addNamespaceBinding (ni.fKey.As<u16string> ().c_str (),  ni.fValue.As<String> ().As<u16string> ().c_str ());
                 }
                 try {
                     expr.emplace (doc->createExpression (e.GetExpression ().As<u16string> ().c_str (), *resolver));

@@ -983,13 +983,13 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief  return first element in iterable, or if 'that' specified, first where 'that' is true, (or return missing)
+         *  \brief  return first element in iterable, or if 'that' specified, first where 'that' is true, (or return nullopt if none)
          *
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          EXPECT_TRUE (*c.First () == 3);
-         *          EXPECT_TRUE (*c.First ([](int i){ return i % 2 == 0;}) == 38);
+         *          EXPECT_EQ (*c.First (), 3);
+         *          EXPECT_EQ (*c.First ([](int i){ return i % 2 == 0;}), 38);
          *      \endcode
          *
          *  \par Example Usage
@@ -1018,7 +1018,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          EXPECT_TRUE (c.FirstValue () == 3);
+         *          EXPECT_EQ (c.FirstValue (), 3);
          *      \endcode
          *
          *  \note
@@ -1037,8 +1037,8 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *          EXPECT_TRUE (*c.Last () == 5);
-         *          EXPECT_TRUE (*c.Last ([](int i){ return i % 2 == 0;}) == 38);
+         *          EXPECT_EQ (*c.Last (), 5);
+         *          EXPECT_EQ (*c.Last ([](int i){ return i % 2 == 0;}), 38);
          *      \endcode
          *
          *  \note
@@ -1058,8 +1058,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *      EXPECT_TRUE (c.LastValue () == 5);
+         *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+         *          EXPECT_EQ (c.LastValue (), 5);
          *      \endcode
          *
          *  See:
