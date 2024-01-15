@@ -5,9 +5,9 @@
 
 #include <ostream>
 
-#include "../../Characters/CString/Utilities.h"
-#include "../../Characters/Format.h"
-#include "../../Containers/Support/ReserveTweaks.h"
+#include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Containers/Support/ReserveTweaks.h"
 
 #include "WriterUtils.h"
 
@@ -214,8 +214,8 @@ string XML::QuoteForXML (const optional<String>& s)
  ********************************************************************************
  */
 Indenter::Indenter (const String& indentText)
-    : fTabS_ (indentText.AsUTF8<string> ())
-    , fTabW_ (indentText.As<wstring> ())
+    : fTabS_ {indentText.AsUTF8<string> ()}
+    , fTabW_ {indentText.As<wstring> ()}
 {
 }
 

@@ -5,13 +5,13 @@
 
 #include <atomic>
 
-#include "../../Debug/Trace.h"
-#include "../../Execution/Common.h"
-#include "../../Execution/Finally.h"
-#include "../../Execution/ProgressMonitor.h"
-#include "../../Memory/Common.h"
-#include "../../Memory/MemoryAllocator.h"
-#include "../../Streams/InputStreamDelegationHelper.h"
+#include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Common.h"
+#include "Stroika/Foundation/Execution/Finally.h"
+#include "Stroika/Foundation/Execution/ProgressMonitor.h"
+#include "Stroika/Foundation/Memory/Common.h"
+#include "Stroika/Foundation/Memory/MemoryAllocator.h"
+#include "Stroika/Foundation/Streams/InputStreamDelegationHelper.h"
 
 #include "../BadFormatException.h"
 

@@ -4,7 +4,6 @@
 #include "../../StroikaPreComp.h"
 
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
-#include "Stroika/Foundation/IO/FileSystem/PathName.h"
 
 #include "DOM.h"
 #include "SAXReader.h"
