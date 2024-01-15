@@ -426,10 +426,10 @@ namespace {
 
                 // Cannot compare that serialized formats equal, but we can assure that when we serialize and then deserialize that
                 // is the same as the original data
-                String serialized   = Variant::INI::Writer{}.WriteAsString (kCase1_.data);
+                String                serialized   = Variant::INI::Writer{}.WriteAsString (kCase1_.data);
                 Variant::INI::Profile deserialized = Variant::INI::Reader{}.ReadProfile (serialized);
-                EXPECT_EQ (deserialized , kCase1_.data);
-                EXPECT_EQ ((Variant::INI::Reader{}.ReadProfile (Memory::BLOB{kCase1_.dataAsFile})) , kCase1_.data);
+                EXPECT_EQ (deserialized, kCase1_.data);
+                EXPECT_EQ ((Variant::INI::Reader{}.ReadProfile (Memory::BLOB{kCase1_.dataAsFile})), kCase1_.data);
             }
         };
         DoBasicReader1_ ();
