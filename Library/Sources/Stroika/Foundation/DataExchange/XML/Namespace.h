@@ -25,9 +25,12 @@ namespace Stroika::Foundation::DataExchange::XML {
      */
     struct NamespaceDefinitions {
     public:
-        constexpr NamespaceDefinitions () = default;
-        NamespaceDefinitions (const optional<URI>& defaultNamespace, const Mapping<String, URI>& prefixedNamepsaces = {});
-        NamespaceDefinitions (const Mapping<String, URI>& prefixedNamepsaces);
+        NamespaceDefinitions () = default;
+        NamespaceDefinitions (const optional<URI>& defaultNamespace, const Mapping<String, URI>& prefixedNamespaces = {});
+        NamespaceDefinitions (const Mapping<String, URI>& prefixedNamespaces);
+
+    public:
+        nonvirtual bool operator== (const NamespaceDefinitions&) const = default;
 
     public:
         nonvirtual optional<URI> GetDefaultNamespace () const;
@@ -36,8 +39,8 @@ namespace Stroika::Foundation::DataExchange::XML {
         nonvirtual Mapping<String, URI> GetPrefixedNamespaces () const;
 
     private:
-        optional<URI>                  fDefaultNamespace_;
-        optional<Mapping<String, URI>> fPrefixedNS_; // optional so can do constexpr
+        optional<URI>        fDefaultNamespace_;
+        Mapping<String, URI> fPrefixedNS_;
     };
 
     /**

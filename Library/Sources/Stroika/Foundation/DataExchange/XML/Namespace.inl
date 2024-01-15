@@ -13,16 +13,16 @@ namespace Stroika::Foundation::DataExchange::XML {
 
     /*
      ********************************************************************************
-     ******************************* NamespaceDefinitions ***************************
+     ************************** XML::NamespaceDefinitions ***************************
      ********************************************************************************
      */
-    inline NamespaceDefinitions::NamespaceDefinitions (const optional<URI>& defaultNamespace, const Mapping<String, URI>& prefixedNamepsaces)
+    inline NamespaceDefinitions::NamespaceDefinitions (const optional<URI>& defaultNamespace, const Mapping<String, URI>& prefixedNamespaces)
         : fDefaultNamespace_{defaultNamespace}
-        , fPrefixedNS_{prefixedNamepsaces}
+        , fPrefixedNS_{prefixedNamespaces}
     {
     }
-    inline NamespaceDefinitions::NamespaceDefinitions (const Mapping<String, URI>& prefixedNamepsaces)
-        : fPrefixedNS_{prefixedNamepsaces}
+    inline NamespaceDefinitions::NamespaceDefinitions (const Mapping<String, URI>& prefixedNamespaces)
+        : fPrefixedNS_{prefixedNamespaces}
     {
     }
     inline optional<URI> NamespaceDefinitions::GetDefaultNamespace () const
@@ -31,12 +31,12 @@ namespace Stroika::Foundation::DataExchange::XML {
     }
     inline Mapping<String, URI> NamespaceDefinitions::GetPrefixedNamespaces () const
     {
-        return fPrefixedNS_.value_or (Mapping<String, URI>{});
+        return fPrefixedNS_;
     }
 
     /*
      ********************************************************************************
-     *********************** XML::NameWithNamespace *********************************
+     ************************* XML::NameWithNamespace *******************************
      ********************************************************************************
      */
     template <Characters::IConvertibleToString NAME_TYPE>
