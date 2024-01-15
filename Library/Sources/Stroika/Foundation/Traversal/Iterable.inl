@@ -885,10 +885,10 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <invocable<T> F>
-    inline optional<T> Iterable<T>::FirstValue (F&& that, ArgByValueType<T> defaultValue) const
+    inline T Iterable<T>::FirstValue (F&& that, ArgByValueType<T> defaultValue) const
         requires (convertible_to<invoke_result_t<F, T>, bool>)
     {
-        return this->First (forward<T> (that)).value_or (defaultValue);
+        return this->First (forward<F> (that)).value_or (defaultValue);
     }
     template <typename T>
     optional<T> Iterable<T>::Last () const

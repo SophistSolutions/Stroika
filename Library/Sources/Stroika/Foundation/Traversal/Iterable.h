@@ -1027,7 +1027,7 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual T FirstValue (ArgByValueType<T> defaultValue = {}) const;
         template <invocable<T> F>
-        nonvirtual optional<T> FirstValue (F&& that, ArgByValueType<T> defaultValue = {}) const
+        nonvirtual T FirstValue (F&& that, ArgByValueType<T> defaultValue = {}) const
             requires (convertible_to<invoke_result_t<F, T>, bool>);
 
     public:
