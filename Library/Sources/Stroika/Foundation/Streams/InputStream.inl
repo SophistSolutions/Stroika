@@ -72,16 +72,15 @@ namespace Stroika::Foundation::Streams::InputStream {
         : inherited{nullptr}
     {
     }
-    #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+#if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
     template <typename ELEMENT_TYPE>
     template <typename ASSTREAMABLE>
     inline InputStream::Ptr<ELEMENT_TYPE>::Ptr (ASSTREAMABLE&& src)
-        requires
-        requires (ASSTREAMABLE) { src.template As<Ptr<ELEMENT_TYPE>> (); }
+        requires requires (ASSTREAMABLE) { src.template As<Ptr<ELEMENT_TYPE>> (); }
         : inherited{src.template As<Ptr<ELEMENT_TYPE>> ()}
     {
     }
-    #endif
+#endif
     template <typename ELEMENT_TYPE>
     inline void InputStream::Ptr<ELEMENT_TYPE>::Close () const
     {

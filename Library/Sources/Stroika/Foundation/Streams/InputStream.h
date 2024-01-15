@@ -182,12 +182,9 @@ namespace Stroika::Foundation::Streams::InputStream {
 #endif
             requires (ASSTREAMABLE) { src.template As<Ptr<ELEMENT_TYPE>> (); }
 
-
-            #if qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
-            : inherited{src.template As<Ptr<ELEMENT_TYPE>> ()}
-    {
-    }
-            #endif
+#if qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+            : inherited{src.template As<Ptr<ELEMENT_TYPE>> ()} {}
+#endif
             ;
 
     public:
