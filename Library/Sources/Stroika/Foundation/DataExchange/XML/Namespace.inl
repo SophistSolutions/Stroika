@@ -9,6 +9,10 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#include "../../Characters/StringBuilder.h"
+#include "../../Characters/ToString.h"
+
 namespace Stroika::Foundation::DataExchange::XML {
 
     /*
@@ -33,6 +37,19 @@ namespace Stroika::Foundation::DataExchange::XML {
     {
         return fPrefixedNS_;
     }
+    inline String NamespaceDefinitions::ToString () const
+    {
+        Characters::StringBuilder sb;
+        sb << "{";
+        if (fDefaultNamespace_) {
+            sb << "defaultNS: " << Characters::ToString (*fDefaultNamespace_) << ", ";
+        }
+        if (fDefaultNamespace_) {
+            sb << "prefixedNamespaces: " << Characters::ToString (fPrefixedNS_);
+        }
+        sb << "}";
+        return sb.str ();
+    }
 
     /*
      ********************************************************************************
@@ -48,6 +65,15 @@ namespace Stroika::Foundation::DataExchange::XML {
         : fName{name}
         , fNamespace{ns}
     {
+    }
+    inline String NameWithNamespace::ToString () const
+    {
+        Characters::StringBuilder sb;
+        if (fNamespace) {
+            sb << fNamespace->As<String> () << ":";
+        }
+        sb << fName;
+        return sb.str ();
     }
 
 }

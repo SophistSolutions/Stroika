@@ -38,6 +38,11 @@ namespace Stroika::Foundation::DataExchange::XML {
     public:
         nonvirtual Mapping<String, URI> GetPrefixedNamespaces () const;
 
+    public:
+        /**
+         */
+        nonvirtual String ToString () const;
+
     private:
         optional<URI>        fDefaultNamespace_;
         Mapping<String, URI> fPrefixedNS_;
@@ -64,6 +69,9 @@ namespace Stroika::Foundation::DataExchange::XML {
 #if qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdefaulted-function-deleted\"")
 #endif
+        /**
+         */
+        nonvirtual String ToString () const;
     };
 
 }
