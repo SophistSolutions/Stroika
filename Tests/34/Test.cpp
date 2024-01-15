@@ -1706,13 +1706,14 @@ namespace {
                 auto n1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person"});
                 EXPECT_EQ (n1, nullptr);
 
+                auto badHeader1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"Header", kXPathOptions_});
+
                 if (d.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider) {
                     // figure out whats up here with xerces @todo
                     return;
                 }
-
-                auto badHeader1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"Header", kXPathOptions_});
                 EXPECT_EQ (badHeader1, nullptr); // no namespace specified
+
                 auto badHeader2 = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:header", kXPathOptions_});
                 EXPECT_EQ (badHeader2, nullptr); // case sensitive match
 
