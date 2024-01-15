@@ -28,10 +28,6 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
     {
         return Convert (Read (in));
     }
-    inline Profile Reader::ReadProfile (const Memory::BLOB& in)
-    {
-        return Convert (Read (in));
-    }
     inline Profile Reader::ReadProfile (istream& in)
     {
         return Convert (Read (in));

@@ -181,7 +181,6 @@ namespace Stroika::Foundation::Execution {
          */
         nonvirtual Streams::InputStream::Ptr<byte> GetStdIn () const;
         nonvirtual void                            SetStdIn (const Streams::InputStream::Ptr<byte>& in);
-        nonvirtual void                            SetStdIn (const Memory::BLOB& in);
 
     public:
         /**

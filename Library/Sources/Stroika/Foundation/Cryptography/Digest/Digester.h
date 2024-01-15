@@ -255,6 +255,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
          *  The reason to provide a const byte* / const byte* overload is - well - maybe pointless - since
          *  that can be quite efficiently turned into a BLOB, but its potentially a little more efficient for
          *  perhaps important cases.
+         * 
+         *  \note many of these overloads are redundant, but provided as a speed tweak for this situations.
          */
         nonvirtual ReturnType operator() (const Streams::InputStream::Ptr<byte>& from) const;
         nonvirtual ReturnType operator() (const byte* from, const byte* to) const;

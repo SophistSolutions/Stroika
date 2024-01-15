@@ -53,8 +53,3 @@ optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream::Ptr<byte>& 
     return nullopt;
 #endif
 }
-
-optional<Fault> SOAP::Deserialize_Fault (const Memory::BLOB& from)
-{
-    return Deserialize_Fault (from.As<Streams::InputStream::Ptr<byte>> ());
-}

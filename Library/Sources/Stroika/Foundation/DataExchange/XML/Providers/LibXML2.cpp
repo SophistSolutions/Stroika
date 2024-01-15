@@ -24,6 +24,7 @@ using namespace Stroika::Foundation::DataExchange::XML::Schema;
 using namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2;
 using namespace Stroika::Foundation::Debug;
 using namespace Stroika::Foundation::Execution;
+using namespace Stroika::Foundation::Streams;
 
 using std::byte;
 
@@ -48,13 +49,13 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const Memory::BLOB& schemaData, const Resource::ResolverPtr& resolver)
+        SchemaRep_ (const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver)
             : fResolver_{resolver}
-            , fSchemaData{schemaData}
+            , fSchemaData{schemaData.ReadAll ()}
         {
             // @todo - pay attention to argument resolver in parsing schema!!! (lowpri til we have one that needs it)
             xmlSchemaParserCtxt* schemaParseContext =
-                xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (schemaData.data ()), static_cast<int> (schemaData.size ()));
+                xmlSchemaNewMemParserCtxt (reinterpret_cast<const char*> (fSchemaData.data ()), static_cast<int> (fSchemaData.size ()));
             fCompiledSchema = xmlSchemaParse (schemaParseContext);
             xmlSchemaFreeParserCtxt (schemaParseContext);
             Execution::ThrowIfNull (fCompiledSchema);
@@ -687,7 +688,7 @@ Providers::LibXML2::Provider::~Provider ()
 #endif
 }
 
-shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const BLOB& schemaData, const Resource::ResolverPtr& resolver) const
+shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver) const
 {
     return Memory::MakeSharedPtr<SchemaRep_> (schemaData, resolver);
 }

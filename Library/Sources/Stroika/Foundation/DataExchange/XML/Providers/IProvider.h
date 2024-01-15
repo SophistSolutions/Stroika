@@ -6,7 +6,8 @@
 
 #include "../../../StroikaPreComp.h"
 
-#include "../../../Common/Property.h"
+#include "Stroika/Foundation/Common/Property.h"
+#include "Stroika/Foundation/Streams/InputStream.h"
 
 #include "../Common.h"
 #include "../DOM.h"
@@ -32,8 +33,9 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
     };
 
     struct ISchemaProvider : public virtual IProvider {
-        virtual ~ISchemaProvider ()                                                                                          = default;
-        virtual shared_ptr<Schema::IRep> SchemaFactory (const BLOB& schemaData, const Resource::ResolverPtr& resolver) const = 0;
+        virtual ~ISchemaProvider ()                                                                  = default;
+        virtual shared_ptr<Schema::IRep> SchemaFactory (const Streams::InputStream::Ptr<byte>& schemaData,
+                                                        const Resource::ResolverPtr&           resolver) const = 0;
     };
     struct IDOMProvider : public virtual IProvider {
         virtual ~IDOMProvider ()                                                                                               = default;

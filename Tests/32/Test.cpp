@@ -426,10 +426,10 @@ namespace {
 
                 // Cannot compare that serialized formats equal, but we can assure that when we serialize and then deserialize that
                 // is the same as the original data
-                auto serialized   = Variant::INI::Writer{}.WriteAsString (kCase1_.data);
-                auto deserialized = Variant::INI::Reader{}.ReadProfile (serialized);
-                EXPECT_TRUE (deserialized == kCase1_.data);
-                EXPECT_TRUE ((Variant::INI::Reader{}.ReadProfile (kCase1_.dataAsFile) == kCase1_.data));
+                String serialized   = Variant::INI::Writer{}.WriteAsString (kCase1_.data);
+                Variant::INI::Profile deserialized = Variant::INI::Reader{}.ReadProfile (serialized);
+                EXPECT_EQ (deserialized , kCase1_.data);
+                EXPECT_EQ ((Variant::INI::Reader{}.ReadProfile (Memory::BLOB{kCase1_.dataAsFile})) , kCase1_.data);
             }
         };
         DoBasicReader1_ ();
@@ -520,7 +520,7 @@ namespace {
                 // Might be a bug, but probably not; before Stroika v3.0d1, we used Mapping_stdmap<> so
                 // the maps were really ordered. But now they are not, so the text representation can
                 // vary. If diff, reverse the parse, and see if OK.
-                VariantValue vvv = DataExchange::Variant::JSON::Reader{}.Read (x);
+                VariantValue vvv = DataExchange::Variant::JSON::Reader{}.Read (Memory::BLOB{x});
                 if (vvv != v) {
                     Stroika::Frameworks::Test::WarnTestIssue (string{"x: " + x}.c_str ());
                     Stroika::Frameworks::Test::WarnTestIssue (string{"expected: " + expected}.c_str ());

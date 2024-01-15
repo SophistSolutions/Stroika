@@ -32,6 +32,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
      * 
      *  The more pressing reason to want to use it for a digest, is that many people support std::hash<T> for their types T, and
      *  this allows using those hash<> specializations.
+     * 
+     *  \note many of these overloads are redundant, but provided as a speed tweak for this situations.
      */
     template <typename T>
     struct SystemHashDigester {

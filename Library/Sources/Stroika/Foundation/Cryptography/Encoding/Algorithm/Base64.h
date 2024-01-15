@@ -48,6 +48,10 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm::Base64 {
     struct Options {
         LineBreak fLineBreak{LineBreak::eAuto_LB};
     };
+
+    /**
+     *  \note BLOB overload redundant, but provided since slight performance tweak (@todo maybe replace with span<byte> for that case/reason)
+     */
     string Encode (const Streams::InputStream::Ptr<byte>& from, const Options& o = {});
     string Encode (const Memory::BLOB& from, const Options& o = {});
 

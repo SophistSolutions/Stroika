@@ -64,7 +64,6 @@ namespace Stroika::Foundation::DataExchange::Variant {
         nonvirtual VariantValue Read (const Streams::InputStream::Ptr<byte>& in);
         nonvirtual VariantValue Read (const Streams::InputStream::Ptr<Characters::Character>& in);
         nonvirtual VariantValue Read (const Traversal::Iterable<Characters::Character>& in);
-        nonvirtual VariantValue Read (const Memory::BLOB& in);
         nonvirtual VariantValue Read (istream& in);
         nonvirtual VariantValue Read (wistream& in);
 

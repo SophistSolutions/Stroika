@@ -95,8 +95,8 @@ namespace Stroika::Foundation::Streams::InputStream {
      *          Reads and writes affect each other EXCPET for the putback buffer!
      *
      *          A special Proxy object is a good choice - but requires the caller todo a lot of extra
-     *          work. To some extent that can be automated by somewhat automatically maanging
-     *          the proxy storage object in the smartpointer, but thats alot of work and concept
+     *          work. To some extent that can be automated by somewhat automatically managing
+     *          the proxy storage object in the smart pointer, but that's a lot of work and concept
      *          for very little gain.
      *
      *          In the end - at least for now - I've decided on KISS - ReadLine() simply requires it
@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Streams::InputStream {
      *          But - it suffers from the grave flaw that when you write generic code or routines, you must write it
      *          to handle both blocking and non-blocking cases, and these are really quite different.
      *
-     *          Mostly - blocking is MUCH simpler to read/write/debug. But you NEED non-blocking sometimes for efficeincy
+     *          Mostly - blocking is MUCH simpler to read/write/debug. But you NEED non-blocking sometimes for efficiency
      *          reasons (to manage progress through a long operation).
      *
      *          Stroika Stream's approach to this is to essentially everywhere in the InputStream::Ptr API, have the methods
@@ -125,14 +125,14 @@ namespace Stroika::Foundation::Streams::InputStream {
      *          One twist has todo with what todo in the non-blocking case when data isn't available. One
      *          choice would be to return optional (or some other flagging / sentinel approach) and the other is to throw.
      *          Throw behavior is much simpler to write code and reason about. Returning a flag/optional is possibly
-     *          more efficient (depends - you have extra flag being copied around, but you avoid the cost of handling expcetions
-     *          - which wins the performance balanace depends on the costs of a throw, and the frequency of a throw.
+     *          more efficient (depends - you have extra flag being copied around, but you avoid the cost of handling exceptions
+     *          - which wins the performance balance depends on the costs of a throw, and the frequency of a throw.
      * 
      *          Stroika Streams generally use the throw (EWouldBlock) approach. However, in the 'Rep' classes, they use the
      *          return optional approach, and this is exposed through the ReadNonBlocking Ptr API. Plus they expose an
      *          AvailableToRead () API;
      * 
-     *          So generally - the Stroika appraoch is that for the causual observer (defaults) - things just work with blocking
+     *          So generally - the Stroika approach is that for the casual observer (defaults) - things just work with blocking
      *          reads, but if you need to do non-blocking reads, this is pretty straightforward.
      *
      *  \note   For better performance, but some slight usage restrictions, consider using @see StreamReader
@@ -173,6 +173,10 @@ namespace Stroika::Foundation::Streams::InputStream {
         Ptr (const Ptr&)     = default;
         Ptr (Ptr&&) noexcept = default;
         Ptr (const shared_ptr<IRep<ELEMENT_TYPE>>& rep);
+        template <typename ASSTREAMABLE>
+        Ptr (ASSTREAMABLE&& src)
+            requires requires (ASSTREAMABLE) { src.template As<Ptr<ELEMENT_TYPE>> (); };
+
 
     public:
         /**
@@ -186,7 +190,7 @@ namespace Stroika::Foundation::Streams::InputStream {
          *  If argument 'reset' is true, this also clears the smart pointer (calls Stream<>::reset()).
          *
          *  It is generally unneeded to ever call Close () - as streams are closed automatically when the final
-         *  reference to them is released (smartptr).
+         *  reference to them is released (smart ptr).
          *
          *  But - this can be handy to signal to the reader from the stream (how this works depends on subtype) - that there
          *  will be no more reading done.

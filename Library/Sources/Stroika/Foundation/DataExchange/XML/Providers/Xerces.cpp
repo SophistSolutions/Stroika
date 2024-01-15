@@ -231,16 +231,16 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
-        SchemaRep_ (const Memory::BLOB& schemaData, const Resource::ResolverPtr& resolver)
+        SchemaRep_ (const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver)
             : fTargetNamespace{}
             , fResolver{resolver}
-            , fSchemaData{schemaData}
+            , fSchemaData{schemaData.ReadAll ()}
         {
             AssertNotNull (XMLPlatformUtils::fgMemoryManager);
             XMLGrammarPoolImpl* grammarPool = new (XMLPlatformUtils::fgMemoryManager) XMLGrammarPoolImpl{XMLPlatformUtils::fgMemoryManager};
             try {
-                Require (not schemaData.empty ()); // checked above
-                MemBufInputSource mis{reinterpret_cast<const XMLByte*> (schemaData.begin ()), schemaData.GetSize (), u""};
+                Require (not fSchemaData.empty ());
+                MemBufInputSource mis{reinterpret_cast<const XMLByte*> (fSchemaData.begin ()), fSchemaData.GetSize (), u""};
 
                 MySchemaResolver_ mySchemaResolver{resolver};
                 // Directly construct SAX2XMLReaderImpl so we can use XMLEntityResolver - which passes along namespace (regular
@@ -1493,7 +1493,7 @@ Providers::Xerces::Provider::~Provider ()
 #endif
 }
 
-shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const BLOB& schemaData, const Resource::ResolverPtr& resolver) const
+shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver) const
 {
     return Memory::MakeSharedPtr<SchemaRep_> (schemaData, resolver);
 }

@@ -73,6 +73,13 @@ namespace Stroika::Foundation::Streams::InputStream {
     {
     }
     template <typename ELEMENT_TYPE>
+    template <typename ASSTREAMABLE>
+    inline InputStream::Ptr<ELEMENT_TYPE>::Ptr (ASSTREAMABLE&& src)
+        requires requires (ASSTREAMABLE) { src.template As<Ptr<ELEMENT_TYPE>> (); }
+        : inherited{src.template As<Ptr<ELEMENT_TYPE>> ()}
+    {
+    }
+    template <typename ELEMENT_TYPE>
     inline void InputStream::Ptr<ELEMENT_TYPE>::Close () const
     {
         Require (IsOpen ());

@@ -20,10 +20,6 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
     {
         return ReadMatrix (_ToCharacterReader (in));
     }
-    inline Iterable<Sequence<String>> Reader::ReadMatrix (const Memory::BLOB& in)
-    {
-        return ReadMatrix (_ToByteReader (in));
-    }
     inline Iterable<Sequence<String>> Reader::ReadMatrix (istream& in)
     {
         return ReadMatrix (_ToByteReader (in));

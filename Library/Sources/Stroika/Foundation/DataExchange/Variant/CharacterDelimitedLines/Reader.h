@@ -72,7 +72,6 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
         nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream::Ptr<byte>& in) const;
         nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream::Ptr<Character>& in) const;
         nonvirtual Iterable<Sequence<String>> ReadMatrix (const Traversal::Iterable<Characters::Character>& in);
-        nonvirtual Iterable<Sequence<String>> ReadMatrix (const Memory::BLOB& in);
         nonvirtual Iterable<Sequence<String>> ReadMatrix (istream& in);
         nonvirtual Iterable<Sequence<String>> ReadMatrix (wistream& in);
     };

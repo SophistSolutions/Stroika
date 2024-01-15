@@ -455,12 +455,6 @@ void ProcessRunner::SetStdIn (const Streams::InputStream::Ptr<byte>& in)
     fStdIn_ = in;
 }
 
-void ProcessRunner::SetStdIn (const Memory::BLOB& in)
-{
-    AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-    fStdIn_ = in.As<Streams::InputStream::Ptr<byte>> ();
-}
-
 Streams::OutputStream::Ptr<byte> ProcessRunner::GetStdOut () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareWriteContext{fThisAssertExternallySynchronized_};

@@ -52,10 +52,6 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         return Read (_ToCharacterReader (in));
     }
-    inline VariantValue Variant::Reader::Read (const Memory::BLOB& in)
-    {
-        return Read (_ToByteReader (in));
-    }
     inline VariantValue Variant::Reader::Read (istream& in)
     {
         return Read (_ToByteReader (in));
@@ -82,10 +78,6 @@ namespace Stroika::Foundation::DataExchange::Variant {
     inline Streams::InputStream::Ptr<byte> Reader::_ToByteReader (const Streams::InputStream::Ptr<Characters::Character>& in)
     {
         return Streams::TextToByteReader::New (in);
-    }
-    inline Streams::InputStream::Ptr<byte> Reader::_ToByteReader (const Memory::BLOB& in)
-    {
-        return in.As<Streams::InputStream::Ptr<byte>> ();
     }
     inline Streams::InputStream::Ptr<Characters::Character> Reader::_ToCharacterReader (const Streams::InputStream::Ptr<Characters::Character>& in)
     {

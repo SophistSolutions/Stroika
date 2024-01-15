@@ -30,7 +30,6 @@ namespace Stroika::Foundation::IO::Network::SOAP {
         //BLOB    detail;     // NYI
     };
     optional<Fault> Deserialize_Fault (const Streams::InputStream::Ptr<byte>& from);
-    optional<Fault> Deserialize_Fault (const Memory::BLOB& from);
 
 }
 

@@ -110,9 +110,9 @@ namespace Stroika::Foundation::DataExchange::XML::Schema {
 
     /**
      */
-    Ptr New (const Providers::ISchemaProvider& p, const BLOB& schemaData, const Resource::ResolverPtr& resolver = nullptr);
+    Ptr New (const Providers::ISchemaProvider& p, const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver = nullptr);
 #if qStroika_Foundation_DataExchange_XML_SupportSchema
-    Ptr New (const BLOB& schemaData, const Resource::ResolverPtr& resolver = nullptr);
+    Ptr New (const Streams::InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver = nullptr);
 #endif
 
 #if qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing
