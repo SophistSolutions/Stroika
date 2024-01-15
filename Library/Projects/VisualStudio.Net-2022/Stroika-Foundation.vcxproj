@@ -137,7 +137,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\XML\Writer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\DOM.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\IProvider.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\LibXML2.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Providers\Xerces.cpp" />

@@ -249,9 +249,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.cpp">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.cpp">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>
