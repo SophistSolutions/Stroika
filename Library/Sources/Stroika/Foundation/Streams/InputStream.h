@@ -177,7 +177,6 @@ namespace Stroika::Foundation::Streams::InputStream {
         Ptr (ASSTREAMABLE&& src)
             requires requires (ASSTREAMABLE) { src.template As<Ptr<ELEMENT_TYPE>> (); };
 
-
     public:
         /**
          */
