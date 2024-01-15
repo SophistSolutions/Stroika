@@ -214,8 +214,8 @@ string XML::QuoteForXML (const optional<String>& s)
  ********************************************************************************
  */
 Indenter::Indenter (const String& indentText)
-    : fTabS_ {indentText.AsUTF8<string> ()}
-    , fTabW_ {indentText.As<wstring> ()}
+    : fTabS_{indentText.AsUTF8<string> ()}
+    , fTabW_{indentText.As<wstring> ()}
 {
 }
 
