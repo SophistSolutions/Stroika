@@ -1653,6 +1653,7 @@ namespace {
                 EXPECT_EQ (n5.size (), 6u);
             }
             // Test Updating DOM using results from XPath lookups
+            DISABLE_COMPILER_MSC_WARNING_START (4305) // apparently bad warning from compiler - about FirstValue second argument I think --LGP 2024-01-15
             {
                 // Workaround lack of XPath predicates with Stroika Iterable filter functions
                 Element::Ptr mrManager{d.GetRootElement ().Lookup (XPath::Expression{"person"}).FirstValue ([] (XPath::Result n) -> bool {
@@ -1674,7 +1675,7 @@ namespace {
                         Element::Ptr e = n;
                         return e != nullptr and e.GetValue ("email") == "alpha@beta.com"_k;
                     });
-                    EXPECT_EQ (mrManager.GetValue ("@id"), "Big.Boss"_k);       // @id fails on xerces, though getattribute (id) works
+                    EXPECT_EQ (mrManager.GetValue ("@id"), "Big.Boss"_k); // @id fails on xerces, though getattribute (id) works
                 }
                 auto mrManager1Subordinates = d.GetRootElement ().LookupOneNode (XPath::Expression{"person/link/@subordinates"});
                 EXPECT_EQ (mrManager1Subordinates.GetValue (), "one.worker two.worker three.worker four.worker five.worker");
@@ -1691,6 +1692,7 @@ namespace {
             catch (const XML::DOM::XPath::XPathExpressionNotSupported&) {
                 Assert (d.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider); // sadly Xerces 3.2 doesn't support [
             }
+            DISABLE_COMPILER_MSC_WARNING_END (4305)
         });
     }
 }
