@@ -22,7 +22,6 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)Atom${OBJ_SUFFIX}\
 	$(ObjDir)BadFormatException${OBJ_SUFFIX}\
-	$(ObjDir)CheckedConverter${OBJ_SUFFIX}\
 	$(ObjDir)InternetMediaType${OBJ_SUFFIX}\
 	$(ObjDir)InternetMediaTypeRegistry${OBJ_SUFFIX}\
 	$(ObjDir)ObjectVariantMapper${OBJ_SUFFIX}\
