@@ -175,7 +175,12 @@ namespace Stroika::Foundation::Streams::InputStream {
         Ptr (const shared_ptr<IRep<ELEMENT_TYPE>>& rep);
         template <typename ASSTREAMABLE>
         Ptr (ASSTREAMABLE&& src)
-            requires requires (ASSTREAMABLE) { src.template As<Ptr<ELEMENT_TYPE>> (); };
+            requires 
+            // NOTE qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy workaround NOT required DIRECTLY HERE but due to similar hack in Memory::BLOB::As()...
+                #if qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
+                same_as<byte,ELEMENT_TYPE> and
+                #endif
+            requires (ASSTREAMABLE) { src.template As<Ptr<ELEMENT_TYPE>> (); };
 
     public:
         /**
