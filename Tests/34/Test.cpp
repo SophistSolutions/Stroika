@@ -1660,16 +1660,16 @@ namespace {
             // Test Updating DOM using results from XPath lookups
             {
                 // Workaround lack of XPath predicates with Stroika Iterable filter functions
-                Element::Ptr mrManager{Memory::ValueOf (d.GetRootElement ().Lookup (XPath::Expression{"person"}).First ([] (XPath::Result n) -> bool {
+                Element::Ptr mrManager{d.GetRootElement ().Lookup (XPath::Expression{"person"}).FirstValue ([] (XPath::Result n) -> bool {
                     Element::Ptr e = n;
                     return e != nullptr and e.GetID () == "Big.Boss";
-                }))};
+                })};
                 EXPECT_EQ (mrManager.GetValue ("email"), "chief@foo.com"_k);
                 mrManager.SetValue ("email", "alpha@beta.com");
-                Element::Ptr mrManager2{Memory::ValueOf (d.GetRootElement ().Lookup (XPath::Expression{"person"}).First ([] (XPath::Result n) {
+                Element::Ptr mrManager2{d.GetRootElement ().Lookup (XPath::Expression{"person"}).FirstValue ([] (XPath::Result n) {
                     Element::Ptr e = n;
                     return e != nullptr and e.GetValue ("email") == "alpha@beta.com"_k;
-                }))};
+                })};
                 EXPECT_EQ (mrManager2.GetID (), "Big.Boss"_k);
             }
             // (DOM Update/XPath code that doesn't work on Xerces)

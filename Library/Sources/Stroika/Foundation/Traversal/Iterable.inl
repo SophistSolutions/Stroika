@@ -837,12 +837,14 @@ namespace Stroika::Foundation::Traversal {
         return i ? *i : optional<T>{};
     }
     template <typename T>
-    inline optional<T> Iterable<T>::First (const function<bool (ArgByValueType<T>)>& that) const
+    template <invocable<T> F>
+    inline optional<T> Iterable<T>::First (F&& that) const
+        requires (convertible_to<invoke_result_t<F, T>, bool>)
     {
         RequireNotNull (that);
         constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
         if (kUseIterableRepIteration_) {
-            Iterator<T> t = this->_fRep->Find (that, Execution::SequencePolicy::eSeq);
+            Iterator<T> t = this->_fRep->Find (forward<F> (that), Execution::SequencePolicy::eSeq);
             return t ? optional<T>{*t} : optional<T>{};
         }
         else {
@@ -861,7 +863,7 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (that);
         constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
         if (kUseIterableRepIteration_) {
-            optional<RESULT_T>          result; // actual result captured in sife-effect of lambda
+            optional<RESULT_T>          result; // actual result captured in side-effect of lambda
             auto                        f = [&that, &result] (ArgByValueType<T> i) { return (result = that (i)).has_value (); };
             _SafeReadRepAccessor<_IRep> accessor{this};
             Iterator<T>                 t = accessor._ConstGetRep ().Find (f, Execution::SequencePolicy::eSeq);
@@ -879,12 +881,14 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline T Iterable<T>::FirstValue (ArgByValueType<T> defaultValue) const
     {
-        if (auto i = begin ()) {
-            return *i;
-        }
-        else {
-            return defaultValue;
-        }
+        return this->First ().value_or (defaultValue);
+    }
+    template <typename T>
+    template <invocable<T> F>
+    inline optional<T> Iterable<T>::FirstValue (F&& that, ArgByValueType<T> defaultValue) const
+        requires (convertible_to<invoke_result_t<F, T>, bool>)
+    {
+        return this->First (forward<T> (that)).value_or (defaultValue);
     }
     template <typename T>
     optional<T> Iterable<T>::Last () const
@@ -901,7 +905,9 @@ namespace Stroika::Foundation::Traversal {
         return nullopt;
     }
     template <typename T>
-    inline optional<T> Iterable<T>::Last (const function<bool (ArgByValueType<T>)>& that) const
+    template <invocable<T> F>
+    inline optional<T> Iterable<T>::Last (F&& that) const
+        requires (convertible_to<invoke_result_t<F, T>, bool>)
     {
         RequireNotNull (that);
         optional<T> result;
@@ -926,19 +932,16 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename T>
-    T Iterable<T>::LastValue (ArgByValueType<T> defaultValue) const
+    inline T Iterable<T>::LastValue (ArgByValueType<T> defaultValue) const
     {
-        if (auto i = begin ()) {
-            auto prev = i;
-            while (i) {
-                prev = i;
-                ++i;
-            }
-            return *prev;
-        }
-        else {
-            return defaultValue;
-        }
+        return this->Last ().value_or (defaultValue);
+    }
+    template <typename T>
+    template <invocable<T> F>
+    inline T Iterable<T>::LastValue (F&& that, ArgByValueType<T> defaultValue) const
+        requires (convertible_to<invoke_result_t<F, T>, bool>)
+    {
+        return this->Last (forward<F> (that)).value_or (defaultValue);
     }
     template <typename T>
     bool Iterable<T>::All (const function<bool (ArgByValueType<T>)>& testEachElt) const
@@ -1000,7 +1003,7 @@ namespace Stroika::Foundation::Traversal {
     inline optional<RESULT_TYPE> Iterable<T>::Mean () const
     {
         Iterator<T> i = begin ();
-        if (i == end ()) {
+        if (i == end ()) [[unlikely]] {
             return nullopt;
         }
         return Math::Mean (i, end ());
@@ -1028,7 +1031,7 @@ namespace Stroika::Foundation::Traversal {
     inline optional<RESULT_TYPE> Iterable<T>::Median (const INORDER_COMPARE_FUNCTION& compare) const
     {
         Iterator<T> i = begin ();
-        if (i == end ()) {
+        if (i == end ()) [[unlikely]] {
             return nullopt;
         }
         return Math::Median<Iterator<T>, RESULT_TYPE> (i, end (), compare);

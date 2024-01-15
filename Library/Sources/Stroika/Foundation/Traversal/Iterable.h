@@ -996,7 +996,7 @@ namespace Stroika::Foundation::Traversal {
          *      \code
          *          Collection<SomeStruct> c;
          *          if (optional<SomeStruct> o = c.First ([=](SomeStruct smi) { return smi.fID == substanceId; })) {
-         *              somthing_with_o (o);
+         *              something_with_o (o);
          *          }
          *      \endcode
          *
@@ -1005,7 +1005,9 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.first(v=vs.110).aspx
          */
         nonvirtual optional<T> First () const;
-        nonvirtual optional<T> First (const function<bool (ArgByValueType<T>)>& that) const;
+        template <invocable<T> F>
+        nonvirtual optional<T> First (F&& that) const
+            requires (convertible_to<invoke_result_t<F, T>, bool>);
         template <typename RESULT_T = T>
         nonvirtual optional<RESULT_T> First (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const;
 
@@ -1024,6 +1026,9 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.firstordefault(v=vs.110).aspx
          */
         nonvirtual T FirstValue (ArgByValueType<T> defaultValue = {}) const;
+        template <invocable<T> F>
+        nonvirtual optional<T> FirstValue (F&& that, ArgByValueType<T> defaultValue = {}) const
+            requires (convertible_to<invoke_result_t<F, T>, bool>);
 
     public:
         /**
@@ -1041,7 +1046,9 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.last(v=vs.110).aspx
          */
         nonvirtual optional<T> Last () const;
-        nonvirtual optional<T> Last (const function<bool (ArgByValueType<T>)>& that) const;
+        template <invocable<T> F>
+        nonvirtual optional<T> Last (F&& that) const
+            requires (convertible_to<invoke_result_t<F, T>, bool>);
         template <typename RESULT_T = T>
         nonvirtual optional<RESULT_T> Last (const function<optional<RESULT_T> (ArgByValueType<T>)>& that) const;
 
@@ -1059,10 +1066,13 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.lastordefault(v=vs.110).aspx
          */
         nonvirtual T LastValue (ArgByValueType<T> defaultValue = {}) const;
+        template <invocable<T> F>
+        nonvirtual T LastValue (F&& that, ArgByValueType<T> defaultValue = {}) const
+            requires (convertible_to<invoke_result_t<F, T>, bool>);
 
     public:
         /**
-         *  \brief  return true iff argument predciate returns true for each element of the iterable
+         *  \brief  return true iff argument predicate returns true for each element of the iterable
          *
          *  \par Example Usage
          *      \code
