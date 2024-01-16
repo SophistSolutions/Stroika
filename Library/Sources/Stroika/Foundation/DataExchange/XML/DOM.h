@@ -29,6 +29,22 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     using DataExchange::BadFormatException;
     using Traversal::Iterable;
 
+    /*
+     *  Special Note about namespaces:
+     * 
+     *      o   Default namespace does is inherited by enclosed elements, but **not** by enclosed attributes.
+     * 
+     *  The reason this basic fact is worthy of note is:
+     *      o   IMHO, it is not intuitive
+     *      o   https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ms754539(v=vs.85) says
+     *              "All elements and attributes in the document that do not have a prefix will then belong to the default namespace"
+     *          THIS IS WRONG - and the top google search hit when searching about default xml namespaces.
+     *
+     *  The reason I believe my counter-claim above is:
+     *      o   https://www.w3.org/TR/xml-names/#defaulting
+     *          "The namespace name for an unprefixed attribute name always has no value" (after saying the reverse for element names)
+     */
+
     /**
      *  \note - some serializers (xerces) may ignore fIndent
      */
@@ -357,6 +373,15 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              */
             using Node::Ptr::GetValue;
             nonvirtual optional<String> GetValue (const XPath::Expression& e) const;
+
+        public:
+            /**
+             *  \req e is an expression resulting in DOM nodes (could be attributes), and then get its text, and add that to an Iterable. Ignores nodes in result set other than attribute/element (like comment nodes)
+             * 
+             *  \note COULD have usefully made this return a Set<> since that's the most common case, but iterable is about as good, and you might
+             *        plausibly want to track dup results, or other???
+             */
+            nonvirtual Traversal::Iterable<String> GetValues (const XPath::Expression& e) const;
 
         public:
             /**

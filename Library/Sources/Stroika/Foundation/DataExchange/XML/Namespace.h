@@ -22,6 +22,8 @@ namespace Stroika::Foundation::DataExchange::XML {
 
     /**
      *  \brief used to specify default namespace, and any n: prefixes applicable to elements.
+     * 
+     *  \note default namespace does NOT apply to attributes, only element names...
      */
     struct NamespaceDefinitions {
     public:

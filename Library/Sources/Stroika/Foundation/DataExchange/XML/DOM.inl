@@ -160,6 +160,20 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         }
         return nullopt;
     }
+    inline Traversal::Iterable<String> Element::Ptr::GetValues (const XPath::Expression& e) const
+    {
+        Require (e.GetOptions ().fResultTypeIndex == XPath::ResultTypeIndex_v<Node::Ptr>);
+        return GetRep ()->Lookup (e).Map<Iterable<String>> ([] (const XPath::Result& e) -> optional<String> {
+            Node::Ptr ep = get<Node::Ptr> (e);
+            switch (ep.GetNodeType ()) {
+                case Node::Type::eAttributeNT:
+                case Node::Type::eElementNT:
+                    return ep.GetValue ();
+                default:
+                    return nullopt; // skip comment nodes etc...
+            }
+        });
+    }
     inline void Element::Ptr::SetValue (const XPath::Expression& e, const String& v)
     {
         Require (e.GetOptions ().fResultTypeIndex == XPath::ResultTypeIndex_v<Node::Ptr>);

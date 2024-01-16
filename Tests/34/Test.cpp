@@ -1750,34 +1750,36 @@ namespace {
             static const URI                        kNS_{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"};
             static const XPath::Expression::Options kXPathOptions_{.fNamespaces = Mapping<String, URI>{{"n", kNS_}}};
 
-            Iterable<Element::Ptr> originalConceptElts = d.GetRootElement ().LookupElements (XPath::Expression{"n:Concepts/n:ConceptDetails", kXPathOptions_});
+            Iterable<Element::Ptr> originalConceptElts =
+                d.GetRootElement ().LookupElements (XPath::Expression{"n:Concepts/n:ConceptDetails", kXPathOptions_});
             EXPECT_EQ (originalConceptElts.size (), 459u);
 
             /*
                 <ConceptDetails>
-			        <PrimaryKey Type="HF">H0000124</PrimaryKey>
-			        <Categories>
-				        <Category>Activity</Category>
-			        </Categories>
-			        <Terms>
-				        <Term Priority="10">Aerobic Excercise</Term>
-			        </Terms>
-		        </ConceptDetails>
+                    <PrimaryKey Type="HF">H0000124</PrimaryKey>
+                    <Categories>
+                        <Category>Activity</Category>
+                    </Categories>
+                    <Terms>
+                        <Term Priority="10">Aerobic Excercise</Term>
+                    </Terms>
+                </ConceptDetails>
             */
             if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // Xerces 3.2.5 doesn't come close to supporting this
-                // NOTE: DO NOT UNDERSTAND why n: MUST not be applied to @Type attribute - seems like it should inherit the namespace from parent node?
-                // --LGP 2024-01-16
                 Element::Ptr aerobicExcerciseElt = d.GetRootElement ().LookupOneElement (
                     XPath::Expression{"//n:ConceptDetails[n:PrimaryKey/@Type='HF' and n:PrimaryKey/text()='H0000124']", kXPathOptions_});
                 EXPECT_NE (aerobicExcerciseElt, nullptr);
                 EXPECT_EQ (aerobicExcerciseElt.GetValue (XPath::Expression{"n:Categories/n:Category", kXPathOptions_}), "Activity");
+                EXPECT_EQ ((Set<String>{"Activity"}), aerobicExcerciseElt.GetValues (XPath::Expression{"n:Categories/n:Category", kXPathOptions_}));
+                // Note as commented in DOM.h, "Default namespace does is inherited by enclosed elements, but **not** by enclosed attributes"
+                EXPECT_EQ (aerobicExcerciseElt.LookupOneNode (XPath::Expression{"n:PrimaryKey/@Type", kXPathOptions_}).GetName ().fNamespace, nullopt);
 
-                auto   conceptsElt = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:Concepts", kXPathOptions_});
+                auto conceptsElt = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:Concepts", kXPathOptions_});
                 EXPECT_EQ (conceptsElt, aerobicExcerciseElt.GetParent ());
 
                 String savedAerobicExcerciseSerialized = Characters::ToString (aerobicExcerciseElt);
                 aerobicExcerciseElt.Delete ();
-                EXPECT_EQ (d.GetRootElement ().LookupElements (XPath::Expression{"n:Concepts/n:ConceptDetails", kXPathOptions_}).size (), 459u -1u);
+                EXPECT_EQ (d.GetRootElement ().LookupElements (XPath::Expression{"n:Concepts/n:ConceptDetails", kXPathOptions_}).size (), 459u - 1u);
                 aerobicExcerciseElt = d.GetRootElement ().LookupOneElement (
                     XPath::Expression{"//n:ConceptDetails[n:PrimaryKey/@Type='HF' and n:PrimaryKey/text()='H0000124']", kXPathOptions_});
                 EXPECT_EQ (aerobicExcerciseElt, nullptr);
@@ -1802,8 +1804,8 @@ namespace {
                     XPath::Expression{"//n:ConceptDetails[n:PrimaryKey/@Type='HF' and n:PrimaryKey/text()='H0000124']", kXPathOptions_});
                 // Not the same cuz of 'i'm surprised...' xml comment node
                 //DbgTrace (L"savedAerobicExcerciseSerialized=%s", Characters::ToString (savedAerobicExcerciseSerialized).c_str ());
-               // DbgTrace (L"NEW savedAerobicExcerciseSerialized=%s", Characters::ToString (aerobicExcerciseElt).c_str ());
-               EXPECT_NE (savedAerobicExcerciseSerialized, Characters::ToString (aerobicExcerciseElt));
+                // DbgTrace (L"NEW savedAerobicExcerciseSerialized=%s", Characters::ToString (aerobicExcerciseElt).c_str ());
+                EXPECT_NE (savedAerobicExcerciseSerialized, Characters::ToString (aerobicExcerciseElt));
             }
         });
     }
