@@ -242,8 +242,8 @@ namespace Stroika::Foundation::Streams::MemoryStream {
         using MemoryStream::Private_::Rep_;
         return make_shared<Rep_<ELEMENT_TYPE>> ();
     }
-    template <typename ELEMENT_TYPE>
-    inline auto New (span<const ELEMENT_TYPE> copyFrom) -> Ptr<ELEMENT_TYPE>
+    template <typename ELEMENT_TYPE, size_t EXTENT>
+    inline auto New (span<const ELEMENT_TYPE, EXTENT> copyFrom) -> Ptr<ELEMENT_TYPE>
     {
         using MemoryStream::Private_::Rep_;
         Ptr r = make_shared<Rep_<ELEMENT_TYPE>> ();

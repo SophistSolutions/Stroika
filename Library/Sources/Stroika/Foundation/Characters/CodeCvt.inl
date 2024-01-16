@@ -430,7 +430,7 @@ namespace Stroika::Foundation::Characters {
                                     ignoreCharsConsumed, fInvalidCharacterReplacementBytesBuf,
                                     fInvalidCharacterReplacementBytesBuf + Memory::NEltsOf (fInvalidCharacterReplacementBytesBuf), bytesInvalChar);
                 if (r == STD_CODE_CVT_T::ok) {
-                    fInvalidCharacterReplacementBytes_ = Memory::SpanReInterpretCast<byte> (
+                    fInvalidCharacterReplacementBytes_ = as_writable_bytes (
                         span{fInvalidCharacterReplacementBytesBuf}.subspan (0, bytesInvalChar - fInvalidCharacterReplacementBytesBuf));
                 }
                 else {

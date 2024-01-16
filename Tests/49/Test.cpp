@@ -35,18 +35,18 @@ namespace {
         {
             {
                 MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
-                EXPECT_TRUE (s != nullptr);
+                EXPECT_NE (s, nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
             }
             {
                 const char              kData[] = "1";
-                MemoryStream::Ptr<byte> s       = MemoryStream::New<byte> (Memory::SpanReInterpretCast<const byte> (span{kData}));
-                EXPECT_TRUE (s != nullptr);
+                MemoryStream::Ptr<byte> s       = MemoryStream::New<byte> (as_bytes (span{kData}));
+                EXPECT_NE (s, nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
                 byte result[100] = {byte{0}};
-                EXPECT_TRUE (s.Read (span{result}).size () == 2);
-                EXPECT_TRUE (to_integer<char> (result[0]) == '1');
-                EXPECT_TRUE (to_integer<char> (result[1]) == '\0');
+                EXPECT_EQ (s.Read (span{result}).size (), 2u);
+                EXPECT_EQ (to_integer<char> (result[0]), '1');
+                EXPECT_EQ (to_integer<char> (result[1]), '\0');
             }
         }
 
@@ -63,12 +63,12 @@ namespace {
         {
             {
                 MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
-                EXPECT_TRUE (s != nullptr);
+                EXPECT_NE (s, nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
             }
             {
                 MemoryStream::Ptr<byte> s = MemoryStream::New<byte> ();
-                EXPECT_TRUE (s != nullptr);
+                EXPECT_NE (s, nullptr);
                 EXPECT_TRUE (s.IsSeekable ());
 
                 using namespace Memory;

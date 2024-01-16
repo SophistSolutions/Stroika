@@ -74,8 +74,8 @@ namespace Stroika::Foundation ::Streams::MemoryStream {
      */
     template <typename ELEMENT_TYPE>
     Ptr<ELEMENT_TYPE> New ();
-    template <typename ELEMENT_TYPE>
-    Ptr<ELEMENT_TYPE> New (span<const ELEMENT_TYPE> copyFrom);
+    template <typename ELEMENT_TYPE, size_t EXTENT>
+    Ptr<ELEMENT_TYPE> New (span<const ELEMENT_TYPE, EXTENT> copyFrom);
     template <typename ELEMENT_TYPE>
     Ptr<ELEMENT_TYPE> New (const Memory::BLOB& copyFrom)
         requires (is_same_v<ELEMENT_TYPE, byte>);

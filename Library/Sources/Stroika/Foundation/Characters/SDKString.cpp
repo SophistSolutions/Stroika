@@ -20,9 +20,9 @@ wstring Characters::SDK2Wide (span<const SDKChar> s)
 {
 #if qPlatform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8};
-    return kCvt_.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (s));
+    return kCvt_.Bytes2String<wstring> (as_bytes (s));
 #else
-    return CodeCvt<wchar_t>{locale{}}.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (s));
+    return CodeCvt<wchar_t>{locale{}}.Bytes2String<wstring> (as_bytes (s));
 #endif
 }
 wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag)
@@ -30,7 +30,7 @@ wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrors
     constexpr auto kOptions_ = CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter};
 #if qPlatform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kOptions_};
-    return kCvt_.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (s));
+    return kCvt_.Bytes2String<wstring> (as_bytes (s));
 #else
     // If - as is not uncommon - kDefaultMissingReplacementCharacter is not representable in the current locale code page,
     // then try something that will be. This API says 'AllowMissingCharacter....' - so allow it!
@@ -44,7 +44,7 @@ wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrors
             return CodeCvt<wchar_t>{locale{}, o};
         }
     }();
-    return codeCvt.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (s));
+    return codeCvt.Bytes2String<wstring> (as_bytes (s));
 #endif
 }
 #endif

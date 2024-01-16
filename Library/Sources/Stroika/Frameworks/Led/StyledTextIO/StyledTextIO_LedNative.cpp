@@ -430,10 +430,9 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
-        auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}),
-                                                                                         span{unicodeText});
+        auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #else
-        auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}), span{unicodeText});
+        auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #endif
         GetSinkStream ().AppendText (text.data (), text.size (), nullptr);
 #else
@@ -534,10 +533,9 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
-        auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}),
-                                                                                         span{unicodeText});
+        auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #else
-        auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}), span{unicodeText});
+        auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #endif
         GetSinkStream ().AppendText (text.data (), text.size (), nullptr);
 #else
@@ -649,10 +647,9 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
-        auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}),
-                                                                                         span{unicodeText});
+        auto text = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #else
-        auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}), span{unicodeText});
+        auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #endif
         GetSinkStream ().AppendText (text.data (), text.size (), nullptr);
 #else
@@ -887,11 +884,9 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
         size_t            nChars = totalTextLength * sizeof (wchar_t);
         StackBuffer<char> result{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
-        nChars = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}
-                     .Characters2Bytes (span{buf}, Memory::SpanReInterpretCast<byte> (span{result}))
-                     .size ();
+        nChars = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Characters2Bytes (span{buf}, as_writable_bytes (span{result})).size ();
 #else
-        nChars    = CodeCvt<Led_tChar>{locale{}}.Characters2Bytes (span{buf}, Memory::SpanReInterpretCast<byte> (span{result})).size ();
+        nChars    = CodeCvt<Led_tChar>{locale{}}.Characters2Bytes (span{buf}, as_writable_bytes (span{result})).size ();
 #endif
         {
             uint32_t encodedTL = 0;

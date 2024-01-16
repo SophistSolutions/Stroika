@@ -705,7 +705,7 @@ bool StyledTextIOReader_HTML::LookingAt (const char* text) const
 Led_tString StyledTextIOReader_HTML::MapInputTextToTString (const string& text)
 {
 #if qWideCharacters
-    return CodeCvt<Led_tChar>{WellKnownCodePages::kANSI}.Bytes2String<Led_tString> (Memory::SpanReInterpretCast<const byte> (span{text}));
+    return CodeCvt<Led_tChar>{WellKnownCodePages::kANSI}.Bytes2String<Led_tString> (as_bytes (span{text}));
 #else
     return text;
 #endif

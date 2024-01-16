@@ -96,7 +96,7 @@ Led_tString Led::Led_ANSIString2tString (const string& s)
 {
     // Up until Stroika v3.0d2 (and maybe for a while after) - this converted from CP_ACP, despite being called 'ANSI' - I htink because I was
     // once confused about the difference between these two --LGP 2023-07-27
-    return CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2String<Led_tString> (Memory::SpanReInterpretCast<const byte> (span{s}));
+    return CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2String<Led_tString> (as_bytes (span{s}));
 }
 #endif
 
