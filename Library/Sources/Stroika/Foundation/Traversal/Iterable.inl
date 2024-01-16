@@ -841,7 +841,6 @@ namespace Stroika::Foundation::Traversal {
     inline optional<T> Iterable<T>::First (F&& that) const
         requires (convertible_to<invoke_result_t<F, T>, bool>)
     {
-        RequireNotNull (that);
         constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
         if (kUseIterableRepIteration_) {
             Iterator<T> t = this->_fRep->Find (forward<F> (that), Execution::SequencePolicy::eSeq);
@@ -909,7 +908,6 @@ namespace Stroika::Foundation::Traversal {
     inline optional<T> Iterable<T>::Last (F&& that) const
         requires (convertible_to<invoke_result_t<F, T>, bool>)
     {
-        RequireNotNull (that);
         optional<T> result;
         for (const auto& i : *this) {
             if (that (i)) {
