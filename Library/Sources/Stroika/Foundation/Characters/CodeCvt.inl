@@ -415,6 +415,9 @@ namespace Stroika::Foundation::Characters {
         using extern_type = typename STD_CODE_CVT_T::extern_type;
         extern_type fInvalidCharacterReplacementBytesBuf[8]; // WAG at sufficient size, but sb enuf
         static_assert (is_same_v<CHAR_T, typename STD_CODE_CVT_T::intern_type>);
+#if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
+Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
         CodeCvt_WrapStdCodeCvt_ (const Options& options, unique_ptr<STD_CODE_CVT_T>&& codeCvt)
             : fCodeCvt_{move (codeCvt)}
             , fInvalidCharacterReplacement_{options.fInvalidCharacterReplacement}

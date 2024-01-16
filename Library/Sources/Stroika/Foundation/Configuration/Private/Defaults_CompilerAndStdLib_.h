@@ -696,6 +696,22 @@ Address 0xbeb33b80 is located in stack of thread T0 at offset 128 in frame
   This frame has 1 object(s):
     [48, 4152) 'buf' (line 548) <== Memory access at offset 128 is inside this variable
 HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+
+
+
+ALSO SPERAETE BUG NOT REGULARLY TESTED COFNIG:
+            <ConfigureCommandLine>configure raspberrypi-g++-12-debug-sanitize_address --config-tag Unix --config-tag raspberrypi --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-12 --sanitize none,address --cross-compiling true</ConfigureCommandLine>
+
+lewis@raspberrypi:/tmp $ ./Test34
+[==========] Running 19 tests from 1 test suite.
+[----------] ...
+[ RUN      ] Foundation_DataExchange_XML.SAX_PARSER_SchemaValidate
+=================================================================
+==7910==ERROR: AddressSanitizer: stack-use-after-scope on address 0xbeba8280 at pc 0x017ab839 bp 0xbeba8118 sp 0xbeba8118
+WRITE of size 4 at 0xbeba8280 thread T0
+    #0 0x17ab836 in Stroika::Foundation::Memory::InlineBuffer<wchar_t, 1024u>::InlineBuffer() ../Memory/InlineBuffer.inl:33
+    #1 0x19f0ea4 in Stroika::Foundation::Characters::CodeCvt<wchar_t>::CodeCvt_WrapStdCodeCvt_<Stroika::Foundation::Characters::Private_::deletable_facet_<std::codecvt_byname<wchar_t, char, __mbstate_t> > >::CodeCvt_WrapStdCodeCvt_(Stroika::Foundation::Characters::CodeCvt<wchar_t>::Options const&, std::unique_ptr<Stroika::Foundation:
+   ....
 */
 
 #ifndef qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy

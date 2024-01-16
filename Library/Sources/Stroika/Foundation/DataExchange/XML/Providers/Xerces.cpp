@@ -1306,6 +1306,9 @@ namespace {
             }
             END_LIB_EXCEPTION_MAPPER_
         }
+#if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
+Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
         virtual void Validate (const Schema::Ptr& schema) const override
         {
             TraceContextBumper                             ctx{"Xerces::DocRep_::Validate"};
@@ -1358,6 +1361,7 @@ namespace {
                 }
                 catch (...) {
                     if constexpr (qDumpXMLOnValidationError_) {
+#if !qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
                         // Generate temp file (each with differnet names), and write out the bad XML.
                         // Then - re-validate (with line#s) - and print the results of the validation to ANOTHER
                         // temporary file
@@ -1390,6 +1394,7 @@ namespace {
                         }
                         catch (...) {
                         }
+#endif
                     }
                     Execution::ReThrow ();
                 }
