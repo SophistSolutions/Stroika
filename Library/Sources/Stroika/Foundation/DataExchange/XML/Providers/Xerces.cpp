@@ -1307,9 +1307,10 @@ namespace {
             END_LIB_EXCEPTION_MAPPER_
         }
 #if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
-Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+        Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
-        virtual void Validate (const Schema::Ptr& schema) const override
+            virtual void
+            Validate (const Schema::Ptr& schema) const override
         {
             TraceContextBumper                             ctx{"Xerces::DocRep_::Validate"};
             AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
