@@ -1702,29 +1702,35 @@ namespace {
             static const XPath::Expression::Options kXPathOptions_{.fNamespaces = Mapping<String, URI>{{"n", kNS_}}};
 
             // Basic XPath
-            try {
-                auto n1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person"});
-                EXPECT_EQ (n1, nullptr);
-                auto badHeader1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"Header", kXPathOptions_});
-
-                if (d.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider) {
-                    // figure out whats up here with xerces @todo
-                    return;
-                }
+            auto n1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person"});
+            EXPECT_EQ (n1, nullptr);
+            auto badHeader1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"Header", kXPathOptions_});
+            if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) {  // Xerces 3.2.5 appears to match despite the wrong namespace reference
                 EXPECT_EQ (badHeader1, nullptr); // no namespace specified
+            }
+            auto badHeader2 = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:header", kXPathOptions_});
+            EXPECT_EQ (badHeader2, nullptr); // case sensitive match
+            EXPECT_ANY_THROW (d.GetRootElement ().LookupOneElement (XPath::Expression{"N:Header", kXPathOptions_}));
+            auto header = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:Header", kXPathOptions_});
+            //DbgTrace (L"header=%s", Characters::ToString (header).c_str ());
+            EXPECT_EQ (header.GetName (), (NameWithNamespace{kNS_, "Header"}));
+            auto docRelHeader = d.GetRootElement ().LookupOneElement (XPath::Expression{"/n:ReferenceContentData/n:Header", kXPathOptions_});
+            EXPECT_EQ (docRelHeader, header);   // Check doc Rel Path same as relative path, and check == works for nodes
+            auto docRelHeader2 = d.GetRootElement ().LookupOneElement (XPath::Expression{"//n:Header", kXPathOptions_});
+            EXPECT_EQ (docRelHeader2, header); // verify // working (at least somewhat - limited for xerces)
+            if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) {  // fails on xerces 3.2.5
+                auto docRelHeader3 =
+                    d.GetRootElement ().LookupOneElement (XPath::Expression{"/n:ReferenceContentData//n:Header", kXPathOptions_});
+                EXPECT_EQ (docRelHeader3, header); // verify // working
+            }
+        });
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            using namespace XML::DOM;
+            Document::Ptr                           d = domFactory (kHealthFrameWorks_v3_xml, nullptr);
+            static const URI                        kNS_{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"};
+            static const XPath::Expression::Options kXPathOptions_{.fNamespaces = Mapping<String, URI>{{"n", kNS_}}};
 
-                auto badHeader2 = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:header", kXPathOptions_});
-                EXPECT_EQ (badHeader2, nullptr); // case sensitive match
-                EXPECT_ANY_THROW (d.GetRootElement ().LookupOneElement (XPath::Expression{"N:Header", kXPathOptions_}));
-                auto header = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:Header", kXPathOptions_});
-                DbgTrace (L"header=%s", Characters::ToString (header).c_str ());
-                EXPECT_EQ (header.GetName (), (NameWithNamespace{kNS_, "Header"}));
-            }
-            catch (...) {
-                DbgTrace (L"c=%s", Characters::ToString (current_exception ()).c_str ()); // breakhere
-            }
             // Iterator XPath
-            // Test Updating DOM using results from XPath lookups
         });
     }
 }
