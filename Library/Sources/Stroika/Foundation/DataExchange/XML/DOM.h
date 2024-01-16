@@ -453,8 +453,18 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              *  PROBABLY quite unsafe to modify DOM while holding this result etc... Needs work on whehn/what is allowed.
+             *  NOTE MORE SAFE IF expression uses 'snapshot'
              */
             nonvirtual Traversal::Iterable<XPath::Result> Lookup (const XPath::Expression& e) const;
+
+        public:
+            /**
+             *  PROBABLY quite unsafe to modify DOM while holding this result etc... Needs work on whehn/what is allowed.
+             *  NOTE MORE SAFE IF expression uses 'snapshot'
+             * 
+             *  \note Same as Lookup - but filters out all non-element nodes
+             */
+            nonvirtual Traversal::Iterable<Element::Ptr> LookupElements (const XPath::Expression& e) const;
 
         public:
             /**

@@ -1741,6 +1741,70 @@ namespace {
                 return ep != nullptr ? ep : optional<Element::Ptr>{};
             });
             EXPECT_EQ (n3e.size (), 459u);
+            EXPECT_TRUE (n3e.SequentialEquals (d.GetRootElement ().LookupElements (XPath::Expression{"n:Concepts/n:ConceptDetails", kXPathOptions_})));
+        });
+        // Test Updating DOM using results from XPath lookups
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            using namespace XML::DOM;
+            Document::Ptr                           d = domFactory (kHealthFrameWorks_v3_xml, nullptr);
+            static const URI                        kNS_{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"};
+            static const XPath::Expression::Options kXPathOptions_{.fNamespaces = Mapping<String, URI>{{"n", kNS_}}};
+
+            Iterable<Element::Ptr> originalConceptElts = d.GetRootElement ().LookupElements (XPath::Expression{"n:Concepts/n:ConceptDetails", kXPathOptions_});
+            EXPECT_EQ (originalConceptElts.size (), 459u);
+
+            /*
+                <ConceptDetails>
+			        <PrimaryKey Type="HF">H0000124</PrimaryKey>
+			        <Categories>
+				        <Category>Activity</Category>
+			        </Categories>
+			        <Terms>
+				        <Term Priority="10">Aerobic Excercise</Term>
+			        </Terms>
+		        </ConceptDetails>
+            */
+            if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // Xerces 3.2.5 doesn't come close to supporting this
+                // NOTE: DO NOT UNDERSTAND why n: MUST not be applied to @Type attribute - seems like it should inherit the namespace from parent node?
+                // --LGP 2024-01-16
+                Element::Ptr aerobicExcerciseElt = d.GetRootElement ().LookupOneElement (
+                    XPath::Expression{"//n:ConceptDetails[n:PrimaryKey/@Type='HF' and n:PrimaryKey/text()='H0000124']", kXPathOptions_});
+                EXPECT_NE (aerobicExcerciseElt, nullptr);
+                EXPECT_EQ (aerobicExcerciseElt.GetValue (XPath::Expression{"n:Categories/n:Category", kXPathOptions_}), "Activity");
+
+                auto   conceptsElt = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:Concepts", kXPathOptions_});
+                EXPECT_EQ (conceptsElt, aerobicExcerciseElt.GetParent ());
+
+                String savedAerobicExcerciseSerialized = Characters::ToString (aerobicExcerciseElt);
+                aerobicExcerciseElt.Delete ();
+                EXPECT_EQ (d.GetRootElement ().LookupElements (XPath::Expression{"n:Concepts/n:ConceptDetails", kXPathOptions_}).size (), 459u -1u);
+                aerobicExcerciseElt = d.GetRootElement ().LookupOneElement (
+                    XPath::Expression{"//n:ConceptDetails[n:PrimaryKey/@Type='HF' and n:PrimaryKey/text()='H0000124']", kXPathOptions_});
+                EXPECT_EQ (aerobicExcerciseElt, nullptr);
+
+                // OK - now lets try adding a concept (namespace inherited from parent node)
+                auto concept2Add = conceptsElt.Append ("ConceptDetails");
+                {
+                    auto primaryKey = concept2Add.Append ("PrimaryKey", "H0000124");
+                    primaryKey.SetAttribute (NameWithNamespace{"Type"}, "HF");
+                }
+                concept2Add.Append (NameWithNamespace{"Priority"}, "10");
+                concept2Add.Append (NameWithNamespace{"Categories"}).Append (NameWithNamespace{"Category"}, "Activity");
+                {
+                    auto terms = concept2Add.Append (NameWithNamespace{"Terms"});
+                    {
+                        auto term = terms.Append (NameWithNamespace{"Term"}, "Aerobic Excercise");
+                        term.SetAttribute (NameWithNamespace{"Priority"}, "10");
+                    }
+                }
+                // Let's look it up again
+                aerobicExcerciseElt = d.GetRootElement ().LookupOneElement (
+                    XPath::Expression{"//n:ConceptDetails[n:PrimaryKey/@Type='HF' and n:PrimaryKey/text()='H0000124']", kXPathOptions_});
+                // Not the same cuz of 'i'm surprised...' xml comment node
+                //DbgTrace (L"savedAerobicExcerciseSerialized=%s", Characters::ToString (savedAerobicExcerciseSerialized).c_str ());
+               // DbgTrace (L"NEW savedAerobicExcerciseSerialized=%s", Characters::ToString (aerobicExcerciseElt).c_str ());
+               EXPECT_NE (savedAerobicExcerciseSerialized, Characters::ToString (aerobicExcerciseElt));
+            }
         });
     }
 }

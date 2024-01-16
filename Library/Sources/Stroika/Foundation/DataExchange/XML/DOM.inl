@@ -261,6 +261,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     {
         return GetRep ()->Lookup (e);
     }
+    inline auto Element::Ptr::LookupElements (const XPath::Expression& e) const -> Traversal::Iterable<Element::Ptr>
+    {
+        return GetRep ()->Lookup (e).Map<Traversal::Iterable<Element::Ptr>> ([] (const XPath::Result& e) {
+            Element::Ptr ep{e};
+            return ep != nullptr ? ep : optional<Element::Ptr>{};
+        });
+    }
     inline auto Element::Ptr::GetRep () const -> shared_ptr<IRep>
     {
         return dynamic_pointer_cast<IRep> (Node::Ptr::GetRep ());
