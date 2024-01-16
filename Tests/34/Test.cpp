@@ -1705,7 +1705,6 @@ namespace {
             try {
                 auto n1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person"});
                 EXPECT_EQ (n1, nullptr);
-
                 auto badHeader1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"Header", kXPathOptions_});
 
                 if (d.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider) {
@@ -1716,19 +1715,12 @@ namespace {
 
                 auto badHeader2 = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:header", kXPathOptions_});
                 EXPECT_EQ (badHeader2, nullptr); // case sensitive match
-
-#if 0
-                // works on libxml2 but must fix error message reporting before checking in...
                 EXPECT_ANY_THROW (d.GetRootElement ().LookupOneElement (XPath::Expression{"N:Header", kXPathOptions_}));
-
-#endif
-
                 auto header = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:Header", kXPathOptions_});
                 DbgTrace (L"header=%s", Characters::ToString (header).c_str ());
                 EXPECT_EQ (header.GetName (), (NameWithNamespace{kNS_, "Header"}));
             }
             catch (...) {
-
                 DbgTrace (L"c=%s", Characters::ToString (current_exception ()).c_str ()); // breakhere
             }
             // Iterator XPath

@@ -421,6 +421,9 @@ namespace {
                 RequireNotNull (doc);
                 fCtx = xmlXPathNewContext (doc);
                 Execution::ThrowIfNull (fCtx);
+                fCtx->error = [] ([[maybe_unused]] void* userData, [[maybe_unused]] const xmlError* error) {
+                    // default function prints to console; we capture 'lastError' later so no need to do anything here.
+                };
                 try {
                     auto namespaceDefs = e.GetOptions ().fNamespaces;
                     if (namespaceDefs.GetDefaultNamespace ()) {
@@ -432,6 +435,12 @@ namespace {
                     }
                     fCtx->node      = contextNode;
                     fResultNodeList = xmlXPathEvalExpression (BAD_CAST e.GetExpression ().AsUTF8 ().c_str (), fCtx);
+                    if (fCtx->lastError.level != XML_ERR_NONE and fCtx->lastError.level != XML_ERR_WARNING) {
+                        // lookup domain in xmlErrorDomain, and lastError.code in xmlParserErrors
+                        Execution::ThrowIfNull (fResultNodeList,
+                                                Execution::RuntimeErrorException{Characters::Format (
+                                                    L"Error parsing xpath (domain %d, code %d)", fCtx->lastError.domain, fCtx->lastError.code)});
+                    }
                     Execution::ThrowIfNull (fResultNodeList);
                 }
                 catch (...) {
