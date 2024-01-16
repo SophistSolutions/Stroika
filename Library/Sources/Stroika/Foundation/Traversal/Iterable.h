@@ -757,13 +757,13 @@ namespace Stroika::Foundation::Traversal {
          *                  ...
          *      \endcode
          *
-         *  Overload which returns optional<RESULT> and nullopt interpretted as skipping that element
+         *  Overload which returns optional<RESULT> and nullopt interpreted as skipping that element
          *
          *  \par Example Usage
          *      Filtering a list example:
          *      \code
          *          // GetAssociatedContentType -> optional<String> - skip items that are 'missing'
-         *          possibleFileSuffixes.Map<Set<InternetMediaType>> ([&] (String suffix) -> InternetMediaType { return r.GetAssociatedContentType (suffix); })
+         *          possibleFileSuffixes.Map<Set<InternetMediaType>> ([&] (String suffix) -> optional<InternetMediaType> { return r.GetAssociatedContentType (suffix); })
          *      \endcode
          * 
          *  \note This could have been written as one function/overload, but then for the RESULT_CONTAINER=Iterbale<T> case

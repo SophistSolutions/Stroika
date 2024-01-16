@@ -1695,18 +1695,18 @@ namespace {
         });
 
         // namespace's content test
+        // Basic XPath
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             using namespace XML::DOM;
             Document::Ptr                           d = domFactory (kHealthFrameWorks_v3_xml, nullptr);
             static const URI                        kNS_{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"};
             static const XPath::Expression::Options kXPathOptions_{.fNamespaces = Mapping<String, URI>{{"n", kNS_}}};
 
-            // Basic XPath
             auto n1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person"});
             EXPECT_EQ (n1, nullptr);
             auto badHeader1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"Header", kXPathOptions_});
-            if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) {  // Xerces 3.2.5 appears to match despite the wrong namespace reference
-                EXPECT_EQ (badHeader1, nullptr); // no namespace specified
+            if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // Xerces 3.2.5 appears to match despite the wrong namespace reference
+                EXPECT_EQ (badHeader1, nullptr);                                       // no namespace specified
             }
             auto badHeader2 = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:header", kXPathOptions_});
             EXPECT_EQ (badHeader2, nullptr); // case sensitive match
@@ -1715,22 +1715,32 @@ namespace {
             //DbgTrace (L"header=%s", Characters::ToString (header).c_str ());
             EXPECT_EQ (header.GetName (), (NameWithNamespace{kNS_, "Header"}));
             auto docRelHeader = d.GetRootElement ().LookupOneElement (XPath::Expression{"/n:ReferenceContentData/n:Header", kXPathOptions_});
-            EXPECT_EQ (docRelHeader, header);   // Check doc Rel Path same as relative path, and check == works for nodes
+            EXPECT_EQ (docRelHeader, header); // Check doc Rel Path same as relative path, and check == works for nodes
             auto docRelHeader2 = d.GetRootElement ().LookupOneElement (XPath::Expression{"//n:Header", kXPathOptions_});
             EXPECT_EQ (docRelHeader2, header); // verify // working (at least somewhat - limited for xerces)
-            if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) {  // fails on xerces 3.2.5
-                auto docRelHeader3 =
-                    d.GetRootElement ().LookupOneElement (XPath::Expression{"/n:ReferenceContentData//n:Header", kXPathOptions_});
+            if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // fails on xerces 3.2.5
+                auto docRelHeader3 = d.GetRootElement ().LookupOneElement (XPath::Expression{"/n:ReferenceContentData//n:Header", kXPathOptions_});
                 EXPECT_EQ (docRelHeader3, header); // verify // working
             }
         });
+        // Iterator XPath
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
             using namespace XML::DOM;
             Document::Ptr                           d = domFactory (kHealthFrameWorks_v3_xml, nullptr);
             static const URI                        kNS_{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"};
             static const XPath::Expression::Options kXPathOptions_{.fNamespaces = Mapping<String, URI>{{"n", kNS_}}};
 
-            // Iterator XPath
+            auto n1 = d.GetRootElement ().Lookup (XPath::Expression{"person"});
+            EXPECT_EQ (n1.size (), 0u); // none there, no namespace, and no elt...
+            auto n2 = d.GetRootElement ().Lookup (XPath::Expression{"n:Header/n:SourceDefinitions/n:SourceDefinition", kXPathOptions_});
+            EXPECT_EQ (n2.size (), 1u);
+            Iterable<XPath::Result> n3 = d.GetRootElement ().Lookup (XPath::Expression{"n:Concepts/n:ConceptDetails", kXPathOptions_});
+            EXPECT_GE (n3.size (), 459u); // could be more cuz could include other nodes (comments etc)
+            Iterable<Element::Ptr> n3e = n3.Map<Iterable<Element::Ptr>> ([] (XPath::Result e) -> optional<Element::Ptr> {
+                Element::Ptr ep{e};
+                return ep != nullptr ? ep : optional<Element::Ptr>{};
+            });
+            EXPECT_EQ (n3e.size (), 459u);
         });
     }
 }
