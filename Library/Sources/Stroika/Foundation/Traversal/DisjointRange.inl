@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Traversal {
                     Assert (endI != fSubRanges_.end ());
                 }
 
-                // then merge out uneeded items in between
+                // then merge out unneeded items in between
                 // @todo/CLEANUP/REVIEW - not sure we always have startI <= endI...
                 if (extendedRange and startI != fSubRanges_.end ()) {
                     for (auto i = startI; i != endI and i != fSubRanges_.end ();) {
@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Traversal {
             for (const RangeType& r : fSubRanges_) {
                 Assert (not r.empty ());
                 if (lastRangeSeenSoFar) {
-                    Assert (lastRangeSeenSoFar->GetUpperBound () <= r.GetLowerBound ()); // equal maybe bad but check that case with itersects which pays attention to openness
+                    Assert (lastRangeSeenSoFar->GetUpperBound () <= r.GetLowerBound ()); // equal maybe bad but check that case with intersects which pays attention to openness
                     Assert (not lastRangeSeenSoFar->Intersects (r));
                     // and make sure we merge together adjacent points
                     value_type nextVal = RangeType::TraitsType::GetNext (lastRangeSeenSoFar->GetUpperBound ());
