@@ -2,6 +2,12 @@ StroikaRoot=$(abspath .)/
 
 include ScriptsLib/Makefile-Common.mk
 
+ifneq ($(CONFIGURATION),)
+	#no error if missing cuz could be doing make clobber
+	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
+endif
+
+
 ifeq ($(filter 3.81, $(firstword $(sort $(MAKE_VERSION) 3.81))),)
 $(info Warning - version of GNU Make - $(MAKE_VERSION) - appears too old)
 endif
@@ -81,7 +87,7 @@ help:
 	@$(ECHO) "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 	@$(ECHO) "    WRITE_PREPROCESSOR_OUTPUT=1  -    Write next to each object file a corresponding .i (preprocessor output) file; useful to reproduce and narrow compiler bugs (for report especially)"
 	@$(ECHO) "    MAKE_INDENT_LEVEL=0          -    Helpful to neaten formatting when multiple levels of makes calling Stroika make"
-	@$(ECHO) "    QUICK_BUILD=1                -    Defaults=0, but if =1, skip some optional build steps (like openssl tests, CURRENT folders; used for some CI testing)"
+	@$(ECHO) "    QUICK_BUILD=1                -    Defaults=0, but if =1, skip some optional build steps (like openssl tests, CURRENT folders; may skip detecting changes in libraries etc; used for some CI testing)"
 	@$(ECHO) "    TEST_FAILURES_CAUSE_FAILED_MAKE=0"
 	@$(ECHO) "                                      only applies to make run-tests, and prevents test failures from stopping make (like make -k on run-tests)"
 
@@ -171,9 +177,21 @@ libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles
 		$(MAKE) --no-print-directory libraries CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 else
+ifeq ($(QUICK_BUILD), 1)
+libraries:
+	@#See if files already there, and if so skip all this, and else do non-quick build
+	@if [[ -f Builds/$(CONFIGURATION)/Stroika-Foundation${LIB_SUFFIX} && -f Builds/$(CONFIGURATION)/Stroika-Frameworks${LIB_SUFFIX} ]]; then \
+		$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika-Foundation and Stroika-Frameworks libraries exist and QUICK_BUILD=1"; \
+	else\
+		$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION); \
+		$(MAKE) --no-print-directory --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components; \
+		$(MAKE) --directory Library --no-print-directory all; \
+	fi
+else
 libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_COMMON IntermediateFiles/DEFAULT_PROJECT_FILES_BUILT IntermediateFiles/ASSURE_DEFAULT_CONFIGURATIONS_BUILT IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@$(MAKE) --directory Library --no-print-directory all
+endif
 endif
 
 
