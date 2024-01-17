@@ -476,9 +476,9 @@ echo "$PREFIX_OUT_LABEL" "Regression Tests Summary:" >>$TEST_OUT_FILE 2>&1
 TOTAL_REGTESTS_EXPECTED_TO_PASS=$(($NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS))
 
 X1=`cat $TEST_OUT_FILE | grep -F "[  PASSED  ]" | wc -l`
-### Dont count fFailConnectionIfSSLCertificateInvalid as an error - its a warning
+### Dont count fFailConnectionIfSSLCertificateInvalid as an error or failure - its a warning
 XF=`cat $TEST_OUT_FILE | grep -i FAILED | grep -v TEST_FAILURES_CAUSE_FAILED_MAKE | grep -v fFailConnectionIfSSLCertificateInvalid | wc -l`
-XE=`cat $TEST_OUT_FILE | grep -E -i "error[ \t]*:" | wc -l`
+XE=`cat $TEST_OUT_FILE | grep -v fFailConnectionIfSSLCertificateInvalid | grep -E -i "error[ \t]*:" | wc -l`
 XC=`cat $TEST_OUT_FILE | grep -i "core dump" | wc -l`
 VOL=`grep -v "\[==========\]" $TEST_OUT_FILE | grep == | wc -l`
 XW=`cat $TEST_OUT_FILE | grep -E -i "warning.*:" | wc -l`
@@ -489,6 +489,7 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 fi
 
 TOTAL_WARNINGS_EXPECTED=0
+TOTAL_WARNINGS_EXPECTED= expr $TOTAL_WARNINGS_EXPECTED + `cat $TEST_OUT_FILE | grep fFailConnectionIfSSLCertificateInvalid | wc -l`
 
 if [ $X1 -eq $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
