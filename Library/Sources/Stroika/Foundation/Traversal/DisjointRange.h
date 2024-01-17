@@ -40,8 +40,8 @@ namespace Stroika::Foundation::Traversal {
     /**
      *  \brief A DisjointRange is NOT a range, but a collection of non-overlapping (except at the edges) Ranges. It its BOUNDs (GetBounds) form a Range.
      *
-     *  \note   NOT internally threadsafe. To use from multiple threads, use Synchronized<DisjointRange>, or otherwise protect.
-     *
+     *  DiscreteRange<> is an immutable type (once constructed, will never change), except for allowing operator=.
+     * 
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   operator==, operator!= supported, but this assumes operator== is defined on 'T'
      */
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  You can pass in empty Ranges, ranges out of order, and overlaping ranges, and the constructor
+         *  You can pass in empty Ranges, ranges out of order, and overlapping ranges, and the constructor
          *  always filters out empty ranges, and re-order so subranges well-ordered and disjoint.
          */
         DisjointRange ()                     = default;
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  A disjoint range is made up of a fininte number of disjoint (non-overlapping) subranges, which are arranged
+         *  A disjoint range is made up of a finite number of disjoint (non-overlapping) subranges, which are arranged
          *  following the natural ordering intrinsic to the value_type. This returns those subranges.
          */
         nonvirtual Containers::Sequence<RangeType> SubRanges () const;
@@ -165,10 +165,10 @@ namespace Stroika::Foundation::Traversal {
         }) const;
 
     private:
-        nonvirtual void MergeIn_ (const RangeType& r);
+        nonvirtual void MergeIn_ (const RangeType& r); // non-const method, but only called during construction
 
     private:
-        nonvirtual void AssertInternalRepValid_ ();
+        nonvirtual void AssertInternalRepValid_ () const;
 
     private:
         Containers::Sequence<RangeType> fSubRanges_;

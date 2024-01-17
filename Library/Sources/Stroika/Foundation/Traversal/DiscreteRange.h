@@ -44,6 +44,8 @@ namespace Stroika::Foundation::Traversal {
      *  \brief A DiscreteRange is a Range where the underlying endpoints are integral (discrete, not continuous); 
      *         this implies you can iterate over the members of the range, and its endpoints are closed.
      *
+     *  DiscreteRange<> is an immutable type (once constructed, will never change), except for allowing operator=..
+     * 
      *  \par Example Usage
      *      \code
      *          vector<int> v = DiscreteRange<int>{1,10}.Elements ().As<vector<int>> ();
@@ -110,27 +112,27 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  Like Range<>::FullRange () but returing a DiscreteRange<> type.
+         *  Like Range<>::FullRange () but returning a DiscreteRange<> type.
          */
         static constexpr DiscreteRange FullRange ();
 
     public:
         /**
-         *  Like Range<>::Intersection (), but returing a DiscreteRange<> type.
+         *  Like Range<>::Intersection (), but returning a DiscreteRange<> type.
          */
         constexpr Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
         constexpr DiscreteRange    Intersection (const DiscreteRange& rhs) const;
 
     public:
         /**
-         *  Like Range<>::UnionBounds (), but returing a DiscreteRange<> type.
+         *  Like Range<>::UnionBounds (), but returning a DiscreteRange<> type.
          */
         constexpr Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& rhs) const;
         constexpr DiscreteRange    UnionBounds (const DiscreteRange& rhs) const;
 
     public:
         /**
-         *  This returns the number of points from lower bound to upperbound inclusive.
+         *  This returns the number of points from lower bound to upper bound inclusive.
          *  This equals GetDistanceSpanned () + 1 (roughly).
          *  If (empty ()) .... this returns 0;
          */
@@ -152,7 +154,7 @@ namespace Stroika::Foundation::Traversal {
          *          }
          *      \endcode
          *
-         *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
+         *  Elements () makes no guarantees about whether or not modifications to the underlying DisjointDiscreteRange<> will
          *  appear in the Elements() Iterable<T>.
          * 
          *  \note Elements produces a generator, not an actual list of each item (internally). This should not be visible externally,

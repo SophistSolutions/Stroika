@@ -230,8 +230,10 @@ namespace Stroika::Foundation::Traversal {
     class DisjointRange;
 
     /**
-     *  A Range<> is analagous to a mathematical range. It's left and and its right sides can
+     *  A Range<> is analogous to a mathematical range. It's left and and its right sides can
      *  be optionally open or closed.
+     * 
+     *  Range<> is an immutable type (once constructed, will never change), except for allowing operator=.
      * 
      *  A range always has a lower and upper bound (if not specified in CTOR, its specified by the type traits) so no
      *  unbounded ranges).

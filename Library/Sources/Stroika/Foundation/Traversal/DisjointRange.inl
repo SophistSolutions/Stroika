@@ -341,7 +341,7 @@ namespace Stroika::Foundation::Traversal {
 #endif
     }
     template <typename T, typename RANGE_TYPE>
-    inline void DisjointRange<T, RANGE_TYPE>::AssertInternalRepValid_ ()
+    inline void DisjointRange<T, RANGE_TYPE>::AssertInternalRepValid_ () const
     {
         if constexpr (qDebug) {
             optional<RangeType> lastRangeSeenSoFar;
