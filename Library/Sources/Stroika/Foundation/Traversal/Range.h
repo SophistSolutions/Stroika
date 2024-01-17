@@ -365,7 +365,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  \brief equivilent to not this->empty ();
+         *  \brief equivalent to not this->empty ();
          */
         constexpr explicit operator bool () const;
 
