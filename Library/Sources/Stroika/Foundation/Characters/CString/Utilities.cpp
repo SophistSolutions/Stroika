@@ -91,6 +91,9 @@ u8string Characters::CString::FormatV (const char8_t* format, va_list argsList)
 }
 
 DISABLE_COMPILER_MSC_WARNING_START (6262)
+#if qCompilerAndStdLib_arm_asan_FaultStackUseAfterScope_Buggy
+Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
 wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
 {
     RequireNotNull (format);
