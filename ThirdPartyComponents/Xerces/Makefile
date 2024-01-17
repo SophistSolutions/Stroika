@@ -114,8 +114,9 @@ endif
 
 # Avoid having warnings leak from here to linking code when Xerces is used --LGP 2022-01-18
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifneq ($(findstring -GL,$(CXXFLAGS)),)
+ifeq (-LTCG,$(findstring -LTCG,$(LinkerArgs_ExtraPrefix)))
 CXXFLAGS+= -wd4702 
+CXXFLAGS+= -wd4706
 endif
 endif
 
