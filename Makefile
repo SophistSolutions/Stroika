@@ -34,7 +34,7 @@ APPLY_CONFIGS=$(or \
 				$(if $(CONFIGURATION_TAGS), \
 					$(shell ScriptsLib/GetConfigurations --quiet --config-tags "$(CONFIGURATION_TAGS)"),\
 					$(if $(filter clobber, $(MAKECMDGOALS)),\
-						$(shell ScriptsLib/GetConfigurations --quiet --all),\
+						$(shell ScriptsLib/GetConfigurations --quiet --all --quiet),\
 						$(shell ScriptsLib/GetConfigurations --quiet --all-default)\
 					)\
 				)\

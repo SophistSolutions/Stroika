@@ -18,7 +18,7 @@ APPLY_CONFIGS=$(or \
 				$(if $(CONFIGURATION_TAGS), \
 					$(shell $(StroikaRoot)ScriptsLib/GetConfigurations --config-tags "$(CONFIGURATION_TAGS)"),\
 					$(if $(filter clobber, $(MAKECMDGOALS)),\
-						$(shell $(StroikaRoot)ScriptsLib/GetConfigurations --all),\
+						$(shell $(StroikaRoot)ScriptsLib/GetConfigurations --all --quiet),\
 						$(shell $(StroikaRoot)ScriptsLib/GetConfigurations --all-default)\
 					)\
 				)\
