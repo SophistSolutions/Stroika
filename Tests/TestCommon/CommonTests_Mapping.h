@@ -329,11 +329,11 @@ namespace CommonTests {
                     for (int i = 0; i < 100; ++i) {
                         c.Add (i, i);
                     }
-                    EXPECT_EQ (c.Keys ().length (), 100);
+                    EXPECT_EQ (c.Keys ().length (), 100u);
 
                     using KT = typename ConcreteContainerType::key_type;
                     c.RetainAll (initializer_list<KT>{1, 3, 5});
-                    EXPECT_TRUE (c.Keys ().length () == 3);
+                    EXPECT_EQ (c.Keys ().length (), 3u);
                     EXPECT_TRUE (c.Keys ().SetEquals (Iterable<KT>{1, 3, 5}, c.GetKeyEqualsComparer ()));
 
                     c.RetainAll (Iterable<KT>{3});
@@ -351,12 +351,12 @@ namespace CommonTests {
                     headers.Add (1, 2);
                     headers.Add (2, 3);
                     ConcreteContainerType headers2 = headers; // up ref count before change
-                    EXPECT_TRUE (headers.size () == 2);
-                    EXPECT_TRUE (headers2.size () == 2);
+                    EXPECT_EQ (headers.size (), 2u);
+                    EXPECT_EQ (headers2.size (), 2u);
                     for (auto hi = headers.begin (); hi != headers.end ();) {
                         hi = headers.erase (hi);
                     }
-                    EXPECT_TRUE (headers2.size () == 2);
+                    EXPECT_EQ (headers2.size (), 2u);
                     EXPECT_TRUE (headers.empty ());
                 }
             }

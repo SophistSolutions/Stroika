@@ -500,8 +500,8 @@ namespace {
     {
         TraceContextBumper ctx{"Test_4_TestDateTime_"};
         {
-            DateTime d = Date (Year{1903}, April, DayOfMonth{4});
-            EXPECT_TRUE (d.Format (DateTime::kISO8601Format) == "1903-04-04");
+            DateTime d{Date{Year{1903}, April, DayOfMonth{4}}};
+            EXPECT_EQ (d.Format (DateTime::kISO8601Format), "1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
@@ -536,7 +536,7 @@ namespace {
             EXPECT_TRUE (d < DateTime::Now ());
             EXPECT_TRUE (DateTime::Now () > d);
             d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC}; // so that compare works - cuz we don't know timezone we'll run test with...
-            EXPECT_TRUE (d.Format (DateTime::kISO8601Format) == "1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            EXPECT_EQ (d.Format (DateTime::kISO8601Format), "1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
@@ -544,7 +544,7 @@ namespace {
             EXPECT_TRUE (d < DateTime::Now ());
             EXPECT_TRUE (DateTime::Now () > d);
             d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC}; // so that compare works - cuz we don't know timezone we'll run test with...
-            EXPECT_TRUE (d.Format (DateTime::kISO8601Format) == "-4712-01-01T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            EXPECT_EQ (d.Format (DateTime::kISO8601Format), "-4712-01-01T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
@@ -745,7 +745,7 @@ namespace {
     {
         TraceContextBumper ctx{"Test_5_DateTimeTimeT_"};
         {
-            DateTime d = Date{Year{2000}, April, DayOfMonth{20}};
+            DateTime d{Date{Year{2000}, April, DayOfMonth{20}}};
             EXPECT_TRUE (d.As<time_t> () == 956188800); // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
@@ -1091,9 +1091,9 @@ namespace {
         }
         {
             Range<DateTime> d1{DateTime{Date{Year{2000}, April, DayOfMonth{20}}}, DateTime{Date{Year{2000}, April, DayOfMonth{22}}}};
-            EXPECT_TRUE (d1.GetDistanceSpanned () / 2 == Duration{"PT1D"});
+            EXPECT_EQ (d1.GetDistanceSpanned () / 2, Duration{"PT1D"});
             // SEE https://stroika.atlassian.net/browse/STK-514 for accuracy of compare (sb .1 or less)
-            EXPECT_TRUE (Math::NearlyEquals (d1.GetMidpoint (), Date{Year{2000}, April, DayOfMonth{21}}, DurationSeconds{2}));
+            EXPECT_TRUE (Math::NearlyEquals (d1.GetMidpoint (), DateTime{Date{Year{2000}, April, DayOfMonth{21}}}, DurationSeconds{2}));
         }
     }
 }
@@ -1108,7 +1108,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Time, all)
     {
         TraceContextBumper ctx{"DoRegressionTests_"};
         Test_0_AssumptionsAboutUnderlyingTimeLocaleLibrary_ ();

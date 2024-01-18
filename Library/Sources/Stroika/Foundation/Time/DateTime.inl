@@ -40,12 +40,6 @@ namespace Stroika::Foundation::Time {
     inline constexpr DateTime::DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz) noexcept
         : fTimezone_{tz}
         , fDate_{date}
-        , fTimeOfDay_{timeOfDay.has_value () ? optional<TimeOfDay>{*timeOfDay} : nullopt}
-    {
-    }
-    inline constexpr DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz) noexcept
-        : fTimezone_{tz}
-        , fDate_{date}
         , fTimeOfDay_{timeOfDay}
     {
     }

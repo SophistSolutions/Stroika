@@ -68,13 +68,13 @@ namespace Stroika::Foundation::Time {
      *  \note   DateTime constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
      *          instead of creating invalid values.
      *
-     *  \note   DateTime values are (optionally) associated with a particular timezone. If the value of the timezone is localetime and
-     *          localtime changes, the DateTime then is relative to that new localetime. If the associated timezone is localtime, the
+     *  \note   DateTime values are (optionally) associated with a particular timezone. If the value of the timezone is localtime and
+     *          localtime changes, the DateTime then is relative to that new localtime. If the associated timezone is localtime, the
      *          interpretation of that timezone happens at the time a request requires it.
      *
      *  \note   Why no kISO8601Format string and use of enum eISO8601 instead? https://en.cppreference.com/w/cpp/locale/time_put/put may provide
      *          enough information (a little unclear on the Z/timezone part) to WRITE an ISO8601 format string for date time, but 
-     *          https://en.cppreference.com/w/cpp/locale/time_get/get doesnt come very close to suporting ISO 8601 format.
+     *          https://en.cppreference.com/w/cpp/locale/time_get/get doesn't come very close to supporting ISO 8601 format.
      * 
      *  \todo   consider if eRFC1123 could be done as kRFC1123Format; see note about about kISO8601Format/eISO8601, but the same issues
      *          apply (unclear good enuf support for timezones). BUT could reconsider.
@@ -88,11 +88,11 @@ namespace Stroika::Foundation::Time {
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *        o Standard Stroika Comparison support (operator<=>,operator==, etc);
      *
-     *          Also note - if the datetimes differ in their GetTimeZone() value, they arparse not necessarily 
+     *          Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily 
      *          considered different. If either one is unknown, they will both be treated as the same timezone. 
      *          Otherwise, they will BOTH be converted to GMT, and compared as GMT.
      *
-     *          This coertion to GMT can be avoided by optional constructor argument to DateTime::ThreeWayComparer
+     *          This coercion to GMT can be avoided by optional constructor argument to DateTime::ThreeWayComparer
      */
     class [[nodiscard]] DateTime {
     public:
@@ -114,16 +114,13 @@ namespace Stroika::Foundation::Time {
          *  \note DateTime (time_t unixEpochTime) returns a datetime in UTC
          *
          *  \note All DateTime constructors REQUIRE valid (in range) arguments.
-         *
-         *  \note TimeOfDay arguments *must* not be 'empty' - instead use optional<TimeOfDay> {nullopt} overload (since Stroika 2.1d4)
          */
         constexpr DateTime (DateTime&& src) noexcept = default;
         constexpr DateTime (const DateTime& src)     = default;
-        constexpr DateTime (const Date& d) noexcept;
-        constexpr DateTime (const DateTime& dt, const Date& updateDate) noexcept;
-        constexpr DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
+        constexpr explicit DateTime (const Date& d) noexcept;
+        constexpr explicit DateTime (const DateTime& dt, const Date& updateDate) noexcept;
+        constexpr explicit DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
         constexpr DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
-        constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
         explicit DateTime (time_t unixEpochTime) noexcept;
         explicit DateTime (const ::tm& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
         explicit DateTime (const ::timespec& tmTime, const optional<Timezone>& tz = Timezone::kUnknown) noexcept;
@@ -154,7 +151,7 @@ namespace Stroika::Foundation::Time {
          *      See https://datatracker.ietf.org/doc/html/rfc3339
          *
          *  eRFC1123:
-         *      eRFC1123  is a very old format (same as RFC822 except 4 digit year intead of 2-digit year), but is still used in the 
+         *      eRFC1123  is a very old format (same as RFC822 except 4 digit year instead of 2-digit year), but is still used in the 
          *      current HTTP specification (e.g. for cookies).
          *      The spec is originally documented in 
          *          https://tools.ietf.org/html/rfc1123#5.2.14
@@ -445,18 +442,18 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          *  returns the TimeOfDay part of the DateTime object (in this datetime's timezone). It returns 'missing' if there
-         *  is no timeofday associated with this DateTime object.
+         *  is no TimeOfDay associated with this DateTime object.
          *
          *  \ens (not result.has_value () or not result->empty ())
          *
-         *  \note Operations on a DateTime which require a 'TimeOfDay' will implicity create a '0' time of day. So for example,
+         *  \note Operations on a DateTime which require a 'TimeOfDay' will implicitly create a '0' time of day. So for example,
          *        if you AddSeconds (1) to a DateTime with a missing TimeOfDay it creates a TimeOfDay with value 12:00:01.
          */
         nonvirtual constexpr optional<TimeOfDay> GetTimeOfDay () const noexcept;
 
     public:
         /**
-         *  Add the given amount of time to construct a new DateTime object. This funtion does NOT change 
+         *  Add the given amount of time to construct a new DateTime object. This function does NOT change 
          *  the timezone value nor adjust for timezone issues. 
          *
          *  Add doesn't modify *this.
@@ -467,7 +464,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Add the given number of days to construct a new DateTime object. This funtion does NOT change 
+         *  Add the given number of days to construct a new DateTime object. This function does NOT change 
          *  the timezone value nor adjust for timezone issues. 
          *
          *  AddDays doesn't modify this.
@@ -478,14 +475,14 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
-         *  Add the given number of seconds to construct a new DateTime object. This funtion does NOT change 
+         *  Add the given number of seconds to construct a new DateTime object. This function does NOT change 
          *  the timezone value nor adjust for timezone issues. 
          *
          *  AddSeconds doesn't modify this.
          *
          *  \note This function will throw range_error() if it cannot perform the required conversions and produce a valid value.
          *
-         *  \note Operations on a DateTime which require a 'TimeOfDay' will implicity create a '0' time of day. So for example,
+         *  \note Operations on a DateTime which require a 'TimeOfDay' will implicitly create a '0' time of day. So for example,
          *        if you AddSeconds (1) to a DateTime with a missing TimeOfDay it creates a TimeOfDay with value 12:00:01.
          */
         nonvirtual DateTime AddSeconds (int64_t seconds) const;

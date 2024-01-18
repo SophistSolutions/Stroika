@@ -99,14 +99,8 @@ namespace {
             Mapping<String, String>   fThisPHRsIDToSharedContactID;
             Bijection<String, String> fThisPHRsIDToSharedContactID2;
 
-            SharedContactsConfig_ () = default;
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fEnabled == rhs.fEnabled and fLastSynchronizedAt == rhs.fLastSynchronizedAt and
-                       fThisPHRsIDToSharedContactID == rhs.fThisPHRsIDToSharedContactID and
-                       fThisPHRsIDToSharedContactID2 == rhs.fThisPHRsIDToSharedContactID2;
-            }
+            SharedContactsConfig_ ()                                 = default;
+            bool operator== (const SharedContactsConfig_& rhs) const = default;
         };
 
         ObjectVariantMapper mapper;
@@ -151,7 +145,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        EXPECT_TRUE (tmp2 == tmp);
+        EXPECT_EQ (tmp2, tmp);
     }
 }
 
@@ -162,33 +156,23 @@ namespace {
         const bool                kWrite2FileAsWell_ = true; // just for debugging
 
         struct SharedContactsConfig_ {
-            int                fInt1;
-            unsigned long long fInt2;
-            long long          fInt3;
-            int32_t            fInt4;
+            int                fInt1{0};
+            unsigned long long fInt2{0};
+            long long          fInt3{0};
+            int32_t            fInt4{0};
 
-            SharedContactsConfig_ ()
-                : fInt1 (0)
-                , fInt2 (0)
-                , fInt3 (0)
-                , fInt4 (0)
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fInt1 == rhs.fInt1 and fInt2 == rhs.fInt2 and fInt3 == rhs.fInt3 and fInt4 == rhs.fInt4;
-            }
+            SharedContactsConfig_ ()                                 = default;
+            bool operator== (const SharedContactsConfig_& rhs) const = default;
         };
 
         ObjectVariantMapper mapper;
 
         // register each of your mappable (even private) types
         mapper.AddClass<SharedContactsConfig_> ({
-            {L"Int1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-            {L"Int2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
-            {L"Int3", StructFieldMetaInfo{&SharedContactsConfig_::fInt3}},
-            {L"Int4", StructFieldMetaInfo{&SharedContactsConfig_::fInt4}},
+            {"Int1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
+            {"Int2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
+            {"Int3", StructFieldMetaInfo{&SharedContactsConfig_::fInt3}},
+            {"Int4", StructFieldMetaInfo{&SharedContactsConfig_::fInt4}},
         });
 
         SharedContactsConfig_ tmp;
@@ -214,7 +198,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        EXPECT_TRUE (tmp2 == tmp);
+        EXPECT_EQ (tmp2, tmp);
     }
 }
 
@@ -228,32 +212,26 @@ namespace {
         struct SharedContactsConfig_ {
             Range<int>         fIntRange;
             DiscreteRange<int> fDiscIntRange2;
-
             SharedContactsConfig_ ()
-                : fIntRange (-3, 99)
-                , fDiscIntRange2 (4, 19)
+                : fIntRange{-3, 99}
+                , fDiscIntRange2{4, 19}
             {
             }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fIntRange == rhs.fIntRange and fDiscIntRange2 == rhs.fDiscIntRange2;
-            }
+            bool operator== (const SharedContactsConfig_& rhs) const = default;
         };
 
         ObjectVariantMapper mapper;
-
         mapper.AddCommonType<Range<int>> ();
         mapper.AddCommonType<DiscreteRange<int>> ();
 
         mapper.AddClass<SharedContactsConfig_> ({
-            {L"fIntRange", StructFieldMetaInfo{&SharedContactsConfig_::fIntRange}},
-            {L"fDiscIntRange2", StructFieldMetaInfo{&SharedContactsConfig_::fDiscIntRange2}},
+            {"fIntRange", StructFieldMetaInfo{&SharedContactsConfig_::fIntRange}},
+            {"fDiscIntRange2", StructFieldMetaInfo{&SharedContactsConfig_::fDiscIntRange2}},
         });
 
         SharedContactsConfig_ tmp;
-        tmp.fIntRange      = Range<int> (1, 10);
-        tmp.fDiscIntRange2 = DiscreteRange<int> (38, 39);
+        tmp.fIntRange      = Range<int>{1, 10};
+        tmp.fDiscIntRange2 = DiscreteRange<int>{38, 39};
         VariantValue v     = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
@@ -271,7 +249,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        EXPECT_TRUE (tmp2 == tmp);
+        EXPECT_EQ (tmp2, tmp);
     }
 }
 
@@ -299,17 +277,9 @@ namespace {
             {Fred::e, L"e"}, {Fred::f, L"f"}, {Fred::g, L"g"}, {Fred::h, L"h"},
         };
         struct SharedContactsConfig_ {
-            Fred fEnum1;
-
-            SharedContactsConfig_ ()
-                : fEnum1 (Fred::a)
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fEnum1 == rhs.fEnum1;
-            }
+            Fred fEnum1{Fred::a};
+            SharedContactsConfig_ ()                                 = default;
+            bool operator== (const SharedContactsConfig_& rhs) const = default;
         };
 
         {
@@ -317,7 +287,7 @@ namespace {
 
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations<Fred> (Fred_NAMES));
             mapper.AddClass<SharedContactsConfig_> ({
-                {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
+                {"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
             });
 
             SharedContactsConfig_ tmp;
@@ -339,7 +309,7 @@ namespace {
 
             // THEN deserialized, and mapped back to C++ object form
             SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-            EXPECT_TRUE (tmp2 == tmp);
+            EXPECT_EQ (tmp2, tmp);
         }
 
         {
@@ -347,7 +317,7 @@ namespace {
 
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Fred> (Bijection<Fred, String> (Fred_NAMES)));
             mapper.AddClass<SharedContactsConfig_> ({
-                {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
+                {"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
             });
 
             SharedContactsConfig_ tmp;
@@ -369,7 +339,7 @@ namespace {
 
             // THEN deserialized, and mapped back to C++ object form
             SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-            EXPECT_TRUE (tmp2 == tmp);
+            EXPECT_EQ (tmp2, tmp);
         }
     }
 }
@@ -382,33 +352,25 @@ namespace {
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
         struct SharedContactsConfig_ {
-            Duration            fDuration1;
+            Duration            fDuration1{chrono::milliseconds (200)};
             optional<DateTime>  fDateTime1;
             optional<DateTime>  fDate1;
             optional<TimeOfDay> fTimeOfDay1;
-
-            SharedContactsConfig_ ()
-                : fDuration1 (chrono::milliseconds (200))
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fDuration1 == rhs.fDuration1 and fDateTime1 == rhs.fDateTime1 and fDate1 == rhs.fDate1 and fTimeOfDay1 == rhs.fTimeOfDay1;
-            }
+            SharedContactsConfig_ ()                                 = default;
+            bool operator== (const SharedContactsConfig_& rhs) const = default;
         };
 
         ObjectVariantMapper mapper;
         mapper.AddClass<SharedContactsConfig_> ({
-            {L"fDuration1", StructFieldMetaInfo{&SharedContactsConfig_::fDuration1}},
-            {L"fDateTime1", StructFieldMetaInfo{&SharedContactsConfig_::fDateTime1}},
-            {L"fDate1", StructFieldMetaInfo{&SharedContactsConfig_::fDate1}},
-            {L"fTimeOfDay1", StructFieldMetaInfo{&SharedContactsConfig_::fTimeOfDay1}},
+            {"fDuration1", StructFieldMetaInfo{&SharedContactsConfig_::fDuration1}},
+            {"fDateTime1", StructFieldMetaInfo{&SharedContactsConfig_::fDateTime1}},
+            {"fDate1", StructFieldMetaInfo{&SharedContactsConfig_::fDate1}},
+            {"fTimeOfDay1", StructFieldMetaInfo{&SharedContactsConfig_::fTimeOfDay1}},
         });
 
         SharedContactsConfig_ tmp;
-        tmp.fDate1 = Date{Time::Year{2001}, Time::February, Time::day{12}};
-        tmp.fDateTime1 = DateTime{Date{Time::Year{2001}, Time::February, Time::day{12}}, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
+        tmp.fDate1 = DateTime{Date{Time::Year{2001}, Time::February, Time::day{12}}};
+        tmp.fDateTime1 = DateTime{Date{Time::Year{2001}, Time::February, Time::day{12}}, Time::TimeOfDay::Parse ("3pm", locale::classic ())};
         tmp.fTimeOfDay1 = tmp.fDateTime1->GetTimeOfDay ();
         Assert (tmp.fTimeOfDay1.has_value ());
         tmp.fTimeOfDay1 = TimeOfDay{tmp.fTimeOfDay1->GetAsSecondsCount () + 60};
@@ -429,7 +391,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        EXPECT_TRUE (tmp2 == tmp);
+        EXPECT_EQ (tmp2, tmp);
     }
 }
 
@@ -470,7 +432,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        EXPECT_TRUE (tmp2 == tmp);
+        EXPECT_EQ (tmp2, tmp);
     }
 }
 
@@ -520,15 +482,15 @@ namespace {
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<tuple<int, String>> ());
 
         mapper.AddClass<SharedContactsConfig_> ({
-            {L"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-            {L"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
-            {L"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
-            {L"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
-            {L"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}},
-            {L"fSet1_", StructFieldMetaInfo{&SharedContactsConfig_::fSet1_}},
-            {L"fVector1_", StructFieldMetaInfo{&SharedContactsConfig_::fVector1_}},
-            {L"fPair1_", StructFieldMetaInfo{&SharedContactsConfig_::fPair1_}},
-            {L"fTuple2", StructFieldMetaInfo{&SharedContactsConfig_::fTuple2_}},
+            {"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
+            {"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}},
+            {"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
+            {"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
+            {"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}},
+            {"fSet1_", StructFieldMetaInfo{&SharedContactsConfig_::fSet1_}},
+            {"fVector1_", StructFieldMetaInfo{&SharedContactsConfig_::fVector1_}},
+            {"fPair1_", StructFieldMetaInfo{&SharedContactsConfig_::fPair1_}},
+            {"fTuple2", StructFieldMetaInfo{&SharedContactsConfig_::fTuple2_}},
         });
 
         SharedContactsConfig_ tmp;
@@ -556,7 +518,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        EXPECT_TRUE (tmp2 == tmp);
+        EXPECT_EQ (tmp2, tmp);
     }
 }
 
@@ -568,26 +530,20 @@ namespace {
 
         struct BaseObj_ {
             int  fVV1{};
-            bool operator== (const BaseObj_& rhs) const
-            {
-                return fVV1 == rhs.fVV1;
-            }
+            bool operator== (const BaseObj_& rhs) const = default;
         };
 
         struct Derived_ : BaseObj_ {
             int  fVV2{};
-            bool operator== (const Derived_& rhs) const
-            {
-                return BaseObj_::operator== (rhs) and fVV2 == rhs.fVV2;
-            }
+            bool operator== (const Derived_& rhs) const = default;
         };
 
         ObjectVariantMapper mapper;
         mapper.AddClass<BaseObj_> ({
-            {L"fVV1", StructFieldMetaInfo{&BaseObj_::fVV1}},
+            {"fVV1", StructFieldMetaInfo{&BaseObj_::fVV1}},
         });
         mapper.AddSubClass<Derived_, BaseObj_> ({
-            {L"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
+            {"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
         });
 
         Derived_ tmp;
@@ -600,7 +556,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         Derived_ tmp2 = mapper.ToObject<Derived_> (Variant::JSON::Reader{}.Read (tmpStream));
-        EXPECT_TRUE (tmp2 == tmp);
+        EXPECT_EQ (tmp2, tmp);
     }
 }
 
@@ -646,15 +602,15 @@ namespace {
         mapper.AddCommonType<vector<int>> ();
 
         mapper.AddClass<SharedContactsConfig_> ({
-            {L"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
-            {L"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
-            {L"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
-            {L"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
-            {L"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
-            {L"fSet1_", StructFieldMetaInfo{&SharedContactsConfig_::fSet1_}, ObjectVariantMapper::MakeCommonSerializer<Set<int>> ()},
-            {L"fVector1_", StructFieldMetaInfo{&SharedContactsConfig_::fVector1_}},
-            {L"fURL1_", StructFieldMetaInfo{&SharedContactsConfig_::fURL1_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
-            {L"fURL2_", StructFieldMetaInfo{&SharedContactsConfig_::fURL2_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
+            {"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
+            {"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+            {"fMapping1", StructFieldMetaInfo{&SharedContactsConfig_::fMapping1}},
+            {"fSequence1", StructFieldMetaInfo{&SharedContactsConfig_::fSequence1}},
+            {"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+            {"fSet1_", StructFieldMetaInfo{&SharedContactsConfig_::fSet1_}, ObjectVariantMapper::MakeCommonSerializer<Set<int>> ()},
+            {"fVector1_", StructFieldMetaInfo{&SharedContactsConfig_::fVector1_}},
+            {"fURL1_", StructFieldMetaInfo{&SharedContactsConfig_::fURL1_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
+            {"fURL2_", StructFieldMetaInfo{&SharedContactsConfig_::fURL2_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()},
         });
 
         SharedContactsConfig_ tmp;
@@ -683,7 +639,7 @@ namespace {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-        EXPECT_TRUE (tmp2 == tmp);
+        EXPECT_EQ (tmp2, tmp);
     }
 }
 
@@ -697,10 +653,7 @@ namespace {
                 uint8_t red;
                 uint8_t green;
                 uint8_t blue;
-                bool    operator== (const RGBColor& rhs) const
-                {
-                    return red == rhs.red and green == rhs.green and blue == rhs.blue;
-                }
+                bool    operator== (const RGBColor& rhs) const = default;
             };
 
             ObjectVariantMapper mapper;
@@ -743,7 +696,7 @@ namespace {
 
             // THEN deserialized, and mapped back to C++ object form
             RGBColor tmp2 = mapper.ToObject<RGBColor> (Variant::JSON::Reader{}.Read (tmpStream));
-            EXPECT_TRUE (tmp2 == tmp);
+            EXPECT_EQ (tmp2, tmp);
         }
     }
 }
@@ -769,17 +722,9 @@ namespace {
         };
 
         struct SharedContactsConfig_ {
-            Fred fEnum1;
-
-            SharedContactsConfig_ ()
-                : fEnum1{Fred::a}
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fEnum1 == rhs.fEnum1;
-            }
+            Fred fEnum1{Fred::a};
+            SharedContactsConfig_ ()                                 = default;
+            bool operator== (const SharedContactsConfig_& rhs) const = default;
         };
 
         {
@@ -787,7 +732,7 @@ namespace {
 
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_EnumAsInt<Fred> ());
             mapper.AddClass<SharedContactsConfig_> ({
-                {L"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
+                {"fEnum1", StructFieldMetaInfo{&SharedContactsConfig_::fEnum1}},
             });
 
             SharedContactsConfig_ tmp;
@@ -809,7 +754,7 @@ namespace {
 
             // THEN deserialized, and mapped back to C++ object form
             SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpStream));
-            EXPECT_TRUE (tmp2 == tmp);
+            EXPECT_EQ (tmp2, tmp);
         }
     }
 }
@@ -835,17 +780,14 @@ namespace {
                 IO::Network::InternetAddress    ia;
                 optional<IO::Network::CIDR>     cidr;
                 DataExchange::InternetMediaType mediaType;
-                bool                            operator== (const T& rhs) const
-                {
-                    return ia == rhs.ia and cidr == rhs.cidr and mediaType == rhs.mediaType;
-                }
+                bool                            operator== (const T& rhs) const = default;
             };
             mapper.AddCommonType<IO::Network::CIDR> ();
             mapper.AddCommonType<optional<IO::Network::CIDR>> ();
             mapper.AddClass<T> ({
-                {L"ia", StructFieldMetaInfo{&T::ia}},
-                {L"cidr", StructFieldMetaInfo{&T::cidr}},
-                {L"mediaType", StructFieldMetaInfo{&T::mediaType}},
+                {"ia", StructFieldMetaInfo{&T::ia}},
+                {"cidr", StructFieldMetaInfo{&T::cidr}},
+                {"mediaType", StructFieldMetaInfo{&T::mediaType}},
             });
             T g1{IO::Network::V4::kLocalhost, IO::Network::CIDR{IO::Network::V6::kAddrAny, 64}, DataExchange::InternetMediaTypes::kJPEG};
             EXPECT_TRUE (mapper.ToObject<T> (mapper.FromObject (g1)) == g1);
@@ -914,7 +856,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_DataExchangeFormat_ObjectVariantMapper, all)
     {
         DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
         DoRegressionTests_SimpleMapToFromJSON_2_ ();

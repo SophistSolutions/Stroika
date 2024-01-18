@@ -385,7 +385,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                         numCharsConsumed += ncc;
                     }
                     else {
-                        // if nItems == 0, this is OK, just means not specified. Else probbaly an issue, but caught by checking number of charcters consumed
+                        // if nItems == 0, this is OK, just means not specified. Else probably an issue, but caught by checking number of characters consumed
                     }
                 }
             }
@@ -393,7 +393,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             if (consumedCharacters != nullptr) {
                 *consumedCharacters = numCharsConsumed;
             }
-            return t.has_value () ? DateTime{*d, t, tz} : *d;
+            return t.has_value () ? DateTime{*d, t, tz} : DateTime{*d};
         } break;
         case LocaleIndependentFormat::eRFC1123: {
             /*
@@ -472,7 +472,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             if (nItems < 3) {
                 return nullopt;
             }
-            Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day), DataExchange::ValidationStrategy::eThrow};
+            Date d = Date{Year{year}, static_cast<MonthOfYear> (month), static_cast<DayOfMonth> (day), DataExchange::ValidationStrategy::eThrow};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
                 t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second),
@@ -503,7 +503,7 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             if (consumedCharacters != nullptr) {
                 *consumedCharacters = numCharsConsumed;
             }
-            return t.has_value () ? DateTime{d, *t, tz} : d;
+            return t.has_value () ? DateTime{d, *t, tz} : DateTime{d};
         } break;
         default: {
             AssertNotReached ();
@@ -633,25 +633,25 @@ String DateTime::Format (LocaleIndependentFormat format) const
 {
     switch (format) {
         case LocaleIndependentFormat::eISO8601: {
-            String r = fDate_.Format (Date::kISO8601Format);
+            StringBuilder r = fDate_.Format (Date::kISO8601Format);
             if (fTimeOfDay_.has_value ()) {
                 String timeStr = fTimeOfDay_->Format (TimeOfDay::kISO8601Format);
-                r += "T"sv + timeStr;
+                r << "T"sv << timeStr;
                 if (fTimezone_) {
                     if (fTimezone_ == Timezone::kUTC) {
                         static const String kZ_{"Z"sv};
-                        r += kZ_;
+                        r << kZ_;
                     }
                     else {
                         auto tzBias     = fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
                         int  minuteBias = abs (static_cast<int> (tzBias)) / 60;
                         int  hrs        = minuteBias / 60;
                         int  mins       = minuteBias - hrs * 60;
-                        r += ::Format (L"%s%.2d:%.2d", (tzBias < 0 ? L"-" : L"+"), hrs, mins);
+                        r << ::Format (L"%s%.2d:%.2d", (tzBias < 0 ? L"-" : L"+"), hrs, mins);
                     }
                 }
             }
-            return r;
+            return r.str ();
         } break;
         case LocaleIndependentFormat::eRFC1123: {
             optional<Timezone>  tz     = GetTimezone ();
@@ -780,7 +780,7 @@ time_t DateTime::As_Simple_ () const
     Date     d     = useDT.GetDate ();
 
     if (useDT.GetDate ().GetYear () < Year{1970}) [[unlikely]] {
-        static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
+        static const range_error kRangeErrror_{"DateTime cannot be converted to time_t - before 1970"};
         Execution::Throw (kRangeErrror_);
     }
 
