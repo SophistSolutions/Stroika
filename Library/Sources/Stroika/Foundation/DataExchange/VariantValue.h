@@ -94,7 +94,7 @@ namespace Stroika::Foundation::DataExchange {
      *
      *          When comparing any other types (except Map or Array) with a String, the to types are coerceced
      *          into Strings, and compared as strings.
-     *
+     * 
      *  TODO:
      *
      *      @todo   XPath / JPath / JSONPath feature in DataExchange::VariantValue - https://github.com/SophistSolutions/Stroika/issues/110
@@ -268,6 +268,9 @@ namespace Stroika::Foundation::DataExchange {
          *  \brief return true iff value GetType () != null;
          *
          *  \note - this is NOT the same as not empty ()!
+         *  \note this is NOT the same same as As<bool> ()
+         * 
+         *  And because of that - at least partly - we avoided support explicit operator (for each type in the basic variant like explicit operator String).
          */
         nonvirtual explicit operator bool () const;
 
@@ -355,7 +358,7 @@ namespace Stroika::Foundation::DataExchange {
          * 
          *  This also produced 'sorted' mappings.
          * 
-         *  You generally dont need to use this, but its helpful for the definition of equality and comparison.
+         *  You generally don't need to use this, but its helpful for the definition of equality and comparison.
          */
         nonvirtual VariantValue Normalize () const;
 
