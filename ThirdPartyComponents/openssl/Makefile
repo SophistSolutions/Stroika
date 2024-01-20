@@ -23,7 +23,8 @@ QUICK_BUILD ?= 1
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
-VERSION=3.1.2
+VERSION=3.2.0
+#VERSION=3.1.2
 #VERSION=3.1.1
 #VERSION=3.1.0
 #VERSION=3.0.8
@@ -49,8 +50,8 @@ ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 FETCHURLS=
 FETCHURLS+=https://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
-FETCHURLS+=http://www.openssl.org/source/old/1.1.1/$(BASENAME).tar.gz
-FETCHURLS+=http://www.openssl.org/source/old/1.1.0/$(BASENAME).tar.gz
+FETCHURLS+=http://www.openssl.org/source/old/3.1/$(BASENAME).tar.gz
+FETCHURLS+=http://www.openssl.org/source/old/3.2/$(BASENAME).tar.gz
 FETCHURLS+=ftp://mirror.switch.ch/mirror/openssl/source/$(BASENAME).tar.gz
 FETCHURLS+=http://artfiles.org/openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.gz
