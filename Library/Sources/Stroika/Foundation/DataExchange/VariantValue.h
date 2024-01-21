@@ -174,17 +174,17 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        static constexpr Type eNull            = Type::eNull;
-        static constexpr Type eBLOB            = Type::eBLOB;
-        static constexpr Type eBoolean         = Type::eBoolean;
-        static constexpr Type eInteger         = Type::eInteger;
-        static constexpr Type eUnsignedInteger = Type::eUnsignedInteger;
-        static constexpr Type eFloat           = Type::eFloat;
-        static constexpr Type eDate            = Type::eDate;
-        static constexpr Type eDateTime        = Type::eDateTime;
-        static constexpr Type eString          = Type::eString;
-        static constexpr Type eArray           = Type::eArray;
-        static constexpr Type eMap             = Type::eMap;
+        using Type::eArray;
+        using Type::eBLOB;
+        using Type::eBoolean;
+        using Type::eDate;
+        using Type::eDateTime;
+        using Type::eFloat;
+        using Type::eInteger;
+        using Type::eMap;
+        using Type::eNull;
+        using Type::eString;
+        using Type::eUnsignedInteger;
 
     public:
         /**

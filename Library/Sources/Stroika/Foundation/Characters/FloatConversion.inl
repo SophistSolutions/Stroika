@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
     }
     constexpr ToStringOptions::ToStringOptions (TrimTrailingZerosType trimTrailingZeros)
-        : fTrimTrailingZeros_{trimTrailingZeros == TrimTrailingZerosType::eTrim}
+        : fTrimTrailingZeros_{trimTrailingZeros == TrimTrailingZerosType::eTrimZeros}
     {
     }
     inline ToStringOptions::ToStringOptions (const ToStringOptions& b1, const ToStringOptions& b2)
@@ -355,7 +355,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     case FloatFormatType::eFixedPoint:
                         useFloatField = ios_base::fixed;
                         break;
-                    case FloatFormatType::eAutomatic: {
+                    case FloatFormatType::eAutomaticScientific: {
                         bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or
                                                      (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                         if (useScientificNotation) {

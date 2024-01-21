@@ -39,28 +39,24 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * But often not.
      */
     enum class TrimTrailingZerosType {
-        eTrim,
-        eDontTrim,
+        eTrimZeros,
+        eDontTrimZeros,
 
-        Stroika_Define_Enum_Bounds (eTrim, eDontTrim)
+        Stroika_Define_Enum_Bounds (eTrimZeros, eDontTrimZeros)
     };
-    constexpr TrimTrailingZerosType eTrimZeros     = TrimTrailingZerosType::eTrim;
-    constexpr TrimTrailingZerosType eDontTrimZeros = TrimTrailingZerosType::eDontTrim;
+    using TrimTrailingZerosType::eDontTrimZeros;
+    using TrimTrailingZerosType::eTrimZeros;
 
     enum class PredefinedLocale {
         eUseCLocale,
+        /**
+         *  \note - this selects the current locale at the time the prefence is used, whereas
+         *          in Stroika v2.1, it used the current locale at the time the preference object was created.
+         */
         eUseCurrentLocale
     };
-
-    /**
-     */
-    constexpr PredefinedLocale eUseCLocale = PredefinedLocale::eUseCLocale;
-
-    /**
-     *  \note - this selects the current locale at the time the prefence is used, whereas
-     *          in Stroika v2.1, it used the current locale at the time the preference object was created.
-     */
-    constexpr PredefinedLocale eUseCurrentLocale = PredefinedLocale::eUseCurrentLocale;
+    using PredefinedLocale::eUseCLocale;
+    using PredefinedLocale::eUseCurrentLocale;
 
     /**
      *  Precision (here) is defined to be the number of significant digits (including before and after decimal point).
@@ -82,16 +78,16 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         eScientific,
         eDefaultFloat,
         eFixedPoint,
-        eAutomatic,
+        eAutomaticScientific,
 
         eDEFAULT = eDefaultFloat,
 
-        Stroika_Define_Enum_Bounds (eScientific, eAutomatic)
+        Stroika_Define_Enum_Bounds (eScientific, eAutomaticScientific)
     };
-    constexpr FloatFormatType eScientific          = FloatFormatType::eScientific;
-    constexpr FloatFormatType eDefaultFloat        = FloatFormatType::eDefaultFloat;
-    constexpr FloatFormatType eFixedPoint          = FloatFormatType::eFixedPoint;
-    constexpr FloatFormatType eAutomaticScientific = FloatFormatType::eAutomatic;
+    using FloatFormatType::eAutomaticScientific;
+    using FloatFormatType::eDefaultFloat;
+    using FloatFormatType::eFixedPoint;
+    using FloatFormatType::eScientific;
 
     /**
      *  These are options for the FloatConversion::ToString () function

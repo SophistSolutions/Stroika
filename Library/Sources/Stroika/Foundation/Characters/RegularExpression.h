@@ -47,12 +47,12 @@ namespace Stroika::Foundation::Characters {
 
             eDEFAULT = eECMAScript,
         };
-        static constexpr SyntaxType eECMAScript = SyntaxType::eECMAScript;
-        static constexpr SyntaxType eBasic      = SyntaxType::eBasic;
-        static constexpr SyntaxType eExtended   = SyntaxType::eExtended;
-        static constexpr SyntaxType eAwk        = SyntaxType::eAwk;
-        static constexpr SyntaxType eGrep       = SyntaxType::eGrep;
-        static constexpr SyntaxType eEGrep      = SyntaxType::eEGrep;
+        using SyntaxType::eAwk;
+        using SyntaxType::eBasic;
+        using SyntaxType::eECMAScript;
+        using SyntaxType::eEGrep;
+        using SyntaxType::eExtended;
+        using SyntaxType::eGrep;
 
     public:
         /**

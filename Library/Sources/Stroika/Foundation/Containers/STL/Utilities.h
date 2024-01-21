@@ -42,7 +42,8 @@ namespace Stroika::Foundation::Containers::STL {
      *      vector<T>   realAnswer = STL::Make<vector<T>> (funCall_returning_set());
      */
     template <typename CREATE_CONTAINER_TYPE, typename FROM_CONTAINER_TYPE>
-    [[deprecated("Since Stroika v3.0d5 just use Traversal::Map<> or more directly use STL(ranges)")]] CREATE_CONTAINER_TYPE Make (const FROM_CONTAINER_TYPE& rhs);
+    [[deprecated ("Since Stroika v3.0d5 just use Traversal::Map<> or more directly use STL(ranges)")]] CREATE_CONTAINER_TYPE
+    Make (const FROM_CONTAINER_TYPE& rhs);
 
     /**
      *  Though you can append to a vector<> with

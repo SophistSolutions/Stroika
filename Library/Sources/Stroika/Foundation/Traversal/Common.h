@@ -30,9 +30,8 @@ namespace Stroika::Foundation::Traversal {
 
         Stroika_Define_Enum_Bounds (eOpen, eClosed)
     };
-
-    constexpr Openness eOpen = Openness::eOpen;
-    constexpr Openness eClosed = Openness::eClosed;
+    using Openness::eClosed;
+    using Openness::eOpen;
 
 }
 

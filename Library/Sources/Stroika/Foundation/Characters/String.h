@@ -113,6 +113,9 @@ namespace Stroika::Foundation::Characters {
 
         Stroika_Define_Enum_Bounds (ePreferKeepLeft, ePreferKeepMid)
     };
+    using StringShorteningPreference::ePreferKeepLeft;
+    using StringShorteningPreference::ePreferKeepMid;
+    using StringShorteningPreference::ePreferKeepRight;
 
     /**
      *  \brief returns true iff T == u8string, u16string, u32string, or wstring

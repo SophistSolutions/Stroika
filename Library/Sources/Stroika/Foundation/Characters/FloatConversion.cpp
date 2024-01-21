@@ -103,7 +103,7 @@ namespace {
                 case FloatConversion::FloatFormatType::eFixedPoint:
                     useFloatField = ios_base::fixed;
                     break;
-                case FloatConversion::FloatFormatType::eAutomatic: {
+                case FloatConversion::FloatFormatType::eAutomaticScientific: {
                     bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or
                                                  (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                     if (useScientificNotation) {
