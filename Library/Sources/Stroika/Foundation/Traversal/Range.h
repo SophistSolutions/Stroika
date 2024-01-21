@@ -436,7 +436,7 @@ namespace Stroika::Foundation::Traversal {
          *  Just return nullopt if not comparable. Then the caller can decide how to break the 'tie' - with midpoint compare, or
          *  left or right edge compares...
          */
-        constexpr optional<bool> LessIsh (const Range& rhs) const;
+        constexpr optional<bool> DefinitelyLessThan (const Range& rhs) const;
 
     public:
         /**

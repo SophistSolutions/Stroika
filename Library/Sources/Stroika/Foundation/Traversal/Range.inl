@@ -445,13 +445,13 @@ namespace Stroika::Foundation::Traversal {
                GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
     }
     template <typename T, typename TRAITS>
-    constexpr optional<bool> Range<T, TRAITS>::LessIsh (const Range& rhs) const
+    constexpr optional<bool> Range<T, TRAITS>::DefinitelyLessThan (const Range& rhs) const
     {
         /*
          *  |    this   |  
          *                   | rhs |
          */
-        if (GetUpperBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness = eClosed) {
+        if (GetUpperBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness () = eClosed) {
             if (GetUpperBound () < rhs.GetLowerBound ()) {
                 return true;
             }
@@ -465,7 +465,7 @@ namespace Stroika::Foundation::Traversal {
          *                          |    this   |  
          *         | rhs |
          */
-        if (GetLowerBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness = eClosed) {
+        if (GetLowerBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness () = eClosed) {
             if (GetLowerBound () > rhs.GetUpperBound ()) {
                 return false;
             }
