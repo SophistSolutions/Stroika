@@ -451,7 +451,7 @@ namespace Stroika::Foundation::Traversal {
          *  |    this   |  
          *                   | rhs |
          */
-        if (GetUpperBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness () = eClosed) {
+        if (GetUpperBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness () == eClosed) {
             if (GetUpperBound () < rhs.GetLowerBound ()) {
                 return true;
             }
@@ -465,7 +465,7 @@ namespace Stroika::Foundation::Traversal {
          *                          |    this   |  
          *         | rhs |
          */
-        if (GetLowerBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness () = eClosed) {
+        if (GetLowerBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness () == eClosed) {
             if (GetLowerBound () > rhs.GetUpperBound ()) {
                 return false;
             }
