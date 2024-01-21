@@ -444,6 +444,47 @@ namespace Stroika::Foundation::Traversal {
         return GetLowerBound () == rhs.GetLowerBound () and GetUpperBound () == rhs.GetUpperBound () and
                GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
     }
+    template <typename T, typename TRAITS>
+    constexpr optional<bool> Range<T, TRAITS>::LessIsh (const Range& rhs) const
+    {
+        /*
+         *  |    this   |  
+         *                   | rhs |
+         */
+        if (GetUpperBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness = eClosed) {
+            if (GetUpperBound () < rhs.GetLowerBound ()) {
+                return true;
+            }
+        }
+        else {
+            if (GetUpperBound () <= rhs.GetLowerBound ()) {
+                return true;
+            }
+        }
+        /*
+         *                          |    this   |  
+         *         | rhs |
+         */
+        if (GetLowerBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness = eClosed) {
+            if (GetLowerBound () > rhs.GetUpperBound ()) {
+                return false;
+            }
+        }
+        else {
+            if (GetLowerBound () >= rhs.GetUpperBound ()) {
+                return false;
+            }
+        }
+        /*
+         *      |    this   |  
+         *         | rhs |
+         *  or
+         *      |    this       |  
+         *               | rhs |
+         *  etc...
+         */
+        return nullopt;
+    }
 
     /*
      ********************************************************************************

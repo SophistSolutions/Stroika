@@ -427,6 +427,19 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \brief Compute a less-like notion for Range.
+         * 
+         *  There is no clear way to provide an ordering of two ranges (of the same type). The ordering of their
+         *  left sides, may not agree with the ordering of their right sides, or their midpoints.
+         * 
+         *  But - OFTEN - they CAN be ordered! And thats often a useful concept. So capture that case at least.
+         *  Just return nullopt if not comparable. Then the caller can decide how to break the 'tie' - with midpoint compare, or
+         *  left or right edge compares...
+         */
+        constexpr optional<bool> LessIsh (const Range& rhs) const;
+
+    public:
+        /**
          *  Returns true iff there are any points shared in common between this range and the rhs range.
          * 
          *  \par Example Usage
