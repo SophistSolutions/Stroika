@@ -204,6 +204,7 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		$resEnv{"CC"} = toExternallyUsedPath_ ($exe32Dir . "\\cl");
 		$resEnv{"LD"} = toExternallyUsedPath_ ($exe32Dir . "\\link");
 		$resEnv{"AR"} = toExternallyUsedPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
+		$resEnv{"ASAN_DLL_DIR"} = toExternallyUsedPath_ ($exe32Dir);
 	}
 	elsif ($ARCH eq "x86_64") {
 		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x64");
@@ -212,6 +213,7 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		$resEnv{"CC"} = toExternallyUsedPath_ ($exe64Dir . "\\cl");
 		$resEnv{"LD"} = toExternallyUsedPath_ ($exe64Dir . "\\link");
 		$resEnv{"AR"} = toExternallyUsedPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
+		$resEnv{"ASAN_DLL_DIR"} = toExternallyUsedPath_ ($exe64Dir);
 	}
 	else {
 		die ("unrecongized ARCH")
