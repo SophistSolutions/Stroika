@@ -47,5 +47,6 @@
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true
   },
-  "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "cmake.sourceDirectory": "C:/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug/ThirdPartyComponents/boost/boost/safe_numerics"
 }
