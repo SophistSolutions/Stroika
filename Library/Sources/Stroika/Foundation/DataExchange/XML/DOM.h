@@ -599,6 +599,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          *  Use the optionally provided stream to deserialize the document from (or create an empty one with a single root documentElement given by name/ns args).
          * 
          *  \note String in overload is trivial wrapper on Streams::TextToByteReader{}, in case you want adjust parameters.
+         *  \note Document::Ptr overload is a way to 'clone' a Document (but even possibly across provider implementations)
          * 
          * @todo add overload taking String 'in' and parse using Streams::TextToByteReader
          *  @todo consider adding 'Resolver' argument - so missing #includes get loaded.
@@ -608,12 +609,14 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReadingr);
         Ptr New (const Providers::IDOMProvider& p, const String& in);
         Ptr New (const Providers::IDOMProvider& p, const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
+        Ptr New (const Providers::IDOMProvider& p, const Ptr& clone);
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
         Ptr New (const NameWithNamespace& documentElementName);
         Ptr New (const Streams::InputStream::Ptr<byte>& in);
         Ptr New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReadingr);
         Ptr New (const String& in);
         Ptr New (const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
+        Ptr New (const Ptr& clone);
 #endif
 
         /**

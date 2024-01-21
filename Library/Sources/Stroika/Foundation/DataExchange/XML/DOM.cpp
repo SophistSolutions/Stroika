@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Execution/Exceptions.h"
 #include "Stroika/Foundation/Memory/Common.h"
 #include "Stroika/Foundation/Streams/InputStream.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
 #include "Stroika/Foundation/Streams/TextToByteReader.h"
 
@@ -152,6 +153,14 @@ Document::Ptr Document::New (const Providers::IDOMProvider& p, const String& in,
     return New (p, Streams::TextToByteReader::New (in), schemaToValidateAgainstWhileReading);
 }
 
+Document::Ptr Document::New (const Providers::IDOMProvider& p, const Ptr& clone)
+{
+    // provider-specific impl COULD possibly be done more efficiently...
+    Streams::MemoryStream::Ptr m = Streams::MemoryStream::New<byte> ();
+    clone.Write (m);
+    return New (p, m);
+}
+
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
 Document::Ptr Document::New (const NameWithNamespace& documentElementName)
 {
@@ -178,5 +187,11 @@ Document::Ptr Document::New (const String& in)
 Document::Ptr Document::New (const String& in, const Schema::Ptr& schema)
 {
     return New (Streams::TextToByteReader::New (in), schema);
+}
+
+Document::Ptr Document::New (const Ptr& clone)
+{
+    static const XML::Providers::IDOMProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
+    return New (*kDefaultProvider_, clone);
 }
 #endif
