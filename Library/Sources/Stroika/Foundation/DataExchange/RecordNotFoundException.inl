@@ -16,7 +16,7 @@ namespace Stroika::Foundation::DataExchange {
      ******************** DataExchange::RecordNotFoundException *********************
      ********************************************************************************
      */
-    inline RecordNotFoundException::RecordNotFoundException (const optional<Characters::String>& whatRecord = {})
+    inline RecordNotFoundException::RecordNotFoundException (const optional<Characters::String>& whatRecord)
         : inherited{whatRecord == nullopt ? "Record Not Found"sv : ("Record (" + *whatRecord + ") Not Found")}
     {
     }
