@@ -509,8 +509,8 @@ void LedLineItDocument::Serialize (CArchive& ar)
             nBytesToWrite = outCharCnt;
             char* buffp   = static_cast<char*> (buf3_);
 #else
-            char* buffp = static_cast<char*> (buf2);
-            size_t nBytesToWrite = charsToWrite;
+            char*     buffp         = static_cast<char*> (buf2);
+            size_t    nBytesToWrite = charsToWrite;
 #endif
             ar.Write (buffp, static_cast<UINT> (nBytesToWrite));
         }

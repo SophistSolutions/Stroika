@@ -185,7 +185,7 @@ namespace {
             }
             {
                 auto dumpCT = [] (const String& label, InternetMediaType i) {
-                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
+                    [[maybe_unused]] InternetMediaTypeRegistry r       = InternetMediaTypeRegistry::Get ();
                     [[maybe_unused]] auto                      ignore1 = label;
                     DbgTrace (L"SUFFIX(%s)=%s", label.c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
                     DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());

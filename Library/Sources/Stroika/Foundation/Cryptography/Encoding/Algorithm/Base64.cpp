@@ -279,18 +279,18 @@ string Algorithm::EncodeBase64 (const Streams::InputStream<byte>::Ptr& from, Lin
 #elif 1
     // quick hack impl
     Memory::BLOB bytes = Streams::InputStream<byte>::Ptr (from).ReadAll ();
-    const byte* start = bytes.begin ();
-    const byte* end = bytes.end ();
+    const byte*  start = bytes.begin ();
+    const byte*  end   = bytes.end ();
     Require (start == end or start != nullptr);
     Require (start == end or end != nullptr);
     base64_encodestate state{lb};
-    size_t srcLen = end - start;
-    size_t bufSize = 4 * srcLen;
+    size_t             srcLen  = end - start;
+    size_t             bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
     StackBuffer<signed char> data{Memory::eUninitialized, bufSize};
-    size_t mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
-    size_t extraBytes = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
-    size_t totalBytes = mostBytesCopied + extraBytes;
+    size_t                   mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
+    size_t                   extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
+    size_t                   totalBytes      = mostBytesCopied + extraBytes;
     Assert (totalBytes <= bufSize);
     return string{data.begin (), data.begin () + totalBytes};
 #else

@@ -1107,7 +1107,7 @@ void SpellCheckEngine_Basic_Simple::SetUserDictionary (const UDDictionaryName& u
     memset (&zero, 0, sizeof (zero));
     bool noUD = (::memcmp (&userDictionary, &zero, sizeof (zero)) == 0);
 #else
-    bool noUD = userDictionary.length () == 0;
+    bool            noUD        = userDictionary.length () == 0;
 #endif
     delete fUD;
     fUD = NULL;

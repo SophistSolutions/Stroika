@@ -871,7 +871,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                     CComQIPtr<IALCommand> alc = (IDispatch*)e;
 #else
-                    CComQIPtr<IALCommand> alc = e;
+                    CComQIPtr<IALCommand>            alc         = e;
 #endif
                     CComBSTR bicCmdName;
                     Led_ThrowIfErrorHRESULT (alc->get_InternalName (&bicCmdName));

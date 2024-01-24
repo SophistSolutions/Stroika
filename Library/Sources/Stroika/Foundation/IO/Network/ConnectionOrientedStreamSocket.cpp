@@ -157,7 +157,7 @@ namespace {
                     FD_ZERO (&setE);
                     FD_SET (fSD_, &setE);
                     timeval time_out = timeout.As<timeval> ();
-                    int ret = ::select (0, NULL, &setW, &setE, &time_out);
+                    int     ret      = ::select (0, NULL, &setW, &setE, &time_out);
                     if (ret <= 0) {
                         // select() failed or connection timed out
                         if (ret == 0)
@@ -196,7 +196,7 @@ namespace {
 #if qPlatform_POSIX
                 return Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
 #elif qPlatform_Windows
-                int flags = 0;
+                int flags        = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
                 return static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));
 #else
@@ -284,9 +284,9 @@ namespace {
                     [this, maxSendAtATime] (const byte* start, const byte* end) -> size_t {
                         Require (static_cast<size_t> (end - start) <= maxSendAtATime);
                         Assert ((end - start) < numeric_limits<int>::max ());
-                        int len = static_cast<int> (end - start);
+                        int len   = static_cast<int> (end - start);
                         int flags = 0;
-                        int n = ThrowWSASystemErrorIfSOCKET_ERROR (::send (fSD_, reinterpret_cast<const char*> (start), len, flags));
+                        int n     = ThrowWSASystemErrorIfSOCKET_ERROR (::send (fSD_, reinterpret_cast<const char*> (start), len, flags));
                         Assert (0 <= n and n <= (end - start));
                         return static_cast<size_t> (n);
                     });
@@ -351,7 +351,7 @@ namespace {
                 if (keepAliveOptions.fEnabled and (keepAliveOptions.fTimeIdleBeforeSendingKeepalives or keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes)) {
                     tcp_keepalive alive{keepAliveOptions.fEnabled};
                     // from https://msdn.microsoft.com/en-us/library/windows/desktop/dd877220(v=vs.85).aspx - "The default settings when a TCP socket is initialized sets the keep-alive timeout to 2 hours and the keep-alive interval to 1 second"
-                    alive.keepalivetime = Math::Round<ULONG> (keepAliveOptions.fTimeIdleBeforeSendingKeepalives.value_or (2 * 60 * 60) * 1000.0);
+                    alive.keepalivetime     = Math::Round<ULONG> (keepAliveOptions.fTimeIdleBeforeSendingKeepalives.value_or (2 * 60 * 60) * 1000.0);
                     alive.keepaliveinterval = Math::Round<ULONG> (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes.value_or (1) * 1000.0);
                     DWORD dwBytesRet{};
                     if (::WSAIoctl (fSD_, SIO_KEEPALIVE_VALS, &alive, sizeof (alive), NULL, 0, &dwBytesRet, NULL, NULL) == SOCKET_ERROR) {

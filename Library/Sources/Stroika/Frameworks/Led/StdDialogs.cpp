@@ -979,11 +979,11 @@ Led_StdDialogHelper::Led_StdDialogHelper (int resID)
 Led_StdDialogHelper::Led_StdDialogHelper (HINSTANCE hInstance, const Led_SDK_Char* resID, HWND parentWnd)
     : fSetFocusItemCalled (false)
 {
-    fHWnd = NULL;
+    fHWnd      = NULL;
     fHINSTANCE = hInstance;
-    fResID = resID;
+    fResID     = resID;
     fParentWnd = parentWnd;
-    fWasOK = false;
+    fWasOK     = false;
 }
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
 Led_StdDialogHelper::Led_StdDialogHelper (GtkWindow* parentWindow)
@@ -1032,9 +1032,9 @@ bool Led_StdDialogHelper::DoModal ()
     ::DisposeWindow (::GetDialogWindow (d));
     ::ReleaseResource (::GetResource ('DITL', fResID));
 #elif qPlatform_Windows
-    HWND oldFocusWnd = ::GetFocus ();
+    HWND oldFocusWnd           = ::GetFocus ();
 #if qNO_INT_PTR_DefinedCompilerBug
-    using INT_PTR = int;
+    using INT_PTR              = int;
 #endif
     [[maybe_unused]] INT_PTR x = ::DialogBoxParam (fHINSTANCE, fResID, fParentWnd, reinterpret_cast<DLGPROC> (StaticDialogProc), reinterpret_cast<LPARAM> (this));
     if (oldFocusWnd != NULL) {
@@ -2005,7 +2005,7 @@ void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
     DialogItemID findText    = kLedStdDlg_ReplaceBox_FindText;
     DialogItemID replaceText = kLedStdDlg_ReplaceBox_ReplaceText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    DialogItemID findText = fLookupTextWidget;
+    DialogItemID findText    = fLookupTextWidget;
     DialogItemID replaceText = fReplaceTextWidget;
 #endif
 
@@ -2069,10 +2069,10 @@ void Led_StdDialogHelper_ReplaceDialog::SaveItems ()
     fFindText    = fFindTextWidget.GetText ();
     fReplaceText = fReplaceTextWidget.GetText ();
 #elif qPlatform_MacOS || qPlatform_Windows
-    fFindText = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_FindText));
+    fFindText    = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_FindText));
     fReplaceText = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_ReplaceText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    fFindText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
+    fFindText    = Led_SDKString2tString (GetItemText (fLookupTextWidget));
     fReplaceText = Led_SDKString2tString (GetItemText (fReplaceTextWidget));
 #endif
 
@@ -2714,8 +2714,8 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
     GtkWidget* window = GetWindow ();
     gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 
-    string message = "Selected object is of type '" + fEmbeddingTypeName + "'.";
-    GtkWidget* label = gtk_label_new (message.c_str ());
+    string     message = "Selected object is of type '" + fEmbeddingTypeName + "'.";
+    GtkWidget* label   = gtk_label_new (message.c_str ());
 
     gtk_widget_show (label);
 
@@ -2804,8 +2804,8 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
     GtkWidget* window = GetWindow ();
     gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 
-    string message = "Selected object is of type '" + fEmbeddingTypeName + "'.";
-    GtkWidget* label = gtk_label_new (message.c_str ());
+    string     message = "Selected object is of type '" + fEmbeddingTypeName + "'.";
+    GtkWidget* label   = gtk_label_new (message.c_str ());
 
     gtk_widget_show (label);
 
@@ -2919,8 +2919,8 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::PreDoModalHook ()
     GtkWidget* window = GetWindow ();
     gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 
-    string message = "ADD URL.";
-    GtkWidget* label = gtk_label_new (message.c_str ());
+    string     message = "ADD URL.";
+    GtkWidget* label   = gtk_label_new (message.c_str ());
 
     gtk_widget_show (label);
 
@@ -3273,7 +3273,7 @@ BOOL Led_StdDialogHelper_SpellCheckDialog::DialogProc (UINT message, WPARAM wPar
     switch (message) {
         case WM_COMMAND: {
             WORD notificationCode = HIWORD (wParam);
-            WORD itemID = LOWORD (wParam);
+            WORD itemID           = LOWORD (wParam);
             switch (itemID) {
                 case kLedStdDlg_SpellCheckBox_IgnoreOnce:
                     OnIgnoreButton ();
@@ -3428,9 +3428,9 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeButton ()
 #if qSupportLedDialogWidgets
     Led_tString changeText = fChangeTextWidget.GetText ();
 #elif qPlatform_MacOS || qPlatform_Windows
-    Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
+    Led_tString changeText        = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Led_tString changeText = Led_SDKString2tString (GetItemText (fChangeTextWidget));
+    Led_tString changeText        = Led_SDKString2tString (GetItemText (fChangeTextWidget));
 #endif
     fCallback.DoChange (changeText);
     DoFindNextCall ();
@@ -3441,9 +3441,9 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeAllButton ()
 #if qSupportLedDialogWidgets
     Led_tString changeText = fChangeTextWidget.GetText ();
 #elif qPlatform_MacOS || qPlatform_Windows
-    Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
+    Led_tString changeText        = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Led_tString changeText = Led_SDKString2tString (GetItemText (fChangeTextWidget));
+    Led_tString changeText        = Led_SDKString2tString (GetItemText (fChangeTextWidget));
 #endif
     fCallback.DoChangeAll (changeText);
     DoFindNextCall ();
@@ -3527,7 +3527,7 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
     DialogItemID changeTextItem    = kLedStdDlg_SpellCheckBox_ChangeText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     DialogItemID undefinedTextItem = fLookupTextWidget;
-    DialogItemID changeTextItem = fChangeTextWidget;
+    DialogItemID changeTextItem    = fChangeTextWidget;
 #endif
 
 #if qPlatform_Windows

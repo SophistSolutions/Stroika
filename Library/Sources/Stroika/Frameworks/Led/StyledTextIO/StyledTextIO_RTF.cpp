@@ -643,8 +643,8 @@ RTFIO::ControlWordAtom RTFIO::EnterControlWord (
     return i->second;
 #else
     ITER start = sControlWordNameMap.begin ();
-    ITER end = sControlWordNameMap.end ();
-    ITER i = lower_bound (start, end, controlWord, StringNControlWordAtom_Comparator ());
+    ITER end   = sControlWordNameMap.end ();
+    ITER i     = lower_bound (start, end, controlWord, StringNControlWordAtom_Comparator ());
     if (i != end and controlWord == (*i).first) {
         return (*i).second;
     }
@@ -1324,7 +1324,7 @@ void StyledTextIOReader_RTF::ReaderContext::UseInputCharSetEncoding (CodePage co
 #else
     if (fCurrentInputCharSetEncoding != codePage) {
         fCurrentInputCharSetEncoding = codePage;
-        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
+        fCharsetMappingTable         = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
     }
 #endif
 }
@@ -1629,8 +1629,8 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                         Led_tChar cc = kFormula;
 #else
                         CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar cc = 0;
-                        size_t nBytes = 1;
+                        Led_tChar         cc     = 0;
+                        size_t            nBytes = 1;
                         cvt.MapFromUNICODE (&kFormula, 1, &cc, &nBytes);
                         if (nBytes != 1) {
                             cc = fDefaultUnsupportedCharacterChar;
@@ -1646,8 +1646,8 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                         Led_tChar cc = kNonBreakingSpace;
 #else
                         CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar cc = 0;
-                        size_t nBytes = 1;
+                        Led_tChar         cc     = 0;
+                        size_t            nBytes = 1;
                         cvt.MapFromUNICODE (&kNonBreakingSpace, 1, &cc, &nBytes);
                         if (nBytes != 1) {
                             cc = fDefaultUnsupportedCharacterChar;
@@ -1666,8 +1666,8 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                         Led_tChar cc = kOptionalHyphen;
 #else
                         CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar cc = 0;
-                        size_t nBytes = 1;
+                        Led_tChar         cc     = 0;
+                        size_t            nBytes = 1;
                         cvt.MapFromUNICODE (&kOptionalHyphen, 1, &cc, &nBytes);
                         if (nBytes != 1) {
                             cc = fDefaultUnsupportedCharacterChar;
@@ -1684,8 +1684,8 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                         Led_tChar cc = kNonBreakingHyphen;
 #else
                         CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar cc = 0;
-                        size_t nBytes = 1;
+                        Led_tChar         cc     = 0;
+                        size_t            nBytes = 1;
                         cvt.MapFromUNICODE (&kNonBreakingHyphen, 1, &cc, &nBytes);
                         if (nBytes != 1) {
                             cc = fDefaultUnsupportedCharacterChar;
@@ -3066,8 +3066,8 @@ bool StyledTextIOReader_RTF::HandlePossibleSpecialCharacterControlWord (ReaderCo
 #if qWideCharacters
             readerContext.GetDestination ().AppendText (&kMappings[i].fUNICODECharacter, 1);
 #else
-            char mbCharBuf[2];
-            size_t mbCharBufSize = 2;
+            char              mbCharBuf[2];
+            size_t            mbCharBufSize = 2;
             CodePageConverter cvtr (readerContext.GetCurrentOutputCharSetEncoding ());
             cvtr.MapFromUNICODE (&kMappings[i].fUNICODECharacter, 1, mbCharBuf, &mbCharBufSize);
             readerContext.GetDestination ().AppendText (mbCharBuf, mbCharBufSize);
@@ -4182,7 +4182,7 @@ void StyledTextIOWriter_RTF::UseOutputCharSetEncoding (CodePage codePage)
 #else
     if (fCurrentOutputCharSetEncoding != codePage) {
         fCurrentOutputCharSetEncoding = codePage;
-        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
+        fCharsetMappingTable          = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
     }
 #endif
 }
@@ -4358,8 +4358,8 @@ void StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
             wchar_t                              uc = c;
 #else
             CodePageConverter cvt (GetCurrentInputCharSetEncoding ());
-            wchar_t uc = '\0';
-            size_t ucCharCount = 1;
+            wchar_t           uc          = '\0';
+            size_t            ucCharCount = 1;
             cvt.MapToUNICODE (&c, 1, &uc, &ucCharCount);
             map<wchar_t, string>::const_iterator i = fCharactersSavedByName_Char2Name.find (uc);
 #endif
@@ -4742,17 +4742,17 @@ bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
 #else
         WriteTagNValue ("wmetafile", 8); // not sure what 8 means - but thats what MSWord 2000 seems to write - LGP 2000-07-08
 
-        void* theDataBytes = nullptr;
-        size_t nBytes = 0;
+        void*            theDataBytes = nullptr;
+        size_t           nBytes       = 0;
         unique_ptr<BYTE> theDataBytes_;
         {
             Tablet screenDC = (::GetWindowDC (nullptr)); // not sure what DC to use to convert MetaFile to DIB - but this seems like a decent guess
-            UINT mapMode = MM_TEXT;
+            UINT   mapMode  = MM_TEXT;
             //UINT          mapMode =   MM_TWIPS;
             HENHMETAFILE hMF = nullptr;
             {
-                RECT rect = AsRECT (Led_Rect (0, 0, vEnhSize, hEnhSize));
-                HDC hMFDC = ::CreateEnhMetaFile (nullptr, nullptr, &rect, nullptr);
+                RECT rect  = AsRECT (Led_Rect (0, 0, vEnhSize, hEnhSize));
+                HDC  hMFDC = ::CreateEnhMetaFile (nullptr, nullptr, &rect, nullptr);
                 ::SetMapMode (hMFDC, mapMode);
                 const char* lpBits = reinterpret_cast<const char*> (dib) + Led_GetDIBPalletByteCount (dib) + sizeof (BITMAPINFOHEADER);
                 Assert (mapMode == MM_TWIPS or mapMode == MM_TEXT);
@@ -4772,7 +4772,7 @@ bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
             BYTE* bytes = new BYTE[nBytes];
             Verify (::GetWinMetaFileBits (hMF, nBytes, bytes, mapMode, screenDC) == nBytes);
 
-            theDataBytes = bytes;
+            theDataBytes  = bytes;
             theDataBytes_ = unique_ptr<BYTE> (bytes);
 
             ::DeleteEnhMetaFile (hMF);
@@ -5195,7 +5195,7 @@ void StyledTextIOWriter_RTF::AssureFontTableBuilt (WriterContext& writerContext)
                 LOGFONT lf;
                 (void)::memset (&lf, 0, sizeof (lf));
                 Characters::CString::Copy (lf.lfFaceName, Memory::NEltsOf (lf.lfFaceName), name.c_str ());
-                lf.lfCharSet = DEFAULT_CHARSET;
+                lf.lfCharSet    = DEFAULT_CHARSET;
                 BYTE useCharset = DEFAULT_CHARSET;
                 ::EnumFontFamiliesEx (screenDC.m_hDC, &lf, (FONTENUMPROC)Save_Charset_EnumFontFamiliesProc, reinterpret_cast<LPARAM> (&useCharset), 0);
                 if (useCharset != DEFAULT_CHARSET) {
