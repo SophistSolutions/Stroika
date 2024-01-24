@@ -68,6 +68,7 @@ namespace Stroika::Foundation::Configuration {
      ******************** Configuration::OffsetFromStart ****************************
      ********************************************************************************
      */
+    #if not (defined(__clang__) && defined(__APPLE__))
     template <typename ENUM>
     inline constexpr make_unsigned_t<typename underlying_type<ENUM>::type> OffsetFromStart (ENUM e)
     {
@@ -80,7 +81,7 @@ namespace Stroika::Foundation::Configuration {
     {
         return ToEnum<ENUM> (offset + ENUM::eSTART);
     }
-
+#endif
     /*
      ********************************************************************************
      ************************** Configuration::EnumNames ****************************
@@ -110,7 +111,7 @@ namespace Stroika::Foundation::Configuration {
     constexpr EnumNames<ENUM_TYPE>::EnumNames (const typename EnumNames<ENUM_TYPE>::BasicArrayInitializer& init)
         : fEnumNames_{init}
     {
-#if !qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy
+#if !qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy && !defined(__APPLE__)
         RequireItemsOrderedByEnumValue_ ();
 #endif
     }
@@ -147,7 +148,7 @@ namespace Stroika::Foundation::Configuration {
         if (e == ENUM_TYPE::eEND) {
             return nullptr;
         }
-#if qDebug
+#if qDebug && !defined(__APPLE__)
         Require (OffsetFromStart<ENUM_TYPE> (e) < fEnumNames_.size ());
         auto refImpl = [this] (ENUM_TYPE e) -> const wchar_t* {
             for (const auto& i : fEnumNames_) {
@@ -159,7 +160,7 @@ namespace Stroika::Foundation::Configuration {
         };
         Ensure (refImpl (e) == fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second);
 #endif
-        return fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second;
+        return fEnumNames_[(int)OffsetFromStart<ENUM_TYPE> (e)].second;
     }
     template <typename ENUM_TYPE>
     inline const wchar_t* EnumNames<ENUM_TYPE>::GetName (ENUM_TYPE e) const
@@ -205,11 +206,14 @@ namespace Stroika::Foundation::Configuration {
     template <typename ENUM_TYPE>
     constexpr void EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
     {
+        // avoid xcode regression - for better fix use Stroika v3 (not all we are disabling is some assert checking)
+        #if not (defined(__clang__) && defined(__APPLE__))
         Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
         using IndexType = make_unsigned_t<typename underlying_type<ENUM_TYPE>::type>;
         for (IndexType i = 0; i < static_cast<IndexType> (ENUM_TYPE::eCOUNT); ++i) {
             Require (OffsetFromStart<ENUM_TYPE> (fEnumNames_[i].first) == i);
         }
+        #endif
     }
 
     /*

@@ -2336,10 +2336,10 @@ sub PostProcessOptions_ ()
 				#$EXTRA_SUFFIX_LINKER_ARGS .= " -lc++experimental";
 				##qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 				if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
-					push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";
-					push @LIB_DEPENDENCIES_ADD, "-lboost_system";
-					push @LIB_DEPENDENCIES_ADD, "-lboost_thread";
-					push @LIB_DEPENDENCIES_ADD, "-lboost_chrono";
+					# push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";
+					# push @LIB_DEPENDENCIES_ADD, "-lboost_system";
+					# push @LIB_DEPENDENCIES_ADD, "-lboost_thread";
+					# push @LIB_DEPENDENCIES_ADD, "-lboost_chrono";
 				}
 			}
 			else {

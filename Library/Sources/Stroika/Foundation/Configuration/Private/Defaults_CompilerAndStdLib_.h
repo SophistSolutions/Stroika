@@ -61,7 +61,7 @@
 #if (__clang_major__ < 11) || (__clang_major__ == 11 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 (older clang versions supported by Stroika v2.0) does not support versions prior to APPLE clang++ 11 (XCode 11)"
 #endif
-#if (__clang_major__ > 14) || (__clang_major__ == 14 && (__clang_minor__ > 0))
+#if (__clang_major__ > 15) || (__clang_major__ == 15 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -1522,7 +1522,7 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 #if defined(__clang__) && defined(__APPLE__)
 // first noticed in XCODE 13
 // HANGS on XCode 14 (at least debug builds on my m1 machine- may have todo with codepage/installed locales?)
-#define qCompiler_vswprintf_on_elispisStr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompiler_vswprintf_on_elispisStr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompiler_vswprintf_on_elispisStr_Buggy 0
 #endif
@@ -1969,7 +1969,7 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 #elif defined(__clang__) && defined(__APPLE__)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 // still broken in XCode 14
-#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_to_chars_FP_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__) && defined(_LIBCPP_VERSION)
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 // appears still broken in clang++13 (maybe should depend on stdlib version not compiler version)
@@ -2025,7 +2025,7 @@ int main ()
 
 #if defined(_LIBCPP_VERSION)
 // Appears still buggy in 14.0 clang libc++ on ubuntu 22.04 (doesnt compile)
-#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
+#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 17000))
 #elif defined(_GLIBCXX_RELEASE)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11 (library so affects clang too if built with glibc)
 // AT LEAST with clang++14, this is broken in _GLIBCXX_RELEASE==12 (Ubuntu 22.04)
@@ -2062,7 +2062,7 @@ int main ()
 #if defined(__clang__) && defined(__APPLE__)
 // Appears broken on XCode 13
 // Still broken on XCode 14
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // appears still broken in clang++-13
 // appears still broken in clang++-14
@@ -2154,7 +2154,7 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // VERIFIED BROKEN on XCode 12.0
 // VERIFIED BROKEN on XCode 13.0
 // VERIFIED BROKEN on XCode 14
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // still broken in clang++-8
 // still broken in clang++-9
@@ -2220,7 +2220,7 @@ Test.cpp:173:31: error: template template argument has different template parame
 // VERIFIED BROKEN on XCode 12.0
 // VERIFIED BROKEN on XCode 13.0
 // VERIFIED BROKEN on XCode 14
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-10
 // verified still broken in clang++-11
@@ -2264,7 +2264,7 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 // Broken in _LIBCPP_VERSION  13000
 // Broken in _LIBCPP_VERSION  14000
 // Broken in _LIBCPP_VERSION  15006 (macos at least)
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 15006))
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 170000))
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
@@ -2654,7 +2654,7 @@ TRIED alignas to fix on the array but no luck
 // reproduced on XCode 12
 // reproduced on XCode 13
 // reproduced on XCode 14
-#define qMacUBSanitizerifreqAlignmentIssue_Buggy ((11 <= __clang_major__) && (__clang_major__ <= 14))
+#define qMacUBSanitizerifreqAlignmentIssue_Buggy ((11 <= __clang_major__) && (__clang_major__ <= 15))
 #else
 #define qMacUBSanitizerifreqAlignmentIssue_Buggy 0
 #endif
@@ -2670,7 +2670,7 @@ TRIED alignas to fix on the array but no luck
 // Still BROKEN on XCode 12.0
 // Still BROKEN on XCode 13.0
 // Still BROKEN on XCode 14
-#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_locale_pctX_print_time_Buggy 0
 #endif
@@ -2991,7 +2991,7 @@ stHarness/SimpleClass.cpp ...
 // VERIFIED STILL BROKEN on XCode 12.0
 // VERIFIED STILL BROKEN on XCode 13.0
 // VERIFIED STILL BROKEN on XCode 14
-#define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_quick_exit_Buggy 0
 #endif
