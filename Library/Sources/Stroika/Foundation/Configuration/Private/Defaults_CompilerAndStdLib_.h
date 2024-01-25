@@ -726,7 +726,6 @@ WRITE of size 4 at 0xbeba8280 thread T0
 
 #endif
 
-
 /**
 In file included from ObjectVariantMapper.h:1067,
                  from ObjectVariantMapper.cpp:22:
@@ -742,15 +741,13 @@ See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
 */
 #ifndef qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy
 
-#if defined(__GNUC__) && !defined(__clang__) 
+#if defined(__GNUC__) && !defined(__clang__)
 #define qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 10)
 #else
 #define qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy 0
 #endif
 
 #endif
-
-
 
 /**
 /usr/bin/ld: /mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug-unix/Tests/48/Test.o: in function `(anonymous namespace)::Test_7_BLOB_()':
