@@ -742,7 +742,7 @@ See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
 #ifndef qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
-#define qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 10)
+#define qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 11)
 #else
 #define qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy 0
 #endif
