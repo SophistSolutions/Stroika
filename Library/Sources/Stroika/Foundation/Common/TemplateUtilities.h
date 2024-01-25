@@ -81,9 +81,12 @@ namespace Stroika::Foundation::Common {
 
     /**
      *  Utility to map from an std::variant<...> and map a TYPE to its underlying index in the given variant
+     * 
+     *      \note Considered doing this as a function, so could take optional argument and use to figure out
+     *            type of VARIANT_VALUE, but frequently used in constexpr setting where this probably would be helpful.
      */
-    template <typename VARIANT_VALUE, typename T>
-    constexpr size_t variant_index ();
+    //template <typename VARIANT_VALUE, typename T> // CANNOT figure out how to declare here and define in INL file...
+    //constexpr size_t VariantIndex;
 
 }
 

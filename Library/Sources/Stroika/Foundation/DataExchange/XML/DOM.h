@@ -92,7 +92,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          *  Some APIs (like Expression) need to know the index - not just the type itself, and this maps.
          */
         template <typename T>
-        constexpr uint8_t ResultTypeIndex_v = static_cast<uint8_t> (Common::variant_index<Result, T> ());
+        constexpr uint8_t ResultTypeIndex_v = static_cast<uint8_t> (Common::VariantIndex<T, Result>);
 
         /**
          *  Expression is provider independent, but since it is implemented with a shared_ptr and immutable,
