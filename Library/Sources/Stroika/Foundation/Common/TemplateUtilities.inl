@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Common {
             }
         }
     }
-    template < typename VARIANT_VALUE, typename T>
+    template <typename VARIANT_VALUE, typename T>
     constexpr size_t VariantIndex = Private_::variant_index<VARIANT_VALUE, T> ();
 
 }

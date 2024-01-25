@@ -83,17 +83,25 @@ namespace Stroika::Foundation::Common {
      *  Utility to map from an std::variant<...> and map a TYPE to its underlying index in the given variant
      * 
      *      \note Considered doing this as a function, so could take optional argument and use to figure out
-     *            type of VARIANT_VALUE, but frequently used in constexpr setting where this probably would be helpful.
+     *            type of VARIANT_VALUE, but frequently used in constexpr setting where this probably would
+     *            be helpful (see below example).
      * 
      *  \par Example Usage
      *      \code
-     *          struct X_ {...
-     *              variant<std::filesystem::path, Memory::BLOB, String> fSourceData_;
-                    template <typename T>
-                    static constexpr size_t VariantIndex_ = variant_index<decltype(fSourceData_), T> ();
-
-
-                ...
+     *          variant<filesystem::path, BLOB, String> fSourceData_;
+     *          template <typename T>
+     *          static constexpr size_t VariantIndex_ = VariantIndex<decltype(fSourceData_), T>;
+     *          ...
+     *          switch (fSourceData_.index ()) {
+     *              case VariantIndex_<filesystem::path>:
+     *              case VariantIndex_<BLOB>:
+     *                  return Streams::TextReader::New (NewReadStream<byte> ());
+     *              case VariantIndex_<String>:
+     *                  return Streams::TextReader::New (get<String> (fSourceData_));
+     *              default:
+     *                  AssertNotReached ();
+     *                  return {};
+     *          }
      *      \endcode
      */
     //template <typename VARIANT_VALUE, typename T> // CANNOT figure out how to declare here and define in INL file...
