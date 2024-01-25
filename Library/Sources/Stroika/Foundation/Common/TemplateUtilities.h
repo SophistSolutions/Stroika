@@ -9,6 +9,8 @@
 #include <type_traits>
 #include <variant>
 
+#include "Common.h"
+
 /**
  *  \file
  *
