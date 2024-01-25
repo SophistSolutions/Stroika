@@ -84,6 +84,17 @@ namespace Stroika::Foundation::Common {
      * 
      *      \note Considered doing this as a function, so could take optional argument and use to figure out
      *            type of VARIANT_VALUE, but frequently used in constexpr setting where this probably would be helpful.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          struct X_ {...
+     *              variant<std::filesystem::path, Memory::BLOB, String> fSourceData_;
+                    template <typename T>
+                    static constexpr size_t VariantIndex_ = variant_index<decltype(fSourceData_), T> ();
+
+
+                ...
+     *      \endcode
      */
     //template <typename VARIANT_VALUE, typename T> // CANNOT figure out how to declare here and define in INL file...
     //constexpr size_t VariantIndex;
