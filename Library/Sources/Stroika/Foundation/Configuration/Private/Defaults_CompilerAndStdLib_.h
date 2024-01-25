@@ -726,6 +726,32 @@ WRITE of size 4 at 0xbeba8280 thread T0
 
 #endif
 
+
+/**
+In file included from ObjectVariantMapper.h:1067,
+                 from ObjectVariantMapper.cpp:22:
+ObjectVariantMapper.inl: In instantiation of ‘static Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer_(const std::optional<_Tp>*) [with T = bool]’:
+ObjectVariantMapper.inl:500:54:   required from ‘static Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer(ARGS&& ...) [with T = std::optional<bool>; ARGS = {}]’
+ObjectVariantMapper.cpp:430:71:   required from here
+ObjectVariantMapper.inl:584:47: internal compiler error: in tsubst_copy, at cp/pt.c:16891
+  584 |             if (d.GetType () == VariantValue::eNull) {
+      |                                 ~~~~~~~~~~~~~~^~~~~
+Please submit a full bug report,
+with preprocessed source if appropriate.
+See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
+*/
+#ifndef qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__) 
+#define qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 10)
+#else
+#define qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy 0
+#endif
+
+#endif
+
+
+
 /**
 /usr/bin/ld: /mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Debug-unix/Tests/48/Test.o: in function `(anonymous namespace)::Test_7_BLOB_()':
 /mnt/c/Sandbox/Stroika/DevRoot/Tests/48/Test.cpp:262: undefined reference to `Stroika::Foundation::Characters::String Stroika::Foundation::Memory::BLOB::AsBase64<Stroika::Foundation::Characters::String>() const'

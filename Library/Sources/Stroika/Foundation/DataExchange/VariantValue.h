@@ -182,7 +182,11 @@ namespace Stroika::Foundation::DataExchange {
         using Type::eFloat;
         using Type::eInteger;
         using Type::eMap;
+#if qCompilerAndStdLib_InternalCompilerErrorTSubCopy_Buggy
+        static constexpr Type eNull = Type::eNull;
+#else
         using Type::eNull;
+#endif
         using Type::eString;
         using Type::eUnsignedInteger;
 
