@@ -193,7 +193,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
     if (errno_t e = ::gmtime_s (&tmTimeDataBuf, &unixTime)) {
         ThrowPOSIXErrNo (e);
     };
-    ::tm*        tmTimeData = &tmTimeDataBuf;
+    ::tm* tmTimeData = &tmTimeDataBuf;
 #else
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
@@ -508,6 +508,23 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
         default: {
             AssertNotReached ();
         } break;
+    }
+    return nullopt;
+}
+
+optional<DateTime> DateTime::ParseQuietly (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharacters)
+{
+    if (rep.empty ()) [[unlikely]] {
+        return nullopt;
+    }
+    wstring                  wRep  = rep.As<wstring> ();
+    const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
+    for (const auto& formatPattern : formatPatterns) {
+        // @todo tecnhnically, the consumedCharacters may not be 100% right, but so hard to fix  (if wchar_t != char32_t)
+        // unless I can use facet for char32_t - not just wchar_t???
+        if (auto o = ParseQuietly_ (wRep, tmget, formatPattern, consumedCharacters)) {
+            return *o;
+        }
     }
     return nullopt;
 }

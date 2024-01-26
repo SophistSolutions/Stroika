@@ -272,6 +272,8 @@ namespace Stroika::Foundation::Time {
         static optional<DateTime> ParseQuietly (const String& rep, LocaleIndependentFormat format, size_t* consumedCharacters = nullptr);
         static optional<DateTime> ParseQuietly (const String& rep, const String& formatPattern, size_t* consumedCharacters = nullptr);
         static optional<DateTime> ParseQuietly (const String& rep, const locale& l, const String& formatPattern, size_t* consumedCharacters = nullptr);
+        static optional<DateTime> ParseQuietly (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns = kDefaultParseFormats,
+                                                size_t* consumedCharacters = nullptr);
 
     private:
         // this rquires rep!= ""
