@@ -1654,6 +1654,7 @@ namespace Stroika::Foundation::Characters {
     static_assert (IConvertibleToString<u8string>);
     static_assert (IConvertibleToString<u16string>);
     static_assert (IConvertibleToString<u32string>);
+    static_assert (not IConvertibleToString<optional<String>>);
 
     /**
      *  Use Stroika String more easily with std::ostream.
