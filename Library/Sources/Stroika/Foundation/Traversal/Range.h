@@ -266,12 +266,8 @@ namespace Stroika::Foundation::Traversal {
      *       fully closed by default, and other arithmetic types (floats) are half open [)
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
-     *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
-     *      o   Depends on operator== being defined on T
-     *      
-     *      o   no operator<, operator<=> support (compare interface) - cuz no obvious well-ordering?
-     *          Could well order on LHS, and then when equal on RHS, but that wouldn't make sense for
-     *          all applicaitons.
+     *      o   Standard Stroika Comparison support (operator==, operator<=>, etc);
+     *      o   Depends on operator==/operator<=> being defined on T
      *      
      *  @see DiscreteRange
      *  @see DisjointRange
@@ -427,6 +423,11 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         */
+        constexpr partial_ordering operator<=> (const Range& rhs) const;
+
+    public:
+        /**
          *  \brief Compute a less-like notion for Range.
          * 
          *  There is no clear way to provide an ordering of two ranges (of the same type). The ordering of their
@@ -436,7 +437,11 @@ namespace Stroika::Foundation::Traversal {
          *  Just return nullopt if not comparable. Then the caller can decide how to break the 'tie' - with midpoint compare, or
          *  left or right edge compares...
          */
-        constexpr optional<bool> DefinitelyLessThan (const Range& rhs) const;
+        [[deprecated("USE operator<==> - check <=> produces less (vs unordered) ")]]
+        constexpr optional<bool> DefinitelyLessThan (const Range& rhs) const
+        {
+            return (*this <=> rhs) == partial_ordering::less;
+        }
 
     public:
         /**

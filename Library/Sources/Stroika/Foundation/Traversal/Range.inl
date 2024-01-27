@@ -445,7 +445,7 @@ namespace Stroika::Foundation::Traversal {
                GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
     }
     template <typename T, typename TRAITS>
-    constexpr optional<bool> Range<T, TRAITS>::DefinitelyLessThan (const Range& rhs) const
+    constexpr partial_ordering Range<T, TRAITS>::operator<=> (const Range& rhs) const
     {
         /*
          *  |    this   |  
@@ -453,12 +453,12 @@ namespace Stroika::Foundation::Traversal {
          */
         if (GetUpperBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness () == eClosed) {
             if (GetUpperBound () < rhs.GetLowerBound ()) {
-                return true;
+                return partial_ordering::less;
             }
         }
         else {
             if (GetUpperBound () <= rhs.GetLowerBound ()) {
-                return true;
+                return partial_ordering::less;
             }
         }
         /*
@@ -467,13 +467,16 @@ namespace Stroika::Foundation::Traversal {
          */
         if (GetLowerBoundOpenness () == eClosed and rhs.GetLowerBoundOpenness () == eClosed) {
             if (GetLowerBound () > rhs.GetUpperBound ()) {
-                return false;
+                return partial_ordering::greater;
             }
         }
         else {
             if (GetLowerBound () >= rhs.GetUpperBound ()) {
-                return false;
+                return partial_ordering::greater;
             }
+        }
+        if (*this == rhs) {
+            return partial_ordering::equivalent;
         }
         /*
          *      |    this   |  
@@ -483,7 +486,7 @@ namespace Stroika::Foundation::Traversal {
          *               | rhs |
          *  etc...
          */
-        return nullopt;
+        return partial_ordering::unordered;
     }
 
     /*
