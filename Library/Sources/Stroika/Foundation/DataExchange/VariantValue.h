@@ -275,6 +275,7 @@ namespace Stroika::Foundation::DataExchange {
          *  \note this is NOT the same same as As<bool> ()
          * 
          *  And because of that - at least partly - we avoided support explicit operator (for each type in the basic variant like explicit operator String).
+         *  \see As<T>
          */
         nonvirtual explicit operator bool () const;
 
@@ -309,6 +310,12 @@ namespace Stroika::Foundation::DataExchange {
          *          o   vector<VariantValue>
          *          o   boost::json::value  (iff __has_include("boost/json/value.hpp"))
          *
+         *  \note   Why As<T> () instead of conversion operator / static_cast support?
+         *          1) - not sure - maybe a mistake
+         *          2) without explicit, can cause confusion with construction conversions etc. With explicit, maybe
+         *             still causes confusion with unform initialization.
+         *          3) At least for the case of bool - operator bool and As<bool> can return different results (maybe also a mistake?).
+         * 
          *  \note   About As<String> () and As<wstring> ()
          *          Conversion to these types is ALWAYS supported, no matter what the source type.
          *          Coercion of Date/DateTime values uses ISO8601 format.
