@@ -223,6 +223,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             nonvirtual bool operator== (const Ptr& rhs) const;
 
         public:
+            /*
+            * Like shared_ptr::operator bool - return true if non-null ptr
+            */
+            explicit operator bool () const;
+
+        public:
             /**
              */
             nonvirtual Type GetNodeType () const;

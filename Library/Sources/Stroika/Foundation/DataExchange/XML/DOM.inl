@@ -61,6 +61,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         }
         return fRep_->Equals (rhs.fRep_.get ());
     }
+    inline Node::Ptr::operator bool () const
+    {
+        return fRep_.operator bool ();
+    }
     inline Node::Type Node::Ptr::GetNodeType () const
     {
         RequireNotNull (fRep_);
