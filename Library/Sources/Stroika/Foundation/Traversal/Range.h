@@ -437,8 +437,7 @@ namespace Stroika::Foundation::Traversal {
          *  Just return nullopt if not comparable. Then the caller can decide how to break the 'tie' - with midpoint compare, or
          *  left or right edge compares...
          */
-        [[deprecated("USE operator<==> - check <=> produces less (vs unordered) ")]]
-        constexpr optional<bool> DefinitelyLessThan (const Range& rhs) const
+        [[deprecated ("USE operator<==> - check <=> produces less (vs unordered) ")]] constexpr optional<bool> DefinitelyLessThan (const Range& rhs) const
         {
             return (*this <=> rhs) == partial_ordering::less;
         }
