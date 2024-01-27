@@ -63,6 +63,8 @@ namespace Stroika::Foundation::Time {
      *
      *      DateTime is more than just a combination of Date, and Time. It also introduces the notion of TIMEZONE.
      *
+     *      Date part is always valid/required (use optional <DateTime> to support old DateTime{}.empty() behavior).
+     *      TimeOfDay may be "unknown" (missing).
      *      Timezone may be "unknown" (missing), or a Timezone object (@see Timezone).
      *
      *  \note   DateTime constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
