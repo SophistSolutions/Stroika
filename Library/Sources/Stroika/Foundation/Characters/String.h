@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Characters {
     concept IBasicUNICODEStdString = is_same_v<T, u8string> or is_same_v<T, u16string> or is_same_v<T, u32string> or is_same_v<T, wstring>;
 
     class String;
-    
+
     /**
      *  The concept IConvertibleToString is satisfied iff the argument type can be used to construct a (Stroika) String.
      *  Note subtly, const char* is treated (as of Stroika v3) as convertible to String, but the characters must be ASCII, or
@@ -1647,7 +1647,6 @@ namespace Stroika::Foundation::Characters {
     private:
         friend class String;
     };
-
 
     // Some some docs/testing...
     static_assert (not IConvertibleToString<int>);

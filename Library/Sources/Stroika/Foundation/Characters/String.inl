@@ -1089,10 +1089,11 @@ namespace Stroika::Foundation::Characters {
         _SafeReadRepAccessor accessor{this};
         size_t               thisLen = accessor._ConstGetRep ().size ();
         if (from > thisLen) [[unlikely]] {
-            Execution::Throw (out_of_range{"string index out of range"});
+            static auto kException_ = out_of_range{"string index out of range"};
+            Execution::Throw (kException_);
         }
         // @todo
-        // Not QUITE correct - due to overflow issues, but pragmaitcally this is probably close enough
+        // Not QUITE correct - due to overflow issues, but pragmatically this is probably close enough
         size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));
         return SubString_ (accessor, from, to);
     }

@@ -159,6 +159,7 @@ namespace Stroika::Foundation::Configuration {
     concept IOperatorLt = Private_::HasLt_v_<T>;
 
     /**
+    *  *** DEPRECATED - use https://en.cppreference.com/w/cpp/utility/compare/three_way_comparable
      *  \brief Concept checks if the given type T can be compared with operator<=>, returning some appropriate ordering
      * 
      *  \par Example Usage
