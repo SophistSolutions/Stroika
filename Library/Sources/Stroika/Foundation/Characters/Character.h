@@ -47,6 +47,10 @@ namespace Stroika::Foundation::Characters {
      *  But a safe (and quite useful) assumption, is just that it is ASCII. If you assume its
      *  always ASCII, you can simplify alot of pragmatic usage. So Stroika v3 does that,
      *  with checks to enforce.
+     * 
+     *  So generally - Stroika String (and Character) APIs - if given a 'char' REQUIRE that it be
+     *  ASCII (unless otherwise documented in that API). Use u8string, or something else if you dont want
+     *  to assume ASCII.
      */
     using ASCII = char;
 
