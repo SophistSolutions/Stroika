@@ -1250,6 +1250,12 @@ namespace Stroika::Foundation::Characters {
          * 
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
          *  this reasonably likely to change in future versions.
+         * 
+         *  \note It is generally true that the data IsASCII (span) IFF Peek<ASCII> returns non-nullopt. But this is
+         *        not ACTUALLY always true. Generally, Stroika constructs strings like this. But callers may manaully construct
+         *        a String with backend rep u32string, for example (e.g because of move construct) - and that might just happen
+         *        to be all ascii. You can count on that IF you get back value from PeekData<ASCII> - it must be all ASCII. But
+         *        the contrapositive is not always true.
          */
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
         static optional<span<const CHAR_TYPE>> PeekData (const PeekSpanData& pds);
