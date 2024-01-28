@@ -1104,7 +1104,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <IConvertibleToString T>
     inline strong_ordering String::operator<=> (T&& rhs) const
-        requires (not same_as<T, String>)
+        requires (not same_as<remove_cvref_t<T>, String>)
     {
         return ThreeWayComparer{}(*this, forward<T> (rhs));
     }
@@ -1122,7 +1122,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <IConvertibleToString T>
     inline bool String::operator== (T&& rhs) const
-        requires (not same_as<T, String>)
+        requires (not same_as<remove_cvref_t<T>, String>)
     {
         return EqualsComparer{}(*this, rhs);
     }

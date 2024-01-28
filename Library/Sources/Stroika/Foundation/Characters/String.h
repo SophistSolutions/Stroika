@@ -1304,7 +1304,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual bool operator== (const String& rhs) const;
         template <IConvertibleToString T>
         nonvirtual bool operator== (T&& rhs) const
-            requires (not same_as<T, String>);
+            requires (not same_as<remove_cvref_t<T>, String>);
 #else
         template <IConvertibleToString T>
         nonvirtual bool operator== (T&& rhs) const;
@@ -1317,7 +1317,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual strong_ordering operator<=> (const String& rhs) const;
         template <IConvertibleToString T>
         nonvirtual strong_ordering operator<=> (T&& rhs) const
-            requires (not same_as<T, String>);
+            requires (not same_as<remove_cvref_t<T>, String>);
 #else
         template <IConvertibleToString T>
         nonvirtual strong_ordering operator<=> (T&& rhs) const;
