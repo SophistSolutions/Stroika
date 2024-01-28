@@ -1162,8 +1162,25 @@ namespace Stroika::Foundation::Characters {
     {
         // optimize very common case of ASCII String vs ASCII String
         if constexpr (is_same_v<remove_cvref_t<LT>, String> and is_same_v<remove_cvref_t<RT>, String>) {
-            if (auto lhsAsciiSpan = lhs.template PeekData<char> ()) {
-                if (auto rhsAsciiSpan = rhs.template PeekData<char> ()) {
+            if (auto lhsAsciiSpan = lhs.template PeekData<ASCII> ()) {
+                if (auto rhsAsciiSpan = rhs.template PeekData<ASCII> ()) {
+                    if (fCompareOptions == CompareOptions::eWithCase) {
+                        if (lhsAsciiSpan->size () != rhsAsciiSpan->size ()) {
+                            return false;
+                        }
+                        return Memory::MemCmp (lhsAsciiSpan->data (), rhsAsciiSpan->data (), lhsAsciiSpan->size ()) == 0;
+                    }
+                    else {
+                        return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, CompareOptions::eCaseInsensitive) == 0;
+                    }
+                }
+            }
+        }
+        // And optimize case of String vs string_view (basic_string_view<ASCII>
+        else if constexpr (is_same_v<remove_cvref_t<LT>, String> and is_same_v<remove_cvref_t<RT>, basic_string_view<ASCII>>) {
+            if (auto lhsAsciiSpan = lhs.template PeekData<ASCII> ()) {
+                if (auto rhsAsciiSpan = span<const ASCII>{rhs}) {
+                    Require (Character::IsASCII (rhsAsciiSpan)); // in debug builds double check sv only used on ASCII strings with Stroika string library
                     if (fCompareOptions == CompareOptions::eWithCase) {
                         if (lhsAsciiSpan->size () != rhsAsciiSpan->size ()) {
                             return false;
