@@ -1318,7 +1318,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Return strong_ordering of case sensitive compare of the two IConvertibleToString objects have the same characters.
+         *  Return strong_ordering of case sensitive (three-way) compare of the two IConvertibleToString objects.
          *  Indirects to ThreeWayComparer{eWithCase} (...)
          */
 #if qCompilerAndStdLib_CompareOpReverse_Buggy
