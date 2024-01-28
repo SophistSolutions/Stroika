@@ -101,12 +101,17 @@ namespace Stroika::Foundation::Characters {
     inline const RegularExpression RegularExpression::kAny{".*"sv};
 
     /**
+     *  This class doesn't do anything. It just collects together a match result/response.
      */
     class RegularExpressionMatch {
     public:
         RegularExpressionMatch (const String& fullMatch);
         RegularExpressionMatch (const String& fullMatch, const Containers::Sequence<String>& subMatches);
+
+    public:
         String                       GetFullMatch () const;
+
+    public:
         Containers::Sequence<String> GetSubMatches () const;
 
     private:
