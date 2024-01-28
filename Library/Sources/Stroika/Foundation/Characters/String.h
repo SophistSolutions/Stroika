@@ -1297,19 +1297,31 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  Return true if case sensitive compare of the two IConvertibleToString objects have the same characters.
+         *  Indirects to EqualsComparer{eWithCase} (...)
          */
-        nonvirtual strong_ordering operator<=> (const String& rhs) const;
-        nonvirtual strong_ordering operator<=> (const wchar_t* rhs) const;
-        nonvirtual strong_ordering operator<=> (const wstring& rhs) const;
-        nonvirtual strong_ordering operator<=> (const wstring_view& rhs) const;
+#if qCompilerAndStdLib_CompareOpReverse_Buggy
+        nonvirtual bool operator== (const String& rhs) const;
+        template <IConvertibleToString T>
+        nonvirtual bool operator== (T&& rhs) const
+            requires (not same_as<T, String>);
+#else
+        template <IConvertibleToString T>
+        nonvirtual bool operator== (T&& rhs) const;
+#endif
 
     public:
         /**
          */
-        nonvirtual bool operator== (const String& rhs) const;
-        nonvirtual bool operator== (const wchar_t* rhs) const;
-        nonvirtual bool operator== (const wstring& rhs) const;
-        nonvirtual bool operator== (const wstring_view& rhs) const;
+#if qCompilerAndStdLib_CompareOpReverse_Buggy
+        nonvirtual strong_ordering operator<=> (const String& rhs) const;
+        template <IConvertibleToString T>
+        nonvirtual strong_ordering operator<=> (T&& rhs) const
+            requires (not same_as<T, String>);
+#else
+        template <IConvertibleToString T>
+        nonvirtual strong_ordering operator<=> (T&& rhs) const;
+#endif
 
     public:
         /**
@@ -1715,7 +1727,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  optional CompareOptions to CTOR allows for case insensitive compares
          */
-        constexpr EqualsComparer (CompareOptions co = CompareOptions::eWithCase);
+        constexpr EqualsComparer (CompareOptions co = eWithCase);
 
         /**
          * Extra overloads a slight performance improvement

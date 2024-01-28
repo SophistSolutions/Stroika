@@ -1097,38 +1097,42 @@ namespace Stroika::Foundation::Characters {
         size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));
         return SubString_ (accessor, from, to);
     }
+#if qCompilerAndStdLib_CompareOpReverse_Buggy
     inline strong_ordering String::operator<=> (const String& rhs) const
     {
         return ThreeWayComparer{}(*this, rhs);
     }
-    inline strong_ordering String::operator<=> (const wchar_t* rhs) const
+    template <IConvertibleToString T>
+    inline strong_ordering String::operator<=> (T&& rhs) const
+        requires (not same_as<T, String>)
     {
-        return ThreeWayComparer{}(*this, rhs);
+        return ThreeWayComparer{}(*this, forward<T> (rhs));
     }
-    inline strong_ordering String::operator<=> (const wstring& rhs) const
+#else
+    template <IConvertibleToString T>
+    inline strong_ordering String::operator<=> (T&& rhs) const
     {
-        return ThreeWayComparer{}(*this, rhs);
+        return ThreeWayComparer{}(*this, forward<T> (rhs));
     }
-    inline strong_ordering String::operator<=> (const wstring_view& rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs);
-    }
+#endif
+#if qCompilerAndStdLib_CompareOpReverse_Buggy
     inline bool String::operator== (const String& rhs) const
     {
         return EqualsComparer{}(*this, rhs);
     }
-    inline bool String::operator== (const wchar_t* rhs) const
+    template <IConvertibleToString T>
+    inline bool String::operator== (T&& rhs) const
+        requires (not same_as<T, String>)
     {
         return EqualsComparer{}(*this, rhs);
     }
-    inline bool String::operator== (const wstring& rhs) const
+#else
+    template <IConvertibleToString T>
+    inline bool String::operator== (T&& rhs) const
     {
         return EqualsComparer{}(*this, rhs);
     }
-    inline bool String::operator== (const wstring_view& rhs) const
-    {
-        return EqualsComparer{}(*this, rhs);
-    }
+#endif
 
     /*
      ********************************************************************************

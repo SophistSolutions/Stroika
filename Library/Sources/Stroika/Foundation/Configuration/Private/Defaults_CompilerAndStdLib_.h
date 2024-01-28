@@ -564,6 +564,38 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
+/**
+*  NO IDEA if this is LGP bug or compiler bug.
+
+I don't understand why we need the explicit String version and requires not same_as<> string template versions (want just the template version)
+*          But when I try that, clang and visaul studio barf with ...
+* 
+            1>C:\Sandbox\Stroika\TMPV3\Library\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.cpp(670): error C2666: 'Stroika::Foundation::Characters::String::operator ==': overloaded functions have similar conversions
+            1>C:\Sandbox\Stroika\TMPV3\Library\Sources\Stroika\Foundation\Characters\String.inl(1124): note: could be 'bool Stroika::Foundation::Characters::String::operator ==<Stroika::Foundation::Characters::String>(T &&) const'
+            1>        with
+            1>        [
+            1>            T=Stroika::Foundation::Characters::String
+            1>        ]
+            1>C:\Sandbox\Stroika\TMPV3\Library\Sources\Stroika\Foundation\Characters\String.inl(1124): note: or 'bool Stroika::Foundation::Characters::String::operator ==<Stroika::Foundation::Characters::String>(T &&) const' [synthesized expression 'y == x']
+* 
+*/
+#ifndef qCompilerAndStdLib_CompareOpReverse_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// replicated in xcode 15
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#elif defined(__clang__)
+// reproduced in clang 15
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#elif defined(_MSC_VER)
+#define qCompilerAndStdLib_CompareOpReverse_Buggy                                                                                          \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt8_)
+#else
+#define qCompilerAndStdLib_CompareOpReverse_Buggy 0
+#endif
+
+#endif
+
 /*
 
    https://bugs.llvm.org/show_bug.cgi?id=42111
