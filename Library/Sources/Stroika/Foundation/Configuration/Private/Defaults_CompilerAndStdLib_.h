@@ -596,7 +596,6 @@ I don't understand why we need the explicit String version and requires not same
 
 #endif
 
-
 /*
 
    https://bugs.llvm.org/show_bug.cgi?id=42111
@@ -2660,10 +2659,9 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #endif
 
 // Not quite the same thing as original bug define but seems a second/related issue that only apperars with clang
-#if qCompilerAndStdLib_CompareOpReverse_Buggy && defined (__clang__)
+#if qCompilerAndStdLib_CompareOpReverse_Buggy && defined(__clang__)
 #pragma clang diagnostic ignored "-Wambiguous-reversed-operator"
 #endif
-
 
 // doesn't seem any portable way todo this, and not defined in C++ language
 // Note - this doesn't appear in http://en.cppreference.com/w/cpp/language/attributes - as of 2016-06-22
