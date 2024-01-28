@@ -1311,7 +1311,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Alias for basic_string>char>::npos - except this is constexpr.
          *
-         *  This is only used for 'STL-compatabiliity' apis, like substr (), find, rfind (), etc.
+         *  This is only used for 'STL-compatibility apis, like substr (), find, rfind (), etc.
          */
         static constexpr size_t npos = static_cast<size_t> (-1);
 
