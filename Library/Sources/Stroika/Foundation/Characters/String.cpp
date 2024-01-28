@@ -70,14 +70,14 @@ namespace {
         protected:
             Rep () = default;
             Rep (span<const CHAR_T> s)
-                requires (not is_same_v<CHAR_T, char8_t>) // char8 ironically involves 2-byte characters, cuz only ascii encoded as 1 byte
+                requires (not same_as<CHAR_T, char8_t>) // char8 ironically involves 2-byte characters, cuz only ascii encoded as 1 byte
                 : _fData{s}
             {
-                if constexpr (is_same_v<CHAR_T, char> or is_same_v<CHAR_T, char8_t>) {
+                if constexpr (same_as<CHAR_T, char> or same_as<CHAR_T, char8_t>) {
                     Require (Character::IsASCII (s));
                 }
                 // Any 8-bit sequence valid for Latin1
-                if constexpr (is_same_v<CHAR_T, char16_t>) {
+                if constexpr (same_as<CHAR_T, char16_t>) {
                     Require (UTFConvert::AllFitsInTwoByteEncoding (s));
                 }
             }
@@ -86,10 +86,10 @@ namespace {
 #if qDebug
                 Require (fOutsandingIterators_ == 0);
 #endif
-                if constexpr (is_same_v<CHAR_T, char> or is_same_v<CHAR_T, char8_t>) {
+                if constexpr (same_as<CHAR_T, char> or same_as<CHAR_T, char8_t>) {
                     Require (Character::IsASCII (s));
                 }
-                if constexpr (is_same_v<CHAR_T, char16_t>) {
+                if constexpr (same_as<CHAR_T, char16_t>) {
                     Require (UTFConvert::AllFitsInTwoByteEncoding (s));
                 }
                 _fData = s;
@@ -107,10 +107,10 @@ namespace {
             virtual PeekSpanData PeekData (optional<PeekSpanData::StorageCodePointType> /*preferred*/) const noexcept override
             {
                 // IGNORE preferred, cuz we return what is in our REP - since returning a direct pointer to that data - no conversion possible
-                if constexpr (is_same_v<CHAR_T, ASCII>) {
+                if constexpr (same_as<CHAR_T, ASCII>) {
                     return PeekSpanData{PeekSpanData::StorageCodePointType::eAscii, {.fAscii = _fData}};
                 }
-                if constexpr (is_same_v<CHAR_T, Latin1>) {
+                if constexpr (same_as<CHAR_T, Latin1>) {
                     return PeekSpanData{PeekSpanData::StorageCodePointType::eSingleByteLatin1, {.fSingleByteLatin1 = _fData}};
                 }
                 else if constexpr (sizeof (CHAR_T) == 2) {
@@ -381,7 +381,7 @@ namespace {
             Rep (span<const CHAR_T> s)
                 : inherited{s} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
             {
-                if constexpr (is_same_v<CHAR_T, wchar_t>) {
+                if constexpr (same_as<CHAR_T, wchar_t>) {
 #if qDebug
                     const CHAR_T* start = s.data ();
                     const CHAR_T* end   = start + s.size ();
@@ -397,7 +397,7 @@ namespace {
             {
                 // if used for appropriately sized character (equiv to wchar_t) - then use that nul-terminated string
                 // and else return nullptr, so it will get wrapped
-                if constexpr (is_same_v<CHAR_T, wchar_t>) {
+                if constexpr (same_as<CHAR_T, wchar_t>) {
                     // we check/require this in CTOR, so should still be true
                     const wchar_t* start = reinterpret_cast<const wchar_t*> (this->_fData.data ());
 #if qDebug
@@ -436,7 +436,7 @@ namespace {
             // String::_IRep OVERRIDES
             virtual const wchar_t* c_str_peek () const noexcept override
             {
-                if constexpr (is_same_v<CHAR_T, wchar_t>) {
+                if constexpr (same_as<CHAR_T, wchar_t>) {
                     return fMovedData_.c_str ();
                 }
                 else {
@@ -655,13 +655,13 @@ shared_ptr<String::_IRep> String::mkEmpty_ ()
 
 template <typename CHAR_T>
 inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
-    requires (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
+    requires (same_as<CHAR_T, ASCII> or same_as<CHAR_T, Latin1> or same_as<CHAR_T, char16_t> or same_as<CHAR_T, char32_t>)
 {
     // No check means needed checking done before, so these assertions just help enforce that
-    if constexpr (is_same_v<CHAR_T, ASCII>) {
+    if constexpr (same_as<CHAR_T, ASCII>) {
         Require (Character::IsASCII (s)); // avoid later assertion error
     }
-    else if constexpr (is_same_v<CHAR_T, Latin1>) {
+    else if constexpr (same_as<CHAR_T, Latin1>) {
         // nothing to check
     }
     else if constexpr (sizeof (CHAR_T) == 2) {
