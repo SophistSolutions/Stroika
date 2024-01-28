@@ -45,14 +45,14 @@ namespace Stroika::Foundation::Containers::Factory {
     inline auto Set_Factory<T, EQUALS_COMPARER>::operator() (const EQUALS_COMPARER& equalsComparer) const -> ConstructedType
     {
         if (this->fFactory_ == nullptr) [[likely]] {
-            if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::IOperatorLt<T>) {
+            if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and totally_ordered<T>) {
                 static const auto kDefault_ = Concrete::Set_stdset<T>{};
                 return kDefault_;
             }
             else {
                 /*
                  *  Not good for large sets, due to lack of indexing/quick lookup. So issue with realloc not such a biggie
-                 *  and probably better than linkedlist since better locality (and have to walk whole list anyhow to see if present).
+                 *  and probably better than linked list since better locality (and have to walk whole list anyhow to see if present).
                  */
                 return Concrete::Set_Array<T>{equalsComparer};
             }

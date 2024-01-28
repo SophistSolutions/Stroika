@@ -91,12 +91,12 @@ namespace Stroika::Foundation::Containers {
      *
      *  Made some progress on this, but now the problem is that when you assign, like as:
      *
-     *  Sequene<String> s;
+     *  Sequence<String> s;
      *
-     *  String a = s[0];    // eror at runtime
+     *  String a = s[0];    // error at runtime
      *
      *  cuz String&& CTOR gets called with arg TemporaryReference<String>, and so but the time TemporaryReference DTOR called, value has
-     *  gone away. No obvious way to tell udnerlying value 'stolen' so maybe the sucblassing trick wont work after all.
+     *  gone away. No obvious way to tell underlying value 'stolen' so maybe the subclassing trick wont work after all.
      *
      *  @see https://stroika.atlassian.net/browse/STK-582
      */
@@ -356,13 +356,15 @@ namespace Stroika::Foundation::Containers {
         /**
          * simply indirect to @Sequence<>::EqualsComparer (only defined if equal_to<T> is defined)
          */
-        nonvirtual bool operator== (const Sequence& rhs) const;
+        nonvirtual bool operator== (const Sequence& rhs) const
+            requires (equality_comparable<T>);
 
     public:
         /**
          * simply indirect to @Sequence<>::operator (only defined if ???comparethreeway?<T> is defined)
          */
-        nonvirtual auto operator<=> (const Sequence& rhs) const;
+        nonvirtual auto operator<=> (const Sequence& rhs) const
+            requires (three_way_comparable<T>);
 
     public:
         /**

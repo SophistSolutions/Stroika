@@ -65,13 +65,13 @@ namespace Stroika::Foundation::Common {
         /**
          */
         constexpr auto operator<=> (const CountedValue&) const
-            requires (Configuration::IOperatorSpaceship<VALUE_TYPE>);
+            requires (three_way_comparable<VALUE_TYPE>);
 
     public:
         /**
          */
         constexpr bool operator== (const CountedValue&) const
-            requires (Configuration::IOperatorEq<VALUE_TYPE>);
+            requires (equality_comparable<VALUE_TYPE>);
     };
 
 }

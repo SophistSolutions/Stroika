@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Containers::Factory {
     inline auto Collection_Factory<T>::operator() () const -> ConstructedType
     {
         if (this->fFactory_ == nullptr) [[likely]] {
-            if constexpr (Configuration::IOperatorLt<T>) {
+            if constexpr (totally_ordered<T>) {
                 // faster adds/removes - same size - so better if possible to use (unless very small collections maybe)
                 static const auto kDefault_ = Concrete::Collection_stdmultiset<T>{};
                 return kDefault_;
@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers::Factory {
             else {
                 if (fHints_OptimizeForLookupSpeedOverUpdateSpeed) [[likely]] {
                     // questionable choice. For smaller sizes, probably faster, due to better locality.
-                    // but adds can occionally be slow (realloc/O(N)) instead of O(1).
+                    // but adds can occasionally be slow (realloc/O(N)) instead of O(1).
                     static const auto kDefault_ = Concrete::Collection_Array<T>{};
                     return kDefault_;
                 }

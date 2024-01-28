@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Common {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     constexpr inline auto KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator<=> (const KeyValuePair& rhs) const
-        requires (Configuration::IOperatorSpaceship<KEY_TYPE> and Configuration::IOperatorSpaceship<VALUE_TYPE>)
+        requires (three_way_comparable<KEY_TYPE> and three_way_comparable<VALUE_TYPE>)
     {
         auto cmp = fKey <=> rhs.fKey;
         if (cmp != strong_ordering::equal) {
@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Common {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     constexpr inline bool KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const KeyValuePair& rhs) const
-        requires (Configuration::IOperatorEq<KEY_TYPE> and Configuration::IOperatorEq<VALUE_TYPE>)
+        requires (equality_comparable<KEY_TYPE> and equality_comparable<VALUE_TYPE>)
     {
         return fKey == rhs.fKey and fValue == rhs.fValue;
     }

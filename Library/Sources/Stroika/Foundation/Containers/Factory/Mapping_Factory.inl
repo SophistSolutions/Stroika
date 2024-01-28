@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers::Factory {
                 static const auto kDefault_ = Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }
-            else if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::IOperatorLt<KEY_TYPE>) {
+            else if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and totally_ordered<KEY_TYPE>) {
                 static const auto kDefault_ = Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
                 return kDefault_;
             }

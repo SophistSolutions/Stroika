@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Common {
          *  This method is only defined if BOTH the key and value have a defined spaceship operator
          */
         constexpr auto operator<=> (const KeyValuePair&) const
-            requires (Configuration::IOperatorSpaceship<KEY_TYPE> and Configuration::IOperatorSpaceship<VALUE_TYPE>);
+            requires (three_way_comparable<KEY_TYPE> and three_way_comparable<VALUE_TYPE>);
 
     public:
         /**
@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Common {
          *  This method is only defined if BOTH the key and value have a defined operator==
          */
         constexpr bool operator== (const KeyValuePair&) const
-            requires (Configuration::IOperatorEq<KEY_TYPE> and Configuration::IOperatorEq<VALUE_TYPE>);
+            requires (equality_comparable<KEY_TYPE> and equality_comparable<VALUE_TYPE>);
     };
 
 }

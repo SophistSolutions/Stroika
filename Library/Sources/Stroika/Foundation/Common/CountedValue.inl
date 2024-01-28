@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
         requires (default_initializable<COUNTER_TYPE> and unsigned_integral<COUNTER_TYPE>)
     constexpr auto CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator<=> (const CountedValue& rhs) const
-        requires (Configuration::IOperatorSpaceship<VALUE_TYPE>)
+        requires (three_way_comparable<VALUE_TYPE>)
     {
         if (auto cmp = fValue <=> rhs.fValue; cmp != strong_ordering::equal) {
             return cmp;
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Common {
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
         requires (default_initializable<COUNTER_TYPE> and unsigned_integral<COUNTER_TYPE>)
     constexpr bool CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator== (const CountedValue& rhs) const
-        requires (Configuration::IOperatorEq<VALUE_TYPE>)
+        requires (equality_comparable<VALUE_TYPE>)
     {
         return fValue == rhs.fValue and fValue == rhs.fValue;
     }

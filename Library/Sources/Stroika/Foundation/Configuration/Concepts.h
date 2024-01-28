@@ -89,6 +89,7 @@ namespace Stroika::Foundation::Configuration {
     concept ITimePoint =
         requires { []<class CLOCK, class DURATION> (type_identity<chrono::time_point<CLOCK, DURATION>>) {}(type_identity<T> ()); };
 
+#if 1
     namespace Private_ {
         template <typename T>
         concept HasEq_ = requires (T t) {
@@ -103,8 +104,11 @@ namespace Stroika::Foundation::Configuration {
         template <typename... Ts>
         constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
     }
+#endif
+#if 0
 
     /**
+    * &&& USE equality_comparable
      *  \brief Concept checks if the given type T can be compared with operator==, and result is convertible to bool
      * 
      *  \par Example Usage
@@ -123,7 +127,9 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     concept IOperatorEq = Private_::HasEq_v_<T>;
+#endif
 
+#if 0
     namespace Private_ {
         template <typename T>
         concept HasLtBase_ = requires (T t) {
@@ -138,6 +144,10 @@ namespace Stroika::Foundation::Configuration {
     }
 
     /**
+    * 
+    *  ** NOTE MOSTLY THE SAME AS totally_ordered concept - but not quite
+    * 
+    * 
      *  \brief Concept checks if the given type T can be compared with operator<, and result is convertible to bool
      * 
      *  \par Example Usage
@@ -157,7 +167,9 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     concept IOperatorLt = Private_::HasLt_v_<T>;
+#endif
 
+#if 0
     /**
     *  *** DEPRECATED - use https://en.cppreference.com/w/cpp/utility/compare/three_way_comparable
      *  \brief Concept checks if the given type T can be compared with operator<=>, returning some appropriate ordering
@@ -174,6 +186,7 @@ namespace Stroika::Foundation::Configuration {
      *  @todo CONSIDER - SHOULD THIS TAKE ARGUMENT OF THE ORDERING TO EXPECT? MAYBE BETTER
      */
     template <typename T>
+    //[[deprecated ("USE three_way_comparable")]] 
     concept IOperatorSpaceship = requires (T t) {
         {
             t <=> t
@@ -187,6 +200,7 @@ namespace Stroika::Foundation::Configuration {
             t <=> t
         } -> std::convertible_to<weak_ordering>;
     };
+#endif
 
     /**
      *  A template which ignores its template arguments, and always returns true_type;
@@ -228,7 +242,11 @@ namespace Stroika::Foundation::Configuration {
         template <typename T>
         constexpr bool HasUsableEqualToOptimization ()
         {
-            if constexpr (IOperatorEq<T>) {
+            // static_assert (Configuration::IOperatorEq<remove_cvref_t<T>> and ! equality_comparable<T>);
+            // static_assert (not Configuration::IOperatorEq<T> and equality_comparable<T>);
+            //   static_assert (Configuration::IOperatorEq<remove_cvref_t<T>> == equality_comparable<T>);
+            // @todo figure out why Private_::HasEq_v_ needed and cannot use equality_comparable
+            if constexpr (Private_::HasEq_v_<T>) {
                 struct EqualToEmptyTester_ : equal_to<T> {
                     int a;
                 };
@@ -365,27 +383,27 @@ namespace Stroika::Foundation::Configuration {
         using has_neq_t = decltype (static_cast<bool> (std::declval<T> () != std::declval<T> ()));
     }
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use IOperatorEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v =
+    [[deprecated ("Since Stroika v3.0d1, use equality_comparable (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v =
         is_detected_v<Private_::has_neq_t, T>;
     template <typename T, typename U>
-    [[deprecated ("Since Stroika v3.0d1, use IOperatorEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v<std::pair<T, U>> =
+    [[deprecated ("Since Stroika v3.0d1, use equality_comparable (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v<std::pair<T, U>> =
         has_neq_v<T> and has_neq_v<U>;
     template <typename... Ts>
-    [[deprecated ("Since Stroika v3.0d1, use IOperatorEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v<std::tuple<Ts...>> =
+    [[deprecated ("Since Stroika v3.0d1, use equality_comparable (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v<std::tuple<Ts...>> =
         (has_neq_v<Ts> and ...);
 
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use IOperatorEq concept")]] constexpr inline bool has_eq_v = IOperatorEq<T>;
+    [[deprecated ("Since Stroika v3.0d1, use equality_comparable concept")]] constexpr inline bool has_eq_v = equality_comparable<T>;
 
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use IOperatorLt concept")]] constexpr inline bool has_lt_v = IOperatorLt<T>;
+    [[deprecated ("Since Stroika v3.0d1, use totally_ordered concept")]] constexpr inline bool has_lt_v = totally_ordered<T>;
 
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use IHasValueType concept")]] constexpr inline bool has_value_type_v = IHasValueType<T>;
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/equality_comparable")]] constexpr bool EqualityComparable ()
     {
-        return IOperatorEq<T>;
+        return equality_comparable<T>;
     }
 
     template <typename T>
@@ -475,7 +493,7 @@ namespace Stroika::Foundation::Configuration {
         return false;
     }
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use IOperatorSpaceship")]] constexpr inline bool has_spaceship_v = IOperatorSpaceship<T>;
+    [[deprecated ("Since Stroika v3.0d1, use three_way_comparable")]] constexpr inline bool has_spaceship_v = three_way_comparable<T>;
     DISABLE_COMPILER_MSC_WARNING_END (4996);
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
