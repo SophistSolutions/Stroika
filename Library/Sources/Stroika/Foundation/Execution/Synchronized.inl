@@ -246,25 +246,25 @@ namespace Stroika::Foundation::Execution {
     }
     template <typename T, typename TRAITS>
     inline bool Synchronized<T, TRAITS>::operator== (const Synchronized& rhs) const
-        requires (TRAITS::kIsRecursiveReadMutex)
+        requires (TRAITS::kIsRecursiveReadMutex and equality_comparable<T>)
     {
         return load () == rhs.load ();
     }
     template <typename T, typename TRAITS>
     inline bool Synchronized<T, TRAITS>::operator== (const T& rhs) const
-        requires (TRAITS::kIsRecursiveReadMutex)
+        requires (TRAITS::kIsRecursiveReadMutex and equality_comparable<T>)
     {
         return load () == rhs;
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::operator<=> (const Synchronized& rhs) const
-        requires (TRAITS::kIsRecursiveReadMutex)
+        requires (TRAITS::kIsRecursiveReadMutex and three_way_comparable<T>)
     {
         return load () <=> rhs.load ();
     }
     template <typename T, typename TRAITS>
     inline auto Synchronized<T, TRAITS>::operator<=> (const T& rhs) const
-        requires (TRAITS::kIsRecursiveReadMutex)
+        requires (TRAITS::kIsRecursiveReadMutex and three_way_comparable<T>)
     {
         return load () <=> rhs;
     }

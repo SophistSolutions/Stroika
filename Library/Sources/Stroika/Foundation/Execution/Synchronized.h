@@ -462,17 +462,17 @@ namespace Stroika::Foundation::Execution {
         /**
          */
         nonvirtual bool operator== (const Synchronized& rhs) const
-            requires (TRAITS::kIsRecursiveReadMutex);
+            requires (TRAITS::kIsRecursiveReadMutex and equality_comparable<T>);
         nonvirtual bool operator== (const T& rhs) const
-            requires (TRAITS::kIsRecursiveReadMutex);
+            requires (TRAITS::kIsRecursiveReadMutex and equality_comparable<T>);
 
     public:
         /**
          */
         nonvirtual auto operator<=> (const Synchronized& rhs) const
-            requires (TRAITS::kIsRecursiveReadMutex);
+            requires (TRAITS::kIsRecursiveReadMutex and three_way_comparable<T>);
         nonvirtual auto operator<=> (const T& rhs) const
-            requires (TRAITS::kIsRecursiveReadMutex);
+            requires (TRAITS::kIsRecursiveReadMutex and three_way_comparable<T>);
 
     public:
         /**
