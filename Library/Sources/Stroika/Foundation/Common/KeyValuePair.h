@@ -82,19 +82,19 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         *  Define operator<=> in the obvious way key <=> key first, and then if equal, compare values.
-         *  This method is only defined if BOTH the key and value have a defined spaceship operator
-         */
-        constexpr auto operator<=> (const KeyValuePair&) const
-            requires (three_way_comparable<KEY_TYPE> and three_way_comparable<VALUE_TYPE>);
-
-    public:
-        /**
          *  Define operator== in the obvious way key == key and value == value.
          *  This method is only defined if BOTH the key and value have a defined operator==
          */
         constexpr bool operator== (const KeyValuePair&) const
             requires (equality_comparable<KEY_TYPE> and equality_comparable<VALUE_TYPE>);
+
+    public:
+        /**
+         *  Define operator<=> in the obvious way key <=> key first, and then if equal, compare values.
+         *  This method is only defined if BOTH the key and value have a defined spaceship operator
+         */
+        constexpr auto operator<=> (const KeyValuePair&) const
+            requires (three_way_comparable<KEY_TYPE> and three_way_comparable<VALUE_TYPE>);
     };
 
 }
