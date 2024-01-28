@@ -83,8 +83,8 @@ namespace Stroika::Foundation::Characters {
         /**
          *   Predefined regular expression that matches anything.
          *
-         *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
-         *   \note Equivilent to
+         *   \note Since this is a static object, beware, it cannot be (safely) used before or after main
+         *   \note Equivalent to
          *       \code
          *           const  RegularExpression   kAny {".*"};
          *       \endcode
