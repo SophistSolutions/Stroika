@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Characters {
      *  \brief returns true iff T == u8string, u16string, u32string, or wstring
      */
     template <typename T>
-    concept IBasicUNICODEStdString = is_same_v<T, u8string> or is_same_v<T, u16string> or is_same_v<T, u32string> or is_same_v<T, wstring>;
+    concept IBasicUNICODEStdString = same_as<T, u8string> or same_as<T, u16string> or same_as<T, u32string> or same_as<T, wstring>;
 
     class String;
 
@@ -297,13 +297,13 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename CHAR_T>
         static String FromUTF8 (span<CHAR_T> from)
-            requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
+            requires (same_as<remove_cv_t<CHAR_T>, char8_t> or same_as<remove_cv_t<CHAR_T>, char>);
         template <typename CHAR_T>
         static String FromUTF8 (basic_string<CHAR_T> from)
-            requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
+            requires (same_as<remove_cv_t<CHAR_T>, char8_t> or same_as<remove_cv_t<CHAR_T>, char>);
         template <typename CHAR_T>
         static String FromUTF8 (const CHAR_T* from)
-            requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
+            requires (same_as<remove_cv_t<CHAR_T>, char8_t> or same_as<remove_cv_t<CHAR_T>, char>);
 
     public:
         /**
@@ -494,7 +494,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void Append (const Character* from, const Character* to);
         template <typename CHAR_T>
         nonvirtual void Append (span<const CHAR_T> s)
-            requires (is_same_v<CHAR_T, Character> or is_same_v<CHAR_T, char32_t>);
+            requires (same_as<CHAR_T, Character> or same_as<CHAR_T, char32_t>);
 
     public:
         nonvirtual String& operator+= (Character appendage);
@@ -1032,7 +1032,7 @@ namespace Stroika::Foundation::Characters {
         /**
          * Convert String losslessly into a standard C++ type.
          *
-         *  Only specifically specialized variants supported: IBasicUNICODEStdString<T> or is_same_v<T,String>
+         *  Only specifically specialized variants supported: IBasicUNICODEStdString<T> or same_as<T,String>
          *      o   wstring
          *      o   u8string
          *      o   u16string
@@ -1055,7 +1055,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (IBasicUNICODEStdString<T> or is_same_v<T, String>);
+            requires (IBasicUNICODEStdString<T> or same_as<T, String>);
 
     public:
         /**
@@ -1077,7 +1077,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T = u8string>
         nonvirtual T AsUTF8 () const
-            requires (is_same_v<T, string> or is_same_v<T, u8string>);
+            requires (same_as<T, string> or same_as<T, u8string>);
 
     public:
         /**
@@ -1095,7 +1095,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T = u16string>
         nonvirtual T AsUTF16 () const
-            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>));
+            requires (same_as<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and same_as<T, wstring>));
 
     public:
         /**
@@ -1113,11 +1113,11 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T = u32string>
         nonvirtual T AsUTF32 () const
-            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>));
+            requires (same_as<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and same_as<T, wstring>));
 
     public:
         /**
-         *  See docs on SDKChar for meaning (charactet set).
+         *  See docs on SDKChar for meaning (character set).
          * 
          *  Note - many UNICODE Strings cannot be represented in the SDKString character set (especially if narrow - depends alot).
          *  But in that case, AsNarrowSDKString () will throw, unless AllowMissingCharacterErrorsFlag is specified.
@@ -1127,7 +1127,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  See docs on SDKChar for meaning (charactet set). If SDKChar is a wide character, there is probably still a
+         *  See docs on SDKChar for meaning (character set). If SDKChar is a wide character, there is probably still a
          *  default 'code page' to interpret narrow characters (Windows CP_ACP). This is a string in that characterset.
          * 
          *  Note - many UNICODE Strings cannot be represented in the SDKString character set (especially if narrow - depends alot).
@@ -1434,7 +1434,7 @@ namespace Stroika::Foundation::Characters {
     public:
         template <typename T>
         [[deprecated ("Since Stroika v3.0d2, just use 0 arg version)")]] void As (T* into) const
-            requires (IBasicUNICODEStdString<T> or is_same_v<T, String>)
+            requires (IBasicUNICODEStdString<T> or same_as<T, String>)
         {
             *into = this->As<T> ();
         }
@@ -1444,19 +1444,19 @@ namespace Stroika::Foundation::Characters {
         }
         template <typename T = u8string>
         [[deprecated ("Since Stroika v3.0d2 - use AsUTF8/0")]] void AsUTF8 (T* into) const
-            requires (is_same_v<T, string> or is_same_v<T, u8string>)
+            requires (same_as<T, string> or same_as<T, u8string>)
         {
             *into = this->AsUTF8 ();
         }
         template <typename T = u16string>
         [[deprecated ("Since Stroika v3.0d2 - use AsUTF16/0")]] void AsUTF16 (T* into) const
-            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>))
+            requires (same_as<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and same_as<T, wstring>))
         {
             *into = AsUTF16 ();
         }
         template <typename T = u32string>
         [[deprecated ("Since Stroika v3.0d2 - use AsUTF32/0")]] void AsUTF32 (T* into) const
-            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>))
+            requires (same_as<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and same_as<T, wstring>))
         {
             *into = AsUTF32 ();
         }
@@ -1470,7 +1470,7 @@ namespace Stroika::Foundation::Characters {
         }
         template <typename T = string>
         [[deprecated ("Since v3.0d2 use /0")]] void AsASCII (T* into) const
-            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+            requires (same_as<T, string> or same_as<T, Memory::StackBuffer<char>>)
         {
             if (not AsASCIIQuietly (into)) {
                 ThrowInvalidAsciiException_ ();
@@ -1478,7 +1478,7 @@ namespace Stroika::Foundation::Characters {
         }
         template <typename T = string>
         [[deprecated ("Since v3.0d2 use /0 overload")]] bool AsASCIIQuietly (T* into) const
-            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+            requires (same_as<T, string> or same_as<T, Memory::StackBuffer<char>>)
         {
             auto r = this->AsASCIIQuietly ();
             if (r) {
@@ -1601,7 +1601,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename CHAR_T>
         static shared_ptr<_IRep> mk_nocheck_ (span<const CHAR_T> s)
-            requires (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
+            requires (same_as<CHAR_T, ASCII> or same_as<CHAR_T, Latin1> or same_as<CHAR_T, char16_t> or same_as<CHAR_T, char32_t>);
 
     private:
         template <unsigned_integral T>
@@ -1692,19 +1692,19 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         concept ICanBeTreatedAsSpanOfCharacter_ =
             derived_from<remove_cvref_t<T>, String>
-            or is_same_v<remove_cvref_t<T>, u8string> 
-            or is_same_v<remove_cvref_t<T>, u8string_view> 
-            or is_same_v<remove_cvref_t<T>, u16string> 
-            or is_same_v<remove_cvref_t<T>, u16string_view> 
-            or is_same_v<remove_cvref_t<T>, u32string> 
-            or is_same_v<remove_cvref_t<T>, u32string_view> 
-            or is_same_v<remove_cvref_t<T>, wstring> 
-            or is_same_v<remove_cvref_t<T>, wstring_view> 
-            or is_same_v<remove_cvref_t<T>, const Character*> 
-            or is_same_v<remove_cvref_t<T>, const char8_t*>
-            or is_same_v<remove_cvref_t<T>, const char16_t*>
-            or is_same_v<remove_cvref_t<T>, const char32_t*>
-            or is_same_v<remove_cvref_t<T>, const wchar_t*> 
+            or same_as<remove_cvref_t<T>, u8string> 
+            or same_as<remove_cvref_t<T>, u8string_view> 
+            or same_as<remove_cvref_t<T>, u16string> 
+            or same_as<remove_cvref_t<T>, u16string_view> 
+            or same_as<remove_cvref_t<T>, u32string> 
+            or same_as<remove_cvref_t<T>, u32string_view> 
+            or same_as<remove_cvref_t<T>, wstring> 
+            or same_as<remove_cvref_t<T>, wstring_view> 
+            or same_as<remove_cvref_t<T>, const Character*> 
+            or same_as<remove_cvref_t<T>, const char8_t*>
+            or same_as<remove_cvref_t<T>, const char16_t*>
+            or same_as<remove_cvref_t<T>, const char32_t*>
+            or same_as<remove_cvref_t<T>, const wchar_t*> 
             ;
         // clang-format on
 

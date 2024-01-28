@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static size_t StrLen_ (const CHAR_T* s)
         {
-            if constexpr (is_same_v<CHAR_T, Latin1>) {
+            if constexpr (same_as<CHAR_T, Latin1>) {
                 return StrLen_ (reinterpret_cast<const char*> (s));
             }
             else {
@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Characters {
             Require (trg.size () >= src.size ());
             ASCII* outI = trg.data ();
             for (auto ii = src.begin (); ii != src.end (); ++ii) {
-                if constexpr (is_same_v<SRC_T, Character>) {
+                if constexpr (same_as<SRC_T, Character>) {
                     *outI++ = ii->GetAsciiCode ();
                 }
                 else {
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Characters {
             Require (trg.size () >= src.size ());
             Latin1* outI = trg.data ();
             for (auto ii = src.begin (); ii != src.end (); ++ii) {
-                if constexpr (is_same_v<SRC_T, Character>) {
+                if constexpr (same_as<SRC_T, Character>) {
                     *outI++ = Latin1{static_cast<unsigned char> (ii->GetCharacterCode ())};
                 }
                 else {
@@ -82,32 +82,32 @@ namespace Stroika::Foundation::Characters {
             if constexpr (derived_from<remove_cvref_t<USTRING>, String>) {
                 return s.GetData (mostlyIgnoredBuf);
             }
-            else if constexpr (is_same_v<remove_cvref_t<USTRING>, const char32_t*> or
-                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<remove_cvref_t<USTRING>, const wchar_t*>)) {
+            else if constexpr (same_as<remove_cvref_t<USTRING>, const char32_t*> or
+                               (sizeof (wchar_t) == sizeof (Character) and same_as<remove_cvref_t<USTRING>, const wchar_t*>)) {
                 return span{reinterpret_cast<const Character*> (s), CString::Length (s)};
             }
-            else if constexpr (is_same_v<remove_cvref_t<USTRING>, u32string> or
-                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<remove_cvref_t<USTRING>, wstring>)) {
+            else if constexpr (same_as<remove_cvref_t<USTRING>, u32string> or
+                               (sizeof (wchar_t) == sizeof (Character) and same_as<remove_cvref_t<USTRING>, wstring>)) {
                 return span{reinterpret_cast<const Character*> (s.c_str ()), s.length ()};
             }
-            else if constexpr (is_same_v<remove_cvref_t<USTRING>, u32string_view> or
-                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<remove_cvref_t<USTRING>, wstring_view>)) {
+            else if constexpr (same_as<remove_cvref_t<USTRING>, u32string_view> or
+                               (sizeof (wchar_t) == sizeof (Character) and same_as<remove_cvref_t<USTRING>, wstring_view>)) {
                 return span{reinterpret_cast<const Character*> (s.data ()), s.length ()};
             }
-            else if constexpr (is_same_v<remove_cvref_t<USTRING>, const char8_t*> or is_same_v<remove_cvref_t<USTRING>, const char16_t*> or
-                               is_same_v<remove_cvref_t<USTRING>, const wchar_t*>) {
+            else if constexpr (same_as<remove_cvref_t<USTRING>, const char8_t*> or same_as<remove_cvref_t<USTRING>, const char16_t*> or
+                               same_as<remove_cvref_t<USTRING>, const wchar_t*>) {
                 span spn{s, CString::Length (s)};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<Character> (spn));
                 return UTFConvert::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
             }
-            else if constexpr (is_same_v<remove_cvref_t<USTRING>, u8string> or is_same_v<remove_cvref_t<USTRING>, u16string> or
-                               is_same_v<remove_cvref_t<USTRING>, wstring>) {
+            else if constexpr (same_as<remove_cvref_t<USTRING>, u8string> or same_as<remove_cvref_t<USTRING>, u16string> or
+                               same_as<remove_cvref_t<USTRING>, wstring>) {
                 span spn{s.data (), s.size ()};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<Character> (spn));
                 return UTFConvert::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
             }
-            else if constexpr (is_same_v<remove_cvref_t<USTRING>, u8string_view> or is_same_v<remove_cvref_t<USTRING>, u16string_view> or
-                               is_same_v<remove_cvref_t<USTRING>, wstring_view>) {
+            else if constexpr (same_as<remove_cvref_t<USTRING>, u8string_view> or same_as<remove_cvref_t<USTRING>, u16string_view> or
+                               same_as<remove_cvref_t<USTRING>, wstring_view>) {
                 span spn{s.data (), s.size ()};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<Character> (spn));
                 return UTFConvert::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
@@ -135,11 +135,11 @@ namespace Stroika::Foundation::Characters {
         if (s.empty ()) {
             return mkEmpty_ ();
         }
-        if constexpr (is_same_v<CHAR_T, ASCII>) {
+        if constexpr (same_as<CHAR_T, ASCII>) {
             Character::CheckASCII (s);
             return mk_nocheck_ (s);
         }
-        else if constexpr (is_same_v<CHAR_T, Latin1>) {
+        else if constexpr (same_as<CHAR_T, Latin1>) {
             Character::CheckLatin1 (s);
             return mk_nocheck_ (s);
         }
@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Characters {
         // then unoicode covert and use other mk_ existing overloads
         Memory::StackBuffer<char32_t> r;
         it.Apply ([&r] (CHAR_T c) {
-            if constexpr (is_same_v<CHAR_T, Character>) {
+            if constexpr (same_as<CHAR_T, Character>) {
                 r.push_back (static_cast<char32_t> (c)); // explicit operator char32_t to avoid ambiguities elsewhere
             }
             else {
@@ -380,7 +380,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename CHAR_T>
     inline String String::FromUTF8 (span<CHAR_T> s)
-        requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
+        requires (same_as<remove_cv_t<CHAR_T>, char8_t> or same_as<remove_cv_t<CHAR_T>, char>)
     {
         if (Character::IsASCII (s)) [[likely]] {
             return mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()});
@@ -396,13 +396,13 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename CHAR_T>
     inline String String::FromUTF8 (basic_string<CHAR_T> from)
-        requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
+        requires (same_as<remove_cv_t<CHAR_T>, char8_t> or same_as<remove_cv_t<CHAR_T>, char>)
     {
         return FromUTF8 (span{from.c_str (), from.length ()});
     }
     template <typename CHAR_T>
     inline String String::FromUTF8 (const CHAR_T* from)
-        requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
+        requires (same_as<remove_cv_t<CHAR_T>, char8_t> or same_as<remove_cv_t<CHAR_T>, char>)
     {
         return FromUTF8 (span{from, ::strlen (reinterpret_cast<const char*> (from))});
     }
@@ -647,7 +647,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename CHAR_T>
     inline void String::Append (span<const CHAR_T> s)
-        requires (is_same_v<CHAR_T, Character> or is_same_v<CHAR_T, char32_t>)
+        requires (same_as<CHAR_T, Character> or same_as<CHAR_T, char32_t>)
     {
         if (not s.empty ()) {
             Memory::StackBuffer<char32_t> ignored1;
@@ -656,7 +656,7 @@ namespace Stroika::Foundation::Characters {
             Memory::CopySpanData (thisSpan, span{combinedBuf});
             char32_t* write2Buf = combinedBuf.data () + thisSpan.size ();
             for (auto i : s) {
-                if constexpr (is_same_v<CHAR_T, Character>) {
+                if constexpr (same_as<CHAR_T, Character>) {
                     *write2Buf = i.template As<char32_t> ();
                 }
                 else {
@@ -737,18 +737,18 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline T String::As () const
-        requires (IBasicUNICODEStdString<T> or is_same_v<T, String>)
+        requires (IBasicUNICODEStdString<T> or same_as<T, String>)
     {
-        if constexpr (is_same_v<T, u8string>) {
+        if constexpr (same_as<T, u8string>) {
             return AsUTF8<T> ();
         }
-        else if constexpr (is_same_v<T, u16string>) {
+        else if constexpr (same_as<T, u16string>) {
             return AsUTF16<T> ();
         }
-        else if constexpr (is_same_v<T, u32string>) {
+        else if constexpr (same_as<T, u32string>) {
             return AsUTF32<T> ();
         }
-        else if constexpr (is_same_v<T, wstring>) {
+        else if constexpr (same_as<T, wstring>) {
             if constexpr (sizeof (wchar_t) == 2) {
                 return AsUTF16<T> ();
             }
@@ -756,13 +756,13 @@ namespace Stroika::Foundation::Characters {
                 return AsUTF32<T> ();
             }
         }
-        else if constexpr (is_same_v<T, String>) {
+        else if constexpr (same_as<T, String>) {
             return *this;
         }
     }
     template <typename T>
     inline T String::AsUTF8 () const
-        requires (is_same_v<T, string> or is_same_v<T, u8string>)
+        requires (same_as<T, string> or same_as<T, u8string>)
     {
         Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
         span<const char8_t>          thisData = GetData (&maybeIgnoreBuf1);
@@ -770,7 +770,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline T String::AsUTF16 () const
-        requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>))
+        requires (same_as<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and same_as<T, wstring>))
     {
         Memory::StackBuffer<char16_t> maybeIgnoreBuf1;
         span<const char16_t>          thisData = GetData (&maybeIgnoreBuf1);
@@ -778,7 +778,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline T String::AsUTF32 () const
-        requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>))
+        requires (same_as<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and same_as<T, wstring>))
     {
         Memory::StackBuffer<char32_t> maybeIgnoreBuf1;
         span<const char32_t>          thisData = GetData (&maybeIgnoreBuf1);
@@ -861,22 +861,22 @@ namespace Stroika::Foundation::Characters {
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
         StorageCodePointType preferredSCP{};
-        if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, ASCII>) {
+        if constexpr (same_as<remove_cv_t<CHAR_TYPE>, ASCII>) {
             preferredSCP = StorageCodePointType::eAscii;
         }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, Latin1>) {
+        else if constexpr (same_as<remove_cv_t<CHAR_TYPE>, Latin1>) {
             preferredSCP = StorageCodePointType::eSingleByteLatin1;
         }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char8_t>) {
+        else if constexpr (same_as<remove_cv_t<CHAR_TYPE>, char8_t>) {
             preferredSCP = StorageCodePointType::eAscii; // not clear what's best in this case but probably doesn't matter
         }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char16_t>) {
+        else if constexpr (same_as<remove_cv_t<CHAR_TYPE>, char16_t>) {
             preferredSCP = StorageCodePointType::eChar16;
         }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char32_t> or is_same_v<remove_cv_t<CHAR_TYPE>, Character>) {
+        else if constexpr (same_as<remove_cv_t<CHAR_TYPE>, char32_t> or same_as<remove_cv_t<CHAR_TYPE>, Character>) {
             preferredSCP = StorageCodePointType::eChar32;
         }
-        if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, wchar_t>) {
+        if constexpr (same_as<remove_cv_t<CHAR_TYPE>, wchar_t>) {
             if constexpr (sizeof (wchar_t) == 2) {
                 preferredSCP = StorageCodePointType::eChar16;
             }
@@ -884,7 +884,7 @@ namespace Stroika::Foundation::Characters {
                 preferredSCP = StorageCodePointType::eChar32;
             }
         }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, Character>) {
+        else if constexpr (same_as<remove_cv_t<CHAR_TYPE>, Character>) {
             // later will map to char32_t, but for now same as wchar_t
             if constexpr (sizeof (wchar_t) == 2) {
                 preferredSCP = StorageCodePointType::eChar16;
@@ -899,32 +899,32 @@ namespace Stroika::Foundation::Characters {
     inline optional<span<const CHAR_TYPE>> String::PeekData (const PeekSpanData& pds)
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
-        if constexpr (is_same_v<CHAR_TYPE, ASCII>) {
+        if constexpr (same_as<CHAR_TYPE, ASCII>) {
             if (pds.fInCP == StorageCodePointType::eAscii) {
                 return pds.fAscii;
             }
         }
-        else if constexpr (is_same_v<CHAR_TYPE, Latin1>) {
+        else if constexpr (same_as<CHAR_TYPE, Latin1>) {
             if (pds.fInCP == StorageCodePointType::eSingleByteLatin1) {
                 return pds.fSingleByteLatin1;
             }
         }
-        else if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
+        else if constexpr (same_as<CHAR_TYPE, char8_t>) {
             if (pds.fInCP == StorageCodePointType::eAscii) { // single-byte-latin1 not legal char8_t format
                 return pds.fAscii;
             }
         }
-        else if constexpr (is_same_v<CHAR_TYPE, char16_t>) {
+        else if constexpr (same_as<CHAR_TYPE, char16_t>) {
             if (pds.fInCP == StorageCodePointType::eChar16) {
                 return pds.fChar16;
             }
         }
-        else if constexpr (is_same_v<CHAR_TYPE, char32_t>) {
+        else if constexpr (same_as<CHAR_TYPE, char32_t>) {
             if (pds.fInCP == StorageCodePointType::eChar32) {
                 return pds.fChar32;
             }
         }
-        else if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
+        else if constexpr (same_as<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (wchar_t) == 2) {
                 if (pds.fInCP == StorageCodePointType::eChar16) {
                     return span<const wchar_t>{reinterpret_cast<const wchar_t*> (pds.fChar16.data ()), pds.fChar16.size ()};
@@ -937,7 +937,7 @@ namespace Stroika::Foundation::Characters {
             }
             return span<const wchar_t>{};
         }
-        else if constexpr (is_same_v<CHAR_TYPE, Character>) {
+        else if constexpr (same_as<CHAR_TYPE, Character>) {
             if (pds.fInCP == StorageCodePointType::eChar32) {
                 return span<const Character>{reinterpret_cast<const Character*> (pds.fChar32.data ()), pds.fChar32.size ()};
             }
@@ -955,7 +955,7 @@ namespace Stroika::Foundation::Characters {
     {
         RequireNotNull (possiblyUsedBuffer);
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
-        if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
+        if constexpr (same_as<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (CHAR_TYPE) == 2) {
                 auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char16_t, STACK_BUFFER_SZ>*> (possiblyUsedBuffer));
                 return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (p.data ()), p.size ()};
@@ -965,11 +965,11 @@ namespace Stroika::Foundation::Characters {
                 return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (p.data ()), p.size ()};
             }
         }
-        else if constexpr (is_same_v<CHAR_TYPE, Character>) {
+        else if constexpr (same_as<CHAR_TYPE, Character>) {
             auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char32_t, STACK_BUFFER_SZ>*> (possiblyUsedBuffer));
             return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (p.data ()), p.size ()};
         }
-        if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
+        if constexpr (same_as<CHAR_TYPE, char8_t>) {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
                     // ASCII chars are subset of char8_t so any span of ascii is legit span of char8_t
@@ -992,7 +992,7 @@ namespace Stroika::Foundation::Characters {
                     return span<const CHAR_TYPE>{};
             }
         }
-        else if constexpr (is_same_v<CHAR_TYPE, char16_t>) {
+        else if constexpr (same_as<CHAR_TYPE, char16_t>) {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
                 case StorageCodePointType::eSingleByteLatin1: {
@@ -1010,7 +1010,7 @@ namespace Stroika::Foundation::Characters {
                     return span<const CHAR_TYPE>{};
             }
         }
-        else if constexpr (is_same_v<CHAR_TYPE, char32_t>) {
+        else if constexpr (same_as<CHAR_TYPE, char32_t>) {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
                 case StorageCodePointType::eSingleByteLatin1: {
@@ -1161,7 +1161,7 @@ namespace Stroika::Foundation::Characters {
     inline bool String::EqualsComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
         // optimize very common case of ASCII String vs ASCII String
-        if constexpr (is_same_v<remove_cvref_t<LT>, String> and is_same_v<remove_cvref_t<RT>, String>) {
+        if constexpr (same_as<remove_cvref_t<LT>, String> and same_as<remove_cvref_t<RT>, String>) {
             if (auto lhsAsciiSpan = lhs.template PeekData<ASCII> ()) {
                 if (auto rhsAsciiSpan = rhs.template PeekData<ASCII> ()) {
                     if (fCompareOptions == CompareOptions::eWithCase) {
@@ -1171,25 +1171,24 @@ namespace Stroika::Foundation::Characters {
                         return Memory::MemCmp (lhsAsciiSpan->data (), rhsAsciiSpan->data (), lhsAsciiSpan->size ()) == 0;
                     }
                     else {
-                        return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, CompareOptions::eCaseInsensitive) == 0;
+                        return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, eCaseInsensitive) == 0;
                     }
                 }
             }
         }
         // And optimize case of String vs string_view (basic_string_view<ASCII>
-        else if constexpr (is_same_v<remove_cvref_t<LT>, String> and is_same_v<remove_cvref_t<RT>, basic_string_view<ASCII>>) {
+        else if constexpr (same_as<remove_cvref_t<LT>, String> and same_as<remove_cvref_t<RT>, basic_string_view<ASCII>>) {
             if (auto lhsAsciiSpan = lhs.template PeekData<ASCII> ()) {
-                if (auto rhsAsciiSpan = span<const ASCII>{rhs}) {
-                    Require (Character::IsASCII (rhsAsciiSpan)); // in debug builds double check sv only used on ASCII strings with Stroika string library
-                    if (fCompareOptions == CompareOptions::eWithCase) {
-                        if (lhsAsciiSpan->size () != rhsAsciiSpan->size ()) {
-                            return false;
-                        }
-                        return Memory::MemCmp (lhsAsciiSpan->data (), rhsAsciiSpan->data (), lhsAsciiSpan->size ()) == 0;
+                auto rhsAsciiSpan = span<const ASCII>{rhs};
+                Require (Character::IsASCII (rhsAsciiSpan)); // in debug builds double check sv only used on ASCII strings with Stroika string library
+                if (fCompareOptions == CompareOptions::eWithCase) {
+                    if (lhsAsciiSpan->size () != rhsAsciiSpan.size ()) {
+                        return false;
                     }
-                    else {
-                        return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, CompareOptions::eCaseInsensitive) == 0;
-                    }
+                    return Memory::MemCmp (lhsAsciiSpan->data (), rhsAsciiSpan.data (), lhsAsciiSpan->size ()) == 0;
+                }
+                else {
+                    return Character::Compare (*lhsAsciiSpan, rhsAsciiSpan, eCaseInsensitive) == 0;
                 }
             }
         }
@@ -1237,7 +1236,7 @@ namespace Stroika::Foundation::Characters {
     inline strong_ordering String::ThreeWayComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
         // optimize very common case of ASCII String vs ASCII String
-        if constexpr (is_same_v<remove_cvref_t<LT>, String> and is_same_v<remove_cvref_t<RT>, String>) {
+        if constexpr (same_as<remove_cvref_t<LT>, String> and same_as<remove_cvref_t<RT>, String>) {
             if (auto lhsAsciiSpan = lhs.template PeekData<ASCII> ()) {
                 if (auto rhsAsciiSpan = rhs.template PeekData<ASCII> ()) {
                     return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, fCompareOptions);
