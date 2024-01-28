@@ -585,8 +585,8 @@ I don't understand why we need the explicit String version and requires not same
 // replicated in xcode 15
 #define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(__clang__)
-// reproduced in clang 15
-#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+// reproduced in clang 16
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
 #elif defined(_MSC_VER)
 #define qCompilerAndStdLib_CompareOpReverse_Buggy                                                                                          \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt8_)
