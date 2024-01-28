@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Characters {
         RegularExpressionMatch (const String& fullMatch, const Containers::Sequence<String>& subMatches);
 
     public:
-        String                       GetFullMatch () const;
+        String GetFullMatch () const;
 
     public:
         Containers::Sequence<String> GetSubMatches () const;
