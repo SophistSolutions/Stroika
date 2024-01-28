@@ -1298,14 +1298,18 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        template <IConvertibleToString T>
-        nonvirtual strong_ordering operator<=> (T&& rhs) const;
+        nonvirtual strong_ordering operator<=> (const String& rhs) const;
+        nonvirtual strong_ordering operator<=> (const wchar_t* rhs) const;
+        nonvirtual strong_ordering operator<=> (const wstring& rhs) const;
+        nonvirtual strong_ordering operator<=> (const wstring_view& rhs) const;
 
     public:
         /**
          */
-        template <IConvertibleToString T>
-        nonvirtual bool operator== (T&& rhs) const;
+        nonvirtual bool operator== (const String& rhs) const;
+        nonvirtual bool operator== (const wchar_t* rhs) const;
+        nonvirtual bool operator== (const wstring& rhs) const;
+        nonvirtual bool operator== (const wstring_view& rhs) const;
 
     public:
         /**

@@ -1096,15 +1096,37 @@ namespace Stroika::Foundation::Characters {
         size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));
         return SubString_ (accessor, from, to);
     }
-    template <IConvertibleToString T>
-    inline strong_ordering String::operator<=> (T&& rhs) const
+    inline strong_ordering String::operator<=> (const String& rhs) const
     {
-        return ThreeWayComparer{}(*this, forward<T> (rhs));
+        return ThreeWayComparer{}(*this, rhs);
     }
-    template <IConvertibleToString T>
-    inline bool String::operator== (T&& rhs) const
+    inline strong_ordering String::operator<=> (const wchar_t* rhs) const
     {
-        return EqualsComparer{}(*this, forward<T> (rhs));
+        return ThreeWayComparer{}(*this, rhs);
+    }
+    inline strong_ordering String::operator<=> (const wstring& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs);
+    }
+    inline strong_ordering String::operator<=> (const wstring_view& rhs) const
+    {
+        return ThreeWayComparer{}(*this, rhs);
+    }
+    inline bool String::operator== (const String& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+    inline bool String::operator== (const wchar_t* rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+    inline bool String::operator== (const wstring& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
+    }
+    inline bool String::operator== (const wstring_view& rhs) const
+    {
+        return EqualsComparer{}(*this, rhs);
     }
 
     /*
