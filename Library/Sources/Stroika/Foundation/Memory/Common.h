@@ -128,13 +128,11 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
-     *  \brief UninitializedConstructorFlag::eUninitialized is a flag to some memory routines to allocate without initializing
+     *  \brief eUninitialized is a flag to some memory routines to allocate without initializing
      * 
-     *  This is mainly used as a performance tweek, for objects that don't need to be initialized, and can just be copied into.
-     * 
-     *  \note the APIS that use this typically require  static_assert (is_trivially_copyable_v<T>);
+     *  \see UninitializedConstructorFlag
      */
-    constexpr UninitializedConstructorFlag eUninitialized = UninitializedConstructorFlag::eUninitialized;
+    using UninitializedConstructorFlag::eUninitialized;
 
     /**
      *  \brief A utility for declaring constant bytes (byte literals).
