@@ -2375,6 +2375,12 @@ sub PostProcessOptions_ ()
 				$FEATUREFLAG_boost = $LIBFEATUREFLAG_No;
 			}
 		}
+		# gcc 10 seems to have trouble building boost (1.84 because co coroutine/cobalt issue), so unless explicitly requested, default to boost off with c++2a mode
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 11.0) and $CPPSTD_VERSION_FLAG eq "--std=c++2a") {
+			if ($FEATUREFLAG_boost_userspecified == false) {
+				$FEATUREFLAG_boost = $LIBFEATUREFLAG_No;
+			}
+		}
 
 		# if boost is available, Stroika adds utilities that depend on parts of it
 		if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
