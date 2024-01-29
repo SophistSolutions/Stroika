@@ -34,9 +34,9 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-#VERSION=1_84_0
+VERSION=1_84_0
 #VERSION=1_82_0                # fails on Ubuntu 18.04 g++-8 to build this version of boost
-VERSION=1_81_0
+#VERSION=1_81_0
 #VERSION=1_80_0
 #VERSION=1_79_0
 #VERSION=1_78_0
