@@ -131,7 +131,7 @@ void Document::Ptr::Validate (const Schema::Ptr& schema) const
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName)
 {
     Document::Ptr doc{p.DocumentFactory (nullptr, nullptr)};
-    doc.SetRootElement (documentElementName);
+    doc.ReplaceRootElement (documentElementName);
     return doc;
 }
 

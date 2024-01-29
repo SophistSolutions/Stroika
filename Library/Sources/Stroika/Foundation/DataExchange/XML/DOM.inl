@@ -334,11 +334,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         }
         return Element::Ptr{nullptr};
     }
-    inline void Document::Ptr::SetRootElement (const NameWithNamespace& newEltName) const
+    inline Element::Ptr Document::Ptr::ReplaceRootElement (const NameWithNamespace& newEltName) const
     {
         // Note this cannot be implemented using the existing Replace () mechanism for elements because the document could be created without a root.
         RequireNotNull (fRep_);
-        return fRep_->SetRootElement (newEltName);
+        return fRep_->ReplaceRootElement (newEltName);
     }
 
 }

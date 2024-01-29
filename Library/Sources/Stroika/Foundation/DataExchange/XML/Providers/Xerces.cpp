@@ -1182,54 +1182,12 @@ namespace {
 }
 
 namespace {
+    Element::Ptr WrapXercesNodeInStroikaNode_ (DOMElement* n);
+}
+namespace {
     struct DocRep_ : DataExchange::XML::DOM::Document::IRep {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
-#endif
-#if 0
-        DocRep_ (const NameWithNamespace& documentElementName)
-        {
-            [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
-            START_LIB_EXCEPTION_MAPPER_
-            {
-                MakeXMLDoc_ (fXMLDoc);
-                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
-                DOMElement* n = documentElementName.fNamespace == nullopt
-                                    ? fXMLDoc->createElement (documentElementName.fName.As<u16string> ().c_str ())
-                                    : fXMLDoc->createElementNS (documentElementName.fNamespace->As<String> ().As<u16string> ().c_str (),
-                                                                documentElementName.fName.As<u16string> ().c_str ());
-                AssertNotNull (n);
-                DOMElement* oldRoot = fXMLDoc->getDocumentElement ();
-                if (oldRoot == nullptr) {
-                    (void)fXMLDoc->insertBefore (n, nullptr);
-                }
-                else {
-                    (void)fXMLDoc->replaceChild (n, oldRoot);
-                    /*
-                     * I THOGUHT this was a memory leak, but that appears to have been wrong. First, the
-                     * DOMNode objects get associated with the document, and when the docment is destroyed
-                     * this is cleaned up. Secondly, there are enough other memory leaks - its unclear if this
-                     * actually helped. Plus the memory management pattern used by Xerces - with its own subchunking etc,
-                     * makes it hard to tell.
-                     *
-                     * More importantly - this caused a regression in HelathFrame - which I didn't debug. The OHSD reports
-                     * like AAFP CCR report - will be rejected by our 'valid HTML' tester. Unclear if thats cuz we generate
-                     * different HTML, but more likely a bug with the load/checker code. Still - not worth worrying
-                     * about why at this stage (especially as we are about to upgrade our Xerces version - could get fixed
-                     * by that?).
-                     *
-                     *      -- LGP 2009-05-15
-                     *
-                     *          oldRoot->release ();
-                     */
-                }
-                Assert (fXMLDoc->getDocumentElement () == n);
-            }
-            END_LIB_EXCEPTION_MAPPER_
-#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
-            ++sLiveCnt;
-#endif
-        }
 #endif
         //
         // If this function is passed a nullptr exceptionResult - it will throw on bad validation.
@@ -1299,7 +1257,7 @@ namespace {
                 });
             END_LIB_EXCEPTION_MAPPER_
         }
-        virtual void SetRootElement (const NameWithNamespace& newEltName) override
+        virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName) override
         {
             DOMElement* n = newEltName.fNamespace == nullopt
                                 ? fXMLDoc->createElement (newEltName.fName.As<u16string> ().c_str ())
@@ -1331,6 +1289,7 @@ namespace {
                  */
             }
             Assert (fXMLDoc->getDocumentElement () == n);
+            return WrapXercesNodeInStroikaNode_ (n);
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {

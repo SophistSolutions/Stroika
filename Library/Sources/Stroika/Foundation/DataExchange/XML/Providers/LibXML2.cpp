@@ -523,23 +523,6 @@ namespace {
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
     public:
-#if 0
-        DocRep_ (const NameWithNamespace& documentElementName)
-        {
-            // Roughly based on http://www.xmlsoft.org/examples/io2.c
-            xmlDocPtr doc = xmlNewDoc (BAD_CAST "1.0");
-            xmlNodePtr n = xmlNewNode (NULL, BAD_CAST documentElementName.fName.AsUTF8 ().c_str ()); // @todo NOT clear what characterset/encoding to use here!
-            xmlDocSetRootElement (doc, n);
-            // AND not super clear how to create the namespace if needed?
-            if (documentElementName.fNamespace) {
-                (void)xmlNewNs (n, BAD_CAST documentElementName.fNamespace->As<String> ().AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
-            }
-            fLibRep_ = doc;
-#if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
-            ++sLiveCnt;
-#endif
-        }
-#endif
         DocRep_ (const Streams::InputStream::Ptr<byte>& in)
         {
             if (in == nullptr) {
@@ -549,10 +532,10 @@ namespace {
                 xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (NULL, NULL, nullptr, 0, "in-stream.xml" /*filename*/);
                 Execution::ThrowIfNull (ctxt);
                 [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
-                byte                    buf[1024];
+                byte                    buf[1024]; // intentionally uninitialized
                 while (auto n = in.Read (span{buf}).size ()) {
                     if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-                        xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but trnaslate to throw
+                        xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but translate to throw
                                                                 // return 1;
                     }
                 }
@@ -590,7 +573,7 @@ namespace {
         {
             return fLibRep_;
         }
-        virtual void SetRootElement (const NameWithNamespace& newEltName) override
+        virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName) override
         {
             xmlNodePtr n = xmlNewNode (NULL, BAD_CAST newEltName.fName.AsUTF8 ().c_str ()); // @todo NOT clear what characterset/encoding to use here!
             xmlDocSetRootElement (fLibRep_, n);
@@ -598,6 +581,7 @@ namespace {
             if (newEltName.fNamespace) {
                 (void)xmlNewNs (n, BAD_CAST newEltName.fNamespace->As<String> ().AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
             }
+            return WrapLibXML2NodeInStroikaNode_ (n);
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
