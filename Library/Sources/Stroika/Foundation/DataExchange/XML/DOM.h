@@ -611,6 +611,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * @todo add overload taking String 'in' and parse using Streams::TextToByteReader
          *  @todo consider adding 'Resolver' argument - so missing #includes get loaded.
          */
+        Ptr New (const Providers::IDOMProvider& p);
         Ptr New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName);
         Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in);
         Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
@@ -618,6 +619,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         Ptr New (const Providers::IDOMProvider& p, const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
         Ptr New (const Providers::IDOMProvider& p, const Ptr& clone);
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
+        Ptr New ();
         Ptr New (const NameWithNamespace& documentElementName);
         Ptr New (const Streams::InputStream::Ptr<byte>& in);
         Ptr New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);

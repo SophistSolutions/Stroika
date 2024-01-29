@@ -128,9 +128,14 @@ void Document::Ptr::Validate (const Schema::Ptr& schema) const
  *************************** DOM::Document::New *********************************
  ********************************************************************************
  */
+Document::Ptr Document::New (const Providers::IDOMProvider& p)
+{
+    return Document::Ptr {p.DocumentFactory (nullptr, nullptr)};
+}
+
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName)
 {
-    Document::Ptr doc{p.DocumentFactory (nullptr, nullptr)};
+    Document::Ptr doc{New (p)};
     doc.ReplaceRootElement (documentElementName);
     return doc;
 }
@@ -164,6 +169,12 @@ Document::Ptr Document::New (const Providers::IDOMProvider& p, const Ptr& clone)
 }
 
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
+Document::Ptr Document::New ()
+{
+    static const XML::Providers::IDOMProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
+    return New (*kDefaultProvider_);
+}
+
 Document::Ptr Document::New (const NameWithNamespace& documentElementName)
 {
     static const XML::Providers::IDOMProvider* kDefaultProvider_ = XML::Providers::kDefaultProvider ();
