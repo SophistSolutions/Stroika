@@ -431,14 +431,6 @@ sub     FillDefaultIncludesPathIfNeeded_
 	#IF we set include path  explicitly, then suppress adding include path automatically (based on features etc) - just explicitly added ones from the commandline
 	my $includeAutomaticDependencies = not $INCLUDES_PATH_SET;
 	if ($includeAutomaticDependencies) {
-
-		# gcc 8 seems to have trouble building boost, so unless explicitly requested, default to boost off for gcc8
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 10.0)) {
-			if ($FEATUREFLAG_boost_userspecified == false) {
-				$FEATUREFLAG_boost = $LIBFEATUREFLAG_No;
-			}
-		}
-
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -2374,6 +2366,13 @@ sub PostProcessOptions_ ()
 						push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
 					}
 				}
+			}
+		}
+
+		# gcc 8 seems to have trouble building boost, so unless explicitly requested, default to boost off for gcc8
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 10.0)) {
+			if ($FEATUREFLAG_boost_userspecified == false) {
+				$FEATUREFLAG_boost = $LIBFEATUREFLAG_No;
 			}
 		}
 
