@@ -587,6 +587,9 @@ I don't understand why we need the explicit String version and requires not same
 #elif defined(__clang__)
 // reproduced in clang 16
 #define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 16))
+#elif defined(__GNUC__) && !defined(__clang__)
+// FIRST SEEN BROKEN IN GCC 13 (so manybe really MY BUG and not compiler bug, but I still don't get it...)
+#define qCompilerAndStdLib_CompareOpReverse_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 13)
 #elif defined(_MSC_VER)
 #define qCompilerAndStdLib_CompareOpReverse_Buggy                                                                                          \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt8_)
