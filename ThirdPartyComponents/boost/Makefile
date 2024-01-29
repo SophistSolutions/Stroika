@@ -35,7 +35,8 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 
 
 #VERSION=1_84_0
-VERSION=1_82_0
+#VERSION=1_82_0                # fails on Ubuntu 18.04 g++-8 to build this version of boost
+VERSION=1_81_0
 #VERSION=1_80_0
 #VERSION=1_79_0
 #VERSION=1_78_0
