@@ -523,6 +523,7 @@ namespace {
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
     public:
+#if 0
         DocRep_ (const NameWithNamespace& documentElementName)
         {
             // Roughly based on http://www.xmlsoft.org/examples/io2.c
@@ -538,23 +539,29 @@ namespace {
             ++sLiveCnt;
 #endif
         }
+#endif
         DocRep_ (const Streams::InputStream::Ptr<byte>& in)
         {
-            xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (NULL, NULL, nullptr, 0, "in-stream.xml" /*filename*/);
-            Execution::ThrowIfNull (ctxt);
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
-            byte                    buf[1024];
-            while (auto n = in.Read (span{buf}).size ()) {
-                if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
-                    xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but trnaslate to throw
-                                                            // return 1;
+            if (in == nullptr) {
+                fLibRep_ = xmlNewDoc (BAD_CAST "1.0");
+            }
+            else {
+                xmlParserCtxtPtr ctxt = xmlCreatePushParserCtxt (NULL, NULL, nullptr, 0, "in-stream.xml" /*filename*/);
+                Execution::ThrowIfNull (ctxt);
+                [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { xmlFreeParserCtxt (ctxt); });
+                byte                    buf[1024];
+                while (auto n = in.Read (span{buf}).size ()) {
+                    if (xmlParseChunk (ctxt, reinterpret_cast<char*> (buf), static_cast<int> (n), 0)) {
+                        xmlParserError (ctxt, "xmlParseChunk"); // @todo read up on what this does but trnaslate to throw
+                                                                // return 1;
+                    }
                 }
+                xmlParseChunk (ctxt, nullptr, 0, 1); // indicate the parsing is finished
+                if (not ctxt->wellFormed) {
+                    Execution::Throw (BadFormatException{"not well formed"sv}); // get good error message and throw that BadFormatException
+                }
+                fLibRep_ = ctxt->myDoc;
             }
-            xmlParseChunk (ctxt, nullptr, 0, 1); // indicate the parsing is finished
-            if (not ctxt->wellFormed) {
-                Execution::Throw (BadFormatException{"not well formed"sv}); // get good error message and throw that BadFormatException
-            }
-            fLibRep_ = ctxt->myDoc;
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
 #endif
@@ -582,6 +589,15 @@ namespace {
         virtual xmlDoc* GetLibXMLDocRep () override
         {
             return fLibRep_;
+        }
+        virtual void SetRootElement (const NameWithNamespace& newEltName) override
+        {
+            xmlNodePtr n = xmlNewNode (NULL, BAD_CAST newEltName.fName.AsUTF8 ().c_str ()); // @todo NOT clear what characterset/encoding to use here!
+            xmlDocSetRootElement (fLibRep_, n);
+            // AND not super clear how to create the namespace if needed?
+            if (newEltName.fNamespace) {
+                (void)xmlNewNs (n, BAD_CAST newEltName.fNamespace->As<String> ().AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
+            }
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
@@ -700,11 +716,6 @@ Providers::LibXML2::Provider::~Provider ()
 shared_ptr<Schema::IRep> Providers::LibXML2::Provider::SchemaFactory (const InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver) const
 {
     return Memory::MakeSharedPtr<SchemaRep_> (schemaData, resolver);
-}
-
-shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const
-{
-    return Memory::MakeSharedPtr<DocRep_> (documentElementName);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::LibXML2::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,

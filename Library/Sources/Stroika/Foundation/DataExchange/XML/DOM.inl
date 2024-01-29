@@ -213,7 +213,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         }
         return Element::Ptr{nullptr};
     }
-    inline Element::Ptr Element::Ptr::Replace ()
+    inline Element::Ptr Element::Ptr::Replace (const NameWithNamespace& newEltName)
     {
         /**
          *  Basic algorithm:
@@ -229,13 +229,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         Element::Ptr parent = this->GetParent ();
         Element::Ptr newNode{nullptr};
         if (parent == nullptr) {
-            auto n = this->GetName ();
             this->Delete ();
             // technically 'Append' is not right and we really should grab the 'next sibling' and insert before it...but that seems unlikely to matter --LGP 2024-01-06
-            newNode = parent.Append (n);
+            newNode = parent.Append (newEltName);
         }
         else {
-            newNode = parent.Insert (this->GetName (), *this);
+            newNode = parent.Insert (newEltName, *this);
             this->Delete ();
         }
         Ensure (newNode.GetParent () == parent);
@@ -334,6 +333,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             }
         }
         return Element::Ptr{nullptr};
+    }
+    inline void Document::Ptr::SetRootElement (const NameWithNamespace& newEltName) const
+    {
+        // Note this cannot be implemented using the existing Replace () mechanism for elements because the document could be created without a root.
+        RequireNotNull (fRep_);
+        return fRep_->SetRootElement (newEltName);
     }
 
 }

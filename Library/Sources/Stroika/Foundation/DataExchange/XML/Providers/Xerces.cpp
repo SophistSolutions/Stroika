@@ -1186,6 +1186,7 @@ namespace {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
 #endif
+#if 0
         DocRep_ (const NameWithNamespace& documentElementName)
         {
             [[maybe_unused]] int ignoreMe = 0; // workaround quirk in clang-format
@@ -1229,6 +1230,7 @@ namespace {
             ++sLiveCnt;
 #endif
         }
+#endif
         //
         // If this function is passed a nullptr exceptionResult - it will throw on bad validation.
         // If it is passed a non-nullptr exceptionResult - then it will map BadFormatException to being ignored, but filling in this
@@ -1242,12 +1244,14 @@ namespace {
             {
                 MakeXMLDoc_ (fXMLDoc);
                 fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
-                MyMaybeSchemaDOMParser_ myDOMParser{schema};
-                myDOMParser.fParser->parse (StdIStream_InputSource_{in, u"XMLDB"});
-                fXMLDoc.reset ();
-                fXMLDoc = shared_ptr<xercesc::DOMDocument>{myDOMParser.fParser->adoptDocument ()};
-                fXMLDoc->setXmlStandalone (true);
-                fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
+                if (in != nullptr) {
+                    MyMaybeSchemaDOMParser_ myDOMParser{schema};
+                    myDOMParser.fParser->parse (StdIStream_InputSource_{in, u"XMLDB"});
+                    fXMLDoc.reset ();
+                    fXMLDoc = shared_ptr<xercesc::DOMDocument>{myDOMParser.fParser->adoptDocument ()};
+                    fXMLDoc->setXmlStandalone (true);
+                    fXMLDoc->setUserData (kXerces2XMLDBDocumentKey_, this, nullptr);
+                }
             }
             END_LIB_EXCEPTION_MAPPER_
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
@@ -1294,6 +1298,39 @@ namespace {
                     return r;
                 });
             END_LIB_EXCEPTION_MAPPER_
+        }
+        virtual void SetRootElement (const NameWithNamespace& newEltName) override
+        {
+            DOMElement* n = newEltName.fNamespace == nullopt
+                                ? fXMLDoc->createElement (newEltName.fName.As<u16string> ().c_str ())
+                                : fXMLDoc->createElementNS (newEltName.fNamespace->As<String> ().As<u16string> ().c_str (),
+                                                            newEltName.fName.As<u16string> ().c_str ());
+            AssertNotNull (n);
+            DOMElement* oldRoot = fXMLDoc->getDocumentElement ();
+            if (oldRoot == nullptr) {
+                (void)fXMLDoc->insertBefore (n, nullptr);
+            }
+            else {
+                (void)fXMLDoc->replaceChild (n, oldRoot);
+                /*
+                 * I THOGUHT this was a memory leak, but that appears to have been wrong. First, the
+                 * DOMNode objects get associated with the document, and when the document is destroyed
+                 * this is cleaned up. Secondly, there are enough other memory leaks - its unclear if this
+                 * actually helped. Plus the memory management pattern used by Xerces - with its own sub-chunking etc,
+                 * makes it hard to tell.
+                 *
+                 * More importantly - this caused a regression in HealthFrame - which I didn't debug. The OHSD reports
+                 * like AAFP CCR report - will be rejected by our 'valid HTML' tester. Unclear if that's cuz we generate
+                 * different HTML, but more likely a bug with the load/checker code. Still - not worth worrying
+                 * about why at this stage (especially as we are about to upgrade our Xerces version - could get fixed
+                 * by that?).
+                 *
+                 *      -- LGP 2009-05-15
+                 *
+                 *          oldRoot->release ();
+                 */
+            }
+            Assert (fXMLDoc->getDocumentElement () == n);
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
         {
@@ -1502,11 +1539,6 @@ Providers::Xerces::Provider::~Provider ()
 shared_ptr<Schema::IRep> Providers::Xerces::Provider::SchemaFactory (const InputStream::Ptr<byte>& schemaData, const Resource::ResolverPtr& resolver) const
 {
     return Memory::MakeSharedPtr<SchemaRep_> (schemaData, resolver);
-}
-
-shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const NameWithNamespace& documentElementName) const
-{
-    return Memory::MakeSharedPtr<DocRep_> (documentElementName);
 }
 
 shared_ptr<DOM::Document::IRep> Providers::Xerces::Provider::DocumentFactory (const Streams::InputStream::Ptr<byte>& in,

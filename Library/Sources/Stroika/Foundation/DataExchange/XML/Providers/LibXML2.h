@@ -65,7 +65,6 @@ namespace Stroika::Foundation::DataExchange::XML::Providers::LibXML2 {
 
         virtual shared_ptr<Schema::IRep>        SchemaFactory (const Streams::InputStream::Ptr<byte>& schemaData,
                                                                const Resource::ResolverPtr&           resolver) const override;
-        virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const NameWithNamespace& documentElementName) const override;
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                  const Schema::Ptr& schemaToValidateAgainstWhileReading) const override;
         virtual void SAXParse (const Streams::InputStream::Ptr<byte>& in, StructuredStreamEvents::IConsumer* callback,

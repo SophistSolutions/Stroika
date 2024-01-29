@@ -200,7 +200,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          *        I couldn't think of any cases where I needed that, and it made it harder to port to other libraries, so I removed those APIs (til I see there utility again).
          *        And then - need to better document just what they do/are for (so can do portable).
          * 
-         *          Similarly for Document::SetRootElement. (thats the only place this AppendNode code used). If we need SetRootElement, we need AppendNode.
+         *          Similarly for Document::SetRootElement. (that's the only place this AppendNode code used). If we need SetRootElement, we need AppendNode.
          *          But that seems to create lots of magic about being careful about tranplating nodes from one document to another. Not sure that was ever done properly and want to avoid
          *          learning how todo with each backend provider/library. For now hope note needed.--LGP 2023-12-16
          */
@@ -375,7 +375,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *      \note the 'String' value maybe implemented in XML in a variety of ways (entities, CDATA, etc).
              * 
              *  The /0 overload looks at 'this node'. The overload taking an XPath::Expression looks at the first selected node (using this node as context)
-             *  Either way, the resueAttributeNT or eElementNT
+             *  Either way, the resulting eAttributeNT or eElementNT nodes value.
              */
             using Node::Ptr::GetValue;
             nonvirtual optional<String> GetValue (const XPath::Expression& e) const;
@@ -422,16 +422,14 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             * creates a new (empty) node with same name (and namespace) as orig, and in the same position
+             * creates a new (empty) node with same argument name (and namespace, and in the same position
              * 
-             *  \req GetParent () != nullptr
-             * 
-             *  This can be used to delete all the children/content under a given node and is equivilent, except that it returns
+             *  This can be used to delete all the children/content under a given node and is equivalent, except that it returns
              *  a new NodePtr, and invalidates this.
              * 
-             *  Note - this CAN be used to replace the document root.
+             *  Note - this CAN be used to replace the document root (same as Document::Ptr{}.SetRootElement()).
              */
-            nonvirtual Ptr Replace ();
+            nonvirtual Ptr Replace (const NameWithNamespace& newEltName);
 
         public:
             /**
@@ -591,6 +589,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  if there exists a root element, this is the same as GetRootElement ().Replace (arg);
+             */
+            nonvirtual void SetRootElement (const NameWithNamespace& newEltName) const;
+
+        public:
+            /**
             * @@todo  - what happens if we rename this operator-> - IO think chaining works nicely then. maybe use that trick throughout Stroika if it works here.
              */
             nonvirtual shared_ptr<IRep> GetRep () const;
@@ -606,20 +610,21 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          *  \note String in overload is trivial wrapper on Streams::TextToByteReader{}, in case you want adjust parameters.
          *  \note Document::Ptr overload is a way to 'clone' a Document (but even possibly across provider implementations)
+         *  \note 'in' stream may be null to create a document with no root element (why is this useful?).
          * 
          * @todo add overload taking String 'in' and parse using Streams::TextToByteReader
          *  @todo consider adding 'Resolver' argument - so missing #includes get loaded.
          */
         Ptr New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName);
         Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in);
-        Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReadingr);
+        Ptr New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
         Ptr New (const Providers::IDOMProvider& p, const String& in);
         Ptr New (const Providers::IDOMProvider& p, const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
         Ptr New (const Providers::IDOMProvider& p, const Ptr& clone);
 #if qStroika_Foundation_DataExchange_XML_SupportDOM
         Ptr New (const NameWithNamespace& documentElementName);
         Ptr New (const Streams::InputStream::Ptr<byte>& in);
-        Ptr New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReadingr);
+        Ptr New (const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
         Ptr New (const String& in);
         Ptr New (const String& in, const Schema::Ptr& schemaToValidateAgainstWhileReading);
         Ptr New (const Ptr& clone);
@@ -628,8 +633,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         /**
          */
         struct IRep {
-            virtual ~IRep ()                                            = default;
-            virtual const Providers::IDOMProvider* GetProvider () const = 0;
+            virtual ~IRep ()                                                                            = default;
+            virtual const Providers::IDOMProvider* GetProvider () const                                 = 0;
+            virtual void                           SetRootElement (const NameWithNamespace& newEltName) = 0;
             virtual void                Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const = 0;
             virtual Iterable<Node::Ptr> GetChildren () const                                                                          = 0;
             virtual void                Validate (const Schema::Ptr& schema) const                                                    = 0;

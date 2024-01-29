@@ -130,7 +130,9 @@ void Document::Ptr::Validate (const Schema::Ptr& schema) const
  */
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName)
 {
-    return Document::Ptr{p.DocumentFactory (documentElementName)};
+    Document::Ptr doc{p.DocumentFactory (nullptr, nullptr)};
+    doc.SetRootElement (documentElementName);
+    return doc;
 }
 
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in)
@@ -138,9 +140,9 @@ Document::Ptr Document::New (const Providers::IDOMProvider& p, const Streams::In
     return Document::Ptr{p.DocumentFactory (in, nullptr)};
 }
 
-Document::Ptr Document::New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReadingr)
+Document::Ptr Document::New (const Providers::IDOMProvider& p, const Streams::InputStream::Ptr<byte>& in, const Schema::Ptr& schemaToValidateAgainstWhileReading)
 {
-    return Document::Ptr{p.DocumentFactory (in, schemaToValidateAgainstWhileReadingr)};
+    return Document::Ptr{p.DocumentFactory (in, schemaToValidateAgainstWhileReading)};
 }
 
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const String& in)

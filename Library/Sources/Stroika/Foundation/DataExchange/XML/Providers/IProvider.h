@@ -38,8 +38,8 @@ namespace Stroika::Foundation::DataExchange::XML::Providers {
                                                         const Resource::ResolverPtr&           resolver) const = 0;
     };
     struct IDOMProvider : public virtual IProvider {
-        virtual ~IDOMProvider ()                                                                                               = default;
-        virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const NameWithNamespace& documentElementName) const           = 0;
+        virtual ~IDOMProvider () = default;
+        // Note input stream 'in' maybe nullptr to avoid reading and create new blank with no root
         virtual shared_ptr<DOM::Document::IRep> DocumentFactory (const Streams::InputStream::Ptr<byte>& in,
                                                                  const Schema::Ptr& schemaToValidateAgainstWhileReading) const = 0;
     };
