@@ -91,9 +91,9 @@ Sequence<String> Execution::ParseCommandLine (int argc, const char* argv[])
     return results;
 }
 
-Sequence<String> Execution::ParseCommandLine (int argc,  char* argv[])
+Sequence<String> Execution::ParseCommandLine (int argc, char* argv[])
 {
-    return ParseCommandLine(argc, const_cast<const char**> (argv));
+    return ParseCommandLine (argc, const_cast<const char**> (argv));
 }
 
 Sequence<String> Execution::ParseCommandLine (int argc, const wchar_t* argv[])
@@ -106,9 +106,9 @@ Sequence<String> Execution::ParseCommandLine (int argc, const wchar_t* argv[])
     return results;
 }
 
-Sequence<String> Execution::ParseCommandLine (int argc,  wchar_t* argv[])
+Sequence<String> Execution::ParseCommandLine (int argc, wchar_t* argv[])
 {
-    return ParseCommandLine(argc, const_cast<const wchar_t**> (argv));
+    return ParseCommandLine (argc, const_cast<const wchar_t**> (argv));
 }
 
 /*
