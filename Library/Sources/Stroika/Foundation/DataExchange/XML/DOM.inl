@@ -269,7 +269,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline auto Element::Ptr::LookupOneNode (const XPath::Expression& e) const -> Node::Ptr
     {
         Require (e.GetOptions ().fResultTypeIndex == XPath::ResultTypeIndex_v<Node::Ptr>);
-        if (auto o = GetRep ()->LookupOne (e)) {
+        if (optional<XPath::Result> o = GetRep ()->LookupOne (e)) {
             return get<Node::Ptr> (*o);
         }
         return Node::Ptr{};

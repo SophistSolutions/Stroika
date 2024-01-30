@@ -543,6 +543,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              */
+            Ptr () = default;
             Ptr (nullptr_t);
             Ptr (const shared_ptr<IRep>& rep);
             Ptr (const Ptr& from) = default;
