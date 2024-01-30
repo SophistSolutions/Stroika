@@ -130,7 +130,7 @@ void Document::Ptr::Validate (const Schema::Ptr& schema) const
  */
 Document::Ptr Document::New (const Providers::IDOMProvider& p)
 {
-    return Document::Ptr {p.DocumentFactory (nullptr, nullptr)};
+    return Document::Ptr{p.DocumentFactory (nullptr, nullptr)};
 }
 
 Document::Ptr Document::New (const Providers::IDOMProvider& p, const NameWithNamespace& documentElementName)
