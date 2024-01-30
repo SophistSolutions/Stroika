@@ -217,6 +217,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  \req the two Ptrs are either nullptr or come from the same XML Provider object.
              */
             nonvirtual bool operator== (const Ptr& rhs) const;
+            nonvirtual bool operator== (nullptr_t) const;
 
         public:
             /*
@@ -277,8 +278,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             *  \brief return the associated shared_ptr (cannot be nullptr)
+             * 
+             *  \ens result != nullptr
              */
             nonvirtual shared_ptr<IRep> GetRep () const;
+
+        public:
+            /**
+             *  \brief return the associated shared_ptr (can be nullptr)
+             */
+            nonvirtual shared_ptr<IRep> PeekRep () const;
 
         public:
             /**
@@ -342,13 +352,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              * returns string value of attribute, and nullopt if doesn't exist
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual optional<String> GetAttribute (const NameWithNamespace& attrName) const;
 
         public:
             /**
              * return true iff attribute exists on this node
-             * return true iff attribute exists on this node and equals (case sensative) value
+             * return true iff attribute exists on this node and equals (case sensitive) value
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual bool HasAttribute (const NameWithNamespace& attrName) const;
             nonvirtual bool HasAttribute (const NameWithNamespace& attrName, const String& value) const;
@@ -356,10 +370,15 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         public:
             /**
              *  Note - setting the attribute to nullopt is equivalent to deleting the attribute
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual void SetAttribute (const NameWithNamespace& attrName, const optional<String>& v);
 
         public:
+            /**
+             *  \req *this != nullptr
+             */
             nonvirtual optional<String> GetID () const;
 
         public:
@@ -372,6 +391,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  The /0 overload looks at 'this node'. The overload taking an XPath::Expression looks at the first selected node (using this node as context)
              *  Either way, the resulting eAttributeNT or eElementNT nodes value.
+             * 
+             *  \req *this != nullptr
              */
             using Node::Ptr::GetValue;
             nonvirtual optional<String> GetValue (const XPath::Expression& e) const;
@@ -382,6 +403,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              * 
              *  \note COULD have usefully made this return a Set<> since that's the most common case, but iterable is about as good, and you might
              *        plausibly want to track dup results, or other???
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Traversal::Iterable<String> GetValues (const XPath::Expression& e) const;
 
@@ -389,6 +412,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  For now, SetValue(e,v) - must  finds an Element (or Attribute) node at 'e' - otherwise throws runtime exception,
              *  cuz no way to know in general where to add what element (could do in some specific cases maybe - like simple QName or @QName expression).
+             * 
+             *  \req *this != nullptr
              */
             using Node::Ptr::SetValue;
             nonvirtual void SetValue (const XPath::Expression& e, const String& v);
@@ -398,12 +423,16 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  \brief Insert Element (after argument node) inside of this 'Element'
              * 
              *  if afterNode is nullptr - then this is PREPEND, else require afterNode is a member of 'Node::Ptr::GetChildren()' - need not be an element
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Ptr Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode);
 
         public:
             /**
              *  value overload just creates the node and calls SetValue() before returning it (so simple shorthand).
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Ptr Append (const NameWithNamespace& eltName);
             nonvirtual Ptr Append (const NameWithNamespace& eltName, const String& value);
@@ -413,6 +442,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  \brief Trivial wrapper on AppendElement, but if v is missing or "", then this is a no-op.
              * 
              *  Trivial, but I've found helpful in making certain uses more terse.
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Ptr AppendIfNotEmpty (const NameWithNamespace& eltName, const optional<String>& v);
 
@@ -424,12 +455,16 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  a new NodePtr, and invalidates this.
              * 
              *  Note - this CAN be used to replace the document root (same as Document::Ptr{}.ReplaceRootElement()).
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Ptr Replace (const NameWithNamespace& newEltName);
 
         public:
             /**
              *  Can return nullptr
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Ptr GetParent () const;
 
@@ -437,7 +472,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  note only returns sub-elements, so use Node::Ptr (inherited) GetChildren to get them all
              *
-             *  \warning Any modification of the DOM may invalidate live iterators or iterables, so refecth after each change
+             *  \warning Any modification of the DOM may invalidate live iterators or iterables, so re-fetch after each change
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Iterable<Node::Ptr> GetChildNodes () const;
 
@@ -445,19 +482,25 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  note only returns sub-elements, so use Node::Ptr (inherited) GetChildren to get them all
              *
-             *  \warning Any modification of the DOM may invalidate live iterators or iterables, so refecth after each change
+             *  \warning Any modification of the DOM may invalidate live iterators or iterables, so re-fetch after each change
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Iterable<Ptr> GetChildElements () const;
 
         public:
             /**
              * can return a NULL Node Ptr if not found. Only examines this node's (direct) children elements (not attributes)
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Ptr GetChild (const NameWithNamespace& eltName) const;
 
         public:
             /**
              * can return a NULL Node Ptr if not found. Only examines this node's (direct) children
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Ptr GetChildByID (const String& id) const;
 
@@ -465,6 +508,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  \note same as Lookup(), but returns 0 or 1 result, instead of iterable of all of them (so ignores e.GetOptions.fSnapshot).
              *  Often more performant and easier to use (if you know zero or one matching element).
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Element::Ptr LookupOneElement (const XPath::Expression& e) const;
 
@@ -472,6 +517,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  \note same as Lookup(), but returns 0 or 1 result, instead of iterable of all of them (so ignores e.GetOptions.fSnapshot).
              *  Often more performant and easier to use (if you know zero or one matching element).
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Node::Ptr LookupOneNode (const XPath::Expression& e) const;
 
@@ -479,6 +526,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              *  PROBABLY quite unsafe to modify DOM while holding this result etc... Needs work on whehn/what is allowed.
              *  NOTE MORE SAFE IF expression uses 'snapshot'
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Traversal::Iterable<XPath::Result> Lookup (const XPath::Expression& e) const;
 
@@ -488,13 +537,24 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  NOTE MORE SAFE IF expression uses 'snapshot'
              * 
              *  \note Same as Lookup - but filters out all non-element nodes
+             * 
+             *  \req *this != nullptr
              */
             nonvirtual Traversal::Iterable<Element::Ptr> LookupElements (const XPath::Expression& e) const;
 
         public:
             /**
+             *  \brief return the associated shared_ptr (cannot be nullptr)
+             * 
+             *  \ens result != nullptr
              */
             nonvirtual shared_ptr<IRep> GetRep () const;
+
+        public:
+            /**
+             *  \brief return the associated shared_ptr (can be nullptr)
+             */
+            nonvirtual shared_ptr<IRep> PeekRep () const;
         };
 
         /**
@@ -558,6 +618,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             /**
              */
             bool operator== (const Ptr&) const = default;
+            bool operator== (nullptr_t) const;
 
         public:
             /**

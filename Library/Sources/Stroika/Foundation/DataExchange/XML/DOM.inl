@@ -61,6 +61,10 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         }
         return fRep_->Equals (rhs.fRep_.get ());
     }
+    inline bool Node::Ptr::operator== (nullptr_t) const
+    {
+        return fRep_ == nullptr;
+    }
     inline Node::Ptr::operator bool () const
     {
         return fRep_.operator bool ();
@@ -103,6 +107,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
     inline shared_ptr<Node::IRep> Node::Ptr::GetRep () const
     {
+        EnsureNotNull (fRep_);
+        return fRep_;
+    }
+    inline shared_ptr<Node::IRep> Node::Ptr::PeekRep () const
+    {
         return fRep_;
     }
 
@@ -118,17 +127,17 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline Element::Ptr::Ptr (const Node::Ptr& p)
         : Node::Ptr{p != nullptr and p.GetNodeType () == Node::eElementNT ? p : nullptr}
     {
-        Require (GetRep () == nullptr or GetNodeType () == eElementNT);
+        Require (PeekRep () == nullptr or GetNodeType () == eElementNT);
     }
     inline Element::Ptr::Ptr (const shared_ptr<IRep>& rep)
         : Node::Ptr{rep}
     {
-        Require (GetRep () == nullptr or GetNodeType () == eElementNT);
+        Require (PeekRep () == nullptr or GetNodeType () == eElementNT);
     }
     inline Element::Ptr::Ptr (const XPath::Result& r)
         : Node::Ptr{get<Node::Ptr> (r)}
     {
-        Require (GetRep () == nullptr or GetNodeType () == eElementNT);
+        Require (PeekRep () == nullptr or GetNodeType () == eElementNT);
     }
     inline optional<String> Element::Ptr::GetAttribute (const NameWithNamespace& attrName) const
     {
@@ -287,7 +296,13 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
     inline auto Element::Ptr::GetRep () const -> shared_ptr<IRep>
     {
-        return dynamic_pointer_cast<IRep> (Node::Ptr::GetRep ());
+        auto r = PeekRep ();
+        EnsureNotNull (r);
+        return r;
+    }
+    inline auto Element::Ptr::PeekRep () const -> shared_ptr<IRep>
+    {
+        return dynamic_pointer_cast<IRep> (Node::Ptr::PeekRep ());
     }
 
     /*
@@ -305,29 +320,32 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
     inline shared_ptr<Document::IRep> Document::Ptr::GetRep () const
     {
+        RequireNotNull (fRep_);
         return fRep_;
+    }
+    inline bool Document::Ptr::operator== (nullptr_t) const
+    {
+        return fRep_ == nullptr;
     }
     inline void Document::Ptr::Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const
     {
-        fRep_->Write (to, options);
+        GetRep ()->Write (to, options);
     }
     inline String Document::Ptr::Write (const SerializationOptions& options) const
     {
         // @todo need a better Streams DESIGN here - were we can write and produce the string directly...
         Streams::MemoryStream::Ptr<byte> bufferedOutput = Streams::MemoryStream::New<byte> ();
-        fRep_->Write (bufferedOutput, options);
+        GetRep ()->Write (bufferedOutput, options);
         return Streams::TextReader::New (bufferedOutput).ReadAll ();
     }
     inline Iterable<Node::Ptr> Document::Ptr::GetChildren () const
     {
-        RequireNotNull (fRep_);
-        return fRep_->GetChildren ();
+        return GetRep ()->GetChildren ();
     }
     inline Element::Ptr Document::Ptr::GetRootElement () const
     {
-        RequireNotNull (fRep_);
         // Should only be one in an XML document.
-        for (Node::Ptr ni : fRep_->GetChildren ()) {
+        for (Node::Ptr ni : GetRep ()->GetChildren ()) {
             if (ni.GetNodeType () == Node::eElementNT) {
                 return ni;
             }
@@ -337,8 +355,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     inline Element::Ptr Document::Ptr::ReplaceRootElement (const NameWithNamespace& newEltName) const
     {
         // Note this cannot be implemented using the existing Replace () mechanism for elements because the document could be created without a root.
-        RequireNotNull (fRep_);
-        return fRep_->ReplaceRootElement (newEltName);
+        return GetRep ()->ReplaceRootElement (newEltName);
     }
 
 }

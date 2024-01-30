@@ -1702,7 +1702,7 @@ namespace {
             static const URI                        kNS_{"http://www.RecordsForLiving.com/Schemas/2012-03/ContentInformation/"};
             static const XPath::Expression::Options kXPathOptions_{.fNamespaces = Mapping<String, URI>{{"n", kNS_}}};
 
-            auto n1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person"});
+            auto n1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person"sv});
             EXPECT_EQ (n1, nullptr);
             auto badHeader1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"Header", kXPathOptions_});
             if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // Xerces 3.2.5 appears to match despite the wrong namespace reference
@@ -1718,6 +1718,8 @@ namespace {
             EXPECT_EQ (docRelHeader, header); // Check doc Rel Path same as relative path, and check == works for nodes
             auto docRelHeader2 = d.GetRootElement ().LookupOneElement (XPath::Expression{"//n:Header", kXPathOptions_});
             EXPECT_EQ (docRelHeader2, header); // verify // working (at least somewhat - limited for xerces)
+            EXPECT_NE (header.LookupOneElement (XPath::Expression{"n:SourceDefinitions", kXPathOptions_}), nullptr);
+            EXPECT_EQ (header.GetValue (XPath::Expression{"n:SourceDefinitions/n:SourceDefinition/n:Version", kXPathOptions_}), "v3"sv);
             if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // fails on xerces 3.2.5
                 auto docRelHeader3 = d.GetRootElement ().LookupOneElement (XPath::Expression{"/n:ReferenceContentData//n:Header", kXPathOptions_});
                 EXPECT_EQ (docRelHeader3, header); // verify // working
