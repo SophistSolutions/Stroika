@@ -21,7 +21,9 @@ namespace Stroika::Foundation::Execution {
     /**
      */
     Sequence<String> ParseCommandLine (const String& cmdLine);
+    Sequence<String> ParseCommandLine (int argc,  char* argv[]);
     Sequence<String> ParseCommandLine (int argc, const char* argv[]);
+    Sequence<String> ParseCommandLine (int argc,  wchar_t* argv[]);
     Sequence<String> ParseCommandLine (int argc, const wchar_t* argv[]);
 
     /**
