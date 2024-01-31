@@ -314,13 +314,16 @@ namespace Stroika::Foundation::IO::Network {
          *  Supported conversion-targets (T):
          *      String - converts to the raw URI format (as it would appear in a web-browser or html link); note raw form is ASCII
          *      string - ditto
+         *
+         *  if T==String, pctEncoded defaults to eDecoded
+         *  if T==string, pctEncoded defaults to ePCTEncoded
          */
         template <typename T>
-        nonvirtual T As (StringPCTEncodedFlag pctEncode = StringPCTEncodedFlag::eDEFAULT) const
+        nonvirtual T As (optional<StringPCTEncodedFlag> pctEncoded = {}) const
             requires (same_as<T, String> or same_as<T, string>);
 
     private:
-        nonvirtual String AsString_ (StringPCTEncodedFlag pctEncode) const;
+        nonvirtual String AsString_ (optional<StringPCTEncodedFlag> pctEncoded) const;
 
     public:
         /**

@@ -186,7 +186,7 @@ namespace Stroika::Foundation::IO::Network {
         return URI::TWC_ (*this, rhs) == 0;
     }
     template <typename T>
-    inline T URI::As (StringPCTEncodedFlag pctEncode) const
+    inline T URI::As (optional<StringPCTEncodedFlag> pctEncode) const
         requires (same_as<T, String> or same_as<T, string>)
     {
         if constexpr (same_as<T, String>) {

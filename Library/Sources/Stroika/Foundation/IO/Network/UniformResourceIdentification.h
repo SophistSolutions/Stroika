@@ -99,20 +99,19 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *          methods, and for objects that really require the string form to be encoded - we just call that As<>.
      *
      *          One SLIGHT exception is the ToString() method, which is just for debugging, and there we emit what will be easier/better
-     *          for debugging, and dont worry about reversability.
+     *          for debugging, and don't worry about reversibility.
      * 
      *          \see also StringPCTEncodedFlag flag
      */
 
     /**
-     * \brief for some purposes, we may want to render objects PCT-encoded, and sometimes not. This flag is just used
-     *        to specify in some 'AsString' apis - which is preferred for output.
+     * \brief for some purposes, we may want to render objects PCT-encoded, and sometimes not (plain or decoded). This flag is just used
+     *        to specify in some 'As<String>' APIs - which is preferred for output. The default often depends on the type being produced
+     *        in the As<> method.
      */
     enum class StringPCTEncodedFlag {
         eDecoded,
         ePCTEncoded,
-
-        eDEFAULT = ePCTEncoded
     };
 
     /**
@@ -159,6 +158,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     public:
         /**
          *  Returns true iff its a KNOWN secure protocol, like https, ssh, ftps, etc. By secure, this generally means that it is TLS based.
+         *  \note for unrecognized schema, this may produce a WAG so just take it as a hint.
          */
         nonvirtual bool IsSecure () const;
 
@@ -264,7 +264,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  if (pctEncoded == StringPCTEncodedFlag::ePCTEncoded)
          *      Returns encoded result (%-encoding host names, and wrapping [] around ipv6 addresses).
          * 
-         *  Prefer using ePCTEncoded (default) if using ASCII std::string.
+         *  if RESULT_TYPE==String, pctEncoded defaults to eDecoded
+         *  if RESULT_TYPE==string, pctEncoded defaults to ePCTEncoded
          *
          *  \par Example Usage
          *      \code
@@ -272,7 +273,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *      \endcode
          */
         template <typename RESULT_TYPE = String>
-        nonvirtual RESULT_TYPE As (StringPCTEncodedFlag pctEncoded = StringPCTEncodedFlag::eDEFAULT) const
+        nonvirtual RESULT_TYPE As (optional<StringPCTEncodedFlag> pctEncode = {}) const
             requires (same_as<RESULT_TYPE, String> or same_as<RESULT_TYPE, string>);
 
     public:
@@ -362,7 +363,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         /**
-         *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
+         *  This takes argument a possibly %-encoded name, or [] encoded internet addresses etc, and produces a properly parsed host object
          *  This may throw if given an invalid raw URL hostname value.
          *
          *  \req not rawURLUserInfo.empty ()        // use optional<UserInfo> {} instead
@@ -376,12 +377,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  if (pctEncoded == StringPCTEncodedFlag::eDecoded)
          *      Returns decoded (no PCT encoding etc) userInfo.
          *  if (pctEncoded == StringPCTEncodedFlag::ePCTEncoded)
-         *      Returns encoded result (%-encoding userinfo after converting to UTF8).
+         *      Returns encoded result (%-encoding user-info after converting to UTF8).
          * 
-         *  Prefer using ePCTEncoded (default) if using ASCII std::string.
+         *  if RESULT_TYPE==String, pctEncoded defaults to eDecoded
+         *  if RESULT_TYPE==string, pctEncoded defaults to ePCTEncoded
+         *
          */
         template <typename RESULT_TYPE = String>
-        nonvirtual RESULT_TYPE As (StringPCTEncodedFlag pctEncoded = StringPCTEncodedFlag::eDEFAULT) const
+        nonvirtual RESULT_TYPE As (optional<StringPCTEncodedFlag> pctEncoded = {}) const
             requires (same_as<RESULT_TYPE, String> or same_as<RESULT_TYPE, string>);
 
     public:
@@ -442,6 +445,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     class [[nodiscard]] Authority {
     public:
+        static constexpr auto eDecoded    = StringPCTEncodedFlag::eDecoded;
+        static constexpr auto ePCTEncoded = StringPCTEncodedFlag::ePCTEncoded;
+
+    public:
         /**
          *  \todo https://stroika.atlassian.net/browse/STK-750
          *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexect
@@ -457,7 +464,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         /**
-         *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
+         *  This takes argument a possibly %-encoded name, or [] encoded internet addresses etc, and produces a properly parsed host object
          *  This may throw if given an invalid raw URL hostname value. However, a 'missing' hostname is not an error, and will just
          *  return an Authority with HostName == nullopt.
          *
@@ -477,9 +484,12 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         /**
          *  Supported conversion-targets (T):
          *      String - converts to the raw URI format (as it would appear in a web-browser or html link)
+         *
+         *  if RESULT_TYPE==String, pctEncoded defaults to eDecoded
+         *  if RESULT_TYPE==string, pctEncoded defaults to ePCTEncoded
          */
         template <typename T>
-        nonvirtual T As (StringPCTEncodedFlag pctEncode = StringPCTEncodedFlag::eDEFAULT) const;
+        nonvirtual T As (optional<StringPCTEncodedFlag> pctEncode = {}) const;
 
     public:
         /**

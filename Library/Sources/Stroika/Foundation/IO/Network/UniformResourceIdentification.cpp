@@ -262,7 +262,7 @@ Authority Authority::Normalize () const
 }
 
 template <>
-String Authority::As (StringPCTEncodedFlag pctEncode) const
+String Authority::As (optional<StringPCTEncodedFlag> pctEncode) const
 {
     StringBuilder sb;
     if (fUserInfo_) {

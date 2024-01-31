@@ -67,11 +67,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         return fInternetAddress_;
     }
     template <typename T>
-    inline T Host::As (StringPCTEncodedFlag pctEncode) const
+    inline T Host::As (optional<StringPCTEncodedFlag> pctEncode) const
         requires (same_as<T, String> or same_as<T, string>)
     {
         if constexpr (same_as<T, String>) {
-            switch (pctEncode) {
+            switch (pctEncode.value_or (eDecoded)) {
                 case StringPCTEncodedFlag::eDecoded: {
                     if (fRegisteredName_) {
                         return *fRegisteredName_;
@@ -87,7 +87,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
             }
         }
         else if constexpr (same_as<T, string>) {
-            return As<String> (pctEncode).AsASCII (); // may throw due to non-ascii characters...
+            return As<String> (pctEncode.value_or (ePCTEncoded)).AsASCII (); // may throw due to non-ascii characters...
         }
     }
     inline strong_ordering Host::operator<=> (const Host& rhs) const
@@ -133,11 +133,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         return h;
     }
     template <typename T>
-    inline T UserInfo::As (StringPCTEncodedFlag pctEncode) const
+    inline T UserInfo::As (optional<StringPCTEncodedFlag> pctEncode) const
         requires (same_as<T, String> or same_as<T, string>)
     {
         if constexpr (same_as<T, String>) {
-            switch (pctEncode) {
+            switch (pctEncode.value_or (eDecoded)) {
                 case StringPCTEncodedFlag::eDecoded:
                     return fUserInfo_;
                 case StringPCTEncodedFlag::ePCTEncoded:
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
             }
         }
         else if constexpr (same_as<T, string>) {
-            return As<String> (pctEncode).AsASCII (); // may throw due to non-ascii characters...
+            return As<String> (pctEncode.value_or (ePCTEncoded)).AsASCII (); // may throw due to non-ascii characters...
         }
     }
     inline strong_ordering UserInfo::operator<=> (const UserInfo& rhs) const
@@ -157,11 +157,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool UserInfo::operator== (const UserInfo& rhs) const
     {
-        return As (StringPCTEncodedFlag::eDecoded) == rhs.As (StringPCTEncodedFlag::eDecoded);
+        return As (eDecoded) == rhs.As (eDecoded);
     }
     inline strong_ordering UserInfo::TWC_ (const UserInfo& lhs, const UserInfo& rhs)
     {
-        return lhs.As (StringPCTEncodedFlag::eDecoded) <=> rhs.As (StringPCTEncodedFlag::eDecoded);
+        return lhs.As (eDecoded) <=> rhs.As (eDecoded);
     }
 
     /*

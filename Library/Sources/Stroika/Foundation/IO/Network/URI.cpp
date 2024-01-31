@@ -127,7 +127,7 @@ URI URI::Parse (const String& rawURL)
     }
 }
 
-String URI::AsString_ (StringPCTEncodedFlag pctEncode) const
+String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     StringBuilder                                  result;
@@ -140,7 +140,7 @@ String URI::AsString_ (StringPCTEncodedFlag pctEncode) const
     }
     if (fAuthority_) {
         Assert (fAuthority_->As<String> (pctEncode).All ([] (Character c) { return c.IsASCII (); }));
-        result << "//"sv << fAuthority_->As<String> (pctEncode); // this already produces 'raw' (pct encoded) format (if desired)
+        result << "//"sv << fAuthority_->As<String> (pctEncode);
     }
 
     if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith ("/"sv))) {
@@ -148,6 +148,8 @@ String URI::AsString_ (StringPCTEncodedFlag pctEncode) const
         static const Execution::RuntimeErrorException kException_{"This is not a legal URI to encode (authority present, but path not empty or absolute)"sv};
         Execution::Throw (kException_);
     }
+
+    // @todo - must respect pctEncode argument!
 
     static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
     result << UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
