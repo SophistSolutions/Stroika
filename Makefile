@@ -132,7 +132,7 @@ distclean:
 ifneq ($(CONFIGURATION),)
 	$(error "make distclean applies to all configurations - and deletes all configurations")
 endif
-	@rm -rf Builds/ ConfigurationFiles/ IntermediateFiles/
+	@rm -rf Builds ConfigurationFiles IntermediateFiles
 	@$(MAKE) --no-print-directory clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 
 clean clobber:
