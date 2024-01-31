@@ -73,7 +73,7 @@ namespace Stroika::Foundation::DataExchange::XML {
             sb << fNamespace->As<String> () << ":";
         }
         sb << fName;
-        return sb.str ();
+        return Characters::ToString (sb.str ());
     }
 
 }
