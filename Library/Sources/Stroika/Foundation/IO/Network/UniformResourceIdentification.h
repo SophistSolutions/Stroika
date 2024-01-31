@@ -196,7 +196,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     class [[nodiscard]] Host {
     public:
-        using StringPCTEncodedFlag        = StringPCTEncodedFlag;
         static constexpr auto eDecoded    = StringPCTEncodedFlag::eDecoded;
         static constexpr auto ePCTEncoded = StringPCTEncodedFlag::ePCTEncoded;
 
@@ -339,7 +338,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     class [[nodiscard]] UserInfo {
     public:
-        using StringPCTEncodedFlag        = StringPCTEncodedFlag;
         static constexpr auto eDecoded    = StringPCTEncodedFlag::eDecoded;
         static constexpr auto ePCTEncoded = StringPCTEncodedFlag::ePCTEncoded;
 

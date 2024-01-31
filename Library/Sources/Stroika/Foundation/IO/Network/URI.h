@@ -20,8 +20,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::IO::Network {
@@ -136,7 +135,7 @@ namespace Stroika::Foundation::IO::Network {
 
     public:
         /**
-         *  This takes argument string url, with possibly % encoded characters, accorind to https://tools.ietf.org/html/rfc3986
+         *  This takes argument string url, with possibly % encoded characters, accordind to https://tools.ietf.org/html/rfc3986
          *  The input characterset is always ASCII (but may encode UCS after %PCT substitions).
          *  If not handed ASCII text, an exception will be thrown.
          */
