@@ -160,7 +160,7 @@ String Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
 
 String Host::ToString () const
 {
-    return Characters::ToString (AsDecoded ());
+    return Characters::ToString (As<String> (StringPCTEncodedFlag::eDecoded));
 }
 
 /*
@@ -186,7 +186,7 @@ String UserInfo::EncodeAsRawURL_ (const String& decodedName)
 
 String UserInfo::ToString () const
 {
-    return Characters::ToString (AsDecoded ());
+    return Characters::ToString (As<String> (eDecoded));
 }
 
 /*
@@ -262,14 +262,14 @@ Authority Authority::Normalize () const
 }
 
 template <>
-String Authority::As () const
+String Authority::As (StringPCTEncodedFlag pctEncode) const
 {
     StringBuilder sb;
     if (fUserInfo_) {
-        sb << fUserInfo_->AsEncoded () << "@"sv;
+        sb << fUserInfo_->As<String> (pctEncode) << "@"sv;
     }
     if (fHost_) {
-        sb << fHost_->AsEncoded ();
+        sb << fHost_->As<String> (pctEncode);
     }
     if (fPort_) {
         sb << Format (L":%d", *fPort_);
@@ -565,11 +565,11 @@ String UniformResourceIdentification::PCTDecode2String (const String& s)
 
 /*
  ********************************************************************************
- *********** hash<Stroika::Foundation::IO::Network::URI> ************************
+ * hash<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host> **
  ********************************************************************************
  */
 size_t std::hash<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host>::operator() (
     const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& arg) const
 {
-    return hash<Characters::String> () (arg.AsEncoded<Characters::String> ());
+    return hash<Characters::String> () (arg.As<Characters::String> (UniformResourceIdentification::Host::eDecoded));
 }

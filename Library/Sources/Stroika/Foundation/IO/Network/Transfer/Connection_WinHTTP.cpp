@@ -506,8 +506,9 @@ namespace {
                     Execution::Throw (kException_);
                 }
                 // NOT SURE - for IPv6 address - if we want to pass encoded value here?
-                fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (
-                    ::WinHttpConnect (*fSessionHandle_, fURL_.GetAuthority ()->GetHost ()->AsEncoded ().c_str (), fURL_.GetPortValue (), 0));
+                fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpConnect (
+                    *fSessionHandle_, fURL_.GetAuthority ()->GetHost ()->As<String> (URI::StringPCTEncodedFlag::ePCTEncoded).c_str (),
+                    fURL_.GetPortValue (), 0));
             }
         }
 

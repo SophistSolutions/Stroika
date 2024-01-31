@@ -127,7 +127,7 @@ URI URI::Parse (const String& rawURL)
     }
 }
 
-String URI::AsString_ () const
+String URI::AsString_ (StringPCTEncodedFlag pctEncode) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     StringBuilder                                  result;
@@ -139,8 +139,8 @@ String URI::AsString_ () const
         result << *fScheme_ << ":"sv;
     }
     if (fAuthority_) {
-        Assert (fAuthority_->As<String> ().All ([] (Character c) { return c.IsASCII (); }));
-        result << "//"sv << fAuthority_->As<String> (); // this already produces 'raw' (pct encoded) format
+        Assert (fAuthority_->As<String> (pctEncode).All ([] (Character c) { return c.IsASCII (); }));
+        result << "//"sv << fAuthority_->As<String> (pctEncode); // this already produces 'raw' (pct encoded) format (if desired)
     }
 
     if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith ("/"sv))) {

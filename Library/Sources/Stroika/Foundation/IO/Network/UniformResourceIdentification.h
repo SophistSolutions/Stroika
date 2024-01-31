@@ -93,14 +93,27 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *              So the Path in Stroika does not use optional.
      *
      *  \note   As () versus AsEncoded () versus AsDecoded ()
-     *          Some objects (like Host, or UserInfo) make sense to access in either encoded or decoded for. Other objects, like an
+     *          Some objects (like Host, or UserInfo) make sense to access in either encoded or decoded form. Other objects, like an
      *          Authority, or URI, really don't make sense except in ENCODED form (because you couldn't parse out the pieces to
      *          get back to the original). So - for objects where it makes sense to access either way, we provide AsEncoded/AsDecoded
      *          methods, and for objects that really require the string form to be encoded - we just call that As<>.
      *
      *          One SLIGHT exception is the ToString() method, which is just for debugging, and there we emit what will be easier/better
      *          for debugging, and dont worry about reversability.
+     * 
+     *          \see also StringPCTEncodedFlag flag
      */
+
+    /**
+     * \brief for some purposes, we may want to render objects PCT-encoded, and sometimes not. This flag is just used
+     *        to specify in some 'AsString' apis - which is preferred for output.
+     */
+    enum class StringPCTEncodedFlag {
+        eDecoded,
+        ePCTEncoded,
+
+        eDEFAULT = ePCTEncoded
+    };
 
     /**
      *  From https://tools.ietf.org/html/rfc3986#section-3.1
@@ -173,7 +186,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *      decimal form, or a registered name.  The host subcomponent is case-
      *      insensitive.
      *
-     *  This class is ALWAYS either (mutually exclusive) regsiterName, or internetAddress.
+     *  This class is ALWAYS either (mutually exclusive) registerName, or internetAddress.
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *          o   Standard Stroika Comparison support (operator<=>,operator==, etc);
@@ -183,6 +196,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      */
     class [[nodiscard]] Host {
     public:
+        using StringPCTEncodedFlag        = StringPCTEncodedFlag;
+        static constexpr auto eDecoded    = StringPCTEncodedFlag::eDecoded;
+        static constexpr auto ePCTEncoded = StringPCTEncodedFlag::ePCTEncoded;
+
+    public:
         /**
          *  Technically accoridng to https://tools.ietf.org/html/rfc3986#section-3.2.2, the registered-name
          *  maybe empty, but for the sake of consistency with the rest of this module, we intead represent
@@ -191,7 +209,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  So, \req not registeredName.empty ()
          * 
          *  \todo https://stroika.atlassian.net/browse/STK-750
-         *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexect
+         *        noexcept - unclear why I cannot declare copy constructor and copy assignment operators as noexcept
          *        on GCC. THIS compiles fine, but then later bits of code that use it fail to compile (g++ 9 at least).
          */
         Host (const String& registeredName);
@@ -208,7 +226,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         /**
-         *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
+         *  This takes argument a possibly %-encoded name, or [] encoded internet addresses etc, and produces a properly parsed host object
          *  This may throw if given an invalid raw URL hostname value.
          *
          *  Require (not rawURLHostnameText.empty ());  // use optional instead, and treat empty text as invalid. NB " " is OK.
@@ -223,7 +241,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         /*
-         *  Returns missing if its not a  registered name (dnsname).
+         *  Returns missing if its not a  registered name (DNS name).
          *
          *  \note always AsRegisteredName () or AsInternetAddress () returns a value;
          */
@@ -239,26 +257,24 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         /**
-         *  Returns decoded (no PCT encoding etc) hostname (registered name, ipv4 or ipv6 address). Doesn't contain the
-         *  [] decoration around ip addresses, etc. Suitable for passing to DNS::Default::GetHostAddress ().
+         *  \brief Returns the hostname, either encoded or decoded (PCT encoding) as some form of printed derivitive string. If the result type is 'std::string' - throws if data not ASCII;
+         * 
+         *  if (pctEncoded == StringPCTEncodedFlag::eDecoded)
+         *      Returns decoded (no PCT encoding etc) hostname (registered name, ipv4 or ipv6 address). Doesn't contain the
+         *      [] decoration around ip addresses, etc. Suitable for passing to DNS::Default::GetHostAddress ().
+         *  if (pctEncoded == StringPCTEncodedFlag::ePCTEncoded)
+         *      Returns encoded result (%-encoding host names, and wrapping [] around ipv6 addresses).
+         * 
+         *  Prefer using ePCTEncoded (default) if using ASCII std::string.
          *
          *  \par Example Usage
          *      \code
-         *          auto locAddrs = IO::Network::DNS::kThe.GetHostAddresses (host.AsDecoded ());
+         *          auto locAddrs = IO::Network::DNS::kThe.GetHostAddresses (host.As<String> (StringPCTEncodedFlag::eDecoded));
          *      \endcode
          */
-        nonvirtual String AsDecoded () const;
-
-    public:
-        /**
-         *  Returns encoded result (%-encoding host names, and wrapping [] around ipv6 addresses).
-         *
-         *  Supported RESULT_TYPE values are:
-         *      String      (all ASCII characters)
-         *      string      (ASCII encoded)
-         */
         template <typename RESULT_TYPE = String>
-        nonvirtual RESULT_TYPE AsEncoded () const;
+        nonvirtual RESULT_TYPE As (StringPCTEncodedFlag pctEncoded = StringPCTEncodedFlag::eDEFAULT) const
+            requires (same_as<RESULT_TYPE, String> or same_as<RESULT_TYPE, string>);
 
     public:
         /**
@@ -280,6 +296,17 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          */
         nonvirtual String ToString () const;
 
+    public:
+        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::eDecoded)")]] String AsDecoded () const
+        {
+            return As<String> (StringPCTEncodedFlag::eDecoded);
+        }
+        template <typename RESULT_TYPE = String>
+        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::ePCTEncoded)")]] RESULT_TYPE AsEncoded () const
+        {
+            return As<RESULT_TYPE> (StringPCTEncodedFlag::ePCTEncoded);
+        }
+
     private:
         // Throws if cannot parse/illegal
         static pair<optional<String>, optional<InternetAddress>> ParseRaw_ (const String& raw);
@@ -293,11 +320,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         optional<String>          fRegisteredName_;
         optional<InternetAddress> fInternetAddress_;
     };
-
-    template <>
-    String Host::AsEncoded () const;
-    template <>
-    string Host::AsEncoded () const;
 
     /**
      * FROM https://tools.ietf.org/html/rfc3986#section-3.2.1:
@@ -316,6 +338,11 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *          These are compared as case-senstive strings.
      */
     class [[nodiscard]] UserInfo {
+    public:
+        using StringPCTEncodedFlag        = StringPCTEncodedFlag;
+        static constexpr auto eDecoded    = StringPCTEncodedFlag::eDecoded;
+        static constexpr auto ePCTEncoded = StringPCTEncodedFlag::ePCTEncoded;
+
     public:
         /**
          *  Note, though https://tools.ietf.org/html/rfc3986#section-3.2.1 allows for an empty UserInfo, we instead
@@ -346,20 +373,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
     public:
         /**
-         *  Returns decoded (no PCT encoding etc) userInfo.
-         */
-        nonvirtual String AsDecoded () const;
-
-    public:
-        /**
-         *  Returns encoded result (%-encoding userinfo after converting to UTF8).
-         *
-         *  Supported RESULT_TYPE values are:
-         *      String      (all ASCII characters)
-         *      string      (ASCII encoded)
+         *  \brief Returns the hostname, either encoded or decoded (PCT encoding) as some form of printed derivitive string. If the result type is 'std::string' - throws if data not ASCII;
+         * 
+         *  if (pctEncoded == StringPCTEncodedFlag::eDecoded)
+         *      Returns decoded (no PCT encoding etc) userInfo.
+         *  if (pctEncoded == StringPCTEncodedFlag::ePCTEncoded)
+         *      Returns encoded result (%-encoding userinfo after converting to UTF8).
+         * 
+         *  Prefer using ePCTEncoded (default) if using ASCII std::string.
          */
         template <typename RESULT_TYPE = String>
-        nonvirtual RESULT_TYPE AsEncoded () const;
+        nonvirtual RESULT_TYPE As (StringPCTEncodedFlag pctEncoded = StringPCTEncodedFlag::eDEFAULT) const
+            requires (same_as<RESULT_TYPE, String> or same_as<RESULT_TYPE, string>);
 
     public:
         /**
@@ -380,6 +405,17 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  @see Characters::ToString ()
          */
         nonvirtual String ToString () const;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::eDecoded)")]] String AsDecoded () const
+        {
+            return As<String> (StringPCTEncodedFlag::eDecoded);
+        }
+        template <typename RESULT_TYPE = String>
+        [[deprecated ("Since Stroika v3.0d5 - use As<String>(StringPCTEncodedFlag::ePCTEncoded)")]] RESULT_TYPE AsEncoded () const
+        {
+            return As<RESULT_TYPE> (StringPCTEncodedFlag::ePCTEncoded);
+        }
 
     private:
         // Throws if cannot parse/illegal
@@ -445,7 +481,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *      String - converts to the raw URI format (as it would appear in a web-browser or html link)
          */
         template <typename T>
-        nonvirtual T As () const;
+        nonvirtual T As (StringPCTEncodedFlag pctEncode = StringPCTEncodedFlag::eDEFAULT) const;
 
     public:
         /**

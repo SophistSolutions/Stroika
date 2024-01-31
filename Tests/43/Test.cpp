@@ -34,13 +34,13 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"Test1_URI_::Private_::TestHostParsing_"};
                 using UniformResourceIdentification::Host;
-                EXPECT_TRUE ((Host{Network::V4::kLocalhost}.AsEncoded () == L"127.0.0.1"sv));
-                EXPECT_TRUE ((Host{InternetAddress{169, 254, 0, 1}}.AsEncoded () == L"169.254.0.1"sv));
-                EXPECT_TRUE ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncoded () == "[fe80::44de:4247:5b76:ddc9]"sv));
-                EXPECT_TRUE ((Host::Parse ("[fe80::44de:4247:5b76:ddc9]"sv).AsInternetAddress () == InternetAddress{"fe80::44de:4247:5b76:ddc9"sv}));
-                EXPECT_TRUE ((Host{"www.sophists.com"}.AsEncoded () == "www.sophists.com"sv));
-                EXPECT_TRUE ((Host{"hello mom"}.AsEncoded () == L"hello%20mom"sv));
-                EXPECT_TRUE ((Host::Parse ("hello%20mom") == Host{"hello mom"}));
+                EXPECT_EQ ((Host{Network::V4::kLocalhost}.As<String> (Host::ePCTEncoded)), L"127.0.0.1"sv);
+                EXPECT_EQ ((Host{InternetAddress{169, 254, 0, 1}}.As<String> (Host::ePCTEncoded)), L"169.254.0.1"sv);
+                EXPECT_EQ ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.As<String> (Host::ePCTEncoded)), "[fe80::44de:4247:5b76:ddc9]"sv);
+                EXPECT_EQ ((Host::Parse ("[fe80::44de:4247:5b76:ddc9]"sv).AsInternetAddress ()), (InternetAddress{"fe80::44de:4247:5b76:ddc9"sv}));
+                EXPECT_EQ ((Host{"www.sophists.com"}.As<String> (Host::ePCTEncoded)), "www.sophists.com"sv);
+                EXPECT_EQ ((Host{"hello mom"}.As<String> (Host::ePCTEncoded)), L"hello%20mom"sv);
+                EXPECT_EQ ((Host::Parse ("hello%20mom")), (Host{"hello mom"}));
                 {
                     // negative tests - must throw
                     try {

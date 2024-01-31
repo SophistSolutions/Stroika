@@ -101,10 +101,10 @@ namespace Stroika::Foundation::IO::Network {
     }
     template <typename RETURN_TYPE>
     RETURN_TYPE URI::GetAuthorityRelativeResource () const
-        requires (is_same_v<RETURN_TYPE, String> or is_same_v<RETURN_TYPE, string> or is_same_v<RETURN_TYPE, URI>)
+        requires (same_as<RETURN_TYPE, String> or same_as<RETURN_TYPE, string> or same_as<RETURN_TYPE, URI>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        if constexpr (is_same_v<RETURN_TYPE, String>) {
+        if constexpr (same_as<RETURN_TYPE, String>) {
             static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
             Characters::StringBuilder result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
             if (fQuery_) {
@@ -113,26 +113,26 @@ namespace Stroika::Foundation::IO::Network {
             }
             return result.str ();
         }
-        if constexpr (is_same_v<RETURN_TYPE, string>) {
+        if constexpr (same_as<RETURN_TYPE, string>) {
             return GetAuthorityRelativeResource<String> ().AsASCII ();
         }
-        if constexpr (is_same_v<RETURN_TYPE, URI>) {
+        if constexpr (same_as<RETURN_TYPE, URI>) {
             return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
         }
     }
     template <typename RETURN_VALUE>
     RETURN_VALUE URI::GetAbsPath () const
-        requires (is_same_v<RETURN_VALUE, String> or is_same_v<RETURN_VALUE, optional<String>>)
+        requires (same_as<RETURN_VALUE, String> or same_as<RETURN_VALUE, optional<String>>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        if constexpr (is_same_v<RETURN_VALUE, String>) {
+        if constexpr (same_as<RETURN_VALUE, String>) {
             if (auto op = GetAbsPath<optional<String>> ()) {
                 return *op;
             }
             static const auto kException_ = Execution::RuntimeErrorException{"This URI does not have an absolute path"sv};
             Execution::Throw (kException_);
         }
-        if constexpr (is_same_v<RETURN_VALUE, optional<String>>) {
+        if constexpr (same_as<RETURN_VALUE, optional<String>>) {
             if (fPath_.empty ()) {
                 return "/"sv;
             }
@@ -144,13 +144,13 @@ namespace Stroika::Foundation::IO::Network {
     }
     template <typename RETURN_TYPE>
     inline optional<RETURN_TYPE> URI::GetQuery () const
-        requires (is_same_v<RETURN_TYPE, String> or is_same_v<RETURN_TYPE, URI::Query>)
+        requires (same_as<RETURN_TYPE, String> or same_as<RETURN_TYPE, URI::Query>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        if constexpr (is_same_v<RETURN_TYPE, String>) {
+        if constexpr (same_as<RETURN_TYPE, String>) {
             return fQuery_;
         }
-        if constexpr (is_same_v<RETURN_TYPE, Query>) {
+        if constexpr (same_as<RETURN_TYPE, Query>) {
             if (fQuery_) {
                 return Query{*fQuery_};
             }
@@ -186,14 +186,14 @@ namespace Stroika::Foundation::IO::Network {
         return URI::TWC_ (*this, rhs) == 0;
     }
     template <typename T>
-    inline T URI::As () const
-        requires (is_same_v<T, String> or is_same_v<T, string>)
+    inline T URI::As (StringPCTEncodedFlag pctEncode) const
+        requires (same_as<T, String> or same_as<T, string>)
     {
-        if constexpr (is_same_v<T, String>) {
-            return AsString_ ();
+        if constexpr (same_as<T, String>) {
+            return AsString_ (pctEncode);
         }
-        if constexpr (is_same_v<T, string>) {
-            return AsString_ ().AsASCII ();
+        if constexpr (same_as<T, string>) {
+            return AsString_ (pctEncode).AsASCII ();
         }
     }
 
