@@ -1015,7 +1015,8 @@ namespace {
                         u"", namespaceDefs.GetDefaultNamespace ()->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str ());
                 }
                 for (Common::KeyValuePair ni : namespaceDefs.GetPrefixedNamespaces ()) {
-                    (*resolver)->addNamespaceBinding (ni.fKey.As<u16string> ().c_str (), ni.fValue.As<String> ().As<u16string> ().c_str ());
+                    (*resolver)->addNamespaceBinding (ni.fKey.As<u16string> ().c_str (),
+                                                      ni.fValue.As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str ());
                 }
                 try {
                     expr.emplace (doc->createExpression (e.GetExpression ().As<u16string> ().c_str (), *resolver));

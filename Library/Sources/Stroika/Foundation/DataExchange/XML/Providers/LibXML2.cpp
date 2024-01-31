@@ -441,7 +441,8 @@ namespace {
                         Execution::Throw (XPath::XPathExpressionNotSupported::kThe);
                     }
                     for (Common::KeyValuePair ni : namespaceDefs.GetPrefixedNamespaces ()) {
-                        xmlXPathRegisterNs (fCtx, BAD_CAST ni.fKey.AsUTF8 ().c_str (), BAD_CAST ni.fValue.As<String> ().AsUTF8 ().c_str ());
+                        xmlXPathRegisterNs (fCtx, BAD_CAST ni.fKey.AsUTF8 ().c_str (),
+                                            BAD_CAST ni.fValue.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
                     }
                     fCtx->node      = contextNode;
                     fResultNodeList = xmlXPathEvalExpression (BAD_CAST e.GetExpression ().AsUTF8 ().c_str (), fCtx);
