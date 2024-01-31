@@ -129,6 +129,8 @@ URI URI::Parse (const String& rawURL)
 
 String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
 {
+    // https://stroika.atlassian.net/browse/STK-1000 -- issue about maybe needed more nuanced approach
+    StringPCTEncodedFlag                           usingPCTEncodeFlag = pctEncode.value_or (eDecoded);
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     StringBuilder                                  result;
     if (fScheme_) {
@@ -139,8 +141,8 @@ String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
         result << *fScheme_ << ":"sv;
     }
     if (fAuthority_) {
-        Assert (fAuthority_->As<String> (pctEncode).All ([] (Character c) { return c.IsASCII (); }));
-        result << "//"sv << fAuthority_->As<String> (pctEncode);
+        Assert (fAuthority_->As<String> (usingPCTEncodeFlag).All ([] (Character c) { return c.IsASCII (); }));
+        result << "//"sv << fAuthority_->As<String> (usingPCTEncodeFlag);
     }
 
     if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith ("/"sv))) {
@@ -149,17 +151,31 @@ String URI::AsString_ (optional<StringPCTEncodedFlag> pctEncode) const
         Execution::Throw (kException_);
     }
 
-    // @todo - must respect pctEncode argument!
+    if (usingPCTEncodeFlag == eDecoded) {
+        result << fPath_;
+    }
+    else {
+        static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
+        result << UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
+    }
 
-    static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
-    result << UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
     if (fQuery_) {
         static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
-        result << "?"sv << UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
+        if (usingPCTEncodeFlag == eDecoded) {
+            result << "?"sv << *fQuery_;
+        }
+        else {
+            result << "?"sv << UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
+        }
     }
     if (fFragment_) {
-        static constexpr UniformResourceIdentification::PCTEncodeOptions kFragmentEncodeOptiosn_{false, false, false, true};
-        result << "#"sv + UniformResourceIdentification::PCTEncode2String (*fFragment_, kFragmentEncodeOptiosn_);
+        if (usingPCTEncodeFlag == eDecoded) {
+            result << "#"sv + *fFragment_;
+        }
+        else {
+            static constexpr UniformResourceIdentification::PCTEncodeOptions kFragmentEncodeOptions_{false, false, false, true};
+            result << "#"sv + UniformResourceIdentification::PCTEncode2String (*fFragment_, kFragmentEncodeOptions_);
+        }
     }
     Ensure (result.str ().All ([] (Character c) { return c.IsASCII (); }));
     return result.str ();

@@ -108,6 +108,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      * \brief for some purposes, we may want to render objects PCT-encoded, and sometimes not (plain or decoded). This flag is just used
      *        to specify in some 'As<String>' APIs - which is preferred for output. The default often depends on the type being produced
      *        in the As<> method.
+     * 
+     *  \note - SEE https://stroika.atlassian.net/browse/STK-1000 -- issue about maybe needed more nuanced approach
+     *         PERHAPS add another flag eDecodedUNICODEButEncodeSOMETUFFNeededToUnparseDisambiguate (not sure that ever happens)?
+     *         (OK - I do have an example - the # character - and maybe sometimes ? character??? - (# in query for example - comes before fragment).
      */
     enum class StringPCTEncodedFlag {
         eDecoded,
