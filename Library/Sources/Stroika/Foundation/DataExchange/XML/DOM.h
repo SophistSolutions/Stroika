@@ -653,6 +653,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
+             */
+            nonvirtual Characters::String ToString () const;
+
+        public:
+            /**
             * @@todo  - what happens if we rename this operator-> - IO think chaining works nicely then. maybe use that trick throughout Stroika if it works here.
              */
             nonvirtual shared_ptr<IRep> GetRep () const;

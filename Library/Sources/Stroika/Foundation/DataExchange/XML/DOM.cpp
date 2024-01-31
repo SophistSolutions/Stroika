@@ -93,7 +93,7 @@ Element::Ptr Element::IRep::GetChildElementByID (const String& id) const
  */
 String Node::Ptr::ToString () const
 {
-    if (GetRep () == nullptr) {
+    if (PeekRep () == nullptr) {
         return "nullptr"sv;
     }
     Streams::MemoryStream::Ptr m = Streams::MemoryStream::New<byte> ();
@@ -113,7 +113,7 @@ auto Element::Ptr::GetChild (const NameWithNamespace& eltName) const -> Ptr
 
 /*
  ********************************************************************************
- *********************************** Document ***********************************
+ *************************** DOM::Document::Ptr *********************************
  ********************************************************************************
  */
 void Document::Ptr::Validate (const Schema::Ptr& schema) const
@@ -121,6 +121,16 @@ void Document::Ptr::Validate (const Schema::Ptr& schema) const
     RequireNotNull (schema);
     RequireNotNull (fRep_);
     fRep_->Validate (schema);
+}
+
+String Document::Ptr::ToString () const
+{
+    if (fRep_ == nullptr) {
+        return "nullptr"sv;
+    }
+    Streams::MemoryStream::Ptr m = Streams::MemoryStream::New<byte> ();
+    fRep_->Write (m, DOM::SerializationOptions{});
+    return Streams::TextReader::New (m).ReadAll ();
 }
 
 /*
