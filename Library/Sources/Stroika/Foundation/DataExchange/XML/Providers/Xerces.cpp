@@ -55,6 +55,16 @@ namespace {
 }
 #endif
 
+namespace {
+    // From https://www.w3.org/TR/xml-names/
+    //      In a namespace declaration, the URI reference is the normalized value of the attribute, so replacement of XML
+    //      character and entity references has already been done before any comparison.
+    //
+    //  Not 100% sure, but I think that means decode %x stuff too (at least that fixes bug I'm encountering with ASTM-CCR files)
+    //      --LGP 2024-01-31
+    constexpr auto kUseURIEncodingFlag_ = URI::StringPCTEncodedFlag::eDecoded;
+}
+
 /*
  */
 #define START_LIB_EXCEPTION_MAPPER_ try {
@@ -775,8 +785,9 @@ namespace {
             {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 AssertNotNull (doc);
-                fNode_ = doc->renameNode (fNode_, name.fNamespace == nullopt ? nullptr : name.fNamespace->As<String> ().As<u16string> ().c_str (),
-                                          name.fName.As<u16string> ().c_str ());
+                fNode_ = doc->renameNode (
+                    fNode_, name.fNamespace == nullopt ? nullptr : name.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str (),
+                    name.fName.As<u16string> ().c_str ());
                 AssertNotNull (fNode_);
             }
             END_LIB_EXCEPTION_MAPPER_
@@ -870,10 +881,11 @@ namespace {
             START_LIB_EXCEPTION_MAPPER_
             {
                 if (fNode_->getNodeType () == DOMNode::ELEMENT_NODE) {
-                    DOMElement* elt = Debug::UncheckedDynamicCast<DOMElement*> (fNode_);
-                    const XMLCh* s = attrName.fNamespace ? elt->getAttributeNS (attrName.fNamespace->As<String> ().As<u16string> ().c_str (),
-                                                                                attrName.fName.As<u16string> ().c_str ())
-                                                         : elt->getAttribute (attrName.fName.As<u16string> ().c_str ());
+                    DOMElement*  elt = Debug::UncheckedDynamicCast<DOMElement*> (fNode_);
+                    const XMLCh* s   = attrName.fNamespace
+                                           ? elt->getAttributeNS (attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str (),
+                                                                  attrName.fName.As<u16string> ().c_str ())
+                                           : elt->getAttribute (attrName.fName.As<u16string> ().c_str ());
                     AssertNotNull (s);
                     if (*s != '\0') {
                         return s;
@@ -907,13 +919,14 @@ namespace {
                      * 
                      *  MAYBE related to  https://stroika.atlassian.net/browse/STK-999 - diff symptoms but similar workaround
                      */
-                    element->setAttributeNS (attrName.fNamespace ? attrName.fNamespace->As<String> ().As<u16string> ().c_str ()
+                    element->setAttributeNS (attrName.fNamespace ? attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str ()
                                                                  : fNode_->getNamespaceURI (),
                                              attrName.fName.As<u16string> ().c_str (), v->As<u16string> ().c_str ());
                 }
                 else {
-                    element->removeAttributeNS (attrName.fNamespace ? attrName.fNamespace->As<String> ().As<u16string> ().c_str ()
-                                                                    : fNode_->getNamespaceURI (),
+                    element->removeAttributeNS (attrName.fNamespace
+                                                    ? attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str ()
+                                                    : fNode_->getNamespaceURI (),
                                                 attrName.fName.As<u16string> ().c_str ());
                 }
             }
@@ -929,9 +942,10 @@ namespace {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 // unsure if we should use smartpointer here - thinkout xerces & smart ptrs & mem management
                 // unclear if we should set namespace to existing node namespace or nullptr here?
-                DOMNode* child = doc->createElementNS (
-                    (eltName.fNamespace == nullopt) ? fNode_->getNamespaceURI () : eltName.fNamespace->As<String> ().As<u16string> ().c_str (),
-                    eltName.fName.As<u16string> ().c_str ());
+                DOMNode* child = doc->createElementNS ((eltName.fNamespace == nullopt)
+                                                           ? fNode_->getNamespaceURI ()
+                                                           : eltName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str (),
+                                                       eltName.fName.As<u16string> ().c_str ());
                 DOMNode* refChildNode = nullptr;
                 if (afterNode == nullptr) {
                     // this means PREPEND.
@@ -957,7 +971,7 @@ namespace {
                 xercesc::DOMDocument* doc = fNode_->getOwnerDocument ();
                 DOMNode*              child{};
                 if (eltName.fNamespace) {
-                    u16string namespaceURI = eltName.fNamespace->As<String> ().As<u16string> ();
+                    u16string namespaceURI = eltName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ();
                     child                  = doc->createElementNS (namespaceURI.c_str (), eltName.fName.As<u16string> ().c_str ());
                 }
                 else {
@@ -997,7 +1011,8 @@ namespace {
                 resolver.emplace (doc->createNSResolver (nullptr));
                 auto namespaceDefs = e.GetOptions ().fNamespaces;
                 if (namespaceDefs.GetDefaultNamespace ()) {
-                    (*resolver)->addNamespaceBinding (u"", namespaceDefs.GetDefaultNamespace ()->As<String> ().As<u16string> ().c_str ());
+                    (*resolver)->addNamespaceBinding (
+                        u"", namespaceDefs.GetDefaultNamespace ()->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str ());
                 }
                 for (Common::KeyValuePair ni : namespaceDefs.GetPrefixedNamespaces ()) {
                     (*resolver)->addNamespaceBinding (ni.fKey.As<u16string> ().c_str (), ni.fValue.As<String> ().As<u16string> ().c_str ());
@@ -1261,7 +1276,7 @@ namespace {
         {
             DOMElement* n = newEltName.fNamespace == nullopt
                                 ? fXMLDoc->createElement (newEltName.fName.As<u16string> ().c_str ())
-                                : fXMLDoc->createElementNS (newEltName.fNamespace->As<String> ().As<u16string> ().c_str (),
+                                : fXMLDoc->createElementNS (newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str (),
                                                             newEltName.fName.As<u16string> ().c_str ());
             AssertNotNull (n);
             DOMElement* oldRoot = fXMLDoc->getDocumentElement ();

@@ -45,6 +45,16 @@ namespace {
 #endif
 
 namespace {
+    // From https://www.w3.org/TR/xml-names/
+    //      In a namespace declaration, the URI reference is the normalized value of the attribute, so replacement of XML
+    //      character and entity references has already been done before any comparison.
+    //
+    //  Not 100% sure, but I think that means decode %x stuff too (at least that fixes bug I'm encountering with ASTM-CCR files)
+    //      --LGP 2024-01-31
+    constexpr auto kUseURIEncodingFlag_ = URI::StringPCTEncodedFlag::eDecoded;
+}
+
+namespace {
     struct SchemaRep_ : ILibXML2SchemaRep {
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
         static inline atomic<unsigned int> sLiveCnt{0};
@@ -247,7 +257,7 @@ namespace {
                 // see genNS2Use_
                 // see SetAttribtues - simple now...
                 // NOT totally clear, but this seems to be it...
-                xmlNodeSetBase (fNode_, BAD_CAST name.fNamespace->As<String> ().AsUTF8 ().c_str ());
+                xmlNodeSetBase (fNode_, BAD_CAST name.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
             }
             xmlNodeSetName (fNode_, BAD_CAST name.fName.AsUTF8 ().c_str ());
         }
@@ -295,7 +305,7 @@ namespace {
         }
         static xmlNsPtr genNS2Use_ (xmlNode* n, const URI& ns)
         {
-            xmlNsPtr              ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> ().AsUTF8 ().c_str ());
+            xmlNsPtr              ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
             basic_string<xmlChar> prefix2Try{BAD_CAST "a"};
             while (ns2Use == nullptr) {
                 // Need to hang the namespace declaration someplace? Could do it just on this element (xmlNewNs)
@@ -303,7 +313,7 @@ namespace {
                 // For now - do on DOC, so we end up with a more terse overall document.
                 // Also - sadly - must cons up SOME prefix, which doesn't conflict. No good way I can see todo that, so do a bad way.
                 // OK - can do still manually using docs root elt - maybe - but do this way for now... cuz xmlNewGlobalNs deprecated
-                ns2Use = xmlNewNs (n, BAD_CAST ns.As<String> ().AsUTF8 ().c_str (), prefix2Try.c_str ());
+                ns2Use = xmlNewNs (n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), prefix2Try.c_str ());
                 if (ns2Use == nullptr) {
                     ++prefix2Try[0]; // if 'a' didn't work, try 'b' // @todo this could use better error handling, but pragmatically probably OK
                 }
@@ -334,7 +344,7 @@ namespace {
         virtual optional<String> GetAttribute (const NameWithNamespace& attrName) const override
         {
             auto r = attrName.fNamespace ? xmlGetNsProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (),
-                                                         BAD_CAST attrName.fNamespace->As<String> ().AsUTF8 ().c_str ())
+                                                         BAD_CAST attrName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ())
                                          : xmlGetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str ());
             if (r == nullptr) {
                 return nullopt;
@@ -579,7 +589,7 @@ namespace {
             xmlDocSetRootElement (fLibRep_, n);
             // AND not super clear how to create the namespace if needed?
             if (newEltName.fNamespace) {
-                (void)xmlNewNs (n, BAD_CAST newEltName.fNamespace->As<String> ().AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
+                (void)xmlNewNs (n, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
             }
             return WrapLibXML2NodeInStroikaNode_ (n);
         }
