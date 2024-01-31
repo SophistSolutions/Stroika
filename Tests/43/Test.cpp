@@ -167,16 +167,17 @@ namespace {
                 Debug::TraceContextBumper ctx{"TestEmptyURI_"};
                 {
                     URI u{};
-                    EXPECT_TRUE (u.As<String> () == "");
+                    EXPECT_EQ (u.As<String> () ,"");
                 }
                 {
                     URI u{""};
-                    EXPECT_TRUE (u.As<String> () == "");
+                    EXPECT_EQ (u.As<String> () , "");
                 }
                 {
                     URI u{" "};
-                    EXPECT_TRUE (u.As<String> () == "%20"); // @todo REVIEW SPEC- urlparse(' ').geturl () produces space, but I think this makes more sense
-                    EXPECT_TRUE (u.GetPath () == " ");
+                    EXPECT_EQ (u.As<String> (URI::ePCTEncoded), "%20"); // @todo REVIEW SPEC- urlparse(' ').geturl () produces space, but I think this makes more sense
+                    EXPECT_EQ (u.As<String> (URI::eDecoded), " ");
+                    EXPECT_EQ (u.GetPath (), " ");
                 }
             }
             void TestSamplesFromPythonURLParseDocs_ ()
