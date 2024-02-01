@@ -167,11 +167,11 @@ namespace {
                 Debug::TraceContextBumper ctx{"TestEmptyURI_"};
                 {
                     URI u{};
-                    EXPECT_EQ (u.As<String> () ,"");
+                    EXPECT_EQ (u.As<String> (), "");
                 }
                 {
                     URI u{""};
-                    EXPECT_EQ (u.As<String> () , "");
+                    EXPECT_EQ (u.As<String> (), "");
                 }
                 {
                     URI u{" "};
