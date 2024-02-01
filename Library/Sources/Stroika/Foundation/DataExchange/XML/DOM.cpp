@@ -68,6 +68,17 @@ XPath::Expression::Expression (String&& e, const Options& o)
 {
 }
 
+String XPath::Expression::ToString () const
+{
+    AssertNotNull (fRep_);
+    StringBuilder sb;
+    sb << "{";
+    sb << "expression: " << Characters::ToString (fRep_->GetExpression ());
+    // @todo add options
+    sb << "}";
+    return sb.str ();
+}
+
 /*
  ********************************************************************************
  ****************************** Element::IRep ***********************************

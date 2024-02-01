@@ -450,7 +450,8 @@ namespace {
                         // lookup domain in xmlErrorDomain, and lastError.code in xmlParserErrors
                         Execution::ThrowIfNull (fResultNodeList,
                                                 Execution::RuntimeErrorException{Characters::Format (
-                                                    L"Error parsing xpath (domain %d, code %d)", fCtx->lastError.domain, fCtx->lastError.code)});
+                                                    L"Error parsing xpath %s: (domain %d, code %d)", Characters::ToString (e).c_str (),
+                                                    fCtx->lastError.domain, fCtx->lastError.code)});
                     }
                     Execution::ThrowIfNull (fResultNodeList);
                 }

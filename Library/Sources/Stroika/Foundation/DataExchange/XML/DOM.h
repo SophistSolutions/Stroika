@@ -156,6 +156,11 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
             nonvirtual Options GetOptions () const;
 
         public:
+            /**
+             */
+            nonvirtual String ToString () const;
+
+        public:
             nonvirtual shared_ptr<const IRep> GetRep () const;
 
         private:
