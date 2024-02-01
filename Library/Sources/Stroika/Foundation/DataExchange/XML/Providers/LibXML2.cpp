@@ -508,7 +508,7 @@ namespace {
             size_t                  size      = (resultSet) ? resultSet->nodeNr : 0;
             Sequence<XPath::Result> r;
             for (size_t i = 0; i < size; ++i) {
-                r += Memory::ValueOf (XPathLookupHelper_::ToResult (resultSet->nodeTab[0]));
+                r += Memory::ValueOf (XPathLookupHelper_::ToResult (resultSet->nodeTab[i]));
             }
             return r;
         }
