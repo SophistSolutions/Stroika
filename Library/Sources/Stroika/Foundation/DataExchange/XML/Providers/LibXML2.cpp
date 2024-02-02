@@ -587,12 +587,10 @@ namespace {
         }
         virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName) override
         {
-            xmlNodePtr n = xmlNewNode (NULL, BAD_CAST newEltName.fName.AsUTF8 ().c_str ());
-            // AND not super clear how to create the namespace if needed?; maybe pass null for Node and then use xmlDocNewDocumentEle.... or something like that???
-            // But this seems to work, so OK for now --LGP 2024-02-02
-            if (newEltName.fNamespace) {
-                (void)xmlNewNs (n, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
-            }
+            // confusing libxml api - OK to pass no node to xmlNewNs - just create the ns object
+            xmlNsPtr       ns = newEltName.fNamespace == nullopt ? nullptr: xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
+            // confusing libxml api - xmlNewDocNode replaces the better named xmlNewNode (happens HERE to be a document root node but in fact API used for any nodes)
+            xmlNodePtr n = xmlNewDocNode (fLibRep_, ns, BAD_CAST newEltName.fName.AsUTF8 ().c_str (), nullptr);
             xmlDocSetRootElement (fLibRep_, n);
             return WrapLibXML2NodeInStroikaNode_ (n);
         }
