@@ -587,12 +587,13 @@ namespace {
         }
         virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName) override
         {
-            xmlNodePtr n = xmlNewNode (NULL, BAD_CAST newEltName.fName.AsUTF8 ().c_str ()); // @todo NOT clear what characterset/encoding to use here!
-            xmlDocSetRootElement (fLibRep_, n);
-            // AND not super clear how to create the namespace if needed?
+            xmlNodePtr n = xmlNewNode (NULL, BAD_CAST newEltName.fName.AsUTF8 ().c_str ());
+            // AND not super clear how to create the namespace if needed?; maybe pass null for Node and then use xmlDocNewDocumentEle.... or something like that???
+            // But this seems to work, so OK for now --LGP 2024-02-02
             if (newEltName.fNamespace) {
                 (void)xmlNewNs (n, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr); // very unsure of this --LGP 2024-01-05
             }
+            xmlDocSetRootElement (fLibRep_, n);
             return WrapLibXML2NodeInStroikaNode_ (n);
         }
         virtual void Write (const Streams::OutputStream::Ptr<byte>& to, const SerializationOptions& options) const override
