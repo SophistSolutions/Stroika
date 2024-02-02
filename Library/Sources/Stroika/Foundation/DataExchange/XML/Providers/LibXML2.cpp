@@ -588,9 +588,17 @@ namespace {
         virtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName) override
         {
             // confusing libxml api - OK to pass no node to xmlNewNs - just create the ns object
-            xmlNsPtr       ns = newEltName.fNamespace == nullopt ? nullptr: xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
+            xmlNsPtr ns = newEltName.fNamespace == nullopt
+                              ? nullptr
+                              : xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
             // confusing libxml api - xmlNewDocNode replaces the better named xmlNewNode (happens HERE to be a document root node but in fact API used for any nodes)
             xmlNodePtr n = xmlNewDocNode (fLibRep_, ns, BAD_CAST newEltName.fName.AsUTF8 ().c_str (), nullptr);
+            if (ns != nullptr) {
+                // crazy hack cuz I cannot find other way to force n->nsDef to get set (and without that the namespace seems set until I write the docs to file)
+                // without this - DOM_WEIRD_LIBXML2_NAMESPACE_BUG fails (regtest 34) --LGP 2024-02-02
+                xmlNewNs (n, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
+                //     xmlSetNs (fLibRep_, ns);
+            }
             xmlDocSetRootElement (fLibRep_, n);
             return WrapLibXML2NodeInStroikaNode_ (n);
         }

@@ -444,13 +444,19 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             *  \brief Trivial wrapper on AppendElement, but if v is missing or "", then this is a no-op.
+             *  \brief Trivial wrapper on AppendElement, but if v is missing then this is a no-op.
              * 
              *  Trivial, but I've found helpful in making certain uses more terse.
              * 
              *  \req *this != nullptr
              */
-            nonvirtual Ptr AppendIfNotEmpty (const NameWithNamespace& eltName, const optional<String>& v);
+            nonvirtual Ptr AppendIf (const NameWithNamespace& eltName, const optional<String>& v);
+
+        public:
+            [[deprecated]] Ptr AppendIfNotEmpty (const NameWithNamespace& eltName, const optional<String>& v)
+            {
+                return AppendIf (eltName, v == nullopt or v->empty () ? nullopt : v);
+            }
 
         public:
             /**

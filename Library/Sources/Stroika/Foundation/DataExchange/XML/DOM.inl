@@ -213,7 +213,7 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         r.SetValue (v);
         return r;
     }
-    inline Element::Ptr Element::Ptr::AppendIfNotEmpty (const NameWithNamespace& eltName, const optional<String>& v)
+    inline Element::Ptr Element::Ptr::AppendIf (const NameWithNamespace& eltName, const optional<String>& v)
     {
         if (v) {
             auto r = Append (eltName);

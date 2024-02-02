@@ -1610,6 +1610,27 @@ namespace {
             EXPECT_EQ (conceptsElt.GetChildElements ().size (), 459u);
             EXPECT_NO_THROW (d.Validate (schema));
             //d.Write (IO::FileSystem::FileOutputStream::New (IO::FileSystem::ToPath (Characters::Format (L"c:/temp/foo%d.xml", ++i))));
+
+
+        });
+    }
+}
+
+
+namespace {
+    GTEST_TEST (Foundation_DataExchange_XML, DOM_WEIRD_LIBXML2_NAMESPACE_BUG)
+    {
+        DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
+            static const URI   kNS_              = "http://www.RecordsForLiving.com/doesntmatter";
+             DOM::Document::Ptr origD                = domFactory (nullptr, nullptr);
+            const auto         testName          = XML::NameWithNamespace{kNS_, "phred"};
+             origD.ReplaceRootElement (testName);
+            EXPECT_EQ (origD.GetRootElement ().GetName (), testName);
+             Streams::MemoryStream::Ptr<byte> ms = Streams::MemoryStream::New<byte> ();
+             origD.Write (ms);
+             DOM::Document::Ptr newD = domFactory (ms, nullptr);
+             EXPECT_EQ (newD.GetRootElement ().GetName (), testName);
+
         });
     }
 }
