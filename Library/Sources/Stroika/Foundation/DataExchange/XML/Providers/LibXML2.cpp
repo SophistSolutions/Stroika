@@ -572,7 +572,7 @@ namespace {
             ++sLiveCnt;
 #endif
         }
-        DocRep_ (DocRep_&&) = delete;
+        DocRep_ (DocRep_&&)           = delete;
         DocRep_& operator= (DocRep_&) = delete;
         ~DocRep_ ()
         {
@@ -676,7 +676,7 @@ namespace {
                 Execution::Throw (BadFormatException{validationCB.msg, lineNumber, columnNumber, fileOffset});
             }
         }
-        xmlDoc*                                                        fLibRep_{nullptr};
+        xmlDoc* fLibRep_{nullptr};
         list<xmlNsPtr> fNSs2Free_; // There probably is a better way with limxml2, but I cannot see how to avoid leaking these namespaces without this
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
