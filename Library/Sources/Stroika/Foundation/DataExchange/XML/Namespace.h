@@ -76,6 +76,11 @@ namespace Stroika::Foundation::DataExchange::XML {
         nonvirtual String ToString () const;
     };
 
+    /**
+     *  Common 'name/namespace' combo used internally in XML.
+     */
+    inline const NameWithNamespace kXMLNS{"http://www.w3.org/2000/xmlns/"sv, "xmlns"sv};
+
 }
 
 /*
