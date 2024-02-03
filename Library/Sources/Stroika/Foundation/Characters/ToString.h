@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Characters {
      *      o   std::filesystem::path
      *      o   exception_ptr
      *      o   POD types (int, bool, double, etc)
-     *      o   anything with .begin (), .end () - so any contrainer/iterable
+     *      o   anything with .begin (), .end () - so any container/iterable
      *      o   anything class(or struct) with a ToString () method
      *
      *  \note   Other types automatically supported
