@@ -40,14 +40,14 @@ namespace Stroika::Foundation::DataExchange::XML {
     inline String NamespaceDefinitions::ToString () const
     {
         Characters::StringBuilder sb;
-        sb << "{";
+        sb << "{"sv;
         if (fDefaultNamespace_) {
-            sb << "defaultNS: " << Characters::ToString (*fDefaultNamespace_) << ", ";
+            sb << "defaultNS: "sv << Characters::ToString (*fDefaultNamespace_) << ", "sv;
         }
         if (fDefaultNamespace_) {
-            sb << "prefixedNamespaces: " << Characters::ToString (fPrefixedNS_);
+            sb << "prefixedNamespaces: "sv << Characters::ToString (fPrefixedNS_);
         }
-        sb << "}";
+        sb << "}"sv;
         return sb.str ();
     }
 
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::DataExchange::XML {
     {
         Characters::StringBuilder sb;
         if (fNamespace) {
-            sb << fNamespace->As<String> () << ":";
+            sb << fNamespace->As<String> () << ":"sv;
         }
         sb << fName;
         return Characters::ToString (sb.str ());
