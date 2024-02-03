@@ -572,10 +572,15 @@ namespace {
             ++sLiveCnt;
 #endif
         }
+        DocRep_ (DocRep_&&) = delete;
+        DocRep_& operator= (DocRep_&) = delete;
         ~DocRep_ ()
         {
             AssertNotNull (fLibRep_);
             xmlFreeDoc (fLibRep_);
+            for (auto i : fNSs2Free_) {
+                xmlFreeNs (i);
+            }
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             Assert (sLiveCnt > 0);
             --sLiveCnt;
@@ -595,15 +600,11 @@ namespace {
             xmlNsPtr ns = newEltName.fNamespace == nullopt
                               ? nullptr
                               : xmlNewNs (nullptr, BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
+            if (ns != nullptr) {
+                fNSs2Free_.push_front (ns);
+            }
             // confusing libxml api - xmlNewDocNode replaces the better named xmlNewNode (happens HERE to be a document root node but in fact API used for any nodes)
             xmlNodePtr n = xmlNewDocNode (fLibRep_, ns, BAD_CAST newEltName.fName.AsUTF8 ().c_str (), nullptr);
-#if 0
-            if (ns != nullptr and childrenInheritNS) {
-                // Would have thought there would be a higher level (specific libxml2) API for this, but this is an OK way to set default ns
-                // --LGP 2024-02-03
-                xmlSetNsProp (n, nullptr, BAD_CAST "xmlns", BAD_CAST newEltName.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
-            }
-#endif
             xmlDocSetRootElement (fLibRep_, n);
             return WrapLibXML2NodeInStroikaNode_ (n);
         }
@@ -676,6 +677,7 @@ namespace {
             }
         }
         xmlDoc*                                                        fLibRep_{nullptr};
+        list<xmlNsPtr> fNSs2Free_; // There probably is a better way with limxml2, but I cannot see how to avoid leaking these namespaces without this
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 }
