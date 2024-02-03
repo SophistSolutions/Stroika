@@ -3,6 +3,8 @@
  */
 #include "../../../StroikaPreComp.h"
 
+#include <list>
+
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/DataExchange/BadFormatException.h"
