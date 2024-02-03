@@ -160,7 +160,19 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
     }
     inline optional<String> Element::Ptr::GetID () const
     {
-        return GetRep ()->GetAttribute ("id"sv);
+        static const NameWithNamespace kID_{"id"sv};
+        return GetRep ()->GetAttribute (kID_);
+    }
+    inline optional<URI> Element::Ptr::GetDefaultNamespace () const
+    {
+        if (auto v = GetAttribute (kXMLNS)) {
+            return URI{*v};
+        }
+        return nullopt;
+    }
+    inline void Element::Ptr::SetDefaultNamespace (const optional<URI> defaultNS)
+    {
+        SetAttribute (kXMLNS, defaultNS == nullopt ? optional<String>{} : defaultNS->As<String> ());
     }
     inline optional<String> Element::Ptr::GetValue (const XPath::Expression& e) const
     {
@@ -197,7 +209,8 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
                 return;
             }
         }
-        Execution::Throw (Execution::RuntimeErrorException<> ("Node not found relative to given element"));
+        static const auto kException_ = Execution::RuntimeErrorException<> ("Node not found relative to given element");
+        Execution::Throw (kException_);
     }
     inline auto Element::Ptr::Insert (const NameWithNamespace& eltName, const Node::Ptr& afterNode) -> Ptr
     {
@@ -352,10 +365,14 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
         }
         return Element::Ptr{nullptr};
     }
-    inline Element::Ptr Document::Ptr::ReplaceRootElement (const NameWithNamespace& newEltName) const
+    inline Element::Ptr Document::Ptr::ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS) const
     {
         // Note this cannot be implemented using the existing Replace () mechanism for elements because the document could be created without a root.
-        return GetRep ()->ReplaceRootElement (newEltName);
+        Element::Ptr r = GetRep ()->ReplaceRootElement (newEltName);
+        if (childrenInheritNS) {
+            r.SetDefaultNamespace (newEltName.fNamespace);
+        }
+        return r;
     }
 
 }

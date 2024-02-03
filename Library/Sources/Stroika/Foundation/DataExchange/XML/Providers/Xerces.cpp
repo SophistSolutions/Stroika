@@ -903,6 +903,10 @@ namespace {
             {
                 DOMElement* element = dynamic_cast<DOMElement*> (fNode_);
                 ThrowIfNull (element);
+                /* 
+                     * SINCE STROIKA V3.0d5 - if no namespace given on attrName, we use nullptr as the namespace (not do any inheritance)
+                     * attributes usually have no namespace!!!!
+                     */
                 if (v) {
                     /*
                      * For reasons that elude maybe (maybe because it was standard for XML early on)
@@ -919,15 +923,13 @@ namespace {
                      * 
                      *  MAYBE related to  https://stroika.atlassian.net/browse/STK-999 - diff symptoms but similar workaround
                      */
-                    element->setAttributeNS (attrName.fNamespace ? attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str ()
-                                                                 : fNode_->getNamespaceURI (),
+                    element->setAttributeNS (attrName.fNamespace ? attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str () : nullptr,
                                              attrName.fName.As<u16string> ().c_str (), v->As<u16string> ().c_str ());
                 }
                 else {
-                    element->removeAttributeNS (attrName.fNamespace
-                                                    ? attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str ()
-                                                    : fNode_->getNamespaceURI (),
-                                                attrName.fName.As<u16string> ().c_str ());
+                    element->removeAttributeNS (
+                        attrName.fNamespace ? attrName.fNamespace->As<String> (kUseURIEncodingFlag_).As<u16string> ().c_str () : nullptr,
+                        attrName.fName.As<u16string> ().c_str ());
                 }
             }
             END_LIB_EXCEPTION_MAPPER_

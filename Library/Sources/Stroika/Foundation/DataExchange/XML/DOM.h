@@ -339,6 +339,9 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
          * 
          *  If you assign a non-Element to an Element::Ptr, it automatically, silently becomes nullptr (like dynamic_cast).
          * 
+         *  \note Giving a namespace to an element is done by giving an xmlns=XXX attribute, so the namespace
+         *        is inherited by all children
+         * 
          *  TODO:
          *      \todo   Maybe add GetNamespaceDefinitions () to return a NamespaceDefinitionsList object with the prefixes
          *              default, and namespace URIs for this particular element. But so far no need.
@@ -385,6 +388,21 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
              *  \req *this != nullptr
              */
             nonvirtual optional<String> GetID () const;
+
+        public:
+            /**
+             *  Gets the XML xmlns= attribute associated with THIS element. This is the default namespace used for this element
+             *  and all children. If its missing (even if a parent element has a default namespace) - this will return nullopt.
+             */
+            nonvirtual optional<URI> GetDefaultNamespace () const;
+
+        public:
+            /**
+             *  \brief Sets the xmlns attribute of this element
+             * 
+             *  \see GetDefaultNamespace
+             */
+            nonvirtual void SetDefaultNamespace (const optional<URI> defaultNS = nullopt);
 
         public:
             /**
@@ -658,9 +676,12 @@ namespace Stroika::Foundation::DataExchange::XML::DOM {
 
         public:
             /**
-             *  if there exists a root element, this is the same as GetRootElement ().Replace (arg);
+             *  If there exists a root element, this is the same as GetRootElement ().Replace (arg), except for the childrenInheritNS part)
+             * 
+             *  \note this creates an xmlns=NS attribute on the root element if a namespace is given in newEltName, so that the namespace
+             *        is inherited by subelements.
              */
-            nonvirtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName) const;
+            nonvirtual Element::Ptr ReplaceRootElement (const NameWithNamespace& newEltName, bool childrenInheritNS = true) const;
 
         public:
             /**
