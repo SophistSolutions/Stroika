@@ -1411,28 +1411,28 @@ namespace {
 }
 
 namespace {
-    void Test48_ToString_ ()
+    GTEST_TEST (Foundation_Characters, Test48_ToString_)
     {
         Debug::TraceContextBumper ctx{"Test48_ToString_"};
-        EXPECT_TRUE (ToString (3) == "3");
-        EXPECT_TRUE (ToString (3u, ios_base::hex) == "0x3");
-        EXPECT_TRUE (ToString (3u) == "3");
+        EXPECT_EQ (ToString (3) , "3");
+        EXPECT_EQ (ToString (3u, ios_base::hex) , "0x3");
+        EXPECT_EQ (ToString (3u) , "3");
         EXPECT_TRUE (ToString (1.0).StartsWith ("1"));
-        EXPECT_TRUE (ToString ("abc") == "'abc'");
-        EXPECT_TRUE (ToString (String{"abc"}) == "'abc'");
-        EXPECT_TRUE (ToString (initializer_list<int>{3, 4, 5}) == "[ 3, 4, 5 ]");
+        EXPECT_EQ (ToString ("abc") , "'abc'");
+        EXPECT_EQ (ToString (String{"abc"}) , "'abc'");
+        EXPECT_EQ (ToString ((initializer_list<int>{3, 4, 5})) , "[ 3, 4, 5 ]");
         {
             using namespace Memory;
-            constexpr byte kSample_[] = {0x34_b, 0x55_b, 0x1f_b};
+            constexpr byte kSample_[] = {0x94_b, 0x55_b, 0x1f_b};   // note format may change - and if ascii - format is different
             Memory::BLOB   b{begin (kSample_), end (kSample_)};
-            EXPECT_TRUE (b.ToString () == "[3 bytes: 34551f]");
-            EXPECT_TRUE (Characters::ToString (b) == "[3 bytes: 34551f]");
+            EXPECT_EQ (b.ToString (), "[3 bytes: 94551f]");
+            EXPECT_EQ (Characters::ToString (b) , "[3 bytes: 94551f]");
         }
         {
             constexpr int ca[3]{1, 3, 5};
             int           a[3]{1, 3, 5};
-            EXPECT_TRUE (Characters::ToString (ca) == "[ 1, 3, 5 ]");
-            EXPECT_TRUE (Characters::ToString (a) == "[ 1, 3, 5 ]");
+            EXPECT_EQ (Characters::ToString (ca) , "[ 1, 3, 5 ]");
+            EXPECT_EQ (Characters::ToString (a) , "[ 1, 3, 5 ]");
         }
     }
 }
@@ -1922,7 +1922,6 @@ namespace {
         Test45_Tokenize_ ();
         Test46_CompareLHSRHS_ ();
         Test47_SubString_ ();
-        Test48_ToString_ ();
         Test49_SetOfStringCTORIssue_ ();
         Test50a_UnicodeStringLiterals_ ();
         Test50_Utf8Conversions_ ();
