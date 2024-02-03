@@ -1414,25 +1414,25 @@ namespace {
     GTEST_TEST (Foundation_Characters, Test48_ToString_)
     {
         Debug::TraceContextBumper ctx{"Test48_ToString_"};
-        EXPECT_EQ (ToString (3) , "3");
-        EXPECT_EQ (ToString (3u, ios_base::hex) , "0x3");
-        EXPECT_EQ (ToString (3u) , "3");
+        EXPECT_EQ (ToString (3), "3");
+        EXPECT_EQ (ToString (3u, ios_base::hex), "0x3");
+        EXPECT_EQ (ToString (3u), "3");
         EXPECT_TRUE (ToString (1.0).StartsWith ("1"));
-        EXPECT_EQ (ToString ("abc") , "'abc'");
-        EXPECT_EQ (ToString (String{"abc"}) , "'abc'");
-        EXPECT_EQ (ToString ((initializer_list<int>{3, 4, 5})) , "[ 3, 4, 5 ]");
+        EXPECT_EQ (ToString ("abc"), "'abc'");
+        EXPECT_EQ (ToString (String{"abc"}), "'abc'");
+        EXPECT_EQ (ToString ((initializer_list<int>{3, 4, 5})), "[ 3, 4, 5 ]");
         {
             using namespace Memory;
-            constexpr byte kSample_[] = {0x94_b, 0x55_b, 0x1f_b};   // note format may change - and if ascii - format is different
+            constexpr byte kSample_[] = {0x94_b, 0x55_b, 0x1f_b}; // note format may change - and if ascii - format is different
             Memory::BLOB   b{begin (kSample_), end (kSample_)};
             EXPECT_EQ (b.ToString (), "[3 bytes: 94551f]");
-            EXPECT_EQ (Characters::ToString (b) , "[3 bytes: 94551f]");
+            EXPECT_EQ (Characters::ToString (b), "[3 bytes: 94551f]");
         }
         {
             constexpr int ca[3]{1, 3, 5};
             int           a[3]{1, 3, 5};
-            EXPECT_EQ (Characters::ToString (ca) , "[ 1, 3, 5 ]");
-            EXPECT_EQ (Characters::ToString (a) , "[ 1, 3, 5 ]");
+            EXPECT_EQ (Characters::ToString (ca), "[ 1, 3, 5 ]");
+            EXPECT_EQ (Characters::ToString (a), "[ 1, 3, 5 ]");
         }
     }
 }

@@ -3,6 +3,7 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../Characters/Character.h"
 #include "../Characters/Format.h"
 #include "../Characters/StringBuilder.h"
 #include "../Cryptography/Encoding/Algorithm/Base64.h"
@@ -371,18 +372,32 @@ BLOB BLOB::Slice (size_t startAt, size_t endAt) const
     Require (startAt <= endAt);
     Require (endAt < size ());
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return BLOB (begin () + startAt, begin () + endAt);
+    return BLOB{begin () + startAt, begin () + endAt};
 }
 
 String BLOB::ToString (size_t maxBytesToShow) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+    bool allBytesAscii = [this] () { return Character::IsASCII (Memory::SpanReInterpretCast<const char> (this->As<span<const byte>> ())); }();
+    auto quoteAscii4Display = [] (const String& s) {
+        return s.ReplaceAll ("\n"sv, "\\n"sv).ReplaceAll ("\r"sv, "\\r"sv); // todo more such
+    };
     if (size () > maxBytesToShow) {
-        String hexStr    = AsHex (maxBytesToShow + 1); // so we can replace/elispis with LimitLength ()
-        size_t maxStrLen = maxBytesToShow < numeric_limits<size_t>::max () / 2 ? maxBytesToShow * 2 : maxBytesToShow;
-        return Characters::Format (L"[%d bytes: ", size ()) + hexStr.LimitLength (maxStrLen) + L"]";
+        if (allBytesAscii) {
+            return Characters::Format (L"[%d bytes: '%s' ...]", size (), quoteAscii4Display (String{this->As<string> ()}).c_str ());
+        }
+        else {
+            String hexStr    = AsHex (maxBytesToShow + 1); // so we can replace/ellipsis with LimitLength ()
+            size_t maxStrLen = maxBytesToShow < numeric_limits<size_t>::max () / 2 ? maxBytesToShow * 2 : maxBytesToShow;
+            return Characters::Format (L"[%d bytes: ", size ()) + hexStr.LimitLength (maxStrLen) + L"]";
+        }
     }
     else {
-        return Characters::Format (L"[%d bytes: ", size ()) + AsHex () + L"]";
+        if (allBytesAscii) {
+            return Characters::Format (L"[%d bytes: '%s']", size (), quoteAscii4Display (String{this->As<string> ()}).c_str ());
+        }
+        else {
+            return Characters::Format (L"[%d bytes: ", size ()) + AsHex () + L"]";
+        }
     }
 }
