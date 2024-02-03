@@ -148,6 +148,7 @@ namespace Stroika::Foundation::Characters {
     //static_assert (IPossibleCharacterRepresentation<Character>); true but not defined yet, so cannot assert here
     static_assert (IPossibleCharacterRepresentation<ASCII>);
     static_assert (IPossibleCharacterRepresentation<Latin1>);
+    static_assert (not IPossibleCharacterRepresentation<std::byte>);
 
     /**
      *  \brief IUNICODECanUnambiguouslyConvertFrom is any 'character representation type' where array of them unambiguously convertible to UNICODE string
