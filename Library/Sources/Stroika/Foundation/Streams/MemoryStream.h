@@ -131,6 +131,12 @@ namespace Stroika::Foundation ::Streams::MemoryStream {
             requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and (same_as<T, Memory::BLOB> or same_as<T, string>)) or
                       (same_as<ELEMENT_TYPE, Characters::Character> and (same_as<T, Characters::String>)));
 
+    public:
+        /**
+         *  Dump in some debugger friendly format/summary
+         */
+        nonvirtual Characters::String ToString () const;
+
     private:
         /**
          * \req *this != nullptr

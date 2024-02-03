@@ -585,9 +585,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaTypeRegistry.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
@@ -827,6 +824,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Resource.cpp">
       <Filter>Sources\DataExchange\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.cpp">
+      <Filter>Sources\Streams</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

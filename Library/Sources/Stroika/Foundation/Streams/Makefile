@@ -25,6 +25,7 @@ SubDirs	=	\
 Objs	=	\
 	$(ObjDir)EOFException${OBJ_SUFFIX}\
 	$(ObjDir)InputStream${OBJ_SUFFIX}\
+	$(ObjDir)MemoryStream${OBJ_SUFFIX}\
 	$(ObjDir)TextReader${OBJ_SUFFIX}\
 	$(ObjDir)TextToByteReader${OBJ_SUFFIX}\
 

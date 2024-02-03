@@ -230,6 +230,9 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
         };
     }
+    namespace Private_ {
+        Characters::String MemStream2StringHelper_ (const span<const byte>& s); // helper to avoid needless #include of ToString code
+    }
 
     /*
      ********************************************************************************
@@ -309,6 +312,11 @@ namespace Stroika::Foundation::Streams::MemoryStream {
             auto tmp = GetRepConstRef_ ().AsVector ();
             return String{span{tmp}};
         }
+    }
+    template <typename ELEMENT_TYPE>
+    inline Characters::String Ptr<ELEMENT_TYPE>::ToString () const
+    {
+        return Private_::MemStream2StringHelper_ (GetRepConstRef_ ().AsVector ());
     }
 
     template <typename ELEMENT_TYPE>
