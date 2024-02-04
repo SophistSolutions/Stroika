@@ -7,6 +7,77 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+### 2.1.15 {2024-02-04}  -- DRAFT
+--SEE IF "runs on raspberry pi with builds" caveat still needed - testing
+#### TLDR
+- Support more recent compilers/changes
+  - better visual studio ASAN workaround (configure LinkTime_CopyFilesToEXEDir)
+- Fix issue downloading thirdparty components, and updated a few to latest versions
+
+#### Change Details
+- Build System
+  - Docker Containers
+    - Visual studio use VS_16_11_33 and VS_17_8_5
+  - Configuration Scripts
+    - LinkTime_CopyFilesToEXEDir in configure and make scripts; used to replace RUN_PREFIX hack and script hack to workaround MSFT ASAN bug/misfeature/regression; lose ScriptsLib/Vs2kASANBugWorkaround
+  - Github actions
+    - dont use specifc version of g++ for codeql test cuz on ubuntu latest
+- Docs
+  - update regtets docs
+- Library
+  - Misc 
+    - basic support for _MSC_VER_2k22_17Pt8_
+    - update bug defines for latest macos/xcode etc
+    - make format-code (clang-format version 16.0.5)
+- RegressionTests and Sanitizers
+- ThirdPartyComponents
+  - curl 
+    - Version 8.5.0
+  - openssl
+    - Adjusted FETCHURLS for openssl so should find older openssl builds for a while longer
+    - Version 3.2.0
+  - boost
+    - Version 1.84.0
+    - Disabled boost by default on gcc 8 and gcc 10, since fails to build on ubuntu (various reasons)
+  - sqlite
+    - Version 3.45.0
+
+#### Release-Validation
+
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13, 15 }
+  - MSVC: { 15.9.50, 16.11.33, 17.8.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 22H2
+    - Windows 11 version 23H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 14.0 (Ventura) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+
+-----
+
 ### 2.1.14 {2023-09-07}
 
 #### TLDR
@@ -77,7 +148,6 @@ especially those they need to be aware of when upgrading.
     - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
   - VS2k22
     - ASAN builds disabled in vs2k22 builds due to [STK-984](https://stroika.atlassian.net/browse/STK-984)
-
 
 ------------------------
 
