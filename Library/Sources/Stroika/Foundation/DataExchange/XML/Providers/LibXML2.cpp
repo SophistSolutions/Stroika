@@ -196,6 +196,17 @@ namespace {
 }
 
 namespace {
+    struct DocRep_;
+    DocRep_* GetWrapperDoc_ (xmlDoc* d);
+    DocRep_* GetWrapperDoc_ (xmlNode* n)
+    {
+        RequireNotNull (n);
+        RequireNotNull (n->doc);
+        return GetWrapperDoc_ (n->doc);
+    }
+}
+
+namespace {
     Node::Ptr WrapLibXML2NodeInStroikaNode_ (xmlNode* n);
 }
 
@@ -362,6 +373,7 @@ namespace {
         {
             RequireNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT);
+
             if (attrName.fNamespace) {
                 // Lookup the argument ns and either add it to this node or use the existing one
                 xmlSetNsProp (fNode_, genNS2Use_ (fNode_, *attrName.fNamespace), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
@@ -563,6 +575,12 @@ namespace {
                 }
                 fLibRep_ = ctxt->myDoc;
             }
+            /*
+             *  From https://opensource.apple.com/source/libxml2/libxml2-7/libxml2/doc/html/libxml-tree.html
+             * 
+             *              void *	_private	: For user data, libxml won't touch it (sometimes it says 'application data' - which is a bit less clear)
+             */
+            fLibRep_->_private = this;
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
 #endif
@@ -570,6 +588,7 @@ namespace {
         DocRep_ (const DocRep_& from)
         {
             fLibRep_ = xmlCopyDoc (from.fLibRep_, 1);
+            fLibRep_->_private = this;
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
 #endif
@@ -579,6 +598,7 @@ namespace {
         ~DocRep_ ()
         {
             AssertNotNull (fLibRep_);
+            Assert (fLibRep_->_private == this);
             xmlFreeDoc (fLibRep_);
             for (auto i : fNSs2Free_) {
                 xmlFreeNs (i);
@@ -682,6 +702,13 @@ namespace {
         list<xmlNsPtr> fNSs2Free_; // There probably is a better way with limxml2, but I cannot see how to avoid leaking these namespaces without this
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
+    DocRep_* GetWrapperDoc_ (xmlDoc* d)
+    {
+        RequireNotNull (d);
+        DocRep_* wrapperDoc = reinterpret_cast<DocRep_*> (d->_private);
+        Assert (wrapperDoc->fLibRep_ == d); // else grave disorder
+        return wrapperDoc;
+    }
 }
 
 /*
