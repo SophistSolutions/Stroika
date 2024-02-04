@@ -204,6 +204,13 @@ namespace {
         RequireNotNull (n->doc);
         return GetWrapperDoc_ (n->doc);
     }
+    xmlNs* GetSharedReUsableXMLNSParentNamespace_ (xmlDoc* d);
+    xmlNs* GetSharedReUsableXMLNSParentNamespace_ (xmlNode* n)
+    {
+        RequireNotNull (n);
+        RequireNotNull (n->doc);
+        return GetSharedReUsableXMLNSParentNamespace_ (n->doc);
+    }
 }
 
 namespace {
@@ -316,12 +323,6 @@ namespace {
         }
         static xmlNsPtr genNS2Use_ (xmlNode* n, const URI& ns)
         {
-            if (true) {
-                // https://stroika.atlassian.net/browse/STK-1001
-                if (ns == kXMLNS.fNamespace) {
-                    return nullptr;
-                }
-            }
             xmlNsPtr              ns2Use = xmlSearchNsByHref (n->doc, n, BAD_CAST ns.As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str ());
             basic_string<xmlChar> prefix2Try{BAD_CAST "a"};
             while (ns2Use == nullptr) {
@@ -373,6 +374,17 @@ namespace {
         {
             RequireNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT);
+
+            if (attrName == kXMLNS) {
+                // https://stroika.atlassian.net/browse/STK-1001
+                //  xmlNs* xmlNS2Use = xmlNewNs (nullptr, BAD_CAST kXMLNS.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
+                xmlNs* xmlNS2Use = GetSharedReUsableXMLNSParentNamespace_ (fNode_);
+                xmlSetNsProp (fNode_, xmlNS2Use, BAD_CAST attrName.fName.AsUTF8 ().c_str (),
+                              v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
+
+                // save
+                return;
+            }
 
             if (attrName.fNamespace) {
                 // Lookup the argument ns and either add it to this node or use the existing one
@@ -581,13 +593,17 @@ namespace {
              *              void *	_private	: For user data, libxml won't touch it (sometimes it says 'application data' - which is a bit less clear)
              */
             fLibRep_->_private = this;
+            fXmlnsNamespace2Use = xmlNewNs (nullptr, BAD_CAST kXMLNS.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
+            fNSs2Free_.push_front (fXmlnsNamespace2Use);
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
 #endif
         }
         DocRep_ (const DocRep_& from)
         {
-            fLibRep_ = xmlCopyDoc (from.fLibRep_, 1);
+            fLibRep_ = xmlCopyDoc (from.fLibRep_, 1); // unclear if this does the right thing with the xmlns???? if any pointers to it??? --LGP 2024-02-04
+            fXmlnsNamespace2Use = xmlNewNs (nullptr, BAD_CAST kXMLNS.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
+            fNSs2Free_.push_front (fXmlnsNamespace2Use);
             fLibRep_->_private = this;
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
@@ -699,6 +715,7 @@ namespace {
             }
         }
         xmlDoc* fLibRep_{nullptr};
+        xmlNs* fXmlnsNamespace2Use{nullptr}; // some APIs require this existing, but not sure where to put it??? and dont want to create a bunch of them... --LGP 2024-02-04
         list<xmlNsPtr> fNSs2Free_; // There probably is a better way with limxml2, but I cannot see how to avoid leaking these namespaces without this
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
@@ -708,6 +725,10 @@ namespace {
         DocRep_* wrapperDoc = reinterpret_cast<DocRep_*> (d->_private);
         Assert (wrapperDoc->fLibRep_ == d); // else grave disorder
         return wrapperDoc;
+    }
+    xmlNs* GetSharedReUsableXMLNSParentNamespace_ (xmlDoc* d)
+    {
+        return GetWrapperDoc_ (d)->fXmlnsNamespace2Use;
     }
 }
 
