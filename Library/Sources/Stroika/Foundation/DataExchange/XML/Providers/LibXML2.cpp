@@ -590,7 +590,7 @@ namespace {
             /*
              *  From https://opensource.apple.com/source/libxml2/libxml2-7/libxml2/doc/html/libxml-tree.html
              * 
-             *              void *	_private	: For user data, libxml won't touch it (sometimes it says 'application data' - which is a bit less clear)
+             *              void *  _private    : For user data, libxml won't touch it (sometimes it says 'application data' - which is a bit less clear)
              */
             fLibRep_->_private = this;
             fXmlnsNamespace2Use = xmlNewNs (nullptr, BAD_CAST kXMLNS.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
