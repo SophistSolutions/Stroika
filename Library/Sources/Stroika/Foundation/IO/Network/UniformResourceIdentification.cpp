@@ -325,13 +325,11 @@ namespace {
     }
 }
 Query::Query (const String& query)
-    : fMap_{}
 {
     InitURLQueryDecoder_ (&fMap_, query.AsASCII<u8string> ());
 }
 
 Query::Query (const u8string& query)
-    : fMap_{}
 {
     InitURLQueryDecoder_ (&fMap_, query);
 }
@@ -404,7 +402,7 @@ u8string UniformResourceIdentification::EncodeURLQueryStringField (const String&
         Containers::Support::ReserveTweaks::Reserve4Add1 (result);
         switch (utf8Query[i]) {
             case ' ':
-                result += u8"+";
+                result += u8"+"sv;
                 break;
             default: {
                 char8_t ccode = utf8Query[i];
@@ -537,7 +535,8 @@ u8string UniformResourceIdentification::PCTDecode (const u8string& s)
                     result += (newC);
                 }
                 else {
-                    Execution::Throw (Execution::RuntimeErrorException{"incomplete % encoded character in URI"sv});
+                    static const auto kException_ = Execution::RuntimeErrorException{"incomplete % encoded character in URI"sv};
+                    Execution::Throw (kException_);
                 }
             } break;
             default: {
@@ -571,5 +570,5 @@ String UniformResourceIdentification::PCTDecode2String (const String& s)
 size_t std::hash<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host>::operator() (
     const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& arg) const
 {
-    return hash<Characters::String> () (arg.As<Characters::String> (UniformResourceIdentification::Host::eDecoded));
+    return hash<Characters::String>{}(arg.As<Characters::String> (UniformResourceIdentification::Host::eDecoded));
 }
