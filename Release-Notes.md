@@ -23,6 +23,7 @@ especially those they need to be aware of when upgrading.
     - LinkTime_CopyFilesToEXEDir in configure and make scripts; used to replace RUN_PREFIX hack and script hack to workaround MSFT ASAN bug/misfeature/regression; lose ScriptsLib/Vs2kASANBugWorkaround
   - Github actions
     - dont use specifc version of g++ for codeql test cuz on ubuntu latest
+    - dont build boost since version of g++ used doesn't work with boost
 - Docs
   - update regtets docs
 - Library
