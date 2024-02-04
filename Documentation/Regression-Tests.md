@@ -36,8 +36,8 @@ checkin from one spot.
   (takes about 1 HR)
 
   ```bash
-MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode15_m1 PARALELLMAKEFLAG=-j5 \
-    ./ScriptsLib/RunRemoteRegressionTests
+  MACHINE=lewis-Mac2 USE_TEST_BASENAME=MacOS_XCode15_m1 PARALELLMAKEFLAG=-j5 \
+      ./ScriptsLib/RunRemoteRegressionTests
   ```
 
 - \$TEST_TARGET=Windows_VS2k17
