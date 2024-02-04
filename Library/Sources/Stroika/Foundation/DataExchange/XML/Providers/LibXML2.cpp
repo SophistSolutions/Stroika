@@ -374,29 +374,22 @@ namespace {
         {
             RequireNotNull (fNode_);
             Require (GetNodeType () == Node::eElementNT);
-
             if (attrName == kXMLNS) {
-                // https://stroika.atlassian.net/browse/STK-1001
-                //  xmlNs* xmlNS2Use = xmlNewNs (nullptr, BAD_CAST kXMLNS.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
-                xmlNs* xmlNS2Use = GetSharedReUsableXMLNSParentNamespace_ (fNode_);
-                xmlSetNsProp (fNode_, xmlNS2Use, BAD_CAST attrName.fName.AsUTF8 ().c_str (),
+                /*
+                 *  Queer, but libxml2 appears to require this attribute have the given namespace (fine) - but not provide a usable xmlNs object.
+                 *  So we must create it on the document, and free it when we free the document.
+                 *
+                 *      \see https://stroika.atlassian.net/browse/STK-1001
+                 */
+                xmlSetNsProp (fNode_, GetSharedReUsableXMLNSParentNamespace_ (fNode_), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
                               v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
-
-                // save
-                return;
             }
-
-            if (attrName.fNamespace) {
+            else if (attrName.fNamespace) {
                 // Lookup the argument ns and either add it to this node or use the existing one
                 xmlSetNsProp (fNode_, genNS2Use_ (fNode_, *attrName.fNamespace), BAD_CAST attrName.fName.AsUTF8 ().c_str (),
                               v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
             else {
-#if 0
-                // Using kNS_ in the xmlSetNsProp call will produce schema validation failure with libxml2 - https://stroika.atlassian.net/browse/STK-999
-                xmlSetNsProp (fNode_, fNode_->ns, BAD_CAST attrName.fName.AsUTF8 ().c_str (),
-                              v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
-#endif
                 xmlSetProp (fNode_, BAD_CAST attrName.fName.AsUTF8 ().c_str (), v == nullopt ? nullptr : (BAD_CAST v->AsUTF8 ().c_str ()));
             }
         }
@@ -593,8 +586,6 @@ namespace {
              *              void *  _private    : For user data, libxml won't touch it (sometimes it says 'application data' - which is a bit less clear)
              */
             fLibRep_->_private = this;
-            fXmlnsNamespace2Use = xmlNewNs (nullptr, BAD_CAST kXMLNS.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
-            fNSs2Free_.push_front (fXmlnsNamespace2Use);
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
 #endif
@@ -602,8 +593,6 @@ namespace {
         DocRep_ (const DocRep_& from)
         {
             fLibRep_ = xmlCopyDoc (from.fLibRep_, 1); // unclear if this does the right thing with the xmlns???? if any pointers to it??? --LGP 2024-02-04
-            fXmlnsNamespace2Use = xmlNewNs (nullptr, BAD_CAST kXMLNS.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
-            fNSs2Free_.push_front (fXmlnsNamespace2Use);
             fLibRep_->_private = this;
 #if qStroika_Foundation_DataExchange_XML_DebugMemoryAllocations
             ++sLiveCnt;
@@ -728,7 +717,14 @@ namespace {
     }
     xmlNs* GetSharedReUsableXMLNSParentNamespace_ (xmlDoc* d)
     {
-        return GetWrapperDoc_ (d)->fXmlnsNamespace2Use;
+        auto wrapperDoc = GetWrapperDoc_ (d);
+        if (wrapperDoc->fXmlnsNamespace2Use == nullptr) {
+            // lazy create, since not always needed
+            wrapperDoc->fXmlnsNamespace2Use =
+                xmlNewNs (nullptr, BAD_CAST kXMLNS.fNamespace->As<String> (kUseURIEncodingFlag_).AsUTF8 ().c_str (), nullptr);
+            wrapperDoc->fNSs2Free_.push_front (wrapperDoc->fXmlnsNamespace2Use);
+        }
+        return wrapperDoc->fXmlnsNamespace2Use;
     }
 }
 
