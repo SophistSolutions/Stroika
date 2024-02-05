@@ -8,11 +8,13 @@ especially those they need to be aware of when upgrading.
 ## History
 
 ### 2.1.15 {2024-02-05}
---SEE IF "runs on raspberry pi with builds" caveat still needed - testing
+
 #### TLDR
+- Minor
 - Support more recent compilers/changes
   - better visual studio ASAN workaround (configure LinkTime_CopyFilesToEXEDir)
-- Fix issue downloading thirdparty components, and updated a few to latest versions
+- Fix issue downloading thirdparty components
+- Updated many third party components to latest versions
 
 #### Change Details
 - Build System
@@ -71,8 +73,6 @@ especially those they need to be aware of when upgrading.
 - Known (minor) issues with regression test output
   - raspberrypi
     - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
-    - runs on raspberry pi with builds from newer Ubuntu 22.04 fails due to my inability to get the latest gcc lib installed on my raspberrypi
-    - tests don't run when built from Ubuntu 22.04 due to glibc version
   - VS2k17
     - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
 
