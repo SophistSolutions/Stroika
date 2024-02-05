@@ -18,7 +18,8 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 # because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
 .NOTPARALLEL:
 
-VERSION=3450000
+VERSION=3450100
+#VERSION=3450000
 #VERSION=3440200
 #VERSION=3440000
 #VERSION=3430000
@@ -44,11 +45,11 @@ AMALGAMATION_WITH_VERSION=sqlite-amalgamation-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(AMALGAMATION_WITH_VERSION).zip
 
 FETCHURLS=
+FETCHURLS+=https://www.sqlite.org/2024/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2023/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2022/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2021/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2020/$(AMALGAMATION_WITH_VERSION).zip
-FETCHURLS+=https://www.sqlite.org/2019/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://github.com/azadkuh/sqlite-amalgamation/archive/${MAPPED_VERSION}.zip
 
 
