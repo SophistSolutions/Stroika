@@ -11,8 +11,8 @@ especially those they need to be aware of when upgrading.
 
 #### TLDR
 - Minor
-- Support more recent compilers/changes
-  - better visual studio ASAN workaround (configure LinkTime_CopyFilesToEXEDir)
+- Support more recent compilers/changes - in e.g. visual studio 17.8.x
+- Re-enable ASAN for for visual studio debug builds - found better workaround for [STK-984](https://stroika.atlassian.net/browse/STK-984) - configure LinkTime_CopyFilesToEXEDir.
 - Fix issue downloading thirdparty components
 - Updated many third party components to latest versions
 
@@ -26,7 +26,7 @@ especially those they need to be aware of when upgrading.
     - dont use specifc version of g++ for codeql test cuz on ubuntu latest
     - dont build boost since version of g++ used doesn't work with boost
 - Docs
-  - update regtets docs
+  - update regtest docs
 - Library
   - Misc 
     - basic support for _MSC_VER_2k22_17Pt8_
