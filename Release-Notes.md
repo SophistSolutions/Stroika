@@ -73,6 +73,7 @@ especially those they need to be aware of when upgrading.
 - Known (minor) issues with regression test output
   - raspberrypi
     - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - Cross-compiled from Ubuntu 22.04 has a number of failures, un-investigated (will address in Stroika v3)
   - VS2k17
     - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
 
