@@ -154,6 +154,11 @@ namespace Stroika::Foundation::Memory {
     constexpr const T& ValueOf (const optional<T>& t);
 
     /**
+     */
+    template <typename EXCEPT, typename T>
+    const T& ValueOfOrThrow (const optional<T>& t, const EXCEPT& throwIfNull = {});
+
+    /**
      *  'Constructor' taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
      *  with code that uses null-pointers to mean 'is-missing': nullptr means missing, and if non null,
      *  derefrence and copy.
