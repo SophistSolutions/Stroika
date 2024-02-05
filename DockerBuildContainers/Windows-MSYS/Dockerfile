@@ -61,8 +61,7 @@ ARG MSYS_20220118=https://github.com/msys2/msys2-installer/releases/download/202
 ARG MSYS_20220904=https://github.com/msys2/msys2-installer/releases/download/2022-09-04/msys2-base-x86_64-20220904.sfx.exe
 ARG MSYS_20230127=https://github.com/msys2/msys2-installer/releases/download/2023-01-27/msys2-base-x86_64-20230127.sfx.exe
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
-  Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20230127" -OutFile msys2.exe; \
+RUN Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20230127" -OutFile msys2.exe; \
   .\msys2.exe -y -oC:\; \
   Remove-Item msys2.exe ;\
   function msys() { C:\msys64\usr\bin\bash.exe @('-lc') + @Args; } \
