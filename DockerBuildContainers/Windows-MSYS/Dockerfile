@@ -53,7 +53,7 @@ FROM ${BASE_IMAGE}
 
 
 ### OR INSTALL VIA MSYS INSTALLER
-#### <MYS_INSTALLER>
+#### <MSYS_INSTALLER>
 ARG MSYS_DIR=c:/msys64/
 ARG MSYS_ASDOS_DIR=c:\msys64
 ARG MSYS_LatestRelease=https://github.com/msys2/msys2-installer/releases/download/nightly-x86_64/msys2-base-x86_64-latest.sfx.exe
@@ -69,7 +69,7 @@ RUN Invoke-WebRequest -UseBasicParsing -uri "$env:MSYS_20230127" -OutFile msys2.
   msys 'pacman --noconfirm -Syuu'; \
   msys 'pacman --noconfirm -Syuu'; \
   cmd /c del /f /s /q 'C:\$Recycle.Bin'
-#### </MYS_INSTALLER>
+#### </MSYS_INSTALLER>
 
 
 ## Complete MSYS install, once the basic (core components of) MSYS are installed one way or another
