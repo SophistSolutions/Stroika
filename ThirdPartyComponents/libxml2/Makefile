@@ -20,7 +20,8 @@ endif
 #
 # CHECK FOR UPDATED VERSIONS https://github.com/GNOME/libxml2/tags
 #
-libxml2_VERSION_=2.12.4
+libxml2_VERSION_=2.12.5
+#libxml2_VERSION_=2.12.4
 #libxml2_VERSION_=2.12.3
 
 ZIPPED_SOURCES_FILE_=../Origs-Cache/libxml2-${libxml2_VERSION_}.tar.gz
