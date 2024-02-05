@@ -63,7 +63,7 @@ Stroika's biggest strength is also its biggest weakness:
 
 - Stroika v2.1
 
-  Tested on x86, arm (+m1), gcc 8 thru gcc 12, clang 6 thru clang 14, Visual Studio.Net 2017, Visual Studio.Net 2019 and Visual Studio.Net 2022, XCode 13.
+  Tested on x86, arm (+m1), gcc 8 thru gcc 12, clang 6 thru clang 14, Visual Studio.Net 2017, Visual Studio.Net 2019 and Visual Studio.Net 2022, XCode 13, 14, 15.
 
 - Stroika v2.0
 
