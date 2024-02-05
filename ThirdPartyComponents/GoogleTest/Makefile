@@ -18,7 +18,7 @@ include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for things like CMA
 endif
 
 #
-# CHECK FOR UPDATED VERSIONS http://zlib.net/
+# CHECK FOR UPDATED VERSIONS https://github.com/google/googletest/tags
 #
 GOOGLETEST_VERSION_=1.14.0
 
