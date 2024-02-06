@@ -448,6 +448,8 @@ endif
 # Use occasionally to generate quick debug builds etc...
 DEFAULT_CONFIGURAITON_ADD2ALL=
 # DEFAULT_CONFIGURAITON_ADD2ALL+= --boost no --openssl no
+# DEFAULT_CONFIGURAITON_ADD2ALL+= --all-available-third-party-components
+# DEFAULT_CONFIGURAITON_ADD2ALL+= --no-third-party-components
 
 default-configurations:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making default configurations:"

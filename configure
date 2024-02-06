@@ -160,19 +160,18 @@ my $Config_Tag = undef;   #see 	https://stroika.atlassian.net/browse/STK-667 to 
 my $BuildByDefault = "always";	# for now default to always...
 
 my $FEATUREFLAG_StrawberryPerl = undef;
-my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
-my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
-my $FEATUREFLAG_boost_userspecified = 0;
-my $FEATUREFLAG_OpenSSL = "";
+my $FEATUREFLAG_LIBCURL = undef;
+my $FEATUREFLAG_boost = undef;
+my $FEATUREFLAG_OpenSSL = undef;
 my $FEATUREFLAG_OpenSSLExtraArgs = "";
-my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
+my $FEATUREFLAG_WinHTTP = undef;
 my $FEATUREFLAG_ATLMFC = undef;
 my $FEATUREFLAG_Xerces = undef;
 my $FEATUREFLAG_libxml2 = undef;
-my $FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_UseStaticTPP;
-my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
-my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
-my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_GoogleTest = undef;
+my $FEATUREFLAG_ZLib = undef;
+my $FEATUREFLAG_sqlite = undef;
+my $FEATUREFLAG_LZMA = undef;
 my $FEATUREFLAG_librt = undef;
 my $FEATUREFLAG_WIX = undef;
 my $TargettingValgrind = undef;
@@ -216,6 +215,114 @@ my @LinkerArgs_LibDependencies_ADD  = qw();
 my $STDCXXLIB = undef;
 my $TOOLS_PATH_ADDITIONS = undef;
 my $lsb_release = trim (`lsb_release -rs 2>/dev/null`);
+
+
+#
+# DoSetThirdPartyComponents_ ('all-available')
+# DoSetThirdPartyComponents_ ('default')
+# DoSetThirdPartyComponents_ ('fill-in-defaults')
+# DoSetThirdPartyComponents_ ('none')
+#
+sub	DoSetThirdPartyComponents_
+{
+	my $x = shift(@_);
+	if ($x eq "all-available") {
+		## Basically the same as fill-in-defaults, except for xerces is included now
+		my $xercesAlreadySet = !defined($FEATUREFLAG_Xerces);
+		DoSetThirdPartyComponents_('fill-in-defaults');
+		if (!$xercesAlreadySet) {
+			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+	}
+	elsif ($x eq "default") {
+		$FEATUREFLAG_ATLMFC = undef;
+		$FEATUREFLAG_boost = undef;
+		$FEATUREFLAG_LIBCURL = undef;
+		$FEATUREFLAG_libxml2 = undef;
+		$FEATUREFLAG_Xerces = undef;
+		$FEATUREFLAG_LZMA = undef;
+		$FEATUREFLAG_OpenSSL = undef;
+		$FEATUREFLAG_sqlite = undef;
+		$FEATUREFLAG_WinHTTP = undef;
+		$FEATUREFLAG_ZLib = undef;
+		$FEATUREFLAG_GoogleTest = undef;
+	}
+	elsif ($x eq "fill-in-defaults") {
+		# Called late enuf that other variables have been filled in...
+		if (!defined $FEATUREFLAG_ATLMFC) {
+			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2022") {
+				# in VS2k22, separate checkboxes for ATL and MFC and we need MFC AND ATL
+				if (-e "$VSVARS_VCToolsInstallDir/atlmfc/include/afxext.h") {
+					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+				}
+			}
+			if (!defined $FEATUREFLAG_ATLMFC) {
+				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+			}
+		}
+		if (!defined $FEATUREFLAG_boost) {
+			$FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_LIBCURL) {
+			if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+				$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
+			}
+			else {
+				$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
+			}
+		}
+		if (!defined $FEATUREFLAG_libxml2) {
+			$FEATUREFLAG_libxml2 = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_Xerces) {
+			# if we have libxml2 being used, then DEFAULT to not including xerces (takes a long time to build and libxml2 better(?))
+			if ($FEATUREFLAG_libxml2 eq $LIBFEATUREFLAG_No) {
+				$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
+			}
+			else {
+				$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
+			}
+		}
+		if (!defined $FEATUREFLAG_LZMA) {
+			$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_OpenSSL) {
+			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_sqlite) {
+			$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_WinHTTP) {
+			if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+				$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
+			}
+			else {
+				$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
+			}
+		}
+		if (!defined $FEATUREFLAG_ZLib) {
+			$FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		if (!defined $FEATUREFLAG_GoogleTest) {
+			$FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+	}
+	elsif ($x eq "none") {
+		$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_boost = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_libxml2 = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_sqlite = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_ZLib = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_GoogleTest = $LIBFEATUREFLAG_No;	}
+	else {
+		die ("Bad argument to DoSetThirdPartyComponents_")
+	}
+}
 
 
 #
@@ -264,6 +371,8 @@ sub	DoHelp_
 		print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
 		print("	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
 		print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
+		print("	    --all-available-third-party-components          /* equivilent to --Xerces (etc) use - for all that are available on this platform   */\n");
+		print("	    --default-third-party-components                /* reset third party settings to their default value (maybe less than all-available-third-party-components) */\n");
 		print("	    --no-third-party-components           			/* equivilent to --StrawberryPerl no --LibCurl no --boost no --OpenSSL no --WinHTTP no --ATLMFC no --Xerces no --limxml2 no --sqlite no --ZLib no --WIX no --lzma no  */\n");
 		print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
 		print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
@@ -686,12 +795,12 @@ sub	SetInitialDefaults_
 		}
 	}
 
-	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
-		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
-	}
-	if ("$^O" eq "cygwin" or "$^O" eq "msys") {
-		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
-	}
+	# if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+	# 	$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
+	# }
+	# if ("$^O" eq "cygwin" or "$^O" eq "msys") {
+	# 	$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
+	# }
 	if ("$^O" eq "darwin") {
 		# hacks so can do initial port/compile
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_No;
@@ -1110,15 +1219,6 @@ sub	SetDefaultForCompilerDriver_
 		$RC = GetMSVCVarName_ ("RC");
 	}
 
-	#https://stroika.atlassian.net/browse/STK-696
-	if (! defined $FEATUREFLAG_Xerces) {
-		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
-	}
-
-	if (! defined $FEATUREFLAG_libxml2) {
-		$FEATUREFLAG_libxml2 = $LIBFEATUREFLAG_UseStaticTPP;
-	}
-
 	if ($MACOSX_DEPLOYMENT_TARGET ne "") {
 		$LinkerArgs_ExtraPrefix .= " -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET";
 	}
@@ -1417,7 +1517,6 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $args[$i];
 			$FEATUREFLAG_boost = $var;
-			$FEATUREFLAG_boost_userspecified = 1;
 		}
 		elsif ((lc ($var) eq "-openssl") or (lc ($var) eq "--openssl")) {
 			$i++;
@@ -1469,18 +1568,14 @@ sub	ParseCommandLine_Remaining_
 			$var = $args[$i];
 			$FEATUREFLAG_LZMA = $var;
 		}
+		elsif ((lc ($var) eq "-default-third-party-components") or (lc ($var) eq "--default-third-party-components")) {
+			DoSetThirdPartyComponents_ ('default');
+		}
+		elsif ((lc ($var) eq "-all-available-third-party-components") or (lc ($var) eq "--all-available-third-party-components")) {
+			DoSetThirdPartyComponents_ ('all-available');
+		}
 		elsif ((lc ($var) eq "-no-third-party-components") or (lc ($var) eq "--no-third-party-components")) {
-			$FEATUREFLAG_ATLMFC = "no";
-			$FEATUREFLAG_boost = "no";
-			$FEATUREFLAG_LIBCURL = "no";
-			$FEATUREFLAG_libxml2 = "no";
-			$FEATUREFLAG_Xerces = "no";
-			$FEATUREFLAG_LZMA = "no";
-			$FEATUREFLAG_OpenSSL = "no";
-			$FEATUREFLAG_sqlite = "no";
-			$FEATUREFLAG_WinHTTP = "no";
-			$FEATUREFLAG_ZLib = "no";
-			$FEATUREFLAG_GoogleTest = "no";
+			DoSetThirdPartyComponents_ ('none');
 		}
 		elsif ((lc ($var) eq "-trace2file") or (lc ($var) eq "--trace2file")) {
 			$i++;
@@ -1928,6 +2023,8 @@ sub	ParseCommandLine_
 	ParseCommandLine_Remaining_ ();
 
 	SetDefaultForCompilerDriver_();
+
+	DoSetThirdPartyComponents_ ('fill-in-defaults');
 
 	CHECK_OPTIONS_ ();
 }
