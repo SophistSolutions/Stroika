@@ -444,27 +444,32 @@ endif
 	@echo "done"
 
 
+# This variable (defaults to nothing) is added to all configurations built by make 'default-configurations' operation
+# Use occasionally to generate quick debug builds etc...
+DEFAULT_CONFIGURAITON_ADD2ALL=
+# DEFAULT_CONFIGURAITON_ADD2ALL+= --boost no --openssl no
+
 default-configurations:
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Making default configurations:"
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-debug-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Profile --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --append-extra-suffix-linker-args -PROFILE
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --trace2file enable
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-debug-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS)  --arch x86_64 --apply-default-debug-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-debug-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Profile --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --append-extra-suffix-linker-args -PROFILE ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Windows --config-tag x86_64 --build-by-default never --arch x86_64 --apply-default-release-flags --trace2file enable ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-debug-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug-x86_64 --config-tag Windows --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS)  --arch x86_64 --apply-default-debug-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86 --config-tag Windows --config-tag x86 --arch x86 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --config-tag Windows --config-tag x86_64 --arch x86_64 --build-by-default $(DETECTED_HOST_OS) --apply-default-release-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
 else ifneq ($(findstring $(DETECTED_HOST_OS),Darwin),)
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-x86_64 --arch x86_64 --config-tag x86_64 --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-arm64 --arch arm64 --config-tag arm --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
 else
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Debug --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-debug-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release --config-tag Unix --build-by-default $(DETECTED_HOST_OS) --only-if-has-compiler --apply-default-release-flags ${DEFAULT_CONFIGURAITON_ADD2ALL}
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ./configure Release-Logging --config-tag Unix --build-by-default never --only-if-has-compiler --apply-default-release-flags --trace2file enable ${DEFAULT_CONFIGURAITON_ADD2ALL}
 endif
 
 
