@@ -83,6 +83,7 @@ namespace {
     }
 }
 
+#if qStroika_Foundation_DataExchange_XML_SupportDOM and qStroika_Foundation_DataExchange_XML_SupportSchema and qStroika_Foundation_DataExchange_XML_SupportParsing
 namespace {
     template <typename REPEAT_TEST>
     void DoWithEachXMLProvider_ (REPEAT_TEST&& test)
@@ -116,6 +117,7 @@ namespace {
 #endif
     }
 }
+#endif
 
 #if qStroika_Foundation_DataExchange_XML_SupportParsing
 namespace {
