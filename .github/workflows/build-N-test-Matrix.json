@@ -170,6 +170,28 @@
         "extra_config_args": "--apply-default-release-flags --stdlib libstdc++ --trace2file enable",
         "run_on_branch": "v3-Release"
     },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-22.04-clang++-All3rdParty (Debug)",
+        "compiler": "clang++-16",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
+        "cpp_version": "c++20",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "Linux",
+        "displayTargetName": "ubuntu-22.04-g++-All3rdParty (Debug)",
+        "compiler": "g++-12",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
+        "cpp_version": "c++20",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
+        "run_on_branch": "v3-Release"
+    },
     {},
     {
         "comment": "MacOS",
@@ -191,6 +213,15 @@
         "xcode": "15.0",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release"
+    },
+    {
+        "build_job": "MacOS",
+        "displayTargetName": "MacOS-13-XCode-15.0--All3rdParty-Debug",
+        "runs_on": "macos-13",
+        "xcode": "15.0",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --all-available-third-party-components",
         "run_on_branch": "v3-Release"
     },
     {},
@@ -250,5 +281,14 @@
         "config_name": "Release",
         "extra_config_args": "--arch x86_64 --apply-default-release-flags --trace2file enable",
         "run_on_branch": "always"
+    },
+    {
+        "build_job": "Windows",
+        "displayTargetName": "windows-vs2k22-msys-x86_64-All3rdParty-Debug",
+        "runs_on": "windows-2022",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3",
+        "config_name": "Debug",
+        "extra_config_args": "--arch x86_64 --apply-default-debug-flags --trace2file enable --all-available-third-party-components",
+        "run_on_branch": "v3-Release"
     }
 ]
