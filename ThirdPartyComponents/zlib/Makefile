@@ -20,8 +20,9 @@ endif
 #
 # CHECK FOR UPDATED VERSIONS http://zlib.net/
 #
-#ZLIB_VERSION_=1.3.1
-ZLIB_VERSION_=1.2.13
+ZLIB_VERSION_=1.3.1
+#ZLIB_VERSION_=1.3
+#ZLIB_VERSION_=1.2.13
 #ZLIB_VERSION_=1.2.12
 
 ZIPPED_SOURCES_FILE_=../Origs-Cache/zlib-${ZLIB_VERSION_}.tar.gz
@@ -45,6 +46,7 @@ COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMP
 
 
 
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 ifeq (${AssertionsEnabled},1)
 CMAKE_BUILD_TYPE_=Debug
 MAYBED_=d
@@ -52,6 +54,15 @@ else
 CMAKE_BUILD_TYPE_=Release
 MAYBED_=
 endif
+endif
+
+#@todo dont understand why config=${CMAKE_BUILD_TYPE_} NEEDED for windows, and needs to not exist on unix
+ifeq (${CMAKE_BUILD_TYPE_},)
+CMAKE_BUILD_TYPE_EXTRA_ARG_=
+else
+CMAKE_BUILD_TYPE_EXTRA_ARG_= --config=${CMAKE_BUILD_TYPE_}
+endif
+
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 OUTPUT_LIB_=zlibstatic${MAYBED_}${LIB_SUFFIX}
@@ -69,6 +80,10 @@ PRODUCED_OUTPUT_ARTIFACTS_=	\
 
 # For some reason, comes out as share by default for zlib
 CMAKE_ARGS+=	-D INSTALL_PKGCONFIG_DIR="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig)"
+
+# Verbose output to debug cmake processing
+#CMAKE_ARGS+= --trace
+#CMAKE_BUILD_AND_INSTALL_ARGS+= --trace
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 # @todo document - not sure needed - maybe related to shared/.so file stuff
@@ -106,19 +121,15 @@ endif
 	@echo "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
+	@
+	@# Since version 1.3, these vcxproj have the wrong value set, so we must correct --LGP 2024-02-06
+	@sed -i 's/MultiThreadedDLL/MultiThreaded/g' ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/zlibstatic.vcxproj
+	@sed -i 's/MultiThreadedDebugDLL/MultiThreadedDebug/g' ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/zlibstatic.vcxproj
+	@
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}BUILD-OUT.txt) ..."
-	@#@todo dont understand why config=${CMAKE_BUILD_TYPE_} NEEDED for windows, and needs to not exist on unix
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE_} > BUILD-OUT.txt 2>&1
-else
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib  > BUILD-OUT.txt 2>&1
-endif
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib ${CMAKE_BUILD_AND_INSTALL_ARGS} ${CMAKE_BUILD_TYPE_EXTRA_ARG_}  > BUILD-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$((${MAKE_INDENT_LEVEL}+1)) "zlib ${ZLIB_VERSION_} - Build (see ${OUTPUT_WORKDIR_PRETTYNAME_}INSTALL-OUT.txt) ..."
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
-else
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
-endif
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . ${CMAKE_BUILD_TYPE_EXTRA_ARG_} ${CMAKE_BUILD_AND_INSTALL_ARGS} > INSTALL-OUT.txt 2>&1
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@#some hacks to make more similar to what I had before - not sure why this fixes things... --LGP 2023-05-11
 	@rm -f ${PER_CONFIGURATION_BUILDS_DIR_}lib/libz.so* ${PER_CONFIGURATION_BUILDS_DIR_}lib/libz*.dylib ${PER_CONFIGURATION_BUILDS_DIR_}lib/pkgconfig/zlib.pc
