@@ -1687,14 +1687,14 @@ namespace {
                 })};
                 EXPECT_EQ (mrManager2.GetID (), "Big.Boss"_k);
             }
-            // (DOM Update/XPath code that doesn't work on Xerces)
+            // (DOM Update/XPath code)
             try {
                 {
                     Element::Ptr mrManager = d.GetRootElement ().Lookup (XPath::Expression{"person"}).FirstValue ([] (XPath::Result n) {
                         Element::Ptr e = n;
                         return e != nullptr and e.GetValue ("email") == "alpha@beta.com"_k;
                     });
-                    EXPECT_EQ (mrManager.GetValue ("@id"), "Big.Boss"_k); // @id fails on xerces, though getattribute (id) works
+                    EXPECT_EQ (mrManager.GetValue ("@id"), "Big.Boss"_k);
                 }
                 auto mrManager1Subordinates = d.GetRootElement ().LookupOneNode (XPath::Expression{"person/link/@subordinates"});
                 EXPECT_EQ (mrManager1Subordinates.GetValue (), "one.worker two.worker three.worker four.worker five.worker");
@@ -1709,7 +1709,11 @@ namespace {
                 EXPECT_EQ (mrManager3.GetValue ("name/family"), "Bossy");
             }
             catch (const XML::DOM::XPath::XPathExpressionNotSupported&) {
+#if qHasFeature_Xerces
                 Assert (d.GetRep ()->GetProvider () == &Providers::Xerces::kDefaultProvider); // sadly Xerces 3.2 doesn't support [
+                #else
+                AssertNotReached ();
+                #endif
             }
             DISABLE_COMPILER_MSC_WARNING_END (4305)
         });
@@ -1725,9 +1729,13 @@ namespace {
             auto n1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"person"sv});
             EXPECT_EQ (n1, nullptr);
             auto badHeader1 = d.GetRootElement ().LookupOneElement (XPath::Expression{"Header", kXPathOptions_});
+#if qHasFeature_Xerces
             if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // Xerces 3.2.5 appears to match despite the wrong namespace reference
                 EXPECT_EQ (badHeader1, nullptr);                                       // no namespace specified
             }
+            #else
+                EXPECT_EQ (badHeader1, nullptr);                                       // no namespace specified
+            #endif
             auto badHeader2 = d.GetRootElement ().LookupOneElement (XPath::Expression{"n:header", kXPathOptions_});
             EXPECT_EQ (badHeader2, nullptr); // case sensitive match
             EXPECT_ANY_THROW (d.GetRootElement ().LookupOneElement (XPath::Expression{"N:Header", kXPathOptions_}));
@@ -1740,10 +1748,15 @@ namespace {
             EXPECT_EQ (docRelHeader2, header); // verify // working (at least somewhat - limited for xerces)
             EXPECT_NE (header.LookupOneElement (XPath::Expression{"n:SourceDefinitions", kXPathOptions_}), nullptr);
             EXPECT_EQ (header.GetValue (XPath::Expression{"n:SourceDefinitions/n:SourceDefinition/n:Version", kXPathOptions_}), "v3"sv);
+#if qHasFeature_Xerces
             if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // fails on xerces 3.2.5
                 auto docRelHeader3 = d.GetRootElement ().LookupOneElement (XPath::Expression{"/n:ReferenceContentData//n:Header", kXPathOptions_});
                 EXPECT_EQ (docRelHeader3, header); // verify // working
             }
+            #else
+                auto docRelHeader3 = d.GetRootElement ().LookupOneElement (XPath::Expression{"/n:ReferenceContentData//n:Header", kXPathOptions_});
+                EXPECT_EQ (docRelHeader3, header); // verify // working
+            #endif
         });
         // Iterator XPath
         DoWithEachXMLProvider_ ([&] ([[maybe_unused]] auto saxParser, [[maybe_unused]] auto schemaFactory, [[maybe_unused]] auto domFactory) {
@@ -1787,7 +1800,10 @@ namespace {
                     </Terms>
                 </ConceptDetails>
             */
+           #if qHasFeature_Xerces
+
             if (d.GetRep ()->GetProvider () != &Providers::Xerces::kDefaultProvider) { // Xerces 3.2.5 doesn't come close to supporting this
+            #endif
                 Element::Ptr aerobicExcerciseElt = d.GetRootElement ().LookupOneElement (
                     XPath::Expression{"//n:ConceptDetails[n:PrimaryKey/@Type='HF' and n:PrimaryKey/text()='H0000124']", kXPathOptions_});
                 EXPECT_NE (aerobicExcerciseElt, nullptr);
@@ -1828,7 +1844,9 @@ namespace {
                 //DbgTrace (L"savedAerobicExcerciseSerialized=%s", Characters::ToString (savedAerobicExcerciseSerialized).c_str ());
                 // DbgTrace (L"NEW savedAerobicExcerciseSerialized=%s", Characters::ToString (aerobicExcerciseElt).c_str ());
                 EXPECT_NE (savedAerobicExcerciseSerialized, Characters::ToString (aerobicExcerciseElt));
+#if qHasFeature_Xerces
             }
+            #endif
         });
     }
 }
