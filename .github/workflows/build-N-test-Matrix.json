@@ -172,10 +172,10 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "ubuntu-22.04-clang++-All3rdParty (Debug)",
+        "displayTargetName": "ubuntu-23.10-clang++-All3rdParty (Debug)",
         "compiler": "clang++-16",
         "runs_on": "ubuntu-latest",
-        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2310-regression-tests:v3",
         "cpp_version": "c++20",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
