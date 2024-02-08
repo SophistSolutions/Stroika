@@ -24,8 +24,6 @@ using namespace Stroika::Foundation::Traversal;
 
 using namespace Stroika::Frameworks;
 
-static_assert (is_same_v<Identity<double>::type, double>);
-
 static_assert (is_same_v<DifferenceType<int>, int>);
 static_assert (is_same_v<DifferenceType<double>, double>);
 

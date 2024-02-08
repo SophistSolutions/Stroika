@@ -40,15 +40,19 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     *  Occasionally helpful to use with LazyType, to push a type T into a ::type field (as if it came from conditional)
+     *  \brief function object whose action is to map its argument, back to the same value it started with (identity function).
      * 
-     *  \par Example Usage
-     *      \code
-     *          static_assert (is_same_v<Identity<double>::type, double>);
-     *      \endcode
+     *  \see also https://stackoverflow.com/questions/41767240/what-is-stdidentity-and-how-it-is-used 
      */
-    template <typename T>
-    using Identity = conditional<true, T, T>;
+    struct Identity {
+        using is_transparent = void;
+
+        template <typename T>
+        constexpr T&& operator() (T&& t) const noexcept
+        {
+            return std::forward<T> (t);
+        }
+    };
 
     namespace Private_ {
         template <typename T>
@@ -75,9 +79,11 @@ namespace Stroika::Foundation::Common {
      *          static_assert (is_same_v<UnsignedOfIf<int>, unsigned int>);
      *          static_assert (is_same_v<UnsignedOfIf<string>, string>);
      *      \endcode
+     * 
+     *  \note conditional<true, T, T> is a trick similar to LazyType
      */
     template <typename T>
-    using UnsignedOfIf = typename conditional_t<is_integral_v<T>, Common::LazyType<make_unsigned_t, T>, Identity<T>>::type;
+    using UnsignedOfIf = typename conditional_t<is_integral_v<T>, LazyType<make_unsigned_t, T>, conditional<true, T, T>>::type;
 
     /**
      *  Utility to map from an std::variant<...> and map a TYPE to its underlying index in the given variant
