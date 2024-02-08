@@ -1714,13 +1714,13 @@ namespace Stroika::Foundation::Traversal {
                 sb = i;
             }
             else {
-                sb << i;
                 if (finalSeparator and idx + 1 == cnt) [[unlikely]] {
                     sb << *finalSeparator;
                 }
                 else {
                     sb << separator;
                 }
+                sb << i;
             }
             ++idx;
         });
