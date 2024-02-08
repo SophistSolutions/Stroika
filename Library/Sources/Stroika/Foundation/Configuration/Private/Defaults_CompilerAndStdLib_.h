@@ -1316,7 +1316,6 @@ make[1]: *** [Makefile:20:
 
 #endif
 
-
 /**
  * In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/type_traits:510:
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_trivially_destructible.h:25:38: error: incomplete type 'Stroika::Foundation::Characters::String' used in type trait expression
@@ -1364,7 +1363,7 @@ In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../includ
 #ifndef qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
 
 #if defined(__clang__)
-#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ <= 16)
+#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
 #else
 #define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy 0
 #endif
@@ -1389,13 +1388,13 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 #ifndef qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy
 
 #if defined(__clang__)
-#define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ <= 16)
+#define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy                                                        \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
 #else
 #define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy 0
 #endif
 
 #endif
-
 
 /*
       Compiling Library/Sources/Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.cpp ... 
@@ -1411,7 +1410,7 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 #ifndef qCompilerAndStdLib_kDefaultToStringConverter_Buggy
 
 #if defined(__clang__)
-#define qCompilerAndStdLib_kDefaultToStringConverter_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ <= 16)
+#define qCompilerAndStdLib_kDefaultToStringConverter_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 16)
 #else
 #define qCompilerAndStdLib_kDefaultToStringConverter_Buggy 0
 #endif
