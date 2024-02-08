@@ -442,6 +442,13 @@ namespace Stroika::Foundation::Traversal {
     {
         return Join (separator, nullopt);
     }
+    template <typename T>
+    template <typename RESULT_T, invocable<T> CONVERT_TO_RESULT>
+    inline RESULT_T Iterable<T>::Join (const CONVERT_TO_RESULT& convertToResult, const Characters::String& separator) const
+        requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>)
+    {
+        return Join (convertToResult, separator, nullopt);
+    }
 #endif
     template <typename T>
     inline Characters::String Iterable<T>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const
