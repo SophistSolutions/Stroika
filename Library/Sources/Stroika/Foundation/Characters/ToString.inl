@@ -436,6 +436,13 @@ namespace Stroika::Foundation::Characters {
 }
 
 namespace Stroika::Foundation::Traversal {
+#if qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
+    template <typename T>
+    inline Characters::String Iterable<T>::Join (const Characters::String& separator) const
+    {
+        return Join (separator, nullopt);
+    }
+#endif
     template <typename T>
     inline Characters::String Iterable<T>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const
     {

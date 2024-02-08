@@ -875,7 +875,12 @@ namespace Stroika::Foundation::Traversal {
                                 const COMBINER&          combiner        = Characters::kDefaultStringCombiner) const
             requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT> and
                       convertible_to<invoke_result_t<COMBINER, RESULT, RESULT, bool>, RESULT>);
+#if qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
+        nonvirtual Characters::String Join (const Characters::String& separator) const;
+        nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator/* = {}*/) const;
+#else
         nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
+#endif
 
     public:
         /**

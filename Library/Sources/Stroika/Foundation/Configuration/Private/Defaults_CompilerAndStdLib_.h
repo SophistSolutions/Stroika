@@ -1316,6 +1316,34 @@ make[1]: *** [Makefile:20:
 
 #endif
 
+
+/**
+ * In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/type_traits:510:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_trivially_destructible.h:25:38: error: incomplete type 'Stroika::Foundation::Characters::String' used in type trait expression
+    : public integral_constant<bool, __is_trivially_destructible(_Tp)> {};
+                                     ^
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/optional:579:5: note: in instantiation of template class 'std::is_trivially_destructible<Stroika::Foundation::Characters::String>' requested here
+    is_trivially_destructible<_Tp>::value &&
+    ^
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/optional:632:15: note: in instantiation of default argument for '__optional_move_assign_base<Stroika::Foundation::Characters::String>' required here
+    : private __optional_move_assign_base<_Tp>
+              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./../Characters/../Containers/../Traversal/Iterable.h:882:135: note: in instantiation of template class 'std::optional<Stroika::Foundation::Characters::String>' requested here
+        nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
+                                                                                                                                      ^
+./../Characters/../Containers/../Traversal/Iterable.h:61:11: note: forward declaration of 'Stroika::Foundation::Characters::String'
+*/
+#ifndef qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
+
+#if defined(_LIBCPP_VERSION)
+#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy       (_LIBCPP_VERSION < 170000)
+#else
+#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy 0
+#endif
+
+#endif
+
+
 /*
 * 
 * https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be
