@@ -863,6 +863,11 @@ namespace Stroika::Foundation::Traversal {
          *  For the very common case of accumulating objects into a String, there are additional (stringish) overloads that more closely mimic
          *  what you can do in JavaScript/python.
          * 
+         *  Gist of arguments
+         *      o   convertToResult: - OPTIONAL converter from T to String
+         *      o   combiner: - OPTIONAL thing that joins two RESULT_T (result of above covertToResult - typically String)
+         *          and combiner MAYBE replaced with String (separator and optionally finalStringSeparator)
+         * 
          *  \note The String returning overload converts to String with kDefaultToStringConverter (Characters::ToString - mostly), so this may not be
          *        a suitable conversion in all cases (mostly intended for debugging or quick cheap display)
          * 
@@ -897,6 +902,10 @@ namespace Stroika::Foundation::Traversal {
 #else
         nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
 #endif
+        template <typename RESULT_T = Characters::String, invocable<T> CONVERT_TO_RESULT>
+        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult, const Characters::String& separator,
+                                  const optional<Characters::String>& finalSeparator = {}) const
+            requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T>);
 
     public:
         /**
