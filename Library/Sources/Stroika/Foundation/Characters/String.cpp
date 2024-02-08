@@ -1676,6 +1676,25 @@ const wchar_t* String::c_str ()
 
 /*
  ********************************************************************************
+ ****************************** StringCombiner **********************************
+ ********************************************************************************
+ */
+String StringCombiner::operator() (const String& lhs, const String& rhs, bool isLast) const
+{
+    StringBuilder sb{lhs};
+    if (isLast and fSpecialSeparatorForLastPair) [[unlikely]] {
+        sb << *fSpecialSeparatorForLastPair;
+    }
+    else {
+        sb << fSeparator;
+    }
+    sb << rhs;
+    return sb.str ();
+}
+
+
+/*
+ ********************************************************************************
  ********************************** operator<< **********************************
  ********************************************************************************
  */

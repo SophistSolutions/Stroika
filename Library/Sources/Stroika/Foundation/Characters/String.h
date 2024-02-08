@@ -1820,6 +1820,21 @@ namespace Stroika::Foundation::Characters {
     String operator+ (LHS_T&& lhs, RHS_T&& rhs)
         requires (derived_from<remove_cvref_t<LHS_T>, String> or derived_from<remove_cvref_t<RHS_T>, String>);
 
+    /**
+     *  \brief StringCombiner is a simple function object used to combine two strings visually - used in Iterable<>::Join ()
+     * 
+     *  This can combine strings in the obvious way (concatenation) - but defaults to separating them with a comma.
+     */
+    struct StringCombiner {
+        String           fSeparator{", "sv};
+        optional<String> fSpecialSeparatorForLastPair;
+        String           operator() (const String& lhs, const String& rhs, bool isLast) const;
+    };
+
+    /**
+     */
+    extern const function<String (String, String, bool)> kDefaultStringCombiner;
+
 }
 
 namespace std {

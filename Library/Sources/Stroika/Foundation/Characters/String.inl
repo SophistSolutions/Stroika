@@ -1314,6 +1314,9 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
+    /**
+     */
+    inline const function<String (String, String, bool)> kDefaultStringCombiner = StringCombiner{.fSeparator = ", "_k};
 }
 
 namespace Stroika::Foundation::Traversal {
