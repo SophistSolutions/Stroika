@@ -1332,17 +1332,91 @@ make[1]: *** [Makefile:20:
         nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
                                                                                                                                       ^
 ./../Characters/../Containers/../Traversal/Iterable.h:61:11: note: forward declaration of 'Stroika::Foundation::Characters::String'
+
+
+
+OR
+
+ file included from ./../Characters/Format.h:10:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/ios:39:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/exception:168:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/exception_ptr.h:43:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/move.h:57:
+/usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/type_traits:1274:4: error: incomplete type 'Stroika::Foundation::Characters::String' used in type trait expression
+                        __is_trivially_constructible(_Tp, const _Tp&)>>
+                        ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/type_traits:1280:14: note: in instantiation of template class 'std::__is_trivially_copy_constructible_impl<Stroika::Foundation::Characters::String, true>' requested here
+    : public __is_trivially_copy_constructible_impl<_Tp>
+             ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/type_traits:3226:5: note: in instantiation of template class 'std::is_trivially_copy_constructible<Stroika::Foundation::Characters::String>' requested here
+    is_trivially_copy_constructible<_Tp>::value;
+    ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/optional:508:12: note: in instantiation of variable template specialization 'std::is_trivially_copy_constructible_v<Stroika::Foundation::Characters::String>' requested here
+           bool = is_trivially_copy_constructible_v<_Tp>,
+                  ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/optional:706:15: note: in instantiation of default argument for '_Optional_base<Stroika::Foundation::Characters::String>' required here
+    : private _Optional_base<_Tp>,
+              ^~~~~~~~~~~~~~~~~~~
+./../Characters/../Containers/../Traversal/Iterable.h:882:135: note: in instantiation of template class 'std::optional<Stroika::Foundation::Characters::String>' requested here
+        nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
+        
 */
 #ifndef qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
 
-#if defined(_LIBCPP_VERSION)
-#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy       (_LIBCPP_VERSION < 170000)
+#if defined(__clang__)
+#define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ <= 16)
 #else
 #define qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy 0
 #endif
 
 #endif
 
+/**
+ * PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
+Stack dump:
+0.      Program arguments: clang++-15 -I/Sandbox/Stroika-Dev/Builds/clang++-15-debug-libstdc++-c++23/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-15-debug-libstdc++-c++23/ -I/Sandbox/Stroika-Dev/Builds/clang++-15-debug-libstdc++-c++23/ThirdPartyComponents/include/libxml2/ -D_GLIBCXX_DEBUG -DqDebug=1 -DqHasFeature_LibCurl=1 -DqHasFeature_OpenSSL=1 -DqHasFeature_WinHTTP=0 -DqHasFeature_ATLMFC=0 -DqHasFeature_Xerces=0 -DqHasFeature_libxml2=1 -DqHasFeature_ZLib=1 -DqHasFeature_GoogleTest=1 -DqHasFeature_sqlite=1 -DqHasFeature_LZMA=1 -DqHasFeature_boost=1 -DqStroika_Foundation_Debug_Trace_TraceToFile=1 -DqStroika_Foundation_Debug_Trace_DefaultTracingOn=1 -DLIBXML_STATIC --std=c++2b -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-psabi -Wno-unused-local-typedef -Wno-future-compat -Wno-unqualified-std-cast-call -g -fsanitize=address,undefined -stdlib=libstdc++ -c FloatConversion.cpp -o /Sandbox/Stroika-Dev/IntermediateFiles/clang++-15-debug-libstdc++-c++23/Library/Foundation/Characters/FloatConversion.o
+1.      ./ToString.inl:449:73: current parser token ','
+2.      ./ToString.inl:438:1: parsing namespace 'Stroika'
+3.      ./ToString.inl:448:5: parsing function body 'Stroika::Foundation::Traversal::Iterable::Join'
+4.      ./ToString.inl:448:5: in compound statement ('{}')
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(_ZN4llvm3sys15PrintStackTraceERNS_11raw_ostreamEi+0x31)[0x7f6fe74a43b1]
+/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(_ZN4llvm3sys17RunSignalHandlersEv+0xee)[0x7f6fe74a20fe]
+/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(_ZN4llvm3sys15CleanupOnSignalEm+0x101)[0x7f6fe74a3771]
+/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(+0xe2767f)[0x7f6fe73c767f]
+/lib/x86_64-linux-gnu/l
+*/
+#ifndef qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy
+
+#if defined(__clang__)
+#define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ <= 16)
+#else
+#define qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy 0
+#endif
+
+#endif
+
+
+/*
+      Compiling Library/Sources/Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.cpp ... 
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
+Stack dump:
+0.      Program arguments: clang++-15 -I/Sandbox/Stroika-Dev/Builds/clang++-15-debug-libstdc++-c++23/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-15-debug-libstdc++-c++23/ -I/Sandbox/Stroika-Dev/Builds/clang++-15-debug-libstdc++-c++23/ThirdPartyComponents/include/libxml2/ -D_GLIBCXX_DEBUG -DqDebug=1 -DqHasFeature_LibCurl=1 -DqHasFeature_OpenSSL=1 -DqHasFeature_WinHTTP=0 -DqHasFeature_ATLMFC=0 -DqHasFeature_Xerces=0 -DqHasFeature_libxml2=1 -DqHasFeature_ZLib=1 -DqHasFeature_GoogleTest=1 -DqHasFeature_sqlite=1 -DqHasFeature_LZMA=1 -DqHasFeature_boost=1 -DqStroika_Foundation_Debug_Trace_TraceToFile=1 -DqStroika_Foundation_Debug_Trace_DefaultTracingOn=1 -DLIBXML_STATIC --std=c++2b -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-psabi -Wno-unused-local-typedef -Wno-future-compat -Wno-unqualified-std-cast-call -g -fsanitize=address,undefined -stdlib=libstdc++ -c AES.cpp -o /Sandbox/Stroika-Dev/IntermediateFiles/clang++-15-debug-libstdc++-c++23/Library/Foundation/Cryptography/Encoding/Algorithm/AES.o
+1.      ./../../../Execution/../Characters/ToString.inl:454:73: current parser token ','
+2.      ./../../../Execution/../Characters/ToString.inl:438:1: parsing namespace 'Stroika'
+3.      ./../../../Execution/../Characters/ToString.inl:448:5: parsing function body 'Stroika::Foundation::Traversal::Iterable::Join'
+4.      ./../../../Execution/../Characters/ToString.inl:448:5: in compound statement ('{}')
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+*/
+#ifndef qCompilerAndStdLib_kDefaultToStringConverter_Buggy
+
+#if defined(__clang__)
+#define qCompilerAndStdLib_kDefaultToStringConverter_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ <= 16)
+#else
+#define qCompilerAndStdLib_kDefaultToStringConverter_Buggy 0
+#endif
+
+#endif
 
 /*
 * 

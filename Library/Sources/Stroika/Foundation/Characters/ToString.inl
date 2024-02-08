@@ -446,8 +446,19 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline Characters::String Iterable<T>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const
     {
+#if qCompilerAndStdLib_kDefaultToStringConverter_Buggy
+        function<Characters::String (T)> cvt;
+        if constexpr (same_as<T, Characters::String>) {
+            cvt = Common::Identity{};
+        }
+        else {
+            cvt = Characters::UnoverloadedToString<T>;
+        }
+        return this->Join (cvt, Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
+#else
         return this->Join (kDefaultToStringConverter<Characters::String>,
                            Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
+#endif
     }
 }
 

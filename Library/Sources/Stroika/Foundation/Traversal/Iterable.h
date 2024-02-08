@@ -869,15 +869,24 @@ namespace Stroika::Foundation::Traversal {
          *  See:
          *      @see Accumulate
          */
+#if qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy
+        template <typename RESULT = Characters::String, invocable<T> CONVERT_TO_RESULT = decltype (kDefaultToStringConverter<RESULT>),
+                  invocable<RESULT, RESULT, bool> COMBINER = decltype (Characters::kDefaultStringCombiner)>
+        nonvirtual RESULT Join (const CONVERT_TO_RESULT& convertToResult = kDefaultToStringConverter<RESULT>,
+                                const COMBINER&          combiner        = Characters::kDefaultStringCombiner) const
+            requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT> and
+                      convertible_to<invoke_result_t<COMBINER, RESULT, RESULT, bool>, RESULT>);
+#else
         template <typename RESULT = Characters::String, invocable<T> CONVERT_TO_RESULT = decltype (kDefaultToStringConverter<>),
                   invocable<RESULT, RESULT, bool> COMBINER = decltype (Characters::kDefaultStringCombiner)>
         nonvirtual RESULT Join (const CONVERT_TO_RESULT& convertToResult = kDefaultToStringConverter<>,
                                 const COMBINER&          combiner        = Characters::kDefaultStringCombiner) const
             requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT> and
                       convertible_to<invoke_result_t<COMBINER, RESULT, RESULT, bool>, RESULT>);
+#endif
 #if qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
         nonvirtual Characters::String Join (const Characters::String& separator) const;
-        nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator/* = {}*/) const;
+        nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const;
 #else
         nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
 #endif
