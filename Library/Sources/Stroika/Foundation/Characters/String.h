@@ -1837,6 +1837,12 @@ namespace Stroika::Foundation::Characters {
 
 }
 
+namespace Stroika::Foundation::Traversal {
+    // specialized as performance optimization
+    template <>
+    Characters::String Iterable<Characters::String>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const;
+}
+
 namespace std {
     template <>
     struct hash<Stroika::Foundation::Characters::String> {

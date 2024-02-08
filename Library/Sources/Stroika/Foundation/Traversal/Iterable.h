@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "../Common/Compare.h"
+#include "../Common/TemplateUtilities.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
 #include "../Configuration/TypeHints.h"
@@ -58,6 +59,9 @@
 
 namespace Stroika::Foundation::Characters {
     class String;
+    extern const function<String (String, String, bool)> kDefaultStringCombiner;
+    template <typename T>
+    String UnoverloadedToString (const T& t);
 }
 
 namespace Stroika::Foundation::Traversal {
@@ -703,9 +707,9 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief functional API which iterates over all members of an Interable, applies a map function to each element, and collects the results in a new Iterable
          * 
-         *  This is like the map() function in so many other languages, like lisp, javascript, etc.
+         *  This is like the map() function in so many other languages, like lisp, JavaScript, etc.
          * 
-         *  The transormation may be a projection, or complete transformation. If the 'extract' function returns optional<RESULT_COLLECTION::value_type>, then a missing
+         *  The transformation may be a projection, or complete transformation. If the 'extract' function returns optional<RESULT_COLLECTION::value_type>, then a missing
          *  value is treated as removeal from the source list (in the resulting generated list).
          * 
          *  \note - @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
@@ -714,11 +718,11 @@ namespace Stroika::Foundation::Traversal {
          *          (optionally) appending the result of that function to the new container.
          * 
          *  \note   Prior to Stroika v3.0d5, this template look 2 template parameters, the first an element type and the second the collection to be produced.
-         *          But since that release, we just take the second paramter (as first) - and infer the RESULT_ELELMENT_TYPE.
+         *          But since that release, we just take the second parameter (as first) - and infer the RESULT_ELELMENT_TYPE.
          * 
          *  \note   Prior to Stroika v2.1.10, this was called Select()
          * 
-         *  \note - The overloads returning Iterable<RESULT> do NOT IMMEDIATELY traverse its argument, but uses @see CreateGenerator - to create a new iterable that dymanically pulls
+         *  \note - The overloads returning Iterable<RESULT> do NOT IMMEDIATELY traverse its argument, but uses @see CreateGenerator - to create a new iterable that dynamically pulls
          *          from 'this' Iterable<>'.
          * 
          *          The overloads returning RESULT_CONTAINER DO however immediately construct RESULT_CONTAINER, and fill it in the the result
@@ -829,35 +833,49 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         * \brief ape the javascript/python 'join' function - take the parts of 'this' iterable and combine them into a new object (typically a string)
+        * @todo - rename this to kDefaultToJOINRESULTConverter or  get rid of RESULT parameter- and only provide a default for the STRING case
+        * &&& keep name, throw in same_as<String> param to RESULT, and lose explict args where used - use default - and document needed magic to avoid mutual include issue
+         */
+        template <same_as<Characters::String> RESULT = Characters::String>
+        static inline const function<RESULT (T)> kDefaultToStringConverter = [] () -> function<Characters::String (T)> {
+            if constexpr (same_as<T, Characters::String> and same_as<RESULT, Characters::String>) {
+                return Common::Identity{};
+            }
+            else {
+                return Characters::UnoverloadedToString<T>;
+            }
+        }();
+
+    public:
+        /**
+         * \brief ape the JavaScript/python 'join' function - take the parts of 'this' iterable and combine them into a new object (typically a string)
          *
          *  This Join () API - if you use the template, is fairly generic and lets the caller iterate over subelements of this iterable, and
          *  combine them into a new thing (@see Reduce - it is similar but more general).
          * 
          *  For the very common case of accumulating objects into a String, there are additional (stringish) overloads that more closely mimic
-         *  what you can do in javascript/python.
+         *  what you can do in JavaScript/python.
          * 
-         *  \note The String returning overload converts to String with ((soon will use Characters::ToString)) i.ToString (), so this may not be
+         *  \note The String returning overload converts to String with kDefaultToStringConverter (Characters::ToString - mostly), so this may not be
          *        a suitable conversion in all cases (mostly intended for debugging or quick cheap display)
          * 
          *  \par Example Usage
          *      \code
          *          Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
-         *          EXPECT_TRUE (c.Join () == "localhost, INADDR_ANY");
-         *          EXPECT_TRUE (c.Join ("; ") == "localhost, INADDR_ANY");
+         *          EXPECT_EQ (c.Join (), "localhost, INADDR_ANY");
+         *          EXPECT_EQ (c.Join ("; "), "localhost; INADDR_ANY");
          *      \endcode
          *
          *  See:
          *      @see Accumulate
          */
-        template <typename RESULT>
-        nonvirtual RESULT Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const;
-        nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT,
-                                            const function<Characters::String (const Characters::String&, const Characters::String&)>& combine) const;
-        nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT, const Characters::String& separator) const;
-        nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT) const;
-        nonvirtual Characters::String Join (const Characters::String& separator) const;
-        nonvirtual Characters::String Join () const;
+        template <typename RESULT = Characters::String, invocable<T> CONVERT_TO_RESULT = decltype (kDefaultToStringConverter<>),
+                  invocable<RESULT, RESULT, bool> COMBINER = decltype (Characters::kDefaultStringCombiner)>
+        nonvirtual RESULT Join (const CONVERT_TO_RESULT& convertToResult = kDefaultToStringConverter<>,
+                                const COMBINER&          combiner        = Characters::kDefaultStringCombiner) const
+            requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT> and
+                      convertible_to<invoke_result_t<COMBINER, RESULT, RESULT, bool>, RESULT>);
+        nonvirtual Characters::String Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator = {}) const;
 
     public:
         /**

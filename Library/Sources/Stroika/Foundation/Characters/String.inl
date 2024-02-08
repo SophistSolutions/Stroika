@@ -1320,38 +1320,17 @@ namespace Stroika::Foundation::Characters {
 }
 
 namespace Stroika::Foundation::Traversal {
-    /*
-     *  LOGICALLY, we should put Iterable<T>::Join () String methods in Iterable.inl, but they must be defined in
-     *  String.inl to avoid #include problems (that includes this anyhow, and this cannot include that because that includes this)
-     */
+
+#if 0
     template <typename T>
-    inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT,
-                                                 const function<Characters::String (const Characters::String&, const Characters::String&)>& combine) const
+    inline Characters::String Iterable<T>::Join (const Characters::String& separator, optional<Characters::String> finalSeparator) const
     {
-        return Join<Characters::String> (convertToT, combine);
+        auto arg1 = kDefaultToStringConverter<T>;
+        auto arg2 = Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator};
+        return this->Join (arg1, arg2);
     }
-    template <typename T>
-    inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT, const Characters::String& separator) const
-    {
-        return Join (convertToT, [=] (const Characters::String& l, const Characters::String& r) { return l + separator + r; });
-    }
-    template <typename T>
-    inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT) const
-    {
-        return Join (convertToT, ", "sv);
-    }
-    template <typename T>
-    inline Characters::String Iterable<T>::Join (const Characters::String& separator) const
-    {
-        //return Join ([] (const auto& i) { return Characters::ToString (i); });    @todo figure out trick to be able to use Characters::ToString () here...
-        return Join ([] (const auto& i) { return i.ToString (); },
-                     [=] (const Characters::String& l, const Characters::String& r) { return l + separator + r; });
-    }
-    template <typename T>
-    inline Characters::String Iterable<T>::Join () const
-    {
-        return Join (", "sv);
-    }
+#endif
+
 }
 
 namespace Stroika::Foundation::Characters {

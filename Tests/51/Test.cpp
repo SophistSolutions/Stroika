@@ -1035,13 +1035,26 @@ namespace {
 }
 
 namespace {
-    void Test20_Join_ ()
+    GTEST_TEST (Foundation_Traversal, Test_Join)
     {
-        using IO::Network::InternetAddress;
-        Debug::TraceContextBumper ctx{"{}::Test20_Join_"};
-        Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
-        EXPECT_TRUE (c.Join () == "localhost, INADDR_ANY");
-        EXPECT_TRUE (c.Join (L"; ") == "localhost; INADDR_ANY");
+        Debug::TraceContextBumper ctx{"Test_Join"};
+        {
+            using IO::Network::InternetAddress;
+            Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
+            EXPECT_EQ (c.Join (), "localhost, INADDR_ANY");
+            EXPECT_EQ (c.Join (L"; "), "localhost; INADDR_ANY");
+        }
+        {
+            using namespace Characters;
+            const Iterable<String> kT1_{"a", "b"};
+            const Iterable<String> kT2_{"a", "b", "c"};
+            EXPECT_EQ (kT1_.Join (Characters::UnoverloadedToString<String>), "'a', 'b'");
+            EXPECT_EQ (kT1_.Join (Iterable<String>::kDefaultToStringConverter<String>), kT1_.Join ());
+            EXPECT_EQ (kT1_.Join (), "a, b");
+            EXPECT_EQ (kT1_.Join (" "), "a b");
+            EXPECT_EQ (kT1_.Join (", ", " and "), "a and b");
+            EXPECT_EQ (kT2_.Join (", ", " and "), "a, b and c");
+        }
     }
 }
 
@@ -1097,7 +1110,7 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Traversal, all)
     {
         Debug::TraceContextBumper ctx{"{}::DoRegressionTests_"};
         Test_1_BasicRange_ ();
@@ -1119,7 +1132,6 @@ namespace {
         Test17_DurationRange_ ();
         Test18_IterableConstructors_ ();
         Test19_CreateGeneratorBug_ ();
-        Test20_Join_ ();
         Test21_Repeat_ ();
         Test22_Top_ ();
         Test23_Iterable_Map_ ();

@@ -435,4 +435,13 @@ namespace Stroika::Foundation::Characters {
 
 }
 
+namespace Stroika::Foundation::Traversal {
+    template <typename T>
+    inline Characters::String Iterable<T>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const
+    {
+        return this->Join (kDefaultToStringConverter<Characters::String>,
+                           Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
+    }
+}
+
 #endif /*_Stroika_Foundation_Characters_ToString_inl_*/

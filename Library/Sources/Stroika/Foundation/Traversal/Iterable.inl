@@ -640,38 +640,25 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    template <typename RESULT>
-    nonvirtual RESULT Iterable<T>::Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const
+    template <typename RESULT, invocable<T> CONVERT_TO_RESULT, invocable<RESULT, RESULT, bool> COMBINER>
+    RESULT Iterable<T>::Join (const CONVERT_TO_RESULT& convertToResult, const COMBINER& combiner) const
+        requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT> and
+                  convertible_to<invoke_result_t<COMBINER, RESULT, RESULT, bool>, RESULT>)
     {
         RESULT result{};
-        bool   firstTime{true};
-        for (const auto& i : *this) {
-            if (firstTime) {
-                result    = convertToT (i);
-                firstTime = false;
+        size_t idx{0};
+        size_t cnt = this->size ();
+        for (auto i : *this) {
+            if (idx == 0) {
+                result = convertToResult (i);
             }
             else {
-                result = combine (result, convertToT (i));
+                result = combiner (result, convertToResult (i), idx + 1 == cnt);
             }
+            ++idx;
         }
         return result;
     }
-#if 0
-    /*
-     *  LOGICALLY, we should put Iterable<T>::Join () String overloads here, but they must be defined in
-     *  String.inl to avoid #include problems (that includes this anyhow, and this cannot include that because that includes this)
-     */
-    template <typename T>
-    Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT, const function<Characters::String (const Characters::String&, const Characters::String&)>& combine) const
-    template <typename T>
-    inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT, const Characters::String& separator) const
-    template <typename T>
-    inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT) const
-    template <typename T>
-    inline Characters::String Iterable<T>::Join (const Characters::String& separator) const
-    template <typename T>
-    inline Characters::String Iterable<T>::Join () const
-#endif
     template <typename T>
     Iterable<T> Iterable<T>::Skip (size_t nItems) const
     {

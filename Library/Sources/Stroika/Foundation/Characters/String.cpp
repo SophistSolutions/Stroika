@@ -1692,6 +1692,23 @@ String StringCombiner::operator() (const String& lhs, const String& rhs, bool is
     return sb.str ();
 }
 
+/*
+ ********************************************************************************
+ ******************* Iterable<Characters::String>::Join *************************
+ ********************************************************************************
+ */
+namespace Stroika::Foundation::Traversal {
+    // specialized as performance optimization
+    template <>
+    Characters::String Iterable<Characters::String>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const
+    {
+        using namespace Characters;
+        String referenceResult = this->Join (Iterable<String>::kDefaultToStringConverter<String>,
+                                             Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
+
+        return referenceResult;
+    }
+}
 
 /*
  ********************************************************************************
