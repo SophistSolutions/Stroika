@@ -833,12 +833,19 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-        * @todo - rename this to kDefaultToJOINRESULTConverter or  get rid of RESULT parameter- and only provide a default for the STRING case
-        * &&& keep name, throw in same_as<String> param to RESULT, and lose explict args where used - use default - and document needed magic to avoid mutual include issue
+         *  kDefaultToStringConverter encapsulates the algorithm used to map T objects to printable strings. As this is
+         *  mainly used for debugging, it defaults to using Characters::ToString() - and so maybe lossy.
+         *
+         *  For plain Strings - however, it just uses Common::Identity (no mapping). So that when used in Join - you get
+         *  no changes to the argument strings (by default - easy to pass in lambda todo what you want to Join).
+         * 
+         *  \note - logically - kDefaultToStringConverter takes no template parameter, but in practical use, it must
+         *        just to postpone the evaluation of its type argument and avoid a direct dependency on the String module,
+         *        which in turn depends on this module.
          */
-        template <same_as<Characters::String> RESULT = Characters::String>
-        static inline const function<RESULT (T)> kDefaultToStringConverter = [] () -> function<Characters::String (T)> {
-            if constexpr (same_as<T, Characters::String> and same_as<RESULT, Characters::String>) {
+        template <same_as<Characters::String> RESULT_T = Characters::String>
+        static inline const function<RESULT_T (T)> kDefaultToStringConverter = [] () -> function<Characters::String (T)> {
+            if constexpr (same_as<T, Characters::String> and same_as<RESULT_T, Characters::String>) {
                 return Common::Identity{};
             }
             else {
@@ -870,19 +877,19 @@ namespace Stroika::Foundation::Traversal {
          *      @see Accumulate
          */
 #if qCompilerAndStdLib_template_SubstDefaultTemplateParamVariableTemplate_Buggy
-        template <typename RESULT = Characters::String, invocable<T> CONVERT_TO_RESULT = decltype (kDefaultToStringConverter<RESULT>),
-                  invocable<RESULT, RESULT, bool> COMBINER = decltype (Characters::kDefaultStringCombiner)>
-        nonvirtual RESULT Join (const CONVERT_TO_RESULT& convertToResult = kDefaultToStringConverter<RESULT>,
-                                const COMBINER&          combiner        = Characters::kDefaultStringCombiner) const
-            requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT> and
-                      convertible_to<invoke_result_t<COMBINER, RESULT, RESULT, bool>, RESULT>);
+        template <typename RESULT_T = Characters::String, invocable<T> CONVERT_TO_RESULT = decltype (kDefaultToStringConverter<RESULT_T>),
+                  invocable<RESULT_T, RESULT_T, bool> COMBINER = decltype (Characters::kDefaultStringCombiner)>
+        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult = kDefaultToStringConverter<RESULT_T>,
+                                  const COMBINER&          combiner        = Characters::kDefaultStringCombiner) const
+            requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T> and
+                      convertible_to<invoke_result_t<COMBINER, RESULT_T, RESULT_T, bool>, RESULT_T>);
 #else
-        template <typename RESULT = Characters::String, invocable<T> CONVERT_TO_RESULT = decltype (kDefaultToStringConverter<>),
-                  invocable<RESULT, RESULT, bool> COMBINER = decltype (Characters::kDefaultStringCombiner)>
-        nonvirtual RESULT Join (const CONVERT_TO_RESULT& convertToResult = kDefaultToStringConverter<>,
-                                const COMBINER&          combiner        = Characters::kDefaultStringCombiner) const
-            requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT> and
-                      convertible_to<invoke_result_t<COMBINER, RESULT, RESULT, bool>, RESULT>);
+        template <typename RESULT_T = Characters::String, invocable<T> CONVERT_TO_RESULT = decltype (kDefaultToStringConverter<>),
+                  invocable<RESULT_T, RESULT_T, bool> COMBINER = decltype (Characters::kDefaultStringCombiner)>
+        nonvirtual RESULT_T Join (const CONVERT_TO_RESULT& convertToResult = kDefaultToStringConverter<>,
+                                  const COMBINER&          combiner        = Characters::kDefaultStringCombiner) const
+            requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T> and
+                      convertible_to<invoke_result_t<COMBINER, RESULT_T, RESULT_T, bool>, RESULT_T>);
 #endif
 #if qCompilerAndStdLib_template_optionalDeclareIncompleteType_Buggy
         nonvirtual Characters::String Join (const Characters::String& separator) const;

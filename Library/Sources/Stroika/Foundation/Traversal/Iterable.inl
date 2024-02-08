@@ -640,14 +640,14 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    template <typename RESULT, invocable<T> CONVERT_TO_RESULT, invocable<RESULT, RESULT, bool> COMBINER>
-    RESULT Iterable<T>::Join (const CONVERT_TO_RESULT& convertToResult, const COMBINER& combiner) const
-        requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT> and
-                  convertible_to<invoke_result_t<COMBINER, RESULT, RESULT, bool>, RESULT>)
+    template <typename RESULT_T, invocable<T> CONVERT_TO_RESULT, invocable<RESULT_T, RESULT_T, bool> COMBINER>
+    RESULT_T Iterable<T>::Join (const CONVERT_TO_RESULT& convertToResult, const COMBINER& combiner) const
+        requires (convertible_to<invoke_result_t<CONVERT_TO_RESULT, T>, RESULT_T> and
+                  convertible_to<invoke_result_t<COMBINER, RESULT_T, RESULT_T, bool>, RESULT_T>)
     {
-        RESULT result{};
-        size_t idx{0};
-        size_t cnt = this->size ();
+        RESULT_T result{};
+        size_t   idx{0};
+        size_t   cnt = this->size ();
         for (auto i : *this) {
             if (idx == 0) {
                 result = convertToResult (i);

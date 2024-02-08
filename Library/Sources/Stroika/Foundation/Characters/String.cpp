@@ -1703,10 +1703,31 @@ namespace Stroika::Foundation::Traversal {
     Characters::String Iterable<Characters::String>::Join (const Characters::String& separator, const optional<Characters::String>& finalSeparator) const
     {
         using namespace Characters;
+#if qDebug
         String referenceResult = this->Join (Iterable<String>::kDefaultToStringConverter<String>,
                                              Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator});
-
-        return referenceResult;
+#endif
+        StringBuilder sb;
+        size_t        cnt = this->size ();
+        this->Apply ([&, idx = 0u] (const String& i) mutable {
+            if (idx == 0) {
+                sb = i;
+            }
+            else {
+                sb << i;
+                if (finalSeparator and idx + 1 == cnt) {
+                    sb << *finalSeparator;
+                }
+                else {
+                    sb << separator;
+                }
+            }
+            ++idx;
+        });
+#if qDebug
+        Ensure (sb.str () == referenceResult);
+#endif
+        return sb.str ();
     }
 }
 
