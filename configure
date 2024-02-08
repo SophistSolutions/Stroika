@@ -228,7 +228,7 @@ sub	DoSetThirdPartyComponents_
 	my $x = shift(@_);
 	if ($x eq "all-available") {
 		## Basically the same as fill-in-defaults, except for xerces is included now
-		my $xercesAlreadySet = !defined($FEATUREFLAG_Xerces);
+		my $xercesAlreadySet = defined($FEATUREFLAG_Xerces);
 		DoSetThirdPartyComponents_('fill-in-defaults');
 		if (!$xercesAlreadySet) {
 			$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
