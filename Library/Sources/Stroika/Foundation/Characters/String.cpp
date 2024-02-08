@@ -1715,7 +1715,7 @@ namespace Stroika::Foundation::Traversal {
             }
             else {
                 sb << i;
-                if (finalSeparator and idx + 1 == cnt) {
+                if (finalSeparator and idx + 1 == cnt) [[unlikely]] {
                     sb << *finalSeparator;
                 }
                 else {
