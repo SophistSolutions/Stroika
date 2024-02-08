@@ -1823,7 +1823,10 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief StringCombiner is a simple function object used to combine two strings visually - used in Iterable<>::Join ()
      * 
-     *  This can combine strings in the obvious way (concatenation) - but defaults to separating them with a comma.
+     *  This can combine strings in the obvious way (concatenation) - but defaults to separating them with a comma (', ').
+     * 
+     *  \note the functional api - is to be given two strings, and a flag saying if the combination is the last one in the list,
+     *        since in English, this is frequently rendered somewhat differently than the rest.
      */
     struct StringCombiner {
         String           fSeparator{", "sv};
@@ -1832,6 +1835,8 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
+     *  kDefaultStringCombiner is just StringCombiner{}, rendered as a function object, so that it can be externed/imported
+     *  in the Iterable code without imposing a dependency on the String code.
      */
     extern const function<String (String, String, bool)> kDefaultStringCombiner;
 

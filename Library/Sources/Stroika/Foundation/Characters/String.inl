@@ -1314,23 +1314,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-    /**
-     */
     inline const function<String (String, String, bool)> kDefaultStringCombiner = StringCombiner{.fSeparator = ", "_k};
-}
-
-namespace Stroika::Foundation::Traversal {
-
-#if 0
-    template <typename T>
-    inline Characters::String Iterable<T>::Join (const Characters::String& separator, optional<Characters::String> finalSeparator) const
-    {
-        auto arg1 = kDefaultToStringConverter<T>;
-        auto arg2 = Characters::StringCombiner{.fSeparator = separator, .fSpecialSeparatorForLastPair = finalSeparator};
-        return this->Join (arg1, arg2);
-    }
-#endif
-
 }
 
 namespace Stroika::Foundation::Characters {

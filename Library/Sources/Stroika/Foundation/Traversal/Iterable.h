@@ -877,6 +877,22 @@ namespace Stroika::Foundation::Traversal {
          *          EXPECT_EQ (c.Join (), "localhost, INADDR_ANY");
          *          EXPECT_EQ (c.Join ("; "), "localhost; INADDR_ANY");
          *      \endcode
+         * 
+         *  \par Example Usage
+         *      \code
+         *          const Iterable<String> kT1_{"a", "b"};
+         *          const Iterable<String> kT2_{"a", "b", "c"};
+         *          EXPECT_EQ (kT1_.Join (Characters::UnoverloadedToString<String>), "'a', 'b'");
+         *          EXPECT_EQ (kT1_.Join (Iterable<String>::kDefaultToStringConverter<String>), kT1_.Join ());
+         *          // Common::Identity{} produces no transformation, and the combiner function just directly concatenates with no separator
+         *          EXPECT_EQ (kT1_.Join (Common::Identity{}, [] (auto l, auto r, bool) { return l + r; }), "ab");
+         *          EXPECT_EQ (kT1_.Join (), "a, b");
+         *          EXPECT_EQ (kT1_.Join (" "), "a b");
+         *          EXPECT_EQ (kT1_.Join (", ", " and "), "a and b");
+         *          EXPECT_EQ (kT2_.Join (", ", " and "), "a, b and c");
+         *          EXPECT_EQ (kT2_.Join ([] (auto i) { return i.ToUpperCase (); }), "A, B, C");
+         *          EXPECT_EQ (kT2_.Join ([] (auto i) { return i.ToUpperCase (); }, "; "sv, " and "sv), "A; B and C");
+         *      \endcode
          *
          *  See:
          *      @see Accumulate
