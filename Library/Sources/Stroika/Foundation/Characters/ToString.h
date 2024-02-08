@@ -92,6 +92,11 @@ namespace Stroika::Foundation::Characters {
         } -> convertible_to<Characters::String>;
     };
 
+    /**
+     */
+    template <typename T>
+    String UnoverloadedToString (const T& t);
+
 }
 
 /*

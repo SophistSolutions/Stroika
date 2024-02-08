@@ -410,6 +410,17 @@ namespace Stroika::Foundation::Characters {
         return ToStringDefaults::ToString (t, flags);
     }
 
+    /*
+     ********************************************************************************
+     *********************** Characters::UnoverloadedToString ***********************
+     ********************************************************************************
+     */
+    template <typename T>
+    inline String UnoverloadedToString (const T& t)
+    {
+        return ToString (t);
+    }
+
     //DEPRECATED
     namespace Private_ {
         template <typename T>
