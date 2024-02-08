@@ -233,6 +233,16 @@ endif
 
 
 #
+# LinkerArgs_StroikaDependentLibDependencies is just like LinkerArgs_LibDependencies, but
+# Its for libraries that are built and dependent on Stroika.
+#
+# The reason for this distiction has todo with ordering (on unix linkers - not needed for windows linker).
+# Dependencies in earlier libraries can be found in later, but not the other way around.
+#
+LinkerArgs_StroikaDependentLibDependencies :=
+
+
+#
 # This macro takes a single argument - the output filename for the link command
 #
 DEFAULT_LINK_LINE=\
@@ -241,8 +251,10 @@ DEFAULT_LINK_LINE=\
 		$(LinkerArgs_LibPath) \
 		${OUT_ARG_PREFIX_NATIVE}$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$1) \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(Objs)) \
+		${LinkerArgs_StroikaDependentLibDependencies} \
 		$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaLibs)) \
-		$(LinkerArgs_LibDependencies) $(LinkerArgs_ExtraSuffix)
+		$(LinkerArgs_LibDependencies) \
+		$(LinkerArgs_ExtraSuffix)
 
 # copy LinkTime_CopyFilesToEXEDir files to EXEDIR
 ifneq ($(LinkTime_CopyFilesToEXEDir),)
