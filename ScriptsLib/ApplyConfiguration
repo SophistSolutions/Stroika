@@ -226,7 +226,7 @@ sub WriteStroikaConfigMakeHeader_CachedLineItem_
 	print (OUT '#CACHED VALUE OF: ' . $vn . '			::=	$(shell $(StroikaRoot)ScriptsLib/GetConfigurationParameter "$(CONFIGURATION)" ' . $vn . ")\n");
 	# If the variable in the XML file as a $ in it, when its written to the makefile, we must quote any $ characters so they don't look like variable expansions
 	$v =~ s/\$/\$\$/g;
-	print (OUT "$vn::=$v\n");
+	print (OUT "$vn ::= $v\n");
 	print (OUT "\n");
 }
 
@@ -329,8 +329,8 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "$var\n");
 	}
 
-	print (OUT "\n\nLinkerArgs_LibPath::=$LinkerArgs_LibPath\n");
-	print (OUT "LinkerArgs_LibDependencies::=$LinkerArgs_LibDependencies\n");
+	print (OUT "\n\nLinkerArgs_LibPath ::= $LinkerArgs_LibPath\n");
+	print (OUT "LinkerArgs_LibDependencies ::= $LinkerArgs_LibDependencies\n");
 
 	print (OUT "\n\n");
 	print (OUT "# Extra dynamically computed link(cppflags) lines\n");
@@ -363,14 +363,14 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("LINKER");
 
 	print (OUT "#\n");
-	print (OUT "EXTRA_COMPILER_ARGS::=	$EXTRA_COMPILER_ARGS\n");
+	print (OUT "EXTRA_COMPILER_ARGS ::=	$EXTRA_COMPILER_ARGS\n");
 
 	print (OUT "#\n");
-	print (OUT "LinkerArgs_ExtraPrefix::=	$LinkerArgs_ExtraPrefix\n");
-	print (OUT "LinkerArgs_ExtraSuffix::=	$LinkerArgs_ExtraSuffix\n");
+	print (OUT "LinkerArgs_ExtraPrefix ::=	$LinkerArgs_ExtraPrefix\n");
+	print (OUT "LinkerArgs_ExtraSuffix ::=	$LinkerArgs_ExtraSuffix\n");
 
-	print (OUT "IncludeDebugSymbolsInExecutables::=	$IncludeDebugSymbolsInExecutables\n");
-	print (OUT "IncludeDebugSymbolsInLibraries::=	$IncludeDebugSymbolsInLibraries\n");
+	print (OUT "IncludeDebugSymbolsInExecutables ::=	$IncludeDebugSymbolsInExecutables\n");
+	print (OUT "IncludeDebugSymbolsInLibraries ::=	$IncludeDebugSymbolsInLibraries\n");
 
 
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
@@ -439,10 +439,10 @@ sub WriteStroikaConfigMakeHeader
 	}
 
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-		print (OUT "OUT_ARG_PREFIX_NATIVE::=-OUT:\n");
+		print (OUT "OUT_ARG_PREFIX_NATIVE ::=-OUT:\n");
 	}
 	else {
-		print (OUT "OUT_ARG_PREFIX_NATIVE::=-o \n");
+		print (OUT "OUT_ARG_PREFIX_NATIVE ::=-o \n");
 	}
 
 	if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
