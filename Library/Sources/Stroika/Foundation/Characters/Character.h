@@ -226,6 +226,8 @@ namespace Stroika::Foundation::Characters {
          *  To avoid checking, cast 'c' to char32_t, as any code-point will be considered valid (so no need to check).
          */
         constexpr Character () noexcept;
+        constexpr Character (const Character&) noexcept = default;
+        constexpr Character (Character&&) noexcept = default;
         constexpr Character (ASCII c);
         constexpr Character (Latin1 c) noexcept;
         constexpr Character (char16_t c);
