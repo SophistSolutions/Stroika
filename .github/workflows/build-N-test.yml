@@ -98,7 +98,7 @@ jobs:
       - name: Hacks 2 Save Space  (apt-remove)
         if: ${{ matrix.apt_remove }}
         run: |
-          apt-get remove ${{ matrix.apt_remove }}
+          apt-get remove -y ${{ matrix.apt_remove }}
           df -h
       - name: Configure ${{ matrix.config_name }}
         run: |
