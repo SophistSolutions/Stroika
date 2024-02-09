@@ -117,9 +117,9 @@ Characters::String ThreadPool::Statistics::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "fNumberOfTasksAdded: " << Characters::ToString (fNumberOfTasksAdded) << ", "sv;
-    sb << "fNumberOfTasksCompleted: " << Characters::ToString (fNumberOfTasksCompleted) << ", "sv;
-    sb << "fTotalTimeConsumed: " << Characters::ToString (fTotalTimeConsumed) << ", "sv;
+    sb << "fNumberOfTasksAdded: "sv << fNumberOfTasksAdded << ", "sv;
+    sb << "fNumberOfTasksCompleted: "sv << fNumberOfTasksCompleted << ", "sv;
+    sb << "fTotalTimeConsumed: "sv << fTotalTimeConsumed << ", "sv;
     sb << "}"sv;
     return sb.str ();
 }

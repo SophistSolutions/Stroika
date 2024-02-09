@@ -66,7 +66,7 @@ String CIDR::As<String> () const
 String Network::CIDR::ToString () const
 {
     StringBuilder sb;
-    sb << Characters::ToString (fBaseAddress_) << "/"sv << Characters::ToString ((int)fSignificantBits_);
+    sb << fBaseAddress_ << "/"sv << (int)fSignificantBits_;
     return sb.str ();
 }
 

@@ -18,13 +18,7 @@
  *
  * Description:
  *
- *
  * TODO:
- *      @todo   Add 'formatting' like wstringstream - so you can append ints, etc. But unclear how to
- *              format these, so think out carefully
- *
- *              Maybe find a way to re-use the stream inserters from iostream (vector to them?)
- *
  *      @todo   Add InsertAt() methods - like from String class (before I deprecate them).
  *              https://stroika.atlassian.net/browse/STK-34
  *
@@ -33,8 +27,21 @@
  *      @todo   Consider adding (back) reserve/capacity methods, but be sure to document these are in units of 
  *              BufferElementType not characters.
  */
+namespace Stroika::Foundation::Characters {
+    template <typename T>
+    String UnoverloadedToString (const T& t);
+}
 
 namespace Stroika::Foundation::Characters {
+
+    namespace Private_ {
+        template <typename T>
+        concept IToString = requires (T t) {
+            {
+                UnoverloadedToString (t)
+            } -> convertible_to<Characters::String>;
+        };
+    }
 
     /**
      *  \brief rarely used  directly - defaults generally fine
@@ -133,7 +140,12 @@ namespace Stroika::Foundation::Characters {
             -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         {
-            Append (forward<APPEND_ARG_T> (a));
+            if constexpr (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
+                Append (forward<APPEND_ARG_T> (a));
+            }
+            else {
+                Append (Characters::UnoverloadedToString (forward<APPEND_ARG_T> (a)));
+            }
             return *this;
         }
 #else
@@ -143,12 +155,12 @@ namespace Stroika::Foundation::Characters {
         // clang-format off
     public:
         /**
-         *  Alias for Append
+         *  Alias for Append if that would work, and otherwise alias for Append (ToString(arg)), if that would work;
          */
         template <typename APPEND_ARG_T>
         nonvirtual auto
         operator<< (APPEND_ARG_T&& a)
-            -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
+            -> StringBuilder& requires (Characters::Private_::IToString<APPEND_ARG_T> or requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         {
             Append (forward<APPEND_ARG_T> (a));

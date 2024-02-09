@@ -32,10 +32,10 @@ Characters::String IntervalTimer::RegisteredTask::ToString () const
 {
     StringBuilder sb;
     sb << "{"sv;
-    sb << "Callback: "sv << Characters::ToString (fCallback) << ", "sv;
-    sb << "CallNextAt: "sv << Characters::ToString (fCallNextAt) << ", "sv;
-    sb << "Frequency: "sv << Characters::ToString (fFrequency) << ", "sv;
-    sb << "Hysteresis: "sv << Characters::ToString (fHysteresis);
+    sb << "Callback: "sv << fCallback << ", "sv;
+    sb << "CallNextAt: "sv << fCallNextAt << ", "sv;
+    sb << "Frequency: "sv << fFrequency << ", "sv;
+    sb << "Hysteresis: "sv << fHysteresis;
     sb << "}"sv;
     return sb.str ();
 }
