@@ -214,14 +214,24 @@ namespace Stroika::Foundation::Characters {
     class [[nodiscard]] Character {
     public:
         /**
-         *  Default constructor produces a zero character.
+         *  Default constructor produces a zero (null) character.
          *  Constructor with char32_t always produces a valid character.
          * 
-         *  The overload taking two char16_t surrogate pairs, may throw if given invalid code-points
+         *  The overloads check for a valid character code-point and throw if given invalid data.
+         *   - The overload taking a single char (ASCII) will throw if arg is not ASCII
+         *   - The overload taking a single char16_t will throw if given a code-point not valid on its own (surrogate without pair)
+         *   - The overload taking two char16_t surrogate pairs, may throw if given invalid code-points
+         *   - The overload taking wchar_t will treat it as char16_t or char32_t constructor, depending on sizeof (wchar_t)
+         * 
+         *  To avoid checking, cast 'c' to char32_t, as any code-point will be considered valid (so no need to check).
          */
         constexpr Character () noexcept;
-        constexpr Character (char32_t c) noexcept;
+        constexpr Character (ASCII c);
+        constexpr Character (Latin1 c) noexcept;
+        constexpr Character (char16_t c);
         constexpr Character (char16_t hiSurrogate, char16_t lowSurrogate);
+        constexpr Character (char32_t c) noexcept;
+        constexpr Character (wchar_t c) noexcept (sizeof (wchar_t) == 4);
 
     public:
         /**

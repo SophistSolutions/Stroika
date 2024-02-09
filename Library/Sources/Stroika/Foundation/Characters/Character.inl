@@ -122,9 +122,23 @@ namespace Stroika::Foundation::Characters {
         : fCharacterCode_{'\0'}
     {
     }
-    constexpr inline Character::Character (char32_t c) noexcept
-        : fCharacterCode_{c}
+    constexpr inline Character::Character (ASCII c) 
+        : fCharacterCode_{static_cast<char32_t> (c)}
     {
+        if (not is_constant_evaluated () and not IsASCII (c)) [[unlikely]] {
+             Private_::ThrowSurrogatesOutOfRange_ ();
+        }
+    }
+    constexpr inline Character::Character (Latin1 c) noexcept
+        : fCharacterCode_{static_cast<char32_t> (c)}
+    {
+    }
+    constexpr inline Character::Character (char16_t c) 
+        : fCharacterCode_{static_cast<char32_t> (c)}
+    {
+        if (IsSurrogatePair_Hi (c)) [[unlikely]] {
+             Private_::ThrowSurrogatesOutOfRange_ ();
+        }
     }
     constexpr Character::Character (char16_t hiSurrogate, char16_t lowSurrogate)
     {
@@ -144,7 +158,20 @@ namespace Stroika::Foundation::Characters {
         }
         fCharacterCode_ = ((hiSurrogate - kUNICODESurrogate_High_Start) << halfShift) + (lowSurrogate - kUNICODESurrogate_Low_Start) + halfBase;
     }
-    inline char Character::GetAsciiCode () const noexcept
+    constexpr inline Character::Character (char32_t c) noexcept
+        : fCharacterCode_{c}
+    {
+    }
+    constexpr inline Character::Character (wchar_t c) noexcept (sizeof (wchar_t) == 4)
+        : fCharacterCode_{static_cast<char32_t> (c)}
+    {
+        if constexpr (sizeof (wchar_t) != 4) {
+            if (IsSurrogatePair_Hi (c)) [[unlikely]] {
+                Private_::ThrowSurrogatesOutOfRange_ ();
+            }
+        }
+    }
+    inline ASCII Character::GetAsciiCode () const noexcept
     {
         Require (IsASCII ());
         return static_cast<char> (fCharacterCode_);

@@ -1455,7 +1455,7 @@ String String::ToLowerCase () const
         for (auto c : psd.fAscii) {
             if (isupper (c)) {
                 changed = true;
-                result.push_back (tolower (c));
+                result.push_back (static_cast<ASCII> (tolower (c)));
             }
             else {
                 result.push_back (c);
@@ -1493,7 +1493,7 @@ String String::ToUpperCase () const
         for (auto c : psd.fAscii) {
             if (islower (c)) {
                 changed = true;
-                result.push_back (toupper (c));
+                result.push_back (static_cast<ASCII> (toupper (c)));
             }
             else {
                 result.push_back (c);

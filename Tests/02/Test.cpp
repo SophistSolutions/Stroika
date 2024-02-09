@@ -1471,7 +1471,7 @@ namespace {
                 b += a;
                 EXPECT_TRUE (a == b);
                 EXPECT_TRUE (a.size () == 5);
-                EXPECT_TRUE (a[3] == 0x00b5);
+                EXPECT_TRUE (a[3].GetCharacterCode () == 0x00b5);
                 EXPECT_TRUE (a[4] == 's');
             };
             test45mus (String{L"45 \u00b5s"});
@@ -1654,22 +1654,22 @@ namespace {
         {
             // https://www.informit.com/articles/article.aspx?p=2274038&seqNum=10 SURROGATE SAMPLES
             {
-                constexpr auto ch = Character{0x10000};
+                constexpr auto ch = Character{char32_t(0x10000)};
                 EXPECT_TRUE ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD800), static_cast<char16_t> (0xDC00)}));
                 EXPECT_TRUE ((ch == Character{0xD800, 0xDC00}));
             }
             {
-                constexpr auto ch = Character{0x10E6D};
+                constexpr auto ch = Character{char32_t(0x10E6D)};
                 EXPECT_TRUE ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD803), static_cast<char16_t> (0xDE6D)}));
                 EXPECT_TRUE ((ch == Character{0xD803, 0xDE6D}));
             }
             {
-                constexpr auto ch = Character{0x1D11E};
+                constexpr auto ch = Character{char32_t(0x1D11E)};
                 EXPECT_TRUE ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD834), static_cast<char16_t> (0xDD1E)}));
                 EXPECT_TRUE ((ch == Character{0xD834, 0xDD1E}));
             }
             {
-                constexpr auto ch = Character{0x10FFFF};
+                constexpr auto ch = Character{char32_t(0x10FFFF)};
                 EXPECT_TRUE ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xDBFF), static_cast<char16_t> (0xDFFF)}));
                 EXPECT_TRUE ((ch == Character{0xDBFF, 0xDFFF}));
             }
@@ -1816,7 +1816,7 @@ namespace {
             String latin1AsStr = String::FromLatin1 (nonAsciiLatin1Test);
             EXPECT_TRUE (latin1AsStr.length () == nonAsciiLatin1Test.length ());
             for (size_t i = 0; i < nonAsciiLatin1Test.length (); ++i) {
-                EXPECT_TRUE (latin1AsStr[i] == static_cast<unsigned char> (nonAsciiLatin1Test[i]));
+                EXPECT_EQ (latin1AsStr[i].GetCharacterCode () , static_cast<unsigned char> (nonAsciiLatin1Test[i]));
             }
         }
         {
