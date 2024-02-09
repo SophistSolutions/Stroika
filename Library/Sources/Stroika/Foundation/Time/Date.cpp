@@ -12,6 +12,7 @@
 #include "../Execution/Throw.h"
 #include "../Linguistics/MessageUtilities.h"
 #include "DateTime.h"
+#include "Duration.h"
 
 #include "Date.h"
 
@@ -38,6 +39,11 @@ Date::FormatException::FormatException ()
  *********************************** Date ***************************************
  ********************************************************************************
  */
+Date Date::Now () noexcept
+{
+    return DateTime::Now ().GetDate ();
+}
+
 Date Date::Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo)
 {
     if (rep.empty ()) {
@@ -196,6 +202,16 @@ Date Date::AsDate_ (const ::tm& when)
     return Date{chrono::sys_days{fRep_} + dayCount, DataExchange::ValidationStrategy::eThrow};
 }
 
+[[nodiscard]] Date Date::Add (const Duration& d) const
+{
+    return Add (chrono::round<days> (d));
+}
+
+Date Date::operator- (const Duration& d) const
+{
+    return Add (-d);
+}
+
 days Date::Since () const
 {
     return Since (DateTime::GetToday (), this->As<year_month_day> ());
@@ -220,7 +236,7 @@ weekday Date::GetDayOfWeek () const
 
     static constexpr unsigned int kDayOfWeekOffsetPerMonth_[12] = {
         3,
-        0, // february special - add one for leap year
+        0, // February special - add one for leap year
         3, 2, 3, 2, 3, 3, 2, 3, 2, 3,
     };
     unsigned int targetDayOfWeek = weekdayOfJan1;

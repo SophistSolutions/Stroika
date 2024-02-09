@@ -410,6 +410,10 @@ namespace Stroika::Foundation::Time {
     {
         return this->Add (daysOffset);
     }
+    inline Date Date::operator+ (const Duration& d) const
+    {
+        return this->Add (d);
+    }
     inline days Date::Since (Date dStart, Date dEnd)
     {
         if (dStart < dEnd) {

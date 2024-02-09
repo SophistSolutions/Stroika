@@ -26,14 +26,14 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Could optimize the Format/Parse calls for case without locale to just hardwire implementaton
+ *      @todo   Could optimize the Format/Parse calls for case without locale to just hardwire implementation
  *              using sprintf/scanf (as we had before 2.1b10); only performance optimization and unclear it would help
  *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
- *      @todo   It would be highly desirable to allow this date code to represent lareger/smaller dates
- *              (without the julian calendar restriction).
+ *      @todo   It would be highly desirable to allow this date code to represent larger/smaller dates
+ *              (without the Julian calendar restriction).
  *              That maybe a longer term issue.
  *
  *              Consider representing as big struct
@@ -46,6 +46,8 @@
  */
 
 namespace Stroika::Foundation::Time {
+
+    class Duration;
 
     using Characters::String;
 
@@ -446,6 +448,12 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  Return the current Date - shorthand for DateTime::Now ().GetDate () (so uses localtime)
+         */
+        static Date Now () noexcept;
+
+    public:
+        /**
          *  \brief Y-M-D format - locale independant, and ISO-8601 date format standard
          *
          *  \note sometimes represented as %F (see https://en.cppreference.com/w/cpp/chrono/c/wcsftime), but that's not supported in https://en.cppreference.com/w/cpp/locale/time_get/get.
@@ -613,9 +621,12 @@ namespace Stroika::Foundation::Time {
          *          d = d.Add (1);      // OR d = d + 1;
          *          Assert (d == 1906y/May/13d);
          *      \endcode
+         * 
+         *  \note - a duration is much more precise than a day, so that overload rounds.
          */
         nonvirtual [[nodiscard]] Date Add (int d) const;
         nonvirtual [[nodiscard]] Date Add (days d) const;
+        nonvirtual [[nodiscard]] Date Add (const Duration& d) const;
 
     public:
         /**
@@ -629,7 +640,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  \brief Returns the difference (*this - rhs) between the two Date records;
          *
-         *  \note Before Stroika v3.0d1, this returend  SignedJulianDayNumber.
+         *  \note Before Stroika v3.0d1, this returned SignedJulianDayNumber.
          */
         nonvirtual days Difference (const Date& rhs) const;
 
@@ -646,15 +657,19 @@ namespace Stroika::Foundation::Time {
          */
         nonvirtual Date operator+ (int daysOffset) const;
         nonvirtual Date operator+ (days daysOffset) const;
+        nonvirtual Date operator+ (const Duration& d) const;
 
     public:
         /**
          *  days operator- (const Date& rhs): Syntactic sugar on Difference()
          *  Date                operator- (days or int daysOffset)  Syntactic sugar on Add(-arg)
+         * 
+         *  \note subtracting by duration 'd' rounds to days...
          */
         nonvirtual days operator- (const Date& rhs) const;
         nonvirtual Date operator- (int daysOffset) const;
         nonvirtual Date operator- (days daysOffset) const;
+        nonvirtual Date operator- (const Duration& d) const;
 
     public:
         /**
