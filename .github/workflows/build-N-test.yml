@@ -95,6 +95,11 @@ jobs:
           rm -rf Archive .git || echo "Issue deleting incomplete"
           #ls -la .
           df -h
+      - name: Hacks 2 Save Space  (apt-remove)
+        if: ${{ matrix.apt_remove }}
+        run: |
+          apt-get remove ${{ matrix.apt_remove }}
+          df -h
       - name: Configure ${{ matrix.config_name }}
         run: |
           ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
