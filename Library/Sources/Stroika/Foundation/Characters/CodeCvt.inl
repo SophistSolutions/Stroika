@@ -29,9 +29,7 @@ namespace Stroika::Foundation::Characters {
                 : FACET{forward<Args> (args)...}
             {
             }
-            ~deletable_facet_ ()
-            {
-            }
+            ~deletable_facet_ () = default;
         };
         void   ThrowErrorConvertingBytes2Characters_ (size_t nSrcCharsWhereError);
         void   ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCharsWhereError);

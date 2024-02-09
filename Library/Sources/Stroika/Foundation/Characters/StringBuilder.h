@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /*
-         *  explicit operator T () provides an alterntive syntax to As<> - depending on user
+         *  explicit operator T () provides an alternative syntax to As<> - depending on user
          *  preference or context. Note - its important that this is explicit - to avoid
          *  creating overload problems.
          */

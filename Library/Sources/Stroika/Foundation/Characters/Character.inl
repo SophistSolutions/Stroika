@@ -122,22 +122,22 @@ namespace Stroika::Foundation::Characters {
         : fCharacterCode_{'\0'}
     {
     }
-    constexpr inline Character::Character (ASCII c) 
+    constexpr inline Character::Character (ASCII c)
         : fCharacterCode_{static_cast<char32_t> (c)}
     {
         if (not is_constant_evaluated () and not IsASCII (c)) [[unlikely]] {
-             Private_::ThrowSurrogatesOutOfRange_ ();
+            Private_::ThrowSurrogatesOutOfRange_ ();
         }
     }
     constexpr inline Character::Character (Latin1 c) noexcept
         : fCharacterCode_{static_cast<char32_t> (c)}
     {
     }
-    constexpr inline Character::Character (char16_t c) 
+    constexpr inline Character::Character (char16_t c)
         : fCharacterCode_{static_cast<char32_t> (c)}
     {
         if (IsSurrogatePair_Hi (c)) [[unlikely]] {
-             Private_::ThrowSurrogatesOutOfRange_ ();
+            Private_::ThrowSurrogatesOutOfRange_ ();
         }
     }
     constexpr Character::Character (char16_t hiSurrogate, char16_t lowSurrogate)
