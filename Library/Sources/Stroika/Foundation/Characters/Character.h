@@ -236,6 +236,10 @@ namespace Stroika::Foundation::Characters {
         constexpr Character (wchar_t c) noexcept (sizeof (wchar_t) == 4);
 
     public:
+        Character& operator= (const Character&) const noexcept = default;
+        Character& operator= ( Character&&) const noexcept = default;
+
+    public:
         /**
          *  \req IsASCII()
          */
