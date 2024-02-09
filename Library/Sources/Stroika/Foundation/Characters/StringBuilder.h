@@ -163,7 +163,12 @@ namespace Stroika::Foundation::Characters {
             -> StringBuilder& requires (Characters::Private_::IToString<APPEND_ARG_T> or requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         {
+            if constexpr (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
             Append (forward<APPEND_ARG_T> (a));
+        }
+        else {
+            Append (Characters::UnoverloadedToString (forward<APPEND_ARG_T> (a)));
+        }
             return *this;
         }
 #else
