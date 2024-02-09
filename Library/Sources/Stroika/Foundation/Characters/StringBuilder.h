@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Characters {
          *  preference or context. Note - its important that this is explicit - to avoid
          *  creating overload problems.
          */
-        nonvirtual explicit operator String () const;
+        nonvirtual /*explicit*/ operator String () const;
         nonvirtual explicit operator wstring () const;
         nonvirtual explicit operator u8string () const;
         nonvirtual explicit operator u16string () const;
