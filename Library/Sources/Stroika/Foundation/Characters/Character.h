@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Characters {
          */
         constexpr Character () noexcept;
         constexpr Character (const Character&) noexcept = default;
-        constexpr Character (Character&&) noexcept = default;
+        constexpr Character (Character&&) noexcept      = default;
         constexpr Character (ASCII c);
         constexpr Character (Latin1 c) noexcept;
         constexpr Character (char16_t c);
@@ -236,8 +236,8 @@ namespace Stroika::Foundation::Characters {
         constexpr Character (wchar_t c) noexcept (sizeof (wchar_t) == 4);
 
     public:
-        Character& operator= (const Character&) const noexcept = default;
-        Character& operator= ( Character&&) const noexcept = default;
+        constexpr Character& operator= (const Character&) noexcept = default;
+        constexpr Character& operator= (Character&&) noexcept      = default;
 
     public:
         /**
