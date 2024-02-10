@@ -35,8 +35,9 @@
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
         "cpp_version": "c++20",
         "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false",
-        "run_on_branch": "v3-Release"
+        "COMMENT-1": "--boost no to save space, cuz else runs out of disk space",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --boost no",
+         "DISABLED-run_on_branch": "v3-Release"
     },
     {
         "build_job": "Linux",
