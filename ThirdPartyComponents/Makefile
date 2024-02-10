@@ -153,74 +153,20 @@ endif
 endif
 
 
-check-prerequisite-tools:
+check check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Checking-Prerequisite Tools:"
-	@for i in $(APPLY_CONFIGS) ; do\
-		$(MAKE) --no-print-directory check-prerequisite-tools CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	done
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@): "
 else
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
-ifeq ($(BUILD_boost), 1)
-	@$(MAKE) --directory boost --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)}: "
 endif
-ifeq ($(BUILD_openssl), 1)
-	@$(MAKE) --directory openssl --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_curl), 1)
-	@$(MAKE) --directory curl --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_lzma), 1)
-	@$(MAKE) --directory lzma --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_sqlite), 1)
-	@$(MAKE) --directory sqlite --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_Xerces), 1)
-	@$(MAKE) --directory Xerces --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_WIX), 1)
-	@$(MAKE) --directory WIX --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_zlib), 1)
-	@$(MAKE) --directory zlib --silent check-prerequisite-tools MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-endif
-
-
-
-
-check:
 ifeq ($(CONFIGURATION),)
 	@for i in $(APPLY_CONFIGS) ; do\
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika ThirdPartyComponents Check {$(CONFIGURATION)}:"
-ifeq ($(BUILD_boost), 1)
-	@$(MAKE) --directory boost --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_curl), 1)
-	@$(MAKE) --directory curl --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_lzma), 1)
-	@$(MAKE) --directory lzma --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_openssl), 1)
-	@$(MAKE) --directory openssl --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_sqlite), 1)
-	@$(MAKE) --directory sqlite --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_Xerces), 1)
-	@$(MAKE) --directory Xerces --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_WIX), 1)
-	@$(MAKE) --directory WIX --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
-ifeq ($(BUILD_zlib), 1)
-	@$(MAKE) --directory zlib --no-print-directory $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
+	@for subdir in $(SubDirs) ; do \
+		$(MAKE) --directory $$subdir --silent $@ MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)); \
+	done
 endif
 
 
@@ -230,15 +176,9 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 endif
-	@$(MAKE) --directory boost --silent $@
-	@$(MAKE) --directory curl --silent $@
-	@$(MAKE) --directory lzma --silent $@
-	@$(MAKE) --directory openssl --silent $@
-	@$(MAKE) --directory sqlite --silent $@
-	@$(MAKE) --directory StrawberryPerl --silent $@
-	@$(MAKE) --directory Xerces --silent $@
-	@$(MAKE) --directory WIX --silent $@
-	@$(MAKE) --directory zlib --silent $@
+	@for subdir in $(SubDirs) ; do \
+		$(MAKE) --directory $$subdir --silent $@; \
+	done
 	@$(ECHO) done
 
 
