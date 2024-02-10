@@ -168,11 +168,11 @@ namespace Stroika::Foundation::Time {
          *
          *  \@todo unsafe if value out of range - decode how to handle - probably should throw if out of range, but unclear - see AsPinned()
          * 
-         *      \note Stroika v2.1 also supproted wstring, which was (tentiatively) desupported in Stroika v3.0d5
+         *      \note Stroika v2.1 also supported wstring, which was (tentatively) de-supported in Stroika v3.0d5
          */
         template <typename T>
         nonvirtual T As () const
-            requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or
+            requires (Configuration::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or
                       Configuration::IDuration<T> or Configuration::ITimePoint<T>);
 
     public:

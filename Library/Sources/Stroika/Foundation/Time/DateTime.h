@@ -429,7 +429,7 @@ namespace Stroika::Foundation::Time {
         nonvirtual T As () const
         // new bug define for clang/xcode? cannot do requires and tmeplate specailize?
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
-            requires (same_as<T, time_t> or same_as<T, struct tm> or same_as<T, struct timespec> or same_as<T, Date> or same_as<T, Characters::String> or
+            requires (Configuration::IAnyOf<T, time_t, struct tm, struct timespec, Date, Characters::String> or
 #if qPlatform_Windows
                       same_as<T, SYSTEMTIME> or
 #endif

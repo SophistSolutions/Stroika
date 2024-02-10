@@ -121,8 +121,8 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and (same_as<T, Memory::BLOB> or same_as<T, string>)) or
-                      (same_as<ELEMENT_TYPE, Characters::Character> and (same_as<T, Characters::String>)));
+            requires (same_as<T, vector<ELEMENT_TYPE>> or (same_as<ELEMENT_TYPE, byte> and Configuration::IAnyOf<T, Memory::BLOB, string>) or
+                      (same_as<ELEMENT_TYPE, Characters::Character> and same_as<T, Characters::String>));
 
     private:
         /**

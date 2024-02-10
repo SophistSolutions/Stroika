@@ -199,14 +199,7 @@ namespace Stroika::Foundation::Memory {
 #if !qCompilerAndStdLib_template_requires_doesnt_work_with_specialization_Buggy
         // clang-format off
         requires (
-            same_as<T,span<const byte>>
-            or same_as<T,span<const uint8_t>>
-            or same_as<T,pair<const byte*, const byte*>>
-            or same_as<T,pair<const uint8_t*, const uint8_t*>>
-            or same_as<T,vector<byte>>
-            or same_as<T,vector<uint8_t>>
-            or same_as<T,Streams::InputStream::Ptr<byte>>
-            or same_as<T,string>
+            Configuration::IAnyOf<T,span<const byte>,span<const uint8_t>, pair<const byte*, const byte*>, pair<const uint8_t*, const uint8_t*>, vector<byte> ,vector<uint8_t>, Streams::InputStream::Ptr<byte>,string>
             or is_trivially_copyable_v<T>
         )
     // clang-format on

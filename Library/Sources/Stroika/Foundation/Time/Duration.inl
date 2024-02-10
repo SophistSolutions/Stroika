@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Time {
     }
     template <typename T>
     inline T Duration::As () const
-        requires (same_as<T, timeval> or integral<T> or floating_point<T> or same_as<T, Characters::String> or
+        requires (Configuration::IAnyOf<T, timeval, Characters::String> or integral<T> or floating_point<T> or
                   Configuration::IDuration<T> or Configuration::ITimePoint<T>)
     {
         if constexpr (integral<T> or floating_point<T>) {
