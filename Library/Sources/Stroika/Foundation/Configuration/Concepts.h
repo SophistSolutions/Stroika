@@ -16,7 +16,7 @@
 #include "ConceptsBase.h"
 
 /*
- *  \file Misceleneous type traits and concepts for metaprogramming
+ *  \file Miscellaneous type traits and concepts for metaprogramming
  * 
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
@@ -89,118 +89,20 @@ namespace Stroika::Foundation::Configuration {
     concept ITimePoint =
         requires { []<class CLOCK, class DURATION> (type_identity<chrono::time_point<CLOCK, DURATION>>) {}(type_identity<T> ()); };
 
-#if 1
-    namespace Private_ {
-        template <typename T>
-        concept HasEq_ = requires (T t) {
-            {
-                t == t
-            } -> std::convertible_to<bool>;
-        };
-        template <typename T>
-        constexpr inline bool HasEq_v_ = HasEq_<T>;
-        template <typename T, typename U>
-        constexpr inline bool HasEq_v_<std::pair<T, U>> = HasEq_v_<T> and HasEq_v_<U>;
-        template <typename... Ts>
-        constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
-    }
-#endif
-#if 0
-
     /**
-    * &&& USE equality_comparable
-     *  \brief Concept checks if the given type T can be compared with operator==, and result is convertible to bool
+     *  \brief concept - trivial shorthand for variadic same_as A or same_as B, or ...
      * 
      *  \par Example Usage
      *      \code
-     *          struct X {};
-     *          static_assert (IOperatorEq<int>);
-     *          static_assert (not IOperatorEq<X>);
-     *          static_assert (IOperatorEq<pair<int, int>>);
-     *          static_assert (IOperatorEq<tuple<int, string>>);
-     *          static_assert (not IOperatorEq<pair<int, X>>);
-     *          static_assert (not IOperatorEq<tuple<X, int>>);
+     *          template <typename T>
+     *          concept IBasicUNICODECodePoint = same_as<remove_cv_t<T>, char8_t> or same_as<remove_cv_t<T>, char16_t> or same_as<remove_cv_t<T>, char32_t>;
+     * 
+     *          template <typename T>
+     *          concept IBasicUNICODECodePoint = Configuration::IAnyOf<remove_cv_t<T>, char8_t, char16_t, char32_t>;
      *      \endcode
-     * 
-     *  \note see https://stackoverflow.com/questions/76510385/how-to-do-simple-c-concept-has-eq-that-works-with-stdpair-is-stdpair-op/76510752#76510752
-     *        for explanation about complexities with pair/tuple
      */
-    template <typename T>
-    concept IOperatorEq = Private_::HasEq_v_<T>;
-#endif
-
-#if 0
-    namespace Private_ {
-        template <typename T>
-        concept HasLtBase_ = requires (T t) {
-            {
-                t < t
-            } -> std::convertible_to<bool>;
-        };
-        template <typename T>
-        constexpr inline bool HasLt_v_ = HasLtBase_<T>;
-        template <typename T, typename U>
-        constexpr inline bool HasLt_v_<std::pair<T, U>> = HasLt_v_<T> and HasLt_v_<U>;
-    }
-
-    /**
-    * 
-    *  ** NOTE MOSTLY THE SAME AS totally_ordered concept - but not quite
-    * 
-    * 
-     *  \brief Concept checks if the given type T can be compared with operator<, and result is convertible to bool
-     * 
-     *  \par Example Usage
-     *      \code
-     *          if constexpr (IOperatorLt<T>) {
-     *              T a{};
-     *              T b{};
-     *              return a < b;
-     *          }
-     *          if constexpr (IOperatorLt<T>) {
-     *              f (less<T>{});  // default impl of std::less<T> should work if IOperatorLt<T>
-     *          }
-     *      \endcode
-     * 
-     *  \note see https://stackoverflow.com/questions/76510385/how-to-do-simple-c-concept-has-eq-that-works-with-stdpair-is-stdpair-op/76510752#76510752
-     *        for explanation about complexities with pair/tuple
-     */
-    template <typename T>
-    concept IOperatorLt = Private_::HasLt_v_<T>;
-#endif
-
-#if 0
-    /**
-    *  *** DEPRECATED - use https://en.cppreference.com/w/cpp/utility/compare/three_way_comparable
-     *  \brief Concept checks if the given type T can be compared with operator<=>, returning some appropriate ordering
-     * 
-     *  \par Example Usage
-     *      \code
-     *          if constexpr (IOperatorSpaceship<T>) {
-     *              T a{};
-     *              T b{};
-     *              return a <=> b;
-     *          }
-     *      \endcode
-     * 
-     *  @todo CONSIDER - SHOULD THIS TAKE ARGUMENT OF THE ORDERING TO EXPECT? MAYBE BETTER
-     */
-    template <typename T>
-    //[[deprecated ("USE three_way_comparable")]] 
-    concept IOperatorSpaceship = requires (T t) {
-        {
-            t <=> t
-        } -> std::convertible_to<partial_ordering>;
-    } or requires (T t) {
-        {
-            t <=> t
-        } -> std::convertible_to<strong_ordering>;
-    } or requires (T t) {
-        {
-            t <=> t
-        } -> std::convertible_to<weak_ordering>;
-    };
-#endif
+    template <typename T, typename... U>
+    concept IAnyOf = (same_as<T, U> or ...);
 
     /**
      *  A template which ignores its template arguments, and always returns true_type;
@@ -239,6 +141,18 @@ namespace Stroika::Foundation::Configuration {
     };
 
     namespace Private_ {
+        template <typename T>
+        concept HasEq_ = requires (T t) {
+            {
+                t == t
+            } -> std::convertible_to<bool>;
+        };
+        template <typename T>
+        constexpr inline bool HasEq_v_ = HasEq_<T>;
+        template <typename T, typename U>
+        constexpr inline bool HasEq_v_<std::pair<T, U>> = HasEq_v_<T> and HasEq_v_<U>;
+        template <typename... Ts>
+        constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
         template <typename T>
         constexpr bool HasUsableEqualToOptimization ()
         {

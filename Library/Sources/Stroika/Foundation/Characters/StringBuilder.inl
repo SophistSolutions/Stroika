@@ -285,8 +285,7 @@ namespace Stroika::Foundation::Characters {
     template <typename OPTIONS>
     template <typename RESULT_T>
     inline RESULT_T StringBuilder<OPTIONS>::As () const
-        requires (same_as<RESULT_T, String> or same_as<RESULT_T, wstring> or same_as<RESULT_T, u8string> or same_as<RESULT_T, u16string> or
-                  same_as<RESULT_T, u32string>)
+        requires (Configuration::IAnyOf<RESULT_T, String, wstring, u8string, u16string, u32string>)
     {
         if constexpr (same_as<RESULT_T, String>) {
             return str ();

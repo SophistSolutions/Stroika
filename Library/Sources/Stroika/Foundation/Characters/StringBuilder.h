@@ -222,8 +222,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename RESULT_T>
         nonvirtual RESULT_T As () const
-            requires (same_as<RESULT_T, String> or same_as<RESULT_T, wstring> or same_as<RESULT_T, u8string> or
-                      same_as<RESULT_T, u16string> or same_as<RESULT_T, u32string>);
+            requires (Configuration::IAnyOf<RESULT_T, String, wstring, u8string, u16string, u32string>);
 
     public:
         /*
