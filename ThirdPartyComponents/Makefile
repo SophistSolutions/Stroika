@@ -240,3 +240,7 @@ endif
 	@$(MAKE) --directory WIX --silent $@
 	@$(MAKE) --directory zlib --silent $@
 	@$(ECHO) done
+
+
+distclean:
+	@cd Origs-Cache ; find . ! -name 'doxygen-1.8.2-setup.exe' ! -name 'doxygen-1.8.2-Windows-Installed.tar.gz' ! -name '.gitignore' -type f -exec rm -f {} +
