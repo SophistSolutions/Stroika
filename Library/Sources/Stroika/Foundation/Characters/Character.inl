@@ -118,6 +118,20 @@ namespace Stroika::Foundation::Characters {
      *********************************** Character **********************************
      ********************************************************************************
      */
+    template <IPossibleCharacterRepresentation CHAR_T>
+    constexpr bool Character::IsASCII (CHAR_T c) noexcept
+    {
+        // clang++-14 likes to see this defined before where its used...
+        if constexpr (same_as<remove_cv_t<CHAR_T>, Character>) {
+            return c.IsASCII ();
+        }
+        else if constexpr (same_as<remove_cv_t<CHAR_T>, Latin1>) {
+            return static_cast<uint8_t> (c) <= 0x7f;
+        }
+        else {
+            return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0x7f;
+        }
+    }
     constexpr inline Character::Character () noexcept
         : fCharacterCode_{'\0'}
     {
@@ -125,6 +139,9 @@ namespace Stroika::Foundation::Characters {
     constexpr inline Character::Character (ASCII c)
         : fCharacterCode_{static_cast<char32_t> (c)}
     {
+        if (is_constant_evaluated ()) {
+            //static_assert (not IsASCII (c));  // not sure what/how todo this
+        }
         if (not is_constant_evaluated () and not IsASCII (c)) [[unlikely]] {
             Private_::ThrowSurrogatesOutOfRange_ ();
         }
@@ -218,19 +235,6 @@ namespace Stroika::Foundation::Characters {
     constexpr bool Character::IsASCII () const noexcept
     {
         return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f;
-    }
-    template <IPossibleCharacterRepresentation CHAR_T>
-    constexpr bool Character::IsASCII (CHAR_T c) noexcept
-    {
-        if constexpr (same_as<remove_cv_t<CHAR_T>, Character>) {
-            return c.IsASCII ();
-        }
-        else if constexpr (same_as<remove_cv_t<CHAR_T>, Latin1>) {
-            return static_cast<uint8_t> (c) <= 0x7f;
-        }
-        else {
-            return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0x7f;
-        }
     }
     template <IPossibleCharacterRepresentation CHAR_T>
     constexpr bool Character::IsASCII (span<const CHAR_T> fromS) noexcept
