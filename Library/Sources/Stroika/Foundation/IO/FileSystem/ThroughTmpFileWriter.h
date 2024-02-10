@@ -13,7 +13,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta-Late">Beta-Late</a>
+ *  \version    <a href="Code-Status.md#Release">Release</a>
  */
 
 namespace Stroika::Foundation::IO::FileSystem {

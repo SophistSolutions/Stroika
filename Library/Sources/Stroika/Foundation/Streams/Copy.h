@@ -18,7 +18,7 @@
  *      @todo   Provide a variant of CopyAll which is safely always cancelable (at least of underlying src and target streams cancelable). Maybe this
  *              is already done? Or maybe this involves using ReadSome() and blocking on availabiliuty of more? CONSIDER
  *
- *      @todo   Redo API (at least overloads) with progress tracker
+ *      @todo   Redo API (at least overloads) with progress tracker(?)
  */
 
 namespace Stroika::Foundation::Streams {

@@ -21,7 +21,7 @@
  *  of connections (e.g. SQLite local database object, and ODBC remote database object). This generic API
  *  can then be used in places where either backend database might be in use.
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Database::SQL {

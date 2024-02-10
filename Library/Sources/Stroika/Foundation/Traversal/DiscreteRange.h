@@ -12,7 +12,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   Consider if clearer having DiscreteRange aggregate Elements() instead of inheriting from

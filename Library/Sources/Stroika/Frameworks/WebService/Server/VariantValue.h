@@ -20,7 +20,7 @@
 #include "../Basic.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Frameworks::WebService::Server::VariantValue {

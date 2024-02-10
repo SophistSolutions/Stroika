@@ -17,13 +17,10 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *
  * @see https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol
- *
- * TODO:
- *
  *
  */
 

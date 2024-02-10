@@ -18,7 +18,7 @@
 
 /**
  * TODO:
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *      @todo   BETTER INTEGRATE STROIKA THREAD/CANCELATION WITH THIS FORM OF CANCELATION (OK now - but could be better
  *              espeicaily if we could Abort on the main thread / any thread; then could lose the fcancedl flag in our

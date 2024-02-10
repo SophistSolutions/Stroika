@@ -16,7 +16,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-588 - TextReader should be seekable (maybe just optionally)
  *              INCOMPLETE IMPLEMENTATION - API probably OK.

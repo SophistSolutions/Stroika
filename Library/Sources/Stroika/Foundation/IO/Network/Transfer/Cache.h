@@ -16,7 +16,7 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  This cache is a generic HTTP fetch cache API, allowing users of the IO::Transfer::Connection code to
  *  use different cache implementations (e.g. one storing to disk, and one to RAM).

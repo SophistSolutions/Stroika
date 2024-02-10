@@ -13,8 +13,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Streams::ToSeekableInputStream {
@@ -39,7 +38,7 @@ namespace Stroika::Foundation::Streams::ToSeekableInputStream {
      *  \note this helper does not require it be given the input stream at SeekOffset 0, but for pretty obvious reasons
      *        it cannot produce a stream that permits seeking backwards from where it starts. This is checked via assertions.
      * 
-     *  \note this helper cannot be used with very large streams, as it caches the stream in memory as it reads, and would
+     *  \note this helper may be problematic with very large streams, as it caches the stream in memory as it reads, and would
      *        eventually run out.
      */
     template <typename ELEMENT_TYPE>

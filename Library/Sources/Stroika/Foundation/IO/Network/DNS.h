@@ -16,9 +16,13 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   DNS::Default() vs DNS::kThe???
+ * 
+ *      @todo   How to add/integrate alternate dns impelmentations (maybe rename this to network-name-resolver???)
+ * 
  *      @todo   add CTOR args for DNS resolve instances with params like timeouts.
  *
  *      @todo   add ctor params for prefer IPV4, IPV6 or both

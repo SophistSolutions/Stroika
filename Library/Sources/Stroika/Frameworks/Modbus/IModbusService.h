@@ -12,7 +12,7 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  \note   This code is basically all based on
  *          http://www.modbus.org/docs/Modbus_Messaging_Implementation_Guide_V1_0b.pdf

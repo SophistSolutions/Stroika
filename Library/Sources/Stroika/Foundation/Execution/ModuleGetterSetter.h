@@ -12,7 +12,7 @@
 #include "../Memory/Common.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation ::Execution {

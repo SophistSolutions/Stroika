@@ -22,7 +22,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-621 stopped testing regularly in Stroika

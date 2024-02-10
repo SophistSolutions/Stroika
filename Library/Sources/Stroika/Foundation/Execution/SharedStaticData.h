@@ -13,12 +13,14 @@
 #include "SpinLock.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
  *      @todo   See about static buffer style from ModuleInit - so no NEW operation!
  *
  *      @todo   use static inline members, but right now that causes VS2k17 compiler to crash
+ * 
+ *      @todo   Need example use somewhere, and document why this instaed of c++ magic initializers... (and if not good reason, deprecate)
  */
 
 namespace Stroika::Foundation::Execution {

@@ -16,7 +16,7 @@
  *
  *  STATUS: NOT EVEN DRAFT IMPL READY YET TO TEST.
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a> -- CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika...
+ *  \version    <a href="Code-Status.md#Draft">Draft</a> -- CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika...
  *
  *
  *  TODO:

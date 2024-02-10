@@ -11,7 +11,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *      @todo   This is still a pretty weak implementation, so could use some revisiting. But better now
  *              as of Stroika v2.1d18

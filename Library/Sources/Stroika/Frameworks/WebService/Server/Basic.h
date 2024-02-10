@@ -16,12 +16,9 @@
  */
 
 /*
- * TODO:
- *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *       SUPER DUPER ROUGH DRAFT
- *
  */
 
 namespace Stroika::Frameworks::WebService::Server {

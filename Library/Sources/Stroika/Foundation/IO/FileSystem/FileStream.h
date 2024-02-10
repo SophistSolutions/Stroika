@@ -11,7 +11,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::IO::FileSystem::FileStream {
@@ -31,8 +31,8 @@ namespace Stroika::Foundation::IO::FileSystem::FileStream {
 
         Stroika_Define_Enum_Bounds (eCloseOnDestruction, eDisconnectOnDestruction)
     };
-    constexpr AdoptFDPolicy eCloseOnDestruction      = AdoptFDPolicy::eCloseOnDestruction;
-    constexpr AdoptFDPolicy eDisconnectOnDestruction = AdoptFDPolicy::eDisconnectOnDestruction;
+    using AdoptFDPolicy::eCloseOnDestruction;
+    using AdoptFDPolicy::eDisconnectOnDestruction;
 
     /**
      */

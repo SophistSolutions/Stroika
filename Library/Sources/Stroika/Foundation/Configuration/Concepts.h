@@ -18,7 +18,7 @@
 /*
  *  \file Misceleneous type traits and concepts for metaprogramming
  * 
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation::Configuration {

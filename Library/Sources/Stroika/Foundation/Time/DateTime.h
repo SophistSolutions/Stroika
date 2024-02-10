@@ -31,7 +31,7 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Release">Release</a>
  *
  * TODO:
  *      @todo - https://stroika.atlassian.net/browse/STK-671 - DateTime::Format and Parse () incorrectly handle the format strings %z and %Z (sort of)

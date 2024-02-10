@@ -14,9 +14,10 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  *  TODO
+ *      o   Look into integrating with popular C++ matrix libraries, blas, eigen, etc...
  */
 
 namespace Stroika::Foundation::Math::LinearAlgebra {

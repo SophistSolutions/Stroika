@@ -13,14 +13,8 @@
 /*
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- *
- * TODO:
- *
- * Notes:
- *
- *
- *
+ * 
+ *      @todo see concepts and add static_assert (ILockable - see diff lockable concepts and doc which and enforce wtih statis assert)
  */
 
 namespace Stroika::Foundation::Execution {

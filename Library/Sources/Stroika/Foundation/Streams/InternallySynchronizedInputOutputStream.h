@@ -13,7 +13,7 @@
 /*
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation::Streams::InternallySynchronizedInputOutputStream {

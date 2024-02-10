@@ -17,16 +17,13 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  \note Testing Note
  *        This code was tested and used by a client as of around Stroika v2.0a204, but may not have been used since, and
  *        probably has not undergone testing since. It could have small breaks, but I don't have stuff with which to test, so
  *        as-is - sorry
  *
- * TODO:
- *
- *      @todo
  */
 namespace Stroika::Frameworks::Modbus {
 
