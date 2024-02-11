@@ -1005,7 +1005,7 @@ namespace Stroika::Frameworks::Led {
         PlatformSpecific fPlatformSpecific{};
 #endif
     };
-    #endif
+#endif
 
 #if qStroika_Frameworks_Led_SupportGDI
     Color Led_GetTextColor ();

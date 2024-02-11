@@ -363,7 +363,7 @@ namespace Stroika::Frameworks::Led {
         Led_tChar* fText;
         size_t     fTextLength;
     };
-    #endif
+#endif
 
 }
 

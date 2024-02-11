@@ -205,8 +205,8 @@ namespace Stroika::Frameworks::Led {
     */
     class Marker {
     public:
-        Marker ()          = default;
-        virtual ~Marker () = default;
+        Marker ()                         = default;
+        virtual ~Marker ()                = default;
         Marker (const Marker&)            = delete;
         Marker& operator= (const Marker&) = delete;
 

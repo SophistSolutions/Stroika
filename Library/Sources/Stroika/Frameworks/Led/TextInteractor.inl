@@ -730,7 +730,7 @@ namespace Stroika::Frameworks::Led {
     {
         fTextInteractor.SetDefaultUpdateMode (fOldValue);
     }
-    #endif
+#endif
 
 }
 

@@ -40,7 +40,6 @@
 #include "Config.h"
 
 #if qPlatform_MacOS
-#include <LowMem.h>
 #include <Processes.h> // for URL support
 #include <Scrap.h>
 #elif qPlatform_Windows

@@ -21,16 +21,14 @@ inline bool IsASCIIAlpha (int c)
     return isascii (c) and isalpha (c);
 }
 
-
-
-        void Led::Private_::SetMarkerRange_ (TextStore& textstore, Marker* marker, size_t start, size_t end) noexcept
-        {
-            textstore.SetMarkerRange (marker, start, end);
-        }
-   void Led::Private_::PreRemoveMarker_ (TextStore& textstore, Marker* marker) 
-   {
-    textStore.PreRemoveMarker (marker);
-   }
+void Led::Private_::SetMarkerRange_ (TextStore& textstore, Marker* marker, size_t start, size_t end) noexcept
+{
+    textstore.SetMarkerRange (marker, start, end);
+}
+void Led::Private_::PreRemoveMarker_ (TextStore& textstore, Marker* marker)
+{
+    textstore.PreRemoveMarker (marker);
+}
 
 /*
  ********************************************************************************

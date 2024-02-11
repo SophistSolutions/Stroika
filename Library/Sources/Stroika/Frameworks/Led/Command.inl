@@ -92,7 +92,7 @@ namespace Stroika::Frameworks::Led {
     inline InteractiveReplaceCommand::SavedTextRep::~SavedTextRep ()
     {
     }
-    #endif
+#endif
 
 }
 

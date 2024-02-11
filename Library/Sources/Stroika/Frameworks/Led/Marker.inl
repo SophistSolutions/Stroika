@@ -16,7 +16,7 @@ namespace Stroika::Frameworks::Led {
 
     namespace Private_ {
         void SetMarkerRange_ (TextStore& textstore, Marker* marker, size_t start, size_t end) noexcept;
-        void PreRemoveMarker_ (TextStore& textstore, Marker* marker) ;
+        void PreRemoveMarker_ (TextStore& textstore, Marker* marker);
     }
 
     /*

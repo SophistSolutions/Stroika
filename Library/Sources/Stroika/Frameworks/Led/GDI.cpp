@@ -2561,7 +2561,6 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
 }
 #endif
 
-
 #if qStroika_Frameworks_Led_SupportGDI
 
 /*
@@ -2634,9 +2633,7 @@ BOOL FAR PASCAL InstalledFonts::FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NEWTEX
 #endif
 #endif
 
-
 #if qStroika_Frameworks_Led_SupportGDI
-
 
 /*
  ********************************************************************************
@@ -2672,8 +2669,8 @@ void Globals::InvalidateGlobals ()
     fLogPixelsV = 72;
 #elif qPlatform_Windows
     WindowDC screenDC (nullptr);
-    fLogPixelsH = ::GetDeviceCaps (screenDC, LOGPIXELSX);
-    fLogPixelsV = ::GetDeviceCaps (screenDC, LOGPIXELSY);
+    fLogPixelsH              = ::GetDeviceCaps (screenDC, LOGPIXELSX);
+    fLogPixelsV              = ::GetDeviceCaps (screenDC, LOGPIXELSY);
 #elif qStroika_FeatureSupported_XWindows
     /*
      *  Either 75 or 100??? Not sure which is best

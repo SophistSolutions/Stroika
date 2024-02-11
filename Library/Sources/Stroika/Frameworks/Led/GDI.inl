@@ -3011,7 +3011,7 @@ namespace Stroika::Frameworks::Led {
         return (Color::kWhite);
 #endif
     }
-    #endif
+#endif
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*

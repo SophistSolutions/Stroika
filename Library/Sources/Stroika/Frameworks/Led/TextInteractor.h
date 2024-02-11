@@ -1084,7 +1084,7 @@ namespace Stroika::Frameworks::Led {
         }
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
-    #endif
+#endif
 
 }
 
