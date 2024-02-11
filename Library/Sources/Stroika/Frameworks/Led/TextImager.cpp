@@ -17,8 +17,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-
-        #if qStroika_Frameworks_Led_SupportGDI
+#if qStroika_Frameworks_Led_SupportGDI
 
 #if qPlatform_MacOS
 inline void GDI_TextFont (short font)

@@ -21,7 +21,7 @@
 
 namespace Stroika::Frameworks::Led {
 
-        #if qStroika_Frameworks_Led_SupportGDI
+#if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         TextImager
     @BASES:         virtual @'MarkerOwner'
@@ -1005,8 +1005,7 @@ namespace Stroika::Frameworks::Led {
         bool      fBackgroundTransparent;
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
-            #endif
-
+#endif
 
 }
 

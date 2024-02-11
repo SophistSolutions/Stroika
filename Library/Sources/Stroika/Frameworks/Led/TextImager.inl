@@ -12,7 +12,7 @@
 
 namespace Stroika::Frameworks::Led {
 
-        #if qStroika_Frameworks_Led_SupportGDI
+#if qStroika_Frameworks_Led_SupportGDI
 
     /*
         ********************************************************************************
@@ -542,8 +542,8 @@ namespace Stroika::Frameworks::Led {
     {
         fBackgroundTransparent = transparent;
     }
-    #endif
-    
+#endif
+
 }
 
 #endif /*_Stroika_Framework_Led_TextImager_inl_*/

@@ -95,15 +95,14 @@ namespace Stroika::Frameworks::Led {
     class Marker;
     class TextStore;
 
-    /*
-    @CLASS:         MarkerOwner
-    @DESCRIPTION:
-            <p>Object which owns Markers. You register this with a @'TextStore'. And then when those markers are changed
-            (contents within the marker), you are updated via the  @'MarkerOwner::AboutToUpdateText' and @'MarkerOwner::DidUpdateText'.
-            methods.</p>
-            <p>Note that these objects should not be copied with X(X&) CTORs etc and are generally handled by pointer - because pointers
-        to particular instances are stored in TextStore objects</p>
-    */
+    /**
+     *  Object which owns Markers. You register this with a @'TextStore'. And then when those markers are changed
+     *  (contents within the marker), you are updated via the  @'MarkerOwner::AboutToUpdateText' and @'MarkerOwner::DidUpdateText'.
+     *  methods.
+     * 
+     *  Note that these objects should not be copied with X(X&) CTORs etc and are generally handled by pointer - because pointers
+     *  to particular instances are stored in TextStore objects
+     */
     class MarkerOwner {
     protected:
         MarkerOwner () = default;
@@ -208,10 +207,6 @@ namespace Stroika::Frameworks::Led {
     public:
         Marker ()          = default;
         virtual ~Marker () = default;
-
-        // Methods private and not actually implemented. Just declared to prevent users from accidentally copying instances of this class. Not intended to be
-        // used that way.
-    private:
         Marker (const Marker&)            = delete;
         Marker& operator= (const Marker&) = delete;
 
@@ -225,8 +220,8 @@ namespace Stroika::Frameworks::Led {
 
         /*
          *  Considered having one notification method since this would be more efficient - but
-         *  using TWO like this is necessary to allow for cooperative transation processing.
-         *  Need to be able to say NO to this transation - and then need to be notified and
+         *  using TWO like this is necessary to allow for cooperative transaction processing.
+         *  Need to be able to say NO to this transaction - and then need to be notified and
          *  update our internals if it goes through.
          *
          *  So AboutToUpdateText () may or may not be balanced with a call to DidUpdateText (),

@@ -10,14 +10,20 @@
  ********************************************************************************
  */
 
+#include "TextStore.h"
+
 namespace Stroika::Frameworks::Led {
 
-    //  class   MarkerOwner;
+    /*
+     ********************************************************************************
+     ********************************* Led::MarkerOwner *****************************
+     ********************************************************************************
+     */
     /*
     @METHOD:        MarkerOwner::GetTextStore
     @DESCRIPTION:   <p>This is a trivial wrapper on @'MarkerOwner::PeekAtTextStore' which asserts that
         PeekAtTextStore () didn't return nullptr, and then returns its result dereferences. Use this for
-        clarity sake when you are sure the markerowner must have an associated TextStore.</p>
+        clarity sake when you are sure the MarkerOwner must have an associated TextStore.</p>
     */
     inline TextStore& MarkerOwner::GetTextStore () const
     {
@@ -128,7 +134,11 @@ namespace Stroika::Frameworks::Led {
         fTextStoreHook->GetStartEnd (start, end);
     }
 
-    //  class   MarkerOwner::UpdateInfo;
+    /*
+     ********************************************************************************
+     ********************* Led::MarkerOwner::UpdateInfo *****************************
+     ********************************************************************************
+     */
     inline MarkerOwner::UpdateInfo::UpdateInfo (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount,
                                                 bool textModified, bool realContentUpdate)
         : fReplaceFrom{from}
@@ -144,7 +154,11 @@ namespace Stroika::Frameworks::Led {
         return fTextModified ? (fReplaceFrom + fTextLength) : fReplaceTo;
     }
 
-    //  class   MarkerMortuary<MARKER>;
+    /*
+     ********************************************************************************
+     ********************** Led::MarkerMortuary<MARKER> *****************************
+     ********************************************************************************
+     */
     template <typename MARKER>
     inline MarkerMortuary<MARKER>::~MarkerMortuary ()
     {
@@ -240,7 +254,11 @@ namespace Stroika::Frameworks::Led {
         return fMarkersToBeDeleted.size () == 0;
     }
 
-    //  ::Contains;
+    /*
+     ********************************************************************************
+     ********************************** Led::Contains *******************************
+     ********************************************************************************
+     */
     /*
     @METHOD:        Contains
     @DESCRIPTION:   <p>Four overloads. Basically this tests if the first marker is contained in the second.
@@ -280,7 +298,11 @@ namespace Stroika::Frameworks::Led {
         return (charPos >= containedMarkerStart and charPos < containedMarkerEnd);
     }
 
-    //  class   TempMarker
+    /*
+     ********************************************************************************
+     ******************************** Led::TempMarker *******************************
+     ********************************************************************************
+     */
     inline size_t TempMarker::GetStart () const
     {
         return fMarker.GetStart ();
@@ -298,7 +320,11 @@ namespace Stroika::Frameworks::Led {
         fMarker.GetRange (start, end);
     }
 
-    //  class   TemporaryMarkerSlideDown<MARKER>
+    /*
+     ********************************************************************************
+     **************** Led::TemporaryMarkerSlideDown<MARKER> *************************
+     ********************************************************************************
+     */
     template <typename MARKER>
     TemporaryMarkerSlideDown<MARKER>::TemporaryMarkerSlideDown (TextStore& ts, const vector<MARKER*>& m, ptrdiff_t slideBy)
         : fTextStore (ts)

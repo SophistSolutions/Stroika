@@ -3009,7 +3009,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-        #if qStroika_Frameworks_Led_SupportGDI
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      **************************** Led_GetSelectedTextColor **************************
@@ -3051,7 +3051,7 @@ namespace Stroika::Frameworks::Led {
         return (Color::kBlack);
 #endif
     }
-    #endif
+#endif
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*
