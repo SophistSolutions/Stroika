@@ -28,10 +28,6 @@
 #endif
 #endif
 
-#if defined(__GNUC__)
-//#include <features.h>
-#endif
-
 /*
  *  This Numeric Led version is intended to allow you to conditionally compile code
  *  based on different versions of Led. The Led::kVersion string is a symbolic representation
@@ -262,6 +258,11 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 #else
 #define qDoubleClickSelectsSpaceAfterWord 0
 #endif
+#endif
+
+
+#ifndef qStroika_Frameworks_Led_SupportGDI
+#define qStroika_Frameworks_Led_SupportGDI qPlatform_Windows
 #endif
 
 /*

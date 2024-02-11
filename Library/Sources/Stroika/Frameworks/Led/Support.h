@@ -35,6 +35,8 @@
 #include <string>
 #include <vector>
 
+#include "Stroika/Foundation/Configuration/Endian.h"
+
 #include "Config.h"
 
 #if qPlatform_MacOS
@@ -52,9 +54,12 @@
 #include <X11/Xatom.h>
 #endif
 
+
 namespace Stroika {
     using namespace std;
     using std::byte;
+
+    using namespace Stroika::Foundation;
 }
 
 namespace Stroika::Frameworks::Led {

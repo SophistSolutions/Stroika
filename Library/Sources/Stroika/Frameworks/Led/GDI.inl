@@ -371,9 +371,10 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
-     ************************************ Region ********************************
+     ************************************ Region ************************************
      ********************************************************************************
      */
     inline Region::Region ()
@@ -558,17 +559,20 @@ namespace Stroika::Frameworks::Led {
         return ::DeleteObject (r);
     }
 #endif
+#endif
 
     /*
      ********************************************************************************
      ************************************ TabStopList *******************************
      ********************************************************************************
      */
+#if qStroika_Frameworks_Led_SupportGDI
     inline DistanceType TabStopList::ComputeTabStopAfterPosition (Tablet* tablet, DistanceType afterPos) const
     {
         RequireNotNull (tablet);
         return tablet->CvtFromTWIPSH (ComputeTabStopAfterPosition (tablet->CvtToTWIPSH (afterPos)));
     }
+#endif
 
 #if qPlatform_Windows
     /*
@@ -601,9 +605,10 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
-     *********************************** Tablet ********************************
+     **************************************** Tablet ********************************
      ********************************************************************************
      */
 #if qPlatform_MacOS
@@ -1008,6 +1013,7 @@ namespace Stroika::Frameworks::Led {
         Assert (false); // NYI
 #endif
     }
+#endif
 
 #if qPlatform_MacOS
     /*
@@ -1029,9 +1035,10 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
-     *********************************** Globals *****************************
+     ****************************************** Globals *****************************
      ********************************************************************************
      */
     inline Globals& Globals::Get ()
@@ -1049,6 +1056,7 @@ namespace Stroika::Frameworks::Led {
     {
         return fLogPixelsV;
     }
+#endif
 
     /*
      ********************************************************************************
@@ -1057,7 +1065,7 @@ namespace Stroika::Frameworks::Led {
      */
     inline Led_Rect operator- (const Led_Rect& lhs, const Led_Point& rhs)
     {
-        return (Led_Rect (lhs.GetTop () - rhs.v, lhs.GetLeft () - rhs.h, lhs.GetHeight (), lhs.GetWidth ()));
+        return Led_Rect (lhs.GetTop () - rhs.v, lhs.GetLeft () - rhs.h, lhs.GetHeight (), lhs.GetWidth ());
     }
     inline Led_Rect operator+ (Led_Point p, Led_Rect r)
     {
@@ -1129,6 +1137,7 @@ namespace Stroika::Frameworks::Led {
 #endif
         return (true);
     }
+#if qStroika_Frameworks_Led_SupportGDI
     inline bool Intersect (const Led_Rect& lhs, const Region& rhs)
     {
 #if qPlatform_MacOS
@@ -1168,6 +1177,7 @@ namespace Stroika::Frameworks::Led {
         return result.CombineRgn (const_cast<Region*> (&lhs), const_cast<Region*> (&rhs), RGN_AND) != NULLREGION;
 #endif
     }
+    #endif
 
     /*
      ********************************************************************************
@@ -1187,11 +1197,11 @@ namespace Stroika::Frameworks::Led {
      */
     inline Led_Size operator+ (Led_Size lhs, Led_Size rhs)
     {
-        return (Led_Size (lhs.v + rhs.v, lhs.h + rhs.h));
+        return Led_Size (lhs.v + rhs.v, lhs.h + rhs.h);
     }
     inline Led_Size operator* (int lhs, Led_Size rhs)
     {
-        return (Led_Size (lhs * rhs.v, lhs * rhs.h));
+        return Led_Size (lhs * rhs.v, lhs * rhs.h);
     }
 
     /*
@@ -1238,6 +1248,7 @@ namespace Stroika::Frameworks::Led {
         return Led_Rect (winTop, winLeft, winHeight, winWidth);
     }
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      ********************************* EnsureRectOnScreen ***************************
@@ -1266,6 +1277,7 @@ namespace Stroika::Frameworks::Led {
         return Led_Rect (0, 0, 0, 0);
 #endif
     }
+#endif
 
     /*
      ********************************************************************************
@@ -1383,6 +1395,7 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
     @METHOD:        Led_CvtScreenPixelsToTWIPSV
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.
@@ -1396,6 +1409,7 @@ namespace Stroika::Frameworks::Led {
         return TWIPS (from * 1440 / Globals::Get ().GetMainScreenLogPixelsV ());
 #endif
     }
+    
     /*
     @METHOD:        Led_CvtScreenPixelsToTWIPSH
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.
@@ -1435,6 +1449,7 @@ namespace Stroika::Frameworks::Led {
         return TWIPS{from * Globals::Get ().GetMainScreenLogPixelsH () / 1440};
 #endif
     }
+    #endif
 
     /*
      ********************************************************************************
@@ -3174,9 +3189,10 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
-     ******************************* GDI_Obj_Selector ***************************
+     *********************************** GDI_Obj_Selector ***************************
      ********************************************************************************
      */
 #if qPlatform_Windows
@@ -3232,6 +3248,8 @@ namespace Stroika::Frameworks::Led {
             ::PenPat (&fRestorePen.fPenPat);
 #endif
     }
+#endif
+
 
 #if qPlatform_MacOS
     inline void GDI_RGBForeColor (const RGBColor& color)

@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 #include "../../Foundation/Characters/String.h"
+#include "../../Foundation/Configuration/Endian.h"
 
 namespace Stroika::Frameworks::Led {
 
@@ -130,40 +131,28 @@ namespace Stroika::Frameworks::Led {
 
     inline unsigned short Led_ByteSwapFromMac (unsigned short src)
     {
-#if qPlatform_MacOS
-        return src;
-#elif qPlatform_Windows
-        return ((src & 0xff) << 8) + (src >> 8);
-#endif
+        return Configuration::EndianConverter (src, Configuration::Endian::eBig, Configuration::GetEndianness ());
     }
     inline short Led_ByteSwapFromMac (short src)
     {
-        return short (Led_ByteSwapFromMac ((unsigned short)src));
+        return Configuration::EndianConverter (src, Configuration::Endian::eBig, Configuration::GetEndianness ());
     }
 
     inline unsigned short Led_ByteSwapFromWindows (unsigned short src)
     {
-#if qPlatform_MacOS
-        return ((src & 0xff) << 8) + (src >> 8);
-#elif qPlatform_Windows
-        return src;
-#endif
+        return Configuration::EndianConverter (src, Configuration::Endian::eLittle, Configuration::GetEndianness ());
     }
     inline short Led_ByteSwapFromWindows (short src)
     {
-        return short (Led_ByteSwapFromWindows ((unsigned short)src));
+        return Configuration::EndianConverter (src, Configuration::Endian::eLittle, Configuration::GetEndianness ());
     }
     inline unsigned long Led_ByteSwapFromWindows (unsigned long src)
     {
-#if qPlatform_MacOS
-        return (Led_ByteSwapFromWindows ((unsigned short)(src & 0xffff)) << 16) + Led_ByteSwapFromWindows ((unsigned short)(src >> 16));
-#elif qPlatform_Windows
-        return src;
-#endif
+        return Configuration::EndianConverter (src, Configuration::Endian::eLittle, Configuration::GetEndianness ());
     }
     inline long Led_ByteSwapFromWindows (long src)
     {
-        return long (Led_ByteSwapFromWindows ((unsigned long)src));
+        return Configuration::EndianConverter (src, Configuration::Endian::eLittle, Configuration::GetEndianness ());
     }
 
     inline void UInt16ToBuf (uint16_t u, uint16_t* realBuf)
@@ -201,9 +190,6 @@ namespace Stroika::Frameworks::Led {
     {
         using Stroika::Foundation::Execution::Throw;
         uint32_t r = BufToUInt32 (buf);
-        if (r > numeric_limits<size_t>::max ()) {
-            Throw (range_error ("32-bits wont fit in size_t"));
-        }
         return static_cast<size_t> (r);
     }
 
@@ -439,6 +425,12 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
+    /*
+     ********************************************************************************
+     ************************** Led_ClipboardObjectAcquire **************************
+     ********************************************************************************
+     */
     inline bool Led_ClipboardObjectAcquire::FormatAvailable (Led_ClipFormat clipType)
     {
 #if qPlatform_MacOS
@@ -504,6 +496,7 @@ namespace Stroika::Frameworks::Led {
         return (::GlobalSize (fOSClipHandle));
 #endif
     }
+    #endif
 
     /*
      ********************************************************************************

@@ -275,6 +275,7 @@ namespace Stroika::Frameworks::Led {
     */
     using TWIPS_Rect = Rect_Base<TWIPS_Point, TWIPS_Point>;
 
+#if qStroika_Frameworks_Led_SupportGDI
     /**
      * \brief Portable GDI abstraction for 'Region' object.
      */
@@ -316,6 +317,7 @@ namespace Stroika::Frameworks::Led {
     };
     Region operator* (const Region& lhs, const Region& rhs);
     Region operator+ (const Region& lhs, const Region& rhs);
+    #endif
 
     /**
      * This class is a portable representation of a color. It can be constructed either
@@ -859,6 +861,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
+#if qStroika_Frameworks_Led_SupportGDI
     /**
      *  Something of a hack version of GDI global variables. We want to keep certain GDI global variables
      *  computed ONCE, for speed reasons. And yet - if we get a certain windows message, we must refresh our cached global
@@ -890,14 +893,17 @@ namespace Stroika::Frameworks::Led {
         class _Global_DESTRUCTOR_;
         friend class _Global_DESTRUCTOR_;
     };
+    #endif
 
     Led_Rect operator- (const Led_Rect& lhs, const Led_Point& rhs);
     Led_Rect operator+ (Led_Point p, Led_Rect r);
     Led_Rect operator+ (Led_Rect r, Led_Point p);
     bool     Intersect (const Led_Rect& lhs, const Led_Rect& rhs);
+#if qStroika_Frameworks_Led_SupportGDI
     bool     Intersect (const Led_Rect& lhs, const Region& rhs);
     bool     Intersect (const Region& lhs, const Led_Rect& rhs);
     bool     Intersect (const Region& lhs, const Region& rhs);
+    #endif
 
     Led_Rect Intersection (const Led_Rect& lhs, const Led_Rect& rhs);
     Led_Rect operator* (const Led_Rect& lhs, const Led_Rect& rhs);
@@ -907,7 +913,9 @@ namespace Stroika::Frameworks::Led {
 
     Led_Rect InsetRect (const Led_Rect& r, int vBy, int hBy);
     Led_Rect EnsureRectInRect (const Led_Rect& r, Led_Rect enlosingR);
+#if qStroika_Frameworks_Led_SupportGDI
     Led_Rect EnsureRectOnScreen (const Led_Rect& r);
+    #endif
 
 #if qPlatform_MacOS
     Led_Point AsLedPoint (Point p);
@@ -1005,6 +1013,7 @@ namespace Stroika::Frameworks::Led {
 
     class OffscreenTablet;
 
+#if qStroika_Frameworks_Led_SupportGDI
     /**
      *  This class is used to wrap a low level graphics drawing device. On Windows - this is an HDC.
      *  On the Mac - a GrafPtr (also CGrafPtr and GWorldPtr). On X-Windows - a drawable and display, and GC.</p>
@@ -1344,6 +1353,7 @@ namespace Stroika::Frameworks::Led {
         Pen fRestorePen;
 #endif
     };
+    #endif
 
     /*
      *  Trap Caching support
@@ -1467,7 +1477,10 @@ namespace Stroika::Frameworks::Led {
     Led_DIB* Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm);
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
+
     void AddRectangleToRegion (Led_Rect addRect, Region* toRgn);
+    #endif
 
 #if qProvideIMESupport
     class IME {

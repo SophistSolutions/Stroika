@@ -26,11 +26,11 @@ Objs	=
 
 # for now - this only builds on windows, cuz unix requires x-windows, and macos only written for very old macos gdi (carbon)
 Objs+=	$(ObjDir)BiDiLayoutEngine${OBJ_SUFFIX}
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)ChunkedArrayTextStore${OBJ_SUFFIX}
 Objs+=	$(ObjDir)Command${OBJ_SUFFIX}
 Objs+=	$(ObjDir)FlavorPackage${OBJ_SUFFIX}
 Objs+=	$(ObjDir)GDI${OBJ_SUFFIX}
+ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)HiddenText${OBJ_SUFFIX}
 Objs+=	$(ObjDir)IdleManager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)LineBasedPartition${OBJ_SUFFIX}
