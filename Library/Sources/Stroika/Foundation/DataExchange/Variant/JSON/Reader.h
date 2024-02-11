@@ -48,6 +48,10 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
 
         optional<Algorithm> fPreferredAlgorithm;
     };
+    using ReaderOptions::Algorithm::eStroikaNative;
+#if __has_include("boost/json.hpp")
+    using ReaderOptions::Algorithm::eBoost;
+#endif
 
     /**
      *  \note   Our definition of the JSON format comes from:
