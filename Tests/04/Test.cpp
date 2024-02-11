@@ -125,7 +125,7 @@ namespace {
         Debug::TraceContextBumper ctx{"{}::Test3_Endian_"};
         using namespace Configuration;
         EXPECT_EQ (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle), 0xBBAA);
-        EXPECT_EQ (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle),0xDDCCBBAA);
+        EXPECT_EQ (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle), 0xDDCCBBAA);
     }
 }
 
