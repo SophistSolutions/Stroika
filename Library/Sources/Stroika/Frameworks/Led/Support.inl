@@ -13,10 +13,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if !qHasIsAscii && defined(isascii)
-//#warning  "You probably should define qHasIsAscii for your compiler."
-#endif
-
 #if qPlatform_MacOS
 }
 #include <Sound.h>
@@ -70,19 +66,6 @@ namespace Stroika::Frameworks::Led {
         return ::strchr (s, c);
 #endif
     }
-
-// This bizare logic to test twice for the presence of isascii is because the first test is
-// whether the development environment provides an isascii(). The second test is
-// in case Led is used with some other library which may be included alog with Led
-// and that other library works around the absence of isascii - just as we did...
-#if !qHasIsAscii && !defined(isascii)
-    // I know this used to be part of the UNIX ctype - unsure why it does not appear to
-    // be in the ANSI ctype??? - LGP 950211
-    inline bool isascii (unsigned char c)
-    {
-        return (c <= 0x7f);
-    }
-#endif
 
 #if qWideCharacters
     inline Led_tString Led_WideString2tString (const wstring& s)

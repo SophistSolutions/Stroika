@@ -29,7 +29,7 @@
 #endif
 
 #if defined(__GNUC__)
-#include <features.h>
+//#include <features.h>
 #endif
 
 /*
@@ -103,9 +103,9 @@
 /*
  *  Not a bug to have this - I think - but doesn't appear part of any ansi spec???
  */
-#ifndef qHasIsAscii
-#define qHasIsAscii 0
-#endif
+//#ifndef qHasIsAscii
+///#define qHasIsAscii 0
+//#endif
 
 /*
  **************** COMMOM configuration variables ***************
@@ -114,45 +114,6 @@
  **************** COMMOM configuration variables ***************
  **************** COMMOM configuration variables ***************
  */
-
-/*
-@CONFIGVAR:     qDebug
-@DESCRIPTION:   <p>Be sure debug #defines setup properly. These are just some sanity checks.
-    In Led - we use qDebug. Just make sure other defines are setup consistently
-    with that define.</p>
-        <p>The default value of the qDebug variable is !defined (NDEBUG)</p>
-        <p>But typically, it is set externally via prefix files (Precomp.pch, MSVC settings dialog, or some such).</p>
-        <p>See also @'qHeavyDebugging'</p>
- */
-#if defined(__cplusplus)
-#ifndef qDebug
-// for some reason, directly defining this as qDebug=!defined(NDEBUG) didn't work on msvc
-// LGP 070404
-#if defined(NDEBUG)
-#define qDebug 0
-#else
-#define qDebug 1
-#endif
-#endif
-#ifndef qDebug
-#error "This must be defined either 0 or 1, depending on if you are building a debug version or not"
-#endif
-#if qDebug && defined(NDEBUG)
-#error "qDebug and NDEBUG must agree"
-#endif
-#if !qDebug && !defined(NDEBUG)
-#error "qDebug and NDEBUG must agree"
-#endif
-
-#if defined(_MSC_VER)
-#if qDebug && !defined(_DEBUG)
-#error "qDebug and _DEBUG must agree"
-#endif
-#if !qDebug && defined(_DEBUG)
-#error "qDebug and _DEBUG must agree"
-#endif
-#endif
-#endif
 
 /*
 @CONFIGVAR:     qHeavyDebugging
@@ -182,28 +143,6 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 /*
  *  -----------------------        Character set Settings/Specifications         ---------------------------
  */
-
-// DONT THINK NEEDED ANYMORE - OR IF IT IS - DO IN FOUNDATIONCONFIG
-//      -- LGP 2012-09-23
-#if 0
-#if qPlatform_Windows
-/*
- *  Some of Microsoft's headers use _UNICODE and some use UNICODE. If users set one or the other, treat that as having
- *  set both.
- */
-#ifdef _UNICODE
-#ifndef UNICODE
-#define UNICODE // UNICODE is used by Windows headers
-#endif
-#endif
-
-#ifdef UNICODE
-#ifndef _UNICODE
-#define _UNICODE // _UNICODE is used by C-runtime/MFC headers
-#endif
-#endif
-#endif
-#endif
 
 /*
 @CONFIGVAR:     qSingleByteCharacters
