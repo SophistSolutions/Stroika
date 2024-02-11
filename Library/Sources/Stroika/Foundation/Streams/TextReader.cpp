@@ -483,19 +483,17 @@ auto TextReader::New (const InputStream::Ptr<byte>& src, const optional<Automati
             }
             else {
                 src.Seek (savedSeek); // adjust amount read from input stream if we read anything
-                switch (codeCvtFlags.value_or (AutomaticCodeCvtFlags::eDEFAULT)) {
-                    case AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8:
-                        return CodeCvt<>{UnicodeExternalEncodings::eUTF8};
-                    case AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale:
-                        return CodeCvt<>{locale{}};
-                    default:
-                        AssertNotReached ();
-                        return CodeCvt<>{};
-                }
             }
         }
-        else {
-            return CodeCvt<>{locale{}};
+        // if not seekable, or no BOM, use codeCvtFlags to figure what todo for codes
+        switch (codeCvtFlags.value_or (AutomaticCodeCvtFlags::eDEFAULT)) {
+            case AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8:
+                return CodeCvt<>{UnicodeExternalEncodings::eUTF8};
+            case AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale:
+                return CodeCvt<>{locale{}};
+            default:
+                AssertNotReached ();
+                return CodeCvt<>{};
         }
     }();
     return New_ (src, codeConverter, *seekable, readAhead);
