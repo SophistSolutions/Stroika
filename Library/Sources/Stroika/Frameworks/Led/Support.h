@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../../Foundation/Configuration/Common.h"
+#include "../../Foundation/Characters/SDKString.h"
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Debug/CompileTimeFlagChecker.h"
 #include "../../Foundation/Execution/Throw.h"
@@ -406,18 +407,25 @@ namespace Stroika::Frameworks::Led {
     bool Led_CasedStringsEqual (const char* lhs, const char* rhs, bool ignoreCase = true);
 
     /*
-        *  Clipboard access support.
-        *
-        *      Note - when using this on the PC - be sure clipboard opened/closed
-        *  surrounding access to this object - as is currently done in Led_MFC.
-        *
-        */
+     *  Clipboard access support.
+     *
+     *      Note - when using this on the PC - be sure clipboard opened/closed
+     *  surrounding access to this object - as is currently done in Led_MFC.
+     *
+     */
+    #ifndef qStroika_Frameworks_Led_SupportClipboard
+    #define qStroika_Frameworks_Led_SupportClipboard (qPlatform_MacOS or qPlatform_Windows or qStroika_FeatureSupported_XWindows)
+    #endif
+
 #if qPlatform_MacOS
     using Led_ClipFormat = OSType;
 #elif qPlatform_Windows
     using Led_ClipFormat                 = CLIPFORMAT;
 #elif qStroika_FeatureSupported_XWindows
     using Led_ClipFormat                 = long;
+#else
+    // used in a lot of places to exchange info, even if not to a real clipboad, so keep type defined for now ... --LGP 2024-02-11
+    enum Led_ClipFormat    : unsigned short {};
 #endif
 #if qPlatform_MacOS
     const Led_ClipFormat kTEXTClipFormat = 'TEXT';
@@ -435,8 +443,11 @@ namespace Stroika::Frameworks::Led {
 #elif qStroika_FeatureSupported_XWindows
     const Led_ClipFormat kTEXTClipFormat = XA_STRING;
     const Led_ClipFormat kFILEClipFormat = 1; // X-TMP-HACK-LGP991213 - not sure what this should be???
+#else
+    const Led_ClipFormat kTEXTClipFormat = (Led_ClipFormat)1;
+    const Led_ClipFormat kFILEClipFormat = (Led_ClipFormat)2;
 #endif
-    const Led_ClipFormat kBadClipFormat = 0;
+    const Led_ClipFormat kBadClipFormat = (Led_ClipFormat) (0);
 
     class Led_ClipboardObjectAcquire {
     public:

@@ -25,8 +25,8 @@ SubDirs	=	\
 Objs	=
 
 # for now - this only builds on windows, cuz unix requires x-windows, and macos only written for very old macos gdi (carbon)
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)BiDiLayoutEngine${OBJ_SUFFIX}
+ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)ChunkedArrayTextStore${OBJ_SUFFIX}
 Objs+=	$(ObjDir)Command${OBJ_SUFFIX}
 Objs+=	$(ObjDir)FlavorPackage${OBJ_SUFFIX}

@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 
+#include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Execution/Exceptions.h"
 
 namespace Stroika::Frameworks::Led {
@@ -287,6 +288,9 @@ namespace Stroika::Frameworks::Led {
     {
         return TWIPS (static_cast<long> (lhs) - static_cast<long> (rhs));
     }
+    inline constexpr TWIPS TWIPS::kPoint   = TWIPS{20}; // a printers 'point' (1/72 of an inch)
+    inline constexpr TWIPS TWIPS::kInch    = TWIPS{1440};
+    inline constexpr TWIPS TWIPS::kOneInch = TWIPS{1440};
 
 #if qPlatform_Windows
     /*
@@ -1434,14 +1438,9 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ******************************* FontMetrics ********************************
+     ******************************* FontMetrics ************************************
      ********************************************************************************
      */
-    inline FontMetrics::FontMetrics ()
-        : fPlatformSpecific ()
-    {
-        (void)::memset (&fPlatformSpecific, 0, sizeof (fPlatformSpecific));
-    }
 #if qPlatform_MacOS
     inline FontMetrics::FontMetrics (const FontInfo& from)
         : fPlatformSpecific (from)
@@ -1458,15 +1457,6 @@ namespace Stroika::Frameworks::Led {
     {
     }
 #endif
-    inline FontMetrics::FontMetrics (const FontMetrics& from)
-        : fPlatformSpecific (from.fPlatformSpecific)
-    {
-    }
-    inline const FontMetrics& FontMetrics::operator= (const FontMetrics& rhs)
-    {
-        fPlatformSpecific = rhs.fPlatformSpecific;
-        return *this;
-    }
     inline DistanceType FontMetrics::GetAscent () const
     {
 #if qPlatform_MacOS
@@ -1701,11 +1691,10 @@ namespace Stroika::Frameworks::Led {
         m_hObject = nullptr;
         return ::DeleteObject (h);
     }
-}
 #endif
+}
 
 namespace Stroika::Frameworks::Led {
-
     /*
      ********************************************************************************
      ************************************* LineSpacing ******************************

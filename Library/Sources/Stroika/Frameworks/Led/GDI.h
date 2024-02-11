@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "Stroika/Foundation/Characters/String.h"
+
 #include "Support.h"
 
 // WHY DON'T WE NEED TO INCLUDE <Windows.h> here??? - LGP 991213
@@ -34,6 +36,7 @@
 namespace Stroika::Frameworks::Led {
 
     using Foundation::Characters::SDKChar;
+    using Foundation::Characters::String;
 
     /**
      * <code>CoordinateType</code> is the <code>signed</code> analog of @'DistanceType'.
@@ -84,9 +87,6 @@ namespace Stroika::Frameworks::Led {
     TWIPS operator+ (const TWIPS& lhs, const TWIPS& rhs);
     TWIPS operator- (const TWIPS& lhs, const TWIPS& rhs);
 
-    inline constexpr TWIPS TWIPS::kPoint   = TWIPS{20}; // a printers 'point' (1/72 of an inch)
-    inline constexpr TWIPS TWIPS::kInch    = TWIPS{1440};
-    inline constexpr TWIPS TWIPS::kOneInch = TWIPS{1440};
 
     class Tablet;
 
@@ -553,6 +553,9 @@ namespace Stroika::Frameworks::Led {
         };
 #elif qStroika_FeatureSupported_XWindows
         using FontNameSpecifier = SDKString;
+#else
+        // even if no actual GDI, need FontNameSpecifer to get stuff compiling
+        using FontNameSpecifier = String;
 #endif
 
     public:
@@ -950,7 +953,7 @@ namespace Stroika::Frameworks::Led {
         };
 #endif
     public:
-        FontMetrics ();
+        FontMetrics () = default;
 #if qPlatform_MacOS
         FontMetrics (const FontInfo& from);
 #elif qPlatform_Windows
@@ -958,8 +961,8 @@ namespace Stroika::Frameworks::Led {
 #elif qStroika_FeatureSupported_XWindows
         FontMetrics (const PlatformSpecific& from);
 #endif
-        FontMetrics (const FontMetrics& from);
-        const FontMetrics& operator= (const FontMetrics& rhs);
+        FontMetrics (const FontMetrics& ) = default;
+         FontMetrics& operator= (const FontMetrics& rhs) = default;
 
     public:
         nonvirtual DistanceType GetAscent () const;
@@ -987,11 +990,11 @@ namespace Stroika::Frameworks::Led {
 
     private:
 #if qPlatform_MacOS
-        FontInfo fPlatformSpecific;
+        FontInfo fPlatformSpecific{};
 #elif qPlatform_Windows
-        TEXTMETRIC fPlatformSpecific;
+        TEXTMETRIC fPlatformSpecific{};
 #elif qStroika_FeatureSupported_XWindows
-        PlatformSpecific fPlatformSpecific;
+        PlatformSpecific fPlatformSpecific{};
 #endif
     };
 

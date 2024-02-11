@@ -15,15 +15,14 @@ using namespace Stroika::Frameworks::Led;
  ****************************** LineBasedPartition ******************************
  ********************************************************************************
  */
-
 LineBasedPartition::LineBasedPartition (TextStore& textStore)
-    : inherited (textStore)
+    : inherited {textStore}
 {
     FinalConstruct ();
 }
 
 LineBasedPartition::LineBasedPartition (TextStore& textStore, SpecialHackToDisableInit /*hack*/)
-    : inherited (textStore)
+    : inherited {textStore}
 {
 }
 
