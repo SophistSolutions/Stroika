@@ -15,6 +15,7 @@
 #include "Stroika/Foundation/Streams/OutputStream.h"
 #include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 #include "Stroika/Foundation/Streams/TextReader.h"
+#include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 #include "Stroika/Foundation/Streams/iostream/OutputStreamFromStdOStream.h"
 
 #include "Stroika/Frameworks/Test/TestHarness.h"
@@ -296,7 +297,30 @@ namespace {
 }
 
 namespace {
-    GTEST_TEST (Foundation_Caching, all)
+    GTEST_TEST (Foundation_Streams, IOStreamSeekBug)
+    {
+        // short input stream caused issue with TextReader reading BOM, setting EOF/Fail flag which seek back didn't clear
+        {
+            stringstream tmp;
+            tmp << "3";
+            auto in = Streams::iostream::InputStreamFromStdIStream::New<byte> (tmp);
+
+            auto r = in.ReadAll ();
+            EXPECT_EQ (r.size (), 1);
+        }
+        {
+            stringstream tmp;
+            tmp << "3";
+            auto inb = Streams::iostream::InputStreamFromStdIStream::New<byte> (tmp);
+            auto in  = TextReader::New (inb, nullopt, SeekableFlag::eSeekable);
+            auto r   = in.ReadAll ();
+            EXPECT_EQ (r.size (), 1);
+        }
+    }
+}
+
+namespace {
+    GTEST_TEST (Foundation_Streams, all)
     {
         BasicBinaryInputStream_::Tests_ ();
         BasicBinaryOutputStream_::Tests_ ();
