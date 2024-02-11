@@ -17,6 +17,7 @@ namespace Stroika::Frameworks::Led {
     namespace Private_ {
         void SetMarkerRange_ (TextStore& textstore, Marker* marker, size_t start, size_t end) noexcept;
         void PreRemoveMarker_ (TextStore& textstore, Marker* marker);
+        void RemoveMarkers (TextStore& ts, Marker* const markerArray[], size_t markerCount);
     }
 
     /*
@@ -218,9 +219,6 @@ namespace Stroika::Frameworks::Led {
             AccumulateMarkerForDeletion (m);
         }
     }
-#if qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
-    void TextStore_RemoveMarkers (TextStore& ts, Marker* const markerArray[], size_t markerCount);
-#endif
     template <typename MARKER>
     /*
     @METHOD:        MarkerMortuary<MARKER>::FinalizeMarkerDeletions
@@ -237,12 +235,7 @@ namespace Stroika::Frameworks::Led {
             // NB: No exceptions can happen in any of this - all these deletes allocate no memory (LGP 950415)
             MARKER* const* markersToBeDeleted_ = &fMarkersToBeDeleted.front ();
             Marker* const* markersToBeDeleted = (Marker* const*)markersToBeDeleted_; // need cast - but safe - cuz array of MARKER* and looking for Marker* - safe cuz const array!
-
-#if qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
-            TextStore_RemoveMarkers (textStore, markersToBeDeleted, fMarkersToBeDeleted.size ());
-#else
-            textStore.RemoveMarkers (markersToBeDeleted, fMarkersToBeDeleted.size ());
-#endif
+            Private_::RemoveMarkers (textStore, markersToBeDeleted, fMarkersToBeDeleted.size ());
             for (size_t i = 0; i < fMarkersToBeDeleted.size (); ++i) {
                 delete fMarkersToBeDeleted[i];
             }

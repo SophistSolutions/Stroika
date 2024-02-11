@@ -20,6 +20,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
     @DESCRIPTION:   <p>HidableTextMarkerOwner is a @'MarkerOwner' class, collecting together a set of
         @'HidableTextMarkerOwner::HidableTextMarker' elements. Each of these hidden-text elements can contain
@@ -280,6 +281,7 @@ namespace Stroika::Frameworks::Led {
         Color fColor;
         bool  fColored;
     };
+#endif
 
 }
 

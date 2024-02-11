@@ -20,6 +20,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
+#if qStroika_Frameworks_Led_SupportGDI
+
 /*
  ********************************************************************************
  ****************************** HidableTextMarkerOwner **************************
@@ -592,3 +594,5 @@ ColoredUniformHidableTextMarkerOwner::HidableTextMarker* ColoredUniformHidableTe
     }
     return new LightUnderlineHidableTextMarker (fontSpec);
 }
+
+#endif

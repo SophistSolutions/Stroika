@@ -186,6 +186,7 @@ namespace Stroika::Frameworks::Led {
         virtual void DidCoalece (void* infoRecord) const noexcept                                    = 0;
     };
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         PartitioningTextImager
     @BASES:         virtual @'TextImager'
@@ -346,6 +347,7 @@ namespace Stroika::Frameworks::Led {
     private:
         PartitionPtr fPartition;
     };
+#endif
 #endif
 
 }

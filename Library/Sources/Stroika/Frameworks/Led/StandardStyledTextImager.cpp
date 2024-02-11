@@ -13,6 +13,8 @@ using StyleMarker       = StyledTextImager::StyleMarker;
 using StyleDatabaseRep  = StandardStyledTextImager::StyleDatabaseRep;
 using InfoSummaryRecord = StandardStyledTextImager::InfoSummaryRecord;
 
+#if qStroika_Frameworks_Led_SupportGDI
+
 /*
  ********************************************************************************
  *************** StandardStyledTextImager::StandardStyleMarker ******************
@@ -448,4 +450,6 @@ void StyleDatabaseRep::Invariant_ () const
 {
     inheritedMC::Invariant_ ();
 }
+#endif
+
 #endif

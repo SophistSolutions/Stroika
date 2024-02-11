@@ -36,7 +36,7 @@ namespace Stroika::Frameworks::Led {
     */
     class MultiRowTextImager : public PartitioningTextImager {
     protected:
-        MultiRowTextImager ();
+        MultiRowTextImager () = default;
         virtual ~MultiRowTextImager ();
 
     private:
@@ -234,8 +234,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool         PositionWouldFitInWindowWithThisTopRow (size_t markerPos, const RowReference& newTopRow);
 
     private:
-        PartitionMarker* fTopLinePartitionMarkerInWindow;
-        size_t           fSubRowInTopLineInWindow;
+        PartitionMarker* fTopLinePartitionMarkerInWindow{nullptr};
+        size_t           fSubRowInTopLineInWindow{0};
 
     private:
         nonvirtual void ReValidateSubRowInTopLineInWindow ();
@@ -245,7 +245,7 @@ namespace Stroika::Frameworks::Led {
         // Override ComputeRowsThatWouldFitInWindowWithTopRow () to change the policy of how we
         // pack rows into a window
     private:
-        mutable size_t fTotalRowsInWindow; // zero means invalid cached - fill cache on call to GetTotalRowsInWindow
+        mutable size_t fTotalRowsInWindow{0}; // zero means invalid cached - fill cache on call to GetTotalRowsInWindow
     protected:
         nonvirtual size_t GetTotalRowsInWindow_ () const;
         nonvirtual void   InvalidateTotalRowsInWindow ();

@@ -363,6 +363,8 @@ void Partition::Invariant_ () const
 }
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
+
 /*
  ********************************************************************************
  ****************************** PartitioningTextImager **************************
@@ -875,6 +877,7 @@ void PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateI
     }
     MarkerOwner::EarlyDidUpdateText (updateInfo);
 }
+#endif
 #endif
 
 /*

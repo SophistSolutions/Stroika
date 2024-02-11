@@ -11,6 +11,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
+#if qStroika_Frameworks_Led_SupportGDI
+
 using StyleMarker            = StyledTextImager::StyleMarker;
 using RunElement             = StyledTextImager::RunElement;
 using StyleMarkerSummarySink = StyledTextImager::StyleMarkerSummarySink;
@@ -514,3 +516,5 @@ int TrivialFontSpecStyleMarker::GetPriority () const
 {
     return eBaselinePriority + 1;
 }
+
+#endif

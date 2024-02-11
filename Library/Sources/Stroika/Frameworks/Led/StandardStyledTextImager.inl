@@ -11,6 +11,7 @@
  */
 
 namespace Stroika::Frameworks::Led {
+#if qStroika_Frameworks_Led_SupportGDI
 
     /*
      ********************************************************************************
@@ -106,6 +107,7 @@ namespace Stroika::Frameworks::Led {
     {
         return fFSP;
     }
+#endif
 
 }
 

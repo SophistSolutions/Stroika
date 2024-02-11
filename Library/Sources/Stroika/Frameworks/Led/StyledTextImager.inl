@@ -12,6 +12,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      ************************ StyledTextImager::StyleMarker *************************
@@ -206,6 +207,7 @@ namespace Stroika::Frameworks::Led {
     {
         return Color::kBlack;
     }
+    #endif
 
 }
 

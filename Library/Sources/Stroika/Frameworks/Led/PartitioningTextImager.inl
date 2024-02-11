@@ -150,6 +150,7 @@ namespace Stroika::Frameworks::Led {
         }
     }
 
+#if qStroika_Frameworks_Led_SupportGDI
     //  class   PartitioningTextImager;
     inline PartitioningTextImager::PartitionPtr PartitioningTextImager::GetPartition () const
     {
@@ -221,6 +222,7 @@ namespace Stroika::Frameworks::Led {
         , fMeasurementsCache (0)
     {
     }
+#endif
 #endif
 
 }

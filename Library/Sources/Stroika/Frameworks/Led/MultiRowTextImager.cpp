@@ -21,15 +21,6 @@ using namespace Stroika::Frameworks::Led;
  ********************************* MultiRowTextImager ***************************
  ********************************************************************************
  */
-MultiRowTextImager::MultiRowTextImager ()
-    : inherited ()
-    , fPMCacheMgr ()
-    , fTopLinePartitionMarkerInWindow (nullptr)
-    , fSubRowInTopLineInWindow (0)
-    , fTotalRowsInWindow (0) // value must be computed
-{
-}
-
 MultiRowTextImager::~MultiRowTextImager ()
 {
     Assert (fTopLinePartitionMarkerInWindow == nullptr);

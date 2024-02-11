@@ -35,6 +35,7 @@ namespace Stroika::Frameworks::Led {
 #ifndef qAssertWarningForEqualPriorityMarkers
 #define qAssertWarningForEqualPriorityMarkers qDebug
 #endif
+#if qStroika_Frameworks_Led_SupportGDI
 
     /*
     @CLASS:         StyledTextImager
@@ -383,6 +384,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual Color GetUnderlineBaseColor () const;
     };
+    #endif
 
 }
 
