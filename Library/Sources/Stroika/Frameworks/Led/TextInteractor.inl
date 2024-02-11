@@ -12,6 +12,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      ***************************** Implementation Details ***************************
@@ -729,6 +730,7 @@ namespace Stroika::Frameworks::Led {
     {
         fTextInteractor.SetDefaultUpdateMode (fOldValue);
     }
+    #endif
 
 }
 

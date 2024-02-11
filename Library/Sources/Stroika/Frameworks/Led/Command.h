@@ -25,6 +25,7 @@ namespace Stroika::Frameworks::Led {
 
     class TextInteractor;
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         Command
     @DESCRIPTION:   <p>An abstraction for a user action, which is undoable. These objects, when created,
@@ -362,6 +363,7 @@ namespace Stroika::Frameworks::Led {
         Led_tChar* fText;
         size_t     fTextLength;
     };
+    #endif
 
 }
 

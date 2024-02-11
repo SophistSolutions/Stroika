@@ -15,6 +15,8 @@ using namespace Stroika::Frameworks::Led;
 
 using Characters::SDKChar;
 
+#if qStroika_Frameworks_Led_SupportGDI
+
 /*
  ********************************************************************************
  *************************************** Command ********************************
@@ -809,3 +811,4 @@ bool InteractiveReplaceCommand::PlainTextRep::AppendCharToRep (size_t insertAt, 
         return false;
     }
 }
+#endif

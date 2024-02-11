@@ -27,6 +27,8 @@ using namespace Stroika::Frameworks::Led;
 
 using SavedTextRep = InteractiveReplaceCommand::SavedTextRep;
 
+#if qStroika_Frameworks_Led_SupportGDI
+
 namespace {
     class FlavorSavorTextRep : public SavedTextRep {
     private:
@@ -3377,3 +3379,4 @@ bool TextInteractor::DelaySomeForScrollBarClick ()
         return false; // not enough time has elapsed
     }
 }
+#endif

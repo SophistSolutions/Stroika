@@ -88,10 +88,10 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
     Require (end <= GetTextStore ().GetEnd ());
     Require (start <= end);
     size_t length = end - start;
-#if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
+#if qPlatform_Windows
+    Memory::StackBuffer<Led_tChar> buf{2 * length + 1}; //CRLF
+#else
     Memory::StackBuffer<Led_tChar> buf{length};
-#elif qPlatform_Windows
-    Memory::StackBuffer<Led_tChar> buf{2 * length + 1};
 #endif
     if (length != 0) {
         Memory::StackBuffer<Led_tChar> buf2{length};
@@ -198,7 +198,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
             ::GlobalFree (hdrop);
         }
         Led_ClipFormat suggestedClipFormat = kBadClipFormat; // no guess - examine text later
-#elif qStroika_FeatureSupported_XWindows
+#else
         char realFileName[1000]; // use MAX_PATH? ??? NO - GET REAL SIZE !!! X-TMP-HACK-LGP991213
         realFileName[0]                    = '\0';
         Led_ClipFormat suggestedClipFormat = kBadClipFormat; // no guess - examine text later
@@ -214,7 +214,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
 bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
 #if qPlatform_MacOS
     const FSSpec* fileName,
-#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
+#else
     const Characters::SDKChar* fileName,
 #endif
     Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage, size_t from, size_t to)
@@ -238,7 +238,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
 void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
 #if qPlatform_MacOS
     const FSSpec* fileName,
-#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
+#else
     const Characters::SDKChar* fileName,
 #endif
     Led_ClipFormat* suggestedClipFormat, [[maybe_unused]] optional<CodePage> suggestedCodePage)
@@ -305,7 +305,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
 #if qPlatform_Windows
     CodeCvt<Led_tChar> converter{&rawByteSpan, CodeCvt<Led_tChar>{suggestedCodePage.value_or (CP_ACP)}};
 #else
-    CodeCvt<Led_tChar> converter{&rawByteSpan, suggestedCodePage? CodeCvt<Led_tChar>{suggestedCodePage)}: CodeCvt<Led_tChar>{locale{})}};
+    CodeCvt<Led_tChar> converter{&rawByteSpan, CodeCvt<Led_tChar>{locale{}}};
 #endif
     size_t                         outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
     Memory::StackBuffer<Led_tChar> fileData2{outCharCnt};

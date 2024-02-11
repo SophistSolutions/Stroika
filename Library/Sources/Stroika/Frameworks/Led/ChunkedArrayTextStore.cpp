@@ -616,9 +616,6 @@ inline ChunkedArrayMarkerOwnerHook* GetAMOH (Marker* m)
  *  can be joined - then do so.
  */
 ChunkedArrayTextStore::ChunkedArrayTextStore ()
-    : fLength{0}
-    , fCachedChunkIndex{0}
-    , fCachedChunkIndexesOffset{0}
 {
     fTextStoreHook = new ChunkedArrayMarkerOwnerHook (this, 2);
 }

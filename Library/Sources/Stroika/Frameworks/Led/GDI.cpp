@@ -1134,6 +1134,7 @@ void Tablet::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led
 }
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
 /*
  ********************************************************************************
  *********************************** Tablet *************************************
@@ -2558,6 +2559,10 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
 #endif
     }
 }
+#endif
+
+
+#if qStroika_Frameworks_Led_SupportGDI
 
 /*
  ********************************************************************************
@@ -2627,6 +2632,11 @@ BOOL FAR PASCAL InstalledFonts::FontFamilyAdderProc (ENUMLOGFONTEX* pelf, NEWTEX
     return 1;
 }
 #endif
+#endif
+
+
+#if qStroika_Frameworks_Led_SupportGDI
+
 
 /*
  ********************************************************************************
@@ -2678,7 +2688,9 @@ void Globals::InvalidateGlobals ()
     fLogPixelsV         = kResToUse;
 #endif
 }
+#endif
 
+#if qStroika_Frameworks_Led_SupportGDI
 /*
  ********************************************************************************
  ************************************ AddRectangleToRegion **********************
@@ -2689,6 +2701,7 @@ void Led::AddRectangleToRegion (Led_Rect addRect, Region* toRgn)
     RequireNotNull (toRgn);
     *toRgn = *toRgn + Region (addRect);
 }
+#endif
 
 /*
  ********************************************************************************

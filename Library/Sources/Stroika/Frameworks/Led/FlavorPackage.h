@@ -80,14 +80,14 @@ namespace Stroika::Frameworks::Led {
         virtual bool    InternalizeFlavor_FILEData (
 #if qPlatform_MacOS
             const FSSpec* fileName,
-#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
+#else
             const SDKChar* fileName,
 #endif
             Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage, size_t from, size_t to);
         virtual void InternalizeFlavor_FILEGuessFormatsFromName (
 #if qPlatform_MacOS
             const FSSpec* fileName,
-#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
+#else
             const SDKChar* fileName,
 #endif
             Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage);

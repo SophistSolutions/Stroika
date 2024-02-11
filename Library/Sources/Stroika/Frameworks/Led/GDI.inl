@@ -1451,6 +1451,7 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      ******************************* FontMetrics ************************************
@@ -1548,6 +1549,7 @@ namespace Stroika::Frameworks::Led {
     {
         return &fPlatformSpecific;
     }
+#endif
 #endif
 
     /*
@@ -1834,8 +1836,8 @@ namespace Stroika::Frameworks::Led {
         return string{(const char*)&fontName[1], len};
 #elif qPlatform_Windows
         return fFontInfo.lfFaceName;
-#elif qStroika_FeatureSupported_XWindows
-        return fFontFamily;
+#else
+        return fFontFamily.AsSDKString ();
 #endif
     }
     // FontName info
@@ -1845,7 +1847,7 @@ namespace Stroika::Frameworks::Led {
         return fFontSpecifier;
 #elif qPlatform_Windows
         return fFontInfo.lfFaceName;
-#elif qStroika_FeatureSupported_XWindows
+#else
         return fFontFamily;
 #endif
     }
@@ -1893,10 +1895,10 @@ namespace Stroika::Frameworks::Led {
     inline bool FontSpecification::GetStyle_Bold () const
     {
 #if qPlatform_MacOS
-        return (fFontStyle & bold);
+        return fFontStyle & bold;
 #elif qPlatform_Windows
-        return (fFontInfo.lfWeight > FW_NORMAL);
-#elif qStroika_FeatureSupported_XWindows
+        return fFontInfo.lfWeight > FW_NORMAL;
+#else
         return fBold;
 #endif
     }
@@ -1921,7 +1923,7 @@ namespace Stroika::Frameworks::Led {
         return (fFontStyle & italic);
 #elif qPlatform_Windows
         return !!fFontInfo.lfItalic;
-#elif qStroika_FeatureSupported_XWindows
+#else
         return fItalics;
 #endif
     }
@@ -1936,7 +1938,7 @@ namespace Stroika::Frameworks::Led {
         }
 #elif qPlatform_Windows
         fFontInfo.lfItalic = isItalic;
-#elif qStroika_FeatureSupported_XWindows
+#else
         fItalics = isItalic;
 #endif
     }
@@ -1946,7 +1948,7 @@ namespace Stroika::Frameworks::Led {
         return (fFontStyle & underline);
 #elif qPlatform_Windows
         return !!fFontInfo.lfUnderline;
-#elif qStroika_FeatureSupported_XWindows
+#else
         return fUnderline;
 #endif
     }
@@ -2058,7 +2060,7 @@ namespace Stroika::Frameworks::Led {
         else {
             return static_cast<unsigned short> (::MulDiv (-fFontInfo.lfHeight, 72, Globals::Get ().GetMainScreenLogPixelsV ()));
         }
-#elif qStroika_FeatureSupported_XWindows
+#else
         return fFontSize;
 #endif
     }
@@ -2068,7 +2070,7 @@ namespace Stroika::Frameworks::Led {
         fFontSize = pointSize;
 #elif qPlatform_Windows
         fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Globals::Get ().GetMainScreenLogPixelsV (), 72);
-#elif qStroika_FeatureSupported_XWindows
+#else
         fFontSize = pointSize;
 #endif
     }
@@ -2977,6 +2979,7 @@ namespace Stroika::Frameworks::Led {
         return fFontNames;
     }
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      ******************************** Led_GetTextColor ******************************
@@ -3008,6 +3011,7 @@ namespace Stroika::Frameworks::Led {
         return (Color::kWhite);
 #endif
     }
+    #endif
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*

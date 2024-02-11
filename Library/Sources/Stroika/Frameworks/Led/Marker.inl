@@ -14,6 +14,11 @@
 
 namespace Stroika::Frameworks::Led {
 
+    namespace Private_ {
+        void SetMarkerRange_ (TextStore& textstore, Marker* marker, size_t start, size_t end) noexcept;
+        void PreRemoveMarker_ (TextStore& textstore, Marker* marker) ;
+    }
+
     /*
      ********************************************************************************
      ********************************* Led::MarkerOwner *****************************
@@ -195,7 +200,7 @@ namespace Stroika::Frameworks::Led {
         }
 
         // Added for SPR#0822 - see for details
-        static_cast<Marker*> (m)->GetOwner ()->GetTextStore ().PreRemoveMarker (m);
+        Private_::PreRemoveMarker_ (static_cast<Marker*> (m)->GetOwner ()->GetTextStore (), m);
 
         // NB: fMarkersToBeDeleted SB a linked list, so we don't need todo any mem allocations
         // and don't need to worry about failing to allocate memory here!!!
@@ -335,7 +340,7 @@ namespace Stroika::Frameworks::Led {
             size_t start = 0;
             size_t end   = 0;
             (*i)->GetRange (&start, &end);
-            fTextStore.SetMarkerRange ((*i), start + fSlideBy, end + fSlideBy);
+            Private_::SetMarkerRange_ (fTextStore, (*i), start + fSlideBy, end + fSlideBy);
         }
     }
     template <typename MARKER>
@@ -345,7 +350,7 @@ namespace Stroika::Frameworks::Led {
             size_t start = 0;
             size_t end   = 0;
             (*i)->GetRange (&start, &end);
-            fTextStore.SetMarkerRange ((*i), start - fSlideBy, end - fSlideBy);
+            Private_::SetMarkerRange_ (fTextStore, (*i), start - fSlideBy, end - fSlideBy);
         }
     }
 

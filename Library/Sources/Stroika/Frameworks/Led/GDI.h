@@ -653,7 +653,7 @@ namespace Stroika::Frameworks::Led {
         Style fFontStyle;
 #elif qPlatform_Windows
         LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
-#elif qStroika_FeatureSupported_XWindows
+#else
         FontNameSpecifier fFontFamily;
         bool              fBold : 1;
         bool              fItalics : 1;
@@ -943,6 +943,7 @@ namespace Stroika::Frameworks::Led {
     CoordinateType Led_CvtScreenPixelsFromTWIPSV (TWIPS from);
     CoordinateType Led_CvtScreenPixelsFromTWIPSH (TWIPS from);
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         FontMetrics
     @DESCRIPTION:   <p><code>FontMetrics</code> is a portable wrapper class on the Macintosh
@@ -1004,13 +1005,16 @@ namespace Stroika::Frameworks::Led {
         PlatformSpecific fPlatformSpecific{};
 #endif
     };
+    #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     Color Led_GetTextColor ();
     Color Led_GetTextBackgroundColor ();
     Color Led_GetSelectedTextColor ();
     Color Led_GetSelectedTextBackgroundColor ();
 
     class OffscreenTablet;
+#endif
 
 #if qStroika_Frameworks_Led_SupportGDI
     /**

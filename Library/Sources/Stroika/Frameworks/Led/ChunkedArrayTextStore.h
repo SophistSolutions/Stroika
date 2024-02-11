@@ -163,8 +163,8 @@ namespace Stroika::Frameworks::Led {
         // Note - this tecnique works best if we ask for FindChunkIndex() on roughly the same chunk each time.
         // If we really bounce all over the place - this optimization could be a slight any-tweek.
     private:
-        mutable size_t fCachedChunkIndex;
-        mutable size_t fCachedChunkIndexesOffset;
+        mutable size_t fCachedChunkIndex{0};
+        mutable size_t fCachedChunkIndexesOffset{0};
 
         nonvirtual void InvalCachedChunkIndexes (); // reset them to the beginning which is always safe...
 
@@ -179,7 +179,7 @@ namespace Stroika::Frameworks::Led {
         static bool AllSubMarkersAreHackMarkerTrees (const Marker* m);
 
     private:
-        size_t             fLength;
+        size_t             fLength{0};
         vector<TextChunk*> fTextChunks;
 
 #if qDebug

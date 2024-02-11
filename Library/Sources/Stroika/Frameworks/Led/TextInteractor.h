@@ -28,6 +28,7 @@ namespace Stroika::Frameworks::Led {
 // Private Led Macro utility to define command numbers (cannot use Math::RoundUpTo use used to init enums - at least on msvc2k17)
 #define RoundUpToNearest_CMDNUMs_MACRO(x, n) (((x + 1) & ~(n - 1)) + n)
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         TextInteractor
     @BASES:         virtual @'TextImager'
@@ -1083,6 +1084,7 @@ namespace Stroika::Frameworks::Led {
         }
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
+    #endif
 
 }
 
