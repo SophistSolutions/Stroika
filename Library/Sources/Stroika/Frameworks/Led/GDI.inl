@@ -3009,6 +3009,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
+        #if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      **************************** Led_GetSelectedTextColor **************************
@@ -3050,10 +3051,12 @@ namespace Stroika::Frameworks::Led {
         return (Color::kBlack);
 #endif
     }
+    #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
-     ************************ Tablet::ClipNarrowAndRestore *********************
+     ************************ Tablet::ClipNarrowAndRestore **************************
      ********************************************************************************
      */
     inline Tablet::ClipNarrowAndRestore::ClipNarrowAndRestore (Tablet* tablet)
@@ -3122,6 +3125,7 @@ namespace Stroika::Frameworks::Led {
             fTablet->SetClip ();
         }
     }
+#endif
 
 #if qPlatform_Windows
     /*
