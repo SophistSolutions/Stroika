@@ -81,9 +81,10 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
                     return nullopt;
                 }
                 size_t maxToRead = intoBuffer.size ();
+                fOriginalStreamRef_.clear (); // clear any failures before read - it will report if a failure found
                 fOriginalStreamRef_.read (reinterpret_cast<BASIC_ISTREAM_ELEMENT_TYPE*> (intoBuffer.data ()), maxToRead);
                 size_t n = static_cast<size_t> (fOriginalStreamRef_.gcount ()); // cast safe cuz amount asked to read was also size_t
-
+                Assert (n <= maxToRead);
                 // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
                 if (not fOriginalStreamRef_.eof () and fOriginalStreamRef_.fail ()) [[unlikely]] {
                     static const Execution::RuntimeErrorException kException_{"Failed to read from istream"sv};
@@ -102,6 +103,7 @@ namespace Stroika::Foundation::Streams::iostream::InputStreamFromStdIStream {
             {
                 Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
                 Require (IsOpenRead ());
+                fOriginalStreamRef_.clear (); // in case we hit eof (causing fail) - eof gets cleared by seeking, but not failbit - it appears...--LGP 2024-02-11
                 switch (whence) {
                     case Whence::eFromStart:
                         fOriginalStreamRef_.seekg (offset, ios::beg);
