@@ -1177,7 +1177,7 @@ namespace Stroika::Frameworks::Led {
         return result.CombineRgn (const_cast<Region*> (&lhs), const_cast<Region*> (&rhs), RGN_AND) != NULLREGION;
 #endif
     }
-    #endif
+#endif
 
     /*
      ********************************************************************************
@@ -1409,7 +1409,7 @@ namespace Stroika::Frameworks::Led {
         return TWIPS (from * 1440 / Globals::Get ().GetMainScreenLogPixelsV ());
 #endif
     }
-    
+
     /*
     @METHOD:        Led_CvtScreenPixelsToTWIPSH
     @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.
@@ -1449,7 +1449,7 @@ namespace Stroika::Frameworks::Led {
         return TWIPS{from * Globals::Get ().GetMainScreenLogPixelsH () / 1440};
 #endif
     }
-    #endif
+#endif
 
     /*
      ********************************************************************************
@@ -1781,15 +1781,15 @@ namespace Stroika::Frameworks::Led {
         , fFontStyle (0)
         ,
 #elif qPlatform_Windows
-            fFontInfo ()
-            ,
+        fFontInfo ()
+        ,
 #elif qStroika_FeatureSupported_XWindows
-            fFontFamily ()
-            , fBold (false)
-            , fItalics (false)
-            , fUnderline (false)
-            , fFontSize (0)
-            ,
+        fFontFamily ()
+        , fBold (false)
+        , fItalics (false)
+        , fUnderline (false)
+        , fFontSize (0)
+        ,
 #endif
         fSubOrSuperScript (eNoSubOrSuperscript)
         , fTextColor (Color::kBlack)
@@ -1806,15 +1806,15 @@ namespace Stroika::Frameworks::Led {
         , fFontStyle (((const FontSpecification&)from).fFontStyle)
         ,
 #elif qPlatform_Windows
-            fFontInfo (((const FontSpecification&)from).fFontInfo)
-            ,
+        fFontInfo (((const FontSpecification&)from).fFontInfo)
+        ,
 #elif qStroika_FeatureSupported_XWindows
-            fFontFamily (from.fFontFamily)
-            , fBold (from.fBold)
-            , fItalics (from.fItalics)
-            , fUnderline (from.fUnderline)
-            , fFontSize (from.fFontSize)
-            ,
+        fFontFamily (from.fFontFamily)
+        , fBold (from.fBold)
+        , fItalics (from.fItalics)
+        , fUnderline (from.fUnderline)
+        , fFontSize (from.fFontSize)
+        ,
 #endif
         fSubOrSuperScript (((const FontSpecification&)from).fSubOrSuperScript)
         , fTextColor (((const FontSpecification&)from).fTextColor)
@@ -1833,9 +1833,9 @@ namespace Stroika::Frameworks::Led {
         size_t len = fontName[0];
         return string{(const char*)&fontName[1], len};
 #elif qPlatform_Windows
-            return fFontInfo.lfFaceName;
+        return fFontInfo.lfFaceName;
 #elif qStroika_FeatureSupported_XWindows
-            return fFontFamily;
+        return fFontFamily;
 #endif
     }
     // FontName info
@@ -1844,9 +1844,9 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return fFontSpecifier;
 #elif qPlatform_Windows
-            return fFontInfo.lfFaceName;
+        return fFontInfo.lfFaceName;
 #elif qStroika_FeatureSupported_XWindows
-            return fFontFamily;
+        return fFontFamily;
 #endif
     }
     // Style info
@@ -1864,9 +1864,9 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return (fFontStyle == 0);
 #elif qPlatform_Windows
-            return (fFontInfo.lfItalic == false and fFontInfo.lfWeight <= FW_NORMAL and fFontInfo.lfUnderline == false and fFontInfo.lfStrikeOut == false);
+        return (fFontInfo.lfItalic == false and fFontInfo.lfWeight <= FW_NORMAL and fFontInfo.lfUnderline == false and fFontInfo.lfStrikeOut == false);
 #elif qStroika_FeatureSupported_XWindows
-            return not fBold and not fItalics and not fUnderline;
+        return not fBold and not fItalics and not fUnderline;
 #endif
     }
     /*
@@ -1880,14 +1880,14 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         fFontStyle = 0;
 #elif qPlatform_Windows
-            fFontInfo.lfItalic    = false;
-            fFontInfo.lfWeight    = FW_NORMAL;
-            fFontInfo.lfUnderline = false;
-            fFontInfo.lfStrikeOut = false;
+        fFontInfo.lfItalic    = false;
+        fFontInfo.lfWeight    = FW_NORMAL;
+        fFontInfo.lfUnderline = false;
+        fFontInfo.lfStrikeOut = false;
 #elif qStroika_FeatureSupported_XWindows
-            fBold      = false;
-            fItalics   = false;
-            fUnderline = false;
+        fBold      = false;
+        fItalics   = false;
+        fUnderline = false;
 #endif
     }
     inline bool FontSpecification::GetStyle_Bold () const
@@ -1895,9 +1895,9 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return (fFontStyle & bold);
 #elif qPlatform_Windows
-            return (fFontInfo.lfWeight > FW_NORMAL);
+        return (fFontInfo.lfWeight > FW_NORMAL);
 #elif qStroika_FeatureSupported_XWindows
-            return fBold;
+        return fBold;
 #endif
     }
     inline void FontSpecification::SetStyle_Bold (bool isBold)
@@ -1910,9 +1910,9 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~bold;
         }
 #elif qPlatform_Windows
-            fFontInfo.lfWeight = isBold ? FW_BOLD : FW_NORMAL;
+        fFontInfo.lfWeight = isBold ? FW_BOLD : FW_NORMAL;
 #elif qStroika_FeatureSupported_XWindows
-            fBold = isBold;
+        fBold = isBold;
 #endif
     }
     inline bool FontSpecification::GetStyle_Italic () const
@@ -1920,9 +1920,9 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return (fFontStyle & italic);
 #elif qPlatform_Windows
-            return !!fFontInfo.lfItalic;
+        return !!fFontInfo.lfItalic;
 #elif qStroika_FeatureSupported_XWindows
-            return fItalics;
+        return fItalics;
 #endif
     }
     inline void FontSpecification::SetStyle_Italic (bool isItalic)
@@ -1935,9 +1935,9 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~italic;
         }
 #elif qPlatform_Windows
-            fFontInfo.lfItalic = isItalic;
+        fFontInfo.lfItalic = isItalic;
 #elif qStroika_FeatureSupported_XWindows
-            fItalics = isItalic;
+        fItalics = isItalic;
 #endif
     }
     inline bool FontSpecification::GetStyle_Underline () const
@@ -1945,9 +1945,9 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return (fFontStyle & underline);
 #elif qPlatform_Windows
-            return !!fFontInfo.lfUnderline;
+        return !!fFontInfo.lfUnderline;
 #elif qStroika_FeatureSupported_XWindows
-            return fUnderline;
+        return fUnderline;
 #endif
     }
     inline void FontSpecification::SetStyle_Underline (bool isUnderline)
@@ -1960,9 +1960,9 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~underline;
         }
 #elif qPlatform_Windows
-            fFontInfo.lfUnderline = isUnderline;
+        fFontInfo.lfUnderline = isUnderline;
 #elif qStroika_FeatureSupported_XWindows
-            fUnderline = isUnderline;
+        fUnderline = isUnderline;
 #endif
     }
     inline FontSpecification::SubOrSuperScript FontSpecification::GetStyle_SubOrSuperScript () const
@@ -2027,14 +2027,14 @@ namespace Stroika::Frameworks::Led {
         }
     }
 #elif qPlatform_Windows
-        inline bool FontSpecification::GetStyle_Strikeout () const
-        {
-            return !!fFontInfo.lfStrikeOut;
-        }
-        inline void FontSpecification::SetStyle_Strikeout (bool isStrikeout)
-        {
-            fFontInfo.lfStrikeOut = isStrikeout;
-        }
+    inline bool FontSpecification::GetStyle_Strikeout () const
+    {
+        return !!fFontInfo.lfStrikeOut;
+    }
+    inline void FontSpecification::SetStyle_Strikeout (bool isStrikeout)
+    {
+        fFontInfo.lfStrikeOut = isStrikeout;
+    }
 #endif
     // FontSize info
     inline FontSpecification::FontSize FontSpecification::GetPointSize () const
@@ -2042,24 +2042,24 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return fFontSize;
 #elif qPlatform_Windows
-            if (fFontInfo.lfHeight >= 0) {
-                // I probably should be doing some magic here with subtracing internal leading, or something like that from this value -
-                // See TextImager::GetStaticDefaultFont () and Win32 SDK docs for LOGFONT
-                // LGP 960222
-                WindowDC   screenDC (nullptr);
-                FontObject font;
-                Verify (font.CreateFontIndirect (&fFontInfo));
-                HFONT      oldFont = screenDC.SelectObject (font);
-                TEXTMETRIC tms;
-                screenDC.GetTextMetrics (&tms);
-                screenDC.SelectObject (oldFont);
-                return (unsigned short)::MulDiv (tms.tmHeight, 72, Globals::Get ().GetMainScreenLogPixelsV ());
-            }
-            else {
-                return static_cast<unsigned short> (::MulDiv (-fFontInfo.lfHeight, 72, Globals::Get ().GetMainScreenLogPixelsV ()));
-            }
+        if (fFontInfo.lfHeight >= 0) {
+            // I probably should be doing some magic here with subtracing internal leading, or something like that from this value -
+            // See TextImager::GetStaticDefaultFont () and Win32 SDK docs for LOGFONT
+            // LGP 960222
+            WindowDC   screenDC (nullptr);
+            FontObject font;
+            Verify (font.CreateFontIndirect (&fFontInfo));
+            HFONT      oldFont = screenDC.SelectObject (font);
+            TEXTMETRIC tms;
+            screenDC.GetTextMetrics (&tms);
+            screenDC.SelectObject (oldFont);
+            return (unsigned short)::MulDiv (tms.tmHeight, 72, Globals::Get ().GetMainScreenLogPixelsV ());
+        }
+        else {
+            return static_cast<unsigned short> (::MulDiv (-fFontInfo.lfHeight, 72, Globals::Get ().GetMainScreenLogPixelsV ()));
+        }
 #elif qStroika_FeatureSupported_XWindows
-            return fFontSize;
+        return fFontSize;
 #endif
     }
     inline void FontSpecification::SetPointSize (FontSize pointSize)
@@ -2067,9 +2067,9 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         fFontSize = pointSize;
 #elif qPlatform_Windows
-            fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Globals::Get ().GetMainScreenLogPixelsV (), 72);
+        fFontInfo.lfHeight = ::MulDiv (-long (pointSize), Globals::Get ().GetMainScreenLogPixelsV (), 72);
 #elif qStroika_FeatureSupported_XWindows
-            fFontSize = pointSize;
+        fFontSize = pointSize;
 #endif
     }
 #if qPlatform_Windows
@@ -2110,31 +2110,31 @@ namespace Stroika::Frameworks::Led {
         fFontStyle     = fontStyle;
     }
 #elif qPlatform_Windows
-        inline LOGFONT FontSpecification::GetOSRep () const
-        {
-            return fFontInfo;
-        }
-        inline void FontSpecification::GetOSRep (LOGFONT* logFont) const
-        {
-            RequireNotNull (logFont);
-            *logFont = fFontInfo;
-        }
-        inline void FontSpecification::SetOSRep (LOGFONT logFont)
-        {
-            fFontInfo = logFont;
-        }
-        inline void FontSpecification::LightSetOSRep (LOGFONT logFont)
-        {
-            fFontInfo                  = logFont;
-            fFontInfo.lfWidth          = 0;
-            fFontInfo.lfEscapement     = 0;
-            fFontInfo.lfOrientation    = 0;
-            fFontInfo.lfCharSet        = DEFAULT_CHARSET;
-            fFontInfo.lfOutPrecision   = 0;
-            fFontInfo.lfClipPrecision  = 0;
-            fFontInfo.lfQuality        = 0;
-            fFontInfo.lfPitchAndFamily = 0;
-        }
+    inline LOGFONT FontSpecification::GetOSRep () const
+    {
+        return fFontInfo;
+    }
+    inline void FontSpecification::GetOSRep (LOGFONT* logFont) const
+    {
+        RequireNotNull (logFont);
+        *logFont = fFontInfo;
+    }
+    inline void FontSpecification::SetOSRep (LOGFONT logFont)
+    {
+        fFontInfo = logFont;
+    }
+    inline void FontSpecification::LightSetOSRep (LOGFONT logFont)
+    {
+        fFontInfo                  = logFont;
+        fFontInfo.lfWidth          = 0;
+        fFontInfo.lfEscapement     = 0;
+        fFontInfo.lfOrientation    = 0;
+        fFontInfo.lfCharSet        = DEFAULT_CHARSET;
+        fFontInfo.lfOutPrecision   = 0;
+        fFontInfo.lfClipPrecision  = 0;
+        fFontInfo.lfQuality        = 0;
+        fFontInfo.lfPitchAndFamily = 0;
+    }
 #endif
 #if qPlatform_Windows
     inline FontSpecification::FontSpecification (const LOGFONT& logFont)
@@ -2163,28 +2163,28 @@ namespace Stroika::Frameworks::Led {
             return false;
         }
 #elif qPlatform_Windows
-            if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
-                return false;
-            }
-            if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
-                return false;
-            }
-            if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
-                return false;
-            }
-            if (lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
-                return false;
-            }
+        if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
+            return false;
+        }
+        if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
+            return false;
+        }
+        if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
+            return false;
+        }
+        if (lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
+            return false;
+        }
 #elif qStroika_FeatureSupported_XWindows
-            if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
-                return false;
-            }
-            if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
-                return false;
-            }
-            if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
-                return false;
-            }
+        if (lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
+            return false;
+        }
+        if (lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
+            return false;
+        }
+        if (lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
+            return false;
+        }
 #endif
         if (lhs.GetStyle_SubOrSuperScript () != rhs.GetStyle_SubOrSuperScript ()) {
             return false;
@@ -2248,9 +2248,9 @@ namespace Stroika::Frameworks::Led {
             SetStyle_Extended (addInTheseAttributes.GetStyle_Extended ());
         }
 #elif qPlatform_Windows
-            if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
-                SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
-            }
+        if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
+            SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
+        }
 #endif
 
         // Font Size
@@ -2259,7 +2259,7 @@ namespace Stroika::Frameworks::Led {
             // speed tweek - avoid costly conversion to 'points'. All we want todo is copy the tmHeight field!
             PokeAtTMHeight (addInTheseAttributes.PeekAtTMHeight ());
 #else
-                SetPointSize (addInTheseAttributes.GetPointSize ());
+            SetPointSize (addInTheseAttributes.GetPointSize ());
 #endif
         }
         if (addInTheseAttributes.GetPointSizeIncrement_Valid ()) {
@@ -2305,9 +2305,9 @@ namespace Stroika::Frameworks::Led {
         , fStyleValid_Extended (false)
         ,
 #elif qPlatform_Windows
-            fStyleValid_Strikeout (false)
-            , fDidSetOSRepCallFlag (false)
-            ,
+        fStyleValid_Strikeout (false)
+        , fDidSetOSRepCallFlag (false)
+        ,
 #endif
         fFontSizeValid (false)
         , fFontSizeIncrementValid (false)
@@ -2329,9 +2329,9 @@ namespace Stroika::Frameworks::Led {
         , fStyleValid_Extended (true)
         ,
 #elif qPlatform_Windows
-            fStyleValid_Strikeout (true)
-            , fDidSetOSRepCallFlag (true)
-            ,
+        fStyleValid_Strikeout (true)
+        , fDidSetOSRepCallFlag (true)
+        ,
 #endif
         fFontSizeValid (true)
         , fFontSizeIncrementValid (false)
@@ -2382,7 +2382,7 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_Condensed);
         Require (fStyleValid_Extended);
 #elif qPlatform_Windows
-            Require (fStyleValid_Strikeout);
+        Require (fStyleValid_Strikeout);
 #endif
         return inherited::GetStyle_Plain ();
     }
@@ -2392,7 +2392,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         isValid = isValid and fStyleValid_Outline and fStyleValid_Shadow and fStyleValid_Condensed and fStyleValid_Extended;
 #elif qPlatform_Windows
-            isValid               = isValid and fStyleValid_Strikeout;
+        isValid               = isValid and fStyleValid_Strikeout;
 #endif
         return isValid;
     }
@@ -2408,8 +2408,8 @@ namespace Stroika::Frameworks::Led {
         fStyleValid_Condensed = false;
         fStyleValid_Extended  = false;
 #elif qPlatform_Windows
-            fStyleValid_Strikeout = false;
-            fDidSetOSRepCallFlag  = false;
+        fStyleValid_Strikeout = false;
+        fDidSetOSRepCallFlag  = false;
 #endif
     }
     inline void IncrementalFontSpecification::SetStyle_Plain ()
@@ -2424,8 +2424,8 @@ namespace Stroika::Frameworks::Led {
         fStyleValid_Condensed = true;
         fStyleValid_Extended  = true;
 #elif qPlatform_Windows
-            fStyleValid_Strikeout = true;
-            fDidSetOSRepCallFlag  = false;
+        fStyleValid_Strikeout = true;
+        fDidSetOSRepCallFlag  = false;
 #endif
         inherited::SetStyle_Plain ();
     }
@@ -2599,30 +2599,30 @@ namespace Stroika::Frameworks::Led {
         inherited::SetStyle_Extended (isExtended);
     }
 #elif qPlatform_Windows
-        inline bool IncrementalFontSpecification::GetStyle_Strikeout () const
-        {
-            Require (fStyleValid_Strikeout);
-            return (inherited::GetStyle_Strikeout ());
-        }
-        inline bool IncrementalFontSpecification::GetStyle_Strikeout_Valid () const
-        {
-            return (fStyleValid_Strikeout);
-        }
-        inline void IncrementalFontSpecification::InvalidateStyle_Strikeout ()
-        {
-            fStyleValid_Strikeout = false;
+    inline bool IncrementalFontSpecification::GetStyle_Strikeout () const
+    {
+        Require (fStyleValid_Strikeout);
+        return (inherited::GetStyle_Strikeout ());
+    }
+    inline bool IncrementalFontSpecification::GetStyle_Strikeout_Valid () const
+    {
+        return (fStyleValid_Strikeout);
+    }
+    inline void IncrementalFontSpecification::InvalidateStyle_Strikeout ()
+    {
+        fStyleValid_Strikeout = false;
 #if qPlatform_Windows
-            fDidSetOSRepCallFlag  = false;
+        fDidSetOSRepCallFlag  = false;
 #endif
-        }
-        inline void IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
-        {
-            fStyleValid_Strikeout = true;
+    }
+    inline void IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
+    {
+        fStyleValid_Strikeout = true;
 #if qPlatform_Windows
-            fDidSetOSRepCallFlag  = false;
+        fDidSetOSRepCallFlag  = false;
 #endif
-            inherited::SetStyle_Strikeout (isStrikeout);
-        }
+        inherited::SetStyle_Strikeout (isStrikeout);
+    }
 #endif
     // FontSize info
     inline unsigned short IncrementalFontSpecification::GetPointSize () const
@@ -2729,47 +2729,47 @@ namespace Stroika::Frameworks::Led {
         inherited::SetOSRep (fontID, fontSize, fontStyle);
     }
 #elif qPlatform_Windows
-        inline LOGFONT IncrementalFontSpecification::GetOSRep () const
-        {
-            Require (fFontSpecifierValid and fStyleValid_Bold and fStyleValid_Italic and fStyleValid_Underline and fFontSizeValid);
-            Require (fStyleValid_Strikeout);
-            return inherited::GetOSRep ();
-        }
-        inline void IncrementalFontSpecification::GetOSRep (LOGFONT* logFont) const
-        {
-            RequireNotNull (logFont);
-            Require (fFontSpecifierValid and fStyleValid_Bold and fStyleValid_Italic and fStyleValid_Underline and fFontSizeValid);
-            Require (fStyleValid_Strikeout);
-            inherited::GetOSRep (logFont);
-        }
-        inline void IncrementalFontSpecification::SetOSRep (LOGFONT logFont)
-        {
-            fFontSpecifierValid     = true;
-            fStyleValid_Bold        = true;
-            fStyleValid_Italic      = true;
-            fStyleValid_Underline   = true;
-            fStyleValid_Strikeout   = true;
-            fFontSizeValid          = true;
-            fFontSizeIncrementValid = false;
-            fDidSetOSRepCallFlag    = true;
-            inherited::SetOSRep (logFont);
-        }
-        inline void IncrementalFontSpecification::LightSetOSRep (LOGFONT logFont)
-        {
-            fFontSpecifierValid     = true;
-            fStyleValid_Bold        = true;
-            fStyleValid_Italic      = true;
-            fStyleValid_Underline   = true;
-            fStyleValid_Strikeout   = true;
-            fFontSizeValid          = true;
-            fFontSizeIncrementValid = false;
-            fDidSetOSRepCallFlag    = true;
-            inherited::LightSetOSRep (logFont);
-        }
-        inline bool IncrementalFontSpecification::GetDidSetOSRepCallFlag () const
-        {
-            return fDidSetOSRepCallFlag;
-        }
+    inline LOGFONT IncrementalFontSpecification::GetOSRep () const
+    {
+        Require (fFontSpecifierValid and fStyleValid_Bold and fStyleValid_Italic and fStyleValid_Underline and fFontSizeValid);
+        Require (fStyleValid_Strikeout);
+        return inherited::GetOSRep ();
+    }
+    inline void IncrementalFontSpecification::GetOSRep (LOGFONT* logFont) const
+    {
+        RequireNotNull (logFont);
+        Require (fFontSpecifierValid and fStyleValid_Bold and fStyleValid_Italic and fStyleValid_Underline and fFontSizeValid);
+        Require (fStyleValid_Strikeout);
+        inherited::GetOSRep (logFont);
+    }
+    inline void IncrementalFontSpecification::SetOSRep (LOGFONT logFont)
+    {
+        fFontSpecifierValid     = true;
+        fStyleValid_Bold        = true;
+        fStyleValid_Italic      = true;
+        fStyleValid_Underline   = true;
+        fStyleValid_Strikeout   = true;
+        fFontSizeValid          = true;
+        fFontSizeIncrementValid = false;
+        fDidSetOSRepCallFlag    = true;
+        inherited::SetOSRep (logFont);
+    }
+    inline void IncrementalFontSpecification::LightSetOSRep (LOGFONT logFont)
+    {
+        fFontSpecifierValid     = true;
+        fStyleValid_Bold        = true;
+        fStyleValid_Italic      = true;
+        fStyleValid_Underline   = true;
+        fStyleValid_Strikeout   = true;
+        fFontSizeValid          = true;
+        fFontSizeIncrementValid = false;
+        fDidSetOSRepCallFlag    = true;
+        inherited::LightSetOSRep (logFont);
+    }
+    inline bool IncrementalFontSpecification::GetDidSetOSRepCallFlag () const
+    {
+        return fDidSetOSRepCallFlag;
+    }
 #endif
     inline void IncrementalFontSpecification::MergeIn (const IncrementalFontSpecification& addInTheseAttributes)
     {
@@ -2802,9 +2802,9 @@ namespace Stroika::Frameworks::Led {
             SetStyle_Extended (addInTheseAttributes.GetStyle_Extended ());
         }
 #elif qPlatform_Windows
-            if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
-                SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
-            }
+        if (addInTheseAttributes.GetStyle_Strikeout_Valid ()) {
+            SetStyle_Strikeout (addInTheseAttributes.GetStyle_Strikeout ());
+        }
 #endif
 
         // Font Size
@@ -2813,7 +2813,7 @@ namespace Stroika::Frameworks::Led {
             // speed tweek - avoid costly conversion to 'points'. All we want todo is copy the tmHeight field!
             PokeAtTMHeight (addInTheseAttributes.PeekAtTMHeight ());
 #else
-                SetPointSize (addInTheseAttributes.GetPointSize ());
+            SetPointSize (addInTheseAttributes.GetPointSize ());
 #endif
         }
         if (addInTheseAttributes.GetPointSizeIncrement_Valid ()) {
@@ -2916,14 +2916,14 @@ namespace Stroika::Frameworks::Led {
             }
         }
 #elif qPlatform_Windows
-            {
-                if (GetStyle_Strikeout_Valid () != rhs.GetStyle_Strikeout_Valid ()) {
-                    return false;
-                }
-                if (GetStyle_Strikeout_Valid () and (GetStyle_Strikeout () != rhs.GetStyle_Strikeout ())) {
-                    return false;
-                }
+        {
+            if (GetStyle_Strikeout_Valid () != rhs.GetStyle_Strikeout_Valid ()) {
+                return false;
             }
+            if (GetStyle_Strikeout_Valid () and (GetStyle_Strikeout () != rhs.GetStyle_Strikeout ())) {
+                return false;
+            }
+        }
 #endif
 
         // Font Color Info
@@ -2987,9 +2987,9 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return (Color::kBlack);
 #elif qPlatform_Windows
-            return Color (::GetSysColor (COLOR_WINDOWTEXT));
+        return Color (::GetSysColor (COLOR_WINDOWTEXT));
 #elif qStroika_FeatureSupported_XWindows
-            return (Color::kBlack);
+        return (Color::kBlack);
 #endif
     }
 
@@ -3003,9 +3003,9 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return (Color::kWhite);
 #elif qPlatform_Windows
-            return Color (::GetSysColor (COLOR_WINDOW));
+        return Color (::GetSysColor (COLOR_WINDOW));
 #elif qStroika_FeatureSupported_XWindows
-            return (Color::kWhite);
+        return (Color::kWhite);
 #endif
     }
 
@@ -3031,10 +3031,10 @@ namespace Stroika::Frameworks::Led {
             return (Color::kBlack);
         }
 #elif qPlatform_Windows
-            //          return Color (::GetSysColor (COLOR_CAPTIONTEXT));
-            return Color (::GetSysColor (COLOR_HIGHLIGHTTEXT));
+        //          return Color (::GetSysColor (COLOR_CAPTIONTEXT));
+        return Color (::GetSysColor (COLOR_HIGHLIGHTTEXT));
 #elif qStroika_FeatureSupported_XWindows
-            return (Color::kWhite);
+        return (Color::kWhite);
 #endif
     }
     inline Color Led_GetSelectedTextBackgroundColor ()
@@ -3044,10 +3044,10 @@ namespace Stroika::Frameworks::Led {
         LMGetHiliteRGB (&hiliteRGBValue);
         return Color (hiliteRGBValue);
 #elif qPlatform_Windows
-            //return Color (::GetSysColor (COLOR_ACTIVECAPTION));
-            return Color (::GetSysColor (COLOR_HIGHLIGHT));
+        //return Color (::GetSysColor (COLOR_ACTIVECAPTION));
+        return Color (::GetSysColor (COLOR_HIGHLIGHT));
 #elif qStroika_FeatureSupported_XWindows
-            return (Color::kBlack);
+        return (Color::kBlack);
 #endif
     }
 
@@ -3080,15 +3080,15 @@ namespace Stroika::Frameworks::Led {
         Assert (fHasOldClip);
         tablet->SetClip (fOldClip * clipFurtherTo);
 #elif qPlatform_Windows
-            /*
+        /*
             *  NB: We must use IntersectClipRect instead of the above SetClip () call because the CLIP on Win32 is in
             *  device rather than logical coordinates.
             */
-            if (::GetDeviceCaps (tablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
-                return;
-            }
-            Verify (::IntersectClipRect (*tablet, clipFurtherTo.GetLeft (), clipFurtherTo.GetTop (), clipFurtherTo.GetRight (),
-                                         clipFurtherTo.GetBottom ()) != ERROR);
+        if (::GetDeviceCaps (tablet->m_hDC, TECHNOLOGY) == DT_METAFILE) {
+            return;
+        }
+        Verify (::IntersectClipRect (*tablet, clipFurtherTo.GetLeft (), clipFurtherTo.GetTop (), clipFurtherTo.GetRight (),
+                                     clipFurtherTo.GetBottom ()) != ERROR);
 #endif
     }
     inline Tablet::ClipNarrowAndRestore::ClipNarrowAndRestore (Tablet* tablet, [[maybe_unused]] const Region& clipFurtherTo)
@@ -3102,9 +3102,9 @@ namespace Stroika::Frameworks::Led {
         Assert (fHasOldClip);
         tablet->SetClip (fOldClip * clipFurtherTo);
 #elif qPlatform_Windows
-            Assert (false); // NYI - see SPR#????
+        Assert (false); // NYI - see SPR#????
 #else
-            Assert (false); // NYI
+        Assert (false); // NYI
 #endif
     }
     inline Tablet::ClipNarrowAndRestore::~ClipNarrowAndRestore ()
@@ -3213,24 +3213,24 @@ namespace Stroika::Frameworks::Led {
         }
     }
 #elif qPlatform_MacOS
-        inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
-            : fTablet (tablet)
-            ,
+    inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
+        : fTablet (tablet)
+        ,
 #if TARGET_CARBON
-            fRestorePen (Pen (::GetPortPenMode (Led_GetCurrentGDIPort ()), &Pen::kBlackPattern, Color (GDI_GetForeColor ())))
+        fRestorePen (Pen (::GetPortPenMode (Led_GetCurrentGDIPort ()), &Pen::kBlackPattern, Color (GDI_GetForeColor ())))
 #else
-            fRestorePen (Pen (Led_GetCurrentGDIPort ()->pnMode, &Led_GetCurrentGDIPort ()->pnPat, Color (GDI_GetForeColor ())))
+        fRestorePen (Pen (Led_GetCurrentGDIPort ()->pnMode, &Led_GetCurrentGDIPort ()->pnPat, Color (GDI_GetForeColor ())))
 #endif
-        {
-            Assert (Led_GetCurrentGDIPort () == *tablet);
-            GDI_RGBForeColor (pen.fPenColor.GetOSRep ());
-            ::PenMode (pen.fPenStyle);
-            ::PenPat (&pen.fPenPat);
-        }
+    {
+        Assert (Led_GetCurrentGDIPort () == *tablet);
+        GDI_RGBForeColor (pen.fPenColor.GetOSRep ());
+        ::PenMode (pen.fPenStyle);
+        ::PenPat (&pen.fPenPat);
+    }
 #elif qStroika_FeatureSupported_XWindows
-        inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
-        {
-        }
+    inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
+    {
+    }
 #endif
     inline GDI_Obj_Selector::~GDI_Obj_Selector ()
     {
@@ -3243,13 +3243,12 @@ namespace Stroika::Frameworks::Led {
             Verify (::SelectObject (fTablet->m_hAttribDC, fRestoreAttribObject));
         }
 #elif qPlatform_MacOS
-            GDI_RGBForeColor (fRestorePen.fPenColor.GetOSRep ());
-            ::PenMode (fRestorePen.fPenStyle);
-            ::PenPat (&fRestorePen.fPenPat);
+        GDI_RGBForeColor (fRestorePen.fPenColor.GetOSRep ());
+        ::PenMode (fRestorePen.fPenStyle);
+        ::PenPat (&fRestorePen.fPenPat);
 #endif
     }
 #endif
-
 
 #if qPlatform_MacOS
     inline void GDI_RGBForeColor (const RGBColor& color)
@@ -3280,7 +3279,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return picture->picFrame.top;
 #elif qPlatform_Windows
-            return Led_ByteSwapFromMac (picture->picFrameTop);
+        return Led_ByteSwapFromMac (picture->picFrameTop);
 #endif
     }
     inline short Led_GetMacPictLeft (const Led_Picture* picture)
@@ -3289,7 +3288,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return picture->picFrame.left;
 #elif qPlatform_Windows
-            return Led_ByteSwapFromMac (picture->picFrameLeft);
+        return Led_ByteSwapFromMac (picture->picFrameLeft);
 #endif
     }
     inline short Led_GetMacPictBottom (const Led_Picture* picture)
@@ -3298,7 +3297,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return picture->picFrame.bottom;
 #elif qPlatform_Windows
-            return Led_ByteSwapFromMac (picture->picFrameBottom);
+        return Led_ByteSwapFromMac (picture->picFrameBottom);
 #endif
     }
     inline short Led_GetMacPictRight (const Led_Picture* picture)
@@ -3307,7 +3306,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         return picture->picFrame.right;
 #elif qPlatform_Windows
-            return Led_ByteSwapFromMac (picture->picFrameRight);
+        return Led_ByteSwapFromMac (picture->picFrameRight);
 #endif
     }
     inline short Led_GetMacPictWidth (const Led_Picture* picture)

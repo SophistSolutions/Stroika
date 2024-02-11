@@ -205,7 +205,7 @@ namespace Stroika::Frameworks::Led {
             h = ::NewHandle (n);
         }
 #else
-        Handle h           = ::NewHandle (n);
+        Handle h = ::NewHandle (n);
 #endif
         Execution::ThrowIfNull (h);
         return h;
@@ -440,8 +440,8 @@ namespace Stroika::Frameworks::Led {
         ScrapFlavorFlags flags = 0;
         return (::GetScrapFlavorFlags (scrap, clipType, &flags) == noErr);
 #else
-        long   scrapOffset = 0;
-        long   result      = ::GetScrap (nullptr, clipType, &scrapOffset);
+        long scrapOffset = 0;
+        long result      = ::GetScrap (nullptr, clipType, &scrapOffset);
         return (result > 0);
 #endif
 #elif qPlatform_Windows
@@ -496,7 +496,7 @@ namespace Stroika::Frameworks::Led {
         return (::GlobalSize (fOSClipHandle));
 #endif
     }
-    #endif
+#endif
 
     /*
      ********************************************************************************

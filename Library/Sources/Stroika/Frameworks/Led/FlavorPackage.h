@@ -100,22 +100,20 @@ namespace Stroika::Frameworks::Led {
         TextStore& fTextStore;
     };
 
-    /*
-    @CLASS:         ReaderFlavorPackage
-    @DESCRIPTION:   <p>Abstraction wrapping both Drag&Drop packages, and clipboard access. Used by @'FlavorPackageInternalizer'.</p>
-    */
+    /**
+     *  Abstraction wrapping both Drag&Drop packages, and clipboard access. Used by @'FlavorPackageInternalizer'.</p>
+     */
     class ReaderFlavorPackage {
     public:
         nonvirtual bool GetFlavorAvailable_TEXT () const;
         virtual bool    GetFlavorAvailable (Led_ClipFormat clipFormat) const = 0;
 
     public:
-        /*
-        @METHOD:        ReaderFlavorPackage::GetFlavorSize
-        @DESCRIPTION:   <p>Return an upper bound on the size of the given flavor element. Try to get the right size, but
-            the OS frequently makes this impossible. Just garuantee that when you do a ReaderFlavorPackage::ReadFlavorData
-            you get the right size, and that is smaller or equal to what this returns.</p>
-        */
+        /** 
+         * Return an upper bound on the size of the given flavor element. Try to get the right size, but
+         * the OS frequently makes this impossible. Just garuantee that when you do a ReaderFlavorPackage::ReadFlavorData
+         * you get the right size, and that is smaller or equal to what this returns.</p>
+         */
         virtual size_t GetFlavorSize (Led_ClipFormat clipFormat) const = 0;
 
     public:

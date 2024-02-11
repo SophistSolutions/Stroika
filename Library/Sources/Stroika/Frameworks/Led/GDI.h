@@ -87,7 +87,6 @@ namespace Stroika::Frameworks::Led {
     TWIPS operator+ (const TWIPS& lhs, const TWIPS& rhs);
     TWIPS operator- (const TWIPS& lhs, const TWIPS& rhs);
 
-
     class Tablet;
 
     /*
@@ -317,7 +316,7 @@ namespace Stroika::Frameworks::Led {
     };
     Region operator* (const Region& lhs, const Region& rhs);
     Region operator+ (const Region& lhs, const Region& rhs);
-    #endif
+#endif
 
     /**
      * This class is a portable representation of a color. It can be constructed either
@@ -893,17 +892,17 @@ namespace Stroika::Frameworks::Led {
         class _Global_DESTRUCTOR_;
         friend class _Global_DESTRUCTOR_;
     };
-    #endif
+#endif
 
     Led_Rect operator- (const Led_Rect& lhs, const Led_Point& rhs);
     Led_Rect operator+ (Led_Point p, Led_Rect r);
     Led_Rect operator+ (Led_Rect r, Led_Point p);
     bool     Intersect (const Led_Rect& lhs, const Led_Rect& rhs);
 #if qStroika_Frameworks_Led_SupportGDI
-    bool     Intersect (const Led_Rect& lhs, const Region& rhs);
-    bool     Intersect (const Region& lhs, const Led_Rect& rhs);
-    bool     Intersect (const Region& lhs, const Region& rhs);
-    #endif
+    bool Intersect (const Led_Rect& lhs, const Region& rhs);
+    bool Intersect (const Region& lhs, const Led_Rect& rhs);
+    bool Intersect (const Region& lhs, const Region& rhs);
+#endif
 
     Led_Rect Intersection (const Led_Rect& lhs, const Led_Rect& rhs);
     Led_Rect operator* (const Led_Rect& lhs, const Led_Rect& rhs);
@@ -915,7 +914,7 @@ namespace Stroika::Frameworks::Led {
     Led_Rect EnsureRectInRect (const Led_Rect& r, Led_Rect enlosingR);
 #if qStroika_Frameworks_Led_SupportGDI
     Led_Rect EnsureRectOnScreen (const Led_Rect& r);
-    #endif
+#endif
 
 #if qPlatform_MacOS
     Led_Point AsLedPoint (Point p);
@@ -969,8 +968,8 @@ namespace Stroika::Frameworks::Led {
 #elif qStroika_FeatureSupported_XWindows
         FontMetrics (const PlatformSpecific& from);
 #endif
-        FontMetrics (const FontMetrics& ) = default;
-         FontMetrics& operator= (const FontMetrics& rhs) = default;
+        FontMetrics (const FontMetrics&)                = default;
+        FontMetrics& operator= (const FontMetrics& rhs) = default;
 
     public:
         nonvirtual DistanceType GetAscent () const;
@@ -1353,7 +1352,7 @@ namespace Stroika::Frameworks::Led {
         Pen fRestorePen;
 #endif
     };
-    #endif
+#endif
 
     /*
      *  Trap Caching support
@@ -1480,7 +1479,7 @@ namespace Stroika::Frameworks::Led {
 #if qStroika_Frameworks_Led_SupportGDI
 
     void AddRectangleToRegion (Led_Rect addRect, Region* toRgn);
-    #endif
+#endif
 
 #if qProvideIMESupport
     class IME {

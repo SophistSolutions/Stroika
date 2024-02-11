@@ -250,6 +250,12 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\ToDo.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\Makefile">
+      <Filter>Led\StyledTextIO</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Makefile">
+      <Filter>Led\Platform</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.h">

@@ -150,6 +150,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Led\MarkerCover.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.inl" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +167,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Led\StdDialogs.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextEmbeddedObjects.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextImager.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\Support.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\SyntaxColoring.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\TextBreaks.inl" />

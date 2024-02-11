@@ -260,7 +260,6 @@ when debugging is ON, then you may want to turn this flag ON.</p>
 #endif
 #endif
 
-
 #ifndef qStroika_Frameworks_Led_SupportGDI
 #define qStroika_Frameworks_Led_SupportGDI qPlatform_Windows
 #endif
