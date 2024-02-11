@@ -165,7 +165,7 @@ namespace Stroika::Frameworks::Led {
         fColored = colored;
         FixupSubMarkers ();
     }
-    #endif
+#endif
 
 }
 

@@ -20,8 +20,8 @@
 
 namespace Stroika::Frameworks::Led {
 
- #if qStroika_Frameworks_Led_SupportGDI
-   /*
+#if qStroika_Frameworks_Led_SupportGDI
+    /*
     @CLASS:         StandardStyledTextImager
     @BASES:         virtual @'StyledTextImager'
     @DESCRIPTION:   <p>StandardStyledTextImager is not intended to be a general and flexible
@@ -254,7 +254,7 @@ namespace Stroika::Frameworks::Led {
     private:
         mutable FontSpecification fFSP;
     };
-    #endif
+#endif
 
 }
 

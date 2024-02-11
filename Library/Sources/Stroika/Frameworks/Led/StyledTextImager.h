@@ -384,7 +384,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual Color GetUnderlineBaseColor () const;
     };
-    #endif
+#endif
 
 }
 

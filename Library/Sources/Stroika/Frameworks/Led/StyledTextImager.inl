@@ -207,7 +207,7 @@ namespace Stroika::Frameworks::Led {
     {
         return Color::kBlack;
     }
-    #endif
+#endif
 
 }
 
