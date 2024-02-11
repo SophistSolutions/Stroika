@@ -58,31 +58,27 @@ namespace Stroika::Foundation::Configuration {
      ************************* Configuration::EndianConverter ***********************
      ********************************************************************************
      */
-    template <>
-    constexpr inline uint16_t EndianConverter (uint16_t value, Endian from, Endian to)
+    template <integral T>
+    constexpr inline T EndianConverter (T value, Endian from, Endian to)
     {
-        Require (from == Endian::eBig or from == Endian::eLittle); // just cuz thats all thats implemented
-        Require (to == Endian::eBig or to == Endian::eLittle);     // just cuz thats all thats implemented
+        Require (from == Endian::eBig or from == Endian::eLittle); // just cuz that's all that's implemented
+        Require (to == Endian::eBig or to == Endian::eLittle);     // ""
         if (from == to) {
             return value;
         }
-        else {
-            Assert (sizeof (value) == 2);
+        if constexpr (sizeof (T) == 1) {
+            return value;
+        }
+        if constexpr (sizeof (T) == 2) {
+            // since we only support big endian and little endian and from != to - swap is easy
             return ((value & 0xFF) << 8) | ((value >> 8) & 0xFF);
         }
-    }
-    template <>
-    constexpr inline uint32_t EndianConverter (uint32_t value, Endian from, Endian to)
-    {
-        Require (from == Endian::eBig or from == Endian::eLittle); // just cuz thats all thats implemented
-        Require (to == Endian::eBig or to == Endian::eLittle);     // just cuz thats all thats implemented
-        if (from == to) {
-            return value;
-        }
-        else {
-            Assert (sizeof (value) == 4);
+        if constexpr (sizeof (T) == 4) {
+            // since we only support big endian and little endian and from != to - I THINK This is right...
             return ((value & 0xFF) << 24) | ((value & 0xFF00) << 8) | ((value >> 8) & 0xFF00) | ((value >> 24) & 0xFF);
         }
+        AssertNotImplemented ();
+        return value;
     }
 
 }

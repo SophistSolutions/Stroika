@@ -6,7 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
+#include <concepts>
 #include <cstdint>
+
+#include "Common.h"
 
 /**
  *  \file
@@ -46,16 +49,18 @@ namespace Stroika::Foundation::Configuration {
      * 
      *  \par Example Usage
      *      \code
-     *          EXPECT_TRUE (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle) == 0xBBAA);
+     *          EXPECT_EQ (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle), 0xBBAA);
      *          uint16_t useThisNumber = EndianConverter<uint16_t> (0xAABB, Endian::eBig, GetEndianness ());
      *      \endcode
      */
-    template <typename T>
+    template <integral T>
     constexpr T EndianConverter (T value, Endian from, Endian to);
+#if 0
     template <>
     constexpr uint16_t EndianConverter (uint16_t value, Endian from, Endian to);
     template <>
     constexpr uint32_t EndianConverter (uint32_t value, Endian from, Endian to);
+#endif
 
 }
 
