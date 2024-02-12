@@ -344,16 +344,9 @@ void Partition::Invariant_ () const
         Assert (&pm->GetOwner () == this);
         size_t start = pm->GetStart ();
         size_t end   = pm->GetEnd ();
-        size_t len   = end - start;
-
         Assert (start == lastCharDrawn);
         Assert (end <= GetEnd () + 1); // +1 for extra bogus space so we always get autoexpanded
-
         lastCharDrawn = end;
-
-        if (end > GetEnd ()) {
-            --len; // Last partition extends past end of text
-        }
         ++realPMCount;
         Assert (realPMCount <= fPartitionMarkerCount);
         Assert (static_cast<bool> (fPartitionMarkerLast == cur) == static_cast<bool> (cur->fNext == nullptr));
@@ -364,14 +357,13 @@ void Partition::Invariant_ () const
 #endif
 
 #if qStroika_Frameworks_Led_SupportGDI
-
 /*
  ********************************************************************************
  ****************************** PartitioningTextImager **************************
  ********************************************************************************
  */
 PartitioningTextImager::PartitioningTextImager ()
-    : fPartition (nullptr)
+    : fPartition {nullptr}
 #if qCacheTextMeasurementsForPM
     , fMeasureTextCache ()
 #endif
