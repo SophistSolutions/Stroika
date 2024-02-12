@@ -15,7 +15,6 @@
             </p>
  */
 
-
 #include "HiddenText.h"
 #include "IdleManager.h"
 #include "MarkerCover.h"

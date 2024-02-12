@@ -28,7 +28,6 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 
 using Memory::StackBuffer;
 
-
 namespace {
     inline void OutputStandardToSinkStream_size_t_ (StyledTextIOWriter::SinkStream& sinkStream, size_t n)
     {

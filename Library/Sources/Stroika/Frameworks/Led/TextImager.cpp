@@ -23,25 +23,25 @@ using namespace Stroika::Frameworks::Led;
 #if qPlatform_Windows
 namespace {
 
-inline bool LogFontsEqual (LOGFONT lhs, LOGFONT rhs)
-{
-    size_t bytesToCompare = offsetof (LOGFONT, lfFaceName) + (::_tcslen (lhs.lfFaceName) + 1) * sizeof (Characters::SDKChar);
-    Require (bytesToCompare <= sizeof (LOGFONT)); // else we were passed bogus LogFont (and we should validate them before here!)
-    return ::memcmp (&lhs, &rhs, bytesToCompare) == 0;
-}
-inline bool LogFontsEqual (const FontSpecification& lhs, const FontSpecification& rhs)
-{
-    if (lhs.GetStyle_SubOrSuperScript () == rhs.GetStyle_SubOrSuperScript ()) {
-        LOGFONT lhslf;
-        lhs.GetOSRep (&lhslf);
-        LOGFONT rhslf;
-        rhs.GetOSRep (&rhslf);
-        return LogFontsEqual (lhslf, rhslf);
+    inline bool LogFontsEqual (LOGFONT lhs, LOGFONT rhs)
+    {
+        size_t bytesToCompare = offsetof (LOGFONT, lfFaceName) + (::_tcslen (lhs.lfFaceName) + 1) * sizeof (Characters::SDKChar);
+        Require (bytesToCompare <= sizeof (LOGFONT)); // else we were passed bogus LogFont (and we should validate them before here!)
+        return ::memcmp (&lhs, &rhs, bytesToCompare) == 0;
     }
-    else {
-        return false;
+    inline bool LogFontsEqual (const FontSpecification& lhs, const FontSpecification& rhs)
+    {
+        if (lhs.GetStyle_SubOrSuperScript () == rhs.GetStyle_SubOrSuperScript ()) {
+            LOGFONT lhslf;
+            lhs.GetOSRep (&lhslf);
+            LOGFONT rhslf;
+            rhs.GetOSRep (&rhslf);
+            return LogFontsEqual (lhslf, rhslf);
+        }
+        else {
+            return false;
+        }
     }
-}
 }
 #endif
 TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager, Tablet* tablet, const FontSpecification& fontSpec)

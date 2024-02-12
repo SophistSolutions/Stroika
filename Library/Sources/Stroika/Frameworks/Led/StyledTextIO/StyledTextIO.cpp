@@ -362,8 +362,7 @@ DiscontiguousRun<bool> StyledTextIOWriter::SrcStream::GetHidableTextRuns () cons
  *************************** StyledTextIOSrcStream_Memory ***********************
  ********************************************************************************
  */
-StyledTextIOSrcStream_Memory::StyledTextIOSrcStream_Memory (const void* data, size_t nBytes
-                                                            )
+StyledTextIOSrcStream_Memory::StyledTextIOSrcStream_Memory (const void* data, size_t nBytes)
     : StyledTextIOReader::SrcStream ()
     , fData (data)
     , fDataEnd (((char*)data) + nBytes)
@@ -424,8 +423,7 @@ size_t StyledTextIOSrcStream_Memory::read1 (char* c)
  ******************* StyledTextIOSrcStream_FileDescriptor ***********************
  ********************************************************************************
  */
-StyledTextIOSrcStream_FileDescriptor::StyledTextIOSrcStream_FileDescriptor (int fd
-                                                                            )
+StyledTextIOSrcStream_FileDescriptor::StyledTextIOSrcStream_FileDescriptor (int fd)
     : StyledTextIOReader::SrcStream ()
     , fFileDescriptor (fd)
     , fCurSeekPos (0)
@@ -452,8 +450,8 @@ void StyledTextIOSrcStream_FileDescriptor::seek_to (size_t to)
 
     size_t targetSeekPos = (to);
     if (targetSeekPos > fBufferWindowEnd) {
-// If we seek PAST that point, we must actually query the file system, so we don't seek
-// past EOF
+        // If we seek PAST that point, we must actually query the file system, so we don't seek
+        // past EOF
         Assert (false); // NYI
     }
     fCurSeekPos = targetSeekPos;
@@ -497,8 +495,8 @@ NotherRead:
             }
         }
 
-// Then we must do a DIRECT read, and don't bother with the buffer
-// (we could loop filling/emtpying buffer, but that would be needless copying).
+        // Then we must do a DIRECT read, and don't bother with the buffer
+        // (we could loop filling/emtpying buffer, but that would be needless copying).
         Assert (false); // NYI
     }
 
@@ -522,7 +520,7 @@ void StyledTextIOSrcStream_FileDescriptor::ReadInWindow ([[maybe_unused]] size_t
 {
     RequireNotNull (fInputBuffer);
     Require (fInputBufferSize > 0);
-    Assert (false);     // NYI
+    Assert (false); // NYI
 }
 
 /*
