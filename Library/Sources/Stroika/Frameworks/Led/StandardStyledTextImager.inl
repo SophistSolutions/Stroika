@@ -50,11 +50,11 @@ namespace Stroika::Frameworks::Led {
     }
     inline FontSpecification StandardStyledTextImager::GetStyleInfo (size_t charAfterPos) const
     {
-        vector<StandardStyledTextImager::InfoSummaryRecord> result = fStyleDatabase->GetStyleInfo (charAfterPos, 1);
+        vector<StyledInfoSummaryRecord> result = fStyleDatabase->GetStyleInfo (charAfterPos, 1);
         Assert (result.size () == 1);
         return result[0];
     }
-    inline vector<StandardStyledTextImager::InfoSummaryRecord> StandardStyledTextImager::GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const
+    inline vector<StyledInfoSummaryRecord> StandardStyledTextImager::GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const
     {
         return (fStyleDatabase->GetStyleInfo (charAfterPos, nTCharsFollowing));
     }

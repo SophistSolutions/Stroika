@@ -561,20 +561,20 @@ void StandardStyledTextIOSinkStream::AppendText (const Led_tChar* text, size_t n
     if (nTChars != 0) {
         if (fontSpec == nullptr) {
             if (fSavedStyleInfo.size () == 0) {
-                fSavedStyleInfo.push_back (StandardStyledTextImager::InfoSummaryRecord (fStyleRunDatabase->GetStyleInfo (fOriginalStart, 0)[0], nTChars));
+                fSavedStyleInfo.push_back (StyledInfoSummaryRecord (fStyleRunDatabase->GetStyleInfo (fOriginalStart, 0)[0], nTChars));
             }
             else {
                 fSavedStyleInfo.back ().fLength += nTChars;
             }
         }
         else {
-            fSavedStyleInfo.push_back (StandardStyledTextImager::InfoSummaryRecord (*fontSpec, nTChars));
+            fSavedStyleInfo.push_back (StyledInfoSummaryRecord (*fontSpec, nTChars));
         }
     }
     fInsertionStart += nTChars;
 }
 
-void StandardStyledTextIOSinkStream::ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns)
+void StandardStyledTextIOSinkStream::ApplyStyle (size_t from, size_t to, const vector<StyledInfoSummaryRecord>& styleRuns)
 {
     Require (from <= to);
     if (GetCachedTextSize () != 0) {
@@ -748,7 +748,7 @@ size_t StandardStyledTextIOSrcStream::GetTotalTextLength () const
     return (fSelEnd - fSelStart);
 }
 
-vector<StandardStyledTextImager::InfoSummaryRecord> StandardStyledTextIOSrcStream::GetStyleInfo (size_t from, size_t len) const
+vector<StyledInfoSummaryRecord> StandardStyledTextIOSrcStream::GetStyleInfo (size_t from, size_t len) const
 {
     size_t effectiveFrom = from + fSelStart;
 #if qDebug
@@ -785,7 +785,7 @@ StandardStyledTextIOSrcStream::Table* StandardStyledTextIOSrcStream::GetTableAt 
 
 void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
 {
-    using InfoSummaryRecord = StandardStyledTextImager::InfoSummaryRecord;
+    using InfoSummaryRecord = StyledInfoSummaryRecord;
     if (fontNames != nullptr or colorsUsed != nullptr) {
         size_t                    totalTextLength = GetTotalTextLength ();
         vector<InfoSummaryRecord> styleRuns;

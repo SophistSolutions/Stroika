@@ -828,6 +828,15 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
+
+            // Query the OS for the default font that should be used for new text windows
+         FontSpecification GetStaticDefaultFont ();
+#if qPlatform_Windows
+         FontSpecification GetStaticDefaultFont (BYTE charSet);
+#endif
+
+
+
 #if qStroika_Frameworks_Led_SupportGDI
     /**
      *  Something of a hack version of GDI global variables. We want to keep certain GDI global variables

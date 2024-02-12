@@ -564,7 +564,7 @@ void LedItDocument::DoSaveHelper ()
                             ::RemoveResource (Handle (macStyleHandle)); // remove old styl resource
                         }
 
-                        vector<StandardStyledTextImager::InfoSummaryRecord> ledStyleRuns = fStyleDatabase->GetStyleInfo (0, fTextStore.GetLength ());
+                        vector<StyledInfoSummaryRecord> ledStyleRuns = fStyleDatabase->GetStyleInfo (0, fTextStore.GetLength ());
                         size_t nStyleRuns = ledStyleRuns.size ();
                         Assert (offsetof (StScrpRec, scrpStyleTab) == sizeof (short)); // thats why we add sizeof (short)
                         macStyleHandle = (StScrpHandle)::Led_DoNewHandle (sizeof (short) + nStyleRuns * sizeof (ScrpSTElement));

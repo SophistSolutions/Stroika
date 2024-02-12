@@ -171,13 +171,6 @@ namespace Stroika::Frameworks::Led {
     private:
         FontSpecification fDefaultFont;
 
-        // Query the OS for the default font that should be used for new text windows
-    public:
-        static FontSpecification GetStaticDefaultFont ();
-#if qPlatform_Windows
-        static FontSpecification GetStaticDefaultFont (BYTE charSet);
-#endif
-
     public:
         virtual FontSpecification GetDefaultSelectionFont () const;
 

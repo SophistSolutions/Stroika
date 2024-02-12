@@ -103,7 +103,7 @@ void StyledTextIOReader::SinkStream::SetJustification (Justification /*justifica
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
 
-void StyledTextIOReader::SinkStream::SetStandardTabStopList (const TextImager::StandardTabStopList& /*tabStops*/)
+void StyledTextIOReader::SinkStream::SetStandardTabStopList (const StandardTabStopList& /*tabStops*/)
 {
     // OVERRIDE, and ignore, since that feature isn't supported by this class
 }
@@ -279,9 +279,9 @@ Justification StyledTextIOWriter::SrcStream::GetJustification () const
 @METHOD:        StyledTextIOWriter::SrcStream::GetStandardTabStopList
 @DESCRIPTION:
 */
-TextImager::StandardTabStopList StyledTextIOWriter::SrcStream::GetStandardTabStopList () const
+StandardTabStopList StyledTextIOWriter::SrcStream::GetStandardTabStopList () const
 {
-    return StandardTabStopList ();
+    return StandardTabStopList {};
 }
 
 /*
@@ -870,6 +870,7 @@ void StyledTextIOWriter::write (const string& str)
     GetSinkStream ().write (str.c_str (), str.length ());
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 /*
  ********************************************************************************
  ***************************** EmbeddingSinkStream ******************************
@@ -884,3 +885,4 @@ void EmbeddingSinkStream::write (const void* buffer, size_t bytes)
 {
     fRealSinkStream.write (buffer, bytes);
 }
+#endif

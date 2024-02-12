@@ -4243,7 +4243,7 @@ void StyledTextIOWriter_RTF::WriteBody (WriterContext& writerContext)
     AssureStyleRunSummaryBuilt (writerContext);
 
     WriteStartParagraph (writerContext);
-    writerContext.fLastEmittedISR    = StandardStyledTextImager::InfoSummaryRecord (IncrementalFontSpecification (), 0);
+    writerContext.fLastEmittedISR    = StyledInfoSummaryRecord (IncrementalFontSpecification (), 0);
     writerContext.fNextStyleChangeAt = 0;
     writerContext.fIthStyleRun       = 0;
     if (not fHidableTextRuns.empty ()) {
@@ -4288,7 +4288,7 @@ void StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
 
     // Style changes
     if (writerContext.GetCurSrcOffset () - 1 == writerContext.fNextStyleChangeAt) {
-        const StandardStyledTextImager::InfoSummaryRecord& nextStyleRun = fStyleRunSummary[writerContext.fIthStyleRun];
+        const StyledInfoSummaryRecord& nextStyleRun = fStyleRunSummary[writerContext.fIthStyleRun];
         if (writerContext.GetCurSrcOffset () <= 1) { // 1+ cuz we've read one character
             EmitBodyFontInfoChange (writerContext, nextStyleRun);
         }
@@ -4608,7 +4608,7 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
             unique_ptr<StyledTextIOWriter::SrcStream> srcStream = unique_ptr<StyledTextIOWriter::SrcStream>{table->MakeCellSubSrcStream (r, c)};
             if (srcStream.get () != nullptr) {
                 WriterContext                                       wc{writerContext, *srcStream.get ()};
-                vector<StandardStyledTextImager::InfoSummaryRecord> x = fStyleRunSummary;
+                vector<StyledInfoSummaryRecord> x = fStyleRunSummary;
                 fStyleRunSummary.clear ();
                 AssureStyleRunSummaryBuilt (wc);
                 WriteBody (wc);

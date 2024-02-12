@@ -489,7 +489,7 @@ StyledTextIOReader_HTML::StyledTextIOReader_HTML (SrcStream* srcStream, SinkStre
     if (fSaveHTMLInfoInto != nullptr) {
         *fSaveHTMLInfoInto = HTMLInfo (); // reset to default values before reading...
     }
-    fFontStack.push_back (TextImager::GetStaticDefaultFont ());
+    fFontStack.push_back (GetStaticDefaultFont ());
 }
 
 void StyledTextIOReader_HTML::Read ()
@@ -1128,6 +1128,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
         if (fCurAHRefStart != size_t (-1)) {
             string tagValue;
             (void)ParseHTMLTagArgOut (fCurAHRefText, "href", &tagValue);
+#if qStroika_Frameworks_Led_SupportGDI
             EmbeddedObjectCreatorRegistry::Assoc assoc;
             if (EmbeddedObjectCreatorRegistry::Get ().Lookup (StandardURLStyleMarker::kEmbeddingTag, &assoc)) {
                 AssertNotNull (assoc.fReadFromMemory);
@@ -1141,6 +1142,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
                 GetSinkStream ().AppendEmbedding (
                     (assoc.fReadFromMemory) (StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
             }
+        #endif
         }
         fCurAHRefStart          = size_t (-1);
         fCurAHRefText           = string{};
@@ -1982,6 +1984,7 @@ size_t StyledTextIOWriter_HTML::WriterContext::GetCurSrcOffset () const
     return GetSrcStream ().current_offset ();
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 SimpleEmbeddedObjectStyleMarker* StyledTextIOWriter_HTML::WriterContext::GetCurSimpleEmbeddedObjectStyleMarker () const
 {
     size_t                                   offset         = GetCurSrcOffset ();
@@ -1996,6 +1999,7 @@ SimpleEmbeddedObjectStyleMarker* StyledTextIOWriter_HTML::WriterContext::GetCurS
         return embeddingsList[0];
     }
 }
+#endif
 
 /*
  ********************************************************************************
@@ -2119,7 +2123,7 @@ void StyledTextIOWriter_HTML::WriteInnerBody (WriterContext& writerContext)
      *  SIMULTANEOUSLY through the style run information, and output new controlling
      *  tags on the fly.
      */
-    writerContext.fLastEmittedISR    = StandardStyledTextImager::InfoSummaryRecord (IncrementalFontSpecification (), 0);
+    writerContext.fLastEmittedISR    = StyledInfoSummaryRecord (IncrementalFontSpecification (), 0);
     writerContext.fLastStyleChangeAt = 0;
     writerContext.fIthStyleRun       = 0;
     Led_tChar c                      = '\0';
@@ -2220,6 +2224,7 @@ void StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
             }
         } break;
 
+#if qStroika_Frameworks_Led_SupportGDI
         case kEmbeddingSentinelChar: {
             unique_ptr<Table> table (writerContext.GetSrcStream ().GetTableAt (writerContext.GetCurSrcOffset () - 1));
             if (table.get () != nullptr) {
@@ -2238,6 +2243,7 @@ void StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
                 WriteCloseTag (writerContext, "a");
             }
         } break;
+#endif
 
         default: {
             if (c == fSoftLineBreakChar) {
@@ -2315,7 +2321,7 @@ void StyledTextIOWriter_HTML::WriteTable (WriterContext& writerContext, Table* t
             unique_ptr<SrcStream> srcStream = unique_ptr<SrcStream> (table->MakeCellSubSrcStream (r, c));
             if (srcStream.get () != nullptr) {
                 WriterContext                                       wc (writerContext, *srcStream.get ());
-                vector<StandardStyledTextImager::InfoSummaryRecord> x = fStyleRunSummary;
+                vector<StyledInfoSummaryRecord> x = fStyleRunSummary;
                 fStyleRunSummary.clear ();
                 AssureStyleRunSummaryBuilt (wc);
                 WriteInnerBody (wc);
@@ -2490,7 +2496,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
     if (skipDoingOpenTags) {
         // Set to a BLANK record - cuz we aren't actually emitting any open-tags - so make sure gets done later after the new <p> tag
         writerContext.fLastEmittedISR =
-            StandardStyledTextImager::InfoSummaryRecord (IncrementalFontSpecification (), fStyleRunSummary[writerContext.fIthStyleRun].fLength);
+            StyledInfoSummaryRecord (IncrementalFontSpecification (), fStyleRunSummary[writerContext.fIthStyleRun].fLength);
     }
     else {
         if (not IsTagOnStack (writerContext, "span")) {
@@ -2545,7 +2551,7 @@ void StyledTextIOWriter_HTML::AssureStyleRunSummaryBuilt (WriterContext& writerC
 {
     if (fStyleRunSummary.empty ()) {
         size_t totalTextLength = writerContext.GetSrcStream ().GetTotalTextLength ();
-        fStyleRunSummary = vector<StandardStyledTextImager::InfoSummaryRecord> (writerContext.GetSrcStream ().GetStyleInfo (0, totalTextLength));
+        fStyleRunSummary = vector<StyledInfoSummaryRecord> (writerContext.GetSrcStream ().GetStyleInfo (0, totalTextLength));
     }
 }
 

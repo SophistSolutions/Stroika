@@ -98,7 +98,7 @@ inline void _DO_ALIGN_ASSERTS_Version4_ ()
     Assert (offsetof (PortableStyleRunData_Version4, fFontSize) == 260);
     Assert (offsetof (PortableStyleRunData_Version4, fLength) == 264);
 }
-inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version4& srcData)
+inline StyledInfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version4& srcData)
 {
     _DO_ALIGN_ASSERTS_Version4_ ();
     FontSpecification fsp;
@@ -112,7 +112,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
     }
     fsp.SetPointSize (fontSize);
     fsp.SetFontName (String::FromNarrowSDKString (srcData.fFontName).AsSDKString ());
-    return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
+    return (StyledInfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
 
 /*
@@ -169,7 +169,7 @@ inline void _DO_ALIGN_ASSERTS_Version5_ ()
     //Assert (sizeof (PortableStyleRunData_Version5) == 16+256);
     Assert (sizeof (PortableStyleRunData_Version5) == 8 + 256);
 }
-inline PortableStyleRunData_Version5 mkPortableStyleRunData_Version5 (const StandardStyledTextImager::InfoSummaryRecord& isr)
+inline PortableStyleRunData_Version5 mkPortableStyleRunData_Version5 (const StyledInfoSummaryRecord& isr)
 {
     _DO_ALIGN_ASSERTS_Version5_ ();
     PortableStyleRunData_Version5 data;
@@ -196,7 +196,7 @@ inline PortableStyleRunData_Version5 mkPortableStyleRunData_Version5 (const Stan
     SizeTToBuf (isr.fLength, &data.fLength);
     return data;
 }
-inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version5& srcData)
+inline StyledInfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version5& srcData)
 {
     _DO_ALIGN_ASSERTS_Version5_ ();
     FontSpecification fsp;
@@ -221,7 +221,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
         size_t fontNameLen = srcData.NameLenFromRecordLen (srcData.fThisRecordLength);
         fsp.SetFontName (String::FromNarrowSDKString (string{srcData.fFontName, fontNameLen}).AsSDKString ());
     }
-    return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
+    return (StyledInfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
 
 /*
@@ -280,7 +280,7 @@ inline void _DO_ALIGN_ASSERTS_Version6_ ()
     Assert (offsetof (PortableStyleRunData_Version6, fFontName) == 16);
     Assert (sizeof (PortableStyleRunData_Version6) == 16 + 256);
 }
-inline PortableStyleRunData_Version6 mkPortableStyleRunData_Version6 (const StandardStyledTextImager::InfoSummaryRecord& isr)
+inline PortableStyleRunData_Version6 mkPortableStyleRunData_Version6 (const StyledInfoSummaryRecord& isr)
 {
     _DO_ALIGN_ASSERTS_Version6_ ();
     PortableStyleRunData_Version6 data;
@@ -312,7 +312,7 @@ inline PortableStyleRunData_Version6 mkPortableStyleRunData_Version6 (const Stan
     SizeTToBuf (isr.fLength, &data.fLength);
     return data;
 }
-inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version6& srcData)
+inline StyledInfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version6& srcData)
 {
     _DO_ALIGN_ASSERTS_Version6_ ();
     FontSpecification fsp;
@@ -346,7 +346,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
         size_t fontNameLen = srcData.NameLenFromRecordLen (srcData.fThisRecordLength);
         fsp.SetFontName (String::FromNarrowSDKString (string{srcData.fFontName, fontNameLen}).AsSDKString ());
     }
-    return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
+    return (StyledInfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
 
 /*
@@ -446,7 +446,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
         if (nStyleRuns > totalTextLength + 1) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
-        vector<StandardStyledTextImager::InfoSummaryRecord> styleRunInfo;
+        vector<StyledInfoSummaryRecord> styleRunInfo;
         {
             StackBuffer<PortableStyleRunData_Version4> portableStyleRuns{Memory::eUninitialized, nStyleRuns};
             if (GetSrcStream ().read (portableStyleRuns.data (), nStyleRuns * sizeof (PortableStyleRunData_Version4)) !=
@@ -461,6 +461,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
     }
 
     // Read Embeddings
+#if qStroika_Frameworks_Led_SupportGDI
     {
         size_t nEmbeddings = InputStandardFromSrcStream_ULONG (GetSrcStream ());
         if (nEmbeddings > totalTextLength) { // sanity check
@@ -492,6 +493,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
             }
         }
     }
+    #endif
 
     // check for extra cookie at the end...
     LedFormatMagicCookie endCookie;
@@ -559,9 +561,9 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
             if (i + thisBucket->fThisRecordLength > howManyBytesOfStyleInfo) {
                 Execution::Throw (DataExchange::BadFormatException::kThe);
             }
-            StandardStyledTextImager::InfoSummaryRecord isr = mkInfoSummaryRecordFromPortData (*thisBucket);
+            StyledInfoSummaryRecord isr = mkInfoSummaryRecordFromPortData (*thisBucket);
 
-            vector<StandardStyledTextImager::InfoSummaryRecord> list;
+            vector<StyledInfoSummaryRecord> list;
             list.push_back (isr);
             GetSinkStream ().ApplyStyle (offsetInText, offsetInText + isr.fLength, list); // silly this API REQUIRES a list...
 
@@ -574,6 +576,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
         }
     }
 
+#if qStroika_Frameworks_Led_SupportGDI
     // Read Embeddings
     {
         size_t nEmbeddings = InputStandardFromSrcStream_ULONG (GetSrcStream ());
@@ -606,6 +609,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
             }
         }
     }
+#endif
 
     // check for extra cookie at the end...
     LedFormatMagicCookie endCookie;
@@ -673,9 +677,9 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
             if (i + thisBucket->fThisRecordLength > howManyBytesOfStyleInfo) {
                 Execution::Throw (DataExchange::BadFormatException::kThe);
             }
-            StandardStyledTextImager::InfoSummaryRecord isr = mkInfoSummaryRecordFromPortData (*thisBucket);
+            StyledInfoSummaryRecord isr = mkInfoSummaryRecordFromPortData (*thisBucket);
 
-            vector<StandardStyledTextImager::InfoSummaryRecord> list;
+            vector<StyledInfoSummaryRecord> list;
             list.push_back (isr);
             GetSinkStream ().ApplyStyle (offsetInText, offsetInText + isr.fLength, list); // silly this API REQUIRES a list...
 
@@ -688,6 +692,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
         }
     }
 
+#if qStroika_Frameworks_Led_SupportGDI
     // Read Embeddings
     {
         size_t nEmbeddings = InputStandardFromSrcStream_ULONG (GetSrcStream ());
@@ -720,6 +725,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
             }
         }
     }
+#endif
 
     // check for extra cookie at the end...
     LedFormatMagicCookie endCookie;
@@ -733,23 +739,9 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
     }
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 SimpleEmbeddedObjectStyleMarker* StyledTextIOReader_LedNativeFileFormat::InternalizeEmbedding (Led_PrivateEmbeddingTag tag, size_t howManyBytes)
 {
-#if qPlatform_MacOS
-    // backward compat... 960303 LGP 2.0b3
-    if (strcmp (tag, kPictTag_V1) == 0) {
-        size_t howManyBytes = 0;
-        if (GetSrcStream ().read (&howManyBytes, sizeof (howManyBytes)) != sizeof (howManyBytes)) {
-            Execution::Throw (DataExchange::BadFormatException::kThe);
-        }
-        StackBuffer<char> pictBuf{Memory::eUninitialized, howManyBytes};
-        if (GetSrcStream ().read (pictBuf, howManyBytes) != howManyBytes) {
-            Execution::Throw (DataExchange::BadFormatException::kThe);
-        }
-        return new StandardMacPictureStyleMarker ((Picture*)(char*)pictBuf, howManyBytes);
-    }
-#endif
-
     StackBuffer<char> dataBuf{Memory::eUninitialized, howManyBytes};
     if (GetSrcStream ().read (dataBuf.data (), howManyBytes) != howManyBytes) {
         Execution::Throw (DataExchange::BadFormatException::kThe);
@@ -765,6 +757,7 @@ SimpleEmbeddedObjectStyleMarker* StyledTextIOReader_LedNativeFileFormat::Interna
     }
     return new StandardUnknownTypeStyleMarker{0, tag, dataBuf.data (), howManyBytes};
 }
+#endif
 
 /*
  ********************************************************************************
@@ -812,7 +805,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
 
     // Write the style runs
     {
-        vector<StandardStyledTextImager::InfoSummaryRecord> styleRunInfo = GetSrcStream ().GetStyleInfo (0, totalTextLength);
+        vector<StyledInfoSummaryRecord> styleRunInfo = GetSrcStream ().GetStyleInfo (0, totalTextLength);
 
         size_t howManyBytes              = 0; // write place-holder, than then come back and patch this!
         size_t styleRunInfoSectionCursor = GetSinkStream ().current_offset ();
@@ -833,6 +826,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
         GetSinkStream ().seek_to (here); // back to where we left off...
     }
 
+#if qStroika_Frameworks_Led_SupportGDI
     // Write the embedded objects
     {
         vector<SimpleEmbeddedObjectStyleMarker*> embeddings = GetSrcStream ().CollectAllEmbeddingMarkersInRange (0, totalTextLength);
@@ -862,6 +856,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
             GetSinkStream ().seek_to (here); // back to where we left off...
         }
     }
+#endif
 
     // Write a magic cookie - just as a validation/sanity check on the format
     write (kLedPartFormatVersion_5_MagicNumber, sizeof (kLedPartFormatVersion_5_MagicNumber));
@@ -906,7 +901,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
 
     // Write the style runs
     {
-        vector<StandardStyledTextImager::InfoSummaryRecord> styleRunInfo = GetSrcStream ().GetStyleInfo (0, totalTextLength);
+        vector<StyledInfoSummaryRecord> styleRunInfo = GetSrcStream ().GetStyleInfo (0, totalTextLength);
 
         size_t howManyBytes              = 0; // write place-holder, than then come back and patch this!
         size_t styleRunInfoSectionCursor = GetSinkStream ().current_offset ();
@@ -928,6 +923,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
     }
 
     // Write the embedded objects
+#if qStroika_Frameworks_Led_SupportGDI
     {
         vector<SimpleEmbeddedObjectStyleMarker*> embeddings = GetSrcStream ().CollectAllEmbeddingMarkersInRange (0, totalTextLength);
         OutputStandardToSinkStream_size_t_ (GetSinkStream (), embeddings.size ());
@@ -956,13 +952,16 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
             GetSinkStream ().seek_to (here); // back to where we left off...
         }
     }
+#endif
 
     // Write a magic cookie - just as a validation/sanity check on the format
     write (kLedPartFormatVersion_6_MagicNumber, sizeof (kLedPartFormatVersion_6_MagicNumber));
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 void StyledTextIOWriter_LedNativeFileFormat::ExternalizeEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
 {
     EmbeddingSinkStream embeddingSinkStream (GetSinkStream ());
     embedding->Write (embeddingSinkStream);
 }
+#endif

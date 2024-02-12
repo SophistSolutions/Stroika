@@ -301,14 +301,24 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         ***************************** Implementation Details ***************************
         ********************************************************************************
         */
-    //  class   HTMLInfo::EntityRefMapEntry
+
+
+    /*
+        ********************************************************************************
+        ***************************** HTMLInfo::EntityRefMapEntry ***************************
+        ********************************************************************************
+        */
     inline HTMLInfo::EntityRefMapEntry::EntityRefMapEntry (const string& entityRefName, wchar_t charValue)
         : fEntityRefName (entityRefName)
         , fCharValue (charValue)
     {
     }
 
-    //  class   StyledTextIOReader_HTML
+    /*
+        ********************************************************************************
+        ***************************** StyledTextIOReader_HTML ***************************
+        ********************************************************************************
+        */
     inline void StyledTextIOReader_HTML::EmitText (const Led_tString& text, bool skipNLCheck)
     {
         EmitText (text.c_str (), text.length (), skipNLCheck);
@@ -318,7 +328,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         HandleHTMLThingy (thingy, text.c_str (), text.length ());
     }
 
-    //  class   StyledTextIOWriter_HTML::WriterContext
+    /*
+        ********************************************************************************
+        ********************** StyledTextIOWriter_HTML::WriterContext ***************************
+        ********************************************************************************
+        */
     inline StyledTextIOWriter_HTML::WriterContext::WriterContext (StyledTextIOWriter_HTML& writer)
         : fWriter (writer)
         , fSrcStream (fWriter.GetSrcStream ())

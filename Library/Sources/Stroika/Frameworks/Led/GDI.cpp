@@ -731,11 +731,184 @@ void FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifie
 #endif
 }
 
-/*
- ********************************************************************************
- ************************ IncrementalFontSpecification **************************
- ********************************************************************************
- */
+#if qPlatform_Windows
+struct FontSelectionInfo {
+    FontSelectionInfo (BYTE desiredCharset)
+        : fDesiredCharset (desiredCharset)
+        , fUsesBestCharset (false)
+        , fIsTT (false)
+        , fIsANSI_VAR_Font (false)
+        , fIsGoodBackupCharset (false)
+        , fIsFavoriteForCharset (false)
+        , fIsVariablePitch (false)
+        , fStartsWithAt (false)
+    {
+        memset (&fBestFont, 0, sizeof (fBestFont));
+    }
+    BYTE       fDesiredCharset;
+    LOGFONT    fBestFont;
+    bool       fUsesBestCharset;
+    bool       fIsTT;
+    bool       fIsANSI_VAR_Font; // a good second choice if Arial not present
+    bool       fIsGoodBackupCharset;
+    bool       fIsFavoriteForCharset;
+    bool       fIsVariablePitch;
+    bool       fStartsWithAt;
+    inline int Score () const
+    {
+        int score = 0;
+        if (fUsesBestCharset) {
+            score += 10; // underweight - because (at least with Win2K) - the fCharset field almost always set to zero - so cannot be used reliably
+        }
+        if (fIsTT) {
+            score += 20;
+        }
+        if (fIsANSI_VAR_Font) {
+            score += 4;
+        }
+        if (fIsGoodBackupCharset) {
+            score += 2;
+        }
+        if (fIsFavoriteForCharset) {
+            score += 25;
+        }
+        if (fIsVariablePitch) {
+            //unsure if this is desirable or not - good for US - but not sure about Japan?
+            score += 2;
+        }
+        if (fStartsWithAt) {
+            score -= 25; // we don't really support vertical fonts
+        }
+        return score;
+    }
+};
+static int FAR PASCAL EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /*lpntm*/, DWORD fontType, LPARAM arg)
+{
+    // Score each font choice, and pick the 'best' one. Pick randomly if several are 'best'.
+    RequireNotNull (lplf);
+    FontSelectionInfo& result = *(FontSelectionInfo*)arg;
+
+    static LOGFONT theANSILogFont;
+    if (theANSILogFont.lfFaceName[0] == '\0') {
+        HFONT xxx = HFONT (::GetStockObject (ANSI_VAR_FONT));
+        Verify (::GetObject (xxx, sizeof theANSILogFont, &theANSILogFont));
+    }
+
+    FontSelectionInfo potentialResult = result;
+    memcpy (&potentialResult.fBestFont, lplf, sizeof (LOGFONT));
+
+    if (potentialResult.fDesiredCharset == DEFAULT_CHARSET) {
+        potentialResult.fUsesBestCharset = bool (lplf->lfCharSet == theANSILogFont.lfCharSet);
+    }
+    else {
+        potentialResult.fUsesBestCharset = bool (lplf->lfCharSet == potentialResult.fDesiredCharset);
+    }
+    potentialResult.fIsTT                = bool (fontType & TRUETYPE_FONTTYPE);
+    potentialResult.fIsANSI_VAR_Font     = ::_tcscmp (lplf->lfFaceName, theANSILogFont.lfFaceName) == 0;
+    potentialResult.fIsGoodBackupCharset = (lplf->lfCharSet == DEFAULT_CHARSET or lplf->lfCharSet == theANSILogFont.lfCharSet);
+    {
+        switch (potentialResult.fDesiredCharset) {
+            case SHIFTJIS_CHARSET: {
+                if (potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS P Gothic")} or
+                    potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS Gothic")} or
+                    potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS PGothic")}) {
+                    potentialResult.fIsFavoriteForCharset = true;
+                }
+            } break;
+            case CHINESEBIG5_CHARSET: {
+                if (potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS HEI")} or
+                    potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MingLiU")}) {
+                    potentialResult.fIsFavoriteForCharset = true;
+                }
+            } break;
+        }
+    }
+    potentialResult.fIsVariablePitch = lplf->lfPitchAndFamily & VARIABLE_PITCH;
+    potentialResult.fStartsWithAt    = lplf->lfFaceName[0] == '@';
+
+    if (potentialResult.Score () > result.Score ()) {
+        result = potentialResult;
+    }
+    return 1;
+}
+#endif
+FontSpecification Led::GetStaticDefaultFont ()
+{
+    //  Since this can be called alot, and since its value shouldn't change during the lifetime
+    //  of Led running, cache the result (and since on windows - at least - it is expensive to compute)
+    static bool              sDefaultFontValid = false;
+    static FontSpecification sDefaultFont;
+    if (not sDefaultFontValid) {
+#if qPlatform_MacOS
+        sDefaultFont.SetFontNameSpecifier (::GetScriptVariable (smCurrentScript, smScriptAppFond));
+        sDefaultFont.SetPointSize (::GetScriptVariable (smCurrentScript, smScriptAppFondSize));
+        sDefaultFont.SetStyle_Plain ();
+#elif qPlatform_Windows
+        sDefaultFont                          = GetStaticDefaultFont (DEFAULT_CHARSET);
+#elif qStroika_FeatureSupported_XWindows
+        {
+            sDefaultFont.SetFontNameSpecifier ("times");
+            sDefaultFont.SetPointSize (12);
+        }
+#endif
+#if qPlatform_Windows
+        sDefaultFont.SetTextColor (Led_GetTextColor ());
+        #endif
+        sDefaultFontValid = true;
+    }
+    return (sDefaultFont);
+}
+
+#if qPlatform_Windows
+FontSpecification Led::GetStaticDefaultFont (BYTE charSet)
+{
+    FontSpecification defaultFont;
+    //nb: import to go through the intermediary font so we don't set into the
+    // LOGFONT lots of fields which are part of the chosen font but are
+    // extraneous, and then mess up later choices to change to face name.
+    //
+    // Eg., if our default font is BOLD, that will result in a big weight# being part of
+    // the logFont. But then if the user picks a different face name, we don't want it
+    // to stay bold. Maybe BOLD is a bad example cuz that DOES show up in our UI (menu of
+    // font attriobutes). But pick one attribute (width? or escarpment) which doesn't show
+    // up in our choice lists, and yet gets caried along even after you change face names.
+    //
+    // See spr# 0426 for more details.
+    FontSpecification fooo;
+    FontSelectionInfo selectedFont (charSet);
+    WindowDC          screenDC (nullptr);
+#if defined(STRICT)
+    ::EnumFontFamilies (screenDC.m_hDC, nullptr, EnumFontCallback, reinterpret_cast<LPARAM> (&selectedFont));
+#else
+    ::EnumFontFamilies (screenDC.m_hDC, nullptr, reinterpret_cast<FONTENUMPROC> (EnumFontCallback), reinterpret_cast<LPARAM> (&selectedFont));
+#endif
+    fooo.LightSetOSRep (selectedFont.fBestFont);
+
+    // EnumFontFamilies seems to pick very bad sizes. Not sure why. No biggie. This works
+    // pretty well. LGP 970613
+    {
+        static LOGFONT theANSILogFont;
+        if (theANSILogFont.lfFaceName[0] == '\0') {
+            HFONT xxx = HFONT (::GetStockObject (ANSI_VAR_FONT));
+            Verify (::GetObject (xxx, sizeof theANSILogFont, &theANSILogFont));
+        }
+        fooo.SetPointSize (min (max (FontSpecification (theANSILogFont).GetPointSize (), static_cast<unsigned short> (8)),
+                                static_cast<unsigned short> (14)));
+    }
+
+    defaultFont.MergeIn (fooo);
+    defaultFont.SetTextColor (Led_GetTextColor ());
+    return (defaultFont);
+}
+#endif
+
+
+
+
+
+
+
+
 
 /*
 @METHOD:        Intersection

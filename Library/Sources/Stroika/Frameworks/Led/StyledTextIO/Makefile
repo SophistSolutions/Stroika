@@ -20,10 +20,10 @@ vpath %cpp $(SrcDir)
 Objs	=	
 
 # for now - this only builds on windows, cuz unix requires x-windows, and macos only written for very old macos gdi (carbon)
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)StyledTextIO${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_HTML${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_LedNative${OBJ_SUFFIX}
+ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)StyledTextIO_MIMETextEnriched${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_PlainText${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_RTF${OBJ_SUFFIX}

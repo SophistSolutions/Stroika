@@ -57,9 +57,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual void Read_Version5 (const char* cookie); // Led 2.1 file format
         nonvirtual void Read_Version6 (const char* cookie); // Introduced for Led 2.2a2
 
+#if qStroika_Frameworks_Led_SupportGDI
         // handles default ones Led knows about. You must override to handle your own private types..
     protected:
         virtual SimpleEmbeddedObjectStyleMarker* InternalizeEmbedding (Led_PrivateEmbeddingTag tag, size_t howManyBytes);
+        #endif
     };
 
     /*
@@ -80,9 +82,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 #endif
         nonvirtual void Write_Version6 (); // Introduced for Led 2.2a2
 
+#if qStroika_Frameworks_Led_SupportGDI
         // handles default ones Led knows about. You must override to handle your own private types..
     protected:
         virtual void ExternalizeEmbedding (SimpleEmbeddedObjectStyleMarker* embedding);
+        #endif
     };
 
     /*

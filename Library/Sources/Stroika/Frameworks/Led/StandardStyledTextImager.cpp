@@ -12,7 +12,7 @@ using namespace Stroika::Frameworks::Led;
 #if qStroika_Frameworks_Led_SupportGDI
 using StyleMarker       = StyledTextImager::StyleMarker;
 using StyleDatabaseRep  = StandardStyledTextImager::StyleDatabaseRep;
-using InfoSummaryRecord = StandardStyledTextImager::InfoSummaryRecord;
+using InfoSummaryRecord = StyledInfoSummaryRecord;
 
 /*
  ********************************************************************************
@@ -296,7 +296,7 @@ bool StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChar
     return (result);
 }
 
-vector<StandardStyledTextImager::InfoSummaryRecord> StandardStyledTextImager::Convert (const ScrpSTElement* teScrapFmt, size_t nElts)
+vector<StyledInfoSummaryRecord> StandardStyledTextImager::Convert (const ScrpSTElement* teScrapFmt, size_t nElts)
 {
     vector<InfoSummaryRecord> result;
     for (size_t i = 0; i < nElts; ++i) {
@@ -384,7 +384,7 @@ StyleDatabaseRep::StyleDatabaseRep (TextStore& textStore)
 {
 }
 
-vector<StandardStyledTextImager::InfoSummaryRecord> StyleDatabaseRep::GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const
+vector<StyledInfoSummaryRecord> StyleDatabaseRep::GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const
 {
     MarkerVector standardStyleMarkers = GetInfoMarkers (charAfterPos, nTCharsFollowing);
 

@@ -56,8 +56,6 @@ Objs+=	$(ObjDir)TextStore${OBJ_SUFFIX}
 Objs+=	$(ObjDir)WordProcessor${OBJ_SUFFIX}
 Objs+=	$(ObjDir)WordWrappedTextImager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)WordWrappedTextInteractor${OBJ_SUFFIX}
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
-endif
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
