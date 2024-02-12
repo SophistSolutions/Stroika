@@ -525,8 +525,8 @@ Again:
                 char   tagBuf[1024];
                 bool   isStartTag = true;
                 ExtractHTMLTagIntoTagNameBuf (tmp.c_str (), tmp.length (), tagBuf, sizeof (tagBuf), &isStartTag);
-                if (isStartTag and ::strcmp (tagBuf, "html") == 0 or ::strcmp (tagBuf, "!doctype") == 0 or
-                    ::strcmp (tagBuf, "title") == 0 or ::strcmp (tagBuf, "head") == 0 or ::strcmp (tagBuf, "body") == 0) {
+                if (isStartTag and (::strcmp (tagBuf, "html") == 0 or ::strcmp (tagBuf, "!doctype") == 0 or
+                    ::strcmp (tagBuf, "title") == 0 or ::strcmp (tagBuf, "head") == 0 or ::strcmp (tagBuf, "body") == 0)) {
                     return true;
                 }
                 return false;
@@ -1845,7 +1845,7 @@ bool StyledTextIOReader_HTML::ParseCSSTagArgOut (const string& text, const strin
     size_t len = text.length ();
 
     for (size_t i = 0; i < len; i++) {
-        while (i < len and isspace (text[i]) or (text[i] == ';')) {
+        while (i < len and (isspace (text[i]) or (text[i] == ';'))) {
             ++i;
         } // SKIP WHITESPACE (or semi-colon - attribute separator)
 

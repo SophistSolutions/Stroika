@@ -540,7 +540,6 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
-        size_t nStyleRuns   = 0;
         size_t offsetInText = 0;
         size_t i            = 0;
         for (; i < howManyBytesOfStyleInfo;) {
@@ -554,7 +553,6 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
             list.push_back (isr);
             GetSinkStream ().ApplyStyle (offsetInText, offsetInText + isr.fLength, list); // silly this API REQUIRES a list...
 
-            ++nStyleRuns;
             offsetInText += isr.fLength;
             i += thisBucket->fThisRecordLength;
         }
@@ -656,7 +654,6 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
 
-        size_t nStyleRuns   = 0;
         size_t offsetInText = 0;
         size_t i            = 0;
         for (; i < howManyBytesOfStyleInfo;) {
@@ -670,7 +667,6 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
             list.push_back (isr);
             GetSinkStream ().ApplyStyle (offsetInText, offsetInText + isr.fLength, list); // silly this API REQUIRES a list...
 
-            ++nStyleRuns;
             offsetInText += isr.fLength;
             i += thisBucket->fThisRecordLength;
         }

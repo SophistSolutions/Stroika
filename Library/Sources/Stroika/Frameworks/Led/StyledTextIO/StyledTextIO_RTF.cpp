@@ -1219,19 +1219,13 @@ StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& re
     , fDocumentCharacterSet (Characters::WellKnownCodePages::kANSI)
     , // ANSI default, according to RTF spec
     fCurrentInputCharSetEncoding_ (Characters::WellKnownCodePages::kANSI)
-    ,
 #if qWideCharacters
-//fMultiByteInputCharBuf (),
+, fMultiByteInputCharBuf ()
 #else
-#if qPlatform_MacOS
-    fCurrentOutputCharSetEncoding (WellKnownCodePages::kMAC)
-    ,
-#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    fCurrentOutputCharSetEncoding (WellKnownCodePages::kANSI)
-    , // not sure???
+#if qPlatform_Windows || qStroika_FeatureSupported_XWindows
+    , fCurrentOutputCharSetEncoding (WellKnownCodePages::kANSI)
 #endif
-    fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
-    , // note: important these two members DECLARED before this one... else not INITED at this point!
+   , fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
 #endif
 {
 #if qWideCharacters
@@ -2665,8 +2659,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContex
      *      --LGP 2000-07-08
      */
     unique_ptr<Led_DIB> dib = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
-    bool createSucceeded = dib.get () != nullptr;
 #if qStroika_Frameworks_Led_SupportGDI
+    bool createSucceeded = dib.get () != nullptr;
     SimpleEmbeddedObjectStyleMarker* embedding = nullptr;
     if (createSucceeded) {
         embedding = new StandardDIBStyleMarker (dib.get ());
@@ -4095,26 +4089,15 @@ StyledTextIOWriter_RTF::Table* StyledTextIOWriter_RTF::WriterContext::GetCurRTFT
 StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream* sinkStream, RTFInfo* rtfInfo)
     : StyledTextIOWriter (srcStream, sinkStream)
     , fCurrentOutputCharSetEncoding{WellKnownCodePages::kANSI}
-    ,
 #if !qWideCharacters
 #if qPlatform_MacOS
-    fCurrentInputCharSetEncoding_{WellKnownCodePages::kMAC}
-    ,
+    , fCurrentInputCharSetEncoding_{WellKnownCodePages::kMAC}
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    fCurrentInputCharSetEncoding_{WellKnownCodePages::kANSI}
-    ,                                    // not sure???
+    , fCurrentInputCharSetEncoding_{WellKnownCodePages::kANSI}
 #endif
-    fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
-    , // note: important these two members DECLARED before this one... else not INITED at this point!
+   , fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
 #endif
-    fCharactersSavedByName ()
-    , fCharactersSavedByName_Name2Char ()
-    , fCharactersSavedByName_Char2Name ()
-    , fRTFInfo (rtfInfo)
-    , fFontTable (nullptr)
-    , fColorTable (nullptr)
-    , fListTable (nullptr)
-    , fStyleRunSummary ()
+    , fRTFInfo {rtfInfo}
     , fDocumentCharacterSet{WellKnownCodePages::kANSI}
     , fSoftLineBreakChar (srcStream->GetSoftLineBreakCharacter ())
     , fHidableTextRuns (srcStream->GetHidableTextRuns ())

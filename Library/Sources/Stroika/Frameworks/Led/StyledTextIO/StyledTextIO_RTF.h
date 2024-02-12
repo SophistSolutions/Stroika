@@ -749,15 +749,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         RTFIO::ColorTable* fColorTable{nullptr};
     };
     
-    , fDefaultFontNumber (-1)
-    , fStartedBodyYet (false)
-    , fCurrentDestination (nullptr)
-    
-
-    /*
-    @CLASS:         StyledTextIOReader_RTF::ReaderContext::Destination_
-    @DESCRIPTION:
-    */
+    /**
+     */
     class StyledTextIOReader_RTF::ReaderContext::Destination_ {
     protected:
         Destination_ () = default;
@@ -766,10 +759,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual ~Destination_ () = default;
 
     public:
-        /*
-        @CLASS:         StyledTextIOReader_RTF::ReaderContext::SinkStreamDestination::Context
-        @DESCRIPTION:
-        */
+        /**
+         */
         struct Context {
             Context () = default;
 
@@ -1070,12 +1061,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void AssureListTableBuilt (WriterContext& writerContext);
 
     private:
-        RTFInfo* fRTFInfo;
+        RTFInfo* fRTFInfo{nullptr};
 
     protected:
-        RTFIO::FontTable*               fFontTable;
-        RTFIO::ColorTable*              fColorTable;
-        RTFIO::ListTables*              fListTable;
+        RTFIO::FontTable*               fFontTable{nullptr};
+        RTFIO::ColorTable*              fColorTable{nullptr};
+        RTFIO::ListTables*              fListTable{nullptr};
         CodePage                        fDocumentCharacterSet;
         vector<StyledInfoSummaryRecord> fStyleRunSummary;
         const Led_tChar                 fSoftLineBreakChar;

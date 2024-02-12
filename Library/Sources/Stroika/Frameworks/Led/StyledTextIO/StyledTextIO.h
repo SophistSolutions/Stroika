@@ -111,6 +111,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     */
         class BadInputHandler {
         public:
+            virtual ~BadInputHandler () = default;
             virtual void HandleBadlyFormattedInput (const StyledTextIOReader& reader, bool unrecoverable);
         };
 

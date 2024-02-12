@@ -2492,10 +2492,10 @@ BOOL Led_StdDialogHelper_EditTablePropertiesDialog::DialogProc (UINT message, WP
 
 void Led_StdDialogHelper_EditTablePropertiesDialog::OnOK ()
 {
+#if qPlatform_Windows
     Info result    = fInfo;
     bool dataValid = true;
 
-#if qPlatform_Windows
     dataValid = dataValid and ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_BorderWidth), &result.fTableBorderWidth) and
                 result.fTableBorderWidth >= 0 and result.fTableBorderWidth <= 1440;
 
