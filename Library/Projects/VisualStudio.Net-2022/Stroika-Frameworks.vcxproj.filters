@@ -536,9 +536,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.cpp">
       <Filter>Led\StyledTextIO</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.cpp">
-      <Filter>Led\StyledTextIO</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_LedNative.cpp">
       <Filter>Led\StyledTextIO</Filter>
     </ClCompile>
@@ -743,9 +740,6 @@
       <Filter>Led\StyledTextIO</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.h">
-      <Filter>Led\StyledTextIO</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.h">
       <Filter>Led\StyledTextIO</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_LedNative.h">

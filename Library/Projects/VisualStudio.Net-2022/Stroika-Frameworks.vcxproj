@@ -96,7 +96,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_MIMETextEnriched.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_PlainText.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.h" />
@@ -135,7 +134,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_MIMETextEnriched.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_PlainText.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_RTF.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\Led\StyledTextIO\StyledTextIO_STYLText.h" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\BiDiLayoutEngine.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\ChunkedArrayTextStore.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Led\Command.inl" />

@@ -211,7 +211,7 @@ FontTable::FontTable ()
 }
 
 FontTable::FontTable (const vector<FontTableEntry>& fontTable)
-    : fEntries {fontTable}
+    : fEntries{fontTable}
 {
 }
 
@@ -219,7 +219,7 @@ IncrementalFontSpecification FontTable::GetFontSpec (int fontNumber)
 {
     const FontTableEntry* ftep = LookupEntryByNumber (fontNumber);
     if (ftep == nullptr) {
-        return IncrementalFontSpecification {}; // See spr#0696 0 some docs leave bad \font#s - so don't blow up - just no font spec!
+        return IncrementalFontSpecification{}; // See spr#0696 0 some docs leave bad \font#s - so don't blow up - just no font spec!
     }
     IncrementalFontSpecification fontSpec;
 #if qPlatform_Windows || qStroika_FeatureSupported_XWindows
@@ -654,20 +654,6 @@ StyledTextIOReader_RTF::ReaderContext::SinkStreamDestination::SinkStreamDestinat
     , fSinkStream (reader.GetSinkStream ())
     , fRTFInfo (reader.GetRTFInfo ())
     , fReader (reader)
-    , fCurrentContext ()
-    , fNewContext ()
-    , fNewContextPending (false)
-    ,
-    //fSmallBuffer (),
-    fTCharsInSmallBuffer (0)
-    , fParaEndedFlag (false)
-    , fParaEndBeforeNewContext (false)
-    , fInTable (false)
-    , fTableOpen (false)
-    , fTableNextRowNum (0)
-    , fTableInRow (false)
-    , fTableNextCellNum (0)
-    , fTableInCell (false)
 {
 }
 
@@ -1220,12 +1206,12 @@ StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& re
     , // ANSI default, according to RTF spec
     fCurrentInputCharSetEncoding_ (Characters::WellKnownCodePages::kANSI)
 #if qWideCharacters
-, fMultiByteInputCharBuf ()
+    , fMultiByteInputCharBuf ()
 #else
 #if qPlatform_Windows || qStroika_FeatureSupported_XWindows
     , fCurrentOutputCharSetEncoding (WellKnownCodePages::kANSI)
 #endif
-   , fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
+    , fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
 #endif
 {
 #if qWideCharacters
@@ -2660,8 +2646,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContex
      */
     unique_ptr<Led_DIB> dib = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
 #if qStroika_Frameworks_Led_SupportGDI
-    bool createSucceeded = dib.get () != nullptr;
-    SimpleEmbeddedObjectStyleMarker* embedding = nullptr;
+    bool                             createSucceeded = dib.get () != nullptr;
+    SimpleEmbeddedObjectStyleMarker* embedding       = nullptr;
     if (createSucceeded) {
         embedding = new StandardDIBStyleMarker (dib.get ());
     }
@@ -4095,9 +4081,9 @@ StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     , fCurrentInputCharSetEncoding_{WellKnownCodePages::kANSI}
 #endif
-   , fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
+    , fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
 #endif
-    , fRTFInfo {rtfInfo}
+    , fRTFInfo{rtfInfo}
     , fDocumentCharacterSet{WellKnownCodePages::kANSI}
     , fSoftLineBreakChar (srcStream->GetSoftLineBreakCharacter ())
     , fHidableTextRuns (srcStream->GetHidableTextRuns ())

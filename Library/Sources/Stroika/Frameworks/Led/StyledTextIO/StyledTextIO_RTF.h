@@ -37,18 +37,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     */
     class RTFIO {
     public:
-        enum {
-            kRTFOpenGroupChar = '{'
-        };
-        enum {
-            kRTFCloseGroupChar = '}'
-        };
-        enum {
-            kRTFStartTagChar = '\\'
-        };
-        enum {
-            kRTFQuoteNextCharChar = '\\'
-        };
+        static constexpr char kRTFOpenGroupChar     = '{';
+        static constexpr char kRTFCloseGroupChar    = '}';
+        static constexpr char kRTFStartTagChar      = '\\';
+        static constexpr char kRTFQuoteNextCharChar = '\\';
 
 #if !qWideCharacters
     public:
@@ -406,7 +398,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             ListTables (const vector<ListTableEntry>& listTableEntries, const vector<ListOverrideTableEntry>& listOverrideTableEntries);
 
         public:
-        public:
             vector<ListTableEntry>         fEntries;
             vector<ListOverrideTableEntry> fOverrideEntries;
         };
@@ -748,7 +739,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         RTFIO::FontTable*  fFontTable{nullptr};
         RTFIO::ColorTable* fColorTable{nullptr};
     };
-    
+
     /**
      */
     class StyledTextIOReader_RTF::ReaderContext::Destination_ {
@@ -766,7 +757,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
             IncrementalFontSpecification fFontSpec{};
             StandardTabStopList          fTabStops{StandardTabStopList{RTFInfo::GetStaticDefaultTabStopWidth ()}};
-            Justification                fJustification;
+            Justification                fJustification{eLeftJustify};
             TWIPS                        fSpaceBefore{TWIPS{0}};
             TWIPS                        fSpaceAfter{TWIPS{0}};
             CoordinateType               fSpaceBetweenLines{1000};
@@ -906,23 +897,23 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         SinkStream&             fSinkStream;
         RTFInfo&                fRTFInfo;
         StyledTextIOReader_RTF& fReader;
-        Context                 fCurrentContext;
-        Context                 fNewContext;
-        mutable bool            fNewContextPending;
+        Context                 fCurrentContext{};
+        Context                 fNewContext{};
+        mutable bool            fNewContextPending{false};
         Led_tChar               fSmallBuffer[8 * 1024]; // buffer is simply a performance hack...
-        size_t                  fTCharsInSmallBuffer;
-        mutable bool            fParaEndedFlag;
+        size_t                  fTCharsInSmallBuffer{0};
+        mutable bool            fParaEndedFlag{false};
 
         // RETHINK - MAYBE DON'T NEED???
-        mutable bool fParaEndBeforeNewContext; // SPR#0968 - if we get BOTH delayed paraend and delayed setcontext call, AND
+        mutable bool fParaEndBeforeNewContext{false}; // SPR#0968 - if we get BOTH delayed paraend and delayed setcontext call, AND
         // finally have to flush - then we need to preserve the ordering with a flag
     private:
-        bool   fInTable;
-        bool   fTableOpen;
-        size_t fTableNextRowNum;
-        bool   fTableInRow; // true if we've started a row; false if row just ended and not sure if there will be another
-        size_t fTableNextCellNum;
-        bool   fTableInCell; // ditto - except for cells
+        bool   fInTable{false};
+        bool fTableOpen{false};
+        size_t fTableNextRowNum{0};
+        bool   fTableInRow{false}; // true if we've started a row; false if row just ended and not sure if there will be another
+        size_t fTableNextCellNum{0};
+        bool   fTableInCell{false}; // ditto - except for cells
 
     private:
         struct CellInfo {
@@ -1013,9 +1004,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         map<wchar_t, string>          fCharactersSavedByName_Char2Name;
 
     protected:
-#if qTroubleAccessingNestedProtectedClassNamesInSubclass
-    public:
-#endif
         class WriterContext;
 
     public:

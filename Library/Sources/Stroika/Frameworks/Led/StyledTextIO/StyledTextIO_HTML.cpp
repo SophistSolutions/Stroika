@@ -526,7 +526,7 @@ Again:
                 bool   isStartTag = true;
                 ExtractHTMLTagIntoTagNameBuf (tmp.c_str (), tmp.length (), tagBuf, sizeof (tagBuf), &isStartTag);
                 if (isStartTag and (::strcmp (tagBuf, "html") == 0 or ::strcmp (tagBuf, "!doctype") == 0 or
-                    ::strcmp (tagBuf, "title") == 0 or ::strcmp (tagBuf, "head") == 0 or ::strcmp (tagBuf, "body") == 0)) {
+                                    ::strcmp (tagBuf, "title") == 0 or ::strcmp (tagBuf, "head") == 0 or ::strcmp (tagBuf, "body") == 0)) {
                     return true;
                 }
                 return false;

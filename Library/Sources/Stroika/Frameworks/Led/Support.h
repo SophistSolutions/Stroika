@@ -522,7 +522,7 @@ namespace Stroika::Frameworks::Led {
     */
     class Led_URLManager {
     public:
-        Led_URLManager () = default;
+        Led_URLManager ()          = default;
         virtual ~Led_URLManager () = default;
 
     public:
