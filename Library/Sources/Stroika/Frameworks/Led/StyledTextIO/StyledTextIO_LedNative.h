@@ -61,7 +61,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         // handles default ones Led knows about. You must override to handle your own private types..
     protected:
         virtual SimpleEmbeddedObjectStyleMarker* InternalizeEmbedding (Led_PrivateEmbeddingTag tag, size_t howManyBytes);
-        #endif
+#endif
     };
 
     /*
@@ -86,7 +86,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         // handles default ones Led knows about. You must override to handle your own private types..
     protected:
         virtual void ExternalizeEmbedding (SimpleEmbeddedObjectStyleMarker* embedding);
-        #endif
+#endif
     };
 
     /*

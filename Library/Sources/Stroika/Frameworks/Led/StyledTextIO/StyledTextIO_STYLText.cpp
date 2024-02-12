@@ -72,8 +72,7 @@ void StyledTextIOReader_STYLText::Read ()
     if (GetSrcStream ().GetAUXResourceHandle () != NULL) {
         StScrpHandle stylHandle = (StScrpHandle)GetSrcStream ().GetAUXResourceHandle ();
         HLock (Handle (stylHandle));
-        vector<StyledInfoSummaryRecord> ledStyleInfo =
-            StandardStyledTextImager::Convert ((*stylHandle)->scrpStyleTab, (*stylHandle)->scrpNStyles);
+        vector<StyledInfoSummaryRecord> ledStyleInfo = StandardStyledTextImager::Convert ((*stylHandle)->scrpStyleTab, (*stylHandle)->scrpNStyles);
         HUnlock (Handle (stylHandle));
         GetSinkStream ().ApplyStyle (0, totalRead, ledStyleInfo);
     }

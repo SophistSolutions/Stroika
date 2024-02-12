@@ -1142,7 +1142,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
                 GetSinkStream ().AppendEmbedding (
                     (assoc.fReadFromMemory) (StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
             }
-        #endif
+#endif
         }
         fCurAHRefStart          = size_t (-1);
         fCurAHRefText           = string{};
@@ -2320,7 +2320,7 @@ void StyledTextIOWriter_HTML::WriteTable (WriterContext& writerContext, Table* t
             WriteOpenTag (writerContext, "td");
             unique_ptr<SrcStream> srcStream = unique_ptr<SrcStream> (table->MakeCellSubSrcStream (r, c));
             if (srcStream.get () != nullptr) {
-                WriterContext                                       wc (writerContext, *srcStream.get ());
+                WriterContext                   wc (writerContext, *srcStream.get ());
                 vector<StyledInfoSummaryRecord> x = fStyleRunSummary;
                 fStyleRunSummary.clear ();
                 AssureStyleRunSummaryBuilt (wc);
@@ -2551,7 +2551,7 @@ void StyledTextIOWriter_HTML::AssureStyleRunSummaryBuilt (WriterContext& writerC
 {
     if (fStyleRunSummary.empty ()) {
         size_t totalTextLength = writerContext.GetSrcStream ().GetTotalTextLength ();
-        fStyleRunSummary = vector<StyledInfoSummaryRecord> (writerContext.GetSrcStream ().GetStyleInfo (0, totalTextLength));
+        fStyleRunSummary       = vector<StyledInfoSummaryRecord> (writerContext.GetSrcStream ().GetStyleInfo (0, totalTextLength));
     }
 }
 

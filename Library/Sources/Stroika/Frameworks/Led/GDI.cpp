@@ -844,7 +844,7 @@ FontSpecification Led::GetStaticDefaultFont ()
         sDefaultFont.SetPointSize (::GetScriptVariable (smCurrentScript, smScriptAppFondSize));
         sDefaultFont.SetStyle_Plain ();
 #elif qPlatform_Windows
-        sDefaultFont                          = GetStaticDefaultFont (DEFAULT_CHARSET);
+        sDefaultFont = GetStaticDefaultFont (DEFAULT_CHARSET);
 #elif qStroika_FeatureSupported_XWindows
         {
             sDefaultFont.SetFontNameSpecifier ("times");
@@ -853,7 +853,7 @@ FontSpecification Led::GetStaticDefaultFont ()
 #endif
 #if qPlatform_Windows
         sDefaultFont.SetTextColor (Led_GetTextColor ());
-        #endif
+#endif
         sDefaultFontValid = true;
     }
     return (sDefaultFont);
@@ -901,14 +901,6 @@ FontSpecification Led::GetStaticDefaultFont (BYTE charSet)
     return (defaultFont);
 }
 #endif
-
-
-
-
-
-
-
-
 
 /*
 @METHOD:        Intersection

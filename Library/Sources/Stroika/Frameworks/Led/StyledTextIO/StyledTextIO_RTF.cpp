@@ -4607,7 +4607,7 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
         for (size_t c = 0; c < columns; ++c) {
             unique_ptr<StyledTextIOWriter::SrcStream> srcStream = unique_ptr<StyledTextIOWriter::SrcStream>{table->MakeCellSubSrcStream (r, c)};
             if (srcStream.get () != nullptr) {
-                WriterContext                                       wc{writerContext, *srcStream.get ()};
+                WriterContext                   wc{writerContext, *srcStream.get ()};
                 vector<StyledInfoSummaryRecord> x = fStyleRunSummary;
                 fStyleRunSummary.clear ();
                 AssureStyleRunSummaryBuilt (wc);

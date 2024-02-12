@@ -281,7 +281,7 @@ Justification StyledTextIOWriter::SrcStream::GetJustification () const
 */
 StandardTabStopList StyledTextIOWriter::SrcStream::GetStandardTabStopList () const
 {
-    return StandardTabStopList {};
+    return StandardTabStopList{};
 }
 
 /*

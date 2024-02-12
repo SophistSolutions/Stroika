@@ -493,7 +493,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
             }
         }
     }
-    #endif
+#endif
 
     // check for extra cookie at the end...
     LedFormatMagicCookie endCookie;
