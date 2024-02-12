@@ -177,7 +177,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
         fileSpecBufferLength = flavorPackage.ReadFlavorData (kFILEClipFormat, fileSpecBufferLength, fileSpecBuffer.data ());
 
 // Unpack the filename
-#if  qPlatform_Windows
+#if qPlatform_Windows
         TCHAR realFileName[_MAX_PATH + 1];
         {
             HDROP hdrop = (HDROP)::GlobalAlloc (GMEM_FIXED, fileSpecBufferLength);
@@ -201,7 +201,8 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
     }
 }
 
-bool FlavorPackageInternalizer::InternalizeFlavor_FILEData ( filesystem::path fileName, Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage, size_t from, size_t to)
+bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (filesystem::path fileName, Led_ClipFormat* suggestedClipFormat,
+                                                            optional<CodePage> suggestedCodePage, size_t from, size_t to)
 {
     Memory::BLOB b       = IO::FileSystem::FileInputStream::New (filesystem::path (fileName)).ReadAll ();
     const byte*  fileBuf = b.begin ();
@@ -219,7 +220,8 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEData ( filesystem::path fi
     return InternalizeFlavor_FILEDataRawBytes (suggestedClipFormat, suggestedCodePage, from, to, fileBuf, fileLen);
 }
 
-void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (filesystem::path fileName,  Led_ClipFormat* suggestedClipFormat, [[maybe_unused]] optional<CodePage> suggestedCodePage)
+void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (filesystem::path fileName, Led_ClipFormat* suggestedClipFormat,
+                                                                            [[maybe_unused]] optional<CodePage> suggestedCodePage)
 {
 #if qPlatform_Windows
     if (suggestedClipFormat != nullptr and *suggestedClipFormat == kBadClipFormat) {

@@ -89,7 +89,6 @@ const bool kRunning32BitGDI = ((::GetVersion () & 0x80000000) == 0); // I BELIEV
 #endif // Should be a better way to check for 32bit GDI!!!
 #endif
 
-
 #if qPlatform_Windows
 inline void Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
 {
@@ -640,7 +639,6 @@ const Color Color::kDarkGreen = Color (0, (Color::kColorValueMax / 256) * 100, 0
 const Color Color::kLimeGreen = Color (0, Color::kColorValueMax, 0);
 const Color Color::kFuchsia   = Color::kMagenta; // same according to that table
 const Color Color::kAqua      = Color::kCyan;    // same according to that table
-
 
 /*
  ********************************************************************************
@@ -1549,7 +1547,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
 #if qTryToOptimizeLongUNISCRIBEScriptOutCalls
             const size_t kMaxCharsToDrawAtATime = 500;
 #endif
-            size_t       len                    = nextTabAt - textCursor;
+            size_t len = nextTabAt - textCursor;
             if (len == 0) {
                 goto Succeeded; // UNISCRIBE barfs on zero-length strings. Nothing todo anyhow...
             }
