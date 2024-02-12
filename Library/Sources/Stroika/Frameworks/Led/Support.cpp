@@ -202,6 +202,8 @@ int Led::Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
         return -1;
     if (result == strong_ordering::greater)
         return 1;
+    AssertNotReached ();
+    return 0;
 #endif
 }
 
@@ -221,6 +223,8 @@ int Led::Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
         return -1;
     if (result == strong_ordering::greater)
         return 1;
+    AssertNotReached ();
+    return 0;
 #endif
 }
 
