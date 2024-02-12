@@ -363,7 +363,7 @@ void Partition::Invariant_ () const
  ********************************************************************************
  */
 PartitioningTextImager::PartitioningTextImager ()
-    : fPartition {nullptr}
+    : fPartition{nullptr}
 #if qCacheTextMeasurementsForPM
     , fMeasureTextCache ()
 #endif
