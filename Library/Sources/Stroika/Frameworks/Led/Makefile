@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../)/
+StroikaRoot:=$(abspath ../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/Led/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Led/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/Led/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Led/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
@@ -17,15 +17,13 @@ endif
 
 vpath %cpp $(SrcDir)
 
-SubDirs	=	\
+SubDirs	:=	\
 	Platform		\
 	StyledTextIO	\
 
 
-Objs	=
+Objs	:=
 
-# for now - this only builds on windows, cuz unix requires x-windows, and macos only written for very old macos gdi (carbon)
-#ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)BiDiLayoutEngine${OBJ_SUFFIX}
 Objs+=	$(ObjDir)ChunkedArrayTextStore${OBJ_SUFFIX}
 Objs+=	$(ObjDir)Command${OBJ_SUFFIX}
