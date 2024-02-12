@@ -101,16 +101,6 @@ namespace {
  ************************************ HTMLInfo **********************************
  ********************************************************************************
  */
-HTMLInfo::HTMLInfo ()
-    : fDocTypeTag{}
-    , fHTMLTag{}
-    , fHeadTag{}
-    , fStartBodyTag{}
-    , fUnknownHeaderTags{}
-    , fTitle{}
-{
-}
-
 HTMLInfo::EntityRefMapEntry HTMLInfo::sDefaultEntityRefMapTable[] = {
 
     EntityRefMapEntry{"euro", 0x20ac}, // As part of bug request SPR#0852 - this number was given to us. Not in the HTML 4.0 spec (but must be somewhere!)
@@ -467,24 +457,7 @@ int HTMLInfo::RealFontSizeToHTMLFontSize (FontSpecification::FontSize size)
  */
 StyledTextIOReader_HTML::StyledTextIOReader_HTML (SrcStream* srcStream, SinkStream* sinkStream, HTMLInfo* saveHTMLInfoInto)
     : StyledTextIOReader{srcStream, sinkStream}
-    , fInAPara{false}
     , fSaveHTMLInfoInto{saveHTMLInfoInto}
-    , fReadingBody{false}
-    , fFontStack{}
-    , fComingTextIsTitle{false}
-    , fNormalizeInputWhitespace{true}
-    , fHTMLBaseFontSize{3}
-    , fHTMLFontSize{3}
-    , fLastCharSpace{true}
-    , fCurAHRefStart{size_t (-1)}
-    , fCurAHRefText{}
-    , fULNestingCount{0}
-    , fLIOpen{false}
-    , fTableOpenCount{0}
-    , fTableRowOpen{false}
-    , fTableCellOpen{false}
-    , fHiddenTextMode{false}
-    , fHiddenTextAccumulation{}
 {
     if (fSaveHTMLInfoInto != nullptr) {
         *fSaveHTMLInfoInto = HTMLInfo (); // reset to default values before reading...

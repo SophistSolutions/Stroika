@@ -25,19 +25,17 @@ struct ScrpSTElement;
 
 namespace Stroika::Frameworks::Led {
 
-/*
-    @CONFIGVAR:     qAssertWarningForEqualPriorityMarkers
-    @DESCRIPTION:   <p>Debugging hack for @'StyledTextImager::StyleMarkerSummarySink::CombineElements'.
-                It CAN cause problems having multiple markers of the same priority overlapping, so this
-                code will assert-out / warn when that happens. It COULD be OK - so thats why this is optional
-                checking.</p>
-        */
-#ifndef qAssertWarningForEqualPriorityMarkers
-#define qAssertWarningForEqualPriorityMarkers qDebug
+/** 
+ * Debugging hack for @'StyledTextImager::StyleMarkerSummarySink::CombineElements'.
+ * It CAN cause problems having multiple markers of the same priority overlapping, so this
+ * code will assert-out / warn when that happens. It COULD be OK - so thats why this is optional
+ * checking.
+ */
+#ifndef qStroika_Frameworks_Led_AssertWarningForEqualPriorityMarkers
+#define qStroika_Frameworks_Led_AssertWarningForEqualPriorityMarkers qDebug
 #endif
 
 #if qStroika_Frameworks_Led_SupportGDI
-
     /*
     @CLASS:         StyledTextImager
     @BASES:         virtual @'TextImager'

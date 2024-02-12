@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     */
     class HTMLInfo {
     public:
-        HTMLInfo ();
+        HTMLInfo () = default;
 
     public:
         struct EntityRefMapEntry {
@@ -185,32 +185,32 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual void EndParaIfOpen ();
 
     private:
-        bool fInAPara;
+        bool fInAPara{false};
 
         // Implement the quirky font/size rules (1..7) HTML prescribes
     protected:
         virtual void SetHTMLFontSize (int to);
 
     protected:
-        int fHTMLBaseFontSize;
-        int fHTMLFontSize;
+        int fHTMLBaseFontSize{3};
+        int fHTMLFontSize{3};
 
     protected:
-        HTMLInfo*                 fSaveHTMLInfoInto;
-        bool                      fReadingBody;
+        HTMLInfo*                 fSaveHTMLInfoInto{nullptr};
+        bool                      fReadingBody{false};
         vector<FontSpecification> fFontStack;
-        bool                      fComingTextIsTitle;
-        bool                      fNormalizeInputWhitespace;
-        bool                      fLastCharSpace;
-        bool                      fHiddenTextMode;
+        bool                      fComingTextIsTitle{false};
+        bool                      fNormalizeInputWhitespace{true};
+        bool                      fLastCharSpace{true};
+        bool                      fHiddenTextMode{false};
         Led_tString               fHiddenTextAccumulation;
-        size_t                    fCurAHRefStart;
+        size_t                    fCurAHRefStart{size_t (-1)};
         string                    fCurAHRefText;
-        unsigned int              fULNestingCount;
-        bool                      fLIOpen;
-        unsigned int              fTableOpenCount;
-        bool                      fTableRowOpen;
-        bool                      fTableCellOpen;
+        unsigned int              fULNestingCount{0};
+        bool                      fLIOpen{false};
+        unsigned int              fTableOpenCount{0};
+        bool                      fTableRowOpen{false};
+        bool                      fTableCellOpen{false};
     };
 
     /*
@@ -303,10 +303,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         */
 
     /*
-        ********************************************************************************
-        ***************************** HTMLInfo::EntityRefMapEntry ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** HTMLInfo::EntityRefMapEntry ***************************
+     ********************************************************************************
+     */
     inline HTMLInfo::EntityRefMapEntry::EntityRefMapEntry (const string& entityRefName, wchar_t charValue)
         : fEntityRefName (entityRefName)
         , fCharValue (charValue)
@@ -314,10 +314,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     }
 
     /*
-        ********************************************************************************
-        ***************************** StyledTextIOReader_HTML ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** StyledTextIOReader_HTML ***************************
+     ********************************************************************************
+     */
     inline void StyledTextIOReader_HTML::EmitText (const Led_tString& text, bool skipNLCheck)
     {
         EmitText (text.c_str (), text.length (), skipNLCheck);
@@ -328,10 +328,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     }
 
     /*
-        ********************************************************************************
-        ********************** StyledTextIOWriter_HTML::WriterContext ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** StyledTextIOWriter_HTML::WriterContext ***************************
+     ********************************************************************************
+     */
     inline StyledTextIOWriter_HTML::WriterContext::WriterContext (StyledTextIOWriter_HTML& writer)
         : fWriter (writer)
         , fSrcStream (fWriter.GetSrcStream ())

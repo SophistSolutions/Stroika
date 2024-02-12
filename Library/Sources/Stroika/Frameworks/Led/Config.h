@@ -339,26 +339,6 @@ namespace Stroika::Frameworks::Led {
 #define qUseMacTmpMemForAllocs 1
 #endif
 
-/*
-@CONFIGVAR:     qUseInternetConfig
-@DESCRIPTION:   <p><b>MAC ONLY</b></p>
-        <p>For URL support, and any other places where it is appropriate, should we try
-    to use Internet Config (IC) when available? Mainly used right now by
-    URL embeddings. Default to TRUE on mac. Not avialable elsewhere.</p>
- */
-#ifndef qUseInternetConfig
-#if TARGET_CARBON
-#define qUseInternetConfig qSDKHasInternetConfig
-#else
-// disable it by default if using CFM68K - since right now I have no CFM68K lib for it
-#if defined(__CFM68K__)
-#define qUseInternetConfig 0
-#else
-#define qUseInternetConfig 1
-#endif
-#endif
-#endif
-
 #endif /*qPlatform_MacOS*/
 
 /*
@@ -388,17 +368,5 @@ namespace Stroika::Frameworks::Led {
  *************** X-Windows Specific configuration variables *************
  *************** X-Windows Specific configuration variables *************
  */
-#if qStroika_FeatureSupported_XWindows
-
-/*
-@CONFIGVAR:     qUseSystemNetscapeOpenURLs
-@DESCRIPTION:   <p><b>X-Windows ONLY</b></p>
-        <p>For supporting openening URLs.</p>
- */
-#ifndef qUseSystemNetscapeOpenURLs
-#define qUseSystemNetscapeOpenURLs 1
-#endif
-
-#endif /*qStroika_FeatureSupported_XWindows*/
 
 #endif /*_Stroika_Framework_Led_Config_h_*/

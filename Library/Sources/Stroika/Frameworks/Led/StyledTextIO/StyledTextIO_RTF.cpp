@@ -211,7 +211,7 @@ FontTable::FontTable ()
 }
 
 FontTable::FontTable (const vector<FontTableEntry>& fontTable)
-    : fEntries (fontTable)
+    : fEntries {fontTable}
 {
 }
 
@@ -219,12 +219,11 @@ IncrementalFontSpecification FontTable::GetFontSpec (int fontNumber)
 {
     const FontTableEntry* ftep = LookupEntryByNumber (fontNumber);
     if (ftep == nullptr) {
-        return IncrementalFontSpecification (); // See spr#0696 0 some docs leave bad \font#s - so don't blow up - just no font spec!
+        return IncrementalFontSpecification {}; // See spr#0696 0 some docs leave bad \font#s - so don't blow up - just no font spec!
     }
-    const FontTableEntry&        fte = *ftep;
     IncrementalFontSpecification fontSpec;
 #if qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    fontSpec.SetFontNameSpecifier (fte.fFontName.c_str ());
+    fontSpec.SetFontNameSpecifier (ftep->fFontName.c_str ());
 #endif
     return fontSpec;
 }
@@ -1234,19 +1233,6 @@ StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& re
     fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
     , // note: important these two members DECLARED before this one... else not INITED at this point!
 #endif
-#if qWideCharacters
-    fUnicodeUCValue (1)
-    , fSkipNextNChars_UC (0)
-    ,
-#endif
-    fHiddenTextStart (static_cast<size_t> (-1))
-    , fDefaultFontNumber (-1)
-    , fStartedBodyYet (false)
-    , fCurrentDestination (nullptr)
-    , fDefaultDestination ()
-    , fCurrentGroup (nullptr)
-    , fFontTable (nullptr)
-    , fColorTable (nullptr)
 {
 #if qWideCharacters
     memset (fMultiByteInputCharBuf, 0, sizeof (fMultiByteInputCharBuf));
@@ -3496,8 +3482,6 @@ void StyledTextIOReader_RTF::ReadTopLevelPictData (TWIPS_Point* shownSize, Image
     *objData     = vector<char> ();
     float scaleX = 1.0f;
     float scaleY = 1.0f;
-    TWIPS picH   = TWIPS{0};
-    TWIPS picV   = TWIPS{0};
 
     while (true) {
         switch (PeekNextChar ()) {
@@ -3872,11 +3856,11 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
             fontSpec.SetStyle_SubOrSuperScript (FontSpecification::eSuperscript);
         } break;
         case RTFIO::eControlAtom_strike: {
+#if qPlatform_Windows
             bool turnStyleOn = true; // no arg means ON
             if (cw.fHasArg) {
                 turnStyleOn = cw.fValue;
             }
-#if qPlatform_Windows
             fontSpec.SetStyle_Strikeout (turnStyleOn);
 #endif
         } break;

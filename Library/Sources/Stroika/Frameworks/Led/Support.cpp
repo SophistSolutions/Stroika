@@ -31,14 +31,6 @@
 
 #include "Support.h"
 
-#if qUseInternetConfig
-#if qSDKHasInternetConfig
-#include <InternetConfig.h>
-#else
-#include <ICAPI.h>
-#include <ICTypes.h>
-#endif
-#endif
 #if qUseActiveXToOpenURLs
 #include <URLMon.h>
 #endif
@@ -179,7 +171,7 @@ Time::DurationSeconds Led::Led_GetDoubleClickTime ()
 {
 #if qPlatform_Windows
     return Time::DurationSeconds{float (::GetDoubleClickTime ()) / 1000.0f};
-#elif qStroika_FeatureSupported_XWindows
+#else
     return 0.25s; // SAME AS DOUBLE_CLICK_TIME FROM gdkevents.c
 #endif
 }
@@ -719,44 +711,31 @@ string Led_URLD::GetURL () const
  ********************************* Led_URLManager *******************************
  ********************************************************************************
  */
-Led_URLManager* Led_URLManager::sThe = nullptr;
-
-Led_URLManager::Led_URLManager ()
-{
+namespace {
+    Led_URLManager* sTheURLMgr_;
 }
-
 Led_URLManager& Led_URLManager::Get ()
 {
-    if (sThe == nullptr) {
-        sThe = new Led_URLManager ();
+    if (sTheURLMgr_ == nullptr) {
+        sTheURLMgr_ = new Led_URLManager ();
     }
-    return *sThe;
+    return *sTheURLMgr_;
 }
 
 void Led_URLManager::Set (Led_URLManager* newURLMgr)
 {
-    if (sThe != newURLMgr) {
-        delete sThe;
-        sThe = newURLMgr;
+    if (sTheURLMgr_ != newURLMgr) {
+        delete sTheURLMgr_;
+        sTheURLMgr_ = newURLMgr;
     }
 }
 
 void Led_URLManager::Open (const string& url)
 {
-#if qUseInternetConfig
-    try {
-        Open_IC (url);
-    }
-    catch (...) {
-        Open_SpyglassAppleEvent (url);
-    }
-#elif qPlatform_Windows
+#if qPlatform_Windows
 #if qUseActiveXToOpenURLs
     Open_ActiveX (url);
 #endif
-#endif
-#if qUseSystemNetscapeOpenURLs
-    Open_SystemNetscape (url);
 #endif
 }
 
@@ -765,44 +744,6 @@ string Led_URLManager::FileSpecToURL ([[maybe_unused]] const filesystem::path& p
     AssertNotImplemented (); // nyi (not needed anywhere right now)
     return "";
 }
-
-#if qUseInternetConfig
-void Led_URLManager::Open_IC (const string& url)
-{
-    // If we compile for internet config, first try that. If that fails, fall back on Netscape.
-    Str255 hint      = "\p"; // not sure what this is for. See how it works without it...
-    OSType signature = '\?\?\?\?';
-    {
-        ProcessSerialNumber myPSN;
-        memset (&myPSN, 0, sizeof (myPSN));
-        Led_ThrowOSErr (::GetCurrentProcess (&myPSN));
-        ProcessInfoRec info;
-        memset (&info, 0, sizeof (info));
-        info.processInfoLength = sizeof (info);
-        Led_ThrowOSErr (::GetProcessInformation (&myPSN, &info));
-        signature = info.processSignature;
-    }
-    ICInstance icInstance;
-    Led_ThrowOSErr (::ICStart (&icInstance, signature));
-#if qSDKHasInternetConfig
-    //  OSErr   err =   ::ICGeneralFindConfigFile (icInstance, true, true, 0, nullptr);
-    OSErr err = noErr;
-#else
-    ICError err    = ::ICFindConfigFile (icInstance, 0, nullptr);
-#endif
-    if (err == noErr) {
-        long urlStart = 0;
-        long urlEnd   = 0;
-        // Unclear if/why url would be modified, but since they declare it as non-cost
-        // better be sure...LGP 961028
-        char urlBuf[1024];
-        CString::Copy (urlBuf, url.c_str (), Memory::NEltsOf (urlBuf));
-        err = ::ICLaunchURL (icInstance, hint, urlBuf, ::strlen (urlBuf), &urlStart, &urlEnd);
-    }
-    ::ICStop (icInstance);
-    Led_ThrowOSErr (err);
-}
-#endif
 
 #if qUseActiveXToOpenURLs
 void Led_URLManager::Open_ActiveX (const string& url)
@@ -840,44 +781,6 @@ void Led_URLManager::Open_ActiveX (const string& url)
     if (not SUCCEEDED (result)) {
         throw result;
     }
-}
-#endif
-
-#if qUseSystemNetscapeOpenURLs
-void Led_URLManager::Open_SystemNetscape (const string& url)
-{
-    string execString;
-    /*
-     *  Code lifted (based on) code from AbiWord - xap_UnixFrame.cpp
-     */
-    struct stat statbuf;
-    memset (&statbuf, 0, sizeof (statbuf));
-//
-// The gnome-help-browser sucks right now. Instead open with netscape
-// or kde.
-// When it gets better we should restore this code.
-/*
-    //if (!stat("/opt/gnome/bin/gnome-help-browser", statbuf) || !stat("/usr/local/bin/gnome-help-browser", statbuf) || !stat("/usr/bin/gnome-help-browser", statbuf))
-    {
-        execString = g_strdup_printf("gnome-help-browser %s &", szURL);
-    }
-    */
-#if 0
-// My system has kdehelp - and I can exec it by itself - but passing args produces an error from KDE:
-//      ERROR: KFM is not running
-//      KFM not ready
-    if (!stat("/opt/kde/bin/kdehelp", &statbuf) || !stat("/usr/local/kde/bin/kdehelp", &statbuf) || !stat("/usr/local/bin/kdehelp", &statbuf) || !stat("/usr/bin/kdehelp", &statbuf)) {
-        execString = "kdehelp " + url + "&";
-    }
-    else
-#endif
-    {
-        // Try to connect to a running Netscape, if not, start new one
-        Memory::StackBuffer<char> buf{Memory::eUninitialized, url.length () * 2 + 1000};
-        sprintf (buf, "netscape -remote openURL\\(\"%s\"\\) || netscape \"%s\" &", url.c_str (), url.c_str ());
-        execString = buf;
-    }
-    system (execString.c_str ());
 }
 #endif
 

@@ -164,7 +164,7 @@ void StyleMarkerSummarySink::CombineElements (StyledTextImager::RunElement* runE
     }
     else {
         bool newEltStronger = runElement->fMarker->GetPriority () < newStyleMarker->GetPriority ();
-#if qAssertWarningForEqualPriorityMarkers
+#if qStroika_Frameworks_Led_AssertWarningForEqualPriorityMarkers
         Assert (runElement->fMarker->GetPriority () != newStyleMarker->GetPriority ());
 #endif
         if (newEltStronger) {

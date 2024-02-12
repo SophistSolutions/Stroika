@@ -679,8 +679,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         CodePage fDocumentCharacterSet;
-        int      fDefaultFontNumber; // -1 ==> none specified
-        bool     fStartedBodyYet;
+        int      fDefaultFontNumber{-1}; // -1 ==> none specified
+        bool     fStartedBodyYet{false};
 
     public:
         nonvirtual CodePage GetCurrentInputCharSetEncoding () const;
@@ -706,20 +706,20 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
 #if qWideCharacters
     public:
-        size_t fUnicodeUCValue; // support for \u and \uc RTF tags
-        size_t fSkipNextNChars_UC;
+        size_t fUnicodeUCValue{1}; // support for \u and \uc RTF tags
+        size_t fSkipNextNChars_UC{0};
 #endif
 
     public:
         nonvirtual void PutRawCharToDestination (char c);
 
     public:
-        size_t fHiddenTextStart; // -1 => NOT in a hidden text block, and otherwise its the start of the block.
+        size_t fHiddenTextStart{static_cast<size_t> (-1)}; // -1 => NOT in a hidden text block, and otherwise its the start of the block.
 
-        /*
-            *  Support for RTF destinations.
-            */
     public:
+        /*
+         *  Support for RTF destinations.
+         */
         class Destination_;
         class SinkStreamDestination;
 
@@ -728,7 +728,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void             SetDestination (Destination_* destination);
 
     private:
-        Destination_* fCurrentDestination;
+        Destination_* fCurrentDestination{nullptr};
 
     public:
         unique_ptr<Destination_> fDefaultDestination;
@@ -740,14 +740,19 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual GroupContext* GetCurrentGroupContext () const; // can be nullptr
         nonvirtual GroupContext* GetParentGroupContext () const;  // can be nullptr
     private:
-        GroupContext* fCurrentGroup;
+        GroupContext* fCurrentGroup{nullptr};
 
         friend class GroupContext;
 
     public:
-        RTFIO::FontTable*  fFontTable;
-        RTFIO::ColorTable* fColorTable;
+        RTFIO::FontTable*  fFontTable{nullptr};
+        RTFIO::ColorTable* fColorTable{nullptr};
     };
+    
+    , fDefaultFontNumber (-1)
+    , fStartedBodyYet (false)
+    , fCurrentDestination (nullptr)
+    
 
     /*
     @CLASS:         StyledTextIOReader_RTF::ReaderContext::Destination_

@@ -522,36 +522,26 @@ namespace Stroika::Frameworks::Led {
     */
     class Led_URLManager {
     public:
-        Led_URLManager ();
+        Led_URLManager () = default;
+        virtual ~Led_URLManager () = default;
 
+    public:
         static Led_URLManager& Get (); // by default builds one, but you can specify your
         // own. NB: deletes old value, so if you specify
         // your own, be sure to allocate it with new so it
         // can be deleted...
         static void Set (Led_URLManager* newURLMgr);
 
-    private:
-        static Led_URLManager* sThe;
-
     public:
         virtual void   Open (const string& url); // throws on detected errors
         virtual string FileSpecToURL (const filesystem::path& p);
 
     protected:
-#if qUseInternetConfig
-        nonvirtual void Open_IC (const string& url);
-#endif
-#if qPlatform_MacOS
-        nonvirtual void Open_SpyglassAppleEvent (const string& url);
-#endif
 #if qUseActiveXToOpenURLs
         nonvirtual void Open_ActiveX (const string& url);
 #endif
 #if qUseSpyglassDDESDIToOpenURLs
         nonvirtual void Open_SpyglassDDE (const string& url);
-#endif
-#if qUseSystemNetscapeOpenURLs
-        nonvirtual void Open_SystemNetscape (const string& url);
 #endif
 
 #if qUseSpyglassDDESDIToOpenURLs
