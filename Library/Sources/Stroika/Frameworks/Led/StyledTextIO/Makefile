@@ -23,12 +23,10 @@ Objs	=
 Objs+=	$(ObjDir)StyledTextIO${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_HTML${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_LedNative${OBJ_SUFFIX}
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)StyledTextIO_MIMETextEnriched${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_PlainText${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_RTF${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextIO_STYLText${OBJ_SUFFIX}
-endif
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 

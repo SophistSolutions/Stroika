@@ -93,15 +93,15 @@ void StyledTextIOWriter_PlainText::Write ()
     Led_tChar buf[8 * 1024];
     size_t    bytesRead = 0;
     while ((bytesRead = GetSrcStream ().readNTChars (buf, Memory::NEltsOf (buf))) != 0) {
-#if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
-        Led_tChar buf2[Memory::NEltsOf (buf)];
-#elif qPlatform_Windows
+#if qPlatform_Windows
         Led_tChar buf2[2 * Memory::NEltsOf (buf)];
+#else
+    Led_tChar buf2[Memory::NEltsOf (buf)];
 #endif
         bytesRead = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, Memory::NEltsOf (buf2));
 #if qWideCharacters
         Streams::MemoryStream::Ptr<byte> memStream = Streams::MemoryStream::New<byte> ();
-        Streams::TextWriter::New (memStream, Characters::CodeCvt<>{static_cast<CodePage> (CP_ACP)}).Write (span{buf2, bytesRead});
+        Streams::TextWriter::New (memStream, Characters::CodeCvt<>{locale{}}).Write (span{buf2, bytesRead});
         auto b = memStream.As<Memory::BLOB> ();
         write (b.data (), b.size ());
 #else

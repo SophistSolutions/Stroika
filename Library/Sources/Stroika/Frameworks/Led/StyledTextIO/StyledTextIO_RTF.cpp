@@ -420,11 +420,13 @@ RTFIO::ListTables::ListTables (const vector<ListTableEntry>& listTableEntries, c
  ********************************** RTFInfo *************************************
  ********************************************************************************
  */
+#if qStroika_Frameworks_Led_SupportGDI
 const Led_PrivateEmbeddingTag RTFIO::kRTFBodyGroupFragmentEmbeddingTag = "RTFBFrag";
 #if qPlatform_Windows
 const Led_ClipFormat RTFIO::kRTFBodyGroupFragmentClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T("RTFF")));
 #else
-const Led_ClipFormat RTFIO::kRTFBodyGroupFragmentClipFormat = 'RTFF';
+const Led_ClipFormat RTFIO::kRTFBodyGroupFragmentClipFormat = static_cast<Led_ClipFormat> ('RTFF');
+#endif
 #endif
 
 inline RTFIO::ControlWordNameMap RTFIO::mkDefaultControlWordNameMap ()
@@ -655,12 +657,14 @@ RTFIO::ControlWordAtom RTFIO::EnterControlWord (
 #endif
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 /*
  ********************************************************************************
  ************************ RTFIO::RTFOLEEmbedding ********************************
  ********************************************************************************
  */
 const Led_PrivateEmbeddingTag RTFIO::RTFOLEEmbedding::kEmbeddingTag = "OLE2RTFEm";
+#endif
 
 /*
  ********************************************************************************
@@ -734,6 +738,7 @@ void SinkStreamDestination::AppendText (const Led_tChar* text, size_t nTChars)
     AppendText_ (text, nTChars);
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 void SinkStreamDestination::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
 {
     //  NB: we PROBABLY should apply the current font to this region as well, but so far - at least - it
@@ -745,6 +750,7 @@ void SinkStreamDestination::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* em
     Flush ();
     fSinkStream.AppendEmbedding (embedding);
 }
+#endif
 
 void SinkStreamDestination::AppendSoftLineBreak ()
 {
@@ -777,7 +783,7 @@ void SinkStreamDestination::SetJustification (Justification justification)
     }
 }
 
-void SinkStreamDestination::SetTabStops (const TextImager::StandardTabStopList& tabStops)
+void SinkStreamDestination::SetTabStops (const StandardTabStopList& tabStops)
 {
     AboutToChange ();
     if (fCurrentContext.fTabStops != tabStops) {
@@ -2474,7 +2480,9 @@ bool StyledTextIOReader_RTF::HandleControlWord_paperX (ReaderContext& /*readerCo
 bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
 {
     CheckIfAboutToStartBody (readerContext);
+#if qStroika_Frameworks_Led_SupportGDI
     using UnknownRTFEmbedding = RTFIO::UnknownRTFEmbedding;
+    #endif
     using ControlWord         = RTFIO::ControlWord;
     /*
      *  Now try to really read on object in. Could be a Led-private-format object. Could be an OLE object. Or one of many
@@ -2554,13 +2562,14 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                  */
                 shownSize.h *= scaleX;
                 shownSize.v *= scaleY;
+#if qStroika_Frameworks_Led_SupportGDI
                 if (shownSize.v > 20000 or shownSize.h > 20000 or shownSize.h < 100 or shownSize.v < 100) {
                     shownSize = UnknownRTFEmbedding::CalcStaticDefaultShownSize ();
                 }
-
+#endif
                 /*
-                     *  First, try to construct the specific kind of object using the info we've extracted.
-                     */
+                 *  First, try to construct the specific kind of object using the info we've extracted.
+                 */
                 if (isOLEEmbedding and isPrivateLedEmbedding) {
                     HandleBadlyFormattedInput ();
                 }
@@ -2582,8 +2591,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                 }
 
                 /*
-                     *  If we succeded, cleanup, and we're done.
-                     */
+                 *  If we succeded, cleanup, and we're done.
+                 */
                 if (isOLEEmbedding or isPrivateLedEmbedding) {
                     ConsumeNextChar ();
                 }
@@ -2592,7 +2601,9 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                     GetSrcStream ().seek_to (readerContext.GetCurrentGroupContext ()->fCurrentGroupStartIdx);
                     string s = ReadInGroupAndSave ();
 
+#if qStroika_Frameworks_Led_SupportGDI
                     SimpleEmbeddedObjectStyleMarker* embedding = nullptr;
+
                     /*
                      *  If there is a result tag and a PICT we can read in it - great. Use that as an arg to the UnknownRTFEmbedding ().
                      *  Otherwise - create one without the DIB/PICT.
@@ -2641,6 +2652,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                         delete embedding;
                         throw;
                     }
+                    #endif
                 }
                 return true; // ALL DONE
             } break;
@@ -2669,7 +2681,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_pard (ReaderContext& readerContex
     // Reset ALL defaults here
     // Assign to current context AND destination at the same time...
     readerContext.GetDestination ().SetTabStops (readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops =
-                                                     TextImager::StandardTabStopList (GetRTFInfo ().GetDefaultTabStop ()));
+                                                     StandardTabStopList (GetRTFInfo ().GetDefaultTabStop ()));
     readerContext.GetDestination ().SetJustification (readerContext.GetCurrentGroupContext ()->fDestinationContext.fJustification = eLeftJustify);
     readerContext.GetDestination ().SetFirstIndent (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFirstIndent = TWIPS{0});
     readerContext.GetDestination ().SetLeftMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fLeftMargin = TWIPS{0});
@@ -2720,6 +2732,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContex
      */
     unique_ptr<Led_DIB> dib = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
     bool                             createSucceeded = dib.get () != nullptr;
+#if qStroika_Frameworks_Led_SupportGDI
     SimpleEmbeddedObjectStyleMarker* embedding       = nullptr;
     if (createSucceeded) {
         embedding = new StandardDIBStyleMarker (dib.get ());
@@ -2741,6 +2754,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContex
             throw;
         }
     }
+    #endif
     return true;
 }
 
@@ -2972,7 +2986,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_tx (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric color-number argument
     }
     else {
-        TextImager::StandardTabStopList* curTabs  = &readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops;
+        StandardTabStopList* curTabs  = &readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops;
         CoordinateType                   lastStop = 0;
         for (auto i = curTabs->fTabStops.begin (); i != curTabs->fTabStops.end (); ++i) {
             lastStop += *i;
@@ -3472,6 +3486,7 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] 
 
 void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& readerContext, size_t nBytes, const void* data)
 {
+#if qStroika_Frameworks_Led_SupportGDI
     // The first sizeof (Led_PrivateEmbeddingTag) bytes are the type tag, and the rest is standard
     // internalize/externalize data.
     if (nBytes < sizeof (Led_PrivateEmbeddingTag)) {
@@ -3496,6 +3511,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
             }
         }
     }
+    #endif
     Execution::Throw (DataExchange::BadFormatException::kThe); // Will be caught by caller, and use "unknown embedding object"
 }
 
@@ -3521,7 +3537,9 @@ void StyledTextIOReader_RTF::ReadPictData (vector<char>* data)
 */
 void StyledTextIOReader_RTF::ReadTopLevelPictData (TWIPS_Point* shownSize, ImageFormat* imageFormat, TWIPS_Point* bmSize, vector<char>* objData)
 {
+#if qStroika_Frameworks_Led_SupportGDI
     using UnknownRTFEmbedding = RTFIO::UnknownRTFEmbedding;
+#endif
     using ControlWord         = RTFIO::ControlWord;
 
     *imageFormat = eDefaultImageFormat;
@@ -3626,9 +3644,11 @@ void StyledTextIOReader_RTF::ReadTopLevelPictData (TWIPS_Point* shownSize, Image
 
                 shownSize->h *= scaleX;
                 shownSize->v *= scaleY;
+#if qStroika_Frameworks_Led_SupportGDI
                 if (shownSize->v > 20000 or shownSize->h > 20000 or shownSize->h < 10 or shownSize->v < 10) {
                     *shownSize = UnknownRTFEmbedding::CalcStaticDefaultShownSize ();
                 }
+#endif
 
                 ConsumeNextChar ();
                 return; // ALL DONE
@@ -3828,6 +3848,7 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
                 // LGP 2000/04/26
                 return;
             }
+            #if qPlatform_Windows
             if (fte->fCharSet != -1) {
                 // Not sure what I should do if Win32CharSetToCodePage returns zero? -- LGP 2002-12-08
                 CodePage cp = Platform::Windows::Win32CharSetToCodePage (fte->fCharSet);
@@ -3836,6 +3857,7 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
                 }
                 readerContext.UseInputCharSetEncoding (readerContext.GetCurrentGroupContext ()->fCurrentCodePage);
             }
+            #endif
         } break;
 
         case RTFIO::eControlAtom_fs: {
@@ -4111,6 +4133,7 @@ size_t StyledTextIOWriter_RTF::WriterContext::GetCurSrcOffset () const
     return GetSrcStream ().current_offset ();
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 SimpleEmbeddedObjectStyleMarker* StyledTextIOWriter_RTF::WriterContext::GetCurSimpleEmbeddedObjectStyleMarker () const
 {
     size_t                                   offset         = GetCurSrcOffset ();
@@ -4125,6 +4148,7 @@ SimpleEmbeddedObjectStyleMarker* StyledTextIOWriter_RTF::WriterContext::GetCurSi
         return embeddingsList[0];
     }
 }
+#endif
 
 StyledTextIOWriter_RTF::Table* StyledTextIOWriter_RTF::WriterContext::GetCurRTFTable () const
 {
@@ -4323,6 +4347,7 @@ void StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
             write ("\\\\");
         } break;
 
+#if qStroika_Frameworks_Led_SupportGDI
         case kEmbeddingSentinelChar: {
             unique_ptr<StyledTextIOWriter_RTF::Table> table (writerContext.GetCurRTFTable ());
             if (table.get () != nullptr) {
@@ -4351,6 +4376,7 @@ void StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
                 WritePrivatLedEmbedding (writerContext, embedding);
             }
         } break;
+#endif
 
         default: {
             if (c == fSoftLineBreakChar) {
@@ -4450,7 +4476,7 @@ void StyledTextIOWriter_RTF::WriteStartParagraph (WriterContext& writerContext)
         default:
             break; // ignore .... \\pard will capture this...
     }
-    TextImager::StandardTabStopList tabStops = writerContext.GetSrcStream ().GetStandardTabStopList ();
+    StandardTabStopList tabStops = writerContext.GetSrcStream ().GetStandardTabStopList ();
     // assume we only save the specified tabstops, and that the default is already saved per-doc
     // since RTF1.4 doesn't seem to have a per-para 'deftabstop' value
     TWIPS tabSoFar = TWIPS{0};
@@ -4632,6 +4658,7 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
     }
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 bool StyledTextIOWriter_RTF::PossiblyWriteUnknownRTFEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
 {
     // Now see if it is an RTF embedding, and if so, write it out.
@@ -4784,6 +4811,7 @@ bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
     }
     return false;
 }
+#endif
 
 #if qGCC_OptBugWithLocalClassesScopedInFunction
 struct VectorSinkStream : SimpleEmbeddedObjectStyleMarker::SinkStream {
@@ -4796,6 +4824,7 @@ public:
     vector<char> fData;
 };
 #endif
+#if qStroika_Frameworks_Led_SupportGDI
 void StyledTextIOWriter_RTF::WritePrivatLedEmbedding (WriterContext& /*writerContext*/, SimpleEmbeddedObjectStyleMarker* embedding)
 {
 #if qBorlandNameInLocalFunctDeclarationSpaceCompilerBug
@@ -4834,6 +4863,7 @@ void StyledTextIOWriter_RTF::WritePrivatLedEmbedding (WriterContext& /*writerCon
     // DONE
     write ("}");
 }
+#endif
 
 void StyledTextIOWriter_RTF::WriteTag (const char* tagStr)
 {
