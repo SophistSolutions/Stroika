@@ -202,10 +202,14 @@ int Led::Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
 #elif qMultiByteCharacters
     return ::_mbsnicmp (l, r, n);
 #elif qWideCharacters
-    auto result = String::ThreeWayComparer{eCaseInsensitive} (Characters::String{l}.SafeSubString (0, n), Characters::String{r}.SafeSubString (0, n));
-    if (result == strong_ordering::equal) return 0;
-    if (result ==  strong_ordering::less) return -1;
-    if (result ==  strong_ordering::greater) return 1;
+    auto result =
+        String::ThreeWayComparer{eCaseInsensitive}(Characters::String{l}.SafeSubString (0, n), Characters::String{r}.SafeSubString (0, n));
+    if (result == strong_ordering::equal)
+        return 0;
+    if (result == strong_ordering::less)
+        return -1;
+    if (result == strong_ordering::greater)
+        return 1;
 #endif
 }
 
@@ -218,10 +222,13 @@ int Led::Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
 #elif qMultiByteCharacters
     return ::_mbsicmp (l, r);
 #elif qWideCharacters
-    auto result = String::ThreeWayComparer{eCaseInsensitive} (Characters::String{l}, Characters::String{r});
-    if (result == strong_ordering::equal) return 0;
-    if (result ==  strong_ordering::less) return -1;
-    if (result ==  strong_ordering::greater) return 1;
+    auto result = String::ThreeWayComparer{eCaseInsensitive}(Characters::String{l}, Characters::String{r});
+    if (result == strong_ordering::equal)
+        return 0;
+    if (result == strong_ordering::less)
+        return -1;
+    if (result == strong_ordering::greater)
+        return 1;
 #endif
 }
 
@@ -818,7 +825,6 @@ void Led_URLManager::Open (const string& url)
     Open_SystemNetscape (url);
 #endif
 }
-
 
 string Led_URLManager::FileSpecToURL ([[maybe_unused]] const const filesystem::path& p)
 {

@@ -24,7 +24,6 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-
 #if qStroika_Frameworks_Led_SupportGDI
 
 #if qPlatform_MacOS
@@ -821,7 +820,8 @@ StyledTextFlavorPackageInternalizer::StyledTextFlavorPackageInternalizer (TextSt
 {
 }
 
-void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (filesystem::path fileName,Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage)
+void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (filesystem::path fileName, Led_ClipFormat* suggestedClipFormat,
+                                                                                      optional<CodePage> suggestedCodePage)
 {
     inherited::InternalizeFlavor_FILEGuessFormatsFromName (fileName, suggestedClipFormat, suggestedCodePage);
 

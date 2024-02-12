@@ -1088,8 +1088,8 @@ filesystem::path SpellCheckEngine_Basic_Simple::GetUserDictionary () const
 
 void SpellCheckEngine_Basic_Simple::SetUserDictionary (const filesystem::path& userDictionary)
 {
-    fUDName = userDictionary;
-    bool            noUD        = userDictionary.empty ();
+    fUDName   = userDictionary;
+    bool noUD = userDictionary.empty ();
     delete fUD;
     fUD = NULL;
 
