@@ -201,17 +201,17 @@ namespace Stroika::Frameworks::Led {
     public:
         // if fontSpec is nullptr, use default. Probably later we will return and update the fontspec with
         // ApplyStyle
-        virtual size_t current_offset () const override;
-        virtual void   AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
-        virtual void   ApplyStyle (size_t from, size_t to, const vector<StyledInfoSummaryRecord>& styleRuns) override;
+        virtual size_t            current_offset () const override;
+        virtual void              AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
+        virtual void              ApplyStyle (size_t from, size_t to, const vector<StyledInfoSummaryRecord>& styleRuns) override;
         virtual FontSpecification GetDefaultFontSpec () const override;
 #if qStroika_Frameworks_Led_SupportGDI
-        virtual void              InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
-        virtual void              AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
-        #endif
-        virtual void              AppendSoftLineBreak () override;
-        virtual void              InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
-        virtual void              Flush () override;
+        virtual void InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
+        virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
+#endif
+        virtual void AppendSoftLineBreak () override;
+        virtual void InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
+        virtual void Flush () override;
 
     public:
         nonvirtual size_t GetInsertionStart () const;
@@ -240,12 +240,12 @@ namespace Stroika::Frameworks::Led {
         vector<Context> fSavedContexts;
 
     private:
-        TextStore*                                          fTextStore;
-        StandardStyledTextImager::StyleDatabasePtr          fStyleRunDatabase;
-        size_t                                              fOriginalStart;
-        size_t                                              fInsertionStart;
-        vector<StyledInfoSummaryRecord> fSavedStyleInfo;
-        vector<Led_tChar>                                   fCachedText;
+        TextStore*                                 fTextStore;
+        StandardStyledTextImager::StyleDatabasePtr fStyleRunDatabase;
+        size_t                                     fOriginalStart;
+        size_t                                     fInsertionStart;
+        vector<StyledInfoSummaryRecord>            fSavedStyleInfo;
+        vector<Led_tChar>                          fCachedText;
     };
 
     /*

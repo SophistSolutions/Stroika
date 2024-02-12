@@ -14,7 +14,6 @@ using StyleMarker       = StyledTextImager::StyleMarker;
 using StyleDatabaseRep  = StandardStyledTextImager::StyleDatabaseRep;
 using InfoSummaryRecord = StandardStyledTextImager::InfoSummaryRecord;
 
-
 /*
  ********************************************************************************
  *************** StandardStyledTextImager::StandardStyleMarker ******************

@@ -255,7 +255,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @DESCRIPTION:
         */
         virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) = 0;
-        #endif
+#endif
 
     public:
         /*
@@ -415,7 +415,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @DESCRIPTION:
         */
         virtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const = 0;
-        #endif
+#endif
 
     public:
         class Table;
@@ -847,7 +847,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     private:
         StyledTextIOWriter::SinkStream& fRealSinkStream;
     };
-    #endif
+#endif
 
     /*
         ********************************************************************************

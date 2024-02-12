@@ -176,7 +176,7 @@ namespace Stroika::Frameworks::Led {
     {
         return fLength;
     }
-    #endif
+#endif
 
 }
 

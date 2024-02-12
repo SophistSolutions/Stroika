@@ -255,9 +255,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual string MapOutputTextFromTString (const Led_tString& text);
 
     protected:
-        const HTMLInfo*                                     fGetHTMLInfoFrom;
+        const HTMLInfo*                 fGetHTMLInfoFrom;
         vector<StyledInfoSummaryRecord> fStyleRunSummary;
-        Led_tChar                                           fSoftLineBreakChar;
+        Led_tChar                       fSoftLineBreakChar;
     };
 
     class StyledTextIOWriter_HTML::WriterContext {
@@ -280,20 +280,20 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         StyledInfoSummaryRecord fLastEmittedISR;
-        size_t                                      fLastStyleChangeAt;
-        size_t                                      fIthStyleRun;
-        size_t                                      fLastForcedNLAt;
-        bool                                        fEmittedStartOfPara;
-        bool                                        fEmittingList;
-        bool                                        fEmittingListItem;
-        vector<string>                              fTagStack;
-        bool                                        fInTableCell;
+        size_t                  fLastStyleChangeAt;
+        size_t                  fIthStyleRun;
+        size_t                  fLastForcedNLAt;
+        bool                    fEmittedStartOfPara;
+        bool                    fEmittingList;
+        bool                    fEmittingListItem;
+        vector<string>          fTagStack;
+        bool                    fInTableCell;
 
     public:
-        nonvirtual size_t                           GetCurSrcOffset () const;
+        nonvirtual size_t GetCurSrcOffset () const;
 #if qStroika_Frameworks_Led_SupportGDI
         nonvirtual SimpleEmbeddedObjectStyleMarker* GetCurSimpleEmbeddedObjectStyleMarker () const;
-        #endif
+#endif
     };
 
     /*

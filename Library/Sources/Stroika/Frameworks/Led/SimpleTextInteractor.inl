@@ -33,7 +33,7 @@ namespace Stroika::Frameworks::Led {
         TemporarilySetUpdateMode updateModeSetter (*this, updateMode);
         SetTopRowInWindow (row);
     }
-    #endif
+#endif
 
 }
 

@@ -236,7 +236,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = SpellCheckEngine_Basic;
 
     public:
-    using SpellCheckEngine::UDInterface;
+        using SpellCheckEngine::UDInterface;
 
     public:
         SpellCheckEngine_Basic_Simple ();

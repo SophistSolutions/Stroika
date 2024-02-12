@@ -33,7 +33,7 @@ namespace Stroika::Frameworks::Led {
     public:
         size_t fLength;
     };
-    
+
 #if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         StandardStyledTextImager

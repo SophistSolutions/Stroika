@@ -21,8 +21,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-
-
     /*
     @CLASS:         TextImager::StandardTabStopList
     @BASES:         @'TextImager::TabStopList'
@@ -47,8 +45,6 @@ namespace Stroika::Frameworks::Led {
     public:
         nonvirtual bool operator== (const StandardTabStopList& rhs) const;
     };
-
-
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*
@@ -256,7 +252,7 @@ namespace Stroika::Frameworks::Led {
         @CLASS:         TextImager::TabStopList
         @DESCRIPTION:   <p>See @'TabStopList'</p>
         */
-        using TabStopList = TabStopList;
+        using TabStopList         = TabStopList;
         using StandardTabStopList = StandardTabStopList;
         class SimpleTabStopList;
 

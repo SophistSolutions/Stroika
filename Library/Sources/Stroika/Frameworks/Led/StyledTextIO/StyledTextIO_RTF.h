@@ -768,57 +768,57 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         struct Context {
             Context ();
 
-            IncrementalFontSpecification    fFontSpec;
-            StandardTabStopList fTabStops;
-            Justification                   fJustification;
-            TWIPS                           fSpaceBefore;
-            TWIPS                           fSpaceAfter;
-            CoordinateType                  fSpaceBetweenLines;
-            bool                            fSpaceBetweenLinesMult;
-            ListStyle                       fListStyle;
-            unsigned char                   fListIndentLevel;
-            TWIPS                           fFirstIndent;
-            TWIPS                           fLeftMargin;
-            TWIPS                           fRightMargin;
-            bool                            fTextHidden;
+            IncrementalFontSpecification fFontSpec;
+            StandardTabStopList          fTabStops;
+            Justification                fJustification;
+            TWIPS                        fSpaceBefore;
+            TWIPS                        fSpaceAfter;
+            CoordinateType               fSpaceBetweenLines;
+            bool                         fSpaceBetweenLinesMult;
+            ListStyle                    fListStyle;
+            unsigned char                fListIndentLevel;
+            TWIPS                        fFirstIndent;
+            TWIPS                        fLeftMargin;
+            TWIPS                        fRightMargin;
+            bool                         fTextHidden;
         };
 
     public:
-        virtual void AppendText (const Led_tChar* text, size_t nTChars)            = 0;
+        virtual void AppendText (const Led_tChar* text, size_t nTChars) = 0;
 #if qStroika_Frameworks_Led_SupportGDI
-        virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)  = 0;
-        #endif
-        virtual void AppendSoftLineBreak ()                                        = 0;
-        virtual void EndParagraph ()                                               = 0;
-        virtual void UseFont (const IncrementalFontSpecification& fontSpec)        = 0;
-        virtual void SetJustification (Justification justification)                = 0;
-        virtual void SetTabStops (const StandardTabStopList& tabStops) = 0;
-        virtual void SetFirstIndent (TWIPS tx)                                     = 0;
-        virtual void SetLeftMargin (TWIPS lhs)                                     = 0;
-        virtual void SetRightMargin (TWIPS rhs)                                    = 0;
-        virtual void SetSpaceBefore (TWIPS tx)                                     = 0;
-        virtual void SetSpaceAfter (TWIPS tx)                                      = 0;
-        virtual void SetSpaceBetweenLines (CoordinateType tx)                      = 0;
-        virtual void SetSpaceBetweenLinesMult (bool multipleLineSpacing)           = 0;
-        virtual void SetTextHidden (bool hidden)                                   = 0;
-        virtual void SetInTable (bool inTable)                                     = 0;
-        virtual void EndRow (bool forceEmit = false)                               = 0;
-        virtual void EndCell (bool forceEmit = false)                              = 0;
-        virtual void SetListStyle (ListStyle listStyle)                            = 0;
-        virtual void SetListIndentLevel (unsigned char indentLevel)                = 0;
-        virtual void SetTableBorderColor (Color c)                                 = 0;
-        virtual void SetCellX (TWIPS cellx)                                        = 0;
-        virtual void SetCellBackColor (const Color& c)                             = 0;
-        virtual void Call_trowd ()                                                 = 0;
-        virtual void Set_trleft (TWIPS t)                                          = 0;
-        virtual void SetDefaultCellMarginsForRow_top (TWIPS t)                     = 0;
-        virtual void SetDefaultCellMarginsForRow_left (TWIPS t)                    = 0;
-        virtual void SetDefaultCellMarginsForRow_bottom (TWIPS t)                  = 0;
-        virtual void SetDefaultCellMarginsForRow_right (TWIPS t)                   = 0;
-        virtual void SetDefaultCellSpacingForRow_top (TWIPS t)                     = 0;
-        virtual void SetDefaultCellSpacingForRow_left (TWIPS t)                    = 0;
-        virtual void SetDefaultCellSpacingForRow_bottom (TWIPS t)                  = 0;
-        virtual void SetDefaultCellSpacingForRow_right (TWIPS t)                   = 0;
+        virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) = 0;
+#endif
+        virtual void AppendSoftLineBreak ()                                 = 0;
+        virtual void EndParagraph ()                                        = 0;
+        virtual void UseFont (const IncrementalFontSpecification& fontSpec) = 0;
+        virtual void SetJustification (Justification justification)         = 0;
+        virtual void SetTabStops (const StandardTabStopList& tabStops)      = 0;
+        virtual void SetFirstIndent (TWIPS tx)                              = 0;
+        virtual void SetLeftMargin (TWIPS lhs)                              = 0;
+        virtual void SetRightMargin (TWIPS rhs)                             = 0;
+        virtual void SetSpaceBefore (TWIPS tx)                              = 0;
+        virtual void SetSpaceAfter (TWIPS tx)                               = 0;
+        virtual void SetSpaceBetweenLines (CoordinateType tx)               = 0;
+        virtual void SetSpaceBetweenLinesMult (bool multipleLineSpacing)    = 0;
+        virtual void SetTextHidden (bool hidden)                            = 0;
+        virtual void SetInTable (bool inTable)                              = 0;
+        virtual void EndRow (bool forceEmit = false)                        = 0;
+        virtual void EndCell (bool forceEmit = false)                       = 0;
+        virtual void SetListStyle (ListStyle listStyle)                     = 0;
+        virtual void SetListIndentLevel (unsigned char indentLevel)         = 0;
+        virtual void SetTableBorderColor (Color c)                          = 0;
+        virtual void SetCellX (TWIPS cellx)                                 = 0;
+        virtual void SetCellBackColor (const Color& c)                      = 0;
+        virtual void Call_trowd ()                                          = 0;
+        virtual void Set_trleft (TWIPS t)                                   = 0;
+        virtual void SetDefaultCellMarginsForRow_top (TWIPS t)              = 0;
+        virtual void SetDefaultCellMarginsForRow_left (TWIPS t)             = 0;
+        virtual void SetDefaultCellMarginsForRow_bottom (TWIPS t)           = 0;
+        virtual void SetDefaultCellMarginsForRow_right (TWIPS t)            = 0;
+        virtual void SetDefaultCellSpacingForRow_top (TWIPS t)              = 0;
+        virtual void SetDefaultCellSpacingForRow_left (TWIPS t)             = 0;
+        virtual void SetDefaultCellSpacingForRow_bottom (TWIPS t)           = 0;
+        virtual void SetDefaultCellSpacingForRow_right (TWIPS t)            = 0;
 
     public:
         virtual void Flush () = 0;
@@ -1064,13 +1064,13 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         RTFInfo* fRTFInfo;
 
     protected:
-        RTFIO::FontTable*                                   fFontTable;
-        RTFIO::ColorTable*                                  fColorTable;
-        RTFIO::ListTables*                                  fListTable;
-        CodePage                                            fDocumentCharacterSet;
+        RTFIO::FontTable*               fFontTable;
+        RTFIO::ColorTable*              fColorTable;
+        RTFIO::ListTables*              fListTable;
+        CodePage                        fDocumentCharacterSet;
         vector<StyledInfoSummaryRecord> fStyleRunSummary;
-        const Led_tChar                                     fSoftLineBreakChar;
-        DiscontiguousRun<bool>                              fHidableTextRuns;
+        const Led_tChar                 fSoftLineBreakChar;
+        DiscontiguousRun<bool>          fHidableTextRuns;
     };
 
     /*
@@ -1101,15 +1101,15 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual Table*                           GetCurRTFTable () const;
 
     public:
-        bool                                        fInTable;
-        StyledTextIOWriter_RTF::SrcStream&          fSrcStream;
-        StyledInfoSummaryRecord fLastEmittedISR;
-        size_t                                      fNextStyleChangeAt;
-        size_t                                      fIthStyleRun;
-        size_t                                      fNextHidableTextChangeAt;
-        bool                                        fHidableTextRegionOpen;
-        size_t                                      fIthHidableTextRun;
-        size_t                                      fCharsToSkip;
+        bool                               fInTable;
+        StyledTextIOWriter_RTF::SrcStream& fSrcStream;
+        StyledInfoSummaryRecord            fLastEmittedISR;
+        size_t                             fNextStyleChangeAt;
+        size_t                             fIthStyleRun;
+        size_t                             fNextHidableTextChangeAt;
+        bool                               fHidableTextRegionOpen;
+        size_t                             fIthHidableTextRun;
+        size_t                             fCharsToSkip;
     };
 
     /*

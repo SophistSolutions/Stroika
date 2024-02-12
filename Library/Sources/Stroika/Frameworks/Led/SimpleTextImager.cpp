@@ -16,7 +16,7 @@ using namespace Stroika::Frameworks::Led;
 
 using PartitionMarker = Partition::PartitionMarker;
 #if qStroika_Frameworks_Led_SupportGDI
-using PartitionPtr    = PartitioningTextImager::PartitionPtr;
+using PartitionPtr = PartitioningTextImager::PartitionPtr;
 
 /*
  ********************************************************************************

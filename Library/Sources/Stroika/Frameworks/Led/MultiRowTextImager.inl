@@ -404,7 +404,7 @@ namespace Stroika::Frameworks::Led {
         AssertNotNull (row.GetPartitionMarker ());
         return GetPartitionElementCacheInfo (row.GetPartitionMarker ()).GetRowHeight (row.GetSubRow ());
     }
-    #endif
+#endif
 
 }
 

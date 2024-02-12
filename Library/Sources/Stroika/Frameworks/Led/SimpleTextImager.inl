@@ -215,7 +215,7 @@ namespace Stroika::Frameworks::Led {
     {
         return (lhs.GetPartitionMarker () != rhs.GetPartitionMarker ());
     }
-    #endif
+#endif
 
 }
 
