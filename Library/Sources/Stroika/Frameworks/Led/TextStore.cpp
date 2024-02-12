@@ -29,6 +29,10 @@ void Led::Private_::PreRemoveMarker_ (TextStore& textstore, Marker* marker)
 {
     textstore.PreRemoveMarker (marker);
 }
+void Led::Private_::RemoveMarkers_ (TextStore& textstore, Marker* const markerArray[], size_t markerCount)
+{
+    textstore.RemoveMarkers (markerArray, markerCount);
+}
 
 /*
  ********************************************************************************
