@@ -89,35 +89,6 @@ const bool kRunning32BitGDI = ((::GetVersion () & 0x80000000) == 0); // I BELIEV
 #endif // Should be a better way to check for 32bit GDI!!!
 #endif
 
-#if qPlatform_MacOS
-inline QDErr SafeNewGWorld (GWorldPtr* offscreenGWorld, short pixelDepth, const Rect* boundsRect, CTabHandle cTable, GDHandle aGDevice, GWorldFlags flags)
-{
-    // NewGWorld seems to crash with 7.5.3 when we are low on memory in our app heap.
-    // So just treat this as a failure result from NewGWorld, and avoid the crash.
-    // LGP 960524
-    try {
-        Led_CheckSomeLocalHeapRAMAvailable (8 * 1024);
-    }
-    catch (...) {
-        return memFullErr;
-    }
-    return ::NewGWorld (offscreenGWorld, pixelDepth, boundsRect, cTable, aGDevice, flags);
-}
-inline GWorldFlags SafeUpdateGWorld (GWorldPtr* offscreenGWorld, short pixelDepth, const Rect* boundsRect, CTabHandle cTable,
-                                     GDHandle aGDevice, GWorldFlags flags)
-{
-    // UpdateGWorld seems to crash with 7.5.3 when we are low on memory in our app heap.
-    // So just treat this as a failure result from UpdateGWorld, and avoid the crash.
-    // LGP 960524
-    try {
-        Led_CheckSomeLocalHeapRAMAvailable (8 * 1024);
-    }
-    catch (...) {
-        return -1; // <0 implies error
-    }
-    return ::UpdateGWorld (offscreenGWorld, pixelDepth, boundsRect, cTable, aGDevice, flags);
-}
-#endif
 
 #if qPlatform_Windows
 inline void Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
@@ -670,28 +641,6 @@ const Color Color::kLimeGreen = Color (0, Color::kColorValueMax, 0);
 const Color Color::kFuchsia   = Color::kMagenta; // same according to that table
 const Color Color::kAqua      = Color::kCyan;    // same according to that table
 
-/*
- ********************************************************************************
- ************************************** Pen *********************************
- ********************************************************************************
- */
-#if qPlatform_MacOS
-const Pattern Pen::kWhitePattern = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-};
-const Pattern Pen::kLightGrayPattern = {
-    0x88, 0x22, 0x88, 0x22, 0x88, 0x22, 0x88, 0x22,
-};
-const Pattern Pen::kGrayPattern = {
-    0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55,
-};
-const Pattern Pen::kDarkGrayPattern = {
-    0x77, 0xdd, 0x77, 0xdd, 0x77, 0xdd, 0x77, 0xdd,
-};
-const Pattern Pen::kBlackPattern = {
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-};
-#endif
 
 /*
  ********************************************************************************
@@ -759,16 +708,7 @@ void FontSpecification::SetFromOSRep (const string& osRep)
 */
 void FontSpecification::SetFontName (const SDKString& fontName)
 {
-#if qPlatform_MacOS
-    Str255 pFontName;
-    pFontName[0] = fontName.length ();
-    memcpy (&pFontName[1], fontName.c_str (), pFontName[0]);
-    short fontNum = 0;
-    ::GetFNum (pFontName, &fontNum);
-    // Alas, the Mac font Manager returns ZERO as the font number if it really
-    // has no idea about the font. This is NOT what we want. But unsure what we can do better at this point!
-    fFontSpecifier = fontNum;
-#elif qPlatform_Windows
+#if qPlatform_Windows
     Characters::CString::Copy (fFontInfo.lfFaceName, Memory::NEltsOf (fFontInfo.lfFaceName), fontName.c_str ());
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif qStroika_FeatureSupported_XWindows
@@ -785,9 +725,7 @@ FontSpecification::FontNameSpecifier::FontNameSpecifier (const Characters::SDKCh
 
 void FontSpecification::SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier)
 {
-#if qPlatform_MacOS
-    fFontSpecifier = fontNameSpecifier;
-#elif qPlatform_Windows
+#if qPlatform_Windows
     Characters::CString::Copy (fFontInfo.lfFaceName, Memory::NEltsOf (fFontInfo.lfFaceName), fontNameSpecifier.fName);
     fFontInfo.lfCharSet = DEFAULT_CHARSET;
 #elif qStroika_FeatureSupported_XWindows
@@ -1456,14 +1394,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
         }
 #endif
 
-#if qPlatform_MacOS
-        Memory::StackBuffer<short> shortOffsets{charsThisTime + 1};
-        Assert (Led_GetCurrentGDIPort () == *this);
-        ::MeasureText (charsThisTime, &text[i], shortOffsets);
-        for (size_t j = 0; j < charsThisTime; ++j) {
-            charLocations[i + j] = shortOffsets[j + 1] + runningCharCount; // Silly Apple defines shortOffsets[0] always to be zero!
-        }
-#elif qPlatform_Windows
+#if qPlatform_Windows
         SIZE size;
         Assert (sizeof (int) == sizeof (DistanceType));
 #if qUseUniscribeToImage && qWideCharacters
@@ -1591,10 +1522,6 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
                             [[maybe_unused]] TextDirection direction, Led_Point outputAt, CoordinateType hTabOrigin,
                             const TabStopList& tabStopList, DistanceType* amountDrawn, CoordinateType hScrollOffset)
 {
-#if qPlatform_MacOS
-    SetPort ();
-#endif
-
     DistanceType     widthSoFar = 0;
     const Led_tChar* textCursor = text;
     const Led_tChar* textEnd    = text + nBytes;
@@ -1614,21 +1541,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
         }
 
 // Actually image the characters
-#if qPlatform_MacOS
-        Assert (Led_GetCurrentGDIPort () == *this);
-        Led_Point cursor = Led_Point (outputAt.v + precomputedFontMetrics.GetAscent (), outputAt.h - hScrollOffset); // ascent - goto baseline...
-        ::MoveTo (cursor.h + widthSoFar, cursor.v);
-        ::TextMode (srcOr);
-        ::DrawText (textCursor, 0, nextTabAt - textCursor);
-#if TARGET_CARBON
-        {
-            Point junk;
-            widthSoFar = ::GetPortPenLocation (Led_GetCurrentGDIPort (), &junk)->h - cursor.h;
-        }
-#else
-        widthSoFar                      = Led_GetCurrentGDIPort ()->pnLoc.h - cursor.h;
-#endif
-#elif qPlatform_Windows
+#if qPlatform_Windows
         int oldBkMode = SetBkMode (TRANSPARENT);
 
 #if qUseUniscribeToImage && qWideCharacters
@@ -1820,10 +1733,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
 
 void Tablet::SetBackColor (const Color& backColor)
 {
-#if qPlatform_MacOS
-    SetPort ();
-    GDI_RGBBackColor (backColor.GetOSRep ());
-#elif qPlatform_Windows
+#if qPlatform_Windows
     SetBkColor (backColor.GetOSRep ());
 #elif qStroika_FeatureSupported_XWindows
     if (backColor == Color::kWhite) {
@@ -1852,10 +1762,7 @@ void Tablet::SetBackColor (const Color& backColor)
 
 void Tablet::SetForeColor (const Color& foreColor)
 {
-#if qPlatform_MacOS
-    SetPort ();
-    GDI_RGBForeColor (foreColor.GetOSRep ());
-#elif qPlatform_Windows
+#if qPlatform_Windows
     SetTextColor (foreColor.GetOSRep ());
 #elif qStroika_FeatureSupported_XWindows
     if (foreColor == Color::kWhite) {
@@ -1890,12 +1797,7 @@ void Tablet::SetForeColor (const Color& foreColor)
 void Tablet::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color& eraseColor)
 {
     if (not eraseRect.IsEmpty ()) {
-#if qPlatform_MacOS
-        SetPort ();
-        Rect qdEraser = AsQDRect (eraseRect);
-        GDI_RGBForeColor (eraseColor.GetOSRep ());
-        ::FillRect (&qdEraser, &Pen::kBlackPattern);
-#elif qPlatform_Windows
+#if qPlatform_Windows
         Led_Rect         eraser = eraseRect;
         Brush            backgroundBrush (eraseColor.GetOSRep ());
         GDI_Obj_Selector pen (this, ::GetStockObject (NULL_PEN));
@@ -1939,14 +1841,7 @@ void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unuse
                                       [[maybe_unused]] Color hilightForeColor, Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
-#if qPlatform_MacOS
-        SetPort ();
-        LMSetHiliteMode (LMGetHiliteMode () & 0x7F);
-        GDI_RGBBackColor (oldBackColor.GetOSRep ()); // Mac HilightMode code already knows the hilightBackColor - and exchanges it with the given backColor
-        //  GDI_RGBForeColor (foreColor.GetOSRep ());       // See IM V-61- docs on "The Hilite Mode".
-        Rect qdHiliteRect = AsQDRect (hilightArea);
-        ::InvertRect (&qdHiliteRect);
-#elif qPlatform_Windows
+#if qPlatform_Windows
         /*
          *  SPR#1271 - major reworking using DIB sections etc, to get much better display of hilighted text.
          */
@@ -2006,13 +1901,7 @@ void Tablet::HilightArea_SolidHelper (const Region& hilightArea, [[maybe_unused]
                                       [[maybe_unused]] Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
-#if qPlatform_MacOS
-        SetPort ();
-        LMSetHiliteMode (LMGetHiliteMode () & 0x7F);
-        GDI_RGBBackColor (oldBackColor.GetOSRep ()); // Mac HilightMode code already knows the hilightBackColor - and exchanges it with the given backColor
-        //  GDI_RGBForeColor (foreColor.GetOSRep ());       // See IM V-61- docs on "The Hilite Mode".
-        ::InvertRgn (hilightArea.GetOSRep ());
-#elif qPlatform_Windows
+#if qPlatform_Windows
         Assert (false); // probably not hard - bit not totally obvious how todo and since not called yet - ignore for now... LGP 2002-12-03
 #elif qStroika_FeatureSupported_XWindows
         Assert (false); // I have no XWin region implementation yet... LGP 2002-12-03
@@ -2026,11 +1915,7 @@ void Tablet::HilightArea_SolidHelper (const Region& hilightArea, [[maybe_unused]
 */
 FontMetrics Tablet::GetFontMetrics () const
 {
-#if qPlatform_MacOS
-    FontInfo fontInfo;
-    ::GetFontInfo (&fontInfo);
-    return (fontInfo);
-#elif qPlatform_Windows
+#if qPlatform_Windows
     RequireNotNull (m_hAttribDC);
     TEXTMETRIC tms;
     Verify (::GetTextMetrics (m_hAttribDC, &tms) != 0);

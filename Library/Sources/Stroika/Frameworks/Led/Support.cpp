@@ -826,56 +826,12 @@ void Led_URLManager::Open (const string& url)
 #endif
 }
 
-#if qPlatform_MacOS
-string Led_URLManager::FileSpecToURL (const FSSpec& fsp)
-{
-    short  len = 0;
-    Handle h   = nullptr;
-    Led_ThrowOSErr (FSpGetFullPath (&fsp, &len, &h));
-    AssertNotNull (h);
-    const char kFilePrefix[]  = "file:///";
-    size_t     kFilePrefixLen = ::strlen (kFilePrefix);
-    char*      result         = new char[kFilePrefixLen + len + 1];
-    (void)::memcpy (result, kFilePrefix, kFilePrefixLen);
-    (void)::memcpy (&result[kFilePrefixLen], *h, len);
-    ::DisposeHandle (h);
-    result[kFilePrefixLen + len] = '\0';
-    for (size_t i = 0; i < len; i++) {
-        if (result[kFilePrefixLen + i] == ':') {
-            result[kFilePrefixLen + i] = '/';
-        }
-    }
-    string r = result;
-    delete[] result;
 
-    // Now go through and quote illegal URL characters
-    string rr;
-    for (size_t i = 0; i < r.length (); i++) {
-        char c = r[i];
-        if (isalnum (c) or c == '/' or c == '.' or c == '_' or c == ':' or c == '#') {
-            rr.append (&c, 1);
-        }
-        else {
-            rr.append ("%");
-            unsigned char x = (((unsigned char)c) >> 4);
-            Assert (x <= 0xf);
-            x = (x > 9) ? (x - 10 + 'A') : (x + '0');
-            rr.append ((char*)&x, 1);
-            x = ((unsigned char)(c & 0xf));
-            Assert (x <= 0xf);
-            x = (x > 9) ? (x - 10 + 'A') : (x + '0');
-            rr.append ((char*)&x, 1);
-        }
-    }
-    return rr;
-}
-#elif qPlatform_Windows
-string Led_URLManager::FileSpecToURL ([[maybe_unused]] const string& path)
+string Led_URLManager::FileSpecToURL ([[maybe_unused]] const const filesystem::path& p)
 {
     AssertNotImplemented (); // nyi (not needed anywhere right now)
     return "";
 }
-#endif
 
 #if qUseInternetConfig
 void Led_URLManager::Open_IC (const string& url)

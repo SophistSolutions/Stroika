@@ -1081,21 +1081,15 @@ void SpellCheckEngine_Basic_Simple::SetMainDictionary (const Dictionary* mainDic
     SetDictionaries (dicts);
 }
 
-SpellCheckEngine_Basic_Simple::UDDictionaryName SpellCheckEngine_Basic_Simple::GetUserDictionary () const
+filesystem::path SpellCheckEngine_Basic_Simple::GetUserDictionary () const
 {
     return fUDName;
 }
 
-void SpellCheckEngine_Basic_Simple::SetUserDictionary (const UDDictionaryName& userDictionary)
+void SpellCheckEngine_Basic_Simple::SetUserDictionary (const filesystem::path& userDictionary)
 {
     fUDName = userDictionary;
-#if qPlatform_MacOS
-    static FSSpec zero;
-    memset (&zero, 0, sizeof (zero));
-    bool noUD = (::memcmp (&userDictionary, &zero, sizeof (zero)) == 0);
-#else
-    bool            noUD        = userDictionary.length () == 0;
-#endif
+    bool            noUD        = userDictionary.empty ();
     delete fUD;
     fUD = NULL;
 

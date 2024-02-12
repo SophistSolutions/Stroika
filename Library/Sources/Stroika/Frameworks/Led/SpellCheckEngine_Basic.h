@@ -258,16 +258,11 @@ namespace Stroika::Frameworks::Led {
         const Dictionary* fMainDictionary;
 
     public:
-#if qPlatform_MacOS
-        using UDDictionaryName = FSSpec;
-#else
-        using UDDictionaryName = SDKString;
-#endif
-        nonvirtual UDDictionaryName GetUserDictionary () const;
-        nonvirtual void             SetUserDictionary (const UDDictionaryName& userDictionary);
+        nonvirtual filesystem::path GetUserDictionary () const;
+        nonvirtual void             SetUserDictionary (const filesystem::path& userDictionary);
 
     private:
-        UDDictionaryName    fUDName;
+        filesystem::path    fUDName;
         EditableDictionary* fUD;
 
     private:

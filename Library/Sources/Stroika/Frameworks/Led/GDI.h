@@ -335,9 +335,7 @@ namespace Stroika::Frameworks::Led {
     public:
         constexpr Color (const Color&) = default;
         constexpr Color (ColorValue redValue, ColorValue greenValue, ColorValue blueValue);
-#if qPlatform_MacOS
-        explicit Color (const RGBColor& rgbColor);
-#elif qPlatform_Windows
+#if qPlatform_Windows
         explicit Color (COLORREF colorRef);
 #endif
 
@@ -371,9 +369,7 @@ namespace Stroika::Frameworks::Led {
         static const Color kAqua;
 
     public:
-#if qPlatform_MacOS
-        nonvirtual RGBColor GetOSRep () const;
-#elif qPlatform_Windows
+#if qPlatform_Windows
         nonvirtual COLORREF GetOSRep () const;
 #endif
 
@@ -407,22 +403,6 @@ namespace Stroika::Frameworks::Led {
      *  Note - this class is used in conjunction with @'GDI_Obj_Selector'.
      */
     class Pen {
-#if qPlatform_MacOS
-    public:
-        static const Pattern kWhitePattern;
-        static const Pattern kLightGrayPattern;
-        static const Pattern kGrayPattern;
-        static const Pattern kDarkGrayPattern;
-        static const Pattern kBlackPattern;
-
-    public:
-        Pen (short penStyle = srcCopy, const Pattern* penPat = &kBlackPattern, const Color& color = Color::kBlack);
-
-    public:
-        short   fPenStyle;
-        Pattern fPenPat;
-        Color   fPenColor;
-#endif
 #if qPlatform_Windows
     public:
         Pen (int nPenStyle, int nWidth, COLORREF crColor);
@@ -540,9 +520,7 @@ namespace Stroika::Frameworks::Led {
         explicit FontSpecification (const IncrementalFontSpecification& from);
 
     public:
-#if qPlatform_MacOS
-        using FontNameSpecifier = short;
-#elif qPlatform_Windows
+#if qPlatform_Windows
         struct FontNameSpecifier { // So struct copies etc will work and so we can define op==
             FontNameSpecifier ();
             FontNameSpecifier (const SDKChar* from);
@@ -619,10 +597,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  SetTextColor (const Color& textColor);
 
     public:
-#if qPlatform_MacOS
-        nonvirtual void GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const;
-        nonvirtual void SetOSRep (short fontID, short fontSize, Style fontStyle);
-#elif qPlatform_Windows
+#if qPlatform_Windows
         nonvirtual LOGFONT GetOSRep () const;
         nonvirtual void    GetOSRep (LOGFONT* logFont) const;
         nonvirtual void    SetOSRep (LOGFONT logFont);
@@ -647,11 +622,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void MergeIn (const IncrementalFontSpecification& addInTheseAttributes);
 
     private:
-#if qPlatform_MacOS
-        short fFontSpecifier;
-        short fFontSize;
-        Style fFontStyle;
-#elif qPlatform_Windows
+#if qPlatform_Windows
         LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
 #else
         FontNameSpecifier fFontFamily;
@@ -784,10 +755,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  SetTextColor (const Color& textColor);
 
     public:
-#if qPlatform_MacOS
-        nonvirtual void GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const;
-        nonvirtual void SetOSRep (short fontID, short fontSize, Style fontStyle); // marks all attribs as valid
-#elif qPlatform_Windows
+#if qPlatform_Windows
         nonvirtual LOGFONT GetOSRep () const;
         nonvirtual void    GetOSRep (LOGFONT* logFont) const;
         nonvirtual void    SetOSRep (LOGFONT logFont); // marks all attribs as valid
@@ -916,17 +884,7 @@ namespace Stroika::Frameworks::Led {
     Led_Rect EnsureRectOnScreen (const Led_Rect& r);
 #endif
 
-#if qPlatform_MacOS
-    Led_Point AsLedPoint (Point p);
-    Point     AsQDPoint (Led_Point p);
-    Led_Rect  AsLedRect (Rect r);
-    Rect      AsQDRect (Led_Rect r);
-    Led_Size  AsLedSize (Point s);
-    Point     GetRectOrigin (const Rect& r);
-    Point     GetRectSize (const Rect& r);
-    short     GetRectHeight (const Rect& r);
-    short     GetRectWidth (const Rect& r);
-#elif qPlatform_Windows
+#if qPlatform_Windows
     Led_Point AsLedPoint (POINT p);
     POINT     AsPOINT (Led_Point p);
     Led_Rect  AsLedRect (RECT r);
@@ -962,9 +920,7 @@ namespace Stroika::Frameworks::Led {
 #endif
     public:
         FontMetrics () = default;
-#if qPlatform_MacOS
-        FontMetrics (const FontInfo& from);
-#elif qPlatform_Windows
+#if qPlatform_Windows
         FontMetrics (const TEXTMETRIC& from);
 #elif qStroika_FeatureSupported_XWindows
         FontMetrics (const PlatformSpecific& from);
@@ -988,18 +944,13 @@ namespace Stroika::Frameworks::Led {
         // Convertion operator to make it easier to make GDI calls with one of our guys on a
         // with something expected a system specific one - like to fill in its value!
     public:
-#if qPlatform_MacOS
-        operator const FontInfo* () const;
-        operator FontInfo* ();
-#elif qPlatform_Windows
+#if qPlatform_Windows
         operator const TEXTMETRIC* () const;
         operator TEXTMETRIC* ();
 #endif
 
     private:
-#if qPlatform_MacOS
-        FontInfo fPlatformSpecific{};
-#elif qPlatform_Windows
+#if qPlatform_Windows
         TEXTMETRIC fPlatformSpecific{};
 #elif qStroika_FeatureSupported_XWindows
         PlatformSpecific fPlatformSpecific{};
@@ -1358,23 +1309,10 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 
-    /*
-     *  Trap Caching support
-     *
-     *      This is a groty hack - but can be quite a big speed improvment for
-     *  the Mac (at least 68K - I've never tried on PowerPC). For now
-     *  (and perhaps always) we only support this for the 68K code.
-     */
-#if qPlatform_MacOS
-    void     GDI_RGBForeColor (const RGBColor& color);
-    void     GDI_RGBBackColor (const RGBColor& color);
-    RGBColor GDI_GetForeColor ();
-    RGBColor GDI_GetBackColor ();
-#endif
 
 // Even for windows we have have this defined if we build including QuickTime support!
 #ifndef qHaveMacPictureDefined
-#define qHaveMacPictureDefined qPlatform_MacOS
+#define qHaveMacPictureDefined 0
 #endif
 
 /*

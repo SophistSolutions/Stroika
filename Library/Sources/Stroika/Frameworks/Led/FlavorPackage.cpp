@@ -11,11 +11,7 @@
 
 #include "Config.h"
 
-#if qPlatform_MacOS
-#include <Drag.h>
-#include <Errors.h>
-#include <Scrap.h>
-#elif qPlatform_Windows
+#if qPlatform_Windows
 #include <fcntl.h>
 #include <io.h>
 #include <shellapi.h>
@@ -96,7 +92,7 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
     if (length != 0) {
         Memory::StackBuffer<Led_tChar> buf2{length};
         GetTextStore ().CopyOut (start, length, buf2.data ());
-#if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
+#if qStroika_FeatureSupported_XWindows
         length = Characters::NLToNative<Led_tChar> (buf2, length, buf, length);
 #elif qPlatform_Windows
         length = Characters::NLToNative<Led_tChar> (buf2.data (), length, buf.data (), 2 * length + 1);
@@ -181,13 +177,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
         fileSpecBufferLength = flavorPackage.ReadFlavorData (kFILEClipFormat, fileSpecBufferLength, fileSpecBuffer.data ());
 
 // Unpack the filename
-#if qPlatform_MacOS
-        HFSFlavor flavorData;
-        memset (&flavorData, 0, sizeof flavorData);
-        memcpy (&flavorData, fileSpecBuffer, min (sizeof flavorData, fileSpecBufferLength));
-        const FSSpec*  realFileName        = &flavorData.fileSpec;
-        Led_ClipFormat suggestedClipFormat = flavorData.fileType;
-#elif qPlatform_Windows
+#if  qPlatform_Windows
         TCHAR realFileName[_MAX_PATH + 1];
         {
             HDROP hdrop = (HDROP)::GlobalAlloc (GMEM_FIXED, fileSpecBufferLength);
@@ -211,13 +201,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
     }
 }
 
-bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
-#if qPlatform_MacOS
-    const FSSpec* fileName,
-#else
-    const Characters::SDKChar* fileName,
-#endif
-    Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage, size_t from, size_t to)
+bool FlavorPackageInternalizer::InternalizeFlavor_FILEData ( filesystem::path fileName, Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage, size_t from, size_t to)
 {
     Memory::BLOB b       = IO::FileSystem::FileInputStream::New (filesystem::path (fileName)).ReadAll ();
     const byte*  fileBuf = b.begin ();
@@ -235,18 +219,9 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
     return InternalizeFlavor_FILEDataRawBytes (suggestedClipFormat, suggestedCodePage, from, to, fileBuf, fileLen);
 }
 
-void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
-#if qPlatform_MacOS
-    const FSSpec* fileName,
-#else
-    const Characters::SDKChar* fileName,
-#endif
-    Led_ClipFormat* suggestedClipFormat, [[maybe_unused]] optional<CodePage> suggestedCodePage)
+void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (filesystem::path fileName,  Led_ClipFormat* suggestedClipFormat, [[maybe_unused]] optional<CodePage> suggestedCodePage)
 {
-#if qPlatform_MacOS
-// Should add code here to grab file-type from OS. If called from XXX - then thats already done, but in case
-// called from elsewhere...
-#elif qPlatform_Windows
+#if qPlatform_Windows
     if (suggestedClipFormat != nullptr and *suggestedClipFormat == kBadClipFormat) {
         TCHAR drive[_MAX_DRIVE];
         TCHAR dir[_MAX_DIR];
@@ -394,15 +369,7 @@ size_t ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, 
  */
 void WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf)
 {
-#if qPlatform_MacOS
-#if TARGET_CARBON
-    ScrapRef scrap = nullptr;
-    Led_ThrowIfOSStatus (::GetCurrentScrap (&scrap));
-    Led_ThrowIfOSStatus (::PutScrapFlavor (scrap, clipFormat, kScrapFlavorMaskNone, bufSize, buf));
-#else
-    Led_ThrowOSErr (::PutScrap (bufSize, clipFormat, Ptr (buf)));
-#endif
-#elif qPlatform_Windows
+#if qPlatform_Windows
     // NOTE: FOR THE PC - it is assumed all this happens  in the context of an open/close clipboard
     // done in the Led_MFC class overrides of OnCopyCommand_Before/OnCopyCommand_After
     HANDLE h = ::GlobalAlloc (GHND | GMEM_MOVEABLE, bufSize);

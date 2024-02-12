@@ -39,10 +39,7 @@
 
 #include "Config.h"
 
-#if qPlatform_MacOS
-#include <Processes.h> // for URL support
-#include <Scrap.h>
-#elif qPlatform_Windows
+#if qPlatform_Windows
 #include <Windows.h> //
 
 #include <DDEML.h> // really only needed if qUseSpyglassDDESDIToOpenURLs - but that define only set in LedConfig.h
@@ -231,34 +228,6 @@ namespace Stroika::Frameworks::Led {
     */
     wstring Led_tString2WideString (const Led_tString& s);
 
-#if qPlatform_MacOS
-    /*
-    @METHOD:        Led_ThrowOSErr
-    @DESCRIPTION:   <p>This is called internally by Led (or your code) after MacOS system calls that return an OSErr.</p>
-            <p>By default that error # is thrown - but you can override this behavior by calling @'Led_Set_ThrowOSErrException_Handler'.</p>
-            <p>Note - this method never returns - it always throws, unless 'err' == 'noErr' - in which case it does nothing.</p>
-    */
-    void Led_ThrowOSErr (OSErr err);
-
-    /*
-    @METHOD:        Led_Get_ThrowOSErrException_Handler
-    @DESCRIPTION:   <p>Get the handler used in @'Led_ThrowBadFormatDataException'.</p>
-    */
-    void (*Led_Get_ThrowOSErrException_Handler ()) (OSErr err);
-
-    /*
-    @METHOD:        Led_Set_ThrowOSErrException_Handler
-    @DESCRIPTION:   <p>Set the handler used in @'Led_ThrowBadFormatDataException'.</p>
-            <p>Note - any handler supplied must never return - it must always throw.</p>
-    */
-    void Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallback) (OSErr err));
-#endif
-
-#if qPlatform_MacOS
-    void Led_ThrowIfOSErr (OSErr err);
-    void Led_ThrowIfOSStatus (OSStatus err);
-#endif
-
     short          Led_ByteSwapFromMac (short src);
     unsigned short Led_ByteSwapFromMac (unsigned short src);
 
@@ -297,13 +266,6 @@ namespace Stroika::Frameworks::Led {
         }
         v.push_back (e);
     }
-
-#if qPlatform_MacOS
-    // throw if cannot do allocation. Use tmp memory if qUseMacTmpMemForAllocs.
-    // fall back on application-heap-zone if no tmp memory
-    Handle Led_DoNewHandle (size_t n);
-    void   Led_CheckSomeLocalHeapRAMAvailable (size_t n = 1024); // only to avoid MacOS crashes on toolbox calls with little RAM left
-#endif
 
     /*
     @CLASS:         DiscontiguousRunElement<DATA>
@@ -417,12 +379,10 @@ namespace Stroika::Frameworks::Led {
      *
      */
 #ifndef qStroika_Frameworks_Led_SupportClipboard
-#define qStroika_Frameworks_Led_SupportClipboard (qPlatform_MacOS or qPlatform_Windows or qStroika_FeatureSupported_XWindows)
+#define qStroika_Frameworks_Led_SupportClipboard (qPlatform_Windows or qStroika_FeatureSupported_XWindows)
 #endif
 
-#if qPlatform_MacOS
-    using Led_ClipFormat = OSType;
-#elif qPlatform_Windows
+#if qPlatform_Windows
     using Led_ClipFormat                 = CLIPFORMAT;
 #elif qStroika_FeatureSupported_XWindows
     using Led_ClipFormat                 = long;
@@ -431,11 +391,7 @@ namespace Stroika::Frameworks::Led {
     enum Led_ClipFormat : unsigned short {
     };
 #endif
-#if qPlatform_MacOS
-    const Led_ClipFormat kTEXTClipFormat = 'TEXT';
-    const Led_ClipFormat kPICTClipFormat = 'PICT';
-    const Led_ClipFormat kFILEClipFormat = 'hfs '; //  flavorTypeHFS->from <Drag.h>
-#elif qPlatform_Windows
+#if qPlatform_Windows
 #if qWideCharacters
     const Led_ClipFormat kTEXTClipFormat = CF_UNICODETEXT;
 #else
@@ -466,9 +422,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual size_t GetDataLength () const;
 
     private:
-#if qPlatform_MacOS
-        Handle fOSClipHandle;
-#elif qPlatform_Windows
+#if qPlatform_Windows
         HANDLE         fOSClipHandle;
 #endif
         void* fLockedData;
@@ -582,11 +536,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         virtual void Open (const string& url); // throws on detected errors
-#if qPlatform_MacOS
-        virtual string FileSpecToURL (const FSSpec& fsp);
-#elif qPlatform_Windows
-        virtual string FileSpecToURL (const string& path);
-#endif
+        virtual string FileSpecToURL (const filesystem::path& p);
 
     protected:
 #if qUseInternetConfig
@@ -603,16 +553,6 @@ namespace Stroika::Frameworks::Led {
 #endif
 #if qUseSystemNetscapeOpenURLs
         nonvirtual void Open_SystemNetscape (const string& url);
-#endif
-
-#if qPlatform_MacOS
-    private:
-        static pascal OSErr FSpGetFullPath (const FSSpec* spec, short* fullPathLength, Handle* fullPath);
-#endif
-
-#if qPlatform_MacOS
-    public:
-        static ProcessSerialNumber FindBrowser ();
 #endif
 
 #if qUseSpyglassDDESDIToOpenURLs

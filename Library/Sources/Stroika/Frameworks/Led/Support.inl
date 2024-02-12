@@ -14,12 +14,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qPlatform_MacOS
-}
-#include <Sound.h>
-namespace Stroika::Frameworks::Led {
-#endif
-
     inline size_t Led_tStrlen (const Led_tChar* s)
     {
         RequireNotNull (s);
@@ -106,29 +100,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-#if qPlatform_MacOS
-    /*
-    @METHOD:        Led_ThrowIfOSErr
-    @DESCRIPTION:   <p>If the argument err is not noErr, then throw that error.</p>
-    */
-    inline void Led_ThrowIfOSErr (OSErr err)
-    {
-        if (err != noErr) {
-            throw err;
-        }
-    }
-    /*
-    @METHOD:        Led_ThrowIfOSStatus
-    @DESCRIPTION:   <p>If the argument err is not noErr, then throw that error.</p>
-    */
-    inline void Led_ThrowIfOSStatus (OSStatus err)
-    {
-        if (err != noErr) {
-            throw err;
-        }
-    }
-#endif
-
     inline unsigned short Led_ByteSwapFromMac (unsigned short src)
     {
         return Configuration::EndianConverter (src, Configuration::Endian::eBig, Configuration::GetEndianness ());
@@ -193,30 +164,6 @@ namespace Stroika::Frameworks::Led {
         return static_cast<size_t> (r);
     }
 
-#if qPlatform_MacOS
-    // throw if cannot do allocation. Use tmp memory if qUseMacTmpMemForAllocs.
-    // fall back on application-heap-zone if no tmp memory
-    inline Handle Led_DoNewHandle (size_t n)
-    {
-#if qUseMacTmpMemForAllocs
-        OSErr  err;                           // ignored...
-        Handle h = ::TempNewHandle (n, &err); // try temp mem, and use our local mem if no temp mem left
-        if (h == nullptr) {
-            h = ::NewHandle (n);
-        }
-#else
-        Handle h = ::NewHandle (n);
-#endif
-        Execution::ThrowIfNull (h);
-        return h;
-    }
-    inline void Led_CheckSomeLocalHeapRAMAvailable (size_t n)
-    {
-        Handle h = ::NewHandle (n);
-        Execution::ThrowIfNull (h);
-        ::DisposeHandle (h);
-    }
-#endif
 
     template <typename ARRAY_CONTAINER, class T>
     size_t IndexOf (const ARRAY_CONTAINER& array, T item)
