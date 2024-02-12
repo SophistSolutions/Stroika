@@ -305,13 +305,8 @@ namespace Stroika::Frameworks::Led {
         virtual bool InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) override;
 
     public:
-        virtual void InternalizeFlavor_FILEGuessFormatsFromName (
-#if qPlatform_MacOS
-            const FSSpec* fileName,
-#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-            const SDKChar* fileName,
-#endif
-            Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage) override;
+        virtual void InternalizeFlavor_FILEGuessFormatsFromName (filesystem::path fileName, Led_ClipFormat* suggestedClipFormat,
+                                                                 optional<CodePage> suggestedCodePage) override;
         virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage,
                                                                         const byte* fileStart, const byte* fileEnd) override;
 
@@ -385,7 +380,7 @@ namespace Stroika::Frameworks::Led {
     private:
         FontSpecification fSavedStyle;
     };
-    #endif
+#endif
 
 }
 

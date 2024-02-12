@@ -6,26 +6,6 @@
 
 #include "../StroikaPreComp.h"
 
-#include "../../Foundation/Characters/SDKString.h"
-#include "../../Foundation/Configuration/Common.h"
-#include "../../Foundation/Debug/Assertions.h"
-#include "../../Foundation/Debug/CompileTimeFlagChecker.h"
-#include "../../Foundation/Execution/Throw.h"
-#include "../../Foundation/Memory/Common.h"
-#include "../../Foundation/Time/Realtime.h"
-
-#if qPlatform_Windows
-#include "../../Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
-#endif
-/*
-@MODULE:    LedSupport
-@DESCRIPTION:
-        <p>Support defines, and utility functions that should usually be provided
-    by some other class library (e.g. Stroika, TCL, MFC, OWL, etc. These
-    defines should just thunk down to the appropriate class library defines -
-    where possible.</p>
- */
-
 #include <climits>
 #include <cstddef>
 #include <cstdint>
@@ -35,20 +15,39 @@
 #include <string>
 #include <vector>
 
-#include "Stroika/Foundation/Configuration/Endian.h"
-
-#include "Config.h"
-
 #if qPlatform_Windows
 #include <Windows.h> //
 
-#include <DDEML.h> // really only needed if qUseSpyglassDDESDIToOpenURLs - but that define only set in LedConfig.h
 #include <oaidl.h> // for SAFEARRAY
 #include <tchar.h>
 #elif qStroika_FeatureSupported_XWindows
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #endif
+
+#include "../../Foundation/Characters/SDKString.h"
+#include "../../Foundation/Configuration/Common.h"
+#include "../../Foundation/Debug/Assertions.h"
+#include "../../Foundation/Debug/CompileTimeFlagChecker.h"
+#include "../../Foundation/Execution/Throw.h"
+#include "../../Foundation/Memory/Common.h"
+#include "../../Foundation/Time/Realtime.h"
+#include "Stroika/Foundation/Configuration/Endian.h"
+
+#if qPlatform_Windows
+#include "../../Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
+#endif
+
+/*
+@MODULE:    LedSupport
+@DESCRIPTION:
+        <p>Support defines, and utility functions that should usually be provided
+    by some other class library (e.g. Stroika, TCL, MFC, OWL, etc. These
+    defines should just thunk down to the appropriate class library defines -
+    where possible.</p>
+ */
+
+#include "Config.h"
 
 namespace Stroika {
     using namespace std;
@@ -314,8 +313,8 @@ namespace Stroika::Frameworks::Led {
     struct DiscontiguousRun : vector<DiscontiguousRunElement<DATA>> {};
 
     /*
-        *  Character set support.
-        */
+     *  Character set support.
+     */
 #if qMultiByteCharacters
     bool Led_IsLeadByte (unsigned char c);
     bool Led_IsValidSingleByte (unsigned char c); // non-leadbyte first byte...
@@ -333,10 +332,10 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     /*
-        *  These routines can be used either with single byte, multibyte, or wide
-        *  characters. They are intended to insulate most of the code from having
-        *  to worry about this.
-        */
+     *  These routines can be used either with single byte, multibyte, or wide
+     *  characters. They are intended to insulate most of the code from having
+     *  to worry about this.
+     */
     /*
     @METHOD:        Led_NextChar
     @DESCRIPTION:   <p>See @'Led_tChar'</p>

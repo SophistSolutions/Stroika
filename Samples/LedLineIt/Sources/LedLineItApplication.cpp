@@ -318,10 +318,6 @@ BOOL LedLineItApplication::InitInstance ()
         return false;
     }
 
-#if qUseSpyglassDDESDIToOpenURLs
-    Led_URLManager::InitDDEHandler ();
-#endif
-
     // Create MDI Frame Window
     {
         LedLineItMainFrame* pFrame = new LedLineItMainFrame ();

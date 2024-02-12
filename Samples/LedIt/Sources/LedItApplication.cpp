@@ -1310,10 +1310,6 @@ BOOL LedItApplication::InitInstance ()
 
 #endif
 
-#if qUseSpyglassDDESDIToOpenURLs
-    Led_URLManager::InitDDEHandler ();
-#endif
-
     // Tell Led about the kinds of embeddings we will allow
     EmbeddedObjectCreatorRegistry::Get ().AddStandardTypes ();
 

@@ -381,19 +381,6 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 /*
-@CONFIGVAR:     qUseSpyglassDDESDIToOpenURLs
-@DESCRIPTION:   <p><b>Win32 ONLY</b></p>
-        <p>For supporting openening URLs, use DDE to an application with Spyglass SDI/DDE.
-    This takes over DDE processing for your app (if you care, this could probably
-    be fixed).</p>
-        <p>Detaults OFF now (as of Led 3.0d5, 2000/04/03) - because this may fail when Led embedded in OCX, and
-    seems of only very marginal value anyhow. The ActiveX stuff SHOULD work, by now!</p>
- */
-#ifndef qUseSpyglassDDESDIToOpenURLs
-#define qUseSpyglassDDESDIToOpenURLs 0
-#endif
-
-/*
 @CONFIGVAR:     qUseActiveXToOpenURLs
 @DESCRIPTION:   <p><b>Win32 ONLY</b></p>
         <p>For supporting openening URLs.</p>

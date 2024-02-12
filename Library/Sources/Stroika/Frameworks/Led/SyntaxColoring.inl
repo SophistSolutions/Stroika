@@ -57,7 +57,7 @@ namespace Stroika::Frameworks::Led {
         }
         return 0;
     }
-    #endif
+#endif
 
 }
 

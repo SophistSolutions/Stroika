@@ -768,19 +768,19 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         struct Context {
             Context () = default;
 
-            IncrementalFontSpecification    fFontSpec{};
-            StandardTabStopList fTabStops{StandardTabStopList {RTFInfo::GetStaticDefaultTabStopWidth ()}};
-            Justification                   fJustification;
-            TWIPS                           fSpaceBefore{TWIPS{0}};
-            TWIPS                           fSpaceAfter{TWIPS{0}};
-            CoordinateType                  fSpaceBetweenLines{1000};
-            bool                            fSpaceBetweenLinesMult{true};
-            ListStyle                       fListStyle{eListStyle_None};
-            unsigned char                   fListIndentLevel{0};
-            TWIPS                           fFirstIndent{TWIPS{0}};
-            TWIPS                           fLeftMargin{TWIPS{0}};
-            TWIPS                           fRightMargin{TWIPS{0}};
-            bool                            fTextHidden{false};
+            IncrementalFontSpecification fFontSpec{};
+            StandardTabStopList          fTabStops{StandardTabStopList{RTFInfo::GetStaticDefaultTabStopWidth ()}};
+            Justification                fJustification;
+            TWIPS                        fSpaceBefore{TWIPS{0}};
+            TWIPS                        fSpaceAfter{TWIPS{0}};
+            CoordinateType               fSpaceBetweenLines{1000};
+            bool                         fSpaceBetweenLinesMult{true};
+            ListStyle                    fListStyle{eListStyle_None};
+            unsigned char                fListIndentLevel{0};
+            TWIPS                        fFirstIndent{TWIPS{0}};
+            TWIPS                        fLeftMargin{TWIPS{0}};
+            TWIPS                        fRightMargin{TWIPS{0}};
+            bool                         fTextHidden{false};
         };
 
     public:
@@ -846,7 +846,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void AppendText (const Led_tChar* text, size_t nTChars) override;
 #if qStroika_Frameworks_Led_SupportGDI
         virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
-        #endif
+#endif
         virtual void AppendSoftLineBreak () override;
         virtual void EndParagraph () override;
         virtual void UseFont (const IncrementalFontSpecification& fontSpec) override;
@@ -1034,11 +1034,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void    WriteStartParagraph (WriterContext& writerContext);
         virtual void    WriteTable (WriterContext& writerContext, Table* table);
 #if qStroika_Frameworks_Led_SupportGDI
-        virtual bool    PossiblyWriteUnknownRTFEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
-        virtual bool    PossiblyWriteOLERTFEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
-        virtual bool    PossiblyWritePICTEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
-        virtual void    WritePrivatLedEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
-        #endif
+        virtual bool PossiblyWriteUnknownRTFEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
+        virtual bool PossiblyWriteOLERTFEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
+        virtual bool PossiblyWritePICTEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
+        virtual void WritePrivatLedEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
+#endif
         virtual void    WriteTag (const char* tagStr);
         virtual void    WriteTagNValue (const char* tagStr, int value);
         virtual void    WriteHexCharDataBlock (size_t nBytes, const void* resultData);
@@ -1100,11 +1100,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         using Table = StyledTextIOWriter::SrcStream::Table;
 
     public:
-        virtual size_t                           GetCurSrcOffset () const;
+        virtual size_t GetCurSrcOffset () const;
 #if qStroika_Frameworks_Led_SupportGDI
         virtual SimpleEmbeddedObjectStyleMarker* GetCurSimpleEmbeddedObjectStyleMarker () const;
-        #endif
-        virtual Table*                           GetCurRTFTable () const;
+#endif
+        virtual Table* GetCurRTFTable () const;
 
     public:
         bool                               fInTable;

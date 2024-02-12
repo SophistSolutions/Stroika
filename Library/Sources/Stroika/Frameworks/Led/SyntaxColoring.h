@@ -32,8 +32,7 @@
 
 namespace Stroika::Frameworks::Led {
 
-
-    #if qStroika_Frameworks_Led_SupportGDI
+#if qStroika_Frameworks_Led_SupportGDI
 
     /*
     @CLASS:         SyntaxAnalyzer
@@ -236,7 +235,7 @@ namespace Stroika::Frameworks::Led {
     public:
         Color fColor;
     };
-    #endif
+#endif
 
 }
 

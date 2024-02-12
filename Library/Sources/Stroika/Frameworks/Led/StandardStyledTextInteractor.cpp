@@ -821,13 +821,7 @@ StyledTextFlavorPackageInternalizer::StyledTextFlavorPackageInternalizer (TextSt
 {
 }
 
-void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
-#if qPlatform_MacOS
-    const FSSpec* fileName,
-#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    const Characters::SDKChar* fileName,
-#endif
-    Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage)
+void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (filesystem::path fileName,Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage)
 {
     inherited::InternalizeFlavor_FILEGuessFormatsFromName (fileName, suggestedClipFormat, suggestedCodePage);
 
@@ -840,7 +834,7 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
         TCHAR dir[_MAX_DIR];
         TCHAR fname[_MAX_FNAME];
         TCHAR ext[_MAX_EXT];
-        ::_tsplitpath_s (fileName, drive, dir, fname, ext);
+        ::_tsplitpath_s (fileName.native ().c_str (), drive, dir, fname, ext);
         if (::_tcsicmp (ext, Led_SDK_TCHAROF (".rtf")) == 0) {
             *suggestedClipFormat = kRTFClipFormat;
         }

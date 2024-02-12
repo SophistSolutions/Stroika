@@ -102,7 +102,7 @@ namespace Stroika::Frameworks::Led {
     {
         return fSelEnd;
     }
-    #endif
+#endif
 
 }
 

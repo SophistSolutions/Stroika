@@ -227,7 +227,7 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (file
         TCHAR dir[_MAX_DIR];
         TCHAR fname[_MAX_FNAME];
         TCHAR ext[_MAX_EXT];
-        ::_tsplitpath_s (fileName, drive, dir, fname, ext);
+        ::_tsplitpath_s (fileName.native ().c_str (), drive, dir, fname, ext);
         if (::_tcsicmp (ext, Led_SDK_TCHAROF (".txt")) == 0) {
             *suggestedClipFormat = kTEXTClipFormat;
         }
