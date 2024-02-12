@@ -909,7 +909,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         // finally have to flush - then we need to preserve the ordering with a flag
     private:
         bool   fInTable{false};
-        bool fTableOpen{false};
+        bool   fTableOpen{false};
         size_t fTableNextRowNum{0};
         bool   fTableInRow{false}; // true if we've started a row; false if row just ended and not sure if there will be another
         size_t fTableNextCellNum{0};
