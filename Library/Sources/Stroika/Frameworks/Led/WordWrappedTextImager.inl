@@ -12,8 +12,8 @@
 
 namespace Stroika::Frameworks::Led {
 
- #if qStroika_Frameworks_Led_SupportGDI
-   /*
+#if qStroika_Frameworks_Led_SupportGDI
+    /*
      ********************************************************************************
      *************** TrivialWordWrappedImager<TEXTSTORE,IMAGER> *********************
      ********************************************************************************
@@ -63,7 +63,7 @@ namespace Stroika::Frameworks::Led {
     {
         return this->GetHeightOfRows (0, this->GetRowCount ());
     }
-    #endif
+#endif
 
 }
 

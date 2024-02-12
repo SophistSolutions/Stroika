@@ -1098,7 +1098,7 @@ namespace Stroika::Frameworks::Led {
         , fCellBackgroundColor (Color::kWhite)
     {
     }
-    #endif
+#endif
 
 }
 

@@ -1958,7 +1958,7 @@ namespace Stroika::Frameworks::Led {
     private:
         ParagraphInfo fSavedStyleInfo;
     };
-    #endif
+#endif
 
 }
 

@@ -127,7 +127,7 @@ namespace Stroika::Frameworks::Led {
         virtual void GetLayoutMargins (MultiRowTextImager::RowReference row, CoordinateType* lhs, CoordinateType* rhs) const override;
         nonvirtual DistanceType GetHeight () const;
     };
-    #endif
+#endif
 
 }
 
