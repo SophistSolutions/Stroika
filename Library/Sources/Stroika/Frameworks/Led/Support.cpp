@@ -877,7 +877,6 @@ void Led_URLManager::Open_SystemNetscape (const string& url)
 }
 #endif
 
-
 /*
  ********************************************************************************
  ********************** Led::MakeSophistsAppNameVersionURL **********************

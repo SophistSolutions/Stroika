@@ -11,7 +11,6 @@
 
 #include "Config.h"
 
-
 #include "TextBreaks.h"
 
 using std::byte;

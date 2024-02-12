@@ -107,7 +107,7 @@ namespace Stroika::Frameworks::Led {
     public:
         nonvirtual void OnSelChange ();
 #endif
-#if  qPlatform_Windows
+#if qPlatform_Windows
     private:
         nonvirtual void DoMenuAppends ();
         nonvirtual void AppendMenuString (const SDKString& s);
@@ -391,7 +391,6 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 
-
 #ifndef qSupportStdAboutBoxDlg
 #define qSupportStdAboutBoxDlg (qPlatform_Windows || qUseGTKForLedStandardDialogs)
 #endif
@@ -419,7 +418,6 @@ namespace Stroika::Frameworks::Led {
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_AboutBox (GtkWindow* parentWindow);
 #endif
-
 
 #if qStroika_FeatureSupported_XWindows
         virtual GtkWidget* MakeWindow () override;
@@ -509,7 +507,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportStdReplaceDlg
-#define qSupportStdReplaceDlg  qPlatform_Windows || qStroika_FeatureSupported_XWindows
+#define qSupportStdReplaceDlg qPlatform_Windows || qStroika_FeatureSupported_XWindows
 #endif
 
 #if qSupportStdReplaceDlg
@@ -628,8 +626,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportStdColorPickBox
-#define qSupportStdColorPickBox                                                                                                            \
-    ( qPlatform_Windows || (qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows))
+#define qSupportStdColorPickBox (qPlatform_Windows || (qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows))
 #endif
 
 #if qSupportStdColorPickBox && defined(__cplusplus)
@@ -667,7 +664,7 @@ namespace Stroika::Frameworks::Led {
         HWND fParentWnd;
 #endif
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     public:
         virtual bool DoModal ();
 #endif
@@ -762,7 +759,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportParagraphIndentsDlg
-#define qSupportParagraphIndentsDlg  qPlatform_Windows
+#define qSupportParagraphIndentsDlg qPlatform_Windows
 #endif
 
 #if qSupportParagraphIndentsDlg
@@ -869,7 +866,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportOtherFontSizeDlg
-#define qSupportOtherFontSizeDlg  qPlatform_Windows
+#define qSupportOtherFontSizeDlg qPlatform_Windows
 #endif
 
 #if qSupportOtherFontSizeDlg
@@ -909,7 +906,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportUnknownEmbeddingInfoDlg
-#define qSupportUnknownEmbeddingInfoDlg  qPlatform_Windows
+#define qSupportUnknownEmbeddingInfoDlg qPlatform_Windows
 #endif
 
 #if qSupportUnknownEmbeddingInfoDlg
@@ -945,7 +942,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportURLXEmbeddingInfoDlg
-#define qSupportURLXEmbeddingInfoDlg  qPlatform_Windows
+#define qSupportURLXEmbeddingInfoDlg qPlatform_Windows
 #endif
 
 #if qSupportURLXEmbeddingInfoDlg
@@ -1156,11 +1153,11 @@ namespace Stroika::Frameworks::Led {
 
     public:
         template <typename T1, typename T2>
-        static void cvt ( T1* o, const  T2& i);
+        static void cvt (T1* o, const T2& i);
     };
 
     template <typename T1, typename T2>
-    void Led_StdDialogHelper_EditTablePropertiesDialog::cvt ( T1* o, const  T2& i)
+    void Led_StdDialogHelper_EditTablePropertiesDialog::cvt (T1* o, const T2& i)
     {
         o->fTableBorderWidth           = i.fTableBorderWidth;
         o->fTableBorderColor           = i.fTableBorderColor;
@@ -1186,7 +1183,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportStdSpellCheckDlg
-#define qSupportStdSpellCheckDlg  qPlatform_Windows || qStroika_FeatureSupported_XWindows
+#define qSupportStdSpellCheckDlg qPlatform_Windows || qStroika_FeatureSupported_XWindows
 #endif
 
 #if qSupportStdSpellCheckDlg

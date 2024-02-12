@@ -101,7 +101,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             }
         };
 
-        public:
+    public:
         class SinkStream;
         /*
     @CLASS:         StyledTextIOReader::BadInputHandler
@@ -109,11 +109,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             <p>Abstract base class for styled text writing. Subclasses know about various styled text file formats, and
         take care of the details of mapping Led internal data structures with styled text into streams of bytes in that format.</p>
     */
-    class BadInputHandler {
-    public:
-        virtual void HandleBadlyFormattedInput (const StyledTextIOReader& reader, bool unrecoverable);
-    };
-
+        class BadInputHandler {
+        public:
+            virtual void HandleBadlyFormattedInput (const StyledTextIOReader& reader, bool unrecoverable);
+        };
 
     protected:
         StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream,
@@ -318,7 +317,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual size_t GetCountOfTCharsInserted () const;
     };
 
-    
     /*
     @CLASS:         StyledTextIOWriter
     @DESCRIPTION:
@@ -554,8 +552,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     */
     class StyledTextIOSrcStream_Memory : public StyledTextIOReader::SrcStream {
     public:
-        StyledTextIOSrcStream_Memory (const void* data, size_t nBytes
-        );
+        StyledTextIOSrcStream_Memory (const void* data, size_t nBytes);
 
     public:
         virtual size_t current_offset () const override;
@@ -702,8 +699,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     class StyledTextIOSrcStream_FileDescriptor : public StyledTextIOReader::SrcStream {
     public:
         // NB: On the Mac - this FD refers to a mac file access path - not the result of an ::open () call.
-        StyledTextIOSrcStream_FileDescriptor (int fd
-        );
+        StyledTextIOSrcStream_FileDescriptor (int fd);
         virtual ~StyledTextIOSrcStream_FileDescriptor ();
 
     public:

@@ -3,7 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-
 #include "../../Foundation/DataExchange/BadFormatException.h"
 #if qPlatform_Windows
 #include "../../Foundation/Memory/Platform/Windows/Handle.h"

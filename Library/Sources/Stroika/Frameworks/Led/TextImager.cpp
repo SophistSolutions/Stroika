@@ -3,7 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-
 #include "GDI.h"
 
 #include "TextImager.h"

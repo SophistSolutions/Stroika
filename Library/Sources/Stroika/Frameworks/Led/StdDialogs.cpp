@@ -236,7 +236,7 @@ void StdColorPopupHelper::Attach (HWND popup)
 }
 #endif
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
 void StdColorPopupHelper::OnSelChange ()
 {
 #if qPlatform_Windows
@@ -261,7 +261,7 @@ void StdColorPopupHelper::OnSelChange ()
 }
 #endif
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
 void StdColorPopupHelper::DoMenuAppends ()
 {
     if (fAllowNone) {
@@ -287,7 +287,7 @@ void StdColorPopupHelper::DoMenuAppends ()
 }
 #endif
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
 void StdColorPopupHelper::AppendMenuString (const SDKString& s)
 {
 #if qPlatform_Windows
@@ -944,7 +944,7 @@ bool Led_StdDialogHelper::DoModal ()
 #if qPlatform_Windows
     HWND oldFocusWnd = ::GetFocus ();
 #if qNO_INT_PTR_DefinedCompilerBug
-    using INT_PTR    = int;
+    using INT_PTR = int;
 #endif
     [[maybe_unused]] INT_PTR x =
         ::DialogBoxParam (fHINSTANCE, fResID, fParentWnd, reinterpret_cast<DLGPROC> (StaticDialogProc), reinterpret_cast<LPARAM> (this));
@@ -1056,7 +1056,7 @@ BOOL Led_StdDialogHelper::DialogProc (UINT message, [[maybe_unused]] WPARAM wPar
 }
 #endif
 
-#if  qPlatform_Windows || (qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs)
+#if qPlatform_Windows || (qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs)
 SDKString Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
 {
 #if qPlatform_Windows
@@ -1395,7 +1395,7 @@ void Led_StdDialogHelper_FindDialog::PreDoModalHook ()
     SelectItemText (findText);
     SetFocusedItem (findText);
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     SetItemChecked (kLedStdDlg_FindBox_WrapAtEndOfDoc, fWrapSearch);
     SetItemChecked (kLedStdDlg_FindBox_WholeWord, fWholeWordSearch);
     SetItemChecked (kLedStdDlg_FindBox_IgnoreCase, not fCaseSensativeSearch);
@@ -1413,13 +1413,13 @@ void Led_StdDialogHelper_FindDialog::OnDontFindButton ()
 {
 #if qSupportLedDialogWidgets
     fFindText = fFindTextWidget.GetText ();
-#elif  qPlatform_Windows
+#elif qPlatform_Windows
     fFindText = Led_SDKString2tString (GetItemText (kLedStdDlg_FindBox_FindText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    fFindText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
+    fFindText                     = Led_SDKString2tString (GetItemText (fLookupTextWidget));
 #endif
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     fWrapSearch          = GetItemChecked (kLedStdDlg_FindBox_WrapAtEndOfDoc);
     fWholeWordSearch     = GetItemChecked (kLedStdDlg_FindBox_WholeWord);
     fCaseSensativeSearch = not GetItemChecked (kLedStdDlg_FindBox_IgnoreCase);
@@ -1570,7 +1570,7 @@ void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
     fReplaceTextWidget.ReplaceWindow (::GetDlgItem (GetHWND (), kLedStdDlg_ReplaceBox_ReplaceText));
 #endif
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     DialogItemID findText    = kLedStdDlg_ReplaceBox_FindText;
     DialogItemID replaceText = kLedStdDlg_ReplaceBox_ReplaceText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
@@ -1590,7 +1590,7 @@ void Led_StdDialogHelper_ReplaceDialog::PreDoModalHook ()
     SelectItemText (replaceText);
     SetFocusedItem (findText);
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     SetItemChecked (kLedStdDlg_ReplaceBox_WrapAtEndOfDoc, fWrapSearch);
     SetItemChecked (kLedStdDlg_ReplaceBox_WholeWord, fWholeWordSearch);
     SetItemChecked (kLedStdDlg_ReplaceBox_IgnoreCase, not fCaseSensativeSearch);
@@ -1641,11 +1641,11 @@ void Led_StdDialogHelper_ReplaceDialog::SaveItems ()
     fFindText    = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_FindText));
     fReplaceText = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_ReplaceText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    fFindText    = Led_SDKString2tString (GetItemText (fLookupTextWidget));
-    fReplaceText = Led_SDKString2tString (GetItemText (fReplaceTextWidget));
+    fFindText                     = Led_SDKString2tString (GetItemText (fLookupTextWidget));
+    fReplaceText                  = Led_SDKString2tString (GetItemText (fReplaceTextWidget));
 #endif
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     fWrapSearch          = GetItemChecked (kLedStdDlg_ReplaceBox_WrapAtEndOfDoc);
     fWholeWordSearch     = GetItemChecked (kLedStdDlg_ReplaceBox_WholeWord);
     fCaseSensativeSearch = not GetItemChecked (kLedStdDlg_ReplaceBox_IgnoreCase);
@@ -1748,7 +1748,7 @@ StdColorPickBox::StdColorPickBox (GtkWindow* modalParentWindow, const Color& ini
 }
 #endif
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
 bool StdColorPickBox::DoModal ()
 {
 #if qPlatform_Windows
@@ -2266,7 +2266,7 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
     gtk_widget_show (button);
     SetOKButton (button);
 #endif
-#if  qPlatform_Windows
+#if qPlatform_Windows
     SelectItemText (kLedStdDlg_URLXEmbeddingInfoBox_TitleText);
 #endif
     inherited::PreDoModalHook ();
@@ -2281,7 +2281,7 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::OnOK ()
     (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_URLText, bufText, static_cast<int> (Memory::NEltsOf (bufText)));
     fURLText = bufText;
 #endif
-#if  qPlatform_Windows
+#if qPlatform_Windows
     SelectItemText (kLedStdDlg_URLXEmbeddingInfoBox_TitleText);
 #endif
     inherited::OnOK ();
@@ -2378,7 +2378,7 @@ void Led_StdDialogHelper_AddNewTableDialog::PreDoModalHook ()
 #if qPlatform_Windows
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
 #endif
-#if  qPlatform_Windows
+#if qPlatform_Windows
     SetItemText (kLedStdDlg_AddNewTableBox_RowCount, FormatINTAsString (static_cast<int> (fRows)));
     SetItemText (kLedStdDlg_AddNewTableBox_ColCount, FormatINTAsString (static_cast<int> (fColumns)));
     SetFocusedItem (kLedStdDlg_AddNewTableBox_RowCount);
@@ -2390,7 +2390,7 @@ void Led_StdDialogHelper_AddNewTableDialog::PreDoModalHook ()
 
 void Led_StdDialogHelper_AddNewTableDialog::OnOK ()
 {
-#if  qPlatform_Windows
+#if qPlatform_Windows
     int r = 0;
     int c = 0;
     if (ParseStringToINT (GetItemText (kLedStdDlg_AddNewTableBox_RowCount), &r) and
@@ -2402,7 +2402,7 @@ void Led_StdDialogHelper_AddNewTableDialog::OnOK ()
     else {
         Led_BeepNotify ();
     }
-    #endif
+#endif
 }
 #endif
 
@@ -2446,7 +2446,7 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::PreDoModalHook ()
         fCellBackgroundColorPopup.SetNoSelectedColor ();
     }
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     SetItemText (kLedStdDlg_EditTablePropertiesBox_BorderWidth, FormatINTAsString (fInfo.fTableBorderWidth));
 
     SetItemText (kLedStdDlg_EditTablePropertiesBox_CellMarginTop, FormatINTAsString (fInfo.fDefaultCellMargins.top));
@@ -2461,10 +2461,10 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::PreDoModalHook ()
     }
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
 #endif
-#if  qPlatform_Windows
+#if qPlatform_Windows
     SetFocusedItem (kLedStdDlg_EditTablePropertiesBox_BorderWidth);
     SelectItemText (kLedStdDlg_EditTablePropertiesBox_BorderWidth);
-    #endif
+#endif
     inherited::PreDoModalHook ();
 }
 
@@ -2495,7 +2495,7 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::OnOK ()
     Info result    = fInfo;
     bool dataValid = true;
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     dataValid = dataValid and ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_BorderWidth), &result.fTableBorderWidth) and
                 result.fTableBorderWidth >= 0 and result.fTableBorderWidth <= 1440;
 
@@ -2527,7 +2527,7 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::OnOK ()
     else {
         Led_BeepNotify ();
     }
-    #endif
+#endif
 }
 #endif
 
@@ -2697,7 +2697,7 @@ void Led_StdDialogHelper_SpellCheckDialog::PreDoModalHook ()
     fChangeTextWidget.ReplaceWindow (::GetDlgItem (GetHWND (), kLedStdDlg_SpellCheckBox_ChangeText));
 #endif
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     SetItemEnabled (kLedStdDlg_SpellCheckBox_Options, fCallback.OptionsDialogEnabled ());
 #endif
 
@@ -2722,7 +2722,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeButton ()
 {
 #if qSupportLedDialogWidgets
     Led_tString changeText = fChangeTextWidget.GetText ();
-#elif  qPlatform_Windows
+#elif qPlatform_Windows
     Led_tString changeText        = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     Led_tString changeText        = Led_SDKString2tString (GetItemText (fChangeTextWidget));
@@ -2735,7 +2735,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeAllButton ()
 {
 #if qSupportLedDialogWidgets
     Led_tString changeText = fChangeTextWidget.GetText ();
-#elif  qPlatform_Windows
+#elif qPlatform_Windows
     Led_tString changeText        = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     Led_tString changeText        = Led_SDKString2tString (GetItemText (fChangeTextWidget));
@@ -2761,7 +2761,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnLookupOnWebButton ()
 {
 #if qSupportLedDialogWidgets
     Led_tString undefinedWordText = fUndefinedWordWidget.GetText ();
-#elif  qPlatform_Windows
+#elif qPlatform_Windows
     Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_UnknownWordText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
     Led_tString undefinedWordText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
@@ -2782,7 +2782,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnCloseButton ()
 void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListChangeSelection ()
 {
     if (fCurrentMisspellInfo != NULL) {
-#if  qPlatform_Windows
+#if qPlatform_Windows
         DialogItemID changeTextItem = kLedStdDlg_SpellCheckBox_ChangeText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         DialogItemID changeTextItem = fChangeTextWidget;
@@ -2817,7 +2817,7 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
     fCurrentMisspellInfo = NULL;
     fCurrentMisspellInfo = fCallback.GetNextMisspelling ();
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     DialogItemID undefinedTextItem = kLedStdDlg_SpellCheckBox_UnknownWordText;
     DialogItemID changeTextItem    = kLedStdDlg_SpellCheckBox_ChangeText;
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
@@ -2852,7 +2852,7 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
     SetItemText (changeTextItem, Led_tString2SDKString (changeText));
 #endif
 
-#if  qPlatform_Windows
+#if qPlatform_Windows
     SetItemEnabled (kLedStdDlg_SpellCheckBox_IgnoreOnce, fCurrentMisspellInfo != NULL);
     SetItemEnabled (kLedStdDlg_SpellCheckBox_IgnoreAll, fCurrentMisspellInfo != NULL);
     SetItemEnabled (kLedStdDlg_SpellCheckBox_ChangeOnce, fCurrentMisspellInfo != NULL);

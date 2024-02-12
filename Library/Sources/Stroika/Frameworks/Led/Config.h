@@ -370,7 +370,6 @@ namespace Stroika::Frameworks::Led {
  */
 #if qPlatform_Windows
 
-
 /*
 @CONFIGVAR:     qUseActiveXToOpenURLs
 @DESCRIPTION:   <p><b>Win32 ONLY</b></p>
