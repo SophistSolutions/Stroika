@@ -755,10 +755,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     */
     class StyledTextIOReader_RTF::ReaderContext::Destination_ {
     protected:
-        Destination_ ();
+        Destination_ () = default;
 
     public:
-        virtual ~Destination_ ();
+        virtual ~Destination_ () = default;
 
     public:
         /*
@@ -766,21 +766,21 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @DESCRIPTION:
         */
         struct Context {
-            Context ();
+            Context () = default;
 
-            IncrementalFontSpecification fFontSpec;
-            StandardTabStopList          fTabStops;
-            Justification                fJustification;
-            TWIPS                        fSpaceBefore;
-            TWIPS                        fSpaceAfter;
-            CoordinateType               fSpaceBetweenLines;
-            bool                         fSpaceBetweenLinesMult;
-            ListStyle                    fListStyle;
-            unsigned char                fListIndentLevel;
-            TWIPS                        fFirstIndent;
-            TWIPS                        fLeftMargin;
-            TWIPS                        fRightMargin;
-            bool                         fTextHidden;
+            IncrementalFontSpecification    fFontSpec{};
+            StandardTabStopList fTabStops{StandardTabStopList {RTFInfo::GetStaticDefaultTabStopWidth ()}};
+            Justification                   fJustification;
+            TWIPS                           fSpaceBefore{TWIPS{0}};
+            TWIPS                           fSpaceAfter{TWIPS{0}};
+            CoordinateType                  fSpaceBetweenLines{1000};
+            bool                            fSpaceBetweenLinesMult{true};
+            ListStyle                       fListStyle{eListStyle_None};
+            unsigned char                   fListIndentLevel{0};
+            TWIPS                           fFirstIndent{TWIPS{0}};
+            TWIPS                           fLeftMargin{TWIPS{0}};
+            TWIPS                           fRightMargin{TWIPS{0}};
+            bool                            fTextHidden{false};
         };
 
     public:
@@ -844,12 +844,14 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         virtual void AppendText (const Led_tChar* text, size_t nTChars) override;
+#if qStroika_Frameworks_Led_SupportGDI
         virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
+        #endif
         virtual void AppendSoftLineBreak () override;
         virtual void EndParagraph () override;
         virtual void UseFont (const IncrementalFontSpecification& fontSpec) override;
         virtual void SetJustification (Justification justification) override;
-        virtual void SetTabStops (const TextImager::StandardTabStopList& tabStops) override;
+        virtual void SetTabStops (const StandardTabStopList& tabStops) override;
         virtual void SetFirstIndent (TWIPS tx) override;
         virtual void SetLeftMargin (TWIPS lhs) override;
         virtual void SetRightMargin (TWIPS rhs) override;
@@ -1031,10 +1033,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual void WriteHexCharHelper (unsigned char c);
         virtual void    WriteStartParagraph (WriterContext& writerContext);
         virtual void    WriteTable (WriterContext& writerContext, Table* table);
+#if qStroika_Frameworks_Led_SupportGDI
         virtual bool    PossiblyWriteUnknownRTFEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
         virtual bool    PossiblyWriteOLERTFEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
         virtual bool    PossiblyWritePICTEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
         virtual void    WritePrivatLedEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
+        #endif
         virtual void    WriteTag (const char* tagStr);
         virtual void    WriteTagNValue (const char* tagStr, int value);
         virtual void    WriteHexCharDataBlock (size_t nBytes, const void* resultData);
@@ -1097,7 +1101,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         virtual size_t                           GetCurSrcOffset () const;
+#if qStroika_Frameworks_Led_SupportGDI
         virtual SimpleEmbeddedObjectStyleMarker* GetCurSimpleEmbeddedObjectStyleMarker () const;
+        #endif
         virtual Table*                           GetCurRTFTable () const;
 
     public:
@@ -1225,30 +1231,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             return fCurrentGroup->fParentGroup;
         }
         return nullptr;
-    }
-
-    //  class   StyledTextIOReader_RTF::ReaderContext::Destination_
-    inline StyledTextIOReader_RTF::ReaderContext::Destination_::Destination_ ()
-    {
-    }
-    inline StyledTextIOReader_RTF::ReaderContext::Destination_::~Destination_ ()
-    {
-    }
-    inline StyledTextIOReader_RTF::ReaderContext::Destination_::Context::Context ()
-        : fFontSpec ()
-        , fTabStops (TextImager::StandardTabStopList (RTFInfo::GetStaticDefaultTabStopWidth ()))
-        , fJustification (eLeftJustify)
-        , fSpaceBefore (TWIPS{0})
-        , fSpaceAfter (TWIPS{0})
-        , fSpaceBetweenLines (1000)
-        , fSpaceBetweenLinesMult (true)
-        , fListStyle (eListStyle_None)
-        , fListIndentLevel (0)
-        , fFirstIndent (TWIPS{0})
-        , fLeftMargin (TWIPS{0})
-        , fRightMargin (TWIPS{0})
-        , fTextHidden (false)
-    {
     }
 
     //  class   StyledTextIOReader_RTF::ReaderContext::SinkStreamDestination

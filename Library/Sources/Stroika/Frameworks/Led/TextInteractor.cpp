@@ -25,9 +25,8 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-using SavedTextRep = InteractiveReplaceCommand::SavedTextRep;
-
 #if qStroika_Frameworks_Led_SupportGDI
+using SavedTextRep = InteractiveReplaceCommand::SavedTextRep;
 
 namespace {
     class FlavorSavorTextRep : public SavedTextRep {

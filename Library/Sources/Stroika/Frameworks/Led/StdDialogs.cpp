@@ -106,9 +106,8 @@ namespace {
  ********************************************************************************
  */
 StdColorPopupHelper::StdColorPopupHelper (bool allowNone)
-    : fAllowNone{allowNone}
-    , fIsSelectedColor{allowNone}
-    , fSelectedColor{Color::kBlack}
+    : fIsSelectedColor{allowNone}
+    , fAllowNone{allowNone}
 #if qPlatform_MacOS
     , fControl{NULL}
 #endif
@@ -1615,6 +1614,7 @@ BOOL Led_StdDialogHelper_AboutBox::DialogProc (UINT message, WPARAM wParam, LPAR
 }
 #endif
 
+#if qSupportStdAboutBoxDlg
 void Led_StdDialogHelper_AboutBox::OnClickInInfoField ()
 {
     OnOK ();
@@ -1624,6 +1624,7 @@ void Led_StdDialogHelper_AboutBox::OnClickInLedWebPageField ()
 {
     OnOK ();
 }
+#endif
 
 #if qSupportStdFindDlg
 /*

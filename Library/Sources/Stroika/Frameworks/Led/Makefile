@@ -43,7 +43,6 @@ Objs+=	$(ObjDir)SimpleTextInteractor${OBJ_SUFFIX}
 Objs+=	$(ObjDir)SimpleTextStore${OBJ_SUFFIX}
 Objs+=	$(ObjDir)SpellCheckEngine_Basic${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StandardStyledTextImager${OBJ_SUFFIX}
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)StandardStyledTextInteractor${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StdDialogs${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextEmbeddedObjects${OBJ_SUFFIX}
@@ -54,6 +53,7 @@ Objs+=	$(ObjDir)TextBreaks${OBJ_SUFFIX}
 Objs+=	$(ObjDir)TextImager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)TextInteractor${OBJ_SUFFIX}
 Objs+=	$(ObjDir)TextStore${OBJ_SUFFIX}
+ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)WordProcessor${OBJ_SUFFIX}
 Objs+=	$(ObjDir)WordWrappedTextImager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)WordWrappedTextInteractor${OBJ_SUFFIX}

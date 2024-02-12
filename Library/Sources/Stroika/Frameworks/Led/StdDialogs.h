@@ -90,7 +90,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         bool  fIsSelectedColor;
-        Color fSelectedColor;
+        Color fSelectedColor{Color::kBlack};
 
     private:
         nonvirtual size_t MapColorIdx (const Color& c) const;

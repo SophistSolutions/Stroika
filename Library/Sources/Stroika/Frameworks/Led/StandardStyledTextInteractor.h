@@ -44,6 +44,7 @@ namespace Stroika::Frameworks::Led {
     extern const Led_ClipFormat kHTMLClipFormat;
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     class SimpleEmbeddedObjectStyleMarker;
 
     DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
@@ -384,6 +385,7 @@ namespace Stroika::Frameworks::Led {
     private:
         FontSpecification fSavedStyle;
     };
+    #endif
 
 }
 

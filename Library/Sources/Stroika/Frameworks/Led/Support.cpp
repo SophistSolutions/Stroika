@@ -96,7 +96,7 @@ Led_tString Led::Led_ANSIString2tString (const string& s)
 {
     // Up until Stroika v3.0d2 (and maybe for a while after) - this converted from CP_ACP, despite being called 'ANSI' - I htink because I was
     // once confused about the difference between these two --LGP 2023-07-27
-    return CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Bytes2String<Led_tString> (as_bytes (span{s}));
+    return CodeCvt<Led_tChar>{locale{}}.Bytes2String<Led_tString> (as_bytes (span{s}));
 }
 #endif
 
@@ -109,7 +109,7 @@ string Led::Led_tString2ANSIString (const Led_tString& s)
 {
     // Up until Stroika v3.0d2 (and maybe for a while after) - this converted from CP_ACP, despite being called 'ANSI' - I htink because I was
     // once confused about the difference between these two --LGP 2023-07-27
-    return CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.String2Bytes<string> (span{s});
+    return CodeCvt<Led_tChar>{locale{}}.String2Bytes<string> (span{s});
 }
 #endif
 
@@ -194,6 +194,7 @@ Time::DurationSeconds Led::Led_GetDoubleClickTime ()
 
 int Led::Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
 {
+    using Characters::String;
     RequireNotNull (l);
     RequireNotNull (r);
 #if qSingleByteCharacters
@@ -201,7 +202,10 @@ int Led::Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
 #elif qMultiByteCharacters
     return ::_mbsnicmp (l, r, n);
 #elif qWideCharacters
-    return ::_wcsnicmp (l, r, n);
+    auto result = String::ThreeWayComparer{eCaseInsensitive} (Characters::String{l}.SafeSubString (0, n), Characters::String{r}.SafeSubString (0, n));
+    if (result == strong_ordering::equal) return 0;
+    if (result ==  strong_ordering::less) return -1;
+    if (result ==  strong_ordering::greater) return 1;
 #endif
 }
 
@@ -214,7 +218,10 @@ int Led::Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
 #elif qMultiByteCharacters
     return ::_mbsicmp (l, r);
 #elif qWideCharacters
-    return ::_wcsicmp (l, r);
+    auto result = String::ThreeWayComparer{eCaseInsensitive} (Characters::String{l}, Characters::String{r});
+    if (result == strong_ordering::equal) return 0;
+    if (result ==  strong_ordering::less) return -1;
+    if (result ==  strong_ordering::greater) return 1;
 #endif
 }
 

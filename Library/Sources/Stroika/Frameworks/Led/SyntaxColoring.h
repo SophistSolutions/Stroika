@@ -31,6 +31,10 @@
 #include "TextInteractor.h"
 
 namespace Stroika::Frameworks::Led {
+
+
+    #if qStroika_Frameworks_Led_SupportGDI
+
     /*
     @CLASS:         SyntaxAnalyzer
     @DESCRIPTION:   <p>This abstract class is the basic for defining the rules for hooking in arbitrary syntactical analyses into the
@@ -232,6 +236,7 @@ namespace Stroika::Frameworks::Led {
     public:
         Color fColor;
     };
+    #endif
 
 }
 

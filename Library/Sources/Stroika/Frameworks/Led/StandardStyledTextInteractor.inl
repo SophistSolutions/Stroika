@@ -12,9 +12,10 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
-     ***************************** StandardStyledTextInteractor ***************************
+     *********************** StandardStyledTextInteractor ***************************
      ********************************************************************************
      */
     /*
@@ -101,6 +102,7 @@ namespace Stroika::Frameworks::Led {
     {
         return fSelEnd;
     }
+    #endif
 
 }
 

@@ -24,6 +24,9 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
+
+#if qStroika_Frameworks_Led_SupportGDI
+
 #if qPlatform_MacOS
 const Led_ClipFormat Led::kLedPrivateClipFormat = 'LedP';
 const Led_ClipFormat Led::kRTFClipFormat        = 'RTF ';
@@ -1254,3 +1257,4 @@ void EmptySelStyleTextRep::InsertSelf (TextInteractor* interactor, size_t at, si
 
     si->SetEmptySelectionStyle (fSavedStyle);
 }
+#endif

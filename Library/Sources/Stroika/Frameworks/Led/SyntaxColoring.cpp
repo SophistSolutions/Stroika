@@ -14,6 +14,8 @@ using namespace Stroika::Frameworks::Led;
 
 using Memory::StackBuffer;
 
+#if qStroika_Frameworks_Led_SupportGDI
+
 using FontChangeStyleMarker = SyntaxColoringMarkerOwner::FontChangeStyleMarker;
 using ColoredStyleMarker    = SyntaxColoringMarkerOwner::ColoredStyleMarker;
 
@@ -691,3 +693,4 @@ FontSpecification ColoredStyleMarker::MakeFontSpec (const StyledTextImager* imag
     fsp.SetTextColor (fColor);
     return fsp;
 }
+#endif
