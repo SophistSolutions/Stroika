@@ -99,19 +99,21 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             {
                 return read (c, 1);
             }
-
-        public:
-#if qPlatform_MacOS
-            /*
-            @METHOD:        StyledTextIOReader::SrcStream::GetAUXResourceHandle
-            @DESCRIPTION:   <p>MacOS Only. Returns the Mac handle to the resource fork, if any (used to read 'styl' resources).</p>
-            */
-            virtual Handle GetAUXResourceHandle () const = 0;
-#endif
         };
 
+        public:
         class SinkStream;
-        class BadInputHandler;
+        /*
+    @CLASS:         StyledTextIOReader::BadInputHandler
+    @DESCRIPTION:
+            <p>Abstract base class for styled text writing. Subclasses know about various styled text file formats, and
+        take care of the details of mapping Led internal data structures with styled text into streams of bytes in that format.</p>
+    */
+    class BadInputHandler {
+    public:
+        virtual void HandleBadlyFormattedInput (const StyledTextIOReader& reader, bool unrecoverable);
+    };
+
 
     protected:
         StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream,
@@ -137,9 +139,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             virtual void   seek_to (size_t to) override;
             virtual size_t read (void* buffer, size_t bytes) override;
             virtual size_t read1 (char* c) override;
-#if qPlatform_MacOS
-            virtual Handle GetAUXResourceHandle () const override;
-#endif
 
         private:
             nonvirtual void FillCache ();
@@ -319,17 +318,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual size_t GetCountOfTCharsInserted () const;
     };
 
-    /*
-    @CLASS:         StyledTextIOReader::BadInputHandler
-    @DESCRIPTION:
-            <p>Abstract base class for styled text writing. Subclasses know about various styled text file formats, and
-        take care of the details of mapping Led internal data structures with styled text into streams of bytes in that format.</p>
-    */
-    class StyledTextIOReader::BadInputHandler {
-    public:
-        virtual void HandleBadlyFormattedInput (const StyledTextIOReader& reader, bool unrecoverable);
-    };
-
+    
     /*
     @CLASS:         StyledTextIOWriter
     @DESCRIPTION:
@@ -566,10 +555,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     class StyledTextIOSrcStream_Memory : public StyledTextIOReader::SrcStream {
     public:
         StyledTextIOSrcStream_Memory (const void* data, size_t nBytes
-#if qPlatform_MacOS
-                                      ,
-                                      Handle resourceHandle = nullptr
-#endif
         );
 
     public:
@@ -577,18 +562,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void   seek_to (size_t to) override;
         virtual size_t read (void* buffer, size_t bytes) override;
         virtual size_t read1 (char* c) override;
-#if qPlatform_MacOS
-        virtual Handle GetAUXResourceHandle () const override;
-#endif
 
     private:
         const void* fData;
         const void* fDataEnd;
         size_t      fBytesInBuffer;
         const void* fCurPtr;
-#if qPlatform_MacOS
-        Handle fResourceHandle;
-#endif
     };
 
     inline StyledTextIOReader::BufferedIndirectSrcStream::BufferedIndirectSrcStream (SrcStream& realSrcStream)
@@ -709,12 +688,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             return 1;
         }
     }
-#if qPlatform_MacOS
-    inline Handle StyledTextIOReader::BufferedIndirectSrcStream::GetAUXResourceHandle () const
-    {
-        return fRealSrcStream.GetAUXResourceHandle ();
-    }
-#endif
 
     /*
     @CLASS:         StyledTextIOSrcStream_FileDescriptor
@@ -730,10 +703,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     public:
         // NB: On the Mac - this FD refers to a mac file access path - not the result of an ::open () call.
         StyledTextIOSrcStream_FileDescriptor (int fd
-#if qPlatform_MacOS
-                                              ,
-                                              Handle resourceHandle = nullptr
-#endif
         );
         virtual ~StyledTextIOSrcStream_FileDescriptor ();
 
@@ -741,9 +710,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual size_t current_offset () const override;
         virtual void   seek_to (size_t to) override;
         virtual size_t read (void* buffer, size_t bytes) override;
-#if qPlatform_MacOS
-        virtual Handle GetAUXResourceHandle () const override;
-#endif
 
     public:
         nonvirtual size_t GetBufferSize () const;
@@ -758,9 +724,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         size_t fInputBufferSize;
         size_t fBufferWindowStart;
         size_t fBufferWindowEnd;
-#if qPlatform_MacOS
-        Handle fResourceHandle;
-#endif
     };
 
     /*

@@ -19,10 +19,6 @@
 
 #include <memory>
 
-#if qPlatform_MacOS
-#include <Processes.h> // for URL support
-#endif
-
 #include "StyledTextImager.h"
 #include "TextInteractor.h"
 
@@ -202,7 +198,7 @@ namespace Stroika::Frameworks::Led {
         SDKString fOpenCommandName;
     };
 
-#if qPlatform_MacOS || qPlatform_Windows
+#if qPlatform_Windows
     /*
     @CLASS:         StandardMacPictureStyleMarker
     @BASES:         @'SimpleEmbeddedObjectStyleMarker'
@@ -213,9 +209,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = SimpleEmbeddedObjectStyleMarker;
 
     public:
-#if qPlatform_MacOS
-        using PictureHandle = Led_Picture**;
-#elif qPlatform_Windows
+#if qPlatform_Windows
         using PictureHandle = HANDLE;
 #endif
 
@@ -287,15 +281,6 @@ namespace Stroika::Frameworks::Led {
         static SimpleEmbeddedObjectStyleMarker* mk (ReaderFlavorPackage& flavorPackage);
 
     public:
-#if qPlatform_MacOS
-        static Led_Picture** sUnsupportedFormatPict; // Must be set externally by user of this class before we ever build one of these
-                                                     // objects, or an assert error.
-                                                     // Reason for this design is we need access to some pict resource, but we don't want
-                                                     // Led to depend on any such things (would make build/distr/name conflicts etc
-        // more complex). So in main, if you ever plan to use these, then load resource and assign
-        // to this member.
-#endif
-
     public:
         virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
                                   const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
@@ -352,14 +337,7 @@ namespace Stroika::Frameworks::Led {
 
 #if !qURLStyleMarkerNewDisplayMode
     public:
-#if qPlatform_MacOS
-        static Led_Picture** sURLPict; // Must be set externally by user of this class before we ever build one of these
-                                       // objects, or an assert error.
-                                       // Reason for this design is we need access to some pict resource, but we don't want
-                                       // Led to depend on any such things (would make build/distr/name conflicts etc
-                                       // more complex). So in main, if you ever plan to use these, then load resource and assign
-                                       // to this member.
-#elif qPlatform_Windows
+#if qPlatform_Windows
         static const Led_DIB* sURLPict;
 #endif
 #endif
@@ -396,7 +374,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual FontSpecification GetDisplayFont (const RunElement& runElement) const;
     };
 
-#if qPlatform_MacOS || qPlatform_Windows
+#if qPlatform_Windows
     class StandardMacPictureWithURLStyleMarker : public SimpleEmbeddedObjectStyleMarker {
     private:
         using inherited = SimpleEmbeddedObjectStyleMarker;
@@ -521,14 +499,7 @@ namespace Stroika::Frameworks::Led {
         ~StandardUnknownTypeStyleMarker ();
 
     public:
-#if qPlatform_MacOS
-        static Led_Picture** sUnknownPict; // Must be set externally by user of this class before we ever build one of these
-                                           // objects, or an assert error.
-                                           // Reason for this design is we need access to some pict resource, but we don't want
-                                           // Led to depend on any such things (would make build/distr/name conflicts etc
-                                           // more complex). So in main, if you ever plan to use these, then load resource and assign
-                                           // to this member.
-#elif qPlatform_Windows
+#if qPlatform_Windows
         static const Led_DIB* sUnknownPict;
 #endif
 

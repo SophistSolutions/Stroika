@@ -370,15 +370,6 @@ namespace Stroika::Frameworks::Led {
  */
 #if qPlatform_Windows
 
-/*
-@CONFIGVAR:     qUseQuicktimeForWindows
-@DESCRIPTION:   <p><b>Win32 ONLY</b></p>
-        <p>When we attempt to draw Macintosh Picture objects, should we try using QuickTime For Windows?
-    If not, the rectangle where the picture should be will be left blank.</p>
- */
-#ifndef qUseQuicktimeForWindows
-#define qUseQuicktimeForWindows 0
-#endif
 
 /*
 @CONFIGVAR:     qUseActiveXToOpenURLs

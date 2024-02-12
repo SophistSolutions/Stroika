@@ -11,9 +11,6 @@
 
 #include "Config.h"
 
-#if qPlatform_MacOS
-#include "TextUtils.h"
-#endif
 
 #include "TextBreaks.h"
 
@@ -609,110 +606,5 @@ void TextBreaks_Basic_TextEditor::RegressionTest ()
         Assert (wordEndResult == 29);
         Assert (wordReal == true);
     }
-}
-#endif
-
-#if qPlatform_MacOS
-/*
- ********************************************************************************
- ***************************** TextBreaks_System ********************************
- ********************************************************************************
- */
-void TextBreaks_System::FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                        size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const
-{
-    AssertNotNull (startOfText);
-    AssertNotNull (wordStartResult);
-    AssertNotNull (wordEndResult);
-    AssertNotNull (wordReal);
-    Assert (textOffsetToStartLookingForWord <= lengthOfText);
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (startOfText, lengthOfText));
-    Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));
-    Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText - textOffsetToStartLookingForWord));
-#endif
-
-    if (textOffsetToStartLookingForWord == lengthOfText) {
-        *wordStartResult = textOffsetToStartLookingForWord;
-        *wordEndResult   = textOffsetToStartLookingForWord;
-        *wordReal        = false;
-        return;
-    }
-    /*
-     *  Unclear which script we should pass along here. Using the system script (smSystemScript) because
-     *  for Japanese people with Japanese systems - this will work fine. In other words - just use
-     *  what the user TENDs to be using. Otherwise - I'm afraid we'd have to add a (non-portable) script
-     *  parameter to this function. Perhaps it might be better to decide on the script based on the
-     *  characterset we are compiled to use?
-     */
-    OffsetTable results;
-    memset (&results, 0, sizeof (results));
-    ::FindWordBreaks ((char*)startOfText, lengthOfText, textOffsetToStartLookingForWord, true, 0, results, smSystemScript);
-    *wordStartResult = results[0].offFirst;
-    *wordEndResult   = results[0].offSecond;
-
-    /*
-     *  Apple's ::FindWordBreaks() routine is rather quirky. It seems to consider a run of spaces
-     *  to be a word. But - unfortunately - it gives no indication if the return value is to be
-     *  considered as a word - or not.
-     *
-     *  We currently use CharacterType() to check if the character is a space. I'm not 100% this
-     *  is always the right thing todo - LGP 950129.
-     */
-    short theType = ::CharacterType ((Ptr)&startOfText[*wordStartResult], 0, smSystemScript) & (smcTypeMask | smcClassMask);
-    *wordReal     = (*wordStartResult != *wordEndResult) and not(theType == (smCharPunct | smPunctBlank));
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (startOfText, *wordStartResult));
-    Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult));
-#endif
-}
-
-void TextBreaks_System::FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                        size_t* wordEndResult, bool* wordReal) const
-{
-    AssertNotNull (startOfText);
-    AssertNotNull (wordEndResult);
-    AssertNotNull (wordReal);
-    Assert (textOffsetToStartLookingForWord <= lengthOfText); // Cannot look at characters
-
-    if (textOffsetToStartLookingForWord == lengthOfText) {
-        *wordEndResult = textOffsetToStartLookingForWord;
-        *wordReal      = false;
-        return;
-    }
-
-#if qMultiByteCharacters
-    Assert (textOffsetToStartLookingForWord <= lengthOfText);
-    Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord)); // initial segment valid
-    Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText - textOffsetToStartLookingForWord)); // second segment valid
-#endif
-
-    /*
-     *  Unclear which script we should pass along here. Using the system script (smSystemScript) because
-     *  for Japanese people with Japanese systems - this will work fine. In other words - just use
-     *  what the user TENDs to be using. Otherwise - I'm afraid we'd have to add a (non-portable) script
-     *  parameter to this function. Perhaps it might be better to decide on the script based on the
-     *  characterset we are compiled to use?
-     */
-    OffsetTable results;
-    memset (&results, 0, sizeof (results));
-    ::FindWordBreaks ((char*)startOfText, lengthOfText, textOffsetToStartLookingForWord, true, BreakTablePtr (-1), results, smSystemScript);
-    *wordEndResult = results[0].offSecond;
-
-    /*
-     *  Apple's ::FindWordBreaks() routine is rather quirky. It seems to consider a run of spaces
-     *  to be a word. But - unfortunately - it gives no indication if the return value is to be
-     *  considered as a word - or not.
-     *
-     *  We currently use CharacterType() to check if the character is a space. I'm not 100% this
-     *  is always the right thing todo - LGP 950129.
-     */
-    short theType = ::CharacterType ((Ptr)&startOfText[results[0].offFirst], 0, smSystemScript) & (smcTypeMask | smcClassMask);
-    *wordReal     = (results[0].offFirst != *wordEndResult) and not(theType == (smCharPunct | smPunctBlank));
-    Assert (*wordEndResult <= lengthOfText); // LGP added 950208 - in response to Alecs email message of same date - not
-// sure this assert is right, but might help debugging later...
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult)); // be sure
-#endif
 }
 #endif

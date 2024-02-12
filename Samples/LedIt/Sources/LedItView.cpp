@@ -520,17 +520,9 @@ public:
 #elif qPlatform_Windows
         DLGTYPE                               infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 #endif
-#if qTemplatedMemberFunctionsFailBug
-        Led_StdDialogHelper_EditTablePropertiesDialog_cvt<DLGTYPE::Info, TableSelectionPropertiesInfo> (&infoDialog.fInfo, *tableProperties);
-#else
         DLGTYPE::cvt<DLGTYPE::Info, TableSelectionPropertiesInfo> (&infoDialog.fInfo, *tableProperties);
-#endif
         if (infoDialog.DoModal ()) {
-#if qTemplatedMemberFunctionsFailBug
-            Led_StdDialogHelper_EditTablePropertiesDialog_cvt<TableSelectionPropertiesInfo, DLGTYPE::Info> (tableProperties, infoDialog.fInfo);
-#else
             DLGTYPE::cvt<TableSelectionPropertiesInfo, DLGTYPE::Info> (tableProperties, infoDialog.fInfo);
-#endif
             return true;
         }
         else {

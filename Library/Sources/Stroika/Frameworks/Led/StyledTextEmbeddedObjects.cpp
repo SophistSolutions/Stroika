@@ -3,10 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#if qPlatform_MacOS
-#include <QDOffscreen.h>
-#include <TextEdit.h> // for Apple TE scrap format and TEContinuous etc compatability
-#endif
 
 #include "../../Foundation/DataExchange/BadFormatException.h"
 #if qPlatform_Windows
@@ -16,10 +12,6 @@
 #include "StandardStyledTextImager.h"
 
 #include "StyledTextEmbeddedObjects.h"
-
-#if qUseQuicktimeForWindows
-#include "QTW.H"
-#endif
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
@@ -1512,59 +1504,6 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 #elif qPlatform_Windows
     dc->SetTextColor (foreColor.GetOSRep ());
     dc->SetBkColor (backColor.GetOSRep ());
-#endif
-
-#if qPlatform_MacOS
-    // Must erase above the picture, and below it. And
-    Rect rr = AsQDRect (innerBoundsRect);
-
-    // Now draw the actual picture
-    ::DrawPicture (pictureHandle, &rr);
-#elif qPlatform_Windows && qUseQuicktimeForWindows
-    // I tried doing a LoadLibrary/GetProcAddress ("DrawPicture") so that I wouldn't need
-    // to link directly against the QT library, and so I wouldn't get errors at start time
-    // if the lib wasn't present. But apparantly Apple has done all that for me in the
-    // staticly linked library they provide. I get no errors when I run on a system that
-    // doesn't have QT installed til the call to QTInitialize(). And staticly linking
-    // only adds 3K - presumably just the code which maps the APIs to the DLLs, and does
-    // the checking to find the DLL.
-    //
-    // So we simply staticly link, and only call QTInitialize() as needed. And then call
-    // QTTerminate at exit (via static DTOR hack), as needed.
-    struct QTIniter {
-        QTIniter ()
-        {
-            fGood = (::QTInitialize (nullptr) == 0);
-        }
-        ~QTIniter ()
-        {
-            if (fGood) {
-                ::QTTerminate ();
-            }
-        }
-        bool fGood;
-    };
-    static QTIniter  sIniter;
-    RECT             rr = AsRECT (innerBoundsRect);
-    Brush            eraseBrush (backColor.GetOSRep ());
-    GDI_Obj_Selector brush (dc, eraseBrush);
-    bool             displaySuccessful = false;
-    if (sIniter.fGood) {
-        displaySuccessful = (::DrawPicture (dc->m_hDC, (PicHandle)pictureHandle, &rr, nullptr) == noErr);
-    }
-    if (not displaySuccessful) {
-        // fill in with some other picture...
-        // treat all excpetions the same. In principle, could draw different picst for memory and
-        // unsupported format exceptions...
-        const Led_DIB* dib = StandardMacPictureStyleMarker::sUnsupportedFormatPict;
-        AssertNotNull (dib);
-        Led_Size dibImageSize = Led_GetDIBImageSize (dib);
-        //      const BITMAPINFOHEADER& hdr         =   dib->bmiHeader;
-        const void* lpBits = Led_GetDIBBitsPointer (dib);
-        //      const char*             lpBits      =   ((const char*)dib) + Led_ByteSwapFromWindows (hdr.biSize) + Led_GetDIBPalletByteCount (dib);
-        ::StretchDIBits (dc->m_hDC, innerBoundsRect.left, innerBoundsRect.top, innerBoundsRect.GetWidth (), innerBoundsRect.GetHeight (), 0,
-                         0, dibImageSize.h, dibImageSize.v, lpBits, dib, DIB_RGB_COLORS, SRCCOPY);
-    }
 #endif
     if (pixelsDrawn != nullptr) {
         *pixelsDrawn = ourBoundsRect.GetWidth ();

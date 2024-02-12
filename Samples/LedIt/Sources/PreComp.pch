@@ -104,8 +104,6 @@
 #endif
 
 #if		qPlatform_Windows
-	#define	qUseQuicktimeForWindows		1
-
 	#if		defined (rez) || defined (RC_INVOKED)
 		#define	qRez		1
 	#endif

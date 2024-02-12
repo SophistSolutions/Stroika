@@ -3,9 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#if qPlatform_MacOS
-#include <Script.h>
-#endif
 
 #include "GDI.h"
 

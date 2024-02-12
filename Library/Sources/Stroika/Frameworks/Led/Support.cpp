@@ -16,11 +16,7 @@
 
 #include "Config.h" // For qPlatform_Windows etc defines...
 
-#if qPlatform_MacOS
-#include <AppleEvents.h> // for URL support
-#include <Scrap.h>
-#include <TextUtils.h>
-#elif qPlatform_Windows
+#if qPlatform_Windows
 #include <fcntl.h>
 #include <io.h>
 #elif qStroika_FeatureSupported_XWindows
@@ -123,9 +119,7 @@ string Led::Led_tString2ANSIString (const Led_tString& s)
 */
 void Led::Led_BeepNotify ()
 {
-#if qPlatform_MacOS
-    ::SysBeep (1);
-#elif qPlatform_Windows
+#if qPlatform_Windows
     ::MessageBeep (MB_OK);
 #elif qStroika_FeatureSupported_XWindows
     if (gBeepNotifyCallBackProc != nullptr) {
@@ -183,9 +177,7 @@ unsigned long Led::LedTickCount2XTime (float ledTickCount)
 */
 Time::DurationSeconds Led::Led_GetDoubleClickTime ()
 {
-#if qPlatform_MacOS
-    return (float (::GetDblTime ()) / 60.0f);
-#elif qPlatform_Windows
+#if qPlatform_Windows
     return Time::DurationSeconds{float (::GetDoubleClickTime ()) / 1000.0f};
 #elif qStroika_FeatureSupported_XWindows
     return 0.25s; // SAME AS DOUBLE_CLICK_TIME FROM gdkevents.c
@@ -231,38 +223,6 @@ int Led::Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
         return 1;
 #endif
 }
-
-#if qPlatform_MacOS
-/*
- ********************************************************************************
- ***************************** Led_ThrowOSErr ***********************************
- ********************************************************************************
- */
-static void (*sLedThrowOSErrExceptionCallback) (OSErr) = nullptr;
-
-void Led::Led_ThrowOSErr (OSErr err)
-{
-    if (err != noErr) {
-        if (sLedThrowOSErrExceptionCallback == nullptr) {
-            throw err;
-        }
-        else {
-            (sLedThrowOSErrExceptionCallback) (err);
-        }
-        Assert (false); // should never get here!
-    }
-}
-
-void (*Led::Led_Get_ThrowOSErrException_Handler ()) (OSErr err)
-{
-    return sLedThrowOSErrExceptionCallback;
-}
-
-void Led::Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallback) (OSErr err))
-{
-    sLedThrowOSErrExceptionCallback = throwOSErrExceptionCallback;
-}
-#endif
 
 /*
 @METHOD:        Led_SkrunchOutSpecialChars
@@ -317,41 +277,13 @@ bool Led::Led_IsValidMultiByteString (const Led_tChar* start, size_t len)
 
 Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
     :
-#if qPlatform_MacOS || qPlatform_Windows
+#if qPlatform_Windows
     fOSClipHandle (nullptr)
     ,
 #endif
     fLockedData (nullptr)
 {
-#if qPlatform_MacOS
-#if TARGET_CARBON
-    ScrapRef scrap = nullptr;
-    Led_ThrowIfOSStatus (::GetCurrentScrap (&scrap));
-    SInt32   byteCount = 0;
-    OSStatus status    = ::GetScrapFlavorSize (scrap, clipType, &byteCount);
-    if (status != noTypeErr) {
-        fOSClipHandle = Led_DoNewHandle (byteCount);
-        Execution::ThrowIfNull (fOSClipHandle);
-        Assert (::GetHandleSize (fOSClipHandle) == byteCount);
-        ::HLock (fOSClipHandle);
-        fLockedData = *fOSClipHandle;
-        Led_ThrowIfOSStatus (::GetScrapFlavorData (scrap, clipType, &byteCount, fLockedData));
-    }
-#else
-    long scrapOffset = 0;
-    fOSClipHandle    = Led_DoNewHandle (0);
-    Execution::ThrowIfNull (fOSClipHandle);
-    long result = ::GetScrap (fOSClipHandle, clipType, &scrapOffset);
-    if (result < 0) {
-        ::DisposeHandle (fOSClipHandle);
-        fOSClipHandle = nullptr;
-        return;
-    }
-    Assert (::GetHandleSize (fOSClipHandle) == result);
-    ::HLock (fOSClipHandle);
-    fLockedData    = *fOSClipHandle;
-#endif
-#elif qPlatform_Windows
+#if qPlatform_Windows
     // perhaps rewrite to use exceptions, but for now - when no cliptype avail - set flag so GoodClip() method can check -
     // just cuz thats what surounding code seems to expect - LGP 980617
     fOSClipHandle = ::GetClipboardData (clipType);
@@ -814,8 +746,6 @@ void Led_URLManager::Open (const string& url)
     catch (...) {
         Open_SpyglassAppleEvent (url);
     }
-#elif qPlatform_MacOS
-    Open_SpyglassAppleEvent (url);
 #elif qPlatform_Windows
 #if qUseActiveXToOpenURLs
     Open_ActiveX (url);
@@ -867,39 +797,6 @@ void Led_URLManager::Open_IC (const string& url)
     }
     ::ICStop (icInstance);
     Led_ThrowOSErr (err);
-}
-#endif
-
-#if qPlatform_MacOS
-void Led_URLManager::Open_SpyglassAppleEvent (const string& url)
-{
-    const OSType        AE_spy_receive_suite = 'WWW!';
-    const OSType        AE_spy_openURL       = 'OURL'; // typeChar OpenURL
-    ProcessSerialNumber browserPSN           = FindBrowser ();
-    AppleEvent          event;
-    {
-        AEAddressDesc progressApp;
-        Led_ThrowOSErr (::AECreateDesc (typeProcessSerialNumber, &browserPSN, sizeof (browserPSN), &progressApp));
-        try {
-            Led_ThrowOSErr (::AECreateAppleEvent (AE_spy_receive_suite, AE_spy_openURL, &progressApp, kAutoGenerateReturnID, kAnyTransactionID, &event));
-            ::AEDisposeDesc (&progressApp);
-        }
-        catch (...) {
-            ::AEDisposeDesc (&progressApp);
-            throw;
-        }
-    }
-    try {
-        Led_ThrowOSErr (::AEPutParamPtr (&event, keyDirectObject, typeChar, url.c_str (), url.length ()));
-        AppleEvent reply;
-        Led_ThrowOSErr (::AESend (&event, &reply, kAEWaitReply, kAENormalPriority, kAEDefaultTimeout, nil, nil));
-        ::AEDisposeDesc (&event);
-        ::AEDisposeDesc (&reply);
-    }
-    catch (...) {
-        ::AEDisposeDesc (&event);
-        throw;
-    }
 }
 #endif
 
@@ -980,92 +877,6 @@ void Led_URLManager::Open_SystemNetscape (const string& url)
 }
 #endif
 
-#if qPlatform_MacOS
-pascal OSErr Led_URLManager::FSpGetFullPath (const FSSpec* spec, short* fullPathLength, Handle* fullPath)
-{
-    // Based on code from Apple Macintosh Developer Technical Support
-    // "MoreFiles 1.4.2" example code
-    OSErr      result;
-    FSSpec     tempSpec;
-    CInfoPBRec pb;
-
-    /* Make a copy of the input FSSpec that can be modified */
-    BlockMoveData (spec, &tempSpec, sizeof (FSSpec));
-
-    if (tempSpec.parID == fsRtParID) {
-        /* The object is a volume */
-
-        /* Add a colon to make it a full pathname */
-        ++tempSpec.name[0];
-        tempSpec.name[tempSpec.name[0]] = ':';
-
-        /* We're done */
-        result = PtrToHand (&tempSpec.name[1], fullPath, tempSpec.name[0]);
-    }
-    else {
-        /* The object isn't a volume */
-
-        /* Put the object name in first */
-        result = PtrToHand (&tempSpec.name[1], fullPath, tempSpec.name[0]);
-        if (result == noErr) {
-            /* Get the ancestor directory names */
-            pb.dirInfo.ioNamePtr = tempSpec.name;
-            pb.dirInfo.ioVRefNum = tempSpec.vRefNum;
-            pb.dirInfo.ioDrParID = tempSpec.parID;
-            do { /* loop until we have an error or find the root directory */
-                pb.dirInfo.ioFDirIndex = -1;
-                pb.dirInfo.ioDrDirID   = pb.dirInfo.ioDrParID;
-                result                 = PBGetCatInfoSync (&pb);
-                if (result == noErr) {
-                    /* Append colon to directory name */
-                    ++tempSpec.name[0];
-                    tempSpec.name[tempSpec.name[0]] = ':';
-
-                    /* Add directory name to beginning of fullPath */
-                    (void)Munger (*fullPath, 0, nullptr, 0, &tempSpec.name[1], tempSpec.name[0]);
-                    result = MemError ();
-                }
-            } while ((result == noErr) && (pb.dirInfo.ioDrDirID != fsRtDirID));
-        }
-    }
-    if (result == noErr) {
-        /* Return the length */
-        *fullPathLength = GetHandleSize (*fullPath);
-    }
-    else {
-        /* Dispose of the handle and return nullptr and zero length */
-        DisposeHandle (*fullPath);
-        *fullPath       = nullptr;
-        *fullPathLength = 0;
-    }
-
-    return (result);
-}
-#endif
-
-#if qPlatform_MacOS
-ProcessSerialNumber Led_URLManager::FindBrowser ()
-{
-    OSType              sig = 'MOSS'; // currently we hardwire Netscape - but we could extend this list to include all known browsers...
-    OSType              processType = 'APPL';
-    ProcessSerialNumber psn;
-    psn.highLongOfPSN = 0;
-    psn.lowLongOfPSN  = kNoProcess;
-    OSErr          err;
-    ProcessInfoRec info;
-    do {
-        err = ::GetNextProcess (&psn);
-        if (err == noErr) {
-            info.processInfoLength = sizeof (ProcessInfoRec);
-            info.processName       = nullptr;
-            info.processAppSpec    = nullptr;
-            err                    = ::GetProcessInformation (&psn, &info);
-        }
-    } while ((err == noErr) && ((info.processSignature != sig) || (info.processType != processType)));
-    Led_ThrowOSErr (err);
-    return info.processNumber;
-}
-#endif
 
 /*
  ********************************************************************************
@@ -1080,8 +891,6 @@ string Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& a
     string fullURL = "http://www.sophists.com" + relURL + "?AppName=" + appName +
 #if qPlatform_Windows
                      string{"&Platform=Windows"} +
-#elif qPlatform_MacOS
-                     string{"&Platform=MacOS"} +
 #elif qStroika_FeatureSupported_XWindows
                      string{"&Platform=XWindows"} +
 #endif
