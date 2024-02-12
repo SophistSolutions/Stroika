@@ -287,7 +287,7 @@ namespace Stroika::Frameworks::Led {
         virtual size_t RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const override;
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
-    #endif
+#endif
 
 }
 

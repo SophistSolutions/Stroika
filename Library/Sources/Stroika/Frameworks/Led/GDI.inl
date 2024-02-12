@@ -3327,7 +3327,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline Led_Size Led_GetMacPictSize (const Led_Picture* picture)
     {
-        return Led_Size {Led_GetMacPictHeight (picture), Led_GetMacPictWidth (picture)};
+        return Led_Size (Led_GetMacPictHeight (picture), Led_GetMacPictWidth (picture));
     }
 #if qPlatform_MacOS
     inline short Led_GetMacPictTop (const Led_Picture* const* picture)
