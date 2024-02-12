@@ -270,11 +270,7 @@ FontSpecification StyledTextIOReader_MIMETextEnriched::GetAdjustedCurrentFontSpe
         fsp.SetStyle_Underline (true);
     }
     if (fFixedWidthMode > 0) {
-#if qPlatform_MacOS
-        fsp.SetFontNameSpecifier (kFontIDMonaco);
-#else
         Assert (false); // just ignore - NYI
-#endif
     }
 
     {

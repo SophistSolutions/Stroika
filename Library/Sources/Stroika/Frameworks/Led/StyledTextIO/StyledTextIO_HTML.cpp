@@ -1300,19 +1300,6 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_font (bool start, const char* 
                 tagValue = tagValue.substr (0, tagValue.find (','));
             }
             fsp.SetFontName (String::FromNarrowSDKString (tagValue).AsSDKString ());
-#if qPlatform_MacOS
-            // cuz the mac does so badly on this, and just sets the font to chicago if its unknown, and cuz
-            // this looks so bad, try a nicer default font...
-            {
-                short fontID;
-                short fontSize;
-                Style fontStyle;
-                fsp.GetOSRep (&fontID, &fontSize, &fontStyle);
-                if (fontID == 0 and not Led_CasedStringsEqual (tagValue, "Chicago")) {
-                    fsp.SetFontNameSpecifier (applFont); // a much more pleasing default
-                }
-            }
-#endif
             fFontStack.back () = fsp;
         }
         if (ParseHTMLTagArgOut (tagText, "color", &tagValue)) {

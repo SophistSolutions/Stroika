@@ -7,12 +7,6 @@
 #include <climits>
 #include <cstdio> // for a couple sprintf() calls - could pretty easily be avoided
 
-#if qPlatform_MacOS
-#include <Errors.h>
-#include <Files.h>
-#include <TextEdit.h> // for Apple TE scrap format and TEContinuous etc compatability
-#endif
-
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/CodeCvt.h"
 #include "../../../Foundation/Characters/CodePage.h"
@@ -34,12 +28,6 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 
 using Memory::StackBuffer;
 
-/**
- *  @todo   Must fix to properly support 32-bit and 64-bit safety
- */
-#if qPlatform_MacOS
-const Led_PrivateEmbeddingTag kPictTag_V1 = "Pict";
-#endif
 
 namespace {
     inline void OutputStandardToSinkStream_size_t_ (StyledTextIOWriter::SinkStream& sinkStream, size_t n)

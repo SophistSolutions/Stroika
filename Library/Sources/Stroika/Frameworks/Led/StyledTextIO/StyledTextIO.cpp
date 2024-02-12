@@ -8,12 +8,6 @@
 #include <climits>
 #include <cstdio> // for a couple sprintf() calls - could pretty easily be avoided
 
-#if qPlatform_MacOS
-#include <Errors.h>
-#include <Files.h>
-#include <TextEdit.h> // for Apple TE scrap format and TEContinuous etc compatability
-#endif
-
 #include "../../../Foundation/DataExchange/BadFormatException.h"
 #include "../../../Foundation/Memory/StackBuffer.h"
 
@@ -369,10 +363,6 @@ DiscontiguousRun<bool> StyledTextIOWriter::SrcStream::GetHidableTextRuns () cons
  ********************************************************************************
  */
 StyledTextIOSrcStream_Memory::StyledTextIOSrcStream_Memory (const void* data, size_t nBytes
-#if qPlatform_MacOS
-                                                            ,
-                                                            Handle resourceHandle
-#endif
                                                             )
     : StyledTextIOReader::SrcStream ()
     , fData (data)
@@ -380,9 +370,6 @@ StyledTextIOSrcStream_Memory::StyledTextIOSrcStream_Memory (const void* data, si
     , fBytesInBuffer (nBytes)
     , fCurPtr (data) //,
 //  fBytesLeft (nBytes)
-#if qPlatform_MacOS
-    , fResourceHandle (resourceHandle)
-#endif
 {
 }
 
@@ -432,23 +419,12 @@ size_t StyledTextIOSrcStream_Memory::read1 (char* c)
     return 0;
 }
 
-#if qPlatform_MacOS
-Handle StyledTextIOSrcStream_Memory::GetAUXResourceHandle () const
-{
-    return fResourceHandle;
-}
-#endif
-
 /*
  ********************************************************************************
  ******************* StyledTextIOSrcStream_FileDescriptor ***********************
  ********************************************************************************
  */
 StyledTextIOSrcStream_FileDescriptor::StyledTextIOSrcStream_FileDescriptor (int fd
-#if qPlatform_MacOS
-                                                                            ,
-                                                                            Handle resourceHandle
-#endif
                                                                             )
     : StyledTextIOReader::SrcStream ()
     , fFileDescriptor (fd)
@@ -457,9 +433,6 @@ StyledTextIOSrcStream_FileDescriptor::StyledTextIOSrcStream_FileDescriptor (int 
     , fInputBufferSize (0)
     , fBufferWindowStart (0)
     , fBufferWindowEnd (0)
-#if qPlatform_MacOS
-    , fResourceHandle (resourceHandle)
-#endif
 {
 }
 
@@ -481,21 +454,7 @@ void StyledTextIOSrcStream_FileDescriptor::seek_to (size_t to)
     if (targetSeekPos > fBufferWindowEnd) {
 // If we seek PAST that point, we must actually query the file system, so we don't seek
 // past EOF
-#if qPlatform_MacOS
-        /*
-         *  We used to just call SetFPos(), and it would return posErr
-         *  if I seeked beyond EOF. The trouble is that WindowsNT 3.51's
-         *  AppleShare fileserver doesn't work that way. It lets you seek
-         *  past EOF. And then returns that larger EOF in ::GetFPos().
-         *  The breaks the idiom I use of seeking to BIGNUM and calling
-         *  current_offset() to measure how big the file was.
-         */
-        long logEOF = 0;
-        Led_ThrowOSErr (::GetEOF (fFileDescriptor, &logEOF));
-        targetSeekPos = min (logEOF, targetSeekPos);
-#else
         Assert (false); // NYI
-#endif
     }
     fCurSeekPos = targetSeekPos;
 }
@@ -540,18 +499,7 @@ NotherRead:
 
 // Then we must do a DIRECT read, and don't bother with the buffer
 // (we could loop filling/emtpying buffer, but that would be needless copying).
-#if qPlatform_MacOS
-        Led_ThrowOSErr (::SetFPos (fFileDescriptor, fsFromStart, fCurSeekPos));
-        {
-            long  count = bytesLeftToCopy;
-            OSErr err   = ::FSRead (fFileDescriptor, &count, &((char*)buffer)[bytesCopiedSoFar]);
-            Led_ThrowOSErr ((err == eofErr) ? noErr : err);
-            bytesCopiedSoFar += count;
-            fCurSeekPos += count;
-        }
-#else
         Assert (false); // NYI
-#endif
     }
 
     return bytesCopiedSoFar;
@@ -574,25 +522,8 @@ void StyledTextIOSrcStream_FileDescriptor::ReadInWindow ([[maybe_unused]] size_t
 {
     RequireNotNull (fInputBuffer);
     Require (fInputBufferSize > 0);
-#if qPlatform_MacOS
-    Led_ThrowOSErr (::SetFPos (fFileDescriptor, fsFromStart, startAt));
-    long  count = fInputBufferSize;
-    OSErr err   = ::FSRead (fFileDescriptor, &count, fInputBuffer);
-    Led_ThrowOSErr ((err == eofErr) ? noErr : err);
-
-    fBufferWindowStart = startAt;
-    fBufferWindowEnd   = startAt + count;
-#else
     Assert (false);     // NYI
-#endif
 }
-
-#if qPlatform_MacOS
-Handle StyledTextIOSrcStream_FileDescriptor::GetAUXResourceHandle () const
-{
-    return fResourceHandle;
-}
-#endif
 
 /*
  ********************************************************************************
@@ -731,15 +662,7 @@ void StyledTextIOWriterSinkStream_FileDescriptor::write (const void* buffer, siz
         if (fOutputBufferSize != 0) {
             Flush ();
         }
-#if qPlatform_MacOS
-        Led_ThrowOSErr (::SetFPos (fFileDescriptor, fsFromStart, fCurSeekPos));
-        long count = bytes;
-        Led_ThrowOSErr (::FSWrite (fFileDescriptor, &count, (char*)buffer));
-        fCurSeekPos += count;
-        fFurthestDiskWriteAt = fCurSeekPos;
-#else
         Assert (false); // NYI
-#endif
     }
     else {
         Assert (fCurSeekPos >= fFurthestDiskWriteAt); // Can only do buffering (easily) in this case
@@ -794,13 +717,7 @@ void StyledTextIOWriterSinkStream_FileDescriptor::Flush ()
         Assert (fOutputBufferSize != 0);
         [[maybe_unused]] size_t bytesInWindow = fBufferWindowEnd - fBufferWindowStart;
         Assert (fOutputBufferSize >= bytesInWindow);
-#if qPlatform_MacOS
-        Led_ThrowOSErr (::SetFPos (fFileDescriptor, fsFromStart, fBufferWindowStart));
-        long count = bytesInWindow;
-        Led_ThrowOSErr (::FSWrite (fFileDescriptor, &count, fOutputBuffer));
-#elif qPlatform_Windows
         Assert (false);
-#endif
         fFurthestDiskWriteAt = fBufferWindowEnd;
         fBufferWindowStart   = 0; // mark as no window now
         fBufferWindowEnd     = 0;
@@ -810,11 +727,7 @@ void StyledTextIOWriterSinkStream_FileDescriptor::Flush ()
 void StyledTextIOWriterSinkStream_FileDescriptor::UpdateEOF ()
 {
     Flush ();
-#if qPlatform_MacOS
-    Led_ThrowOSErr (::SetEOF (fFileDescriptor, fCurSeekPos));
-#else
     AssertNotImplemented ();
-#endif
 }
 
 /*

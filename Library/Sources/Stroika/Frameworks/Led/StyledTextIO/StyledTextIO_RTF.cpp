@@ -223,59 +223,7 @@ IncrementalFontSpecification FontTable::GetFontSpec (int fontNumber)
     }
     const FontTableEntry&        fte = *ftep;
     IncrementalFontSpecification fontSpec;
-#if qPlatform_MacOS
-    Str255 fontName;
-    fontName[0] = fte.fFontName.length ();
-    memcpy (&fontName[1], fte.fFontName.c_str (), fontName[0]);
-    short fontNum = 0;
-    ::GetFNum (fontName, &fontNum);
-    if (fontNum == 0) {
-        // Alas, the Mac font Manager returns ZERO as the font number if it really
-        // has no idea about the font. This is NOT what we want. So instead,
-        // use the other information - like font family etc - to make a best guess
-        // about what font # to return. Of course, be careful. Maybe the user REALLY
-        // DID specify font# 0 - system font.
-        Str255 realName;
-        ::GetFontName (0, realName);
-        if (memcmp (realName, fontName, realName[0]) == 0) {
-            // then the user REALLY said Chicago/System font, and so
-            // we just use that...
-        }
-        else {
-            // Just guesses at what we should use. Maybe reverse engineer what
-            // MS Word does on mac?
-            switch (fte.fFamily) {
-                case FontTableEntry::eNil:
-                    fontNum = applFont;
-                    break;
-                case FontTableEntry::eRoman:
-                    fontNum = kFontIDTimes;
-                    break;
-                case FontTableEntry::eSwiss:
-                    fontNum = kFontIDGeneva;
-                    break;
-                case FontTableEntry::eModern:
-                    fontNum = kFontIDMonaco;
-                    break;
-                case FontTableEntry::eScript:
-                    fontNum = kFontIDLondon;
-                    break;
-                case FontTableEntry::eDecor:
-                    fontNum = kFontIDLondon;
-                    break;
-                case FontTableEntry::eTech:
-                    fontNum = kFontIDSymbol;
-                    break;
-                case FontTableEntry::eBidi:
-                default: {
-                    // no idea. Just us application font I guess?
-                    fontNum = applFont;
-                } break;
-            }
-        }
-    }
-    fontSpec.SetFontNameSpecifier (fontNum);
-#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
+#if qPlatform_Windows || qStroika_FeatureSupported_XWindows
     fontSpec.SetFontNameSpecifier (fte.fFontName.c_str ());
 #endif
     return fontSpec;

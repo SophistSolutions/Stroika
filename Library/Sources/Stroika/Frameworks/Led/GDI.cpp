@@ -839,11 +839,7 @@ FontSpecification Led::GetStaticDefaultFont ()
     static bool              sDefaultFontValid = false;
     static FontSpecification sDefaultFont;
     if (not sDefaultFontValid) {
-#if qPlatform_MacOS
-        sDefaultFont.SetFontNameSpecifier (::GetScriptVariable (smCurrentScript, smScriptAppFond));
-        sDefaultFont.SetPointSize (::GetScriptVariable (smCurrentScript, smScriptAppFondSize));
-        sDefaultFont.SetStyle_Plain ();
-#elif qPlatform_Windows
+#if qPlatform_Windows
         sDefaultFont = GetStaticDefaultFont (DEFAULT_CHARSET);
 #elif qStroika_FeatureSupported_XWindows
         {

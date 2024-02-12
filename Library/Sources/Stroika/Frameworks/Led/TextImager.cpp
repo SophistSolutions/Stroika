@@ -15,55 +15,14 @@ using namespace Stroika::Frameworks::Led;
 
 #if qStroika_Frameworks_Led_SupportGDI
 
-#if qPlatform_MacOS
-inline void GDI_TextFont (short font)
-{
-#if TARGET_CARBON
-    ::TextFont (font);
-#else
-    if (Led_GetCurrentGDIPort ()->txFont != font) {
-        ::TextFont (font);
-    }
-#endif
-}
-inline void GDI_TextFace (short face)
-{
-#if TARGET_CARBON
-    ::TextFace (face);
-#else
-    if (Led_GetCurrentGDIPort ()->txFace != face) {
-        ::TextFace (face);
-    }
-#endif
-}
-inline void GDI_TextMode (short mode)
-{
-#if TARGET_CARBON
-    ::TextMode (mode);
-#else
-    if (Led_GetCurrentGDIPort ()->txMode != mode) {
-        ::TextMode (mode);
-    }
-#endif
-}
-inline void GDI_TextSize (short size)
-{
-#if TARGET_CARBON
-    ::TextSize (size);
-#else
-    if (Led_GetCurrentGDIPort ()->txSize != size) {
-        ::TextSize (size);
-    }
-#endif
-}
-#endif
-
 /*
  ********************************************************************************
  *********************** TextImager::FontCacheInfoUpdater ***********************
  ********************************************************************************
  */
 #if qPlatform_Windows
+namespace {
+
 inline bool LogFontsEqual (LOGFONT lhs, LOGFONT rhs)
 {
     size_t bytesToCompare = offsetof (LOGFONT, lfFaceName) + (::_tcslen (lhs.lfFaceName) + 1) * sizeof (Characters::SDKChar);
@@ -83,6 +42,7 @@ inline bool LogFontsEqual (const FontSpecification& lhs, const FontSpecification
         return false;
     }
 }
+}
 #endif
 TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager, Tablet* tablet, const FontSpecification& fontSpec)
     : fImager (imager)
@@ -92,34 +52,7 @@ TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager
     , fRestoreAttribObject (nullptr)
 #endif
 {
-#if qPlatform_MacOS
-    /*
-     *  For MAC:
-     *
-     *      Just set the font using the font-spec, and assume any 'restore' will be taken care of
-     *  at a higher level (really just ignore as long as I can, and if I need to, then
-     *  probably best to take care of here!!! (modularity vs speed).
-     */
-    short fontID    = 0;
-    short fontSize  = 0;
-    Style fontStyle = 0;
-    fontSpec.GetOSRep (&fontID, &fontSize, &fontStyle);
-    tablet->SetPort ();
-    GDI_TextFont (fontID);
-    if (fontSpec.GetStyle_SubOrSuperScript () != FontSpecification::eNoSubOrSuperscript) {
-        // See SPR#1523- was 'max (fontSize/2, 1);'
-        // Careful to sync this with TextImager::DrawSegment_ () 'drawTop' adjustment
-        fontSize = max (fontSize * 2 / 3, 1);
-    }
-    GDI_TextSize (fontSize);
-    GDI_TextFace (fontStyle);
-
-    if (not imager->fCachedFontValid or fontSpec != imager->fCachedFontSpec) {
-        imager->fCachedFontInfo  = tablet->GetFontMetrics ();
-        imager->fCachedFontSpec  = fontSpec;
-        imager->fCachedFontValid = true;
-    }
-#elif qPlatform_Windows
+#if qPlatform_Windows
     /*
      *  For Windows:
      *
