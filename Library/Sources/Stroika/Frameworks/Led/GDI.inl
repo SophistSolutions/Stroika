@@ -292,7 +292,6 @@ namespace Stroika::Frameworks::Led {
     inline constexpr TWIPS TWIPS::kInch    = TWIPS{1440};
     inline constexpr TWIPS TWIPS::kOneInch = TWIPS{1440};
 
-
 #if qPlatform_Windows
     /*
      ********************************************************************************
@@ -372,8 +371,6 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-
-
 #if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
@@ -433,7 +430,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline bool Region::IsEmpty () const
     {
-#if  qPlatform_Windows
+#if qPlatform_Windows
         AssertNotNull (fRgn);
 #endif
         Assert (false); //NYI - not used yet - so don't worry about this right now... LGP 2002-12-03
@@ -441,7 +438,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline Led_Rect Region::GetBoundingRect () const
     {
-#if  qPlatform_Windows
+#if qPlatform_Windows
         AssertNotNull (fRgn);
         RECT r;
         int  tmp = ::GetRgnBox (fRgn, &r);
@@ -924,7 +921,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 #endif
-
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*
@@ -1978,7 +1974,7 @@ namespace Stroika::Frameworks::Led {
     {
         bool isValid = fStyleValid_Bold and fStyleValid_Italic and fStyleValid_Underline and fStyleValid_SubOrSuperScript;
 #if qPlatform_Windows
-        isValid               = isValid and fStyleValid_Strikeout;
+        isValid = isValid and fStyleValid_Strikeout;
 #endif
         return isValid;
     }
@@ -2115,14 +2111,14 @@ namespace Stroika::Frameworks::Led {
     {
         fStyleValid_Strikeout = false;
 #if qPlatform_Windows
-        fDidSetOSRepCallFlag  = false;
+        fDidSetOSRepCallFlag = false;
 #endif
     }
     inline void IncrementalFontSpecification::SetStyle_Strikeout (bool isStrikeout)
     {
         fStyleValid_Strikeout = true;
 #if qPlatform_Windows
-        fDidSetOSRepCallFlag  = false;
+        fDidSetOSRepCallFlag = false;
 #endif
         inherited::SetStyle_Strikeout (isStrikeout);
     }
@@ -2585,7 +2581,6 @@ namespace Stroika::Frameworks::Led {
     }
 
 #endif
-
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*

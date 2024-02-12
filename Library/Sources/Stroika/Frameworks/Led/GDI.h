@@ -580,8 +580,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetStyle_Extended () const;
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool    GetStyle_Strikeout () const;
-        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool GetStyle_Strikeout () const;
+        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         using FontSize = uint16_t;
@@ -623,7 +623,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
 #if qPlatform_Windows
-        LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
+        LOGFONT fFontInfo; // Could make this MUCH smaller on windows - do for future release!
 #else
         FontNameSpecifier fFontFamily;
         bool              fBold : 1;
@@ -724,10 +724,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InvalidateStyle_Extended ();
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool    GetStyle_Strikeout () const;
-        nonvirtual bool    GetStyle_Strikeout_Valid () const;
-        nonvirtual void    InvalidateStyle_Strikeout ();
-        nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool   GetStyle_Strikeout () const;
+        nonvirtual bool   GetStyle_Strikeout_Valid () const;
+        nonvirtual void   InvalidateStyle_Strikeout ();
+        nonvirtual void   SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         /*
@@ -783,8 +783,8 @@ namespace Stroika::Frameworks::Led {
         bool fStyleValid_Condensed : 1;
         bool fStyleValid_Extended : 1;
 #elif qPlatform_Windows
-        bool fStyleValid_Strikeout : 1;
-        bool fDidSetOSRepCallFlag : 1;
+        bool              fStyleValid_Strikeout : 1;
+        bool              fDidSetOSRepCallFlag : 1;
 #endif
         bool fFontSizeValid : 1;
         bool fFontSizeIncrementValid : 1;
@@ -1308,7 +1308,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 #endif
-
 
 // Even for windows we have have this defined if we build including QuickTime support!
 #ifndef qHaveMacPictureDefined

@@ -104,7 +104,7 @@ namespace Stroika::Frameworks::Led {
 #if qSingleByteCharacters
     using Led_tChar = char;
 #elif qMultiByteCharacters
-    using Led_tChar = char;
+    using Led_tChar                      = char;
 #elif qWideCharacters
     using Led_tChar = wchar_t;
 #else
@@ -383,7 +383,7 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if qPlatform_Windows
-    using Led_ClipFormat                 = CLIPFORMAT;
+    using Led_ClipFormat = CLIPFORMAT;
 #elif qStroika_FeatureSupported_XWindows
     using Led_ClipFormat                 = long;
 #else
@@ -423,7 +423,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
 #if qPlatform_Windows
-        HANDLE         fOSClipHandle;
+        HANDLE fOSClipHandle;
 #endif
         void* fLockedData;
     };
@@ -535,7 +535,7 @@ namespace Stroika::Frameworks::Led {
         static Led_URLManager* sThe;
 
     public:
-        virtual void Open (const string& url); // throws on detected errors
+        virtual void   Open (const string& url); // throws on detected errors
         virtual string FileSpecToURL (const filesystem::path& p);
 
     protected:

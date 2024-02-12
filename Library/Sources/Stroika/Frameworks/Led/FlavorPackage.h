@@ -77,8 +77,10 @@ namespace Stroika::Frameworks::Led {
         virtual bool    InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
         nonvirtual bool InternalizeFlavor_TEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
         virtual bool    InternalizeFlavor_FILE (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
-        virtual bool    InternalizeFlavor_FILEData (filesystem::path fileName, Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage, size_t from, size_t to);
-        virtual void InternalizeFlavor_FILEGuessFormatsFromName (filesystem::path fileName, Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage);
+        virtual bool    InternalizeFlavor_FILEData (filesystem::path fileName, Led_ClipFormat* suggestedClipFormat,
+                                                    optional<CodePage> suggestedCodePage, size_t from, size_t to);
+        virtual void    InternalizeFlavor_FILEGuessFormatsFromName (filesystem::path fileName, Led_ClipFormat* suggestedClipFormat,
+                                                                    optional<CodePage> suggestedCodePage);
         virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage,
                                                                         const byte* fileStart, const byte* fileEnd);
         virtual bool InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage,

@@ -164,7 +164,6 @@ namespace Stroika::Frameworks::Led {
         return static_cast<size_t> (r);
     }
 
-
     template <typename ARRAY_CONTAINER, class T>
     size_t IndexOf (const ARRAY_CONTAINER& array, T item)
     {
