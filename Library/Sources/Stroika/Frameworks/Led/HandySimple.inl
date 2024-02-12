@@ -120,7 +120,7 @@ namespace Stroika::Frameworks::Led {
             fCachedImager                            = new MyTrivImager (tablet, centeredRect, fWatermarkText);
             fCachedIntoRect                          = centeredRect;
             fCachedIntoTablet                        = tablet;
-            IncrementalFontSpecification extraStyles = TextImager::GetStaticDefaultFont ();
+            IncrementalFontSpecification extraStyles = GetStaticDefaultFont ();
             extraStyles.SetTextColor (GetWatermarkColor ());
             fCachedImager->SetStyleInfo (0, fCachedImager->GetLength (), extraStyles);
 

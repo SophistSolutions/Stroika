@@ -152,7 +152,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = StyledTextImager::StyleMarker;
 
     public:
-        StandardStyleMarker (const FontSpecification& styleInfo = TextImager::GetStaticDefaultFont ());
+        StandardStyleMarker (const FontSpecification& styleInfo = GetStaticDefaultFont ());
 
     public:
         virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,

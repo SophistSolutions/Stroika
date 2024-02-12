@@ -273,7 +273,7 @@ FontSpecification Options::GetDefaultNewDocFont () const
         }
     }
 #endif
-    return TextImager::GetStaticDefaultFont ();
+    return GetStaticDefaultFont ();
 }
 
 void Options::SetDefaultNewDocFont ([[maybe_unused]] const FontSpecification& defaultNewDocFont)

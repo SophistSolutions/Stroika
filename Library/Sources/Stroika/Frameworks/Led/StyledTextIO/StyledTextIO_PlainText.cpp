@@ -96,7 +96,7 @@ void StyledTextIOWriter_PlainText::Write ()
 #if qPlatform_Windows
         Led_tChar buf2[2 * Memory::NEltsOf (buf)];
 #else
-    Led_tChar buf2[Memory::NEltsOf (buf)];
+        Led_tChar buf2[Memory::NEltsOf (buf)];
 #endif
         bytesRead = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, Memory::NEltsOf (buf2));
 #if qWideCharacters

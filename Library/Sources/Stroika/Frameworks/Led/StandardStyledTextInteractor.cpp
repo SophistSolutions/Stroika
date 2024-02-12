@@ -585,7 +585,7 @@ void StandardStyledTextIOSinkStream::ApplyStyle (size_t from, size_t to, const v
 
 FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const
 {
-    return TextImager::GetStaticDefaultFont ();
+    return GetStaticDefaultFont ();
 }
 
 void StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at)

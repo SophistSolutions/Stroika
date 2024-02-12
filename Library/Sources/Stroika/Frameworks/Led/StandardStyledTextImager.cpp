@@ -380,7 +380,7 @@ void StandardStyledTextImager::AbstractStyleDatabaseRep::Invariant_ () const
  ********************************************************************************
  */
 StyleDatabaseRep::StyleDatabaseRep (TextStore& textStore)
-    : inheritedMC (textStore, TextImager::GetStaticDefaultFont ())
+    : inheritedMC (textStore, GetStaticDefaultFont ())
 {
 }
 

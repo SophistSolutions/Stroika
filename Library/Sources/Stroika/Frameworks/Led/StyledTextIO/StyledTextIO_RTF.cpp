@@ -2482,8 +2482,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
     CheckIfAboutToStartBody (readerContext);
 #if qStroika_Frameworks_Led_SupportGDI
     using UnknownRTFEmbedding = RTFIO::UnknownRTFEmbedding;
-    #endif
-    using ControlWord         = RTFIO::ControlWord;
+#endif
+    using ControlWord = RTFIO::ControlWord;
     /*
      *  Now try to really read on object in. Could be a Led-private-format object. Could be an OLE object. Or one of many
      *  types we don't support.
@@ -2652,7 +2652,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                         delete embedding;
                         throw;
                     }
-                    #endif
+#endif
                 }
                 return true; // ALL DONE
             } break;
@@ -2731,9 +2731,9 @@ bool StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContex
      *      --LGP 2000-07-08
      */
     unique_ptr<Led_DIB> dib = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
-    bool                             createSucceeded = dib.get () != nullptr;
+    bool createSucceeded = dib.get () != nullptr;
 #if qStroika_Frameworks_Led_SupportGDI
-    SimpleEmbeddedObjectStyleMarker* embedding       = nullptr;
+    SimpleEmbeddedObjectStyleMarker* embedding = nullptr;
     if (createSucceeded) {
         embedding = new StandardDIBStyleMarker (dib.get ());
     }
@@ -2754,7 +2754,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContex
             throw;
         }
     }
-    #endif
+#endif
     return true;
 }
 
@@ -2987,7 +2987,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_tx (ReaderContext& readerContext,
     }
     else {
         StandardTabStopList* curTabs  = &readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops;
-        CoordinateType                   lastStop = 0;
+        CoordinateType       lastStop = 0;
         for (auto i = curTabs->fTabStops.begin (); i != curTabs->fTabStops.end (); ++i) {
             lastStop += *i;
         }
@@ -3511,7 +3511,7 @@ void StyledTextIOReader_RTF::ConstructLedEmebddingFromRTFInfo (ReaderContext& re
             }
         }
     }
-    #endif
+#endif
     Execution::Throw (DataExchange::BadFormatException::kThe); // Will be caught by caller, and use "unknown embedding object"
 }
 
@@ -3540,7 +3540,7 @@ void StyledTextIOReader_RTF::ReadTopLevelPictData (TWIPS_Point* shownSize, Image
 #if qStroika_Frameworks_Led_SupportGDI
     using UnknownRTFEmbedding = RTFIO::UnknownRTFEmbedding;
 #endif
-    using ControlWord         = RTFIO::ControlWord;
+    using ControlWord = RTFIO::ControlWord;
 
     *imageFormat = eDefaultImageFormat;
     *shownSize   = TWIPS_Point (TWIPS{0}, TWIPS{0});
@@ -3848,7 +3848,7 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
                 // LGP 2000/04/26
                 return;
             }
-            #if qPlatform_Windows
+#if qPlatform_Windows
             if (fte->fCharSet != -1) {
                 // Not sure what I should do if Win32CharSetToCodePage returns zero? -- LGP 2002-12-08
                 CodePage cp = Platform::Windows::Win32CharSetToCodePage (fte->fCharSet);
@@ -3857,7 +3857,7 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
                 }
                 readerContext.UseInputCharSetEncoding (readerContext.GetCurrentGroupContext ()->fCurrentCodePage);
             }
-            #endif
+#endif
         } break;
 
         case RTFIO::eControlAtom_fs: {
@@ -4170,7 +4170,7 @@ StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream
     ,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     fCurrentInputCharSetEncoding_{WellKnownCodePages::kANSI}
-    , // not sure???
+    ,                                    // not sure???
 #endif
     fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
     , // note: important these two members DECLARED before this one... else not INITED at this point!

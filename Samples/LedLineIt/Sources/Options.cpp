@@ -256,7 +256,7 @@ FontSpecification Options::GetDefaultNewDocFont () const
     // but don't know how better to choose...
     // Not TOO important what we do here. Really we should get/save a user-chosen default in the
     // prefs file!
-    FontSpecification defFont = TextImager::GetStaticDefaultFont ();
+    FontSpecification defFont = GetStaticDefaultFont ();
     defFont.SetFontName (_T ("Courier New"));
     defFont.SetPointSize (10);
     return defFont;

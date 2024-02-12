@@ -1687,7 +1687,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
         if (fFontInfo.lfHeight >= 0) {
             // I probably should be doing some magic here with subtracing internal leading, or something like that from this value -
-            // See TextImager::GetStaticDefaultFont () and Win32 SDK docs for LOGFONT
+            // See GetStaticDefaultFont () and Win32 SDK docs for LOGFONT
             // LGP 960222
             WindowDC   screenDC (nullptr);
             FontObject font;
