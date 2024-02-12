@@ -14,6 +14,9 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
+
+#if qStroika_Frameworks_Led_SupportGDI
+
 #if qMultiByteCharacters
 inline AdjustToValidCharIndex (const Led_tChar* text, size_t index)
 {
@@ -480,3 +483,5 @@ size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
 
     return (bestRowLength);
 }
+
+#endif

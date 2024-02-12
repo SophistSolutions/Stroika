@@ -31,6 +31,8 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
+#if qStroika_Frameworks_Led_SupportGDI
+
 class ParagraphInfoChangeTextRep : public InteractiveReplaceCommand::SavedTextRep {
 private:
     using inherited = InteractiveReplaceCommand::SavedTextRep;
@@ -8067,3 +8069,4 @@ void EmptySelectionParagraphSavedTextRep::InsertSelf (TextInteractor* interactor
     RequireNotNull (wp);
     wp->GetParagraphDatabase ()->SetParagraphInfo (at, 1, IncrementalParagraphInfo (fSavedStyleInfo));
 }
+#endif

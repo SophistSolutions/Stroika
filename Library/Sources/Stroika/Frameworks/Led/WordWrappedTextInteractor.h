@@ -18,6 +18,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
 
     /*
@@ -52,6 +53,7 @@ namespace Stroika::Frameworks::Led {
         virtual void SetTopRowInWindowByMarkerPosition (size_t markerPos, UpdateMode updateMode = eDefaultUpdate) override;
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
+#endif
 
 }
 

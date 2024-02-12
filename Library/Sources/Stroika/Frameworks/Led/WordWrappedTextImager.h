@@ -30,6 +30,7 @@ namespace Stroika::Frameworks::Led {
 #define qDefaultLedSoftLineBreakChar '\001'
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         WordWrappedTextImager
     @BASES:         @'MultiRowTextImager'
@@ -126,6 +127,7 @@ namespace Stroika::Frameworks::Led {
         virtual void GetLayoutMargins (MultiRowTextImager::RowReference row, CoordinateType* lhs, CoordinateType* rhs) const override;
         nonvirtual DistanceType GetHeight () const;
     };
+    #endif
 
 }
 

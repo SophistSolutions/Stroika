@@ -53,10 +53,10 @@ Objs+=	$(ObjDir)TextBreaks${OBJ_SUFFIX}
 Objs+=	$(ObjDir)TextImager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)TextInteractor${OBJ_SUFFIX}
 Objs+=	$(ObjDir)TextStore${OBJ_SUFFIX}
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)WordProcessor${OBJ_SUFFIX}
 Objs+=	$(ObjDir)WordWrappedTextImager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)WordWrappedTextInteractor${OBJ_SUFFIX}
+ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 endif
 
 

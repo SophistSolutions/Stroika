@@ -14,6 +14,8 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
+
 #if qTemplateGeneratedMixinsSometimesCorrupted
     inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookLosingTextStore ()
     {
@@ -1096,6 +1098,7 @@ namespace Stroika::Frameworks::Led {
         , fCellBackgroundColor (Color::kWhite)
     {
     }
+    #endif
 
 }
 

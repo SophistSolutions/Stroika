@@ -10,6 +10,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
+#if qStroika_Frameworks_Led_SupportGDI
 /*
  ********************************************************************************
  ***************************** WordWrappedTextInteractor ************************
@@ -64,3 +65,5 @@ void WordWrappedTextInteractor::SetTopRowInWindowByMarkerPosition (size_t marker
 {
     SetTopRowInWindow (GetRowReferenceContainingPosition (markerPos), updateMode);
 }
+
+#endif

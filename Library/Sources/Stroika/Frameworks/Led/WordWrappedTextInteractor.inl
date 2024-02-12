@@ -12,6 +12,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      *************************** WordWrappedTextInteractor **************************
@@ -27,6 +28,7 @@ namespace Stroika::Frameworks::Led {
         TemporarilySetUpdateMode updateModeSetter (*this, updateMode);
         SetTopRowInWindow (row);
     }
+    #endif
 
 }
 

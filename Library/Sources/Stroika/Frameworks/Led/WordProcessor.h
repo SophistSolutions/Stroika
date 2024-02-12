@@ -28,6 +28,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
     @CLASS:         StandardStyledWordWrappedTextInteractor
@@ -1957,6 +1958,7 @@ namespace Stroika::Frameworks::Led {
     private:
         ParagraphInfo fSavedStyleInfo;
     };
+    #endif
 
 }
 
