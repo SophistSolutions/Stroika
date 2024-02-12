@@ -20,6 +20,20 @@
 
 namespace Stroika::Frameworks::Led {
 
+    /*
+        @CLASS:         StyledInfoSummaryRecord
+        @BASES:         @'FontSpecification'
+        @DESCRIPTION:   <p>Add a length attribute to @'FontSpecification'. Used in specifying style runs by
+            @'StandardStyledTextImager'.</p>
+        */
+    struct StyledInfoSummaryRecord : public FontSpecification {
+    public:
+        StyledInfoSummaryRecord (const FontSpecification& fontSpec, size_t length);
+
+    public:
+        size_t fLength;
+    };
+    
 #if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         StandardStyledTextImager
@@ -59,19 +73,7 @@ namespace Stroika::Frameworks::Led {
             *  custom style markers.
             */
     public:
-        /*
-        @CLASS:         StandardStyledTextImager::InfoSummaryRecord
-        @BASES:         @'FontSpecification'
-        @DESCRIPTION:   <p>Add a length attribute to @'FontSpecification'. Used in specifying style runs by
-            @'StandardStyledTextImager'.</p>
-        */
-        struct InfoSummaryRecord : public FontSpecification {
-        public:
-            InfoSummaryRecord (const FontSpecification& fontSpec, size_t length);
-
-        public:
-            size_t fLength;
-        };
+        using InfoSummaryRecord = StyledInfoSummaryRecord;
 
         nonvirtual FontSpecification GetStyleInfo (size_t charAfterPos) const;
         nonvirtual vector<InfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const;

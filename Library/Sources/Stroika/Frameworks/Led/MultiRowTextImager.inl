@@ -12,6 +12,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      ****************************** MultiRowTextImager ******************************
@@ -403,6 +404,7 @@ namespace Stroika::Frameworks::Led {
         AssertNotNull (row.GetPartitionMarker ());
         return GetPartitionElementCacheInfo (row.GetPartitionMarker ()).GetRowHeight (row.GetSubRow ());
     }
+    #endif
 
 }
 

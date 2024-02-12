@@ -9,11 +9,11 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
+#if qStroika_Frameworks_Led_SupportGDI
 using StyleMarker       = StyledTextImager::StyleMarker;
 using StyleDatabaseRep  = StandardStyledTextImager::StyleDatabaseRep;
 using InfoSummaryRecord = StandardStyledTextImager::InfoSummaryRecord;
 
-#if qStroika_Frameworks_Led_SupportGDI
 
 /*
  ********************************************************************************

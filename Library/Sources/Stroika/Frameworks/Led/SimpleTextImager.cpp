@@ -15,6 +15,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
 using PartitionMarker = Partition::PartitionMarker;
+#if qStroika_Frameworks_Led_SupportGDI
 using PartitionPtr    = PartitioningTextImager::PartitionPtr;
 
 /*
@@ -1236,3 +1237,4 @@ size_t SimpleTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, siz
     Assert (newerLen <= nTChars);
     return newerLen;
 }
+#endif

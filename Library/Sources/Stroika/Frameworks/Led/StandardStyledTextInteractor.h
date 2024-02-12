@@ -203,10 +203,12 @@ namespace Stroika::Frameworks::Led {
         // ApplyStyle
         virtual size_t current_offset () const override;
         virtual void   AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
-        virtual void   ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) override;
+        virtual void   ApplyStyle (size_t from, size_t to, const vector<StyledInfoSummaryRecord>& styleRuns) override;
         virtual FontSpecification GetDefaultFontSpec () const override;
+#if qStroika_Frameworks_Led_SupportGDI
         virtual void              InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
         virtual void              AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
+        #endif
         virtual void              AppendSoftLineBreak () override;
         virtual void              InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
         virtual void              Flush () override;
@@ -242,7 +244,7 @@ namespace Stroika::Frameworks::Led {
         StandardStyledTextImager::StyleDatabasePtr          fStyleRunDatabase;
         size_t                                              fOriginalStart;
         size_t                                              fInsertionStart;
-        vector<StandardStyledTextImager::InfoSummaryRecord> fSavedStyleInfo;
+        vector<StyledInfoSummaryRecord> fSavedStyleInfo;
         vector<Led_tChar>                                   fCachedText;
     };
 

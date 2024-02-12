@@ -25,6 +25,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
+#if qStroika_Frameworks_Led_SupportGDI
 // Hack to free up registry data on program exit. No real point to this but
 // to shutup MFC leak detector. That has SOME value, since it makes it easier to see REAL
 // leaks.
@@ -1789,4 +1790,5 @@ static PixMap** MakePixMapFromDIB (const Led_DIB* dib)
 
     return result;
 }
+#endif
 #endif

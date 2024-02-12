@@ -256,7 +256,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     protected:
         const HTMLInfo*                                     fGetHTMLInfoFrom;
-        vector<StandardStyledTextImager::InfoSummaryRecord> fStyleRunSummary;
+        vector<StyledInfoSummaryRecord> fStyleRunSummary;
         Led_tChar                                           fSoftLineBreakChar;
     };
 
@@ -279,7 +279,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         StyledTextIOWriter::SrcStream& fSrcStream;
 
     public:
-        StandardStyledTextImager::InfoSummaryRecord fLastEmittedISR;
+        StyledInfoSummaryRecord fLastEmittedISR;
         size_t                                      fLastStyleChangeAt;
         size_t                                      fIthStyleRun;
         size_t                                      fLastForcedNLAt;
@@ -291,7 +291,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         nonvirtual size_t                           GetCurSrcOffset () const;
+#if qStroika_Frameworks_Led_SupportGDI
         nonvirtual SimpleEmbeddedObjectStyleMarker* GetCurSimpleEmbeddedObjectStyleMarker () const;
+        #endif
     };
 
     /*

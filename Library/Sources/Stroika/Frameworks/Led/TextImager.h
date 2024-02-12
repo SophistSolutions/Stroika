@@ -21,6 +21,35 @@
 
 namespace Stroika::Frameworks::Led {
 
+
+
+    /*
+    @CLASS:         TextImager::StandardTabStopList
+    @BASES:         @'TextImager::TabStopList'
+    @DESCRIPTION:   <p>A simple tabstop implementation in the caller specifies the exact position of each tabstop. This
+                is most directly ananogous to the Win32SDK GetTabbedTextExtent () API apporach.</p>
+    */
+    class StandardTabStopList : public TabStopList {
+    public:
+        StandardTabStopList (); // default to 1/2 inch
+        StandardTabStopList (TWIPS eachWidth);
+        StandardTabStopList (const vector<TWIPS>& tabstops);
+        StandardTabStopList (const vector<TWIPS>& tabstops, TWIPS afterTabsWidth);
+
+    public:
+        virtual TWIPS ComputeIthTab (size_t i) const override;
+        virtual TWIPS ComputeTabStopAfterPosition (TWIPS afterPos) const override;
+
+    public:
+        TWIPS         fDefaultTabWidth; //  for tabs PAST the ones specified in the fTabStops list
+        vector<TWIPS> fTabStops;
+
+    public:
+        nonvirtual bool operator== (const StandardTabStopList& rhs) const;
+    };
+
+
+
 #if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         TextImager
@@ -228,8 +257,8 @@ namespace Stroika::Frameworks::Led {
         @DESCRIPTION:   <p>See @'TabStopList'</p>
         */
         using TabStopList = TabStopList;
+        using StandardTabStopList = StandardTabStopList;
         class SimpleTabStopList;
-        class StandardTabStopList;
 
     public:
         virtual const TabStopList& GetTabStopList (size_t containingPos) const;
@@ -917,31 +946,6 @@ namespace Stroika::Frameworks::Led {
 
     public:
         TWIPS fTWIPSPerTabStop;
-    };
-
-    /*
-    @CLASS:         TextImager::StandardTabStopList
-    @BASES:         @'TextImager::TabStopList'
-    @DESCRIPTION:   <p>A simple tabstop implementation in the caller specifies the exact position of each tabstop. This
-                is most directly ananogous to the Win32SDK GetTabbedTextExtent () API apporach.</p>
-    */
-    class TextImager::StandardTabStopList : public TextImager::TabStopList {
-    public:
-        StandardTabStopList (); // default to 1/2 inch
-        StandardTabStopList (TWIPS eachWidth);
-        StandardTabStopList (const vector<TWIPS>& tabstops);
-        StandardTabStopList (const vector<TWIPS>& tabstops, TWIPS afterTabsWidth);
-
-    public:
-        virtual TWIPS ComputeIthTab (size_t i) const override;
-        virtual TWIPS ComputeTabStopAfterPosition (TWIPS afterPos) const override;
-
-    public:
-        TWIPS         fDefaultTabWidth; //  for tabs PAST the ones specified in the fTabStops list
-        vector<TWIPS> fTabStops;
-
-    public:
-        nonvirtual bool operator== (const StandardTabStopList& rhs) const;
     };
 
     /*

@@ -16,6 +16,8 @@ using namespace Stroika::Foundation;
 
 using namespace Stroika::Frameworks::Led;
 
+#if qStroika_Frameworks_Led_SupportGDI
+
 /*
  ********************************************************************************
  ********************************* MultiRowTextImager ***************************
@@ -1510,3 +1512,4 @@ void MultiRowTextImager::PMInfoCacheMgr::MyMarker::DidUpdateText (const UpdateIn
     inherited::DidUpdateText (updateInfo);
     fPMInfoCacheMgr.MyMarkerDidUpdateCallback ();
 }
+#endif

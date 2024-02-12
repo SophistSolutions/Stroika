@@ -12,6 +12,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      ********************* InteractorImagerMixinHelper<IMAGER> **********************
@@ -79,6 +80,7 @@ namespace Stroika::Frameworks::Led {
         INTERACTOR1::DidUpdateText (updateInfo);
         INTERACTOR2::DidUpdateText (updateInfo);
     }
+#endif
 
 }
 

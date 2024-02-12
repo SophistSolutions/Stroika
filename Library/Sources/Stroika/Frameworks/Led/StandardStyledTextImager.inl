@@ -11,6 +11,17 @@
  */
 
 namespace Stroika::Frameworks::Led {
+    /*
+     ********************************************************************************
+     *************************** StyledInfoSummaryRecord ***************************
+     ********************************************************************************
+     */
+    inline StyledInfoSummaryRecord::StyledInfoSummaryRecord (const FontSpecification& fontSpec, size_t length)
+        : FontSpecification (fontSpec)
+        , fLength (length)
+    {
+    }
+
 #if qStroika_Frameworks_Led_SupportGDI
 
     /*
@@ -30,13 +41,6 @@ namespace Stroika::Frameworks::Led {
     inline void StandardStyledTextImager::StandardStyleMarker::SetInfo (const FontSpecification& fsp)
     {
         fFontSpecification = fsp;
-    }
-
-    // class StandardStyledTextImager::InfoSummaryRecord
-    inline StandardStyledTextImager::InfoSummaryRecord::InfoSummaryRecord (const FontSpecification& fontSpec, size_t length)
-        : FontSpecification (fontSpec)
-        , fLength (length)
-    {
     }
 
     // class StandardStyledTextImager

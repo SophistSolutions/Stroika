@@ -28,6 +28,7 @@
 
 namespace Stroika::Frameworks::Led {
 
+#if qStroika_Frameworks_Led_SupportGDI
     using Led_PrivateEmbeddingTag = char[10];
 
 /*
@@ -114,6 +115,8 @@ namespace Stroika::Frameworks::Led {
 
     const Led_Size kDefaultEmbeddingMargin = Led_Size (4, 4); // space left around embedding so you can see selected.
     // Not needed for all embeddings, but often helpful
+
+
     /*
     @CLASS:         SimpleEmbeddedObjectStyleMarker
     @BASES:         @'StyledTextImager::StyleMarker'
@@ -448,7 +451,6 @@ namespace Stroika::Frameworks::Led {
         size_t fPictureSize;
 #endif
     };
-#endif
 
     class StandardDIBWithURLStyleMarker : public SimpleEmbeddedObjectStyleMarker {
     private:
@@ -565,6 +567,8 @@ namespace Stroika::Frameworks::Led {
         unique_ptr<Led_DIB>     fDisplayDIB;
     };
 
+#if qStroika_Frameworks_Led_SupportGDI
+
     /*
     @METHOD:        InsertEmbeddingForExistingSentinel
     @DESCRIPTION:   <p>Utility method to insert the given embedding (@'SimpleEmbeddedObjectStyleMarker') into the given
@@ -584,6 +588,9 @@ namespace Stroika::Frameworks::Led {
                 avoids you from having todo them in a bunch of places.</p>
     */
     void AddEmbedding (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt, MarkerOwner* ownerForEmbedding);
+    #endif
+#endif
+#endif
 
 }
 

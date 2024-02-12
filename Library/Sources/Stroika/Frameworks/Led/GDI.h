@@ -69,7 +69,7 @@ namespace Stroika::Frameworks::Led {
     class TWIPS {
     public:
         constexpr explicit TWIPS (long v);
-        operator long () const;
+        constexpr operator long () const;
 
     private:
         long fValue;

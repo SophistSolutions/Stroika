@@ -411,6 +411,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             vector<ListOverrideTableEntry> fOverrideEntries;
         };
 
+#if qStroika_Frameworks_Led_SupportGDI
         static const Led_PrivateEmbeddingTag kRTFBodyGroupFragmentEmbeddingTag;
         static const Led_ClipFormat          kRTFBodyGroupFragmentClipFormat;
 
@@ -426,6 +427,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             virtual void      DoWriteToOLE1Stream (size_t* nBytes, byte** resultData) = 0;
             virtual Led_Size  GetSize ()                                              = 0;
         };
+#endif
     };
 
     /*
@@ -767,7 +769,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             Context ();
 
             IncrementalFontSpecification    fFontSpec;
-            TextImager::StandardTabStopList fTabStops;
+            StandardTabStopList fTabStops;
             Justification                   fJustification;
             TWIPS                           fSpaceBefore;
             TWIPS                           fSpaceAfter;
@@ -783,12 +785,14 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         virtual void AppendText (const Led_tChar* text, size_t nTChars)            = 0;
+#if qStroika_Frameworks_Led_SupportGDI
         virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)  = 0;
+        #endif
         virtual void AppendSoftLineBreak ()                                        = 0;
         virtual void EndParagraph ()                                               = 0;
         virtual void UseFont (const IncrementalFontSpecification& fontSpec)        = 0;
         virtual void SetJustification (Justification justification)                = 0;
-        virtual void SetTabStops (const TextImager::StandardTabStopList& tabStops) = 0;
+        virtual void SetTabStops (const StandardTabStopList& tabStops) = 0;
         virtual void SetFirstIndent (TWIPS tx)                                     = 0;
         virtual void SetLeftMargin (TWIPS lhs)                                     = 0;
         virtual void SetRightMargin (TWIPS rhs)                                    = 0;
@@ -1064,7 +1068,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         RTFIO::ColorTable*                                  fColorTable;
         RTFIO::ListTables*                                  fListTable;
         CodePage                                            fDocumentCharacterSet;
-        vector<StandardStyledTextImager::InfoSummaryRecord> fStyleRunSummary;
+        vector<StyledInfoSummaryRecord> fStyleRunSummary;
         const Led_tChar                                     fSoftLineBreakChar;
         DiscontiguousRun<bool>                              fHidableTextRuns;
     };
@@ -1099,7 +1103,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     public:
         bool                                        fInTable;
         StyledTextIOWriter_RTF::SrcStream&          fSrcStream;
-        StandardStyledTextImager::InfoSummaryRecord fLastEmittedISR;
+        StyledInfoSummaryRecord fLastEmittedISR;
         size_t                                      fNextStyleChangeAt;
         size_t                                      fIthStyleRun;
         size_t                                      fNextHidableTextChangeAt;

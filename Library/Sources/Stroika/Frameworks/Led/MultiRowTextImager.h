@@ -21,7 +21,8 @@
 
 namespace Stroika::Frameworks::Led {
 
-    /*
+ #if qStroika_Frameworks_Led_SupportGDI
+   /*
     @CLASS:         MultiRowTextImager
     @BASES:         @'PartitioningTextImager'
     @DESCRIPTION:
@@ -398,6 +399,7 @@ namespace Stroika::Frameworks::Led {
     private:
         PMInfoCacheMgr& fPMInfoCacheMgr;
     };
+    #endif
 
 }
 

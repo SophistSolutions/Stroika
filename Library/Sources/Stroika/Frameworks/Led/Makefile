@@ -35,15 +35,17 @@ Objs+=	$(ObjDir)HiddenText${OBJ_SUFFIX}
 Objs+=	$(ObjDir)IdleManager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)LineBasedPartition${OBJ_SUFFIX}
 Objs+=	$(ObjDir)Marker${OBJ_SUFFIX}
-ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)MultiRowTextImager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)PartitioningTextImager${OBJ_SUFFIX}
+ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)SimpleLed${OBJ_SUFFIX}
+endif
 Objs+=	$(ObjDir)SimpleTextImager${OBJ_SUFFIX}
 Objs+=	$(ObjDir)SimpleTextInteractor${OBJ_SUFFIX}
 Objs+=	$(ObjDir)SimpleTextStore${OBJ_SUFFIX}
 Objs+=	$(ObjDir)SpellCheckEngine_Basic${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StandardStyledTextImager${OBJ_SUFFIX}
+ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)StandardStyledTextInteractor${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StdDialogs${OBJ_SUFFIX}
 Objs+=	$(ObjDir)StyledTextEmbeddedObjects${OBJ_SUFFIX}

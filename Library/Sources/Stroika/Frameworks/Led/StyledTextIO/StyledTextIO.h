@@ -39,7 +39,7 @@
 
 #include "../../../Foundation/Memory/Common.h"
 
-#include "../StandardStyledTextImager.h" //  For StandardStyledTextImager::InfoSummaryRecord declaration
+#include "../StandardStyledTextImager.h" //  For StyledInfoSummaryRecord declaration
 #include "../StyledTextEmbeddedObjects.h"
 #include "../StyledTextImager.h"
 #include "../Support.h"
@@ -232,7 +232,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @METHOD:        StyledTextIOReader::SinkStream::ApplyStyle
         @DESCRIPTION:   <p>Apply the given style information to the given range of text. See @'StyledTextIOReader::SinkStream::AppendText'.</p>
         */
-        virtual void ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) = 0;
+        virtual void ApplyStyle (size_t from, size_t to, const vector<StyledInfoSummaryRecord>& styleRuns) = 0;
 
     public:
         /*
@@ -241,6 +241,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         */
         virtual FontSpecification GetDefaultFontSpec () const = 0;
 
+#if qStroika_Frameworks_Led_SupportGDI
     public:
         /*
         @METHOD:        StyledTextIOReader::SinkStream::InsertEmbeddingForExistingSentinel
@@ -254,6 +255,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @DESCRIPTION:
         */
         virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) = 0;
+        #endif
 
     public:
         /*
@@ -279,7 +281,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         virtual void SetJustification (Justification justification);
-        virtual void SetStandardTabStopList (const TextImager::StandardTabStopList& tabStops);
+        virtual void SetStandardTabStopList (const StandardTabStopList& tabStops);
         virtual void SetFirstIndent (TWIPS tx);
         virtual void SetLeftMargin (TWIPS lhs);
         virtual void SetRightMargin (TWIPS rhs);
@@ -368,12 +370,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     */
     class StyledTextIOWriter::SrcStream {
     public:
-        using StandardTabStopList = TextImager::StandardTabStopList;
-
-    public:
-        virtual ~SrcStream ()
-        {
-        }
+        virtual ~SrcStream () = default;
 
     public:
         /*
@@ -409,14 +406,16 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @METHOD:        StyledTextIOWriter::SrcStream::GetStyleInfo
         @DESCRIPTION:
         */
-        virtual vector<StandardStyledTextImager::InfoSummaryRecord> GetStyleInfo (size_t from, size_t len) const = 0;
+        virtual vector<StyledInfoSummaryRecord> GetStyleInfo (size_t from, size_t len) const = 0;
 
+#if qStroika_Frameworks_Led_SupportGDI
     public:
         /*
         @METHOD:        StyledTextIOWriter::SrcStream::CollectAllEmbeddingMarkersInRange
         @DESCRIPTION:
         */
         virtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const = 0;
+        #endif
 
     public:
         class Table;
@@ -833,6 +832,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         size_t fCurSeekPos; // zero-based
     };
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         EmbeddingSinkStream
     @BASES:         @'SimpleEmbeddedObjectStyleMarker::SinkStream'
@@ -847,6 +847,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     private:
         StyledTextIOWriter::SinkStream& fRealSinkStream;
     };
+    #endif
 
     /*
         ********************************************************************************

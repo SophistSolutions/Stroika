@@ -261,7 +261,7 @@ namespace Stroika::Frameworks::Led {
         : fValue (v)
     {
     }
-    inline TWIPS::operator long () const
+    constexpr TWIPS::operator long () const
     {
         return fValue;
     }
@@ -1867,7 +1867,7 @@ namespace Stroika::Frameworks::Led {
         return (fFontStyle == 0);
 #elif qPlatform_Windows
         return (fFontInfo.lfItalic == false and fFontInfo.lfWeight <= FW_NORMAL and fFontInfo.lfUnderline == false and fFontInfo.lfStrikeOut == false);
-#elif qStroika_FeatureSupported_XWindows
+#else
         return not fBold and not fItalics and not fUnderline;
 #endif
     }
@@ -3286,7 +3286,7 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (picture);
 #if qPlatform_MacOS
         return picture->picFrame.top;
-#elif qPlatform_Windows
+#else
         return Led_ByteSwapFromMac (picture->picFrameTop);
 #endif
     }
@@ -3295,7 +3295,7 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (picture);
 #if qPlatform_MacOS
         return picture->picFrame.left;
-#elif qPlatform_Windows
+#else
         return Led_ByteSwapFromMac (picture->picFrameLeft);
 #endif
     }
@@ -3304,7 +3304,7 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (picture);
 #if qPlatform_MacOS
         return picture->picFrame.bottom;
-#elif qPlatform_Windows
+#else
         return Led_ByteSwapFromMac (picture->picFrameBottom);
 #endif
     }
@@ -3313,21 +3313,21 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (picture);
 #if qPlatform_MacOS
         return picture->picFrame.right;
-#elif qPlatform_Windows
+#else
         return Led_ByteSwapFromMac (picture->picFrameRight);
 #endif
     }
     inline short Led_GetMacPictWidth (const Led_Picture* picture)
     {
-        return (Led_GetMacPictRight (picture) - Led_GetMacPictLeft (picture));
+        return Led_GetMacPictRight (picture) - Led_GetMacPictLeft (picture);
     }
     inline short Led_GetMacPictHeight (const Led_Picture* picture)
     {
-        return (Led_GetMacPictBottom (picture) - Led_GetMacPictTop (picture));
+        return Led_GetMacPictBottom (picture) - Led_GetMacPictTop (picture);
     }
     inline Led_Size Led_GetMacPictSize (const Led_Picture* picture)
     {
-        return Led_Size (Led_GetMacPictHeight (picture), Led_GetMacPictWidth (picture));
+        return Led_Size {Led_GetMacPictHeight (picture), Led_GetMacPictWidth (picture)};
     }
 #if qPlatform_MacOS
     inline short Led_GetMacPictTop (const Led_Picture* const* picture)
