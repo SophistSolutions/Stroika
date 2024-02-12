@@ -756,7 +756,7 @@ void Led_URLManager::Open (const string& url)
 #endif
 }
 
-string Led_URLManager::FileSpecToURL ([[maybe_unused]] const const filesystem::path& p)
+string Led_URLManager::FileSpecToURL ([[maybe_unused]] const filesystem::path& p)
 {
     AssertNotImplemented (); // nyi (not needed anywhere right now)
     return "";
