@@ -275,7 +275,6 @@ bool SpellCheckEngine_Basic::LookupWord_ (const Led_tString& checkWord, Led_tStr
         }
     }
 
-#if qWideCharacters
     {
         const wchar_t kRightSingleQuotationMark = L'\x2019';
         size_t        apos                      = checkWord.find (kRightSingleQuotationMark);
@@ -285,7 +284,6 @@ bool SpellCheckEngine_Basic::LookupWord_ (const Led_tString& checkWord, Led_tStr
             return LookupWord_ (tmp, matchedWordResult);
         }
     }
-#endif
 
     // PROBABALY LOTS MORE LOGIC/RULES TO ADD HERE!!!
     {
@@ -992,9 +990,7 @@ TextBreaks_SpellChecker::CharacterClasses TextBreaks_SpellChecker::CharToCharact
             return (eWordClass);
         } break;
 
-#if qWideCharacters
         case 0x2019: // curly apostrophe
-#endif
         case '\'': {
             // APOSTROPHE between digits or letters
             if (charToExamine > startOfText and charToExamine < &startOfText[lengthOfText]) {
@@ -1106,17 +1102,13 @@ void SpellCheckEngine_Basic_Simple::ReadFromUD ()
      *  Ignore any errors reading from the UD (at least file-not-found errors).
      */
     try {
-        Memory::BLOB b = IO::FileSystem::FileInputStream::New (filesystem::path (fUDName)).ReadAll ();
-#if qWideCharacters
+        Memory::BLOB                   b = IO::FileSystem::FileInputStream::New (filesystem::path (fUDName)).ReadAll ();
         span<const byte>               rawByteSpan{b};
         CodeCvt<Led_tChar>             converter{&rawByteSpan};
         size_t                         outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
         Memory::StackBuffer<Led_tChar> fileData2{outCharCnt};
         auto                           charsRead = converter.Bytes2Characters (&rawByteSpan, span{fileData2});
         fUD->ReadFromBuffer (charsRead.data (), charsRead.data () + charsRead.size ());
-#else
-        fUD->ReadFromBuffer (reinterpret_cast<const Led_tChar*> (reader.begin ()), reinterpret_cast<const Led_tChar*> (reader.end ()));
-#endif
     }
     catch (...) {
     }
@@ -1125,12 +1117,7 @@ void SpellCheckEngine_Basic_Simple::ReadFromUD ()
 void SpellCheckEngine_Basic_Simple::WriteToUD ()
 {
     Execution::ThrowIfNull (fUD);
-    vector<Led_tChar> data = fUD->SaveToBuffer ();
-
+    vector<Led_tChar>                     data   = fUD->SaveToBuffer ();
     IO::FileSystem::FileOutputStream::Ptr writer = IO::FileSystem::FileOutputStream::New (filesystem::path (fUDName));
-#if qWideCharacters
     Streams::TextWriter::New (writer, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eInclude).Write (span{data});
-#else
-    writer.Append (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (data.begin ())), data.size ());
-#endif
 }

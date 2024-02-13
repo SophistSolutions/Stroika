@@ -195,8 +195,6 @@ namespace Stroika::Frameworks::Led {
         VectorMarkerSink vml (markerList);
         CollectAllMarkersInRangeInto ((from > 0) ? (from - 1) : from, min (to + 1, GetEnd () + 1), owner, vml);
     }
-#if qSingleByteCharacters || qWideCharacters
-    // qMultiByteCharacters Code in C file - COMPLEX/SLOW
     inline size_t TextStore::CharacterToTCharIndex (size_t i)
     {
         return (i);
@@ -205,7 +203,6 @@ namespace Stroika::Frameworks::Led {
     {
         return (i);
     }
-#endif
     /*
     @METHOD:        TextStore::SetMarkerStart
     @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the end-point doesn't change.
@@ -244,13 +241,7 @@ namespace Stroika::Frameworks::Led {
         if (afterPos >= GetEnd ()) {
             return (GetEnd ());
         }
-#if qSingleByteCharacters || qWideCharacters
         size_t result = afterPos + 1;
-#elif qMultiByteCharacters
-        Led_tChar thisChar;
-        CopyOut (afterPos, 1, &thisChar);
-        size_t result = Led_IsLeadByte (thisChar) ? (afterPos + 2) : (afterPos + 1);
-#endif
         Ensure (result <= GetEnd ());
         return (result);
     }
@@ -280,30 +271,10 @@ namespace Stroika::Frameworks::Led {
     }
     inline void TextStore::Invariant () const
     {
-#if qDebug and qHeavyDebugging
+#if qDebug and qStroika_Frameworks_Led_HeavyDebugging
         Invariant_ ();
 #endif
     }
-#if qMultiByteCharacters
-    inline void TextStore::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
-    {
-        if constexpr (qDebug) {
-            /*
-             *  We know that line (not row) breaks are a good syncronization point to look back and scan to make
-             *  sure all the double-byte characters are correct - because an NL is NOT a valid second byte.
-             */
-            Assert (not Led_IsValidSecondByte ('\n'));
-            size_t startOfFromLine = GetStartOfLineContainingPosition (charPos);
-            Assert (startOfFromLine <= charPos);
-            size_t                         len = charPos - startOfFromLine;
-            Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-            CopyOut (startOfFromLine, len, buf);
-            Assert (Led_IsValidMultiByteString (buf, len)); // This check that the whole line from the beginning to the charPos point
-                                                            // is valid makes sure that the from position doesn't split a double-byte
-                                                            // character.
-        }
-    }
-#endif
     inline bool TextStore::Overlap (size_t mStart, size_t mEnd, size_t from, size_t to)
     {
         Require (mStart <= mEnd);

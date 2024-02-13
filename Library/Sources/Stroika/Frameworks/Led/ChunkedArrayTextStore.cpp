@@ -730,13 +730,6 @@ void ChunkedArrayTextStore::ReplaceWithoutUpdate (size_t from, size_t to, const 
     }
 #endif
     Assert (from <= to);
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (withWhat, withWhatCount));
-
-    Assert_CharPosDoesNotSplitCharacter (from);
-    Assert_CharPosDoesNotSplitCharacter (to);
-#endif
-
     if (from != to or withWhatCount != 0) {
         // THIS ISN't QUITE RIGHT - A GOOD APPROX HOWEVER...
         // cuz we don't update markers properly yet... Close - but not quite, a replace

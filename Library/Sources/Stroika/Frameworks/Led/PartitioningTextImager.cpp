@@ -178,9 +178,6 @@ void Partition::Split (PartitionMarker* pm, size_t at)
     RequireNotNull (pm);
     Require (pm->GetStart () < at);
     Require (pm->GetEnd () > at);
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (at);
-#endif
 
     vector<void*> watcherInfos;
     DoAboutToSplitCalls (pm, at, &watcherInfos);
@@ -705,18 +702,12 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (CoordinateType hOffset, 
                 DistanceType hSize = CalcSegmentSize (absoluteSegStart, curEnd);
                 if (se.fDirection == eLeftToRight) {
                     if (static_cast<CoordinateType> (hSize + spannedSoFar) > hOffset) {
-#if qMultiByteCharacters
-                        Assert_CharPosDoesNotSplitCharacter (prevEnd);
-#endif
                         //DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (LTR)", hOffset, prevEnd);
                         return (prevEnd);
                     }
                 }
                 else {
                     if (static_cast<CoordinateType> (segVisEnd) - static_cast<CoordinateType> (hSize) < hOffset) {
-#if qMultiByteCharacters
-                        Assert_CharPosDoesNotSplitCharacter (prevEnd);
-#endif
                         //DbgTrace ("PartitioningTextImager::GetRowRelativeCharAtLoc (offset=%d,...) returning %d (RTL)", hOffset, prevEnd);
                         return (prevEnd);
                     }

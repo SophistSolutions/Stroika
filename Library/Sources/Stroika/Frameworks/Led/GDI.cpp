@@ -31,7 +31,7 @@ using namespace Stroika::Frameworks::Led;
 
 #if qPlatform_Windows
 // RTL Imaging flags
-#define qUseUniscribeToImage qUniscribeAvailableWithSDK&& qWideCharacters
+#define qUseUniscribeToImage qUniscribeAvailableWithSDK
 #define qUseFakeTTGetWPlacementToImage 1
 #define qUseGetCharPlacementToImage 1
 #endif
@@ -93,31 +93,19 @@ const bool kRunning32BitGDI = ((::GetVersion () & 0x80000000) == 0); // I BELIEV
 inline void Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
 {
     Require (nChars < static_cast<size_t> (numeric_limits<int>::max ()));
-#if qWideCharacters
     Verify (::GetTextExtentExPointW (hdc, str, static_cast<int> (nChars), maxExtent, lpnFit, alpDx, lpSize));
-#else
-    Verify (::GetTextExtentExPointA (hdc, str, static_cast<int> (nChars), maxExtent, lpnFit, alpDx, lpSize));
-#endif
 }
 inline void Win32_GetTextExtentPoint (HDC hdc, const Led_tChar* str, int nChars, LPSIZE lpSize)
 {
-#if qWideCharacters
     Verify (::GetTextExtentPointW (hdc, str, nChars, lpSize));
-#else
-    Verify (::GetTextExtentPointA (hdc, str, nChars, lpSize));
-#endif
 }
 inline void Win32_TextOut (HDC hdc, int xStart, int yStart, const Led_tChar* str, int nChars)
 {
-#if qWideCharacters
     Verify (::TextOutW (hdc, xStart, yStart, str, nChars));
-#else
-    Verify (::TextOutA (hdc, xStart, yStart, str, nChars));
-#endif
 }
 #endif
 
-#if qPlatform_Windows && qWideCharacters && qUseUniscribeToImage
+#if qPlatform_Windows && qUseUniscribeToImage
 
 const size_t kMaxUNISCRIBECharacters = 30000;
 
@@ -550,7 +538,7 @@ namespace {
 }
 #endif
 
-#if qPlatform_Windows && qWideCharacters && qUseFakeTTGetWPlacementToImage
+#if qPlatform_Windows && qUseFakeTTGetWPlacementToImage
 static bool Win9x_Workaround_GetCharPlacementFunction (HDC hdc, const wchar_t* srcText, size_t len, wchar_t* glyphImagesOut);
 #endif
 
@@ -1543,20 +1531,10 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
             }
         }
 
-#if qMultiByteCharacters
-        /*
-         *  See if i+charsThisTime is on a real character boundary - and if not - then step back one so it is.
-         */
-        if (Led_FindPrevOrEqualCharBoundary (&text[0], &text[i + charsThisTime]) != &text[i + charsThisTime]) {
-            Assert (charsThisTime > 0);
-            --charsThisTime;
-        }
-#endif
-
 #if qPlatform_Windows
         SIZE size;
         Assert (sizeof (int) == sizeof (DistanceType));
-#if qUseUniscribeToImage && qWideCharacters
+#if qUseUniscribeToImage
         {
             if (sUniscribeDLL.IsAvail ()) {
                 SCRIPT_CONTROL scriptControl;
@@ -1618,7 +1596,7 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
             charLocations[i + j] += runningCharCount;
         }
 
-#if qUseUniscribeToImage && qWideCharacters
+#if qUseUniscribeToImage
     Succeeded:
 #endif
 #elif qStroika_FeatureSupported_XWindows
@@ -1644,7 +1622,6 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_t
     // This REALLY shold be done better - fix may not be here, but in DrawCode below...
     // LGP 960509
 
-    // Now, special hack- assert no qMultiByteCharacters
     if (nTChars > 0) {
         int  lastWidth = (nTChars == 1) ? charLocations[0] : (charLocations[nTChars - 1] - charLocations[nTChars - 2]);
         SIZE size;
@@ -1691,11 +1668,6 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
             if (*nextTabAt == '\t') {
                 break;
             }
-
-// We can get away with ++nextTabAt even under SJIS so long as...
-#if qMultiByteCharacters
-            Assert (not Led_IsValidSecondByte ('\t'));
-#endif
             ++nextTabAt;
         }
 
@@ -1703,7 +1675,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
 #if qPlatform_Windows
         int oldBkMode = SetBkMode (TRANSPARENT);
 
-#if qUseUniscribeToImage && qWideCharacters
+#if qUseUniscribeToImage
         {
 #if qTryToOptimizeLongUNISCRIBEScriptOutCalls
             const size_t kMaxCharsToDrawAtATime = 500;
@@ -1797,7 +1769,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
              *  A bunch of different ways to get the RTL code emitted. Try them each in order (some ifdefed out). When
              *  one succeeds - just to the succcess label.
              */
-#if qUseGetCharPlacementToImage && qWideCharacters
+#if qUseGetCharPlacementToImage
             {
                 size_t                       len = nextTabAt - textCursor;
                 Memory::StackBuffer<wchar_t> glyphs{len};
@@ -1814,7 +1786,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
             }
 #endif
 
-#if qUseFakeTTGetWPlacementToImage && qWideCharacters
+#if qUseFakeTTGetWPlacementToImage
             {
                 size_t                       len = nextTabAt - textCursor;
                 Memory::StackBuffer<wchar_t> glyphs{len};
@@ -1830,13 +1802,8 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
                 size_t len = nextTabAt - textCursor;
                 // Fallback - if the above fails...
                 // Displays the text in the right order, but doesn't do contextual shaping (tested on WinXP and WinME) - LGP 2002-12-10
-#if qWideCharacters
                 Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor,
                                        static_cast<UINT> (len), nullptr));
-#else
-                Verify (::ExtTextOutA (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor,
-                                       static_cast<UINT> (len), nullptr));
-#endif
             }
 
         Succeeded_But_Need_To_Adjust_Width:
@@ -1852,7 +1819,7 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
                 widthSoFar += size.cx;
             }
         }
-#if qUseUniscribeToImage && qWideCharacters
+#if qUseUniscribeToImage
     Succeeded:;
 #endif
 
@@ -2928,12 +2895,12 @@ Led_DIB* Led::Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm)
 }
 #endif
 
-#if qProvideIMESupport
+#if qStroika_Frameworks_Led_ProvideIMESupport
 #include <ime.h>
 
 /*
  ********************************************************************************
- ************************************** IME *********************************
+ ****************************************** IME *********************************
  ********************************************************************************
  */
 IME* IME::sThe = nullptr;
@@ -3198,7 +3165,7 @@ void Led::Led_CenterWindowInParent (HWND w)
 
 ////////////////////////////// PRIVATE UTILITIES
 
-#if qPlatform_Windows && qWideCharacters && qUseFakeTTGetWPlacementToImage
+#if qPlatform_Windows && qUseFakeTTGetWPlacementToImage
 
 ///////////////////////////////////////////////////////////////////////////////////
 ////////////// CODE FROM Microsoft Knowledge Base Article - 241020  ///////////////

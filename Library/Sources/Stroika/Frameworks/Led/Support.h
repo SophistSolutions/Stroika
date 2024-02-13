@@ -68,6 +68,21 @@ namespace Stroika::Frameworks::Led {
 
     /*
     @CLASS:         Led_tChar
+            @todo LOSE THIS TYPE!!!!  - use Stroika::FoundationL::Character::Charactrer
+
+                   STILL need define for chararcter encoding version of GDI API (qTargetPlatformSDKUseswchar_t)
+
+                   For now - use wchar_t - since thats what I did for a long time.
+
+                   But Stroika Character better.
+
+                   ANd in TextStore - do same tricks I do with String - have one REP where size is one-byte (ISOLATIN) - and one case where size is char16_t (no surrogagtes)
+                   and one case for char32_t. THen copyOut magic does right mapping automatically (or have Peek API like I do for String).
+
+                   REally - TONS of APIs that use const Led_tChar* should be replaced with span<const Character>..
+
+
+    #if 0
     @DESCRIPTION:   <p>There are lots of different ways of encoding character sets. And it is
         a goal for Led to be able to support them all. The three major ways are wide characters,
         single-byte characters, and multibyte character strings.</p>
@@ -98,17 +113,10 @@ namespace Stroika::Frameworks::Led {
         <code>ValidateTextForCharsetConformance()</code> to check / validate a string to make
         sure it is valid with respect to the character set you are using (for example doesn't end
         spliting a multibyte character).</p>
+        #endif
     */
 #if defined(__cplusplus)
-#if qSingleByteCharacters
-    using Led_tChar = char;
-#elif qMultiByteCharacters
-    using Led_tChar                      = char;
-#elif qWideCharacters
     using Led_tChar = wchar_t;
-#else
-#error "One of these must be defined"
-#endif
 #endif
 
 /*
@@ -117,19 +125,13 @@ namespace Stroika::Frameworks::Led {
         macros @'qSingleByteCharacters', @'qMultiByteCharacters', and @'qWideCharacters'.</p>
     */
 #define LED_TCHAR_OF__(X) L##X
-#if qSingleByteCharacters || qMultiByteCharacters
-#define LED_TCHAR_OF(X) X
-#elif qWideCharacters
 #define LED_TCHAR_OF(X) LED_TCHAR_OF__ (X)
-#endif
 
-#if qWideCharacters
     constexpr wchar_t kNonBreakingSpace = 0x00a0;
     constexpr wchar_t kZeroWidthSpace   = 0x200b;
     constexpr wchar_t kPoundSign        = 0x00a3;
     constexpr wchar_t kCentSign         = 0x00a2;
     constexpr wchar_t kYenSign          = 0x00a5;
-#endif
 
     /*
     @CLASS:         Led_tString
@@ -313,25 +315,6 @@ namespace Stroika::Frameworks::Led {
     struct DiscontiguousRun : vector<DiscontiguousRunElement<DATA>> {};
 
     /*
-     *  Character set support.
-     */
-#if qMultiByteCharacters
-    bool Led_IsLeadByte (unsigned char c);
-    bool Led_IsValidSingleByte (unsigned char c); // non-leadbyte first byte...
-    bool Led_IsValidSecondByte (unsigned char c);
-    bool Led_IsValidMultiByteString (const Led_tChar* start, size_t len); // check all chars valid - and 'len' doesn't split char!
-
-    /*
-        *  Led_FindPrevOrEqualCharBoundary use useful for when we guess an index in the middle
-        *  of a string, and we want to use that index - or THAT mbyte character. So this
-        *  routine always returns guessedEnd or guessedEnd-1, depending on which is the beginning
-        *  of the mbtye character.
-        */
-    const Led_tChar* Led_FindPrevOrEqualCharBoundary (const Led_tChar* start, const Led_tChar* guessedEnd);
-    Led_tChar*       Led_FindPrevOrEqualCharBoundary (Led_tChar* start, Led_tChar* guessedEnd);
-#endif
-
-    /*
      *  These routines can be used either with single byte, multibyte, or wide
      *  characters. They are intended to insulate most of the code from having
      *  to worry about this.
@@ -339,6 +322,8 @@ namespace Stroika::Frameworks::Led {
     /*
     @METHOD:        Led_NextChar
     @DESCRIPTION:   <p>See @'Led_tChar'</p>
+
+            @todo DEPRECATE - NO POINT IN THIS API ANY LONGER -- LGP 2024-02-12
     */
     Led_tChar*       Led_NextChar (Led_tChar* fromHere);
     const Led_tChar* Led_NextChar (const Led_tChar* fromHere);
@@ -346,6 +331,8 @@ namespace Stroika::Frameworks::Led {
     /*
     @METHOD:        Led_PreviousChar
     @DESCRIPTION:   <p>See @'Led_tChar'</p>
+
+            @todo DEPRECATE - NO POINT IN THIS API ANY LONGER -- LGP 2024-02-12
     */
     Led_tChar*       Led_PreviousChar (Led_tChar* startOfString, Led_tChar* fromHere);
     const Led_tChar* Led_PreviousChar (const Led_tChar* startOfString, const Led_tChar* fromHere);
@@ -353,6 +340,8 @@ namespace Stroika::Frameworks::Led {
     /*
     @METHOD:        ValidateTextForCharsetConformance
     @DESCRIPTION:   <p>See @'Led_tChar'</p>
+
+            @todo DEPRECATE - NO POINT IN THIS API ANY LONGER -- LGP 2024-02-12
     */
     bool ValidateTextForCharsetConformance (const Led_tChar* text, size_t length); // just return true or false - no other diagnostics
 
@@ -391,11 +380,7 @@ namespace Stroika::Frameworks::Led {
     };
 #endif
 #if qPlatform_Windows
-#if qWideCharacters
     const Led_ClipFormat kTEXTClipFormat = CF_UNICODETEXT;
-#else
-    const Led_ClipFormat kTEXTClipFormat = CF_TEXT;
-#endif
     //  const Led_ClipFormat    kPICTClipFormat =   CF_METAFILEPICT;
     const Led_ClipFormat kPICTClipFormat = CF_DIB;
     const Led_ClipFormat kFILEClipFormat = CF_HDROP;

@@ -105,15 +105,10 @@ namespace Stroika::Frameworks::Led {
             eSpaceClass,
             eSentinelClass, // Special character which always breaks on either side, and stands by itself
             eWordClass,
-#if qSingleByteCharacters
-#elif qWideCharacters
             eKanjiClass,
             eKatakanaClass,
             eHiraganaClass,
             eRomanjiOrDigitClass,
-#else
-#error "That character set not yet fully supported"
-#endif
             eOtherCharacterClass //  e.g. some punctuation... (;)
         };
 

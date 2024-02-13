@@ -39,14 +39,14 @@ namespace Stroika::Frameworks::Led {
 /*
     @CONFIGVAR:     qTryToUseUNISCRIBEForTextRuns
     @DESCRIPTION:   <p>Defines whether or not we try to use the UNISCRIBE Windows SDK to generate text layouts for bidirectional text
-                such as Hebrew or Arabic. This defaults to true iff @'qWideCharacters' and @'qPlatform_Windows' is true.
+                such as Hebrew or Arabic. This defaults to true iff @'qPlatform_Windows' is true.
                 Note that UNISCRIBE isn't necessarily available on a particular system. This code just tries to use
                 UNISCRIBE if its available. So - you MAY want to use this option TOGETHER with @'qUseFriBidi'.</p>
                     <p>Note that if BOTH @'qUseFriBidi' and @'qTryToUseUNISCRIBEForTextRuns' are defined, then
                 @'qUseFriBidi' will take precedence.</p>
         */
 #ifndef qTryToUseUNISCRIBEForTextRuns
-#if qWideCharacters && qPlatform_Windows && qUniscribeAvailableWithSDK
+#if qPlatform_Windows && qUniscribeAvailableWithSDK
 #define qTryToUseUNISCRIBEForTextRuns 1
 #else
 #define qTryToUseUNISCRIBEForTextRuns 0

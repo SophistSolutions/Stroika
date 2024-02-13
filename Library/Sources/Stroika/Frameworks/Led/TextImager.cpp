@@ -459,10 +459,6 @@ void TextImager::SetSelection (size_t start, size_t end)
 {
     Assert (start >= 0);
     Assert (end <= GetEnd ()); // char 1 between positions 1..2
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (start);
-    Assert_CharPosDoesNotSplitCharacter (end);
-#endif
 
 #if 0
     DbgTrace ("TextImager::SetSelection (this= 0x%x, this_class = %s, oldSelStart=%d, oldSelEnd=%d, newSelStart=%d, newSelEnd=%d)\n",
@@ -478,18 +474,12 @@ void TextImager::SetSelection (size_t start, size_t end)
 size_t TextImager::GetSelectionStart () const
 {
     RequireNotNull (PeekAtTextStore ()); // Must specify TextStore before calling this, or any routine that calls it.
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (fHiliteMarker->GetStart ());
-#endif
     return (fHiliteMarker->GetStart ());
 }
 
 size_t TextImager::GetSelectionEnd () const
 {
     RequireNotNull (PeekAtTextStore ()); // Must specify TextStore before calling this, or any routine that calls it.
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (fHiliteMarker->GetEnd ());
-#endif
     return (fHiliteMarker->GetEnd ());
 }
 
@@ -499,10 +489,6 @@ void TextImager::GetSelection (size_t* start, size_t* end) const
     AssertNotNull (start);
     AssertNotNull (end);
     fHiliteMarker->GetRange (start, end);
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (*start);
-    Assert_CharPosDoesNotSplitCharacter (*end);
-#endif
 }
 
 void TextImager::SetSelection_ (size_t start, size_t end)
@@ -595,15 +581,6 @@ size_t TextImager::ComputeRelativePosition (size_t fromPos, CursorMovementDirect
                         size_t positionInLine = fromPos - GetTextStore ().GetStartOfLine (fromLine); // ZERO RELATIVE
                         Assert (positionInLine <= GetTextStore ().GetLineLength (fromLine));
                         positionInLine = min (positionInLine, GetTextStore ().GetLineLength (newLine)); // don't go past end of new line...
-#if qMultiByteCharacters
-                        // Don't split a mbyte character
-                        Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, positionInLine};
-                        CopyOut (GetTextStore ().GetStartOfLine (newLine), positionInLine, buf);
-                        if (Led_FindPrevOrEqualCharBoundary (buf, buf + positionInLine) != buf + positionInLine) {
-                            Assert (positionInLine > 0);
-                            --positionInLine;
-                        }
-#endif
                         return GetTextStore ().GetStartOfLine (newLine) + positionInLine;
                     }
                 } break;
@@ -1642,12 +1619,6 @@ void TextImager::MeasureSegmentWidth_ (const FontSpecification& fontSpec, size_t
     size_t length = to - from;
     Assert (length > 0);
 
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (text, length));
-    Assert_CharPosDoesNotSplitCharacter (from);
-    Assert_CharPosDoesNotSplitCharacter (to);
-#endif
-
     FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
 
     if (ContainsMappedDisplayCharacters (text, length)) {
@@ -1687,20 +1658,10 @@ DistanceType TextImager::MeasureSegmentBaseLine_ (const FontSpecification& fontS
     return (fCachedFontInfo.GetAscent ());
 }
 
-FontMetrics TextImager::GetFontMetricsAt (
-#if qMultiByteCharacters
-    size_t charAfterPos
-#else
-    size_t /*charAfterPos*/
-#endif
-) const
+FontMetrics TextImager::GetFontMetricsAt (size_t charAfterPos) const
 {
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Tablet*> (tablet));
-
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (charAfterPos);
-#endif
 
     FontSpecification fontSpec = GetDefaultFont ();
 

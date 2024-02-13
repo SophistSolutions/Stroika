@@ -144,10 +144,6 @@ namespace Stroika::Frameworks::Led {
         nonvirtual size_t GetLength () const;
         nonvirtual size_t GetEnd () const;
         nonvirtual void   CopyOut (size_t from, size_t count, Led_tChar* buffer) const;
-#if qMultiByteCharacters
-    public:
-        nonvirtual void Assert_CharPosDoesNotSplitCharacter (size_t charPos) const;
-#endif
 
         // this field is managed by the TextStore subclass which
         // keeps track of these markers. NO-ONE ELSE SHOULD TOUCH!!!

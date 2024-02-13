@@ -61,7 +61,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void Partition::Invariant () const
     {
-#if qDebug and qHeavyDebugging
+#if qDebug and qStroika_Frameworks_Led_HeavyDebugging
         Invariant_ ();
 #endif
     }
@@ -190,7 +190,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void PartitioningTextImager::Invariant () const
     {
-#if qDebug and qHeavyDebugging
+#if qDebug and qStroika_Frameworks_Led_HeavyDebugging
         Invariant_ ();
 #endif
     }

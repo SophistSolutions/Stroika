@@ -139,50 +139,6 @@ namespace {
     }
 }
 
-#if !qWideCharacters
-
-/*
- ********************************************************************************
- ******************* RTFIO::SingleByteCharsetToCharsetMappingTable **************
- ********************************************************************************
- */
-RTFIO::SingleByteCharsetToCharsetMappingTable::SingleByteCharsetToCharsetMappingTable (CodePage srcEncoding, CodePage dstEncoding, char bogusChar)
-{
-    /*
-     *  Walk the two (input and output) tables, and compute the table which would convert from src to dst.
-     *  This means simply linearly walking the input table, and for all valid input characters, find the corresponding
-     *  number (by doing a name lookup) in the output table.
-     *
-     *  Any unmappable combinations are replaced with the 'bogusChar'.
-     */
-    CodePageConverter srcCvt (srcEncoding);
-    CodePageConverter dstCvt (dstEncoding);
-
-    for (size_t i = 0; i < 256; ++i) {
-        wchar_t unicodeChar = '\0';
-
-        {
-            size_t outCharCnt = 1;
-            char   srcChar    = i;
-            srcCvt.MapToUNICODE (&srcChar, 1, &unicodeChar, &outCharCnt);
-            if (outCharCnt != 1) {
-                unicodeChar = '\0';
-            }
-        }
-
-        if (unicodeChar == '\0') {
-            fMappingTable[i] = bogusChar;
-        }
-        else {
-            char   outChar;
-            size_t outCharCnt = 1;
-            dstCvt.MapFromUNICODE (&unicodeChar, 1, &outChar, &outCharCnt);
-            fMappingTable[i] = (outCharCnt == 1) ? outChar : bogusChar;
-        }
-    }
-}
-#endif
-
 /*
  ********************************************************************************
  ******************** RTFIO::FontTableEntry::FontTableEntry *********************
@@ -1205,18 +1161,9 @@ StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& re
     , fDocumentCharacterSet (Characters::WellKnownCodePages::kANSI)
     , // ANSI default, according to RTF spec
     fCurrentInputCharSetEncoding_ (Characters::WellKnownCodePages::kANSI)
-#if qWideCharacters
     , fMultiByteInputCharBuf ()
-#else
-#if qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    , fCurrentOutputCharSetEncoding (WellKnownCodePages::kANSI)
-#endif
-    , fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
-#endif
 {
-#if qWideCharacters
     memset (fMultiByteInputCharBuf, 0, sizeof (fMultiByteInputCharBuf));
-#endif
 #if qCannotAssignRValueAutoPtrToExistingOneInOneStepBug || qTroubleOverloadingXofXRefCTORWithTemplatedMemberCTOR
     unique_ptr<Destination_> x = unique_ptr<Destination_> (new SinkStreamDestination (reader));
     fDefaultDestination        = x;
@@ -1237,36 +1184,17 @@ StyledTextIOReader_RTF::ReaderContext::~ReaderContext ()
 
 void StyledTextIOReader_RTF::ReaderContext::UseInputCharSetEncoding (CodePage codePage)
 {
-#if qWideCharacters
     fCurrentInputCharSetEncoding_ = codePage;
-#else
-    if (fCurrentInputCharSetEncoding_ != codePage) {
-        fCurrentInputCharSetEncoding_ = codePage;
-        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding);
-    }
-#endif
 }
-
-#if !qWideCharacters
-void StyledTextIOReader_RTF::ReaderContext::UseOutputCharSetEncoding (CodePage codePage)
-{
-    if (fCurrentOutputCharSetEncoding != codePage) {
-        fCurrentOutputCharSetEncoding = codePage;
-        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding);
-    }
-}
-#endif
 
 void StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c)
 {
     RequireNotNull (GetCurrentGroupContext ());
 
-#if qWideCharacters
     if (fSkipNextNChars_UC > 0) {
         fSkipNextNChars_UC--;
         return;
     }
-#endif
 
     CodePage codePage = GetCurrentInputCharSetEncoding ();
 
@@ -1288,7 +1216,6 @@ void StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c)
     //  existed in an existing code page (and I think my old tabular mechanism was highly questionable, and incomplete).
     //
 
-#if qWideCharacters
     if ((GetCurrentGroupContext ()->fCCHSCodePage != 0) and fDocumentCharacterSet == codePage) {
         codePage = GetCurrentGroupContext ()->fCCHSCodePage;
     }
@@ -1327,17 +1254,6 @@ void StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c)
             fMultiByteInputCharBuf[0] = '\0';
         }
     }
-#else
-
-    if (GetCurrentGroupContext ()->fCCHSCodePage != 0) {
-        RTFIO::SingleByteCharsetToCharsetMappingTable mapTable (GetCurrentGroupContext ()->fCCHSCodePage, GetCurrentOutputCharSetEncoding ());
-        c = mapTable.Map (c);
-    }
-    else {
-        c = fCharsetMappingTable.Map (c);
-    }
-    GetDestination ().AppendText (&c, 1);
-#endif
 }
 
 /*
@@ -1539,34 +1455,14 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                     case '|': {
                         ConsumeNextChar ();
                         const wchar_t kFormula = 0x0006;
-#if qWideCharacters
-                        Led_tChar cc = kFormula;
-#else
-                        CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar         cc     = 0;
-                        size_t            nBytes = 1;
-                        cvt.MapFromUNICODE (&kFormula, 1, &cc, &nBytes);
-                        if (nBytes != 1) {
-                            cc = fDefaultUnsupportedCharacterChar;
-                        }
-#endif
+                        Led_tChar     cc       = kFormula;
                         CheckIfAboutToStartBody (readerContext);
                         readerContext.GetDestination ().AppendText (&cc, 1);
                     } break;
 
                     case '~': {
                         ConsumeNextChar ();
-#if qWideCharacters
                         Led_tChar cc = kNonBreakingSpace;
-#else
-                        CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar         cc     = 0;
-                        size_t            nBytes = 1;
-                        cvt.MapFromUNICODE (&kNonBreakingSpace, 1, &cc, &nBytes);
-                        if (nBytes != 1) {
-                            cc = fDefaultUnsupportedCharacterChar;
-                        }
-#endif
                         CheckIfAboutToStartBody (readerContext);
                         readerContext.GetDestination ().AppendText (&cc, 1);
                     } break;
@@ -1576,17 +1472,7 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
 
                         const wchar_t kOptionalHyphen = 0x00AD; //  RTF 1.5 spec says "Optional Hyphen". This is the character from the UNICODE spec labeled "Soft Hyphen"
                                                                 //  that was the closest match I could find
-#if qWideCharacters
                         Led_tChar cc = kOptionalHyphen;
-#else
-                        CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar         cc     = 0;
-                        size_t            nBytes = 1;
-                        cvt.MapFromUNICODE (&kOptionalHyphen, 1, &cc, &nBytes);
-                        if (nBytes != 1) {
-                            cc = fDefaultUnsupportedCharacterChar;
-                        }
-#endif
                         CheckIfAboutToStartBody (readerContext);
                         readerContext.GetDestination ().AppendText (&cc, 1);
                     } break;
@@ -1594,17 +1480,7 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                     case '_': {
                         ConsumeNextChar ();
                         const wchar_t kNonBreakingHyphen = 0x2011;
-#if qWideCharacters
-                        Led_tChar cc = kNonBreakingHyphen;
-#else
-                        CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar         cc     = 0;
-                        size_t            nBytes = 1;
-                        cvt.MapFromUNICODE (&kNonBreakingHyphen, 1, &cc, &nBytes);
-                        if (nBytes != 1) {
-                            cc = fDefaultUnsupportedCharacterChar;
-                        }
-#endif
+                        Led_tChar     cc                 = kNonBreakingHyphen;
                         CheckIfAboutToStartBody (readerContext);
                         readerContext.GetDestination ().AppendText (&cc, 1);
                     } break;
@@ -2919,10 +2795,9 @@ bool StyledTextIOReader_RTF::HandleControlWord_tx (ReaderContext& readerContext,
 
 bool StyledTextIOReader_RTF::HandleControlWord_u ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] const RTFIO::ControlWord& controlWord)
 {
-// Unclear how I should treat this for the NON-UNICODE Led case. I COULD read the UNICODE chars - and then map them to narrow. But probably just
-// as good to just read whatever narrow characters were already there.
-// LGP 2000/04/29
-#if qWideCharacters
+    // Unclear how I should treat this for the NON-UNICODE Led case. I COULD read the UNICODE chars - and then map them to narrow. But probably just
+    // as good to just read whatever narrow characters were already there.
+    // LGP 2000/04/29
     if (controlWord.fHasArg) {
         readerContext.fSkipNextNChars_UC = readerContext.fUnicodeUCValue;
         wchar_t u                        = static_cast<wchar_t> (controlWord.fValue);
@@ -2931,20 +2806,17 @@ bool StyledTextIOReader_RTF::HandleControlWord_u ([[maybe_unused]] ReaderContext
     else {
         HandleBadlyFormattedInput ();
     }
-#endif
     return false;
 }
 
 bool StyledTextIOReader_RTF::HandleControlWord_uc ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] const RTFIO::ControlWord& controlWord)
 {
-#if qWideCharacters
     if (not controlWord.fHasArg) {
         readerContext.fUnicodeUCValue = 1;
     }
     else {
         readerContext.fUnicodeUCValue = max (0L, controlWord.fValue);
     }
-#endif
     return false;
 }
 
@@ -2997,15 +2869,7 @@ bool StyledTextIOReader_RTF::HandlePossibleSpecialCharacterControlWord (ReaderCo
     for (size_t i = 0; i < Memory::NEltsOf (kMappings); ++i) {
         if (controlWord.fWord == kMappings[i].fControlWordName) {
             CheckIfAboutToStartBody (readerContext);
-#if qWideCharacters
             readerContext.GetDestination ().AppendText (&kMappings[i].fUNICODECharacter, 1);
-#else
-            char              mbCharBuf[2];
-            size_t            mbCharBufSize = 2;
-            CodePageConverter cvtr (readerContext.GetCurrentOutputCharSetEncoding ());
-            cvtr.MapFromUNICODE (&kMappings[i].fUNICODECharacter, 1, mbCharBuf, &mbCharBufSize);
-            readerContext.GetDestination ().AppendText (mbCharBuf, mbCharBufSize);
-#endif
             return true;
         }
     }
@@ -4075,14 +3939,6 @@ StyledTextIOWriter_RTF::Table* StyledTextIOWriter_RTF::WriterContext::GetCurRTFT
 StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream* sinkStream, RTFInfo* rtfInfo)
     : StyledTextIOWriter (srcStream, sinkStream)
     , fCurrentOutputCharSetEncoding{WellKnownCodePages::kANSI}
-#if !qWideCharacters
-#if qPlatform_MacOS
-    , fCurrentInputCharSetEncoding_{WellKnownCodePages::kMAC}
-#elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    , fCurrentInputCharSetEncoding_{WellKnownCodePages::kANSI}
-#endif
-    , fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
-#endif
     , fRTFInfo{rtfInfo}
     , fDocumentCharacterSet{WellKnownCodePages::kANSI}
     , fSoftLineBreakChar (srcStream->GetSoftLineBreakCharacter ())
@@ -4106,25 +3962,8 @@ StyledTextIOWriter_RTF::~StyledTextIOWriter_RTF ()
 
 void StyledTextIOWriter_RTF::UseOutputCharSetEncoding (CodePage codePage)
 {
-#if qWideCharacters
     fCurrentOutputCharSetEncoding = codePage;
-#else
-    if (fCurrentOutputCharSetEncoding != codePage) {
-        fCurrentOutputCharSetEncoding = codePage;
-        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding);
-    }
-#endif
 }
-
-#if !qWideCharacters
-void StyledTextIOWriter_RTF::UseInputCharSetEncoding (CodePage codePage)
-{
-    if (fCurrentInputCharSetEncoding_ != codePage) {
-        fCurrentInputCharSetEncoding_ = codePage;
-        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding);
-    }
-}
-#endif
 
 void StyledTextIOWriter_RTF::SetCharactersSavedByName (const vector<pair<string, wchar_t>>& charactersSavedByName)
 {
@@ -4284,16 +4123,8 @@ void StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
                 WriteTag ("line");
                 break;
             }
-#if qWideCharacters
             map<wchar_t, string>::const_iterator i  = fCharactersSavedByName_Char2Name.find (c);
             wchar_t                              uc = c;
-#else
-            CodePageConverter cvt (GetCurrentInputCharSetEncoding ());
-            wchar_t           uc          = '\0';
-            size_t            ucCharCount = 1;
-            cvt.MapToUNICODE (&c, 1, &uc, &ucCharCount);
-            map<wchar_t, string>::const_iterator i = fCharactersSavedByName_Char2Name.find (uc);
-#endif
             if (i == fCharactersSavedByName_Char2Name.end ()) {
                 WritePlainUnicodeCharCharacterHelper (uc);
             }

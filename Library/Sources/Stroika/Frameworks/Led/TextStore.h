@@ -433,11 +433,6 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual void Invariant_ () const;
 #endif
-
-#if qMultiByteCharacters
-    public:
-        nonvirtual void Assert_CharPosDoesNotSplitCharacter (size_t charPos) const;
-#endif
     };
 
     /*

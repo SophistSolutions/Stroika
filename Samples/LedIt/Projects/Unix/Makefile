@@ -94,11 +94,6 @@ endif
 ifeq ($(DEBUG_SYMBOLS),1)
 CXXFLAGS +=	-g
 endif
-ifeq ($(UNICODE),1)
-CXXFLAGS +=	-DqWideCharacters=1
-else
-CXXFLAGS +=	-DqSingleByteCharacters=1
-endif
 
 LDFLAGS	=	`gtk-config --libs`
 ifeq ($(DEBUG_SYMBOLS),1)

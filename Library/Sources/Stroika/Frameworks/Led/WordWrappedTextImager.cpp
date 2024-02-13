@@ -16,17 +16,6 @@ using namespace Stroika::Frameworks::Led;
 
 #if qStroika_Frameworks_Led_SupportGDI
 
-#if qMultiByteCharacters
-inline AdjustToValidCharIndex (const Led_tChar* text, size_t index)
-{
-    if (Led_FindPrevOrEqualCharBoundary (&text[0], &text[index]) != &text[index]) {
-        Assert (index > 0);
-        --index;
-    }
-    return (index);
-}
-#endif
-
 inline DistanceType LookupLengthInVector (const DistanceType* widthsVector, size_t startSoFar, size_t i)
 {
     AssertNotNull (widthsVector);
@@ -229,9 +218,6 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
 {
     RequireNotNull (widthsVector);
     Require (wrapWidth >= 1);
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (text, length));
-#endif
     size_t bestRowLength = 0;
 
     /*
@@ -275,16 +261,10 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
             if (bestBreakPointIndex > 1) {
                 --bestBreakPointIndex; // because overshot above
             }
-#if qMultiByteCharacters
-            bestBreakPointIndex = AdjustToValidCharIndex (text, bestBreakPointIndex);
-#endif
 
             if (bestBreakPointIndex > (kCharsFromEndToSearchFrom + 5)) { // no point on a short search
                 Assert (bestBreakPointIndex > kCharsFromEndToSearchFrom);
                 guessIndex = bestBreakPointIndex - kCharsFromEndToSearchFrom;
-#if qMultiByteCharacters
-                guessIndex = AdjustToValidCharIndex (text, guessIndex);
-#endif
             }
             break;
         }
@@ -306,10 +286,7 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
 
             if (bestRowLength == 0) {
                 if (bestBreakPointIndex > (kCharsFromEndToSearchFrom * 3 + 5)) { // no point on a short search
-                    guessIndex = bestBreakPointIndex - kCharsFromEndToSearchFrom * 3;
-#if qMultiByteCharacters
-                    guessIndex = AdjustToValidCharIndex (text, guessIndex);
-#endif
+                    guessIndex    = bestBreakPointIndex - kCharsFromEndToSearchFrom * 3;
                     bestRowLength = TryToFindWrapPointForMeasuredText1 (text, length, wrapWidth, offsetToMarkerCoords, widthsVector,
                                                                         startSoFar, guessIndex, wordWrapMax);
                 }
@@ -331,26 +308,14 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
     }
 
     Assert (bestRowLength > 0);
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (offsetToMarkerCoords + bestRowLength);
-#endif
     return (bestRowLength);
 }
 
 size_t WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tChar* text, size_t length, DistanceType wrapWidth,
-#if qMultiByteCharacters
-                                                                  size_t offsetToMarkerCoords,
-#else
-                                                                  size_t /*offsetToMarkerCoords*/,
-#endif
-                                                                  const DistanceType* widthsVector, size_t startSoFar, size_t searchStart, size_t wrapLength)
+                                                                  size_t /*offsetToMarkerCoords*/, const DistanceType* widthsVector,
+                                                                  size_t startSoFar, size_t searchStart, size_t wrapLength)
 {
     AssertNotNull (widthsVector);
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (text, length));
-    Assert (Led_IsValidMultiByteString (text, wrapLength));
-    Assert_CharPosDoesNotSplitCharacter (offsetToMarkerCoords + searchStart);
-#endif
 
     Assert (wrapLength <= length);
 
@@ -399,20 +364,11 @@ size_t WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tCha
         bestRowLength = wordEnd;
     }
 
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (offsetToMarkerCoords + bestRowLength);
-#endif
-
-    return (bestRowLength);
+    return bestRowLength;
 }
 
-size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
-#if qMultiByteCharacters
-    const Led_tChar* text,
-#else
-    const Led_tChar* /*text*/,
-#endif
-    size_t length, DistanceType wrapWidth, size_t offsetToMarkerCoords, const DistanceType* widthsVector, size_t startSoFar)
+size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (const Led_tChar* /*text*/, size_t length, DistanceType wrapWidth,
+                                                                          size_t offsetToMarkerCoords, const DistanceType* widthsVector, size_t startSoFar)
 {
     size_t bestRowLength = 0;
 
@@ -428,16 +384,10 @@ size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
     size_t guessIdx = size_t ((length - 1) * (float (wrapWidth) / float (fullWordWidth)));
     Assert (guessIdx < length);
 
-/*
+    /*
      *  Note - at this point guessIdx may not be on an even character boundary.
      *  So our first job is to make sure it doesn't split a character.
      */
-#if qMultiByteCharacters
-    /*
-     *  See if guessIndex is on a real character boundary - and if not - then step back one.
-     */
-    guessIdx = AdjustToValidCharIndex (text, guessIdx);
-#endif
     Assert (guessIdx < length);
 
     DistanceType guessWidth = LookupLengthInVector (widthsVector, startSoFar, guessIdx);
@@ -468,16 +418,7 @@ size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
 
     // Must always consume at least one character, even if it won't fit entirely
     if (bestRowLength == 0) {
-#if qMultiByteCharacters
-        if (Led_IsLeadByte (text[0])) {
-            bestRowLength = 2;
-        }
-        else {
-            bestRowLength = 1;
-        }
-#else
         bestRowLength = 1;
-#endif
     }
 
     return (bestRowLength);

@@ -694,13 +694,6 @@ namespace Stroika::Frameworks::Led {
         virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
                                              bool controlPressed, bool altKeyPressed);
 
-#if qMultiByteCharacters
-    protected:
-        char fMultiByteInputCharBuf[2]; // the 'multi' in 'multibyte' better be 2!!
-
-        virtual bool HandledMByteCharTyping (char theChar);
-#endif
-
         /*
          *  Query of the windowing system if there are any pending keystrokes.
          */

@@ -1317,12 +1317,7 @@ long ActiveLedItControl::OLE_Find (long searchFrom, const VARIANT& findText, BOO
 
     TextStore::SearchParameters parameters;
 
-#if qWideCharacters
-    parameters.fMatchString = findText.bstrVal;
-#else
-    USES_CONVERSION;
-    parameters.fMatchString = OLE2A (findText.bstrVal);
-#endif
+    parameters.fMatchString         = findText.bstrVal;
     parameters.fWrapSearch          = !!wrapSearch;
     parameters.fWholeWordSearch     = !!wholeWordSearch;
     parameters.fCaseSensativeSearch = !!caseSensativeSearch;
@@ -1356,14 +1351,8 @@ long ActiveLedItControl::OLE_FindReplace (long searchFrom, const VARIANT& findTe
 
     TextStore::SearchParameters parameters;
 
-#if qWideCharacters
     Led_tString findStr    = findText.bstrVal;
     Led_tString replaceStr = replaceText.bstrVal;
-#else
-    USES_CONVERSION;
-    Led_tString findStr    = OLE2A (findText.bstrVal);
-    Led_tString replaceStr = OLE2A (replaceText.bstrVal);
-#endif
     return fEditor.OLE_FindReplace (searchFrom, findStr, replaceStr, wrapSearch, wholeWordSearch, caseSensativeSearch);
 }
 
@@ -1470,10 +1459,8 @@ void ActiveLedItControl::OnAboutBoxCommand ()
                 ::MoveWindow (w, kPictWidth / 2 - kVERWidth / 2, 35, 230, 14, false);
 #if _UNICODE
 #define kUNICODE_NAME_ADORNER L" [UNICODE]"
-#elif qWideCharacters
-#define kUNICODE_NAME_ADORNER " [Internal UNICODE]"
 #else
-#define kUNICODE_NAME_ADORNER
+#define kUNICODE_NAME_ADORNER " [Internal UNICODE]"
 #endif
                 ::SetWindowText (w, (SDKString{_T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")")}).c_str ());
             }
@@ -2339,20 +2326,14 @@ void ActiveLedItControl::SetSmartCutAndPaste (BOOL bNewValue)
 
 BOOL ActiveLedItControl::OLE_GetSmartQuoteMode ()
 {
-#if qWideCharacters
     return fEditor.GetSmartQuoteMode ();
-#else
-    return false;
-#endif
 }
 
 void ActiveLedItControl::OLE_SetSmartQuoteMode (BOOL bNewValue)
 {
-#if qWideCharacters
     if (bNewValue != OLE_GetSmartQuoteMode ()) {
         fEditor.SetSmartQuoteMode (!!bNewValue);
     }
-#endif
 }
 
 BOOL ActiveLedItControl::GetWrapToWindow ()

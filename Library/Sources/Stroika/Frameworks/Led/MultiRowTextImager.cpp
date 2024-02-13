@@ -827,10 +827,6 @@ void MultiRowTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMa
     AssertNotNull (expandedToMarkerPos);
     Assert (fromMarkerPos <= toMarkerPos);
     Assert (toMarkerPos <= GetEnd ());
-#if qMultiByteCharacters && qDebug
-    Assert_CharPosDoesNotSplitCharacter (fromMarkerPos);
-    Assert_CharPosDoesNotSplitCharacter (toMarkerPos);
-#endif
 
     size_t curTopRowRelativeRowNumber = 0;
 
@@ -1114,9 +1110,6 @@ Led_Rect MultiRowTextImager::GetCharLocationRowRelative (size_t afterPosition, R
     const Led_Rect kMagicAfterRect  = Led_Rect (10000, 0, 0, 0);
 
     Require (afterPosition <= GetEnd ());
-#if qMultiByteCharacters && qDebug
-    Assert_CharPosDoesNotSplitCharacter (afterPosition);
-#endif
 
     if (afterPosition < GetStartOfRow (topRow)) {
         return (kMagicBeforeRect);
@@ -1182,10 +1175,7 @@ size_t MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where,
             *  autoscrolling...
             */
     if (where.v < 0) {
-#if qMultiByteCharacters
-        Assert_CharPosDoesNotSplitCharacter (0);
-#endif
-        return (0);
+        return 0;
     }
 
     RowReference   curRow                     = topRow;
@@ -1196,9 +1186,6 @@ size_t MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where,
         size_t           subRow = curRow.GetSubRow ();
         AssertNotNull (cur);
         size_t start = cur->GetStart ();
-#if qMultiByteCharacters
-        Assert_CharPosDoesNotSplitCharacter (start);
-#endif
 
         PartitionElementCacheInfo pmCacheInfo = GetPartitionElementCacheInfo (cur);
 
@@ -1206,9 +1193,6 @@ size_t MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where,
                 *  patch start/end/len to take into account rows...
                 */
         start += pmCacheInfo.PeekAtRowStart (subRow);
-#if qMultiByteCharacters
-        Assert_CharPosDoesNotSplitCharacter (start);
-#endif
 
         /*
          *  Count the interline space as part of the last row of the line for the purpose of hit-testing.
@@ -1227,10 +1211,7 @@ size_t MultiRowTextImager::GetCharAtLocationRowRelative (const Led_Point& where,
         topVPos += pmCacheInfo.GetRowHeight (subRow) + interLineSpaceIfAny;
     } while (GetNextRowReference (&curRow));
 
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (GetEnd ());
-#endif
-    return (GetEnd ());
+    return GetEnd ();
 }
 
 DistanceType MultiRowTextImager::CalculateInterLineSpace (const PartitionMarker* /*pm*/) const

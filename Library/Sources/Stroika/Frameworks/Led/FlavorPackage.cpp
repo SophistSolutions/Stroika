@@ -275,9 +275,8 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
      *  import that contents as if it was plain text
      *
      *  We COULD just vector to InternalizeBestFlavor above for the TEXT case - but then we'd lose the passed information about the
-     *  prefered code page - so just do the read/replace here...
+     *  preferred code page - so just do the read/replace here...
      */
-#if qWideCharacters
     span<const byte> rawByteSpan{reinterpret_cast<const byte*> (rawBytes), nRawBytes};
 #if qPlatform_Windows
     CodeCvt<Led_tChar> converter{&rawByteSpan, CodeCvt<Led_tChar>{suggestedCodePage.value_or (CP_ACP)}};
@@ -287,11 +286,6 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
     size_t                         outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
     Memory::StackBuffer<Led_tChar> fileData2{outCharCnt};
     auto                           charsRead = converter.Bytes2Characters (&rawByteSpan, span{fileData2}).size ();
-#else
-    Memory::StackBuffer<Led_tChar> fileData2{nRawBytes};
-    memcpy (fileData2, (char*)rawBytes, nRawBytes);
-    size_t charsRead = nRawBytes;
-#endif
     charsRead = Characters::NormalizeTextToNL<Led_tChar> (fileData2.data (), charsRead, fileData2.data (), charsRead);
     GetTextStore ().Replace (from, to, fileData2.data (), charsRead);
     return true;

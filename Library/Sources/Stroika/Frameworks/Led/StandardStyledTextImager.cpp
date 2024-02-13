@@ -118,10 +118,6 @@ FontMetrics StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos) con
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Tablet*> (tablet));
 
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (charAfterPos);
-#endif
-
     FontCacheInfoUpdater fontCacheUpdater (this, tablet, GetStyleInfo (charAfterPos));
     return (fontCacheUpdater.GetMetrics ());
 }

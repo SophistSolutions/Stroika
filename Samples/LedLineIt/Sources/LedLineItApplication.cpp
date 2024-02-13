@@ -571,10 +571,8 @@ void LedLineItApplication::OnAppAbout ()
                 ::MoveWindow (w, kPictWidth / 2 - kVERWidth / 2, 32, kVERWidth, 16, false);
 #if _UNICODE
 #define kUNICODE_NAME_ADORNER L" [UNICODE]"
-#elif qWideCharacters
-#define kUNICODE_NAME_ADORNER " [Internal UNICODE]"
 #else
-#define kUNICODE_NAME_ADORNER
+#define kUNICODE_NAME_ADORNER " [Internal UNICODE]"
 #endif
                 ::SetWindowText (w, _T (qLed_ShortVersionString) kUNICODE_NAME_ADORNER _T (" (") _T (__DATE__) _T (")"));
             }

@@ -130,12 +130,6 @@ void SimpleTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffer) con
 void SimpleTextStore::ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount)
 {
     Assert (from <= to);
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (withWhat, withWhatCount));
-
-    Assert_CharPosDoesNotSplitCharacter (from);
-    Assert_CharPosDoesNotSplitCharacter (to);
-#endif
 
     Invariant ();
 

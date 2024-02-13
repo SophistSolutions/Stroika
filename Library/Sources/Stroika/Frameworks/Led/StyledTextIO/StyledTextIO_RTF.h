@@ -42,20 +42,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         static constexpr char kRTFStartTagChar      = '\\';
         static constexpr char kRTFQuoteNextCharChar = '\\';
 
-#if !qWideCharacters
-    public:
-        class SingleByteCharsetToCharsetMappingTable {
-        public:
-            SingleByteCharsetToCharsetMappingTable (CodePage srcEncoding, CodePage dstEncoding, char bogusChar = '?');
-
-        public:
-            nonvirtual char Map (char inChar);
-
-        private:
-            char fMappingTable[256];
-        };
-#endif
-
     public:
         // perhaps should be more careful to keep these sorted, so easier to find particular one...
         enum ControlWordAtom {
@@ -679,27 +665,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     private:
         CodePage fCurrentInputCharSetEncoding_;
-#if qWideCharacters
-        char fMultiByteInputCharBuf[2];
-#endif
+        char     fMultiByteInputCharBuf[2];
 
-#if !qWideCharacters
-    public:
-        nonvirtual CodePage GetCurrentOutputCharSetEncoding () const;
-        nonvirtual void     UseOutputCharSetEncoding (CodePage codePage);
-
-    private:
-        CodePage fCurrentOutputCharSetEncoding;
-
-    public:
-        RTFIO::SingleByteCharsetToCharsetMappingTable fCharsetMappingTable;
-#endif
-
-#if qWideCharacters
     public:
         size_t fUnicodeUCValue{1}; // support for \u and \uc RTF tags
         size_t fSkipNextNChars_UC{0};
-#endif
 
     public:
         nonvirtual void PutRawCharToDestination (char c);
@@ -982,18 +952,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     private:
         CodePage fCurrentOutputCharSetEncoding;
 
-#if !qWideCharacters
-    public:
-        nonvirtual CodePage GetCurrentInputCharSetEncoding () const;
-        nonvirtual void     UseInputCharSetEncoding (CodePage codePage);
-
-    private:
-        CodePage fCurrentInputCharSetEncoding_;
-
-    protected:
-        RTFIO::SingleByteCharsetToCharsetMappingTable fCharsetMappingTable;
-#endif
-
     public:
         nonvirtual const vector<pair<string, wchar_t>>& GetCharactersSavedByName () const;
         nonvirtual void SetCharactersSavedByName (const vector<pair<string, wchar_t>>& charactersSavedByName);
@@ -1107,15 +1065,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         ***************************** Implementation Details ***************************
         ********************************************************************************
         */
-
-#if !qWideCharacters
-    //  class   RTFIO::SingleByteCharsetToCharsetMappingTable
-    inline char RTFIO::SingleByteCharsetToCharsetMappingTable::Map (char inChar)
-    {
-        return (fMappingTable[(unsigned char)inChar]);
-    }
-#endif
-
 //  class   RTFIO::StringNControlWordAtom
 #if !qFriendDeclarationsDontWorkWithNestedClassesBug && !qUseMapForControlWordMap
     inline bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
@@ -1189,12 +1138,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     {
         return fCurrentInputCharSetEncoding_;
     }
-#if !qWideCharacters
-    inline CodePage StyledTextIOReader_RTF::ReaderContext::GetCurrentOutputCharSetEncoding () const
-    {
-        return fCurrentOutputCharSetEncoding;
-    }
-#endif
     inline StyledTextIOReader_RTF::ReaderContext::Destination_& StyledTextIOReader_RTF::ReaderContext::GetDestination () const
     {
         EnsureNotNull (fCurrentDestination);
@@ -1311,12 +1254,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     {
         return fCurrentOutputCharSetEncoding;
     }
-#if !qWideCharacters
-    inline CodePage StyledTextIOWriter_RTF::GetCurrentInputCharSetEncoding () const
-    {
-        return fCurrentInputCharSetEncoding_;
-    }
-#endif
 
 }
 

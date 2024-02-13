@@ -677,11 +677,7 @@ bool StyledTextIOReader_HTML::LookingAt (const char* text) const
 
 Led_tString StyledTextIOReader_HTML::MapInputTextToTString (const string& text)
 {
-#if qWideCharacters
     return CodeCvt<Led_tChar>{WellKnownCodePages::kANSI}.Bytes2String<Led_tString> (as_bytes (span{text}));
-#else
-    return text;
-#endif
 }
 
 void StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bool skipNLCheck)
@@ -766,39 +762,16 @@ void StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
         }
     }
     if (refName.length () > 0) {
-#if !qWideCharacters
-#if qPlatform_MacOS
-        const CodePage kInternalCodePageToMapTo = WellKnownCodePages::kMAC;
-#else
-        const CodePage kInternalCodePageToMapTo = WellKnownCodePages::kANSI;
-#endif
-#endif
         if (refName[0] == '#') {
             wchar_t result = static_cast<wchar_t> (::atoi (refName.c_str () + 1));
-#if qWideCharacters
             EmitText (&result, 1);
-#else
-            CodePageConverter         cpc (kInternalCodePageToMapTo);
-            size_t                    outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (&result, 1);
-            Memory::StackBuffer<char> buf{Memory::eUninitialized, outCharCnt};
-            cpc.MapFromUNICODE (&result, 1, buf, &outCharCnt);
-            EmitText (buf, outCharCnt);
-#endif
             return;
         }
         else {
             const vector<StyledTextIOReader_HTML::EntityRefMapEntry>& entityRefs = GetEntityRefMapTable ();
             for (auto i = entityRefs.begin (); i != entityRefs.end (); ++i) {
                 if (refName == (*i).fEntityRefName) {
-#if qWideCharacters
                     EmitText (&(*i).fCharValue, 1);
-#else
-                    CodePageConverter         cpc (kInternalCodePageToMapTo);
-                    size_t                    outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (&(*i).fCharValue, 1);
-                    Memory::StackBuffer<char> buf{Memory::eUninitialized, outCharCnt};
-                    cpc.MapFromUNICODE (&(*i).fCharValue, 1, buf, &outCharCnt);
-                    EmitText (buf, outCharCnt);
-#endif
                     return;
                 }
             }
@@ -1105,13 +1078,9 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
             EmbeddedObjectCreatorRegistry::Assoc assoc;
             if (EmbeddedObjectCreatorRegistry::Get ().Lookup (StandardURLStyleMarker::kEmbeddingTag, &assoc)) {
                 AssertNotNull (assoc.fReadFromMemory);
-#if qWideCharacters
                 Led_URLD urld =
                     Led_URLD{tagValue.c_str (),
                              CodeCvt<Led_tChar>{WellKnownCodePages::kANSI}.String2Bytes<string> (span{fHiddenTextAccumulation}).c_str ()};
-#else
-                Led_URLD urld = Led_URLD{tagValue.c_str (), fHiddenTextAccumulation.c_str ()};
-#endif
                 GetSinkStream ().AppendEmbedding (
                     (assoc.fReadFromMemory) (StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
             }
@@ -2211,27 +2180,9 @@ void StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
                 break;
             }
             wchar_t unicodeC = c;
-#if !qWideCharacters
-// The entity refs we write must be in UNICODE. For non UNICODE Led - make the best guess we can (could parameterize this to make
-// better - but for I18N - really should just use UNICODE).
-#if qPlatform_MacOS
-            const CodePage kInternalCodePageToMapFrom = WellKnownCodePages::kMAC;
-#else
-            const CodePage kInternalCodePageToMapFrom = WellKnownCodePages::kANSI;
-#endif
-            if (static_cast<unsigned int> (c) >= 128) {
-                // ascii chars OK - just have to worry about non-ascii ones...
-                // Those must be mapped TO UNICODE
-                CodePageConverter cpc (kInternalCodePageToMapFrom);
-                size_t            outCharCnt = 1;
-                cpc.MapToUNICODE (&c, 1, &unicodeC, &outCharCnt);
-                Assert (outCharCnt == 1);
-            }
-#endif
-
             /*
-                 *  Check if the char should be written as an entity-ref, and otherwise simply emit it.
-                 */
+             *  Check if the char should be written as an entity-ref, and otherwise simply emit it.
+             */
             const vector<StyledTextIOReader_HTML::EntityRefMapEntry>& entityRefs = GetEntityRefMapTable ();
             vector<EntityRefMapEntry>::const_iterator                 i          = entityRefs.begin ();
             for (; i != entityRefs.end (); ++i) {
@@ -2537,9 +2488,5 @@ string StyledTextIOWriter_HTML::MapOutputTextFromWString (const wstring& text)
 
 string StyledTextIOWriter_HTML::MapOutputTextFromTString (const Led_tString& text)
 {
-#if qWideCharacters
     return MapOutputTextFromWString (text);
-#else
-    return text;
-#endif
 }

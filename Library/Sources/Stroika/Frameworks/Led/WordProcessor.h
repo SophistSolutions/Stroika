@@ -63,14 +63,12 @@ namespace Stroika::Frameworks::Led {
         virtual void    HookGainedNewTextStore () override;
         nonvirtual void HookGainedNewTextStore_ ();
 
-#if qWideCharacters
     public:
         nonvirtual bool GetSmartQuoteMode () const;
         nonvirtual void SetSmartQuoteMode (bool smartQuoteMode);
 
     private:
         bool fSmartQuoteMode;
-#endif
 
     public:
         class WordProcessorTextIOSinkStream;
@@ -882,7 +880,7 @@ namespace Stroika::Frameworks::Led {
     private:
         bool fOverwriteTableMode;
 
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     public:
         nonvirtual bool GetNoTablesAllowed () const;
         nonvirtual void SetNoTablesAllowed (bool noTablesAllowed);
@@ -1062,7 +1060,7 @@ namespace Stroika::Frameworks::Led {
     private:
         bool fOverwriteTableMode;
 
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     public:
         nonvirtual bool GetNoTablesAllowed () const;
         nonvirtual void SetNoTablesAllowed (bool noTablesAllowed);
@@ -1611,7 +1609,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void SaveMiscActiveFocusInfo ();
         nonvirtual void RestoreMiscActiveFocusInfo ();
 
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     protected:
         virtual void HookInternalizerChanged () override;
 #endif

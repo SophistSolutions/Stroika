@@ -17,52 +17,28 @@ namespace Stroika::Frameworks::Led {
     inline size_t Led_tStrlen (const Led_tChar* s)
     {
         RequireNotNull (s);
-#if qSingleByteCharacters
-        return ::strlen (s);
-#elif qMultiByteCharacters
-        return ::_mbstrlen (s);
-#elif qWideCharacters
         return ::wcslen (s);
-#endif
     }
 
     inline int Led_tStrCmp (const Led_tChar* l, const Led_tChar* r)
     {
         RequireNotNull (l);
         RequireNotNull (r);
-#if qSingleByteCharacters
-        return ::strcmp (l, r);
-#elif qMultiByteCharacters
-        return ::_mbscmp (l, r);
-#elif qWideCharacters
         return ::wcscmp (l, r);
-#endif
     }
 
     inline int Led_tStrnCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
     {
         RequireNotNull (l);
         RequireNotNull (r);
-#if qSingleByteCharacters
-        return ::strncmp (l, r, n);
-#elif qMultiByteCharacters
-        return ::_mbsncmp (l, r, n);
-#elif qWideCharacters
         return ::wcsncmp (l, r, n);
-#endif
     }
 
     inline const Led_tChar* Led_tStrChr (const Led_tChar* s, Led_tChar c)
     {
         RequireNotNull (s);
-#if qWideCharacters
         return ::wcschr (s, c);
-#else
-        return ::strchr (s, c);
-#endif
     }
-
-#if qWideCharacters
     inline Led_tString Led_WideString2tString (const wstring& s)
     {
         return s;
@@ -71,20 +47,8 @@ namespace Stroika::Frameworks::Led {
     {
         return s;
     }
-#endif
 
-#if !qWideCharacters
-    inline Led_tString Led_ANSIString2tString (const string& s)
-    {
-        return s;
-    }
-    inline string Led_tString2ANSIString (const Led_tString& s)
-    {
-        return s;
-    }
-#endif
-
-#if qWideCharacters == qTargetPlatformSDKUseswchar_t
+#if qTargetPlatformSDKUseswchar_t
     inline SDKString Led_tString2SDKString (const Led_tString& s)
     {
         return Foundation::Characters::String{s}.AsSDKString ();
@@ -93,11 +57,7 @@ namespace Stroika::Frameworks::Led {
 
     inline Led_tString Led_SDKString2tString (const SDKString& s)
     {
-#if qWideCharacters
         return Foundation::Characters::String::FromSDKString (s).As<wstring> ();
-#else
-        return Foundation::Characters::String::FromSDKString (s).AsNarrowSDKString ();
-#endif
     }
 
     inline unsigned short Led_ByteSwapFromMac (unsigned short src)
@@ -175,39 +135,15 @@ namespace Stroika::Frameworks::Led {
         return kBadIndex;
     }
 
-#if qMultiByteCharacters
-    inline bool Led_IsLeadByte (unsigned char c)
-    {
-#error "That Multibyte character set not supported"
-    }
-    inline bool Led_IsValidSingleByte (unsigned char /*c*/)
-    {
-        // This isn't really right, but close enough for now. Alec Wysocker seems to think
-        // so anyhow... LGP 950306
-        return true;
-    }
-    inline bool Led_IsValidSecondByte (unsigned char c)
-    {
-#error "That Multibyte character set not supported"
-    }
-#endif
     inline Led_tChar* Led_NextChar (Led_tChar* fromHere)
     {
         AssertNotNull (fromHere);
-#if qSingleByteCharacters || qWideCharacters
-        return (fromHere + 1); // address arithmatic does the magic for wide characters
-#elif qMultiByteCharacters
-        return (Led_IsLeadByte (*fromHere) ? (fromHere + 2) : (fromHere + 1));
-#endif
+        return fromHere + 1;
     }
     inline const Led_tChar* Led_NextChar (const Led_tChar* fromHere)
     {
         AssertNotNull (fromHere);
-#if qSingleByteCharacters || qWideCharacters
-        return (fromHere + 1); // address arithmatic does the magic for wide characters
-#elif qMultiByteCharacters
-        return (Led_IsLeadByte (*fromHere) ? (fromHere + 2) : (fromHere + 1));
-#endif
+        return fromHere + 1;
     }
     /*
 
@@ -245,53 +181,7 @@ namespace Stroika::Frameworks::Led {
         AssertNotNull (startOfString);
         AssertNotNull (fromHere);
         Assert (startOfString < fromHere); // Must be room for previous character to exist!
-#if qSingleByteCharacters || qWideCharacters
-        return (fromHere - 1); // address arithmatic does the magic for wide characters
-#elif qMultiByteCharacters
-        /*
-         *  If the previous byte is a lead-byte, then the real character boundsary
-         *  is really TWO back.
-         *
-         *  Proof by contradiction:
-         *      Assume prev character is back one byte. Then the chracter it is part of
-         *  contains the first byte of the character we started with. This obviously
-         *  cannot happen. QED.
-         *
-         *      This is actually a worth-while test since lots of second bytes look quite
-         *  a lot like lead-bytes - so this happens a lot.
-         */
-        if (Led_IsLeadByte (*(fromHere - 1))) {
-            Assert (fromHere - startOfString >= 2); // else split character...
-            return (fromHere - 2);
-        }
-        if (fromHere == startOfString + 1) {
-            return (startOfString); // if there is only one byte to go back, it must be an ASCII byte
-        }
-        // we go back by BYTES til we find a syncronization point
-        const Led_tChar* cur = fromHere - 2;
-        for (; cur > startOfString; --cur) {
-            if (not Led_IsLeadByte (*cur)) {
-                // Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
-                // at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
-                // a valid mbyte char boundary.
-                ++cur;
-                break;
-            }
-        }
-        Assert (cur < fromHere);
-        // Now we are pointing AT LEAST one mbyte char back from 'fromHere' so scan forward as we used
-        // to to find the previous character...
-        for (; cur < fromHere;) {
-            const Led_tChar* next = Led_NextChar (cur);
-            if (next == fromHere) {
-                return (cur);
-            }
-            Assert (next < fromHere); // if we've gone past - then fromHere must have split a mbyte char!
-            cur = next;
-        }
-        Assert (false);
-        return (0); // previous character must exist!!!
-#endif
+        return fromHere - 1;               // address arithmatic does the magic for wide characters
     }
     inline Led_tChar* Led_PreviousChar (Led_tChar* startOfString, Led_tChar* fromHere)
     {
@@ -300,20 +190,10 @@ namespace Stroika::Frameworks::Led {
         return ((Led_tChar*)Led_PreviousChar ((const Led_tChar*)startOfString, (const Led_tChar*)fromHere));
     }
 
-    inline bool ValidateTextForCharsetConformance (
-#if qMultiByteCharacters
-        const Led_tChar* text, size_t length
-#else
-        const Led_tChar*, size_t
-#endif
-    )
+    inline bool ValidateTextForCharsetConformance (const Led_tChar*, size_t)
     {
-#if qMultiByteCharacters
-        return (Led_IsValidMultiByteString (text, length));
-#else
         return true; // probably should do SOME validation here for other character sets - at least
                      // for plain ascii!!! - LGP 950212
-#endif
     }
 
     inline unsigned Led_DigitCharToNumber (char digitChar)
@@ -333,43 +213,6 @@ namespace Stroika::Frameworks::Led {
         Require (digitValue <= 9);
         return static_cast<char> (digitValue + '0');
     }
-
-#if qMultiByteCharacters
-    inline const Led_tChar* Led_FindPrevOrEqualCharBoundary (const Led_tChar* start, const Led_tChar* guessedEnd)
-    {
-        if (guessedEnd == start) {
-            return guessedEnd;
-        }
-
-        // we go back by BYTES til we find a syncronization point
-        const Led_tChar* cur = guessedEnd - 1;
-        for (; cur > start; --cur) {
-            if (not Led_IsLeadByte (*cur)) {
-                // Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
-                // at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
-                // a valid mbyte char boundary.
-                ++cur;
-                break;
-            }
-        }
-        const Led_tChar* closestStart = cur;
-        for (;;) {
-            cur = Led_NextChar (cur);
-            if (cur > guessedEnd) {
-                break;
-            }
-            closestStart = cur;
-        }
-        Assert ((closestStart == guessedEnd) or (closestStart == guessedEnd - 1));
-        return closestStart;
-    }
-    inline Led_tChar* Led_FindPrevOrEqualCharBoundary (Led_tChar* start, Led_tChar* guessedEnd)
-    {
-        // We could duplicate all the code above - but its simpler to just cast and invoke
-        // the above impemenation...
-        return ((Led_tChar*)Led_FindPrevOrEqualCharBoundary ((const Led_tChar*)start, (const Led_tChar*)guessedEnd));
-    }
-#endif
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*
@@ -501,9 +344,6 @@ namespace Stroika::Frameworks::Led {
         return Led_CasedStringsEqual_ (string_view{lhs}, string_view{rhs}, ignoreCase);
     }
 }
-CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qSingleByteCharacters, qSingleByteCharacters);
-CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qMultiByteCharacters, qMultiByteCharacters);
-CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qWideCharacters, qWideCharacters);
-CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qProvideIMESupport, qProvideIMESupport);
+CompileTimeFlagChecker_HEADER (Stroika::Frameworks::Led, qStroika_Frameworks_Led_ProvideIMESupport, qStroika_Frameworks_Led_ProvideIMESupport);
 
 #endif /*_Stroika_Framework_Led_Support_inl_*/

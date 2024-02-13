@@ -104,13 +104,9 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
             char c;
             GetSrcStream ().seek_to (currentOffset + 1);
             if (GetSrcStream ().read (&c, 1) != 0 and c == '<') {
-// special case of << - not a real command - just echo <
-#if qWideCharacters
+                // special case of << - not a real command - just echo <
                 Led_tChar wc = c; // tmp-hack - assume src is ASCII - LGP990308
                 GetSinkStream ().AppendText (&wc, 1, &fontSpec);
-#else
-                GetSinkStream ().AppendText (&c, 1, &fontSpec);
-#endif
             }
             else {
                 // HANDLE REAL COMMAND

@@ -39,7 +39,6 @@ inline bool IsASCIIDigit (Led_tChar c)
     return isascii (c) and isdigit (c);
 }
 
-#if qWideCharacters
 static bool SJIS_IsLeadByte (unsigned char c)
 {
     // Based on code from LEC - mtcdef.h
@@ -168,7 +167,6 @@ inline unsigned GetJapaneseKutenRow (wchar_t c)
         return 0;
     }
 }
-#endif
 
 /*
  ********************************************************************************
@@ -194,11 +192,6 @@ void TextBreaks_Basic::FindWordBreaks (const Led_tChar* startOfText, size_t leng
     AssertNotNull (wordEndResult);
     AssertNotNull (wordReal);
     Assert (textOffsetToStartLookingForWord <= lengthOfText);
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (startOfText, lengthOfText));
-    Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));
-    Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText - textOffsetToStartLookingForWord));
-#endif
 
     if (textOffsetToStartLookingForWord == lengthOfText) {
         *wordStartResult = textOffsetToStartLookingForWord;
@@ -266,10 +259,6 @@ void TextBreaks_Basic::FindWordBreaks (const Led_tChar* startOfText, size_t leng
         *wordEndResult = cur - startOfText;
     }
     *wordReal = not(charClass == eSpaceClass) and (*wordStartResult != *wordEndResult);
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (startOfText, *wordStartResult));
-    Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult));
-#endif
 }
 
 void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
@@ -286,18 +275,7 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
         return;
     }
 
-#if qMultiByteCharacters
-    Assert (textOffsetToStartLookingForWord <= lengthOfText);
-    Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord)); // initial segment valid
-    Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText - textOffsetToStartLookingForWord)); // second segment valid
-#endif
-
-#if qSingleByteCharacters || qWideCharacters
     Led_tChar thisChar = startOfText[textOffsetToStartLookingForWord];
-#elif qMultiByteCharacters
-    Led_tChar thisChar[2] = {startOfText[textOffsetToStartLookingForWord],
-                             Led_IsLeadByte (startOfText[textOffsetToStartLookingForWord]) ? startOfText[textOffsetToStartLookingForWord + 1] : '\0'};
-#endif
 
     bool             isSpaceChar    = IsASCIISpace (thisChar);
     CharacterClasses startCharClass = CharToCharacterClass (startOfText, lengthOfText, &startOfText[textOffsetToStartLookingForWord]);
@@ -308,22 +286,16 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
         Assert (not isspace (thisChar)); // else we need to cleanup the wordReal logic below...
     }
     else {
-#if qWideCharacters
         Led_tChar prevChar = thisChar; // for Kinsoku rule - need to keep track of previous character...
                                        // But since we skip first char at start of loop, initialize with
                                        // first char!
 
         CharacterClasses prevCharWordClass = startCharClass;
-#endif
 
         const Led_tChar* end = &startOfText[lengthOfText];
         const Led_tChar* cur = Led_NextChar (&startOfText[textOffsetToStartLookingForWord]);
         for (; cur < end; cur = Led_NextChar (cur)) {
-#if qSingleByteCharacters || qWideCharacters
             Led_tChar thisLoopCurChar = *cur;
-#elif qMultiByteCharacters
-            Led_tChar thisLoopCurChar[2] = {*cur, Led_IsLeadByte (*cur) ? *(cur + 1) : '\0'};
-#endif
 
             CharacterClasses charClass = CharToCharacterClass (startOfText, lengthOfText, cur);
             if (charClass == eSentinelClass) {
@@ -337,7 +309,6 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
             if (isSpaceChar != curCharSpaceChar) {
                 break;
             }
-#if qWideCharacters
             //  FROM CHARLESVIEW EDITOR - (Basically) ALL I COPIED WAS THE COMMENT!
             //
             // Here is the Kinsoku rule:
@@ -353,27 +324,18 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
             }
             prevChar          = thisLoopCurChar;
             prevCharWordClass = charClass;
-#endif
         }
         *wordEndResult = cur - startOfText;
     }
     *wordReal = (not(IsASCIISpace (thisChar))) and (textOffsetToStartLookingForWord != *wordEndResult);
     Assert (*wordEndResult <= lengthOfText); // LGP added 950208 - in response to Alecs email message of same date - not
                                              // sure this assert is right, but might help debugging later...
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult)); // be sure
-#endif
 }
 
-#if qSingleByteCharacters || qWideCharacters
 TextBreaks_Basic::CharacterClasses TextBreaks_Basic::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText,
                                                                            const Led_tChar* charToExamine) const
 {
-#if qSingleByteCharacters || qWideCharacters
     Led_tChar c = *charToExamine;
-#elif qMultiByteCharacters
-    Led_tChar c[2] = {*charToExamine, Led_IsLeadByte (*charToExamine) ? *(charToExamine + 1) : '\0'};
-#endif
 
     if (c == 0) {
         return eSentinelClass;
@@ -389,7 +351,6 @@ TextBreaks_Basic::CharacterClasses TextBreaks_Basic::CharToCharacterClass (const
     if (IsASCIIAlnum (c)) {
         return (eWordClass);
     }
-#if qWideCharacters
     {
         unsigned kutenRow = GetJapaneseKutenRow (c);
         switch (kutenRow) {
@@ -406,7 +367,6 @@ TextBreaks_Basic::CharacterClasses TextBreaks_Basic::CharToCharacterClass (const
             }
         }
     }
-#endif
 
     switch (c) {
         case '.': { // PERIOD before digits
@@ -426,12 +386,6 @@ TextBreaks_Basic::CharacterClasses TextBreaks_Basic::CharToCharacterClass (const
 
     return eOtherCharacterClass;
 }
-#elif qMultiByteCharacters
-TextBreaks_Basic::CharacterClasses TextBreaks_Basic::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine)
-{
-#error "Not yet supported - now looking like it never will be - use UNICODE instead"
-}
-#endif
 
 #if qDebug
 void TextBreaks_Basic::RegressionTest ()
@@ -484,9 +438,7 @@ TextBreaks_Basic_WP::CharacterClasses TextBreaks_Basic_WP::CharToCharacterClass 
             }
         } break;
 
-#if qWideCharacters
         case 0x2019: // curly apostrophe
-#endif
         case '\'': {
             // APOSTROPHE between digits or letters
             if (charToExamine > startOfText and charToExamine < &startOfText[lengthOfText]) {
@@ -501,31 +453,10 @@ TextBreaks_Basic_WP::CharacterClasses TextBreaks_Basic_WP::CharToCharacterClass 
         } break;
     }
 
-#if qSingleByteCharacters && qPlatform_MacOS
-    const char kNonBreakingSpace = '\0xCA'; // Inside-Mac : Text (Appendix A-6 thru A-15)
-    if (*charToExamine == kNonBreakingSpace) {
-        return (eWordClass);
-    }
-    const char kPoundSign = '\0xA3'; // Inside-Mac : Text (Appendix A-6 thru A-15)
-    if (*charToExamine == kPoundSign) {
-        return (eWordClass);
-    }
-    const char kYenSign = '\0xB4'; // Inside-Mac : Text (Appendix A-6 thru A-15)
-    if (*charToExamine == kYenSign) {
-        return (eWordClass);
-    }
-    const char kCentSign = '\0xA2'; // Inside-Mac : Text (Appendix A-6 thru A-15)
-    if (*charToExamine == kCentSign) {
-        return (eWordClass);
-    }
-#endif
-
-#if qWideCharacters
     // Mimic what we did for MacOS (Inside-Mac : Text (Appendix A-6 thru A-15))
     if (*charToExamine == kNonBreakingSpace or *charToExamine == kPoundSign or *charToExamine == kYenSign or *charToExamine == kCentSign) {
         return eWordClass;
     }
-#endif
     if (*charToExamine == '$' or *charToExamine == '%' or *charToExamine == '-') {
         return (eWordClass);
     }

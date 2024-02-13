@@ -862,10 +862,6 @@ void SimpleTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMark
     Assert (fromMarkerPos >= 0);
     Assert (fromMarkerPos <= toMarkerPos);
     Assert (toMarkerPos <= GetEnd ());
-#if qMultiByteCharacters && qDebug
-    Assert_CharPosDoesNotSplitCharacter (fromMarkerPos);
-    Assert_CharPosDoesNotSplitCharacter (toMarkerPos);
-#endif
 
     size_t curTopRowRelativeRowNumber = 0;
 
@@ -1123,9 +1119,6 @@ Led_Rect SimpleTextImager::GetCharLocationRowRelative (size_t afterPosition, Row
 
     Assert (afterPosition >= 0);
     Assert (afterPosition <= GetEnd ()); // does that ever make sense???
-#if qMultiByteCharacters && qDebug
-    Assert_CharPosDoesNotSplitCharacter (afterPosition);
-#endif
 
     if (afterPosition < GetStartOfRow (topRow)) {
         return (kMagicBeforeRect);
@@ -1173,10 +1166,7 @@ size_t SimpleTextImager::GetCharAtLocationRowRelative (const Led_Point& where, R
      *  autoscrolling...
      */
     if (where.v < 0) {
-#if qMultiByteCharacters
-        Assert_CharPosDoesNotSplitCharacter (0);
-#endif
-        return (0);
+        return 0;
     }
 
     RowReference   curRow                     = topRow;
@@ -1187,9 +1177,6 @@ size_t SimpleTextImager::GetCharAtLocationRowRelative (const Led_Point& where, R
 
         AssertNotNull (cur);
         size_t start = cur->GetStart ();
-#if qMultiByteCharacters
-        Assert_CharPosDoesNotSplitCharacter (start);
-#endif
 
         /*
          *  Count the interline space as part of the last row of the line for the purpose of hit-testing.
@@ -1208,10 +1195,7 @@ size_t SimpleTextImager::GetCharAtLocationRowRelative (const Led_Point& where, R
         topVPos += GetRowHeight () + interLineSpace;
     } while (GetNextRowReference (&curRow));
 
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (GetLength () + 1);
-#endif
-    return (GetEnd ());
+    return GetEnd ();
 }
 
 /*

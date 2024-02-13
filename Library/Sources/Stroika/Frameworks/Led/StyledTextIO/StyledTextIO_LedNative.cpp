@@ -413,7 +413,6 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
         if (GetSrcStream ().read (buf.data (), totalTextLength) != totalTextLength) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
-#if qWideCharacters
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
@@ -422,9 +421,6 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
         auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #endif
         GetSinkStream ().AppendText (text.data (), text.size (), nullptr);
-#else
-        GetSinkStream ().AppendText (buf, totalTextLength, NULL);
-#endif
     }
 
     // Read Style Runs
@@ -518,7 +514,6 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
         if (GetSrcStream ().read (buf.data (), totalTextLength) != totalTextLength) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
-#if qWideCharacters
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
@@ -527,9 +522,6 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
         auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #endif
         GetSinkStream ().AppendText (text.data (), text.size (), nullptr);
-#else
-        GetSinkStream ().AppendText (buf, totalTextLength, NULL);
-#endif
     }
 
     // Read Style Runs
@@ -632,7 +624,6 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
         if (GetSrcStream ().read (buf.data (), totalTextLength) != totalTextLength) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
-#if qWideCharacters
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
@@ -641,9 +632,6 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
         auto text = CodeCvt<Led_tChar>{locale{}}.Bytes2Characters (as_bytes (span{buf}), span{unicodeText});
 #endif
         GetSinkStream ().AppendText (text.data (), text.size (), nullptr);
-#else
-        GetSinkStream ().AppendText (buf.data (), totalTextLength, NULL);
-#endif
     }
 
     // Read Style Runs
@@ -757,95 +745,6 @@ void StyledTextIOWriter_LedNativeFileFormat::Write ()
     Write_Version6 ();
 }
 
-#if !qWideCharacters
-void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
-{
-    // Write a magic cookie to identify this format
-    write (kLedPartFormatVersion_5_MagicNumber, sizeof (kLedPartFormatVersion_5_MagicNumber));
-
-    // write a length-of-text count, and then the text
-    size_t totalTextLength = GetSrcStream ().GetTotalTextLength ();
-    {
-        size_t encodedTL = 0;
-        Uint32ToBuf (totalTextLength, &encodedTL);
-        write (&encodedTL, sizeof (encodedTL));
-    }
-
-    {
-#if qDebug
-        size_t checkTotalWritten = 0;
-#endif
-        Led_tChar buf[1024];
-        size_t    bytesWritten = 0;
-        while ((bytesWritten = GetSrcStream ().readNTChars (buf, Memory::NEltsOf (buf))) != 0) {
-            write (buf, bytesWritten);
-            if constexpr (qDebug) {
-                checkTotalWritten += bytesWritten;
-            }
-        }
-        Assert (checkTotalWritten == totalTextLength);
-    }
-
-    // Write the style runs
-    {
-        vector<StyledInfoSummaryRecord> styleRunInfo = GetSrcStream ().GetStyleInfo (0, totalTextLength);
-
-        size_t howManyBytes              = 0; // write place-holder, than then come back and patch this!
-        size_t styleRunInfoSectionCursor = GetSinkStream ().current_offset ();
-        OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
-
-        size_t styleRuns = styleRunInfo.size ();
-        for (size_t i = 0; i < styleRuns; ++i) {
-            PortableStyleRunData_Version5 data = mkPortableStyleRunData_Version5 (styleRunInfo[i]);
-            write (&data, data.fThisRecordLength);
-        }
-
-        // Here we back-patch the new size of the embedded object, so we can read-over these things
-        // without knowing about the object type (exp cross-platform).
-        size_t here  = GetSinkStream ().current_offset ();
-        howManyBytes = here - (styleRunInfoSectionCursor + 4); //+4 cuz don't count size marker length itself.
-        GetSinkStream ().seek_to (styleRunInfoSectionCursor);
-        OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
-        GetSinkStream ().seek_to (here); // back to where we left off...
-    }
-
-#if qStroika_Frameworks_Led_SupportGDI
-    // Write the embedded objects
-    {
-        vector<SimpleEmbeddedObjectStyleMarker*> embeddings = GetSrcStream ().CollectAllEmbeddingMarkersInRange (0, totalTextLength);
-        OutputStandardToSinkStream_size_t_ (GetSinkStream (), embeddings.size ());
-        size_t markerPosOffset = GetSrcStream ().GetEmbeddingMarkerPosOffset ();
-        for (size_t i = 0; i < embeddings.size (); ++i) {
-            SimpleEmbeddedObjectStyleMarker* embedding = embeddings[i];
-            // Write where embedding is located in text, relative to beginning of text (being internalized/extenralized)
-            size_t whereAt = embedding->GetStart () - markerPosOffset;
-            OutputStandardToSinkStream_size_t_ (GetSinkStream (), whereAt);
-
-            // Note: this howManyBytes refers to the content-type specific portion.
-            size_t howManyBytes        = 0; // write place-holder, than then come back and patch this!
-            size_t embeddingSizeCursor = GetSinkStream ().current_offset ();
-            OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
-
-            size_t embeddingCursor = GetSinkStream ().current_offset ();
-            write (embedding->GetTag (), sizeof (Led_PrivateEmbeddingTag));
-            ExternalizeEmbedding (embedding);
-
-            // Here we back-patch the new size of the embedded object, so we can read-over these things
-            // without knowing about the object type (exp cross-platform).
-            size_t here  = GetSinkStream ().current_offset ();
-            howManyBytes = here - embeddingCursor;
-            GetSinkStream ().seek_to (embeddingSizeCursor);
-            OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
-            GetSinkStream ().seek_to (here); // back to where we left off...
-        }
-    }
-#endif
-
-    // Write a magic cookie - just as a validation/sanity check on the format
-    write (kLedPartFormatVersion_5_MagicNumber, sizeof (kLedPartFormatVersion_5_MagicNumber));
-}
-#endif
-
 void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
 {
     // Write a magic cookie to identify this format
@@ -858,7 +757,6 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
         if (GetSrcStream ().readNTChars (buf.data (), totalTextLength) != totalTextLength) {
             Execution::Throw (DataExchange::BadFormatException::kThe);
         }
-#if qWideCharacters
         size_t            nChars = totalTextLength * sizeof (wchar_t);
         StackBuffer<char> result{Memory::eUninitialized, nChars};
 #if qPlatform_Windows
@@ -872,14 +770,6 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
             write (&encodedTL, sizeof (encodedTL));
         }
         write (result.data (), nChars);
-#else
-        {
-            size_t encodedTL = 0;
-            UInt32ToBuf (totalTextLength, &encodedTL);
-            write (&encodedTL, sizeof (encodedTL));
-        }
-        write (buf, totalTextLength);
-#endif
     }
 
     // Write the style runs

@@ -552,7 +552,7 @@ namespace Stroika::Frameworks::Led {
     {
         fOverwriteTableMode = overwriteTableMode;
     }
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     inline bool WordProcessor::WordProcessorTextIOSinkStream::GetNoTablesAllowed () const
     {
         return fNoTablesAllowed;
@@ -582,7 +582,6 @@ namespace Stroika::Frameworks::Led {
      ************************************ WordProcessor *****************************
      ********************************************************************************
      */
-#if qWideCharacters
     /*
     @METHOD:        WordProcessor::GetSmartQuoteMode
     @DESCRIPTION:   <p>If true, then when a user types a quote character (&quot;) - it will be replaced
@@ -602,7 +601,6 @@ namespace Stroika::Frameworks::Led {
     {
         fSmartQuoteMode = smartQuoteMode;
     }
-#endif
     inline WordProcessor::ParagraphDatabasePtr WordProcessor::GetParagraphDatabase () const
     {
         return fParagraphDatabase;
@@ -734,7 +732,7 @@ namespace Stroika::Frameworks::Led {
     {
         fOverwriteTableMode = overwriteTableMode;
     }
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     inline bool WordProcessor::WordProcessorFlavorPackageInternalizer::GetNoTablesAllowed () const
     {
         return fNoTablesAllowed;

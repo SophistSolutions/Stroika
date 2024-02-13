@@ -86,31 +86,6 @@ TextStore::~TextStore ()
     Require (fMarkerOwners.size () == 1 and fMarkerOwners[0] == this); // better have deleted 'em all by now (except for US)!
 }
 
-#if qMultiByteCharacters
-// qSingleByteCharacters || qWideCharacters cases in headers
-size_t TextStore::CharacterToTCharIndex (size_t i)
-{
-    size_t tCharIndex = 1;
-    int    ii         = i;
-    for (; ii > 0; --ii) {
-        tCharIndex = FindNextCharacter (tCharIndex);
-    }
-    return (tCharIndex);
-}
-#endif
-
-#if qMultiByteCharacters
-// qSingleByteCharacters || qWideCharacters cases in headers
-size_t TextStore::TCharToCharacterIndex (size_t i)
-{
-    size_t charCount = 1;
-    for (size_t tCharIndex = 0; tCharIndex < i; tCharIndex = FindNextCharacter (tCharIndex)) {
-        ++charCount;
-    }
-    return charCount;
-}
-#endif
-
 /*
 @METHOD:        TextStore::Replace
 @DESCRIPTION:   <p>Replace the text in the range {from,to} with the withWhatCount Led_tChars of text pointed
@@ -123,11 +98,6 @@ void TextStore::Replace (size_t from, size_t to, const Led_tChar* withWhat, size
 {
     Require (from <= to);
     Require (to <= GetEnd ());
-#if qMultiByteCharacters
-    Assert (Led_IsValidMultiByteString (withWhat, withWhatCount));
-    Assert_CharPosDoesNotSplitCharacter (from);
-    Assert_CharPosDoesNotSplitCharacter (to);
-#endif
 
     if (from != to or withWhatCount != 0) {
         UpdateInfo    updateInfo (from, to, withWhat, withWhatCount, true, true);
@@ -267,14 +237,11 @@ size_t TextStore::GetStartOfLineContainingPosition (size_t afterPos) const
     Assert (afterPos >= 0);
     Assert (afterPos <= GetEnd ());
 
-// Scan back looking for '\n', and the character AFTER that is the start of this line...
+    // Scan back looking for '\n', and the character AFTER that is the start of this line...
 
-// Note, that this is OK todo a character at a time going back because '\n' is NOT
-// a valid second byte (at least in SJIS - probaly should check out other MBYTE
-// charsets - assert good enuf for now)!!!
-#if qMultiByteCharacters
-    Assert (not Led_IsValidSecondByte ('\n'));
-#endif
+    // Note, that this is OK todo a character at a time going back because '\n' is NOT
+    // a valid second byte (at least in SJIS - probaly should check out other MBYTE
+    // charsets - assert good enuf for now)!!!
 
     /*
      *  The main thing making this slightly non-trival is that we try to perform the charsearch
@@ -325,14 +292,11 @@ size_t TextStore::GetEndOfLineContainingPosition (size_t afterPos) const
     Assert (afterPos >= 0);
     Assert (afterPos <= GetEnd ());
 
-// Scan forward looking for '\n' (and don't count NL - just like GetEndOfLine())
+    // Scan forward looking for '\n' (and don't count NL - just like GetEndOfLine())
 
-// Note, that this is OK todo a character at a time going back because '\n' is NOT
-// a valid second byte (at least in SJIS - probaly should check out other MBYTE
-// charsets - assert good enuf for now)!!!
-#if qMultiByteCharacters
-    Assert (not Led_IsValidSecondByte ('\n'));
-#endif
+    // Note, that this is OK todo a character at a time going back because '\n' is NOT
+    // a valid second byte (at least in SJIS - probaly should check out other MBYTE
+    // charsets - assert good enuf for now)!!!
 
     /*
      *  The main thing making this slightly non-trival is that we try to perform the charsearch
@@ -373,101 +337,10 @@ size_t TextStore::FindPreviousCharacter (size_t beforePos) const
         return (0);
     }
     else {
-#if qMultiByteCharacters
-        /*
-         *  This code is based on the optimized Led_PreviousChar() in LedSupport, only it has
-         *  been adapted to only call CopyOut() on as much text as it needs.
-         */
-        const size_t chunkSize = 16; // how many characters we read at a time from the TextStore
-        Led_tChar    _stackBuf_[1024];
-        Led_tChar*   buf = _stackBuf_;
-
-        size_t           bytesReadOutSoFar = 0;
-        const Led_tChar* cur               = nullptr;
-        bool             notFoundSyncPoint = true;
-        for (; notFoundSyncPoint;) { // we return out when we find what we are looking for...
-
-            Assert (bytesReadOutSoFar < beforePos);
-            bytesReadOutSoFar += chunkSize;
-            bytesReadOutSoFar = min (bytesReadOutSoFar, beforePos - 1); // don't read more than there is!!!
-            Assert (bytesReadOutSoFar > 0);
-            if (bytesReadOutSoFar > sizeof (_stackBuf_)) {
-                if (buf != _stackBuf_) {
-                    delete[] buf;
-                }
-                buf = nullptr;
-                buf = new Led_tChar[bytesReadOutSoFar];
-            }
-            Assert (beforePos > bytesReadOutSoFar);
-            CopyOut (beforePos - bytesReadOutSoFar, bytesReadOutSoFar, buf);
-
-            const Led_tChar* fromHere = &buf[bytesReadOutSoFar];
-
-            /*
-             *  If the previous byte is a lead-byte, then the real character boundsary
-             *  is really TWO back.
-             *
-             *  Proof by contradiction:
-             *      Assume prev character is back one byte. Then the chracter it is part of
-             *  contains the first byte of the character we started with. This obviously
-             *  cannot happen. QED.
-             *
-             *      This is actually a worth-while test since lots of second bytes look quite
-             *  a lot like lead-bytes - so this happens a lot.
-             */
-            if (Led_IsLeadByte (*(fromHere - 1))) {
-                Assert (fromHere - buf >= 2); // else split character...
-                return ((fromHere - 2 - buf) + beforePos - bytesReadOutSoFar);
-            }
-
-            if (bytesReadOutSoFar == 1) {
-                return (beforePos - 1); // if there is only one byte to go back, it must be an ASCII byte
-            }
-
-            // we go back by BYTES til we find a syncronization point
-            for (cur = fromHere - 2; cur > buf; --cur) {
-                Assert (cur >= buf);
-                if (not Led_IsLeadByte (*cur)) {
-                    // Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
-                    // at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
-                    // a valid mbyte char boundary.
-                    ++cur;
-                    notFoundSyncPoint = false;
-                    break;
-                }
-            }
-            if (bytesReadOutSoFar == beforePos - 1) {
-                // we've read all there is - so we must be at a sync-point - regardless.
-                notFoundSyncPoint = false;
-            }
-        }
-        Assert (not notFoundSyncPoint);
-        Assert (cur >= buf);
-
-        // Now we are pointing AT LEAST one mbyte char back from 'fromHere' so scan forward as we used
-        // to to find the previous character...
-        const Led_tChar* fromHere = &buf[bytesReadOutSoFar];
-        Assert (cur < fromHere);
-        Assert (Led_IsValidMultiByteString (cur, bytesReadOutSoFar - (cur - buf)));
-        for (; cur < fromHere;) {
-            const Led_tChar* next = Led_NextChar (cur);
-            if (next == fromHere) {
-                if (buf != _stackBuf_) {
-                    delete[] buf;
-                }
-                return ((cur - buf) + beforePos - bytesReadOutSoFar);
-            }
-            Assert (next < fromHere); // if we've gone past - then fromHere must have split a mbyte char!
-            cur = next;
-        }
-        Assert (false);
-        return (0);
-#else
         size_t newPos = beforePos - 1;
         Ensure (newPos >= 0); // cuz we cannot split Wide-Characters, and if we were already at beginning
         // of buffer, we'd have never gotten to this code
         return (newPos);
-#endif
     }
 }
 
@@ -660,11 +533,7 @@ searchSMORE:
 // if we are doing case-IN-sensative compare, and characters not the same, maybe they are
 // simply of different case?
 #if qUseWin32CompareStringCallForCaseInsensitiveSearch
-#if qWideCharacters
 #define X_COMPARESTRING ::CompareStringW
-#else
-#define X_COMPARESTRING ::CompareStringA
-#endif
             if (X_COMPARESTRING (LOCALE_USER_DEFAULT, NORM_IGNORECASE, &lookingAtData[i], 1, &pattern[i], 1) == CSTR_EQUAL) {
                 charsEqual = true;
             }

@@ -2681,7 +2681,7 @@ namespace Stroika::Frameworks::Led {
         return Led_Size (Led_GetMacPictHeight (picture), Led_GetMacPictWidth (picture));
     }
 
-#if qProvideIMESupport
+#if qStroika_Frameworks_Led_ProvideIMESupport
     /*
      ********************************************************************************
      *************************************** IME ************************************

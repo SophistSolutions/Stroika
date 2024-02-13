@@ -472,13 +472,7 @@ TextInteractor::TextInteractor ()
     ,
     //fScrollBarType (),
     fScrollBarParamsValid (false)
-#if qMultiByteCharacters
-//fMultiByteInputCharBuf (),
-#endif
 {
-#if qMultiByteCharacters
-    fMultiByteInputCharBuf[0] = '\0';
-#endif
     fScrollBarType[h] = eScrollBarNever;
     fScrollBarType[v] = eScrollBarNever;
 }
@@ -1243,11 +1237,6 @@ void TextInteractor::SetSelectionShown (bool shown, UpdateMode updateMode)
 void TextInteractor::SetSelection (size_t start, size_t end)
 {
     Assert (end <= GetEnd ());
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (start);
-    Assert_CharPosDoesNotSplitCharacter (end);
-#endif
-
     UpdateMode updateMode = GetDefaultUpdateMode ();
 
     // This isn't quite perfect for the case of eImmediateUpdate- but should be close enough...
@@ -2232,12 +2221,7 @@ void TextInteractor::InteractiveReplace (const Led_tChar* withWhat, size_t withW
 void TextInteractor::InteractiveReplace_ (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount,
                                           bool updateCursorPosition, bool validateTextForCharsetConformance, UpdateMode updateMode)
 {
-// Assert selection bounardaries valid Led_tChar boundaries
-#if qMultiByteCharacters
-    Assert_CharPosDoesNotSplitCharacter (from);
-    Assert_CharPosDoesNotSplitCharacter (to);
-#endif
-
+    // Assert selection bounardaries valid Led_tChar boundaries
     if (validateTextForCharsetConformance) {
         // Then check the GIVEN text - no assert here, just bad_input if text bad...
         if (not ValidateTextForCharsetConformance (withWhat, withWhatCharCount)) {
@@ -3259,12 +3243,6 @@ void TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPre
 {
     IdleManager::NonIdleContext nonIdleContext;
 
-#if qMultiByteCharacters
-    if (HandledMByteCharTyping (theChar)) {
-        return;
-    }
-#endif
-
     Assert (GetSelectionEnd () <= GetLength () + 1);
 
     if (GetSuppressTypedControlCharacters ()) {
@@ -3301,48 +3279,6 @@ void TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPre
     Update ();
 #endif
 }
-
-#if qMultiByteCharacters
-bool TextInteractor::HandledMByteCharTyping (char theChar)
-{
-    if (fMultiByteInputCharBuf[0] == '\0' and Led_IsLeadByte (theChar)) {
-        /*
-         *  If we get a first-byte - then don't process it yet. Just save it up for the
-         *  next call.
-         */
-        fMultiByteInputCharBuf[0] = theChar;
-        fMultiByteInputCharBuf[1] = '\0';
-        return true; // done with processing the character...
-    }
-    else if (fMultiByteInputCharBuf[0] != '\0') {
-        /*
-         *  If we have a PENDING first-byte - then append this to our buffer, and pretend
-         *  the user typed these two bytes. However - if we get a BAD second byte -
-         *  then call BadUserInput() (basicly does a sysbeep) and drop it on the
-         *  floor.
-         */
-        fMultiByteInputCharBuf[1] = theChar; // set it even if its bad so OnBadUserInput can peek()
-        if (ValidateTextForCharsetConformance (fMultiByteInputCharBuf, 2)) {
-            InteractiveReplace (fMultiByteInputCharBuf, 2);
-            fMultiByteInputCharBuf[0] = '\0';
-            size_t newSelection       = FindNextCharacter (GetSelectionStart ());
-            SetSelection (newSelection, newSelection);
-            ScrollToSelection ();
-#if qPeekForMoreCharsOnUserTyping
-            UpdateIfNoKeysPending ();
-#else
-            Update ();
-#endif
-        }
-        else {
-            OnBadUserInput ();
-            fMultiByteInputCharBuf[0] = '\0';
-        }
-        return true; // done with processing the character...
-    }
-    return false; // We did nothing - handle character as usual
-}
-#endif
 
 #if qPlatform_MacOS || qStroika_FeatureSupported_XWindows
 float TextInteractor::GetTickCountBetweenBlinks ()

@@ -292,11 +292,7 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnUniChar ([[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
     {
-#if qWideCharacters
         return LED_WIN32_HELPER::OnUniChar_Msg (wParam, lParam);
-#else
-        return MFC_BASE_CLASS::Default ();
-#endif
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnIMEChar ([[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)

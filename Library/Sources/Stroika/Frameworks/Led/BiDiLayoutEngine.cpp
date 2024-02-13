@@ -181,7 +181,7 @@ public:
 } aMyIWriteMemoizedUniscribeDirFunction;
 #endif
 
-#if qPlatform_Windows && qWideCharacters && qTryToUseUNISCRIBEForTextRuns
+#if qPlatform_Windows && qTryToUseUNISCRIBEForTextRuns
 namespace {
 
     /*
@@ -714,10 +714,6 @@ bool TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
 #if qUseFriBidi
 void TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDirection)
 {
-#if !qWideCharacters
-#error "Not implemented - only support FriBidi for UNICODE version of Led right now"
-#endif
-
     Assert (fTextLength <= FRIBIDI_MAX_STRING_LENGTH);
 
     FriBidiCharType baseDir = FRIBIDI_TYPE_ON; // http://imagic.weizmann.ac.il/~dov/freesw/FriBidi/ docs indicate FRIBIDI_TYPE_N is a good default value - 2002-11-27

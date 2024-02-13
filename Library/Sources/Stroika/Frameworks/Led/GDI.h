@@ -1428,7 +1428,7 @@ namespace Stroika::Frameworks::Led {
     void AddRectangleToRegion (Led_Rect addRect, Region* toRgn);
 #endif
 
-#if qProvideIMESupport
+#if qStroika_Frameworks_Led_ProvideIMESupport
     class IME {
     public:
         IME ();

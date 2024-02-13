@@ -108,29 +108,12 @@ namespace Stroika::Frameworks::Led::Platform {
         size_t newRowStart = ti.CalculateCharDeltaFromRowDeltaFromTopOfWindow (fRowNum) + ti.GetMarkerPositionOfStartOfWindow ();
         size_t newRowEnd   = ti.GetEndOfRowContainingPosition (newRowStart);
         Assert (newRowEnd >= newRowStart);
-#if qMultiByteCharacters
-        size_t newRowLen = newRowEnd - newRowStart;
-#endif
 
         TextImager::GoalColumnRecomputerControlContext skipRecompute (ti, true);
 
         size_t newSelStart = ti.GetRowRelativeCharAtLoc (TextImager::Tablet_Acquirer (&ti)->CvtFromTWIPSH (ti.GetSelectionGoalColumn ()), newRowStart);
 
         newSelStart = min (newSelStart, newRowEnd); // pin to END of row
-
-// Avoid splitting mbyte characters
-#if qMultiByteCharacters
-        if (newSelStart > newRowStart) {
-            Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, newRowLen};
-            ti.CopyOut (newRowStart, newRowLen, buf);
-            const char* text  = buf;
-            size_t      index = newSelStart - newRowStart;
-            if (Led_FindPrevOrEqualCharBoundary (&text[0], &text[index]) != &text[index]) {
-                Assert (newSelStart > newRowStart);
-                --newSelStart;
-            }
-        }
-#endif
 
         // Ha! Finally!
         ti.SetSelection (newSelStart, newSelStart);

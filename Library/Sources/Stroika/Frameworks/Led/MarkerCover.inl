@@ -691,7 +691,7 @@ namespace Stroika::Frameworks::Led {
     template <typename MARKER, typename MARKERINFO, typename INCREMENTALMARKERINFO>
     inline void MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::Invariant () const
     {
-#if qDebug && qHeavyDebugging
+#if qDebug && qStroika_Frameworks_Led_HeavyDebugging
         Invariant_ ();
 #endif
     }

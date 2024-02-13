@@ -40,34 +40,17 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-#if !qWideCharacters
-Led_tString Led::Led_WideString2tString (const wstring& s)
-{
-    return Wide2ACPString (s);
-}
-
-wstring Led::Led_tString2WideString (const Led_tString& s)
-{
-    return ACP2WideString (s);
-}
-#endif
-
-#if qWideCharacters != qTargetPlatformSDKUseswchar_t
+#if !qTargetPlatformSDKUseswchar_t
 /*
 @METHOD:        Led_tString2SDKString
 @DESCRIPTION:   <p></p>
 */
 SDKString Led::Led_tString2SDKString (const Led_tString& s)
 {
-#if qWideCharacters && !qTargetPlatformSDKUseswchar_t
+#if !qTargetPlatformSDKUseswchar_t
     size_t                                   nChars = s.length () * sizeof (wchar_t) + 1; // convert null byte, too
     Memory::StackBuffer<Characters::SDKChar> result{Memory::eUninitialized, nChars};
     CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
-    return SDKString{result.data ()};
-#elif !qWideCharacters && qTargetPlatformSDKUseswchar_t
-    size_t                                   nChars = s.length () + 1; // convert null byte, too
-    Memory::StackBuffer<Characters::SDKChar> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
     return SDKString{result.data ()};
 #else
 #error "Hmm"
@@ -75,7 +58,6 @@ SDKString Led::Led_tString2SDKString (const Led_tString& s)
 }
 #endif
 
-#if qWideCharacters
 /*
 @METHOD:        Led_ANSIString2tString
 @DESCRIPTION:   <p></p>
@@ -86,9 +68,7 @@ Led_tString Led::Led_ANSIString2tString (const string& s)
     // once confused about the difference between these two --LGP 2023-07-27
     return CodeCvt<Led_tChar>{locale{}}.Bytes2String<Led_tString> (as_bytes (span{s}));
 }
-#endif
 
-#if qWideCharacters
 /*
 @METHOD:        Led_tString2ANSIString
 @DESCRIPTION:   <p></p>
@@ -99,7 +79,6 @@ string Led::Led_tString2ANSIString (const Led_tString& s)
     // once confused about the difference between these two --LGP 2023-07-27
     return CodeCvt<Led_tChar>{locale{}}.String2Bytes<string> (span{s});
 }
-#endif
 
 /*
 @METHOD:        Led_BeepNotify
@@ -181,11 +160,6 @@ int Led::Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
     using Characters::String;
     RequireNotNull (l);
     RequireNotNull (r);
-#if qSingleByteCharacters
-    return ::strnicmp (l, r, n);
-#elif qMultiByteCharacters
-    return ::_mbsnicmp (l, r, n);
-#elif qWideCharacters
     auto result =
         String::ThreeWayComparer{eCaseInsensitive}(Characters::String{l}.SafeSubString (0, n), Characters::String{r}.SafeSubString (0, n));
     if (result == strong_ordering::equal)
@@ -196,18 +170,12 @@ int Led::Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
         return 1;
     AssertNotReached ();
     return 0;
-#endif
 }
 
 int Led::Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
 {
     RequireNotNull (l);
     RequireNotNull (r);
-#if qSingleByteCharacters
-    return ::stricmp (l, r);
-#elif qMultiByteCharacters
-    return ::_mbsicmp (l, r);
-#elif qWideCharacters
     auto result = String::ThreeWayComparer{eCaseInsensitive}(Characters::String{l}, Characters::String{r});
     if (result == strong_ordering::equal)
         return 0;
@@ -217,7 +185,6 @@ int Led::Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
         return 1;
     AssertNotReached ();
     return 0;
-#endif
 }
 
 /*
@@ -240,30 +207,6 @@ size_t Led::Led_SkrunchOutSpecialChars (Led_tChar* text, size_t textLen, Led_tCh
     }
     return textLen - charsSkipped;
 }
-
-#if qMultiByteCharacters
-bool Led::Led_IsValidMultiByteString (const Led_tChar* start, size_t len)
-{
-    AssertNotNull (start);
-    const Led_tChar* end = &start[len];
-    const Led_tChar* cur = start;
-    for (; cur < end; cur = Led_NextChar (cur)) {
-        if (Led_IsLeadByte (*cur)) {
-            if (cur + 1 == end) {
-                return false; // string ends on LedByte!!!
-            }
-            if (not Led_IsValidSecondByte (*(cur + 1))) {
-                return false; // byte second byte after lead-byte
-            }
-        }
-        else if (not Led_IsValidSingleByte (*cur)) {
-            return false;
-        }
-    }
-    return (cur == end); // if it were less - we'd be in the loop, and if it were
-    // more - we'd have ended on a lead-byte
-}
-#endif
 
 /*
  ********************************************************************************
@@ -821,7 +764,4 @@ bool Led::Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase)
     return false;
 }
 
-CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qSingleByteCharacters, qSingleByteCharacters);
-CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qMultiByteCharacters, qMultiByteCharacters);
-CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qWideCharacters, qWideCharacters);
-CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qProvideIMESupport, qProvideIMESupport);
+CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led, qStroika_Frameworks_Led_ProvideIMESupport, qStroika_Frameworks_Led_ProvideIMESupport);

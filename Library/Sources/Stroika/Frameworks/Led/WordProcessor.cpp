@@ -985,9 +985,7 @@ const TWIPS WordProcessor::kBadCachedFarthestRightMarginInDocument = TWIPS (-1);
 
 WordProcessor::WordProcessor ()
     : inherited ()
-#if qWideCharacters
     , fSmartQuoteMode (true)
-#endif
     , fParagraphDatabase (nullptr)
     , fICreatedParaDB (false)
     , fHidableTextDatabase (nullptr)
@@ -1803,7 +1801,6 @@ void WordProcessor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPresse
             return;
         }
     }
-#if qWideCharacters
     if (theChar == '"' and GetSmartQuoteMode () and not(optionPressed or commandPressed or controlPressed or altKeyPressed)) {
         const wchar_t kSpecialOpenQuote  = 8220;
         const wchar_t kSpecialCloseQuote = 8221;
@@ -1830,9 +1827,7 @@ void WordProcessor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPresse
         wchar_t quoteChar = isAQuoteToClose ? kSpecialCloseQuote : kSpecialOpenQuote;
         inherited::OnTypedNormalCharacter (quoteChar, optionPressed, shiftPressed, commandPressed, controlPressed, altKeyPressed);
     }
-    else
-#endif
-    {
+    else {
         inherited::OnTypedNormalCharacter (theChar, optionPressed, shiftPressed, commandPressed, controlPressed, altKeyPressed);
     }
 }
@@ -3413,15 +3408,7 @@ Led_tString WordProcessor::GetListLeader (size_t paragraphMarkerPos) const
         return Led_tString{};
     }
     else {
-#if qWideCharacters
         const Led_tChar kBulletChar = 0x2022;
-#else
-#if qPlatform_MacOS
-        const Led_tChar kBulletChar = '�';
-#else
-        const Led_tChar kBulletChar = '�';
-#endif
-#endif
         // In a future release, pay attention to RTF \levelfollowN (0 tab, 1 space, 2 nothing)
         // For now, sample RTF docs with MSWord 2k appear to write out 0 (tab) by default.
         return Led_tString{&kBulletChar, 1} + LED_TCHAR_OF ("\t");
@@ -4158,25 +4145,13 @@ void WordProcessor::ReplaceMappedDisplayCharacters (const Led_tChar* srcText, Le
 {
     inherited::ReplaceMappedDisplayCharacters (srcText, copyText, nTChars);
     if (fShowParagraphGlyphs and nTChars > 0 and srcText[nTChars - 1] == '\n') {
-// Windoze-specific char - whats equiv on Mac?
-#if qWideCharacters
+        // Windoze-specific char - whats equiv on Mac?
         const Led_tChar kReplacementChar = 0x00b6;
-#elif qPlatform_MacOS
-        const Led_tChar kReplacementChar = 166;
-#else
-        const Led_tChar kReplacementChar = '�';
-#endif
-        copyText[nTChars - 1] = kReplacementChar;
+        copyText[nTChars - 1]            = kReplacementChar;
     }
     if (fShowSpaceGlyphs) {
-// NOT SURE WHAT CHAR (on any platform) to replace with. Maybe can do best with UNICODE?
-#if qWideCharacters
+        // NOT SURE WHAT CHAR (on any platform) to replace with. Maybe can do best with UNICODE?
         const Led_tChar kReplacementChar = 0x00b7;
-#elif qPlatform_MacOS
-        const Led_tChar kReplacementChar = 215;
-#else
-        const Led_tChar kReplacementChar = '�';
-#endif
         ReplaceMappedDisplayCharacters_HelperForChar (copyText, nTChars, ' ', kReplacementChar);
     }
 }
@@ -4423,7 +4398,7 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textSto
     : inherited{textStore, textStyleDatabase, insertionStart}
     , fOverwriteTableMode{false}
     ,
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     fNoTablesAllowed{false}
     ,
 #endif
@@ -4457,7 +4432,7 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (WordProcessor* wp,
     : inherited{&wp->GetTextStore (), wp->GetStyleDatabase (), insertionStart}
     , fOverwriteTableMode{false}
     ,
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     fNoTablesAllowed{false}
     ,
 #endif
@@ -4621,7 +4596,7 @@ void WordProcessorTextIOSinkStream::StartTable ()
     fTableCellOpen = false;
     ++fTableOpenLevel;
 #endif
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     if (GetNoTablesAllowed ()) {
         return;
     }
@@ -4633,7 +4608,7 @@ void WordProcessorTextIOSinkStream::StartTable ()
         Flush ();
     }
 
-#if qNestedTablesSupported
+#if qStroika_Frameworks_Led_NestedTablesSupported
     if (fCurrentTable != nullptr) {
         // when we support nested tables for REAL - we need to also save other context like fCurrentTableCellWidths / fCurrentTableColSpanArray
         fTableStack.push_back (fCurrentTable);
@@ -4685,7 +4660,7 @@ void WordProcessorTextIOSinkStream::EndTable ()
         fTableCellOpen = false;
     }
 #endif
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     if (GetNoTablesAllowed ()) {
         AppendText (LED_TCHAR_OF ("\n"), 1, nullptr);
         return;
@@ -4694,7 +4669,7 @@ void WordProcessorTextIOSinkStream::EndTable ()
     if (fCurrentTable != nullptr) {
         // Be careful to protect against unbalanced start/ends cuz of bad StyledTextIO input data
         fCurrentTable = nullptr;
-#if qNestedTablesSupported
+#if qStroika_Frameworks_Led_NestedTablesSupported
         if (not fTableStack.empty ()) {
             fCurrentTable = fTableStack.back ();
             fTableStack.pop_back ();
@@ -4711,7 +4686,7 @@ void WordProcessorTextIOSinkStream::StartTableRow ()
     Require (not fTableCellOpen);
     fTableRowOpen = true;
 #endif
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     if (GetNoTablesAllowed ()) {
         fNextTableCell = 0;
         AppendText (LED_TCHAR_OF ("\n"), 1, nullptr);
@@ -4743,7 +4718,7 @@ void WordProcessorTextIOSinkStream::EndTableRow ()
     Require (not fTableCellOpen);
     fTableRowOpen = false;
 #endif
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     if (GetNoTablesAllowed ()) {
         return;
     }
@@ -4803,7 +4778,7 @@ void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
     fTableCellOpen = true;
 #endif
 
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     if (GetNoTablesAllowed ()) {
         if (fNextTableCell >= 1) {
             AppendText (LED_TCHAR_OF ("\t"), 1, nullptr);
@@ -4843,7 +4818,7 @@ void WordProcessorTextIOSinkStream::EndTableCell ()
     Require (fTableCellOpen);
     fTableCellOpen = false;
 #endif
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     if (GetNoTablesAllowed ()) {
         return;
     }
@@ -5368,7 +5343,7 @@ WordProcessorFlavorPackageInternalizer::WordProcessorFlavorPackageInternalizer (
     , inherited (ts, styleDatabase)
     , fOverwriteTableMode (false)
     ,
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     fNoTablesAllowed (false)
     ,
 #endif
@@ -5383,7 +5358,7 @@ WordProcessor::StandardStyledTextIOSinkStream* WordProcessorFlavorPackageInterna
         new WordProcessorTextIOSinkStream (PeekAtTextStore (), fStyleDatabase, fParagraphDatabase, fHidableTextDatabase, insertionStart);
     sinkStream->SetIgnoreLastParaAttributes (true);
     sinkStream->SetOverwriteTableMode (GetOverwriteTableMode ());
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
     sinkStream->SetNoTablesAllowed (GetNoTablesAllowed ());
 #endif
 
@@ -7827,7 +7802,7 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::RestoreMiscActiveFocusInf
     }
 }
 
-#if !qNestedTablesSupported
+#if !qStroika_Frameworks_Led_NestedTablesSupported
 void WordProcessor::Table::EmbeddedTableWordProcessor::HookInternalizerChanged ()
 {
     inherited::HookInternalizerChanged ();

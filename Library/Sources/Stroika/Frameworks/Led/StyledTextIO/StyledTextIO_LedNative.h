@@ -77,9 +77,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual void Write () override;
 
     protected:
-#if !qWideCharacters
-        nonvirtual void Write_Version5 (); // Led 2.1 file format
-#endif
         nonvirtual void Write_Version6 (); // Introduced for Led 2.2a2
 
 #if qStroika_Frameworks_Led_SupportGDI

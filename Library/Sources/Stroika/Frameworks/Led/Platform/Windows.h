@@ -95,7 +95,7 @@ namespace Stroika::Frameworks::Led::Platform {
             <p>Default Value:   (qWideCharacters && !qTargetPlatformSDKUseswchar_t)</p>
         */
 #ifndef qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
-#define qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug (qWideCharacters && !qTargetPlatformSDKUseswchar_t)
+#define qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug (!qTargetPlatformSDKUseswchar_t)
 #endif
 
     /*
@@ -151,9 +151,7 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual void    OnPaint_Msg ();
         virtual void    OnSize_Msg ();
         virtual void    OnChar_Msg (UINT nChar, LPARAM lKeyData);
-#if qWideCharacters
         virtual LRESULT OnUniChar_Msg (WPARAM nChar, LPARAM lParam);
-#endif
 #if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
         virtual LONG OnIMEChar_Msg (WPARAM wParam, LPARAM lParam);
         virtual LONG OnIME_COMPOSITION_Msg (WPARAM wParam, LPARAM lParam);
@@ -645,7 +643,7 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     void Led_Win32_Helper<BASE_INTERACTOR>::OnChar_Msg (UINT nChar, LPARAM /*lKeyData*/)
     {
-#if qWideCharacters && !qTargetPlatformSDKUseswchar_t
+#if !qTargetPlatformSDKUseswchar_t
         {
             CodePage useCodePage = Characters::Platform::Windows::Win32PrimaryLangIDToCodePage (LOWORD (::GetKeyboardLayout (nullptr)));
             char     ccc         = nChar;
@@ -686,7 +684,6 @@ namespace Stroika::Frameworks::Led::Platform {
         (void)::SendMessage (::GetParent (hWnd), WM_COMMAND, MAKELONG (GetWindowID (), EN_CHANGE), (LPARAM)hWnd);
 #endif
     }
-#if qWideCharacters
     template <typename BASE_INTERACTOR>
     /*
     @METHOD:        Led_Win32_Helper<BASE_INTERACTOR>::OnUniChar_Msg
@@ -729,7 +726,6 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
         return 0;
     }
-#endif
 #if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
     template <typename BASE_INTERACTOR>
     /*
@@ -759,7 +755,6 @@ namespace Stroika::Frameworks::Led::Platform {
             nChar = '\n';
         }
 
-#if qWideCharacters
         if (qTargetPlatformSDKUseswchar_t || ::IsWindowUnicode (this->GetValidatedHWND ())) {
             // do nothing - 'nChar' is already a fine UNICODE character
             // NB: we COULD just check qTargetPlatformSDKUseswchar_t. But be nicer that MSFT. Allow for that a user
@@ -790,7 +785,6 @@ namespace Stroika::Frameworks::Led::Platform {
                 nChar = convertedChar;
             }
         }
-#endif
 #endif
 
         OnTypedNormalCharacter (nChar, false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000),
@@ -1157,7 +1151,7 @@ namespace Stroika::Frameworks::Led::Platform {
     */
     void Led_Win32_Helper<BASE_INTERACTOR>::OnSetFocus_Msg (HWND /*oldWnd*/)
     {
-#if qProvideIMESupport
+#if qStroika_Frameworks_Led_ProvideIMESupport
         IME::Get ().ForgetPosition ();
         IME::Get ().Enable ();
 #endif
@@ -2087,7 +2081,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 Led_Rect caretRect = this->CalculateCaretRect ();
 
                 if (caretRect.IsEmpty ()) {
-#if qProvideIMESupport
+#if qStroika_Frameworks_Led_ProvideIMESupport
                     // if caret is to be invisible, then make sure the IME is moved
                     // offscreen (maybe should be hidden?) - SPR#1359
                     Led_Rect wr = this->GetWindowRect ();
@@ -2118,7 +2112,7 @@ namespace Stroika::Frameworks::Led::Platform {
                     ::SetCaretPos (caretRect.GetLeft (), caretRect.GetTop ());
 
 // When we support the IME - it probably needs to be notified here!!!
-#if qProvideIMESupport
+#if qStroika_Frameworks_Led_ProvideIMESupport
                     IME::Get ().NotifyPosition (hWnd, (SHORT)caretRect.GetLeft (), (SHORT)caretRect.GetTop ());
 #endif
                 }
@@ -2469,13 +2463,8 @@ namespace Stroika::Frameworks::Led::Platform {
         size_t                         len2 = 2 * len;
         Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, len2};
         len2 = Characters::NLToNative<Led_tChar> (buf.data (), len, buf2.data (), len2);
-#if qWideCharacters
         // Assume they want ANSI code page text?
-        int nChars = ::WideCharToMultiByte (CP_ACP, 0, buf2.data (), static_cast<int> (len2), lpText, cchTextMax - 1, nullptr, nullptr);
-#else
-        size_t nChars = min (size_t (cchTextMax) - 1, len2);
-        (void)::memcpy (lpText, buf2, nChars);
-#endif
+        int nChars     = ::WideCharToMultiByte (CP_ACP, 0, buf2.data (), static_cast<int> (len2), lpText, cchTextMax - 1, nullptr, nullptr);
         lpText[nChars] = '\0';
         return nChars;
     }
@@ -2495,12 +2484,8 @@ namespace Stroika::Frameworks::Led::Platform {
         if (lpText != nullptr) {
             size_t                         len = ::strlen (lpText);
             Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
-#if qWideCharacters
             // Assume they want ANSI code page text?
             len = static_cast<size_t> (::MultiByteToWideChar (CP_ACP, 0, lpText, static_cast<int> (len), buf.data (), static_cast<int> (len)));
-#else
-            (void)::memcpy (buf.data (), lpText, len);
-#endif
             len = Characters::NormalizeTextToNL<Led_tChar> (buf.data (), len, buf.data (), len);
             this->Replace (0, 0, buf.data (), len);
         }
@@ -2510,12 +2495,8 @@ namespace Stroika::Frameworks::Led::Platform {
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgGetTextLength (WPARAM /*wParam*/, LPARAM /*lParam*/)
     {
-//*2 cuz of CRLF worst case, and *2 cuz of unicode->MBYTE worst case (is that so - worst case? - maybe not needed to multiply there).
-#if qWideCharacters
+        //*2 cuz of CRLF worst case, and *2 cuz of unicode->MBYTE worst case (is that so - worst case? - maybe not needed to multiply there).
         return (4 * this->GetLength ()); // always enuf for unicode chars...
-#else
-        return this->GetLength () * 2;
-#endif
     }
     template <typename BASECLASS>
     LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgGetSel (WPARAM wParam, LPARAM lParam)
@@ -2685,13 +2666,11 @@ namespace Stroika::Frameworks::Led::Platform {
         size_t                         len = ::_tcslen (text);
         Memory::StackBuffer<Led_tChar> buf{Memory::eUninitialized, len};
 
-#if qWideCharacters == qTargetPlatformSDKUseswchar_t
+#if qTargetPlatformSDKUseswchar_t
         //::_tcscpy (buf, text);
         (void)::memcpy (buf.begin (), text, (len + 1) * sizeof (text[0]));
-#elif qWideCharacters && !qTargetPlatformSDKUseswchar_t
+#else
         len = ::MultiByteToWideChar (CP_ACP, 0, text, len, buf, len); // Assume they want ANSI code page text?
-#elif !qWideCharacters && qTargetPlatformSDKUseswchar_t
-        Assert (false); // NOT IMPLEMENTED - WHY WOULD YOU DO THIS?
 #endif
         size_t nLen = Characters::NormalizeTextToNL<Led_tChar> (buf.data (), len, buf.data (), len);
         Assert (ValidateTextForCharsetConformance (buf.data (), nLen));
@@ -3153,11 +3132,9 @@ namespace Stroika::Frameworks::Led::Platform {
             case WM_CHAR:
                 this->OnChar_Msg (static_cast<UINT> (wParam), lParam);
                 break;
-#if qWideCharacters
             case WM_UNICHAR:
                 return this->OnUniChar_Msg (wParam, lParam);
                 break;
-#endif
 #if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
             case WM_IME_CHAR:
                 return this->OnIMEChar_Msg (wParam, lParam);

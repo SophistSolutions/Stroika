@@ -398,10 +398,9 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
             fBreakWidths = max<size_t> (fBreakWidths, 1U); // assure a decent value given...
 
             if (fBreakLongLines) {
-#if qWideCharacters
                 using Characters::CodeCvt;
                 using Characters::String;
-                Memory::BLOB rawBytesBLOB{span { reinterpret_cast<const byte*> (rawBytes), nRawBytes }};
+                Memory::BLOB rawBytesBLOB{span{reinterpret_cast<const byte*> (rawBytes), nRawBytes}};
 
                 String x              = suggestedCodePage ? TextReader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
                                                           : TextReader::New (rawBytesBLOB).ReadAll ();
@@ -430,26 +429,6 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                     GetTextStore ().Replace (from, to, patchedData.data (), charsRead);
                 }
                 return true;
-#else
-                // Copy byte by byte to a new buffer, and break lines that are too long - as I go....
-                StackBuffer<byte> patchedBytes{Memory::eUninitialized, nRawBytes + nRawBytes / fBreakWidths};
-                size_t            curLineSize = 0;
-                size_t            ourIdx      = 0;
-                for (const byte* p = reinterpret_cast<const byte*> (rawBytes); p != reinterpret_cast<const byte*> (rawBytes) + nRawBytes; ++p) {
-                    if (*p == '\n' or *p == '\r') {
-                        curLineSize = 0;
-                    }
-                    else {
-                        ++curLineSize;
-                    }
-                    patchedBytes[ourIdx++] = *p;
-                    if (curLineSize >= fBreakWidths) {
-                        curLineSize            = 0;
-                        patchedBytes[ourIdx++] = '\n';
-                    }
-                }
-                return inherited::InternalizeFlavor_FILEDataRawBytes (suggestedClipFormat, suggestedCodePage, from, to, patchedBytes, ourIdx);
-#endif
             }
             else {
                 return inherited::InternalizeFlavor_FILEDataRawBytes (suggestedClipFormat, suggestedCodePage, from, to, rawBytes, nRawBytes);
@@ -504,28 +483,21 @@ void LedLineItDocument::Serialize (CArchive& ar)
                     break;
             }
         }
-#if qWideCharacters
         Characters::CodeCvt<Led_tChar> codeCvt{fCodePage};
-#endif
         while (offset < eob) {
             size_t charsToWrite = min (kBufSize, eob - offset);
             fTextStore.CopyOut (offset, charsToWrite, buf);
             offset += charsToWrite;
-#if qPlatform_MacOS
-            Led_tChar buf2[sizeof (buf)];
-#elif qPlatform_Windows
+#if qPlatform_Windows
             Led_tChar buf2[2 * sizeof (buf)];
+#else
+            Led_tChar buf2[sizeof (buf)];
 #endif
             charsToWrite = Characters::NLToNative<Led_tChar> (buf, charsToWrite, buf2, sizeof (buf2));
-#if qWideCharacters
             StackBuffer<byte> buf3_{Memory::eUninitialized, codeCvt.ComputeTargetByteBufferSize (span{buf, charsToWrite})};
             auto              toWrite       = codeCvt.Characters2Bytes (span{buf, charsToWrite}, span{buf3_});
             char*             buffp         = reinterpret_cast<char*> (buf3_.data ());
             size_t            nBytesToWrite = toWrite.size ();
-#else
-            char*     buffp         = static_cast<char*> (buf2);
-            size_t    nBytesToWrite = charsToWrite;
-#endif
             ar.Write (buffp, static_cast<UINT> (nBytesToWrite));
         }
     }
@@ -553,7 +525,6 @@ void LedLineItDocument::Serialize (CArchive& ar)
             }
         }
 
-#if qWideCharacters
         using Characters::CodeCvt;
         CodeCvt<Led_tChar>     codeCvt{useUnicodEncoding ? CodeCvt<Led_tChar>{*useUnicodEncoding}
                                                          : (useCodePage == kAutomaticallyGuessCodePage ? CodeCvt<Led_tChar>{locale{}}
@@ -564,9 +535,6 @@ void LedLineItDocument::Serialize (CArchive& ar)
         nLen             = static_cast<DWORD> (n.size ());
         result[nLen]     = '\0'; // assure NUL-Term
         Led_tChar* buffp = static_cast<Led_tChar*> (result);
-#else
-        Led_tChar* buffp = static_cast<char*> (buf);
-#endif
 
         nLen = static_cast<DWORD> (Characters::NormalizeTextToNL<Led_tChar> (buffp, nLen, buffp, nLen));
         fTextStore.Replace (0, 0, buffp, nLen);

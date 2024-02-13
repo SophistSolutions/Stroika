@@ -296,11 +296,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void   SetRowStart (size_t i, size_t rowStart); // NB: rowStart[1] MUST BE ZERO!!!!
 
     private:
-#if qAllowRowsThatAreLongerThan255
-        using RowHeight_ = unsigned short;
-#else
-        using RowHeight_ = unsigned char;
-#endif
+        using RowHeight_ = uint16_t;
         // Don't yet support packed RowStart_ ONLY because we keep array of starts, not nChars in row.
         // If we switch to that - then we can use unsigned char for this as with the rowHeight guy!!!
         // LGP 950519

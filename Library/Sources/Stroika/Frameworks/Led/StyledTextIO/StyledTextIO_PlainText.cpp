@@ -46,7 +46,6 @@ void StyledTextIOReader_PlainText::Read ()
             break;
         }
     }
-#if qWideCharacters
     span<const byte>               rawByteSpan{reinterpret_cast<const byte*> (buf.data ()), len};
     CodeCvt<Led_tChar>             converter{&rawByteSpan, CodeCvt<Led_tChar>{locale{}}};
     size_t                         outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
@@ -55,27 +54,14 @@ void StyledTextIOReader_PlainText::Read ()
     size_t charsRead = outCharCnt;
     Assert (charsRead <= len);
     Led_tChar* useBuf = wbuf.data ();
-#else
-    size_t             charsRead = len;
-    Led_tChar*         useBuf    = buf;
-#endif
-    charsRead = Characters::NormalizeTextToNL<Led_tChar> (useBuf, charsRead, useBuf, charsRead);
+    charsRead         = Characters::NormalizeTextToNL<Led_tChar> (useBuf, charsRead, useBuf, charsRead);
     GetSinkStream ().AppendText (useBuf, charsRead, nullptr);
     GetSinkStream ().EndOfBuffer ();
 }
 
 bool StyledTextIOReader_PlainText::QuickLookAppearsToBeRightFormat ()
 {
-#if qWideCharacters
     return true;
-#else
-    SrcStreamSeekSaver savePos{GetSrcStream ()};
-
-    char   buf[1024];
-    size_t bytesRead = GetSrcStream ().read (buf, sizeof (buf));
-
-    return ValidateTextForCharsetConformance (buf, bytesRead);
-#endif
 }
 
 /*
@@ -98,14 +84,10 @@ void StyledTextIOWriter_PlainText::Write ()
 #else
         Led_tChar buf2[Memory::NEltsOf (buf)];
 #endif
-        bytesRead = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, Memory::NEltsOf (buf2));
-#if qWideCharacters
+        bytesRead                                  = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, Memory::NEltsOf (buf2));
         Streams::MemoryStream::Ptr<byte> memStream = Streams::MemoryStream::New<byte> ();
         Streams::TextWriter::New (memStream, Characters::CodeCvt<>{locale{}}).Write (span{buf2, bytesRead});
         auto b = memStream.As<Memory::BLOB> ();
         write (b.data (), b.size ());
-#else
-        write (buf2.data (), bytesRead);
-#endif
     }
 }

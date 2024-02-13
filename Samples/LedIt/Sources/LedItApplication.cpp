@@ -372,10 +372,8 @@ public:
         inherited::PreDoModalHook ();
 #if _UNICODE
 #define kUNICODE_NAME_ADORNER L" [UNICODE]"
-#elif qWideCharacters
-#define kUNICODE_NAME_ADORNER " [Internal UNICODE]"
 #else
-#define kUNICODE_NAME_ADORNER
+#define kUNICODE_NAME_ADORNER " [Internal UNICODE]"
 #endif
 
 #if qPlatform_MacOS
