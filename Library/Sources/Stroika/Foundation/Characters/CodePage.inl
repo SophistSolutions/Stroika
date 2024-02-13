@@ -106,7 +106,8 @@ namespace Stroika::Foundation::Characters {
         kCodePage_UTF8 [[deprecated ("Since v3.0d2 - WellKnownCodePages::kUTF8")]] = WellKnownCodePages::kUTF8
     };
 
-    class [[deprecated ("Since Stroika v3.0d2, use CodeCvt - for example - CodeCvt<wchar_t>{locale{}}.String2Bytes<SDKString> (span<const wchar_t>{s})")]] CodePageConverter {
+    class [[deprecated ("Since Stroika v3.0d2, use CodeCvt - for example - CodeCvt<wchar_t>{locale{}}.String2Bytes<SDKString> (span<const "
+                        "wchar_t>{s})")]] CodePageConverter {
     public:
         enum class HandleBOMFlag {
             eHandleBOM
