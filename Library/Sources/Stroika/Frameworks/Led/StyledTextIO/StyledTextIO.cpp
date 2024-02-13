@@ -498,6 +498,7 @@ NotherRead:
         // Then we must do a DIRECT read, and don't bother with the buffer
         // (we could loop filling/emtpying buffer, but that would be needless copying).
         Assert (false); // NYI
+        ::read (fFileDescriptor, reinterpret_cast<byte*> (buffer) +bytesCopiedSoFar, bytesLeftToCopy);   //we need something like this!!!
     }
 
     return bytesCopiedSoFar;

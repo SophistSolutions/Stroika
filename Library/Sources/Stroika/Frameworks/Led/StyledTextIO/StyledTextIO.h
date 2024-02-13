@@ -715,12 +715,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual void ReadInWindow (size_t startAt); // zero based startAt
 
     private:
-        int    fFileDescriptor;
-        size_t fCurSeekPos;
-        char*  fInputBuffer; // buffer is simply a performance hack...
-        size_t fInputBufferSize;
-        size_t fBufferWindowStart;
-        size_t fBufferWindowEnd;
+        int    fFileDescriptor{};
+        size_t fCurSeekPos{};
+        char*  fInputBuffer{}; // buffer is simply a performance hack...
+        size_t fInputBufferSize{};
+        size_t fBufferWindowStart{};
+        size_t fBufferWindowEnd{};
     };
 
     /*
