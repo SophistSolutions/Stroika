@@ -29,6 +29,10 @@ FETCHURLS_+=https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/down
 ${ZIPPED_SOURCES_FILE_}:
 	@MAKE_INDENT_LEVEL=$$((${MAKE_INDENT_LEVEL}+1)) ${StroikaRoot}ScriptsLib/WebGet ${ZIPPED_SOURCES_FILE_} ${FETCHURLS_}
 
+check-prerequisite-tools:
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "strawberry-perl $(PERL_VERSION_) - Checking Prerequisite tools ... "
+	@{ type unzip > /dev/null; } || { $(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && $(StroikaRoot)ScriptsLib/GetMessageForMissingTool unzip && exit 1; }
+	@$(ECHO) "done";
 
 ORIGs CURRENT:	$(ZIPPED_SOURCES_FILE_)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "strawberry-perl ${PERL_VERSION_} - Extracting $(ZIPPED_SOURCES_FILE_) to $@"` "... "
@@ -37,7 +41,7 @@ ORIGs CURRENT:	$(ZIPPED_SOURCES_FILE_)
 
 
 all:	
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/ActivePerl Build $(PERL_VERSION_):"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/strawberry-perl Build $(PERL_VERSION_):"
 	@$(MAKE) --silent CURRENT
 
 
