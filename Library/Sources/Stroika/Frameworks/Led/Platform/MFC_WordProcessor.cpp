@@ -334,9 +334,9 @@ void Led_MFC_ControlItem::OnDeactivateUI (BOOL bUndoable)
     }
 }
 
-void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet, [[maybe_unused]] size_t from,
-                                       [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto,
-                                       const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
+void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const StyleRunElement& /*runElement*/, Tablet* tablet,
+                                       [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
+                                       const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     Require (to - from == 1);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinelChar);
@@ -363,7 +363,7 @@ void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const Run
     COleClientItem::Draw (Led_MFC_CDCFromTablet (tablet), CRect (AsRECT (innerBoundsRect)));
 }
 
-void Led_MFC_ControlItem::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement,
+void Led_MFC_ControlItem::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, [[maybe_unused]] const StyleRunElement& runElement,
                                                [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
                                                [[maybe_unused]] const Led_tChar* text, DistanceType* distanceResults) const
 {
@@ -372,7 +372,7 @@ void Led_MFC_ControlItem::MeasureSegmentWidth ([[maybe_unused]] const StyledText
     distanceResults[0] = fSize.h + 2 * kDefaultEmbeddingMargin.h;
 }
 
-DistanceType Led_MFC_ControlItem::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/,
+DistanceType Led_MFC_ControlItem::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const StyleRunElement& /*runElement*/,
                                                         [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);

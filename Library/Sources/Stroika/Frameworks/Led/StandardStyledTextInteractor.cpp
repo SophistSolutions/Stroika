@@ -172,8 +172,8 @@ void StandardStyledTextInteractor::InteractiveSetFont (const IncrementalFontSpec
 IncrementalFontSpecification StandardStyledTextInteractor::GetContinuousStyleInfo (size_t from, size_t nTChars) const
 {
     if (nTChars == 0 and from == GetSelectionStart ()) {
-        vector<InfoSummaryRecord> summaryInfo;
-        summaryInfo.push_back (InfoSummaryRecord (fEmptySelectionStyle, 0));
+        vector<StyledInfoSummaryRecord> summaryInfo;
+        summaryInfo.push_back (StyledInfoSummaryRecord (fEmptySelectionStyle, 0));
         return (GetContinuousStyleInfo_ (summaryInfo));
     }
     else {
@@ -515,8 +515,7 @@ InteractiveReplaceCommand::SavedTextRep* StandardStyledTextInteractor::Interacti
  ********************************************************************************
  */
 using StandardStyledTextIOSinkStream = StandardStyledTextInteractor::StandardStyledTextIOSinkStream;
-StandardStyledTextIOSinkStream::StandardStyledTextIOSinkStream (TextStore* textStore, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-                                                                size_t insertionStart)
+StandardStyledTextIOSinkStream::StandardStyledTextIOSinkStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase, size_t insertionStart)
     : inherited ()
     , fSavedContexts ()
     , fTextStore (textStore)
@@ -652,7 +651,7 @@ void StandardStyledTextIOSinkStream::Flush ()
     Ensure (fSavedStyleInfo.size () == 0);
 }
 
-void StandardStyledTextIOSinkStream::PushContext (TextStore* ts, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase, size_t insertionStart)
+void StandardStyledTextIOSinkStream::PushContext (TextStore* ts, const StyleDatabasePtr& textStyleDatabase, size_t insertionStart)
 {
     Require (GetCachedTextSize () == 0); // must flush before setting/popping context
 
@@ -685,7 +684,7 @@ void StandardStyledTextIOSinkStream::PopContext ()
  ********************************************************************************
  */
 using StandardStyledTextIOSrcStream = StandardStyledTextInteractor::StandardStyledTextIOSrcStream;
-StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (TextStore* textStore, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase,
                                                               size_t selectionStart, size_t selectionEnd)
     : inherited ()
     , fTextStore (textStore)
@@ -785,10 +784,9 @@ StandardStyledTextIOSrcStream::Table* StandardStyledTextIOSrcStream::GetTableAt 
 
 void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
 {
-    using InfoSummaryRecord = StyledInfoSummaryRecord;
     if (fontNames != nullptr or colorsUsed != nullptr) {
-        size_t                    totalTextLength = GetTotalTextLength ();
-        vector<InfoSummaryRecord> styleRuns;
+        size_t                          totalTextLength = GetTotalTextLength ();
+        vector<StyledInfoSummaryRecord> styleRuns;
         if (totalTextLength != 0) {
             styleRuns = GetStyleInfo (0, totalTextLength);
         }
@@ -814,7 +812,7 @@ size_t StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const
  ********************************************************************************
  */
 using StyledTextFlavorPackageInternalizer = StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer;
-StyledTextFlavorPackageInternalizer::StyledTextFlavorPackageInternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase)
+StyledTextFlavorPackageInternalizer::StyledTextFlavorPackageInternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase)
     : inherited (ts)
     , fStyleDatabase (styleDatabase)
 {
@@ -952,7 +950,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_STYLAndTEXT (ReaderF
             size_t pasteEndXXX = newSel.GetStart () - 1;
             Assert (pasteEndXXX >= pasteStart);
             StScrpRec* styleRecords = reinterpret_cast<StScrpRec*> (static_cast<char*> (buf));
-            vector<InfoSummaryRecord> ledStyleInfo = StandardStyledTextImager::Convert (styleRecords->scrpStyleTab, styleRecords->scrpNStyles);
+            vector<StyledInfoSummaryRecord> ledStyleInfo = StandardStyledTextImager::Convert (styleRecords->scrpStyleTab, styleRecords->scrpNStyles);
             fStyleDatabase->SetStyleInfo (pasteStart, pasteEndXXX - pasteStart, ledStyleInfo);
         }
 
@@ -1103,7 +1101,7 @@ StandardStyledTextInteractor::StandardStyledTextIOSinkStream* StyledTextFlavorPa
  ********************************************************************************
  */
 using StyledTextFlavorPackageExternalizer = StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer;
-StyledTextFlavorPackageExternalizer::StyledTextFlavorPackageExternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase)
+StyledTextFlavorPackageExternalizer::StyledTextFlavorPackageExternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase)
     : inherited (ts)
     , fStyleDatabase (styleDatabase)
 {
@@ -1165,8 +1163,8 @@ void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_STYL (WriterFlavorPa
     Require (to <= GetTextStore ().GetEnd ());
     size_t length = to - from;
 
-    vector<InfoSummaryRecord> ledStyleRuns = fStyleDatabase->GetStyleInfo (from, length);
-    size_t                    nStyleRuns   = ledStyleRuns.size ();
+    vector<StyledInfoSummaryRecord> ledStyleRuns = fStyleDatabase->GetStyleInfo (from, length);
+    size_t                          nStyleRuns   = ledStyleRuns.size ();
 
     Assert (offsetof (StScrpRec, scrpStyleTab) == sizeof (short)); // thats why we add sizeof (short)
 

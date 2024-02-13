@@ -34,6 +34,101 @@ namespace Stroika::Frameworks::Led {
         size_t fLength;
     };
 
+    /*
+    @CLASS:         StandardStyledTextImager::AbstractStyleDatabaseRep
+    @BASES:         @'MarkerOwner'
+    @DESCRIPTION:   <p>xxx.</p>
+    */
+    class AbstractStyleDatabaseRep : public virtual MarkerOwner {
+    private:
+        using inherited = MarkerOwner;
+
+    public:
+        virtual vector<StyledInfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const                  = 0;
+        virtual void    SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo) = 0;
+        nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<StyledInfoSummaryRecord>& styleInfos);
+        virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const StyledInfoSummaryRecord* styleInfos) = 0;
+
+        // Debug support
+    public:
+        nonvirtual void Invariant () const;
+#if qDebug
+    protected:
+        virtual void Invariant_ () const;
+#endif
+    };
+
+    /*
+        @CLASS:         StyleDatabasePtr
+        @BASES:         @'shared_ptr<T>', (T=@'StandardStyledTextImager::StyleDatabaseRep')
+        @DESCRIPTION:
+        */
+    using StyleDatabasePtr = shared_ptr<AbstractStyleDatabaseRep>;
+
+    /*
+    @CLASS:         StandardStyledTextImager::StandardStyleMarker
+    @BASES:         @'StyledTextImager::StyleMarker'
+    @DESCRIPTION:
+            <p>Private, implementation detail class. Part of @'StandardStyledTextImager' implementation.</p>
+            <p>Should NOT be subclassed. These participate in routines to grab
+        runs of style info, etc, and aren't really designed to be subclassed. Also, all elements
+        of this type in the text buffer are summarily deleted upon deletion of the owning StyleDatabase.</p>
+    */
+    class StandardStyleMarker : public StyleMarker {
+    private:
+        using inherited = StyleMarker;
+
+    public:
+        StandardStyleMarker (const FontSpecification& styleInfo = GetStaticDefaultFont ());
+
+#if qStroika_Frameworks_Led_SupportGDI
+    public:
+        virtual void DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,
+                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to,
+                                          const Led_tChar* text, DistanceType* distanceResults) const override;
+        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
+        virtual DistanceType MeasureSegmentBaseLine (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
+#endif
+
+    public:
+        nonvirtual FontSpecification GetInfo () const;
+        nonvirtual void              SetInfo (const FontSpecification& fsp);
+
+    public:
+        FontSpecification fFontSpecification;
+    };
+
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
+    /*
+    @CLASS:         StandardStyledTextImager::StyleDatabaseRep
+    @BASES:         @'MarkerCover'<@'StandardStyleMarker',@'FontSpecification',@'IncrementalFontSpecification'>
+    @DESCRIPTION:   <p>Reference counted object which stores all the style runs objects for a
+        @'StandardStyledTextImager'. An explicit storage object like this is used, instead of using
+        the @'StandardStyledTextImager' itself, so as too allow you to have either multiple views onto the
+        same text which use the SAME database of style runs, or to allow using different style info databases,
+        all live on the same text.</p>
+    */
+    class StyleDatabaseRep : public AbstractStyleDatabaseRep, private MarkerCover<StandardStyleMarker, FontSpecification, IncrementalFontSpecification> {
+    private:
+        using inheritedMC = MarkerCover<StandardStyleMarker, FontSpecification, IncrementalFontSpecification>;
+
+    public:
+        StyleDatabaseRep (TextStore& textStore);
+
+    public:
+        virtual vector<StyledInfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const override;
+        virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo) override;
+        virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const StyledInfoSummaryRecord* styleInfos) override;
+
+#if qDebug
+    protected:
+        virtual void Invariant_ () const override;
+#endif
+    };
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
+
 #if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         StandardStyledTextImager
@@ -69,17 +164,15 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void HookGainedNewTextStore_ ();
 
         /*
-            *  Interface to getting and setting STANDARD style info. These routines ignore
-            *  custom style markers.
-            */
+     *  Interface to getting and setting STANDARD style info. These routines ignore
+     *  custom style markers.
+     */
     public:
-        using InfoSummaryRecord = StyledInfoSummaryRecord;
-
         nonvirtual FontSpecification GetStyleInfo (size_t charAfterPos) const;
-        nonvirtual vector<InfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const;
+        nonvirtual vector<StyledInfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const;
         nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo);
-        nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos);
-        nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos);
+        nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<StyledInfoSummaryRecord>& styleInfos);
+        nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const StyledInfoSummaryRecord* styleInfos);
 
     public:
         virtual FontMetrics GetFontMetricsAt (size_t charAfterPos) const override;
@@ -91,7 +184,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual IncrementalFontSpecification GetContinuousStyleInfo (size_t from, size_t nTChars) const; // was DoContinuousStyle()
     protected:
-        nonvirtual IncrementalFontSpecification GetContinuousStyleInfo_ (const vector<InfoSummaryRecord>& summaryInfo) const;
+        nonvirtual IncrementalFontSpecification GetContinuousStyleInfo_ (const vector<StyledInfoSummaryRecord>& summaryInfo) const;
 
 #if qPlatform_MacOS
     public:
@@ -101,24 +194,9 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         // macstyle routines to get/set 'styl' resources for range of text...
     public:
-        static vector<InfoSummaryRecord> Convert (const ScrpSTElement* teScrapFmt, size_t nElts);
-        static void Convert (const vector<InfoSummaryRecord>& fromLedStyleRuns, ScrpSTElement* teScrapFmt); // Assumed pre-alloced and same legnth as fromLedStyleRuns
+        static vector<StyledInfoSummaryRecord> Convert (const ScrpSTElement* teScrapFmt, size_t nElts);
+        static void Convert (const vector<StyledInfoSummaryRecord>& fromLedStyleRuns, ScrpSTElement* teScrapFmt); // Assumed pre-alloced and same legnth as fromLedStyleRuns
 #endif
-
-    public:
-        class StandardStyleMarker;
-
-    public:
-        class AbstractStyleDatabaseRep;
-        class StyleDatabaseRep;
-
-    public:
-        /*
-        @CLASS:         StandardStyledTextImager::StyleDatabasePtr
-        @BASES:         @'shared_ptr<T>', (T=@'StandardStyledTextImager::StyleDatabaseRep')
-        @DESCRIPTION:
-        */
-        using StyleDatabasePtr = shared_ptr<AbstractStyleDatabaseRep>;
 
     public:
         nonvirtual StyleDatabasePtr GetStyleDatabase () const;
@@ -139,95 +217,6 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         StandardStyledTextImager::StandardStyleMarker
-    @BASES:         @'StyledTextImager::StyleMarker'
-    @DESCRIPTION:
-            <p>Private, implementation detail class. Part of @'StandardStyledTextImager' implementation.</p>
-            <p>Should NOT be subclassed. These participate in routines to grab
-        runs of style info, etc, and aren't really designed to be subclassed. Also, all elements
-        of this type in the text buffer are summarily deleted upon deletion of the owning StyleDatabase.</p>
-    */
-    class StandardStyledTextImager::StandardStyleMarker : public StyledTextImager::StyleMarker {
-    private:
-        using inherited = StyledTextImager::StyleMarker;
-
-    public:
-        StandardStyleMarker (const FontSpecification& styleInfo = GetStaticDefaultFont ());
-
-    public:
-        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
-                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                          const Led_tChar* text, DistanceType* distanceResults) const override;
-        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
-        virtual DistanceType MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
-
-    public:
-        nonvirtual FontSpecification GetInfo () const;
-        nonvirtual void              SetInfo (const FontSpecification& fsp);
-
-    public:
-        FontSpecification fFontSpecification;
-    };
-
-    /*
-    @CLASS:         StandardStyledTextImager::AbstractStyleDatabaseRep
-    @BASES:         @'MarkerOwner'
-    @DESCRIPTION:   <p>xxx.</p>
-    */
-    class StandardStyledTextImager::AbstractStyleDatabaseRep : public virtual MarkerOwner {
-    private:
-        using inherited = MarkerOwner;
-
-    public:
-        virtual vector<InfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const                        = 0;
-        virtual void    SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo) = 0;
-        nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos);
-        virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos) = 0;
-
-        // Debug support
-    public:
-        nonvirtual void Invariant () const;
-#if qDebug
-    protected:
-        virtual void Invariant_ () const;
-#endif
-    };
-
-    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
-    /*
-    @CLASS:         StandardStyledTextImager::StyleDatabaseRep
-    @BASES:         @'MarkerCover'<@'StandardStyleMarker',@'FontSpecification',@'IncrementalFontSpecification'>
-    @DESCRIPTION:   <p>Reference counted object which stores all the style runs objects for a
-        @'StandardStyledTextImager'. An explicit storage object like this is used, instead of using
-        the @'StandardStyledTextImager' itself, so as too allow you to have either multiple views onto the
-        same text which use the SAME database of style runs, or to allow using different style info databases,
-        all live on the same text.</p>
-    */
-    class StandardStyledTextImager::StyleDatabaseRep
-        : public StandardStyledTextImager::AbstractStyleDatabaseRep,
-          private MarkerCover<StandardStyledTextImager::StandardStyleMarker, FontSpecification, IncrementalFontSpecification> {
-    private:
-        using inheritedMC = MarkerCover<StandardStyledTextImager::StandardStyleMarker, FontSpecification, IncrementalFontSpecification>;
-
-    public:
-        StyleDatabaseRep (TextStore& textStore);
-
-    public:
-        virtual vector<InfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const override;
-        virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo) override;
-        virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos) override;
-
-#if qDebug
-    protected:
-        virtual void Invariant_ () const override;
-#endif
-    };
-
-    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
-
-    /*
     @CLASS:         SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper
     @BASES:         BASECLASS
     @DESCRIPTION:   <p>Simple helper class so that @'SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>' will use the font specification of any
@@ -244,14 +233,11 @@ namespace Stroika::Frameworks::Led {
     private:
         using inherited = BASECLASS;
 
-    public:
-        using RunElement = StyledTextImager::RunElement;
+    protected:
+        virtual StyleRunElement MungeRunElement (const StyleRunElement& inRunElt) const override;
 
     protected:
-        virtual RunElement MungeRunElement (const RunElement& inRunElt) const override;
-
-    protected:
-        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
+        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const override;
 
     private:
         mutable FontSpecification fFSP;

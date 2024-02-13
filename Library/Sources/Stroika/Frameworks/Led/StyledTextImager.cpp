@@ -13,8 +13,6 @@ using namespace Stroika::Frameworks::Led;
 
 #if qStroika_Frameworks_Led_SupportGDI
 
-using StyleMarker            = StyledTextImager::StyleMarker;
-using RunElement             = StyledTextImager::RunElement;
 using StyleMarkerSummarySink = StyledTextImager::StyleMarkerSummarySink;
 
 /*
@@ -52,7 +50,7 @@ StyleMarkerSummarySink::StyleMarkerSummarySink (size_t from, size_t to)
     // See SPR#1293 - may want to get rid of this eventually
     Require (from <= to);
     if (from != to) {
-        fBuckets.push_back (RunElement (nullptr, to - from));
+        fBuckets.push_back (StyleRunElement{nullptr, to - from});
     }
 }
 
@@ -65,7 +63,7 @@ StyleMarkerSummarySink::StyleMarkerSummarySink (size_t from, size_t to, const Te
 {
     Require (from <= to);
     if (from != to) {
-        fBuckets.push_back (RunElement (nullptr, to - from));
+        fBuckets.push_back (StyleRunElement{nullptr, to - from});
     }
     using ScriptRunElt              = TextLayoutBlock::ScriptRunElt;
     vector<ScriptRunElt> scriptRuns = text.GetScriptRuns ();
@@ -123,9 +121,9 @@ void StyleMarkerSummarySink::SplitIfNeededAt (size_t markerPos)
             size_t oldLength = (*i).fLength;
 #endif
             // then we need a split at that position.
-            RunElement newElt = *i;
-            (*i).fLength      = markerPos - eltStart;
-            newElt.fLength    = eltEnd - markerPos;
+            StyleRunElement newElt = *i;
+            (*i).fLength           = markerPos - eltStart;
+            newElt.fLength         = eltEnd - markerPos;
 #if qDebug
             Assert (oldLength == (*i).fLength + newElt.fLength);
 #endif
@@ -146,7 +144,7 @@ void StyleMarkerSummarySink::SplitIfNeededAt (size_t markerPos)
         <p>Subclassers can OVERRIDE this behavior, and, for instance, restrict paying attention to only a particular
     subtype of '@StyleMarker's, or maybe to set particular values into one (chosen subtype marker to connote the overlap, and
     allow this to effect the draw. Or, perhaps, a subclass might ingnore markers with a particular owner value.</p>
-        <p>Note that markers NOT used can be placed in the @'StyledTextImager::RunElement's 'fSupercededMarkers' array,
+        <p>Note that markers NOT used can be placed in the @'StyleRunElement's 'fSupercededMarkers' array,
     so that the eventual marker which does the drawing <em>can</em> delegate or combine the drawing behaviors of
     different kinds of markers.</p>
         <p>Note also that this routine will somewhat randomly deal with ties. The first element of a given
@@ -154,7 +152,7 @@ void StyleMarkerSummarySink::SplitIfNeededAt (size_t markerPos)
     from a TextStore - that results in random choices. That can cause trouble - so try to avoid ties
     without GOOD motivation.</p>
 */
-void StyleMarkerSummarySink::CombineElements (StyledTextImager::RunElement* runElement, StyleMarker* newStyleMarker)
+void StyleMarkerSummarySink::CombineElements (StyleRunElement* runElement, StyleMarker* newStyleMarker)
 {
     RequireNotNull (runElement);
     RequireNotNull (newStyleMarker);
@@ -179,25 +177,25 @@ void StyleMarkerSummarySink::CombineElements (StyledTextImager::RunElement* runE
 
 /*
 @METHOD:        StyledTextImager::StyleMarkerSummarySink::ProduceOutputSummary
-@DESCRIPTION:   <p>Create a vector of @'StyledTextImager::RunElement's. Each of these contains a list of
+@DESCRIPTION:   <p>Create a vector of @'StyleRunElement's. Each of these contains a list of
             marker objects for the region and a length field. The elements are returned in VIRTUAL (LTR display)
             order - NOT logical (internal memory buffer) order. The elements are guarantied not to cross
             any directional boundaries (as returned from the @'TextLayoutBlock::GetScriptRuns' API)</p>
 */
-vector<StyledTextImager::RunElement> StyledTextImager::StyleMarkerSummarySink::ProduceOutputSummary () const
+vector<StyleRunElement> StyledTextImager::StyleMarkerSummarySink::ProduceOutputSummary () const
 {
     using ScriptRunElt = TextLayoutBlock::ScriptRunElt;
     // Soon fix to use fText as a REFERENCE. Then we probably should have this code assure its re-ordering is done only once and then cached,
     // LGP 2002-12-16
     if (fText != nullptr) {
-        vector<RunElement>   runElements;
-        vector<ScriptRunElt> scriptRuns = fText->GetScriptRuns ();
+        vector<StyleRunElement> runElements;
+        vector<ScriptRunElt>    scriptRuns = fText->GetScriptRuns ();
         if (scriptRuns.size () > 1) {
             // sort by virtual start
-            sort (scriptRuns.begin (), scriptRuns.end (), TextLayoutBlock::LessThanVirtualStart ());
+            sort (scriptRuns.begin (), scriptRuns.end (), TextLayoutBlock::LessThanVirtualStart{});
         }
         for (auto i = scriptRuns.begin (); i != scriptRuns.end (); ++i) {
-            // Grab all StyledTextImager::RunElement elements from this run and copy them out
+            // Grab all StyleRunElement elements from this run and copy them out
             const ScriptRunElt& se                 = *i;
             size_t              styleRunStart      = 0;
             size_t              runEltsBucketStart = runElements.size ();
@@ -245,7 +243,7 @@ StyleMarkerSummarySinkForSingleOwner::StyleMarkerSummarySinkForSingleOwner (cons
 @DESCRIPTION:   <p>Like @'StyledTextImager::StyleMarkerSummarySink::CombineElements', except that matching
     the MarkerOwner is more important than the Marker Priority.</p>
 */
-void StyleMarkerSummarySinkForSingleOwner::CombineElements (StyledTextImager::RunElement* runElement, StyleMarker* newStyleMarker)
+void StyleMarkerSummarySinkForSingleOwner::CombineElements (StyleRunElement* runElement, StyleMarker* newStyleMarker)
 {
     RequireNotNull (runElement);
     RequireNotNull (newStyleMarker);
@@ -278,9 +276,9 @@ void StyleMarkerSummarySinkForSingleOwner::CombineElements (StyledTextImager::Ru
 /*
 @METHOD:        StyledTextImager::SummarizeStyleMarkers
 @DESCRIPTION:   <p>Create a summary of the style markers applied to a given range of text (by default using
-    @'StyledTextImager::StyleMarkerSummarySink') into @'StyledTextImager::RunElement's.</p>
+    @'StyledTextImager::StyleMarkerSummarySink') into @'StyleRunElement's.</p>
 */
-vector<RunElement> StyledTextImager::SummarizeStyleMarkers (size_t from, size_t to) const
+vector<StyleRunElement> StyledTextImager::SummarizeStyleMarkers (size_t from, size_t to) const
 {
     // See SPR#1293 - may want to get rid of this eventually
     StyleMarkerSummarySink summary (from, to);
@@ -291,9 +289,9 @@ vector<RunElement> StyledTextImager::SummarizeStyleMarkers (size_t from, size_t 
 /*
 @METHOD:        StyledTextImager::SummarizeStyleMarkers
 @DESCRIPTION:   <p>Create a summary of the style markers applied to a given range of text (by default using
-    @'StyledTextImager::StyleMarkerSummarySink') into @'StyledTextImager::RunElement's.</p>
+    @'StyledTextImager::StyleMarkerSummarySink') into @'StyleRunElement's.</p>
 */
-vector<RunElement> StyledTextImager::SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const
+vector<StyleRunElement> StyledTextImager::SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const
 {
     StyleMarkerSummarySink summary (from, to, text);
     GetTextStore ().CollectAllMarkersInRangeInto (from, to, TextStore::kAnyMarkerOwner, summary);
@@ -313,7 +311,7 @@ void StyledTextImager::DrawSegment (Tablet* tablet, size_t from, size_t to, cons
      *  Note that SummarizeStyleMarkers assures 'outputSummary' comes out in VIRTUAL order.
      *  Must display text in LTR virtual display order.
      */
-    vector<RunElement> outputSummary = SummarizeStyleMarkers (from, to, text);
+    vector<StyleRunElement> outputSummary = SummarizeStyleMarkers (from, to, text);
 
     Led_Rect tmpDrawInto          = drawInto;
     size_t   outputSummaryLength  = outputSummary.size ();
@@ -323,10 +321,10 @@ void StyledTextImager::DrawSegment (Tablet* tablet, size_t from, size_t to, cons
     }
 
     for (size_t i = 0; i < outputSummaryLength; ++i) {
-        const RunElement& re       = outputSummary[i];
-        size_t            reLength = re.fLength;
-        size_t            reFrom   = text.MapVirtualOffsetToReal (indexIntoText_VISUAL) + from; // IN LOGICAL OFFSETS!!!
-        size_t            reTo     = reFrom + reLength;                                         // ""
+        const StyleRunElement& re       = outputSummary[i];
+        size_t                 reLength = re.fLength;
+        size_t                 reFrom   = text.MapVirtualOffsetToReal (indexIntoText_VISUAL) + from; // IN LOGICAL OFFSETS!!!
+        size_t                 reTo     = reFrom + reLength;                                         // ""
         Assert (indexIntoText_VISUAL <= to - from);
         Assert (reLength > 0);
         /*
@@ -393,15 +391,15 @@ void StyledTextImager::DrawSegment (Tablet* tablet, size_t from, size_t to, cons
 void StyledTextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text, DistanceType* distanceResults) const
 {
     // See SPR#1293 - may want to pass in TextLayoutBlock here - instead of just plain text...
-    vector<RunElement> outputSummary = SummarizeStyleMarkers (from, to);
+    vector<StyleRunElement> outputSummary = SummarizeStyleMarkers (from, to);
 
     size_t outputSummaryLength = outputSummary.size ();
     size_t indexIntoText       = 0;
     for (size_t i = 0; i < outputSummaryLength; ++i) {
-        const RunElement& re       = outputSummary[i];
-        size_t            reFrom   = indexIntoText + from;
-        size_t            reLength = re.fLength;
-        size_t            reTo     = reFrom + reLength;
+        const StyleRunElement& re       = outputSummary[i];
+        size_t                 reFrom   = indexIntoText + from;
+        size_t                 reLength = re.fLength;
+        size_t                 reTo     = reFrom + reLength;
         Assert (indexIntoText <= to - from);
         if (re.fMarker == nullptr) {
             MeasureSegmentWidth_ (GetDefaultFont (), reFrom, reTo, &text[indexIntoText], &distanceResults[indexIntoText]);
@@ -427,7 +425,7 @@ DistanceType StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) con
         to = from + 1;
     }
 
-    vector<RunElement> outputSummary = SummarizeStyleMarkers (from, to);
+    vector<StyleRunElement> outputSummary = SummarizeStyleMarkers (from, to);
 
     /*
      *  This is somewhat subtle.
@@ -449,10 +447,10 @@ DistanceType StyledTextImager::MeasureSegmentHeight (size_t from, size_t to) con
     DistanceType maxHeightBelow = 0;
     size_t       indexIntoText  = 0;
     for (size_t i = 0; i < outputSummaryLength; ++i) {
-        const RunElement& re       = outputSummary[i];
-        size_t            reFrom   = indexIntoText + from;
-        size_t            reLength = re.fLength;
-        size_t            reTo     = reFrom + reLength;
+        const StyleRunElement& re       = outputSummary[i];
+        size_t                 reFrom   = indexIntoText + from;
+        size_t                 reLength = re.fLength;
+        size_t                 reTo     = reFrom + reLength;
         Assert (indexIntoText <= to - from);
         DistanceType itsBaseline;
         DistanceType itsHeight;
@@ -479,16 +477,16 @@ DistanceType StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to) c
         to = from + 1;
     }
 
-    vector<RunElement> outputSummary       = SummarizeStyleMarkers (from, to);
-    size_t             outputSummaryLength = outputSummary.size ();
+    vector<StyleRunElement> outputSummary       = SummarizeStyleMarkers (from, to);
+    size_t                  outputSummaryLength = outputSummary.size ();
     Assert (outputSummaryLength != 0);
     DistanceType maxHeight     = 0;
     size_t       indexIntoText = 0;
     for (size_t i = 0; i < outputSummaryLength; ++i) {
-        const RunElement& re       = outputSummary[i];
-        size_t            reFrom   = indexIntoText + from;
-        size_t            reLength = re.fLength;
-        size_t            reTo     = reFrom + reLength;
+        const StyleRunElement& re       = outputSummary[i];
+        size_t                 reFrom   = indexIntoText + from;
+        size_t                 reLength = re.fLength;
+        size_t                 reTo     = reFrom + reLength;
         Assert (indexIntoText <= to - from);
         if (re.fMarker == nullptr) {
             maxHeight = max (maxHeight, MeasureSegmentBaseLine_ (GetDefaultFont (), reFrom, reTo));

@@ -63,8 +63,8 @@ protected:
 
 #if qSupportSyntaxColoring
 protected:
-    virtual vector<RunElement> SummarizeStyleMarkers (size_t from, size_t to) const override;
-    virtual vector<RunElement> SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const override;
+    virtual vector<StyleRunElement> SummarizeStyleMarkers (size_t from, size_t to) const override;
+    virtual vector<StyleRunElement> SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const override;
 #endif
 
 public:

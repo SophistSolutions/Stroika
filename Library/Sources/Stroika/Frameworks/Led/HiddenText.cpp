@@ -533,11 +533,11 @@ void UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
  ************* HidableTextMarkerOwner::FontSpecHidableTextMarker ****************
  ********************************************************************************
  */
-FontSpecification HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpec (const StyledTextImager* /*imager*/, const RunElement& runElement) const
+FontSpecification HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpec (const StyledTextImager* /*imager*/, const StyleRunElement& runElement) const
 {
     FontSpecification fsp;
     for (auto i = runElement.fSupercededMarkers.begin (); i != runElement.fSupercededMarkers.end (); ++i) {
-        if (StandardStyledTextImager::StandardStyleMarker* m = dynamic_cast<StandardStyledTextImager::StandardStyleMarker*> (*i)) {
+        if (StandardStyleMarker* m = dynamic_cast<StandardStyleMarker*> (*i)) {
             fsp.MergeIn (m->fFontSpecification);
         }
     }

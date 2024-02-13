@@ -278,7 +278,7 @@ LedItDocument::LedItDocument ()
     ::AfxOleLockApp ();
 #endif
     fTextStore.AddMarkerOwner (this);
-    fStyleDatabase       = StandardStyledTextImager::StyleDatabasePtr (new StandardStyledTextImager::StyleDatabaseRep (fTextStore));
+    fStyleDatabase       = make_shared<StyleDatabaseRep>  (fTextStore);
     fParagraphDatabase   = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
     fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
 }
@@ -1103,7 +1103,7 @@ BOOL LedItDocument::OnNewDocument ()
         return FALSE;
     }
     fFileFormat          = eDefaultFormat;
-    fStyleDatabase       = StandardStyledTextImager::StyleDatabasePtr (new StandardStyledTextImager::StyleDatabaseRep (fTextStore));
+    fStyleDatabase       = make_shared<StyleDatabaseRep>  (fTextStore);
     fParagraphDatabase   = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
     fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
     return TRUE;
@@ -1362,7 +1362,7 @@ BOOL LedItDocument::OnOpenDocument (LPCTSTR lpszPathName)
     }
 
     fCommandHandler.Commit ();
-    fStyleDatabase       = StandardStyledTextImager::StyleDatabasePtr (new StandardStyledTextImager::StyleDatabaseRep (fTextStore));
+    fStyleDatabase       = make_shared<StyleDatabaseRep> (fTextStore);
     fParagraphDatabase   = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
     fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
 

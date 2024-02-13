@@ -393,7 +393,7 @@ void LedLineItView::HookGainedNewTextStore ()
 #endif
 
 #if qSupportSyntaxColoring
-vector<LedLineItView::RunElement> LedLineItView::SummarizeStyleMarkers (size_t from, size_t to) const
+vector<StyleRunElement> LedLineItView::SummarizeStyleMarkers (size_t from, size_t to) const
 {
     // See SPR#1293 - may want to get rid of this eventually
     StyleMarkerSummarySinkForSingleOwner summary (*fSyntaxColoringMarkerOwner, from, to);
@@ -401,7 +401,7 @@ vector<LedLineItView::RunElement> LedLineItView::SummarizeStyleMarkers (size_t f
     return summary.ProduceOutputSummary ();
 }
 
-vector<LedLineItView::RunElement> LedLineItView::SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const
+vector<StyleRunElement> LedLineItView::SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const
 {
     StyleMarkerSummarySinkForSingleOwner summary (*fSyntaxColoringMarkerOwner, from, to, text);
     GetTextStore ().CollectAllMarkersInRangeInto (from, to, TextStore::kAnyMarkerOwner, summary);

@@ -686,7 +686,7 @@ void WindowedSyntaxColoringMarkerOwner::RecheckRange (size_t updateFrom, size_t 
  ******************************** ColoredStyleMarker ****************************
  ********************************************************************************
  */
-FontSpecification ColoredStyleMarker::MakeFontSpec (const StyledTextImager* imager, const RunElement& /*runElement*/) const
+FontSpecification ColoredStyleMarker::MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& /*runElement*/) const
 {
     RequireNotNull (imager);
     FontSpecification fsp = imager->GetDefaultFont ();

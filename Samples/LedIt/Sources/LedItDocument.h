@@ -114,20 +114,20 @@ public:
 #endif
 
 public:
-    nonvirtual TextStore& GetTextStore ();
-    nonvirtual StandardStyledTextImager::StyleDatabasePtr& GetStyleDatabase ();
+    nonvirtual TextStore&        GetTextStore ();
+    nonvirtual StyleDatabasePtr& GetStyleDatabase ();
     nonvirtual WordProcessor::ParagraphDatabasePtr& GetParagraphDatabase ();
     nonvirtual WordProcessor::HidableTextDatabasePtr& GetHidableTextDatabase ();
     nonvirtual CommandHandler&                        GetCommandHandler ();
 
 protected:
 public:
-    ChunkedArrayTextStore                      fTextStore;
-    StyledTextIO::RTFInfo                      fRTFInfo;
-    StandardStyledTextImager::StyleDatabasePtr fStyleDatabase;
-    WordProcessor::ParagraphDatabasePtr        fParagraphDatabase;
-    WordProcessor::HidableTextDatabasePtr      fHidableTextDatabase;
-    MultiLevelUndoCommandHandler               fCommandHandler;
+    ChunkedArrayTextStore                 fTextStore;
+    StyledTextIO::RTFInfo                 fRTFInfo;
+    StyleDatabasePtr                      fStyleDatabase;
+    WordProcessor::ParagraphDatabasePtr   fParagraphDatabase;
+    WordProcessor::HidableTextDatabasePtr fHidableTextDatabase;
+    MultiLevelUndoCommandHandler          fCommandHandler;
 
 #if qStroika_FeatureSupported_XWindows
 public:
@@ -204,7 +204,7 @@ inline TextStore& LedItDocument::GetTextStore ()
 {
     return fTextStore;
 }
-inline StandardStyledTextImager::StyleDatabasePtr& LedItDocument::GetStyleDatabase ()
+inline StyleDatabasePtr& LedItDocument::GetStyleDatabase ()
 {
     return fStyleDatabase;
 }

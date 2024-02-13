@@ -149,9 +149,9 @@ namespace Stroika::Frameworks::Led {
 
     /**
      */
-    class HidableTextMarkerOwner::HidableTextMarker : public StyledTextImager::StyleMarker {
+    class HidableTextMarkerOwner::HidableTextMarker : public StyleMarker {
     private:
-        using inherited = StyledTextImager::StyleMarker;
+        using inherited = StyleMarker;
 
     public:
         HidableTextMarker ();
@@ -186,23 +186,20 @@ namespace Stroika::Frameworks::Led {
         using inherited = BASECLASS;
 
     public:
-        using RunElement = StyledTextImager::RunElement;
-
-    public:
         HidableTextMarkerHelper ();
 
     public:
         virtual int GetPriority () const override;
 
     protected:
-        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
+        virtual void DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,
                                   const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                                   CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to,
                                           const Led_tChar* text, DistanceType* distanceResults) const override;
-        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
+        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
 
-        virtual DistanceType MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
+        virtual DistanceType MeasureSegmentBaseLine (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
     };
 
     /*
@@ -224,7 +221,7 @@ namespace Stroika::Frameworks::Led {
         FontSpecHidableTextMarker (const IncrementalFontSpecification& styleInfo);
 
     protected:
-        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
+        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const override;
 
     public:
         IncrementalFontSpecification fFontSpecification;

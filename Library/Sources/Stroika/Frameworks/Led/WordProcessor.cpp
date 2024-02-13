@@ -3891,17 +3891,17 @@ DistanceType WordProcessor::MeasureMinSegDescent (size_t from, size_t to) const
         to = from + 1;
     }
 
-    vector<RunElement> outputSummary = SummarizeStyleMarkers (from, to);
+    vector<StyleRunElement> outputSummary = SummarizeStyleMarkers (from, to);
 
     size_t outputSummaryLength = outputSummary.size ();
     Assert (outputSummaryLength != 0);
     DistanceType minHeightBelow = 0;
     size_t       indexIntoText  = 0;
     for (size_t i = 0; i < outputSummaryLength; ++i) {
-        const RunElement& re       = outputSummary[i];
-        size_t            reFrom   = indexIntoText + from;
-        size_t            reLength = re.fLength;
-        size_t            reTo     = reFrom + reLength;
+        const StyleRunElement& re       = outputSummary[i];
+        size_t                 reFrom   = indexIntoText + from;
+        size_t                 reLength = re.fLength;
+        size_t                 reTo     = reFrom + reLength;
         Assert (indexIntoText <= to - from);
         DistanceType itsBaseline;
         DistanceType itsHeight;
@@ -4392,7 +4392,7 @@ inline TWIPS CalcDefaultRHSMargin ()
 }
 
 using WordProcessorTextIOSinkStream = WordProcessor::WordProcessorTextIOSinkStream;
-WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textStore, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase,
                                                               const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
                                                               const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart)
     : inherited{textStore, textStyleDatabase, insertionStart}
@@ -4896,7 +4896,7 @@ void WordProcessorTextIOSinkStream::SetDefaultCellSpacingForCurrentRow (TWIPS to
     }
 }
 
-void WordProcessorTextIOSinkStream::PushContext (TextStore* ts, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+void WordProcessorTextIOSinkStream::PushContext (TextStore* ts, const StyleDatabasePtr& textStyleDatabase,
                                                  const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                                  const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart)
 {
@@ -5011,7 +5011,7 @@ void WordProcessorTextIOSinkStream::Flush ()
  ********************************************************************************
  */
 using WordProcessorTextIOSrcStream = WordProcessor::WordProcessorTextIOSrcStream;
-WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore* textStore, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase,
                                                             const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                                             const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase,
                                                             size_t selectionStart, size_t selectionEnd)
@@ -5295,10 +5295,10 @@ StyledTextIOWriter::SrcStream* WordProcessorTextIOSrcStream::TableIOMapper::Make
     size_t vCol = column + fStartCol;
 
     if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessor::Table::ePlainCell) {
-        TextStore*                                 ts = nullptr;
-        StandardStyledTextImager::StyleDatabasePtr styleDatabase;
-        WordProcessor::ParagraphDatabasePtr        paragraphDatabase;
-        WordProcessor::HidableTextDatabasePtr      hidableTextDatabase;
+        TextStore*                            ts = nullptr;
+        StyleDatabasePtr                      styleDatabase;
+        WordProcessor::ParagraphDatabasePtr   paragraphDatabase;
+        WordProcessor::HidableTextDatabasePtr hidableTextDatabase;
         fRealTable.GetCellWordProcessorDatabases (vRow, vCol, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
         return new WordProcessorTextIOSrcStream (ts, styleDatabase, paragraphDatabase, hidableTextDatabase);
     }
@@ -5336,7 +5336,7 @@ TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellSpacingFor
  */
 using WordProcessorFlavorPackageInternalizer = WordProcessor::WordProcessorFlavorPackageInternalizer;
 
-WordProcessorFlavorPackageInternalizer::WordProcessorFlavorPackageInternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase,
+WordProcessorFlavorPackageInternalizer::WordProcessorFlavorPackageInternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase,
                                                                                 const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
                                                                                 const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase)
     : FlavorPackageInternalizer (ts)
@@ -5597,7 +5597,7 @@ void WordProcessor::WPPartition::Invariant_ () const
  */
 using WordProcessorFlavorPackageExternalizer = WordProcessor::WordProcessorFlavorPackageExternalizer;
 
-WordProcessorFlavorPackageExternalizer::WordProcessorFlavorPackageExternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase,
+WordProcessorFlavorPackageExternalizer::WordProcessorFlavorPackageExternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase,
                                                                                 const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
                                                                                 const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase)
     : FlavorPackageExternalizer (ts)
@@ -5734,9 +5734,9 @@ void Table::FinalizeAddition (WordProcessor::AbstractParagraphDatabaseRep* o, si
     ts.AddMarker (this, addAt, 1, o);
 }
 
-void Table::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet, [[maybe_unused]] size_t from,
-                         [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto,
-                         const Led_Rect& invalidRect, CoordinateType /*useBaseLine*/, DistanceType* pixelsDrawn)
+void Table::DrawSegment (const StyledTextImager* imager, const StyleRunElement& /*runElement*/, Tablet* tablet,
+                         [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
+                         const Led_Rect& drawInto, const Led_Rect& invalidRect, CoordinateType /*useBaseLine*/, DistanceType* pixelsDrawn)
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
     Assert (from + 1 == to);
@@ -5799,7 +5799,7 @@ Done:
     }
 }
 
-void Table::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, const RunElement& /*runElement*/, [[maybe_unused]] size_t from,
+void Table::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, const StyleRunElement& /*runElement*/, [[maybe_unused]] size_t from,
                                  [[maybe_unused]] size_t to, [[maybe_unused]] const Led_tChar* text, DistanceType* distanceResults) const
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
@@ -5808,7 +5808,7 @@ void Table::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager
     distanceResults[0] = fTotalWidth;
 }
 
-DistanceType Table::MeasureSegmentHeight ([[maybe_unused]] const StyledTextImager* imager, const RunElement& /*runElement*/,
+DistanceType Table::MeasureSegmentHeight ([[maybe_unused]] const StyledTextImager* imager, const StyleRunElement& /*runElement*/,
                                           [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
@@ -7182,7 +7182,7 @@ void Table::ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e)
             with the given cell. Arguments CAN be null. Only non-null pointer values
             are filled in.</p>
 */
-void Table::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, StandardStyledTextImager::StyleDatabasePtr* styleDatabase,
+void Table::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, StyleDatabasePtr* styleDatabase,
                                            WordProcessor::ParagraphDatabasePtr* paragraphDatabase, WordProcessor::HidableTextDatabasePtr* hidableTextDatabase)
 {
     Require (row < GetRowCount ());
@@ -7608,7 +7608,7 @@ WordProcessor::Table::Cell::Cell (Table& forTable, CellMergeFlags mergeFlags)
             CAN be null. Only non-null pointer valeus
             are filled in.</p>
 */
-void WordProcessor::Table::Cell::GetCellWordProcessorDatabases (TextStore** ts, StandardStyledTextImager::StyleDatabasePtr* styleDatabase,
+void WordProcessor::Table::Cell::GetCellWordProcessorDatabases (TextStore** ts, StyleDatabasePtr* styleDatabase,
                                                                 WordProcessor::ParagraphDatabasePtr*   paragraphDatabase,
                                                                 WordProcessor::HidableTextDatabasePtr* hidableTextDatabase)
 {
@@ -7634,7 +7634,7 @@ TextStore& WordProcessor::Table::Cell::GetTextStore () const
     return *fCellRep->fTextStore;
 }
 
-StandardStyledTextImager::StyleDatabasePtr WordProcessor::Table::Cell::GetStyleDatabase () const
+StyleDatabasePtr WordProcessor::Table::Cell::GetStyleDatabase () const
 {
     Require (fCellMergeFlags == ePlainCell);
     return fCellRep->fStyleDatabase;

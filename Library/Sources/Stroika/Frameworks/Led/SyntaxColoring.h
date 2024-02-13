@@ -230,7 +230,7 @@ namespace Stroika::Frameworks::Led {
         ColoredStyleMarker (const Color& color);
 
     protected:
-        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
+        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const override;
 
     public:
         Color fColor;

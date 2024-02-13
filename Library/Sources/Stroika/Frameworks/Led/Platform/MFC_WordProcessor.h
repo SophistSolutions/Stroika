@@ -82,7 +82,7 @@ namespace Stroika::Frameworks::Led::Platform {
             using inherited = WordProcessor::WordProcessorFlavorPackageInternalizer;
 
         public:
-            ControlItemContextInternalizer (COleDocument* doc, TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase,
+            ControlItemContextInternalizer (COleDocument* doc, TextStore& ts, const StyleDatabasePtr& styleDatabase,
                                             const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                             const WordProcessor::HidableTextDatabasePtr& hiddenTextDatabase)
                 : FlavorPackageInternalizer{ts}
@@ -164,12 +164,12 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual BOOL OnChangeItemPosition (const CRect& rectPos) override;
 
     public:
-        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
+        virtual void DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,
                                   const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                                   CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to,
                                           const Led_tChar* text, DistanceType* distanceResults) const override;
-        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
+        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
         virtual void DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
         virtual bool HandleOpen () override;
 

@@ -55,7 +55,7 @@ namespace Stroika::Frameworks::Led {
         EnsureNotNull (fTextStore);
         return *fTextStore;
     }
-    inline StandardStyledTextImager::StyleDatabasePtr StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetStyleDatabase () const
+    inline StyleDatabasePtr StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetStyleDatabase () const
     {
         return fStyleRunDatabase;
     }

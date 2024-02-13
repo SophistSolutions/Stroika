@@ -9,19 +9,25 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-#if qStroika_Frameworks_Led_SupportGDI
-using StyleMarker       = StyledTextImager::StyleMarker;
-using StyleDatabaseRep  = StandardStyledTextImager::StyleDatabaseRep;
-using InfoSummaryRecord = StyledInfoSummaryRecord;
+/*
+ ********************************************************************************
+ ************************** AbstractStyleDatabaseRep ****************************
+ ********************************************************************************
+ */
+#if qDebug
+void AbstractStyleDatabaseRep::Invariant_ () const
+{
+}
+#endif
 
 /*
  ********************************************************************************
  *************** StandardStyledTextImager::StandardStyleMarker ******************
  ********************************************************************************
  */
-using StandardStyleMarker = StandardStyledTextImager::StandardStyleMarker;
 
-void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet, size_t from,
+#if qStroika_Frameworks_Led_SupportGDI
+void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const StyleRunElement& /*runElement*/, Tablet* tablet, size_t from,
                                        size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                                        CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
@@ -29,24 +35,27 @@ void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const Run
     imager->DrawSegment_ (tablet, fFontSpecification, from, to, text, drawInto, useBaseLine, pixelsDrawn);
 }
 
-void StandardStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to,
-                                               const Led_tChar* text, DistanceType* distanceResults) const
+void StandardStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const StyleRunElement& /*runElement*/, size_t from,
+                                               size_t to, const Led_tChar* text, DistanceType* distanceResults) const
 {
     RequireNotNull (imager);
     imager->MeasureSegmentWidth_ (fFontSpecification, from, to, text, distanceResults);
 }
 
-DistanceType StandardStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
+DistanceType StandardStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const StyleRunElement& /*runElement*/, size_t from, size_t to) const
 {
     RequireNotNull (imager);
     return (imager->MeasureSegmentHeight_ (fFontSpecification, from, to));
 }
 
-DistanceType StandardStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
+DistanceType StandardStyleMarker::MeasureSegmentBaseLine (const StyledTextImager* imager, const StyleRunElement& /*runElement*/, size_t from, size_t to) const
 {
     RequireNotNull (imager);
     return (imager->MeasureSegmentBaseLine_ (fFontSpecification, from, to));
 }
+#endif
+
+#if qStroika_Frameworks_Led_SupportGDI
 
 /*
  ********************************************************************************
@@ -105,7 +114,7 @@ void StandardStyledTextImager::SetStyleDatabase (const StyleDatabasePtr& styleDa
 
 /*
 @METHOD:        StandardStyledTextImager::HookStyleDatabaseChanged
-@DESCRIPTION:   <p>Called whenever the @'StandardStyledTextImager::StyleDatabasePtr' associated with this @'StandardStyledTextImager'
+@DESCRIPTION:   <p>Called whenever the @'StyleDatabasePtr' associated with this @'StandardStyledTextImager'
     is changed. This means when a new one is provided, created, or disassociated. It does NOT mean that its called when any of the
     data in the style database changes.</p>
 */
@@ -128,7 +137,7 @@ FontMetrics StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos) con
 */
 FontSpecification StandardStyledTextImager::GetDefaultSelectionFont () const
 {
-    vector<InfoSummaryRecord> summaryInfo = GetStyleInfo (GetSelectionEnd (), 0);
+    vector<StyledInfoSummaryRecord> summaryInfo = GetStyleInfo (GetSelectionEnd (), 0);
     Assert (summaryInfo.size () == 1);
     return summaryInfo[0];
 }
@@ -143,11 +152,11 @@ FontSpecification StandardStyledTextImager::GetDefaultSelectionFont () const
 */
 IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo (size_t from, size_t nTChars) const
 {
-    vector<InfoSummaryRecord> summaryInfo = GetStyleInfo (from, nTChars);
+    vector<StyledInfoSummaryRecord> summaryInfo = GetStyleInfo (from, nTChars);
     return (GetContinuousStyleInfo_ (summaryInfo));
 }
 
-IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (const vector<InfoSummaryRecord>& summaryInfo) const
+IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (const vector<StyledInfoSummaryRecord>& summaryInfo) const
 {
     IncrementalFontSpecification fontSpec;
 
@@ -177,7 +186,7 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
         else {
             // check each attribute (if not already different) and see if NOW different...
 
-            InfoSummaryRecord isr = summaryInfo[i];
+            StyledInfoSummaryRecord isr = summaryInfo[i];
 
             // Font ID
             if (fontSpec.GetFontNameSpecifier_Valid () and fontSpec.GetFontNameSpecifier () != isr.GetFontNameSpecifier ()) {
@@ -294,18 +303,18 @@ bool StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChar
 
 vector<StyledInfoSummaryRecord> StandardStyledTextImager::Convert (const ScrpSTElement* teScrapFmt, size_t nElts)
 {
-    vector<InfoSummaryRecord> result;
+    vector<StyledInfoSummaryRecord> result;
     for (size_t i = 0; i < nElts; ++i) {
         IncrementalFontSpecification fsp;
         fsp.SetOSRep (teScrapFmt[i].scrpFont, teScrapFmt[i].scrpSize, teScrapFmt[i].scrpFace);
-        size_t            length = (i < (nElts - 1)) ? (teScrapFmt[i + 1].scrpStartChar - teScrapFmt[i].scrpStartChar) : 9999999;
-        InfoSummaryRecord isr (fsp, length);
+        size_t                  length = (i < (nElts - 1)) ? (teScrapFmt[i + 1].scrpStartChar - teScrapFmt[i].scrpStartChar) : 9999999;
+        StyledInfoSummaryRecord isr (fsp, length);
         result.push_back (isr);
     }
     return (result);
 }
 
-void StandardStyledTextImager::Convert (const vector<InfoSummaryRecord>& fromLedStyleRuns, ScrpSTElement* teScrapFmt)
+void StandardStyledTextImager::Convert (const vector<StyledInfoSummaryRecord>& fromLedStyleRuns, ScrpSTElement* teScrapFmt)
 {
     size_t nElts     = fromLedStyleRuns.size ();
     size_t startChar = 0;
@@ -320,7 +329,7 @@ void StandardStyledTextImager::Convert (const vector<InfoSummaryRecord>& fromLed
 #endif
 
     for (size_t i = 0; i < nElts; ++i) {
-        InfoSummaryRecord isr = fromLedStyleRuns[i];
+        StyledInfoSummaryRecord isr = fromLedStyleRuns[i];
 
         (void)::memset (&teScrapFmt[i], 0, sizeof (teScrapFmt[i]));
         teScrapFmt[i].scrpStartChar = startChar;
@@ -361,17 +370,6 @@ void StandardStyledTextImager::Invariant_ () const
 
 /*
  ********************************************************************************
- ************** StandardStyledTextImager::AbstractStyleDatabaseRep **************
- ********************************************************************************
- */
-#if qDebug
-void StandardStyledTextImager::AbstractStyleDatabaseRep::Invariant_ () const
-{
-}
-#endif
-
-/*
- ********************************************************************************
  **************** StandardStyledTextImager::StyleDatabaseRep ********************
  ********************************************************************************
  */
@@ -384,9 +382,9 @@ vector<StyledInfoSummaryRecord> StyleDatabaseRep::GetStyleInfo (size_t charAfter
 {
     MarkerVector standardStyleMarkers = GetInfoMarkers (charAfterPos, nTCharsFollowing);
 
-    vector<InfoSummaryRecord> result;
-    size_t                    tCharsSoFar           = 0;
-    size_t                    nStandardStyleMarkers = standardStyleMarkers.size ();
+    vector<StyledInfoSummaryRecord> result;
+    size_t                          tCharsSoFar           = 0;
+    size_t                          nStandardStyleMarkers = standardStyleMarkers.size ();
     for (size_t i = 0; i < nStandardStyleMarkers; ++i) {
         StandardStyleMarker* marker = standardStyleMarkers[i];
         AssertNotNull (marker);
@@ -408,7 +406,7 @@ vector<StyledInfoSummaryRecord> StyleDatabaseRep::GetStyleInfo (size_t charAfter
         }
         Assert (length > 0 or nTCharsFollowing == 0);
         Assert (length <= nTCharsFollowing);
-        result.push_back (InfoSummaryRecord (marker->fFontSpecification, length));
+        result.push_back (StyledInfoSummaryRecord (marker->fFontSpecification, length));
         tCharsSoFar += length;
     }
     Assert (tCharsSoFar == nTCharsFollowing);
@@ -420,18 +418,18 @@ void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowin
     SetInfo (charAfterPos, nTCharsFollowing, styleInfo);
 }
 #if 0
-void    StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos)
+void    StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<StyledInfoSummaryRecord>& styleInfos)
 {
     SetStyleInfo (charAfterPos, nTCharsFollowing, styleInfos.size (), &styleInfos.front ());
 }
 #endif
-void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos)
+void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const StyledInfoSummaryRecord* styleInfos)
 {
     size_t setAt           = charAfterPos;
     size_t lengthUsedSoFar = 0;
     for (size_t i = 0; i < nStyleInfos and lengthUsedSoFar < nTCharsFollowing; ++i) {
-        InfoSummaryRecord isr    = styleInfos[i];
-        size_t            length = isr.fLength;
+        StyledInfoSummaryRecord isr    = styleInfos[i];
+        size_t                  length = isr.fLength;
         Assert (nTCharsFollowing >= lengthUsedSoFar);
         length = min (nTCharsFollowing - lengthUsedSoFar, length);
         SetStyleInfo (setAt, length, IncrementalFontSpecification (isr));

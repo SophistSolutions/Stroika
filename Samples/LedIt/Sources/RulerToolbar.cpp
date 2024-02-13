@@ -474,7 +474,7 @@ void RulerBar::Update (const WordProcessor::IncrementalParagraphInfo& pf)
 {
     if (pf.GetTabStopList_Valid ()) {
         StandardTabStopList tabStops = pf.GetTabStopList ();
-        DistanceType                    tabSoFar = 0;
+        DistanceType        tabSoFar = 0;
         Require (tabStops.fTabStops.size () <= MAX_TAB_STOPS);
         size_t i = 0;
         for (; i < tabStops.fTabStops.size (); ++i) {

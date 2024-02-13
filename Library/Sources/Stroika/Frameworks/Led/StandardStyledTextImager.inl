@@ -11,15 +11,51 @@
  */
 
 namespace Stroika::Frameworks::Led {
+
     /*
      ********************************************************************************
-     *************************** StyledInfoSummaryRecord ***************************
+     *************************** StyledInfoSummaryRecord ****************************
      ********************************************************************************
      */
     inline StyledInfoSummaryRecord::StyledInfoSummaryRecord (const FontSpecification& fontSpec, size_t length)
-        : FontSpecification (fontSpec)
-        , fLength (length)
+        : FontSpecification{fontSpec}
+        , fLength{length}
     {
+    }
+
+    /*
+     ********************************************************************************
+     **************************** StyledInfoSummaryRecord ***************************
+     ********************************************************************************
+     */
+    inline void AbstractStyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<StyledInfoSummaryRecord>& styleInfos)
+    {
+        SetStyleInfo (charAfterPos, nTCharsFollowing, styleInfos.size (), &styleInfos.front ());
+    }
+    inline void AbstractStyleDatabaseRep::Invariant () const
+    {
+#if qDebug
+        Invariant_ ();
+#endif
+    }
+
+    /*
+     ********************************************************************************
+     ****************************** StandardStyleMarker *****************************
+     ********************************************************************************
+     */
+    inline StandardStyleMarker::StandardStyleMarker (const FontSpecification& styleInfo)
+        : StyleMarker ()
+        , fFontSpecification (styleInfo)
+    {
+    }
+    inline FontSpecification StandardStyleMarker::GetInfo () const
+    {
+        return fFontSpecification;
+    }
+    inline void StandardStyleMarker::SetInfo (const FontSpecification& fsp)
+    {
+        fFontSpecification = fsp;
     }
 
 #if qStroika_Frameworks_Led_SupportGDI
@@ -29,22 +65,7 @@ namespace Stroika::Frameworks::Led {
      *************************** StandardStyledTextImager ***************************
      ********************************************************************************
      */
-    inline StandardStyledTextImager::StandardStyleMarker::StandardStyleMarker (const FontSpecification& styleInfo)
-        : StyleMarker ()
-        , fFontSpecification (styleInfo)
-    {
-    }
-    inline FontSpecification StandardStyledTextImager::StandardStyleMarker::GetInfo () const
-    {
-        return fFontSpecification;
-    }
-    inline void StandardStyledTextImager::StandardStyleMarker::SetInfo (const FontSpecification& fsp)
-    {
-        fFontSpecification = fsp;
-    }
-
-    // class StandardStyledTextImager
-    inline StandardStyledTextImager::StyleDatabasePtr StandardStyledTextImager::GetStyleDatabase () const
+    inline StyleDatabasePtr StandardStyledTextImager::GetStyleDatabase () const
     {
         return fStyleDatabase;
     }
@@ -62,38 +83,28 @@ namespace Stroika::Frameworks::Led {
     {
         fStyleDatabase->SetStyleInfo (charAfterPos, nTCharsFollowing, styleInfo);
     }
-    inline void StandardStyledTextImager::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos)
+    inline void StandardStyledTextImager::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<StyledInfoSummaryRecord>& styleInfos)
     {
         fStyleDatabase->SetStyleInfo (charAfterPos, nTCharsFollowing, styleInfos);
     }
-    inline void StandardStyledTextImager::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos)
+    inline void StandardStyledTextImager::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos,
+                                                        const StyledInfoSummaryRecord* styleInfos)
     {
         fStyleDatabase->SetStyleInfo (charAfterPos, nTCharsFollowing, nStyleInfos, styleInfos);
     }
 
-    // class StandardStyledTextImager::AbstractStyleDatabaseRep
-    inline void StandardStyledTextImager::AbstractStyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing,
-                                                                                  const vector<InfoSummaryRecord>& styleInfos)
-    {
-        SetStyleInfo (charAfterPos, nTCharsFollowing, styleInfos.size (), &styleInfos.front ());
-    }
-    inline void StandardStyledTextImager::AbstractStyleDatabaseRep::Invariant () const
-    {
-#if qDebug
-        Invariant_ ();
-#endif
-    }
-
-    // class SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>
+    /*
+     ********************************************************************************
+     ** SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS> **
+     ********************************************************************************
+     */
     template <class BASECLASS>
-    typename SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::RunElement
-    SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::MungeRunElement (const RunElement& inRunElt) const
+    StyleRunElement SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::MungeRunElement (const StyleRunElement& inRunElt) const
     {
-        using StyleMarker = StyledTextImager::StyleMarker;
-        using SSM         = StandardStyledTextImager::StandardStyleMarker;
+        using SSM = StandardStyleMarker;
 
-        fFSP              = FontSpecification ();
-        RunElement result = inherited::MungeRunElement (inRunElt);
+        fFSP                   = FontSpecification{};
+        StyleRunElement result = inherited::MungeRunElement (inRunElt);
         for (auto i = result.fSupercededMarkers.begin (); i != result.fSupercededMarkers.end (); ++i) {
             if (SSM* ssm = dynamic_cast<SSM*> (*i)) {
                 fFSP = ssm->fFontSpecification;
@@ -107,7 +118,7 @@ namespace Stroika::Frameworks::Led {
     }
     template <class BASECLASS>
     FontSpecification SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::MakeFontSpec (const StyledTextImager* /*imager*/,
-                                                                                                                const RunElement& /*runElement*/) const
+                                                                                                                const StyleRunElement& /*runElement*/) const
     {
         return fFSP;
     }
