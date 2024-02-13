@@ -285,6 +285,8 @@ namespace Stroika::Foundation::Characters {
          *        to byte, and the codecvt API calls this extern_type
          * 
          *  /2 overload \req to.size () >= min(Bytes2Characters(*from), ComputeTargetCharacterBufferSize (*from)) on input.
+         * 
+         *  \see also Bytes2String for similar function, but operating on strings
          */
         nonvirtual size_t Bytes2Characters (span<const byte> from) const;
         nonvirtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const;
@@ -316,6 +318,8 @@ namespace Stroika::Foundation::Characters {
          *        to byte, and the codecvt API calls this extern_type
          * 
          *  /2 overload \req to.size () >= min(ComputeTargetByteBufferSize (from),Characters2Bytes(from)) on input.
+         * 
+         *  \see also String2Bytes for similar function, but operating on strings
          */
         nonvirtual size_t Characters2Bytes (span<const CHAR_T> from) const;
         nonvirtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const;
