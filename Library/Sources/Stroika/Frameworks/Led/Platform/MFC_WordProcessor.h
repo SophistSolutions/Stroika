@@ -82,7 +82,7 @@ namespace Stroika::Frameworks::Led::Platform {
             using inherited = WordProcessor::WordProcessorFlavorPackageInternalizer;
 
         public:
-            ControlItemContextInternalizer (COleDocument* doc, TextStore& ts, const StyleDatabasePtr& styleDatabase,
+            ControlItemContextInternalizer (COleDocument* doc, TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
                                             const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                             const WordProcessor::HidableTextDatabasePtr& hiddenTextDatabase)
                 : FlavorPackageInternalizer{ts}

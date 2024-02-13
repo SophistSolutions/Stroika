@@ -59,13 +59,6 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-        @CLASS:         StyleDatabasePtr
-        @BASES:         @'shared_ptr<T>', (T=@'StandardStyledTextImager::StyleDatabaseRep')
-        @DESCRIPTION:
-        */
-    using StyleDatabasePtr = shared_ptr<AbstractStyleDatabaseRep>;
-
-    /*
     @CLASS:         StandardStyledTextImager::StandardStyleMarker
     @BASES:         @'StyledTextImager::StyleMarker'
     @DESCRIPTION:
@@ -199,14 +192,14 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        nonvirtual StyleDatabasePtr GetStyleDatabase () const;
-        nonvirtual void             SetStyleDatabase (const StyleDatabasePtr& styleDatabase);
+        nonvirtual shared_ptr<AbstractStyleDatabaseRep> GetStyleDatabase () const;
+        nonvirtual void                                 SetStyleDatabase (const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase);
 
     protected:
         virtual void HookStyleDatabaseChanged ();
 
     private:
-        StyleDatabasePtr fStyleDatabase;
+        shared_ptr<AbstractStyleDatabaseRep> fStyleDatabase;
         bool             fICreatedDatabase;
 
 // Debug support

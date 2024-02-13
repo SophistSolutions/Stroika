@@ -80,7 +80,7 @@ void StandardStyledTextImager::HookLosingTextStore_ ()
     if (fICreatedDatabase) {
         fICreatedDatabase = false;
         if (fStyleDatabase.get () != nullptr) {
-            fStyleDatabase = StyleDatabasePtr ();
+            fStyleDatabase = nullptr;
             HookStyleDatabaseChanged ();
         }
     }
@@ -101,7 +101,7 @@ void StandardStyledTextImager::HookGainedNewTextStore_ ()
     }
 }
 
-void StandardStyledTextImager::SetStyleDatabase (const StyleDatabasePtr& styleDatabase)
+void StandardStyledTextImager::SetStyleDatabase (const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase)
 {
     fStyleDatabase    = styleDatabase;
     fICreatedDatabase = false;

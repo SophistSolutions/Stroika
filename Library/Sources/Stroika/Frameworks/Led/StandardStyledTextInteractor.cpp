@@ -515,7 +515,8 @@ InteractiveReplaceCommand::SavedTextRep* StandardStyledTextInteractor::Interacti
  ********************************************************************************
  */
 using StandardStyledTextIOSinkStream = StandardStyledTextInteractor::StandardStyledTextIOSinkStream;
-StandardStyledTextIOSinkStream::StandardStyledTextIOSinkStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase, size_t insertionStart)
+StandardStyledTextIOSinkStream::StandardStyledTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                                                size_t insertionStart)
     : inherited ()
     , fSavedContexts ()
     , fTextStore (textStore)
@@ -651,7 +652,7 @@ void StandardStyledTextIOSinkStream::Flush ()
     Ensure (fSavedStyleInfo.size () == 0);
 }
 
-void StandardStyledTextIOSinkStream::PushContext (TextStore* ts, const StyleDatabasePtr& textStyleDatabase, size_t insertionStart)
+void StandardStyledTextIOSinkStream::PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase, size_t insertionStart)
 {
     Require (GetCachedTextSize () == 0); // must flush before setting/popping context
 
@@ -684,7 +685,7 @@ void StandardStyledTextIOSinkStream::PopContext ()
  ********************************************************************************
  */
 using StandardStyledTextIOSrcStream = StandardStyledTextInteractor::StandardStyledTextIOSrcStream;
-StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase,
+StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                               size_t selectionStart, size_t selectionEnd)
     : inherited ()
     , fTextStore (textStore)
@@ -812,7 +813,7 @@ size_t StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const
  ********************************************************************************
  */
 using StyledTextFlavorPackageInternalizer = StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer;
-StyledTextFlavorPackageInternalizer::StyledTextFlavorPackageInternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase)
+StyledTextFlavorPackageInternalizer::StyledTextFlavorPackageInternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase)
     : inherited (ts)
     , fStyleDatabase (styleDatabase)
 {
@@ -1101,7 +1102,7 @@ StandardStyledTextInteractor::StandardStyledTextIOSinkStream* StyledTextFlavorPa
  ********************************************************************************
  */
 using StyledTextFlavorPackageExternalizer = StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer;
-StyledTextFlavorPackageExternalizer::StyledTextFlavorPackageExternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase)
+StyledTextFlavorPackageExternalizer::StyledTextFlavorPackageExternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase)
     : inherited (ts)
     , fStyleDatabase (styleDatabase)
 {

@@ -114,8 +114,8 @@ public:
 #endif
 
 public:
-    nonvirtual TextStore&        GetTextStore ();
-    nonvirtual StyleDatabasePtr& GetStyleDatabase ();
+    nonvirtual TextStore& GetTextStore ();
+    nonvirtual shared_ptr<AbstractStyleDatabaseRep>& GetStyleDatabase ();
     nonvirtual WordProcessor::ParagraphDatabasePtr& GetParagraphDatabase ();
     nonvirtual WordProcessor::HidableTextDatabasePtr& GetHidableTextDatabase ();
     nonvirtual CommandHandler&                        GetCommandHandler ();
@@ -124,7 +124,7 @@ protected:
 public:
     ChunkedArrayTextStore                 fTextStore;
     StyledTextIO::RTFInfo                 fRTFInfo;
-    StyleDatabasePtr                      fStyleDatabase;
+    shared_ptr<AbstractStyleDatabaseRep>  fStyleDatabase;
     WordProcessor::ParagraphDatabasePtr   fParagraphDatabase;
     WordProcessor::HidableTextDatabasePtr fHidableTextDatabase;
     MultiLevelUndoCommandHandler          fCommandHandler;
@@ -204,7 +204,7 @@ inline TextStore& LedItDocument::GetTextStore ()
 {
     return fTextStore;
 }
-inline StyleDatabasePtr& LedItDocument::GetStyleDatabase ()
+inline shared_ptr<AbstractStyleDatabaseRep>& LedItDocument::GetStyleDatabase ()
 {
     return fStyleDatabase;
 }

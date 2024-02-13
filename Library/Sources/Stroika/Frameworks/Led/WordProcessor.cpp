@@ -4392,7 +4392,7 @@ inline TWIPS CalcDefaultRHSMargin ()
 }
 
 using WordProcessorTextIOSinkStream = WordProcessor::WordProcessorTextIOSinkStream;
-WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase,
+WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                               const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
                                                               const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart)
     : inherited{textStore, textStyleDatabase, insertionStart}
@@ -4799,10 +4799,10 @@ void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
     Assert (fNextTableRow > 0);
     Assert (fNextTableCell > 0);
 
-    TextStore*             ts = nullptr;
-    StyleDatabasePtr       styleDatabase;
-    ParagraphDatabasePtr   paragraphDatabase;
-    HidableTextDatabasePtr hidableTextDatabase;
+    TextStore*                           ts = nullptr;
+    shared_ptr<AbstractStyleDatabaseRep> styleDatabase;
+    ParagraphDatabasePtr                 paragraphDatabase;
+    HidableTextDatabasePtr               hidableTextDatabase;
     fCurrentTable->GetCellWordProcessorDatabases (fNextTableRow - 1, fCurrentTableCell, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
     PushContext (ts, styleDatabase, paragraphDatabase, hidableTextDatabase, 0);
     if (GetOverwriteTableMode ()) {
@@ -4896,7 +4896,7 @@ void WordProcessorTextIOSinkStream::SetDefaultCellSpacingForCurrentRow (TWIPS to
     }
 }
 
-void WordProcessorTextIOSinkStream::PushContext (TextStore* ts, const StyleDatabasePtr& textStyleDatabase,
+void WordProcessorTextIOSinkStream::PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                  const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                                  const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart)
 {
@@ -5011,7 +5011,7 @@ void WordProcessorTextIOSinkStream::Flush ()
  ********************************************************************************
  */
 using WordProcessorTextIOSrcStream = WordProcessor::WordProcessorTextIOSrcStream;
-WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase,
+WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                             const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                                             const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase,
                                                             size_t selectionStart, size_t selectionEnd)
@@ -5296,7 +5296,7 @@ StyledTextIOWriter::SrcStream* WordProcessorTextIOSrcStream::TableIOMapper::Make
 
     if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessor::Table::ePlainCell) {
         TextStore*                            ts = nullptr;
-        StyleDatabasePtr                      styleDatabase;
+        shared_ptr<AbstractStyleDatabaseRep>  styleDatabase;
         WordProcessor::ParagraphDatabasePtr   paragraphDatabase;
         WordProcessor::HidableTextDatabasePtr hidableTextDatabase;
         fRealTable.GetCellWordProcessorDatabases (vRow, vCol, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
@@ -5336,7 +5336,7 @@ TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellSpacingFor
  */
 using WordProcessorFlavorPackageInternalizer = WordProcessor::WordProcessorFlavorPackageInternalizer;
 
-WordProcessorFlavorPackageInternalizer::WordProcessorFlavorPackageInternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase,
+WordProcessorFlavorPackageInternalizer::WordProcessorFlavorPackageInternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
                                                                                 const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
                                                                                 const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase)
     : FlavorPackageInternalizer (ts)
@@ -5597,7 +5597,7 @@ void WordProcessor::WPPartition::Invariant_ () const
  */
 using WordProcessorFlavorPackageExternalizer = WordProcessor::WordProcessorFlavorPackageExternalizer;
 
-WordProcessorFlavorPackageExternalizer::WordProcessorFlavorPackageExternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase,
+WordProcessorFlavorPackageExternalizer::WordProcessorFlavorPackageExternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
                                                                                 const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
                                                                                 const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase)
     : FlavorPackageExternalizer (ts)
@@ -7125,10 +7125,10 @@ Table::EmbeddedTableWordProcessor* Table::ConstructEmbeddedTableWordProcessor (W
     bool   activeFocusedCell      = GetIntraCellMode (&cellModeRow, &cellModeCol) and cellModeRow == forRow and cellModeCol == forColumn;
     EmbeddedTableWordProcessor* e = new EmbeddedTableWordProcessor (forWordProcessor, *this, forRow, forColumn, activeFocusedCell);
     try {
-        TextStore*             ts = nullptr;
-        StyleDatabasePtr       styleDatabase;
-        ParagraphDatabasePtr   paragraphDatabase;
-        HidableTextDatabasePtr hidableTextDatabase;
+        TextStore*                           ts = nullptr;
+        shared_ptr<AbstractStyleDatabaseRep> styleDatabase;
+        ParagraphDatabasePtr                 paragraphDatabase;
+        HidableTextDatabasePtr               hidableTextDatabase;
         GetCellWordProcessorDatabases (forRow, forColumn, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
         e->SetStyleDatabase (styleDatabase);
         e->SetParagraphDatabase (paragraphDatabase);
@@ -7182,7 +7182,7 @@ void Table::ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e)
             with the given cell. Arguments CAN be null. Only non-null pointer values
             are filled in.</p>
 */
-void Table::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, StyleDatabasePtr* styleDatabase,
+void Table::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
                                            WordProcessor::ParagraphDatabasePtr* paragraphDatabase, WordProcessor::HidableTextDatabasePtr* hidableTextDatabase)
 {
     Require (row < GetRowCount ());
@@ -7608,7 +7608,7 @@ WordProcessor::Table::Cell::Cell (Table& forTable, CellMergeFlags mergeFlags)
             CAN be null. Only non-null pointer valeus
             are filled in.</p>
 */
-void WordProcessor::Table::Cell::GetCellWordProcessorDatabases (TextStore** ts, StyleDatabasePtr* styleDatabase,
+void WordProcessor::Table::Cell::GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
                                                                 WordProcessor::ParagraphDatabasePtr*   paragraphDatabase,
                                                                 WordProcessor::HidableTextDatabasePtr* hidableTextDatabase)
 {
@@ -7634,7 +7634,7 @@ TextStore& WordProcessor::Table::Cell::GetTextStore () const
     return *fCellRep->fTextStore;
 }
 
-StyleDatabasePtr WordProcessor::Table::Cell::GetStyleDatabase () const
+shared_ptr<AbstractStyleDatabaseRep> WordProcessor::Table::Cell::GetStyleDatabase () const
 {
     Require (fCellMergeFlags == ePlainCell);
     return fCellRep->fStyleDatabase;
@@ -7682,7 +7682,7 @@ WordProcessor::Table::CellRep::CellRep (Table& forTable)
 {
     fTextStore = new SimpleTextStore ();
     fTextStore->AddMarkerOwner (this);
-    fStyleDatabase       = StyleDatabasePtr (new StyleDatabaseRep (*fTextStore));
+    fStyleDatabase       = make_shared<StyleDatabaseRep> (*fTextStore);
     fParagraphDatabase   = ParagraphDatabasePtr (new ParagraphDatabaseRep (*fTextStore));
     fHidableTextDatabase = HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (*fTextStore));
 }

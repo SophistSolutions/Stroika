@@ -65,7 +65,7 @@ namespace Stroika::Frameworks::Led {
      *************************** StandardStyledTextImager ***************************
      ********************************************************************************
      */
-    inline StyleDatabasePtr StandardStyledTextImager::GetStyleDatabase () const
+    inline shared_ptr<AbstractStyleDatabaseRep> StandardStyledTextImager::GetStyleDatabase () const
     {
         return fStyleDatabase;
     }

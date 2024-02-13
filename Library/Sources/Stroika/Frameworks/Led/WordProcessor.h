@@ -861,7 +861,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = StandardStyledTextInteractor::StandardStyledTextIOSinkStream;
 
     public:
-        WordProcessorTextIOSinkStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase,
+        WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                        const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                        const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart = 0);
         WordProcessorTextIOSinkStream (WordProcessor* wp, size_t insertionStart = 0);
@@ -920,7 +920,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void SetIgnoreLastParaAttributes (bool ignoreLastParaAttributes);
 
     protected:
-        nonvirtual void PushContext (TextStore* ts, const StyleDatabasePtr& textStyleDatabase, const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
+        nonvirtual void PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                     const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                      const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart);
         nonvirtual void PopContext ();
 
@@ -969,7 +970,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = StandardStyledTextInteractor::StandardStyledTextIOSrcStream;
 
     public:
-        WordProcessorTextIOSrcStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase,
+        WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                       const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                       const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t selectionStart = 0,
                                       size_t selectionEnd = kBadIndex);
@@ -1045,7 +1046,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer;
 
     public:
-        WordProcessorFlavorPackageInternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase,
+        WordProcessorFlavorPackageInternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
                                                 const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                                 const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase);
 
@@ -1128,7 +1129,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer;
 
     public:
-        WordProcessorFlavorPackageExternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase,
+        WordProcessorFlavorPackageExternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
                                                 const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
                                                 const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase);
 
@@ -1387,7 +1388,8 @@ namespace Stroika::Frameworks::Led {
         virtual void ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e);
 
     public:
-        virtual void GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, StyleDatabasePtr* styleDatabase = nullptr,
+        virtual void GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts,
+                                                    shared_ptr<AbstractStyleDatabaseRep>*  styleDatabase       = nullptr,
                                                     WordProcessor::ParagraphDatabasePtr*   paragraphDatabase   = nullptr,
                                                     WordProcessor::HidableTextDatabasePtr* hidableTextDatabase = nullptr);
 
@@ -1495,11 +1497,11 @@ namespace Stroika::Frameworks::Led {
         CellMergeFlags fCellMergeFlags;
 
     public:
-        nonvirtual void             GetCellWordProcessorDatabases (TextStore** ts, StyleDatabasePtr* styleDatabase = nullptr,
-                                                                   WordProcessor::ParagraphDatabasePtr*   paragraphDatabase   = nullptr,
-                                                                   WordProcessor::HidableTextDatabasePtr* hidableTextDatabase = nullptr);
-        nonvirtual TextStore&       GetTextStore () const;
-        nonvirtual StyleDatabasePtr GetStyleDatabase () const;
+        nonvirtual void       GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase = nullptr,
+                                                             WordProcessor::ParagraphDatabasePtr*   paragraphDatabase   = nullptr,
+                                                             WordProcessor::HidableTextDatabasePtr* hidableTextDatabase = nullptr);
+        nonvirtual TextStore& GetTextStore () const;
+        nonvirtual shared_ptr<AbstractStyleDatabaseRep> GetStyleDatabase () const;
         nonvirtual WordProcessor::ParagraphDatabasePtr GetParagraphDatabase () const;
         nonvirtual WordProcessor::HidableTextDatabasePtr GetHidableTextDatabase () const;
 
@@ -1536,7 +1538,7 @@ namespace Stroika::Frameworks::Led {
     public:
         Table&                                fForTable;
         TextStore*                            fTextStore;
-        StyleDatabasePtr                      fStyleDatabase;
+        shared_ptr<AbstractStyleDatabaseRep>  fStyleDatabase;
         WordProcessor::ParagraphDatabasePtr   fParagraphDatabase;
         WordProcessor::HidableTextDatabasePtr fHidableTextDatabase;
         Color                                 fBackColor;

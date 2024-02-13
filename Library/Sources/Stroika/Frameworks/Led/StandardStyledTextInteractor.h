@@ -195,7 +195,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = StyledTextIO::StyledTextIOReader::SinkStream;
 
     public:
-        StandardStyledTextIOSinkStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase, size_t insertionStart = 0);
+        StandardStyledTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase, size_t insertionStart = 0);
         ~StandardStyledTextIOSinkStream ();
 
     public:
@@ -223,29 +223,29 @@ namespace Stroika::Frameworks::Led {
         nonvirtual const vector<Led_tChar>& GetCachedText () const;
 
     protected:
-        nonvirtual TextStore&       GetTextStore () const;
-        nonvirtual StyleDatabasePtr GetStyleDatabase () const;
+        nonvirtual TextStore& GetTextStore () const;
+        nonvirtual shared_ptr<AbstractStyleDatabaseRep> GetStyleDatabase () const;
 
     protected:
-        nonvirtual void PushContext (TextStore* ts, const StyleDatabasePtr& textStyleDatabase, size_t insertionStart);
+        nonvirtual void PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase, size_t insertionStart);
         nonvirtual void PopContext ();
 
     private:
         struct Context {
-            TextStore*       fTextStore;
-            StyleDatabasePtr fStyleRunDatabase;
-            size_t           fOriginalStart;
-            size_t           fInsertionStart;
+            TextStore*                           fTextStore;
+            shared_ptr<AbstractStyleDatabaseRep> fStyleRunDatabase;
+            size_t                               fOriginalStart;
+            size_t                               fInsertionStart;
         };
         vector<Context> fSavedContexts;
 
     private:
-        TextStore*                      fTextStore;
-        StyleDatabasePtr                fStyleRunDatabase;
-        size_t                          fOriginalStart;
-        size_t                          fInsertionStart;
-        vector<StyledInfoSummaryRecord> fSavedStyleInfo;
-        vector<Led_tChar>               fCachedText;
+        TextStore*                           fTextStore;
+        shared_ptr<AbstractStyleDatabaseRep> fStyleRunDatabase;
+        size_t                               fOriginalStart;
+        size_t                               fInsertionStart;
+        vector<StyledInfoSummaryRecord>      fSavedStyleInfo;
+        vector<Led_tChar>                    fCachedText;
     };
 
     /*
@@ -260,8 +260,8 @@ namespace Stroika::Frameworks::Led {
         using inherited = StyledTextIO::StyledTextIOWriter::SrcStream;
 
     public:
-        StandardStyledTextIOSrcStream (TextStore* textStore, const StyleDatabasePtr& textStyleDatabase, size_t selectionStart = 0,
-                                       size_t selectionEnd = kBadIndex);
+        StandardStyledTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                       size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
         StandardStyledTextIOSrcStream (StandardStyledTextImager* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
 
     public:
@@ -281,11 +281,11 @@ namespace Stroika::Frameworks::Led {
         nonvirtual size_t GetSelEnd () const;
 
     private:
-        TextStore*       fTextStore;
-        StyleDatabasePtr fStyleRunDatabase;
-        size_t           fCurOffset;
-        size_t           fSelStart;
-        size_t           fSelEnd;
+        TextStore*                           fTextStore;
+        shared_ptr<AbstractStyleDatabaseRep> fStyleRunDatabase;
+        size_t                               fCurOffset;
+        size_t                               fSelStart;
+        size_t                               fSelEnd;
     };
 
     /*
@@ -298,7 +298,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = FlavorPackageInternalizer;
 
     public:
-        StyledTextFlavorPackageInternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase);
+        StyledTextFlavorPackageInternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase);
 
     public:
         virtual bool InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) override;
@@ -324,7 +324,7 @@ namespace Stroika::Frameworks::Led {
         virtual StandardStyledTextIOSinkStream* mkStandardStyledTextIOSinkStream (size_t insertionStart);
 
     protected:
-        StyleDatabasePtr fStyleDatabase;
+        shared_ptr<AbstractStyleDatabaseRep> fStyleDatabase;
     };
 
     /*
@@ -337,7 +337,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = FlavorPackageExternalizer;
 
     public:
-        StyledTextFlavorPackageExternalizer (TextStore& ts, const StyleDatabasePtr& styleDatabase);
+        StyledTextFlavorPackageExternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase);
 
     public:
         virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage, size_t from, size_t to) override;
@@ -357,7 +357,7 @@ namespace Stroika::Frameworks::Led {
         virtual StandardStyledTextIOSrcStream* mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd);
 
     protected:
-        StyleDatabasePtr fStyleDatabase;
+        shared_ptr<AbstractStyleDatabaseRep> fStyleDatabase;
     };
 
     /*
