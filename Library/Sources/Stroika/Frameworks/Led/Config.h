@@ -22,12 +22,6 @@
  *
  */
 
-#if qPlatform_MacOS
-#if defined(__cplusplus) && !defined(__SOMIDL__)
-#include <ConditionalMacros.h>
-#endif
-#endif
-
 /*
  *  This Numeric Led version is intended to allow you to conditionally compile code
  *  based on different versions of Led. The Led::kVersion string is a symbolic representation
@@ -80,28 +74,6 @@
 
 #define qLed_FullVersion                                                                                                                   \
     Stroika_Make_FULL_VERSION (qLed_Version_Major, qLed_Version_Minor, qLed_Version_Stage, qLed_Version_SubStage, qLed_Version_FinalBuild)
-
-// #if qPlatform_MacOS + qPlatform_Windows + qStroika_FeatureSupported_XWindows > 1
-// #error "Only one of these should be defined"
-// #endif
-// #if !qPlatform_MacOS && !qPlatform_Windows && !qStroika_FeatureSupported_XWindows
-// #error "One of these should be defined - right now thats all we support"
-// #endif
-
-/*
- *  Do things like memcpy () get inlined by the compiler, or should we do so ourselves
- *  manually for cases that matter.
- */
-#ifndef qComplilerDoesNotInlineIntrinsics
-#define qComplilerDoesNotInlineIntrinsics 0
-#endif
-
-/*
- *  Not a bug to have this - I think - but doesn't appear part of any ansi spec???
- */
-//#ifndef qHasIsAscii
-///#define qHasIsAscii 0
-//#endif
 
 /*
  **************** COMMOM configuration variables ***************
