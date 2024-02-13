@@ -5,7 +5,7 @@
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
 #
-StroikaRoot=$(abspath ../..)/
+StroikaRoot:=$(abspath ../..)/
 
 ifneq (${CONFIGURATION},)
 	-include ${StroikaRoot}IntermediateFiles/${CONFIGURATION}/Configuration.mk
@@ -20,13 +20,13 @@ endif
 #
 # CHECK FOR UPDATED VERSIONS https://github.com/GNOME/libxml2/tags
 #
-libxml2_VERSION_=2.12.5
+libxml2_VERSION_:=2.12.5
 #libxml2_VERSION_=2.12.4
 #libxml2_VERSION_=2.12.3
 
-ZIPPED_SOURCES_FILE_=../Origs-Cache/libxml2-${libxml2_VERSION_}.tar.gz
+ZIPPED_SOURCES_FILE_:=../Origs-Cache/libxml2-${libxml2_VERSION_}.tar.gz
 
-FETCHURLS_=
+FETCHURLS_:=
 FETCHURLS_+= https://github.com/GNOME/libxml2/archive/refs/tags/v${libxml2_VERSION_}.tar.gz
 
 

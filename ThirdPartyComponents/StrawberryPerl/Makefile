@@ -6,7 +6,7 @@
 #		PATH=$(StroikaRoot)ThirdPartyComponents/StrawberryPerl/CURRENT/perl/bin:$PATH		OR
 #		portableshell.bat from 'CURRENT' directory
 #
-StroikaRoot=$(abspath ../..)/
+StroikaRoot:=$(abspath ../..)/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 

@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../../../)/
+StroikaRoot:=$(abspath ../../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/InteretProtocol/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/InteretProtocol/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/InteretProtocol/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/InteretProtocol/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
@@ -19,7 +19,7 @@ endif
 vpath %cpp $(SrcDir)
 
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)ICMP${OBJ_SUFFIX}\
 	$(ObjDir)IP${OBJ_SUFFIX}\
 

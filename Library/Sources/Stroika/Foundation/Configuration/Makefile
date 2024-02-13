@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../../../../)/
+StroikaRoot:=$(abspath ../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,8 +8,8 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Configuration/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Configuration/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Configuration/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Configuration/
 
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)

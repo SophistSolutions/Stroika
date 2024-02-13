@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../)/
+StroikaRoot:=$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,14 +8,14 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir				=	$(StroikaRoot)Samples/SQL/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SQL/
+SrcDir			:=	$(StroikaRoot)Samples/SQL/
+ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SQL/
 
 
-TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SQL/
-TARGETEXE				=	$(TARGETDIR)SQL${EXE_SUFFIX}
+TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SQL/
+TARGETEXE		:=	$(TARGETDIR)SQL${EXE_SUFFIX}
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 	$(ObjDir)ComputerNetwork${OBJ_SUFFIX}\
 	$(ObjDir)DirectEmployeesDB${OBJ_SUFFIX}\

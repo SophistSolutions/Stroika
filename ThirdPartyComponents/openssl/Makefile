@@ -5,7 +5,7 @@
 #				(repeated in most ThirdPartyComponents makefiles)
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
-StroikaRoot=$(abspath ../..)/
+StroikaRoot:=$(abspath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
@@ -23,7 +23,7 @@ QUICK_BUILD ?= 1
 #
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
-VERSION=3.2.1
+VERSION:=3.2.1
 #VERSION=3.2.0
 #VERSION=3.1.4
 #VERSION=3.1.3
@@ -31,8 +31,8 @@ VERSION=3.2.1
 #VERSION=3.1.1
 #VERSION=3.1.0
 
-BASENAME=openssl-$(VERSION)
-EXTRACTED_DIRNAME=$(BASENAME)
+BASENAME:=openssl-$(VERSION)
+EXTRACTED_DIRNAME:=$(BASENAME)
 
 
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)/
@@ -44,9 +44,9 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
+ZIPPEDFILE:=../Origs-Cache/$(BASENAME).tar.gz
 
-FETCHURLS=
+FETCHURLS:=
 FETCHURLS+=https://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/old/3.1/$(BASENAME).tar.gz

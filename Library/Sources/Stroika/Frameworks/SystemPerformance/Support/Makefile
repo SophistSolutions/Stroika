@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../../../../../)/
+StroikaRoot:=$(abspath ../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,8 +8,8 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/Support/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/SystemPerformance/Support/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/Support/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/SystemPerformance/Support/
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
 CXXFLAGS+=-Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Frameworks.pdb)
@@ -18,7 +18,7 @@ endif
 
 vpath %cpp $(SrcDir)
 
-Objs	=	\
+Objs	:=	\
 
 
 ifneq ($(findstring Windows,$(TARGET_PLATFORMS)),)

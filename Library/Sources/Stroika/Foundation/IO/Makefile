@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../)/
+StroikaRoot:=$(abspath ../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/
-ObjDir					=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/
+SrcDir		:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
@@ -17,7 +17,7 @@ CXXFLAGS+=-Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)B
 endif
 
 
-SubDirs	=	\
+SubDirs	:=	\
 	FileSystem	\
 	Network		\
 
@@ -26,7 +26,7 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 
-Objs	=	\
+Objs	:=	\
 
 
 all:	$(Objs) $(SubDirs)

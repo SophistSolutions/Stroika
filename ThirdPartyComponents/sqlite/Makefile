@@ -4,7 +4,7 @@
 #				(repeated in most ThirdPartyComponents makefiles)
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
-StroikaRoot=$(abspath ../..)/
+StroikaRoot:=$(abspath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
@@ -40,11 +40,11 @@ ifeq (${VERSION},3320300)
 MAPPED_VERSION=3.32.3
 endif
 
-AMALGAMATION_WITH_VERSION=sqlite-amalgamation-$(VERSION)
+AMALGAMATION_WITH_VERSION:=sqlite-amalgamation-$(VERSION)
 
-ZIPPEDFILE=../Origs-Cache/$(AMALGAMATION_WITH_VERSION).zip
+ZIPPEDFILE:=../Origs-Cache/$(AMALGAMATION_WITH_VERSION).zip
 
-FETCHURLS=
+FETCHURLS:=
 FETCHURLS+=https://www.sqlite.org/2024/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2023/$(AMALGAMATION_WITH_VERSION).zip
 FETCHURLS+=https://www.sqlite.org/2022/$(AMALGAMATION_WITH_VERSION).zip
@@ -70,13 +70,13 @@ else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdi
 SQLITE3LIB=sqlite.lib
 SQLITE3EXE=sqlite.exe
 endif
-TARGETDIR				=	$(PER_CONFIGURATION_BUILDS_DIR)bin/
-TARGETEXE				=	$(TARGETDIR)sqlite${EXE_SUFFIX}
+TARGETDIR			:=	$(PER_CONFIGURATION_BUILDS_DIR)bin/
+TARGETEXE			:=	$(TARGETDIR)sqlite${EXE_SUFFIX}
 
 LibObjs=\
 	$(ObjDir)sqlite3${OBJ_SUFFIX}\
 
-Objs=\
+Objs:=\
 	$(LibObjs)\
 	$(ObjDir)shell${OBJ_SUFFIX}\
 

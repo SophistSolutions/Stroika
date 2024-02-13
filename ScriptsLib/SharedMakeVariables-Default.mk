@@ -13,12 +13,12 @@ endif
 export StroikaRoot
 
 ifndef ObjDir
-	ObjDir		=	./
+	ObjDir		:=	./
 endif
 
 
 ifndef StroikaPlatformTargetBuildDir
-	StroikaPlatformTargetBuildDir		=	$(StroikaRoot)Builds/$(CONFIGURATION)/
+	StroikaPlatformTargetBuildDir		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/
 endif
 
 
@@ -28,15 +28,15 @@ endif
 #		Directory where the library (.lib, or .a) Stroika libraries are found (Buidlds/$(CONFIGURATION)/)
 #
 ifndef StroikaLibDir
-	StroikaLibDir		=	$(StroikaPlatformTargetBuildDir)
+	StroikaLibDir		:=	$(StroikaPlatformTargetBuildDir)
 endif
 
 
 ifndef StroikaFoundationLib
-	StroikaFoundationLib		=	$(StroikaLibDir)Stroika-Foundation$(LIB_SUFFIX)
+	StroikaFoundationLib		:=	$(StroikaLibDir)Stroika-Foundation$(LIB_SUFFIX)
 endif
 ifndef StroikaFrameworksLib
-	StroikaFrameworksLib		=	$(StroikaLibDir)Stroika-Frameworks$(LIB_SUFFIX)
+	StroikaFrameworksLib		:=	$(StroikaLibDir)Stroika-Frameworks$(LIB_SUFFIX)
 endif
 
 
@@ -47,7 +47,7 @@ ECHO_BUILD_LINES	?=	0
 
 
 
-TPP_PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir))/ThirdPartyComponents/lib/pkgconfig
+TPP_PKG_CONFIG_PATH:=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir))/ThirdPartyComponents/lib/pkgconfig
 
 
 ### to make this obsolete, 2 new config arrays:
@@ -96,7 +96,7 @@ endif
 
 
 ifndef HTMLViewCompiler
-	HTMLViewCompiler	=	"$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler"
+	HTMLViewCompiler	:=	"$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler"
 endif
 
 
@@ -138,6 +138,8 @@ endif
 #	$1 input src name
 #	$2 OUTFILE OBJ name
 #
+# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
+#
 ifeq (Unix,$(ProjectPlatformSubdir))
 DEFAULT_CC_LINE=\
 	"$(CC)" \
@@ -162,6 +164,9 @@ endif
 #	$2 OUTFILE OBJ name
 #
 # note slightly confusingly, CPP is 'c pre processor' not c++ (which is CXX)
+#
+# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
+#
 ifeq (Unix,$(ProjectPlatformSubdir))
 DEFAULT_CPP_LINE=\
 	"$(CXX)" \
@@ -198,6 +203,8 @@ endif
 # This macro takes two arguments:
 #	$1 OUTFILE library name
 #	$2 list of OBJS
+#
+# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 #
 DEFAULT_LIBRARY_GEN_LINE=
 ifneq ($(AR),)
@@ -245,6 +252,8 @@ LinkerArgs_StroikaDependentLibDependencies :=
 #
 # This macro takes a single argument - the output filename for the link command
 #
+# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
+#
 DEFAULT_LINK_LINE=\
 	"$(LINKER)" \
 		$(LinkerArgs_ExtraPrefix) \
@@ -262,6 +271,9 @@ ifneq ($(LinkTime_CopyFilesToEXEDir),)
 endif
 
 
+#
+# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated (e.g. things added to CPPFLAGS get added to MIDL_FLAGS)
+#
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 MIDL_FLAGS=	${CPPFLAGS}
 MIDL_FLAGS+=	-nologo
@@ -282,7 +294,9 @@ endif
 
 
 
-
+#
+# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated (e.g. things added to CPPFLAGS get added to RC_FLAGS)
+#
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 RC_FLAGS=	${CPPFLAGS}
 RC_FLAGS+=	-nologo

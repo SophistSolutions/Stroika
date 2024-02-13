@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../../)/
+StroikaRoot:=$(abspath ../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Execution/Resources/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Execution/Resources/
+SrcDir	:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Execution/Resources/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Execution/Resources/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
@@ -17,12 +17,12 @@ endif
 
 vpath %cpp $(SrcDir)
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)Manager${OBJ_SUFFIX}\
 	$(ObjDir)Name${OBJ_SUFFIX}\
 	$(ObjDir)ResourceNotFoundException${OBJ_SUFFIX}\
 
-SubDirs	=	\
+SubDirs	:=	\
 	Concrete \
 
 

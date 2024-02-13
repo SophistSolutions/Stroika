@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../)/
+StroikaRoot:=$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,17 +8,17 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir				=	$(StroikaRoot)Samples/LedIt/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedIt/
+SrcDir			:=	$(StroikaRoot)Samples/LedIt/
+ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedIt/
 
-TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedIt/
-TARGETEXE				=	$(TARGETDIR)LedIt${EXE_SUFFIX}
+TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedIt/
+TARGETEXE		:=	$(TARGETDIR)LedIt${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)Sources/
 
 
-Objs	=	\
+Objs	:=	\
 
 ifeq ($(qFeatureFlag_ATLMFC), use-system)
 Objs+= $(ObjDir)ColorMenu${OBJ_SUFFIX}

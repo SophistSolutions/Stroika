@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../)/
+StroikaRoot:=$(abspath ../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/Test/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Test/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/Test/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Test/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
@@ -19,7 +19,7 @@ endif
 vpath %cpp $(SrcDir)
 
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)ArchtypeClasses${OBJ_SUFFIX}\
 	$(ObjDir)TestHarness${OBJ_SUFFIX}\
 

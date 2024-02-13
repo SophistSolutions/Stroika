@@ -5,7 +5,7 @@
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
 
-StroikaRoot=$(abspath ../..)/
+StroikaRoot:=$(abspath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber

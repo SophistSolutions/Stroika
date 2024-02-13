@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../)/
+StroikaRoot:=$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,14 +8,14 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir				=	$(StroikaRoot)Samples/Serialization/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Serialization/
+SrcDir			:=	$(StroikaRoot)Samples/Serialization/
+ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Serialization/
 
 
-TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Serialization/
-TARGETEXE				=	$(TARGETDIR)Serialization${EXE_SUFFIX}
+TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Serialization/
+TARGETEXE		:=	$(TARGETDIR)Serialization${EXE_SUFFIX}
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 	\
 	$(ObjDir)ObjectVariantMapper${OBJ_SUFFIX}\

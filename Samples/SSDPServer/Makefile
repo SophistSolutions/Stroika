@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../)/
+StroikaRoot:=$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -9,14 +9,14 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 
-SrcDir				=	$(StroikaRoot)Samples/SSDPServer/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPServer/
+SrcDir			:=	$(StroikaRoot)Samples/SSDPServer/
+ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SSDPServer/
 
-TARGETDIR			=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPServer/
-TARGETEXE			=	$(TARGETDIR)SSDPServer${EXE_SUFFIX}
+TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPServer/
+TARGETEXE		:=	$(TARGETDIR)SSDPServer${EXE_SUFFIX}
 
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)SSDPServer${OBJ_SUFFIX}\
 
 

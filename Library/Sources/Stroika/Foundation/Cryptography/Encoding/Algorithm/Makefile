@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../../../)/
+StroikaRoot:=$(abspath ../../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Cryptography/Encoding/Algorithm/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Cryptography/Encoding/Algorithm/
+SrcDir	:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Cryptography/Encoding/Algorithm/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Cryptography/Encoding/Algorithm/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
@@ -17,7 +17,7 @@ endif
 
 vpath %cpp $(SrcDir)
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)AES${OBJ_SUFFIX}\
 	$(ObjDir)Base64${OBJ_SUFFIX}\
 	$(ObjDir)RC4${OBJ_SUFFIX}\

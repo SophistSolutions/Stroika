@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../)/
+StroikaRoot:=$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,17 +8,17 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir				=	$(StroikaRoot)Samples/ActiveLedIt/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-ActiveLedIt/
+SrcDir				:=	$(StroikaRoot)Samples/ActiveLedIt/
+ObjDir				:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-ActiveLedIt/
 
-TARGETDIR			=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ActiveLedIt/
-TARGETEXE			=	$(TARGETDIR)SophistSolutions.ActiveLedIt.dll
+TARGETDIR			:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ActiveLedIt/
+TARGETEXE			:=	$(TARGETDIR)SophistSolutions.ActiveLedIt.dll
 
 
 VPATH	=			$(SrcDir)Sources/
 
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)ActiveLedIt${OBJ_SUFFIX}\
 	$(ObjDir)ActiveLedItControl${OBJ_SUFFIX}\
 	$(ObjDir)ActiveLedItPpg${OBJ_SUFFIX}\

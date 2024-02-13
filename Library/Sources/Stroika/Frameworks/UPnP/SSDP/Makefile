@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../../)/
+StroikaRoot:=$(abspath ../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/SSDP/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/SSDP/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/UPnP/SSDP/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/UPnP/SSDP/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
@@ -18,12 +18,12 @@ endif
 
 vpath %cpp $(SrcDir)
 
-SubDirs	=	\
+SubDirs	:=	\
 	Client	\
 	Server	\
 
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)Advertisement${OBJ_SUFFIX}\
 	$(ObjDir)Common${OBJ_SUFFIX}\
 

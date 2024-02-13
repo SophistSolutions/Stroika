@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../)/
+StroikaRoot:=$(abspath ../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/
-ObjDir	 =	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/SystemPerformance/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/SystemPerformance/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
@@ -16,7 +16,7 @@ CXXFLAGS+=-Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)B
 endif
 
 
-SubDirs	=	\
+SubDirs	:=	\
 	Instruments	\
 	Support	\
 
@@ -24,7 +24,7 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)AllInstruments${OBJ_SUFFIX}\
 	$(ObjDir)Capturer${OBJ_SUFFIX}\
 	$(ObjDir)CaptureSet${OBJ_SUFFIX}\

@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../..)/
+StroikaRoot:=$(abspath ../../../../..)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=   $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/WebServer/
+SrcDir	:=   $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/WebServer/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
@@ -14,7 +14,7 @@ include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 VPATH		=	$(SrcDir) $(StroikaLibDir)
 
-SubDirs=				\
+SubDirs	:=				\
 	HTMLViewCompiler	\
 
 

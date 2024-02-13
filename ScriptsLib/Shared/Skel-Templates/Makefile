@@ -1,5 +1,5 @@
-export TOP_ROOT=$(abspath ./)/
-StroikaRoot=$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
+export TOP_ROOT:=$(abspath ./)/
+StroikaRoot:=$(TOP_ROOT)ThirdPartyComponents/Stroika/StroikaRoot/
 
 ifeq (,$(wildcard $(StroikaRoot)Makefile))
 $(warning "submodules missing: perhaps you should run `git submodule update --init --recursive`")

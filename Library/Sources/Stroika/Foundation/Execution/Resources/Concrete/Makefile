@@ -5,8 +5,8 @@ ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Execution/Resources/Concrete/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Execution/Resources/Concrete/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Foundation/Execution/Resources/Concrete/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Execution/Resources/Concrete/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
@@ -18,7 +18,7 @@ endif
 
 vpath %cpp $(SrcDir)
 
-Objs	=
+Objs	:=
 
 ifneq ($(findstring POSIX,$(TARGET_PLATFORMS)),)
 Objs+=	$(ObjDir)ElfResourceManager${OBJ_SUFFIX}

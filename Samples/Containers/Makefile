@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../)/
+StroikaRoot:=$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,11 +8,11 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir				=	$(StroikaRoot)Samples/Containers/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Containers/
+SrcDir			:=	$(StroikaRoot)Samples/Containers/
+ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-Containers/
 
-TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Containers/
-TARGETEXE				=	$(TARGETDIR)Containers${EXE_SUFFIX}
+TARGETDIR		:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-Containers/
+TARGETEXE		:=	$(TARGETDIR)Containers${EXE_SUFFIX}
 
 # ONLY depend on foundation library, not frameworks library
 StroikaLibs					=	$(StroikaFoundationLib)
@@ -20,7 +20,7 @@ StroikaLibs					=	$(StroikaFoundationLib)
 VPATH	=			$(SrcDir)/Sources/
 
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 	\
 	$(ObjDir)Collection${OBJ_SUFFIX}\

@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../)/
+StroikaRoot:=$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,12 +8,12 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir				=	$(StroikaRoot)Samples/SimpleLedTest/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SimpleLedTest/
+SrcDir		:=	$(StroikaRoot)Samples/SimpleLedTest/
+ObjDir		:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SimpleLedTest/
 
 
-TARGETDIR	=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleLedTest/
-TARGETEXE	=	$(TARGETDIR)SimpleLedTest${EXE_SUFFIX}
+TARGETDIR	:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleLedTest/
+TARGETEXE	:=	$(TARGETDIR)SimpleLedTest${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)Sources/

@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../../../../)/
+StroikaRoot:=$(abspath ../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,8 +8,8 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Characters/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Characters/
+SrcDir	:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Characters/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Characters/
 
 ifeq ($(WIN_USE_PROGRAM_DATABASE),1)
 CXXFLAGS+=-Fd$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot)Builds/$(CONFIGURATION)/Stroika-Foundation.pdb)
@@ -18,7 +18,7 @@ endif
 
 vpath %cpp $(SrcDir)
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)Character${OBJ_SUFFIX}\
 	$(ObjDir)CharacterEncodingException${OBJ_SUFFIX}\
 	$(ObjDir)Charset${OBJ_SUFFIX}\

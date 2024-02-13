@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../)/
+StroikaRoot:=$(abspath ../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -7,16 +7,16 @@ endif
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
-SrcDir				=	$(StroikaRoot)Samples/LedLineIt/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedLineIt/
+SrcDir			:=	$(StroikaRoot)Samples/LedLineIt/
+ObjDir			:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-LedLineIt/
 
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 
 
-TARGETDIR	=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedLineIt/
-TARGETEXE	=	$(TARGETDIR)LedLineIt${EXE_SUFFIX}
+TARGETDIR	:=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedLineIt/
+TARGETEXE	:=	$(TARGETDIR)LedLineIt${EXE_SUFFIX}
 
 
 VPATH	=			$(SrcDir)Sources/
@@ -24,7 +24,7 @@ VPATH	=			$(SrcDir)Sources/
 RC_OUTPUT_=$(ObjDir)LedLineIt.res
 
 
-Objs	=	\
+Objs	:=	\
 
 ifeq ($(qFeatureFlag_ATLMFC), use-system)
 Objs+= $(ObjDir)FontMenu${OBJ_SUFFIX}

@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../../)/
+StroikaRoot:=$(abspath ../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/Led/StyledTextIO/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Led/StyledTextIO/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/Led/StyledTextIO/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/Led/StyledTextIO/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
@@ -17,7 +17,7 @@ endif
 
 vpath %cpp $(SrcDir)
 
-Objs	=	
+Objs	:=	
 
 # for now - this only builds on windows, cuz unix requires x-windows, and macos only written for very old macos gdi (carbon)
 Objs+=	$(ObjDir)StyledTextIO${OBJ_SUFFIX}

@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../../../)/
+StroikaRoot:=$(abspath ../../../../)/
 
 ifneq ($(CONFIGURATION),)
 ifneq ($(MAKECMDGOALS),clean)
@@ -11,8 +11,8 @@ endif
 -include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Frameworks/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/
+SrcDir	:=	$(StroikaRoot)Library/Sources/Stroika/Frameworks/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
@@ -25,7 +25,7 @@ endif
 VPATH		=	$(SrcDir) $(StroikaLibDir)
 
 
-SubDirs=	\
+SubDirs:=	\
 		Led\
 		Modbus\
 		NetworkMonitor\

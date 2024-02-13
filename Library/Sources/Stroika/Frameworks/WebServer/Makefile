@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../)/
+StroikaRoot:=$(abspath ../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/WebServer/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/WebServer/
+SrcDir	:=   $(StroikaRoot)Library/Sources/Stroika/Frameworks/WebServer/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Frameworks/WebServer/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
@@ -19,7 +19,7 @@ endif
 vpath %cpp $(SrcDir)
 
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)ConnectionManager${OBJ_SUFFIX}\
 	$(ObjDir)Connection${OBJ_SUFFIX}\
 	$(ObjDir)CORS${OBJ_SUFFIX}\

@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../../../)/
+StroikaRoot:=$(abspath ../../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/HTTP/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/HTTP/
+SrcDir	:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/Network/HTTP/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/IO/Network/HTTP/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
@@ -18,7 +18,7 @@ endif
 
 vpath %cpp $(SrcDir)
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)ClientErrorException${OBJ_SUFFIX}\
 	$(ObjDir)CacheControl${OBJ_SUFFIX}\
 	$(ObjDir)Cookie${OBJ_SUFFIX}\

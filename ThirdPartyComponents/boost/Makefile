@@ -13,7 +13,7 @@
 #		@todo	Now that we pass in CFLAGS, CXXFLAGS etc, we probably can get away with fewer explicit settings in the build process (like _GLIBCXX_DEBUG)
 #
 
-StroikaRoot=$(abspath ../..)/
+StroikaRoot:=$(abspath ../..)/
 
 ifneq ($(CONFIGURATION),)
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
@@ -34,12 +34,12 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-VERSION=1_84_0
+VERSION:=1_84_0
 #VERSION=1_83_0
 #VERSION=1_82_0
-VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
-VERSION_WITH_2DOTS=$(shell echo $(VERSION_WITH_DOTS) | sed 's/\.[ab][0-9]//')
-ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
+VERSION_WITH_DOTS:=$(shell echo $(VERSION) | sed s/_/\./g)
+VERSION_WITH_2DOTS:=$(shell echo $(VERSION_WITH_DOTS) | sed 's/\.[ab][0-9]//')
+ZIPPEDFILE:=../Origs-Cache/boost_$(VERSION).tar.gz
 
 
 

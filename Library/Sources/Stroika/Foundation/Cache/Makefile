@@ -1,4 +1,4 @@
-StroikaRoot=$(abspath ../../../../../)/
+StroikaRoot:=$(abspath ../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
@@ -8,11 +8,11 @@ endif
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
 
-SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Cache/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Cache/
+SrcDir	:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Cache/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Cache/
 
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)Statistics${OBJ_SUFFIX}
 
 

@@ -1,12 +1,12 @@
-StroikaRoot=$(abspath ../../../../../../)/
+StroikaRoot:=$(abspath ../../../../../../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
 	-include $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Configuration.mk
 endif
 
-SrcDir	=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Database/SQL/
-ObjDir	=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Database/SQL/
+SrcDir	:=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Database/SQL/
+ObjDir	:=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Library/Foundation/Database/SQL/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)ScriptsLib/SharedMakeVariables-Default.mk
@@ -18,14 +18,14 @@ endif
 
 vpath %cpp $(SrcDir)
 
-Objs	=	\
+Objs	:=	\
 	$(ObjDir)Connection${OBJ_SUFFIX}\
 	$(ObjDir)ODBC${OBJ_SUFFIX}\
 	$(ObjDir)SQLite${OBJ_SUFFIX}\
 	$(ObjDir)Statement${OBJ_SUFFIX}\
 	$(ObjDir)Utils${OBJ_SUFFIX}\
 
-SubDirs	=	\
+SubDirs	:=	\
 	ORM \
 
 .PHONY:				$(SubDirs)

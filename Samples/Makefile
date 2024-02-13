@@ -1,4 +1,4 @@
-export StroikaRoot=$(shell realpath ../)/
+export StroikaRoot:=$(shell realpath ../)/
 
 ifneq ($(CONFIGURATION),)
 	#no error if missing cuz could be doing make clobber
