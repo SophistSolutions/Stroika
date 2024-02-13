@@ -57,7 +57,7 @@ namespace Stroika::Frameworks::Led {
     {
         fJustification = justification;
     }
-    inline const WordProcessor::ParagraphInfo::StandardTabStopList& WordProcessor::ParagraphInfo::GetTabStopList () const
+    inline const StandardTabStopList& WordProcessor::ParagraphInfo::GetTabStopList () const
     {
         return fTabStops;
     }
@@ -280,7 +280,7 @@ namespace Stroika::Frameworks::Led {
     {
         fJustificationValid = false;
     }
-    inline const TextImager::StandardTabStopList& WordProcessor::IncrementalParagraphInfo::GetTabStopList () const
+    inline const StandardTabStopList& WordProcessor::IncrementalParagraphInfo::GetTabStopList () const
     {
         Require (fTabStopListValid);
         return inherited::GetTabStopList ();

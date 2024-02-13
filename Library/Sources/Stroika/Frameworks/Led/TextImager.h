@@ -23,7 +23,7 @@ namespace Stroika::Frameworks::Led {
 
     /*
     @CLASS:         TextImager::StandardTabStopList
-    @BASES:         @'TextImager::TabStopList'
+    @BASES:         @'TabStopList'
     @DESCRIPTION:   <p>A simple tabstop implementation in the caller specifies the exact position of each tabstop. This
                 is most directly ananogous to the Win32SDK GetTabbedTextExtent () API apporach.</p>
     */
@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::Led {
         vector<TWIPS> fTabStops;
 
     public:
-        nonvirtual bool operator== (const StandardTabStopList& rhs) const = default;
+        constexpr bool operator== (const StandardTabStopList& rhs) const;
     };
 
 #if qStroika_Frameworks_Led_SupportGDI
@@ -242,11 +242,9 @@ namespace Stroika::Frameworks::Led {
     public:
         //class TabStopList;
         /*
-        @CLASS:         TextImager::TabStopList
+        @CLASS:         TabStopList
         @DESCRIPTION:   <p>See @'TabStopList'</p>
         */
-        using TabStopList         = TabStopList;
-        using StandardTabStopList = StandardTabStopList;
         class SimpleTabStopList;
 
     public:
@@ -921,11 +919,11 @@ namespace Stroika::Frameworks::Led {
 
     /*
     @CLASS:         TextImager::SimpleTabStopList
-    @BASES:         @'TextImager::TabStopList'
+    @BASES:         @'TabStopList'
     @DESCRIPTION:   <p>A simple tabstop implementation in which all tabstops are equidistant from each other, and start
                 at position zero. This is commonly used as the default tabstop object.</p>
     */
-    class TextImager::SimpleTabStopList : public TextImager::TabStopList {
+    class TextImager::SimpleTabStopList : public TabStopList {
     public:
         SimpleTabStopList (TWIPS twipsPerTabStop);
 

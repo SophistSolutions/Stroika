@@ -291,13 +291,13 @@ void TextImager::SetSelectionShown (bool shown)
 
 /*
 @METHOD:        TextImager::GetTabStopList
-@DESCRIPTION:   <p>Return the tabstop list (@'TextImager::TabStopList') active at a particular position in the text. Typically this will
+@DESCRIPTION:   <p>Return the tabstop list (@'TabStopList') active at a particular position in the text. Typically this will
     apply to an entire region (often a paragraph/partitionmarker). And we only need specify
     one point in that range.</p>
         <p>Override this to provide a different tabstop list. The default is a @'TextImager::SimpleTabStopList' of width
     roughly 1/3 of an inch.</p>
 */
-const TextImager::TabStopList& TextImager::GetTabStopList (size_t /*containingPos*/) const
+const TabStopList& TextImager::GetTabStopList (size_t /*containingPos*/) const
 {
     // 1/3 inch tabstops by default (roughly 4 chars wide on Mac in Courier 10-point)
     static SimpleTabStopList sDefaultTabStopList = SimpleTabStopList (TWIPS (1440 / 3));

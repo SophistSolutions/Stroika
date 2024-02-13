@@ -111,7 +111,7 @@ struct DoIt_SetJustification {
     }
 };
 struct DoIt_SetStandardTabStopList {
-    static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, WordProcessor::StandardTabStopList tabStops)
+    static void DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, StandardTabStopList tabStops)
     {
         wp->SetStandardTabStopList (selStart, selEnd, tabStops);
     }
@@ -913,7 +913,7 @@ struct JustificationExtractor {
     }
 };
 struct TabStopExtractor {
-    TextImager::StandardTabStopList operator() (const WordProcessor::ParagraphInfo& from)
+    StandardTabStopList operator() (const WordProcessor::ParagraphInfo& from)
     {
         return from.GetTabStopList ();
     }
@@ -1358,9 +1358,9 @@ void WordProcessor::SetJustification (size_t from, size_t to, Justification just
     fParagraphDatabase->SetParagraphInfo (from, to - from, pi);
 }
 
-TextImager::StandardTabStopList WordProcessor::GetDefaultStandardTabStopList ()
+StandardTabStopList WordProcessor::GetDefaultStandardTabStopList ()
 {
-    return StandardTabStopList ();
+    return StandardTabStopList{};
 }
 
 /*
@@ -1368,7 +1368,7 @@ TextImager::StandardTabStopList WordProcessor::GetDefaultStandardTabStopList ()
 @DESCRIPTION:
     <p>Return the tabstops list setting for the paragraph containing the character characterPos</p>
 */
-TextImager::StandardTabStopList WordProcessor::GetStandardTabStopList (size_t characterPos) const
+StandardTabStopList WordProcessor::GetStandardTabStopList (size_t characterPos) const
 {
     return fParagraphDatabase->GetParagraphInfo (characterPos).GetTabStopList ();
 }
@@ -3599,7 +3599,7 @@ void WordProcessor::InteractiveDoIndentChange (bool increase)
 @METHOD:        WordProcessor::GetTabStopList
 @DESCRIPTION:   <p>Override @'TextImager::GetTabStopList' - to return the tabstoplist associated with this paragraph.</p>
 */
-const TextImager::TabStopList& WordProcessor::GetTabStopList (size_t containingPos) const
+const TabStopList& WordProcessor::GetTabStopList (size_t containingPos) const
 {
     return fParagraphDatabase->GetParagraphInfo (containingPos).GetTabStopList ();
 }
@@ -4534,7 +4534,7 @@ void WordProcessorTextIOSinkStream::SetJustification (Justification justificatio
     fNewParagraphInfo.SetJustification (justification);
 }
 
-void WordProcessorTextIOSinkStream::SetStandardTabStopList (const TextImager::StandardTabStopList& tabStops)
+void WordProcessorTextIOSinkStream::SetStandardTabStopList (const StandardTabStopList& tabStops)
 {
     fNewParagraphInfo.SetTabStopList (tabStops);
 }
@@ -5048,7 +5048,7 @@ Justification WordProcessorTextIOSrcStream::GetJustification () const
     }
 }
 
-TextImager::StandardTabStopList WordProcessorTextIOSrcStream::GetStandardTabStopList () const
+StandardTabStopList WordProcessorTextIOSrcStream::GetStandardTabStopList () const
 {
     if (fParagraphDatabase.get () == nullptr) {
         return inherited::GetStandardTabStopList ();

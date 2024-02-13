@@ -433,7 +433,7 @@ void LedLineItView::SetCurUserLine (size_t newCurLine)
     ScrollToSelection ();
 }
 
-const LedLineItView::TabStopList& LedLineItView::GetTabStopList (size_t /*containingPos*/) const
+const TabStopList& LedLineItView::GetTabStopList (size_t /*containingPos*/) const
 {
     return fTabStopList;
 }

@@ -492,7 +492,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InteractiveDoIndentChange (bool increase);
 
     protected:
-        virtual const TextImager::TabStopList& GetTabStopList (size_t containingPos) const override;
+        virtual const TabStopList& GetTabStopList (size_t containingPos) const override;
 
     protected:
         virtual void DrawBefore (const Led_Rect& subsetToDraw, bool printing) override;
@@ -589,9 +589,6 @@ namespace Stroika::Frameworks::Led {
                     </p>
     */
     class WordProcessor::ParagraphInfo {
-    public:
-        using StandardTabStopList = TextImager::StandardTabStopList;
-
     public:
         ParagraphInfo ();
 
@@ -894,7 +891,7 @@ namespace Stroika::Frameworks::Led {
         virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
         virtual void AppendSoftLineBreak () override;
         virtual void SetJustification (Justification justification) override;
-        virtual void SetStandardTabStopList (const TextImager::StandardTabStopList& tabStops) override;
+        virtual void SetStandardTabStopList (const StandardTabStopList& tabStops) override;
         virtual void SetFirstIndent (TWIPS tx) override;
         virtual void SetLeftMargin (TWIPS lhs) override;
         virtual void SetRightMargin (TWIPS rhs) override;

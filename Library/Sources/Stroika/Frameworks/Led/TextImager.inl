@@ -12,49 +12,12 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qStroika_Frameworks_Led_SupportGDI
-
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
-
-    // class TextImager::SimpleTabStopList
-    inline TextImager::SimpleTabStopList::SimpleTabStopList (TWIPS twipsPerTabStop)
-        : TabStopList ()
-        , fTWIPSPerTabStop (twipsPerTabStop)
-    {
-        Require (twipsPerTabStop > 0);
-    }
-    inline TWIPS TextImager::SimpleTabStopList::ComputeIthTab (size_t i) const
-    {
-        return TWIPS (static_cast<long> ((i + 1) * fTWIPSPerTabStop));
-    }
-    inline TWIPS TextImager::SimpleTabStopList::ComputeTabStopAfterPosition (TWIPS afterPos) const
-    {
-        Assert (fTWIPSPerTabStop > 0);
-        size_t idx    = afterPos / fTWIPSPerTabStop;
-        TWIPS  result = TWIPS (static_cast<long> ((idx + 1) * fTWIPSPerTabStop));
-        Ensure (result % fTWIPSPerTabStop == 0);
-        Ensure (result > afterPos);
-        return result;
-    }
-
-    //  class   TextImager::GoalColumnRecomputerControlContext
-    inline TextImager::GoalColumnRecomputerControlContext::GoalColumnRecomputerControlContext (TextImager& imager, bool suppressRecompute)
-        : fTextImager (imager)
-        , fSavedSuppressRecompute (imager.fSuppressGoalColumnRecompute)
-    {
-        imager.fSuppressGoalColumnRecompute = suppressRecompute;
-    }
-    inline TextImager::GoalColumnRecomputerControlContext::~GoalColumnRecomputerControlContext ()
-    {
-        fTextImager.fSuppressGoalColumnRecompute = fSavedSuppressRecompute;
-    }
-
-    // class TextImager::StandardTabStopList
-    inline TextImager::StandardTabStopList::StandardTabStopList ()
+     ********************************************************************************
+     ******************************** StandardTabStopList ***************************
+     ********************************************************************************
+     */
+    inline StandardTabStopList::StandardTabStopList ()
         : TabStopList ()
         , fDefaultTabWidth (720)
         , //  default to 1/2 inch - RTF spec default
@@ -62,14 +25,14 @@ namespace Stroika::Frameworks::Led {
     {
         Assert (fDefaultTabWidth > 0);
     }
-    inline TextImager::StandardTabStopList::StandardTabStopList (TWIPS eachWidth)
+    inline StandardTabStopList::StandardTabStopList (TWIPS eachWidth)
         : TabStopList ()
         , fDefaultTabWidth (eachWidth)
         , fTabStops ()
     {
         Require (fDefaultTabWidth > 0);
     }
-    inline TextImager::StandardTabStopList::StandardTabStopList (const vector<TWIPS>& tabstops)
+    inline StandardTabStopList::StandardTabStopList (const vector<TWIPS>& tabstops)
         : TabStopList ()
         , fDefaultTabWidth (720)
         , //  default to 1/2 inch - RTF spec default
@@ -77,14 +40,14 @@ namespace Stroika::Frameworks::Led {
     {
         Assert (fDefaultTabWidth > 0);
     }
-    inline TextImager::StandardTabStopList::StandardTabStopList (const vector<TWIPS>& tabstops, TWIPS afterTabsWidth)
+    inline StandardTabStopList::StandardTabStopList (const vector<TWIPS>& tabstops, TWIPS afterTabsWidth)
         : TabStopList ()
         , fDefaultTabWidth (afterTabsWidth)
         , fTabStops (tabstops)
     {
         Require (fDefaultTabWidth > 0);
     }
-    inline TWIPS TextImager::StandardTabStopList::ComputeIthTab (size_t i) const
+    inline TWIPS StandardTabStopList::ComputeIthTab (size_t i) const
     {
         TWIPS  r      = TWIPS (0);
         size_t smallI = min (i + 1, fTabStops.size ());
@@ -96,7 +59,7 @@ namespace Stroika::Frameworks::Led {
         }
         return r;
     }
-    inline TWIPS TextImager::StandardTabStopList::ComputeTabStopAfterPosition (TWIPS afterPos) const
+    inline TWIPS StandardTabStopList::ComputeTabStopAfterPosition (TWIPS afterPos) const
     {
         // Instead if walking all tabstops til we find the right one - GUESS where the right one is (division) and then
         // walk back and forth if/as needed to narrow it down. This will guess perfectly if there are no user-defined tabstops.
@@ -122,6 +85,59 @@ namespace Stroika::Frameworks::Led {
         AssertNotReached ();
         return afterPos;
     }
+    constexpr bool StandardTabStopList::operator== (const StandardTabStopList& rhs) const
+    {
+        return fDefaultTabWidth == rhs.fDefaultTabWidth and fTabStops == rhs.fTabStops;
+    }
+
+#if qStroika_Frameworks_Led_SupportGDI
+
+    /*
+     ********************************************************************************
+     ***************************** TextImager::SimpleTabStopList ********************
+     ********************************************************************************
+     */
+    inline TextImager::SimpleTabStopList::SimpleTabStopList (TWIPS twipsPerTabStop)
+        : TabStopList ()
+        , fTWIPSPerTabStop (twipsPerTabStop)
+    {
+        Require (twipsPerTabStop > 0);
+    }
+    inline TWIPS TextImager::SimpleTabStopList::ComputeIthTab (size_t i) const
+    {
+        return TWIPS (static_cast<long> ((i + 1) * fTWIPSPerTabStop));
+    }
+    inline TWIPS TextImager::SimpleTabStopList::ComputeTabStopAfterPosition (TWIPS afterPos) const
+    {
+        Assert (fTWIPSPerTabStop > 0);
+        size_t idx    = afterPos / fTWIPSPerTabStop;
+        TWIPS  result = TWIPS (static_cast<long> ((idx + 1) * fTWIPSPerTabStop));
+        Ensure (result % fTWIPSPerTabStop == 0);
+        Ensure (result > afterPos);
+        return result;
+    }
+
+    /*
+     ********************************************************************************
+     ****************** TextImager::GoalColumnRecomputerControlContext **************
+     ********************************************************************************
+     */
+    inline TextImager::GoalColumnRecomputerControlContext::GoalColumnRecomputerControlContext (TextImager& imager, bool suppressRecompute)
+        : fTextImager (imager)
+        , fSavedSuppressRecompute (imager.fSuppressGoalColumnRecompute)
+    {
+        imager.fSuppressGoalColumnRecompute = suppressRecompute;
+    }
+    inline TextImager::GoalColumnRecomputerControlContext::~GoalColumnRecomputerControlContext ()
+    {
+        fTextImager.fSuppressGoalColumnRecompute = fSavedSuppressRecompute;
+    }
+
+    /*
+     ********************************************************************************
+     ************************************** TextImager ******************************
+     ********************************************************************************
+     */
     inline void TextImager::SetWindowRect_ (const Led_Rect& windowRect)
     {
         fWindowRect = windowRect;

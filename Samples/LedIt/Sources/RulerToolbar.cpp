@@ -473,7 +473,7 @@ CSize RulerBar::CalcFixedLayout (BOOL bStretch, BOOL bHorz)
 void RulerBar::Update (const WordProcessor::IncrementalParagraphInfo& pf)
 {
     if (pf.GetTabStopList_Valid ()) {
-        TextImager::StandardTabStopList tabStops = pf.GetTabStopList ();
+        StandardTabStopList tabStops = pf.GetTabStopList ();
         DistanceType                    tabSoFar = 0;
         Require (tabStops.fTabStops.size () <= MAX_TAB_STOPS);
         size_t i = 0;
@@ -537,7 +537,7 @@ void RulerBar::FillInParaFormat (WordProcessor::IncrementalParagraphInfo& pf)
             soFar = nPos;
         }
     }
-    pf.SetTabStopList (TextImager::StandardTabStopList (v));
+    pf.SetTabStopList (StandardTabStopList{v});
 
     pf.SetMargins (TWIPS{m_leftmargin.GetHorzPosTwips ()}, TWIPS{m_rightmargin.GetHorzPosTwips ()});
     pf.SetFirstIndent (TWIPS{m_indent.GetHorzPosTwips () - m_leftmargin.GetHorzPosTwips ()});

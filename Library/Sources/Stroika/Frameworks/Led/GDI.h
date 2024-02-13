@@ -22,16 +22,15 @@
 #include <string>
 #include <vector>
 
-#include "Stroika/Foundation/Characters/String.h"
-
-#include "Support.h"
-
 // WHY DON'T WE NEED TO INCLUDE <Windows.h> here??? - LGP 991213
-
 #if qStroika_FeatureSupported_XWindows
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #endif
+
+#include "Stroika/Foundation/Characters/String.h"
+
+#include "Support.h"
 
 namespace Stroika::Frameworks::Led {
 
@@ -80,6 +79,9 @@ namespace Stroika::Frameworks::Led {
         nonvirtual TWIPS& operator*= (double rhs);
 
     public:
+        constexpr bool operator== (const TWIPS&) const = default;
+
+    public:
         static const TWIPS kPoint;
         static const TWIPS kInch;
         static const TWIPS kOneInch;
@@ -122,7 +124,7 @@ namespace Stroika::Frameworks::Led {
         /*
         @DESCRIPTION:   <p>Given a distance from the left margin, find the immediately following tabstops position.
             This is what is actaully used in the imagers to compute where to draw text. It can logically
-            be implemented by walking the tabstoplist and calling @'TextImager::TabStopList::ComputeIthTab', and
+            be implemented by walking the tabstoplist and calling @'TabStopList::ComputeIthTab', and
             returning the next one after the one past(or equal to) <code>afterPos</code>.</p>
                 <p>Note - this used to take/return Distance - but in Led 3.0 - it changed to take/return TWIPS (see SPR#0767);</p>
                 <p>Now there is an overloaded version using Distance that takes a Tablet* as argument.</p>
