@@ -278,7 +278,7 @@ LedItDocument::LedItDocument ()
     ::AfxOleLockApp ();
 #endif
     fTextStore.AddMarkerOwner (this);
-    fStyleDatabase       = make_shared<StyleDatabaseRep>  (fTextStore);
+    fStyleDatabase       = make_shared<StyleDatabaseRep> (fTextStore);
     fParagraphDatabase   = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
     fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
 }
@@ -1103,7 +1103,7 @@ BOOL LedItDocument::OnNewDocument ()
         return FALSE;
     }
     fFileFormat          = eDefaultFormat;
-    fStyleDatabase       = make_shared<StyleDatabaseRep>  (fTextStore);
+    fStyleDatabase       = make_shared<StyleDatabaseRep> (fTextStore);
     fParagraphDatabase   = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
     fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
     return TRUE;
