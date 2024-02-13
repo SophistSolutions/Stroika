@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::Led {
         vector<TWIPS> fTabStops;
 
     public:
-        nonvirtual bool operator== (const StandardTabStopList& rhs) const;
+        nonvirtual bool operator== (const StandardTabStopList& rhs) const = default;
     };
 
 #if qStroika_Frameworks_Led_SupportGDI
@@ -51,13 +51,13 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         TextImager
     @BASES:         virtual @'MarkerOwner'
     @DESCRIPTION:   <p>The @'TextImager' class is one of central importance in Led.
-                TextImagers are responsable for imaging to a @'Tablet*' the
+                TextImagers are responsible for imaging to a @'Tablet*' the
                 contents of a particular @'TextStore'. A TextImager (except in the degenerate case)
                 is always associated with one TextStore (though a single TextStore can have
                 multiple TextImagers displaying its contents). This long-term relationship allows
                 the TextImagers to keep track of cached data like word-wrapping information etc.
-                TextStores have a flexable notification mechanism so that TextImagers get notifed
-                when 'interesting' modications are made to the text (or @'Marker's) in the TextStore
+                TextStores have a flexible notification mechanism so that TextImagers get notified
+                when 'interesting' modifications are made to the text (or @'Marker's) in the TextStore
                 a TextImager is pointing to.</p>
 
                     <p>A particular TextImager subclass takes the given text,
@@ -537,7 +537,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         class HilightMarker : public Marker {
         public:
-            HilightMarker ();
+            HilightMarker () = default;
         };
         HilightMarker* fHiliteMarker;
         bool           fWeAllocedHiliteMarker;

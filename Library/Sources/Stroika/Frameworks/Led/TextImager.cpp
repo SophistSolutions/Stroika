@@ -22,21 +22,20 @@ using namespace Stroika::Frameworks::Led;
  */
 #if qPlatform_Windows
 namespace {
-
-    inline bool LogFontsEqual (LOGFONT lhs, LOGFONT rhs)
+    inline bool LogFontsEqual_ (LOGFONT lhs, LOGFONT rhs)
     {
         size_t bytesToCompare = offsetof (LOGFONT, lfFaceName) + (::_tcslen (lhs.lfFaceName) + 1) * sizeof (Characters::SDKChar);
         Require (bytesToCompare <= sizeof (LOGFONT)); // else we were passed bogus LogFont (and we should validate them before here!)
         return ::memcmp (&lhs, &rhs, bytesToCompare) == 0;
     }
-    inline bool LogFontsEqual (const FontSpecification& lhs, const FontSpecification& rhs)
+    inline bool LogFontsEqual_ (const FontSpecification& lhs, const FontSpecification& rhs)
     {
         if (lhs.GetStyle_SubOrSuperScript () == rhs.GetStyle_SubOrSuperScript ()) {
             LOGFONT lhslf;
             lhs.GetOSRep (&lhslf);
             LOGFONT rhslf;
             rhs.GetOSRep (&rhslf);
-            return LogFontsEqual (lhslf, rhslf);
+            return LogFontsEqual_ (lhslf, rhslf);
         }
         else {
             return false;
@@ -45,11 +44,11 @@ namespace {
 }
 #endif
 TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager, Tablet* tablet, const FontSpecification& fontSpec)
-    : fImager (imager)
+    : fImager{imager}
 #if qPlatform_Windows
-    , fTablet (tablet)
-    , fRestoreObject (nullptr)
-    , fRestoreAttribObject (nullptr)
+    , fTablet{tablet}
+    , fRestoreObject{nullptr}
+    , fRestoreAttribObject{nullptr}
 #endif
 {
 #if qPlatform_Windows
@@ -60,7 +59,7 @@ TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager
      *  in to tablet each time. And on DTOR, restore old font into tablet.
      */
     bool changed = false;
-    if (imager->fCachedFont == nullptr or !LogFontsEqual (fontSpec, imager->fCachedFontSpec)) {
+    if (imager->fCachedFont == nullptr or !LogFontsEqual_ (fontSpec, imager->fCachedFontSpec)) {
         changed = true;
         delete imager->fCachedFont;
         imager->fCachedFont = nullptr;
@@ -99,16 +98,6 @@ TextImager::FontCacheInfoUpdater::FontCacheInfoUpdater (const TextImager* imager
     tablet->SetFont (fontSpec);
     imager->fCachedFontInfo = tablet->GetFontMetrics ();
 #endif
-}
-
-/*
- ********************************************************************************
- ***************************** TextImager::HilightMarker ************************
- ********************************************************************************
- */
-TextImager::HilightMarker::HilightMarker ()
-    : Marker ()
-{
 }
 
 /*
@@ -1526,7 +1515,7 @@ void TextImager::DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec
     tablet->SetBackColor (backColor);
     tablet->SetForeColor (foreColor);
 
-    FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
+    FontCacheInfoUpdater fontCacheUpdater{this, tablet, fontSpec};
 
     DistanceType ascent = fCachedFontInfo.GetAscent ();
     Assert (useBaseLine >= drawInto.top);
@@ -1619,7 +1608,7 @@ void TextImager::MeasureSegmentWidth_ (const FontSpecification& fontSpec, size_t
     size_t length = to - from;
     Assert (length > 0);
 
-    FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
+    FontCacheInfoUpdater fontCacheUpdater{this, tablet, fontSpec};
 
     if (ContainsMappedDisplayCharacters (text, length)) {
         Memory::StackBuffer<Led_tChar> buf2{Memory::eUninitialized, length};
@@ -1641,7 +1630,7 @@ DistanceType TextImager::MeasureSegmentHeight_ (const FontSpecification& fontSpe
 {
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Tablet*> (tablet));
-    FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
+    FontCacheInfoUpdater fontCacheUpdater{this, tablet, fontSpec};
     return (fCachedFontInfo.GetLineHeight ());
 }
 
@@ -1654,19 +1643,19 @@ DistanceType TextImager::MeasureSegmentBaseLine_ (const FontSpecification& fontS
 {
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Tablet*> (tablet));
-    FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
-    return (fCachedFontInfo.GetAscent ());
+    FontCacheInfoUpdater fontCacheUpdater{this, tablet, fontSpec};
+    return fCachedFontInfo.GetAscent ();
 }
 
-FontMetrics TextImager::GetFontMetricsAt (size_t charAfterPos) const
+FontMetrics TextImager::GetFontMetricsAt ([[maybe_unused]] size_t charAfterPos) const
 {
     Tablet_Acquirer tablet (this);
     AssertNotNull (static_cast<Tablet*> (tablet));
 
     FontSpecification fontSpec = GetDefaultFont ();
 
-    FontCacheInfoUpdater fontCacheUpdater (this, tablet, fontSpec);
-    return (fCachedFontInfo);
+    FontCacheInfoUpdater fontCacheUpdater{this, tablet, fontSpec};
+    return fCachedFontInfo;
 }
 
 #endif

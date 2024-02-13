@@ -122,10 +122,6 @@ namespace Stroika::Frameworks::Led {
         AssertNotReached ();
         return afterPos;
     }
-    inline bool TextImager::StandardTabStopList::operator== (const StandardTabStopList& rhs) const
-    {
-        return fDefaultTabWidth == rhs.fDefaultTabWidth and fTabStops == rhs.fTabStops;
-    }
     inline void TextImager::SetWindowRect_ (const Led_Rect& windowRect)
     {
         fWindowRect = windowRect;
