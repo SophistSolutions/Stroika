@@ -39,7 +39,7 @@
         "COMMENT-1": "--boost no to save space, cuz else runs out of disk space",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --boost no",
          "DISABLED-run_on_branch": "v3-Release",
-         "run_on_branch": "always"
+         "run_on_branch": "v3-Release"
         },
     {
         "build_job": "Linux",
