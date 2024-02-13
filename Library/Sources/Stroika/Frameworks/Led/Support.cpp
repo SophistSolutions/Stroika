@@ -41,20 +41,9 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
 #if !qTargetPlatformSDKUseswchar_t
-/*
-@METHOD:        Led_tString2SDKString
-@DESCRIPTION:   <p></p>
-*/
 SDKString Led::Led_tString2SDKString (const Led_tString& s)
 {
-#if !qTargetPlatformSDKUseswchar_t
-    size_t                                   nChars = s.length () * sizeof (wchar_t) + 1; // convert null byte, too
-    Memory::StackBuffer<Characters::SDKChar> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
-    return SDKString{result.data ()};
-#else
-#error "Hmm"
-#endif
+    return CodeCvt<wchar_t>{locale{}}.String2Bytes<SDKString> (span<const wchar_t>{s});
 }
 #endif
 
