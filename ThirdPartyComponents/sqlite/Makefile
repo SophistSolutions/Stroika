@@ -18,7 +18,7 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 # because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
 .NOTPARALLEL:
 
-VERSION=3450100
+VERSION:=3450100
 #VERSION=3450000
 #VERSION=3440200
 #VERSION=3440000
@@ -58,22 +58,22 @@ PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Buil
 #lose trailing / on PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_ because on macos make THATDIR doesn't work with trailing slash (old WEIRD_MACOS_MAKEFILE_DIR_BUG -  MacOS XCode 10 - GNU Make 3.81)
 PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/sqlite)
 
-OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
+OUTPUT_WORKDIR_PRETTYNAME:="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
 .PHONY:	all clean clobber check
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 SQLITE3LIB=libsqlite.a
-SQLITE3EXE=sqlite
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 SQLITE3LIB=sqlite.lib
-SQLITE3EXE=sqlite.exe
 endif
 TARGETDIR			:=	$(PER_CONFIGURATION_BUILDS_DIR)bin/
 TARGETEXE			:=	$(TARGETDIR)sqlite${EXE_SUFFIX}
 
-LibObjs=\
+ObjDir:=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/
+
+LibObjs:=\
 	$(ObjDir)sqlite3${OBJ_SUFFIX}\
 
 Objs:=\
@@ -82,10 +82,10 @@ Objs:=\
 
 # Use the stroika link macro (DEFAULT_LINK_LINE), but omit the stroika lib itself, and other injected depepdencies
 # for sqlite executable
-LinkerArgs_LibDependencies=
-StroikaLibs=
+LinkerArgs_LibDependencies:=
+StroikaLibs:=
 ifeq (Unix,$(ProjectPlatformSubdir))
-LinkerArgs_LibDependencies=-lpthread
+LinkerArgs_LibDependencies:=-lpthread
 endif
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
@@ -169,7 +169,6 @@ ifeq (1,$(qCompiler_HasNoMisleadingIndentation_Flag))
 CFLAGS	+= -Wno-misleading-indentation
 endif
 
-ObjDir=$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/
 
 vpath %c $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
 
