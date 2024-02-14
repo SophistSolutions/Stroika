@@ -18,9 +18,6 @@
 #define kShowVerticalScrollbarID 201
 #define kShowHorizontalScrollbarID 202
 
-#if !qURLStyleMarkerNewDisplayMode
-#define kURLPictID 1001
-#endif
 #define kUnknownEmbeddingPictID 1002
 #define kUnsupportedPICTFormatPictID 1003
 

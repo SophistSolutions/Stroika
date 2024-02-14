@@ -70,9 +70,6 @@ IDB_ACTIVELEDIT         BITMAP  DISCARDABLE     "ActiveLedItControl.bmp"
 
 
 
-#if		!qURLStyleMarkerNewDisplayMode
-kURLPictID           			BitMap	MOVEABLE PURE	"URLEmbeddingIcon.bmp"
-#endif
 kUnknownEmbeddingPictID			BitMap	MOVEABLE PURE	"UnknownEmbeddingIcon.bmp"
 kUnsupportedPICTFormatPictID	BitMap	MOVEABLE PURE	"UnsupportedPictFormat.bmp"
 

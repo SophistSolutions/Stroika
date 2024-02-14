@@ -301,17 +301,6 @@ namespace Stroika::Frameworks::Led {
         Led_DIB* fDIBData;
     };
 
-/*
-    @CONFIGVAR:     qURLStyleMarkerNewDisplayMode
-    @DESCRIPTION:
-            <p>The old display mode was somewhat idiosyncratic, and the new one is more like how other browsers
-        display URLs. But keep the old one available in case some prefer it (at least for 3.0).</p>
-            <p>Turn ON by default.</p>
-        */
-#ifndef qURLStyleMarkerNewDisplayMode
-#define qURLStyleMarkerNewDisplayMode 1
-#endif
-
     /*
     @CLASS:         StandardURLStyleMarker
     @BASES:         @'SimpleEmbeddedObjectStyleMarker'
@@ -334,13 +323,6 @@ namespace Stroika::Frameworks::Led {
     public:
         static SimpleEmbeddedObjectStyleMarker* mk (const char* embeddingTag, const void* data, size_t len);
         static SimpleEmbeddedObjectStyleMarker* mk (ReaderFlavorPackage& flavorPackage);
-
-#if !qURLStyleMarkerNewDisplayMode
-    public:
-#if qPlatform_Windows
-        static const Led_DIB* sURLPict;
-#endif
-#endif
 
     public:
         virtual void DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,

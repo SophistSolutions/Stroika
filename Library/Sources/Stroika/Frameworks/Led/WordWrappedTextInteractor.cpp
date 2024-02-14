@@ -31,8 +31,7 @@ void WordWrappedTextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool 
         bool savedSuppressFlag = GetSuppressTypedControlCharacters ();
         SetSuppressTypedControlCharacters (false);
         try {
-            inherited::OnTypedNormalCharacter (WordWrappedTextImager::kSoftLineBreakChar, optionPressed, shiftPressed, commandPressed,
-                                               controlPressed, altKeyPressed);
+            inherited::OnTypedNormalCharacter (kSoftLineBreakChar, optionPressed, shiftPressed, commandPressed, controlPressed, altKeyPressed);
         }
         catch (...) {
             SetSuppressTypedControlCharacters (savedSuppressFlag);

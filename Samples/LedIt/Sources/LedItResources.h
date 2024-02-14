@@ -379,9 +379,6 @@ enum {
 
 #define STRx_Untitled 300
 
-#if !qURLStyleMarkerNewDisplayMode
-#define kURLPictID 5001
-#endif
 #define kUnknownEmbeddingPictID 5002
 #define kUnsupportedDIBFormatPictID 5003
 
@@ -431,9 +428,6 @@ enum {
 
 #define kBadUserInputExceptionOnCmdDialogID 1008
 
-#if !qURLStyleMarkerNewDisplayMode
-#define kURLPictID 1001
-#endif
 #define kUnknownEmbeddingPictID 1002
 #define kUnsupportedPICTFormatPictID 1003
 

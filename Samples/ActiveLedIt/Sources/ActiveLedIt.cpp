@@ -132,10 +132,7 @@ BOOL ActiveLedItApp::InitInstance ()
     BOOL bInit = inherited::InitInstance ();
 
     if (bInit) {
-// Tell Led about the picture resources it needs to render some special embedding markers
-#if !qURLStyleMarkerNewDisplayMode
-        StandardURLStyleMarker::sURLPict = (const Led_DIB*)::LoadDLLResource (kURLPictID, RT_BITMAP);
-#endif
+        // Tell Led about the picture resources it needs to render some special embedding markers
         StandardUnknownTypeStyleMarker::sUnknownPict          = (const Led_DIB*)::LoadDLLResource (kUnknownEmbeddingPictID, RT_BITMAP);
         StandardMacPictureStyleMarker::sUnsupportedFormatPict = (const Led_DIB*)::LoadDLLResource (kUnsupportedPICTFormatPictID, RT_BITMAP);
 

@@ -655,7 +655,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-    
     /*
     @CLASS:         WordProcessorTable::Cell
     @DESCRIPTION:   <p>Used internally by the @'WordProcessorTable' code.</p>
@@ -719,9 +718,6 @@ namespace Stroika::Frameworks::Led {
         Led_Rect                                 fCachedBoundsRect;
         TWIPS                                    fCellXWidth;
     };
-
-
-
 
     /**
      *      <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream', for use with the StyledTextIO module,

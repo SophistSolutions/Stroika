@@ -28,8 +28,6 @@
 #define qSupportStyleSheets 0
 #endif
 
-#define qURLStyleMarkerNewDisplayMode 1
-
 #ifndef qIncludeBasicSpellcheckEngine
 #define qIncludeBasicSpellcheckEngine 1
 #endif

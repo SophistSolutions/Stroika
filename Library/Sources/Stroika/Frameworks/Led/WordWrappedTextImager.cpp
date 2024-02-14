@@ -32,9 +32,6 @@ inline DistanceType LookupLengthInVector (const DistanceType* widthsVector, size
  ********************************* WordWrappedTextImager ************************
  ********************************************************************************
  */
-
-const Led_tChar WordWrappedTextImager::kSoftLineBreakChar = qDefaultLedSoftLineBreakChar;
-
 /*
 @METHOD:        WordWrappedTextImager::FillCache
 @DESCRIPTION:   <p>Hook the MultiRowTextImager's FillCache () call to compute the row information for
@@ -158,7 +155,7 @@ void WordWrappedTextImager::AdjustBestRowLength (size_t /*textStart*/, const Led
 {
     Require (*rowLength > 0);
     for (const Led_tChar* cur = &text[0]; cur < end; cur = Led_NextChar (cur)) {
-        if (*cur == WordWrappedTextImager::kSoftLineBreakChar) {
+        if (*cur == kSoftLineBreakChar) {
             size_t newBestRowLength = (cur - text) + 1;
             Assert (newBestRowLength <= *rowLength + 1); // Assure newBestRowLength is less than it would have been without the
             // softlinebreak character, EXCEPT if the softlinebreak char is already

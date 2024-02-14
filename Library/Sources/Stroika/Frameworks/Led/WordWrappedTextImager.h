@@ -30,11 +30,10 @@ namespace Stroika::Frameworks::Led {
 #define qDefaultLedSoftLineBreakChar '\001'
 #endif
 
-
-/**
+    /**
  *       <p>Sentinel character used to mark a soft line-break.</p>
  */
-constexpr Led_tChar kSoftLineBreakChar = qDefaultLedSoftLineBreakChar;
+    constexpr Led_tChar kSoftLineBreakChar = qDefaultLedSoftLineBreakChar;
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*

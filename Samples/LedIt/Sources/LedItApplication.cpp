@@ -695,10 +695,7 @@ LedItApplication::LedItApplication ()
     TRegistrar<LTabGroup>::Register ();
     TRegistrar<LStdPopupMenu>::Register ();
 
-// Tell Led about the picture resources it needs to render some special embedding markers
-#if !qURLStyleMarkerNewDisplayMode
-    StandardURLStyleMarker::sURLPict = (Picture**)::GetResource ('PICT', kURLPictID);
-#endif
+    // Tell Led about the picture resources it needs to render some special embedding markers
     StandardUnknownTypeStyleMarker::sUnknownPict   = (Picture**)::GetResource ('PICT', kUnknownEmbeddingPictID);
     StandardDIBStyleMarker::sUnsupportedFormatPict = (Picture**)::GetResource ('PICT', kUnsupportedDIBFormatPictID);
 
@@ -1346,10 +1343,7 @@ BOOL LedItApplication::InitInstance ()
     fOleTemplateServer.UpdateRegistry (OAT_INPLACE_SERVER);
     COleObjectFactory::UpdateRegistryAll ();
 
-// Tell Led about the picture resources it needs to render some special embedding markers
-#if !qURLStyleMarkerNewDisplayMode
-    StandardURLStyleMarker::sURLPict = (const Led_DIB*)::LoadAppResource (kURLPictID, RT_BITMAP);
-#endif
+    // Tell Led about the picture resources it needs to render some special embedding markers
     StandardUnknownTypeStyleMarker::sUnknownPict          = (const Led_DIB*)::LoadAppResource (kUnknownEmbeddingPictID, RT_BITMAP);
     StandardMacPictureStyleMarker::sUnsupportedFormatPict = (const Led_DIB*)::LoadAppResource (kUnsupportedPICTFormatPictID, RT_BITMAP);
 

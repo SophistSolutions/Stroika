@@ -33,10 +33,6 @@ kLedItRTFDocumentIconID	ICON	DISCARDABLE		"LedItRTFDocument.ico"
 IDR_MAINFRAME			BITMAP  MOVEABLE PURE   "Toolbar.bmp"
 IDR_SRVR_INPLACE		BITMAP	MOVEABLE PURE	"IToolbar.bmp"
 
-
-#if		!qURLStyleMarkerNewDisplayMode
-kURLPictID           			BitMap	MOVEABLE PURE	"URLEmbeddingIcon.bmp"
-#endif
 kUnknownEmbeddingPictID			BitMap	MOVEABLE PURE	"UnknownEmbeddingIcon.bmp"
 kUnsupportedPICTFormatPictID	BitMap	MOVEABLE PURE	"UnsupportedPictFormat.bmp"
 

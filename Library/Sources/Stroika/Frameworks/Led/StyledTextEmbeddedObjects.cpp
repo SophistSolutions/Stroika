@@ -488,25 +488,12 @@ const Led_ClipFormat StandardURLStyleMarker::kWin32URLClipFormat =
 const Led_ClipFormat StandardURLStyleMarker::kURLDClipFormat = 'URLD'; //??? NOT SURE WHAT RIGHT ANSWER SB HERE!!!
 #endif
 
-#if !qURLStyleMarkerNewDisplayMode
-#if qPlatform_MacOS
-Led_Picture** StandardURLStyleMarker::sURLPict = nullptr;
-#elif qPlatform_Windows
-const Led_DIB* StandardURLStyleMarker::sURLPict = nullptr;
-#endif
-
-#endif
 constexpr Led_PrivateEmbeddingTag StandardURLStyleMarker::kEmbeddingTag = "URL";
 
 StandardURLStyleMarker::StandardURLStyleMarker (const Led_URLD& urlData)
     : SimpleEmbeddedObjectStyleMarker ()
     , fURLData (urlData)
 {
-#if !qURLStyleMarkerNewDisplayMode
-#if qPlatform_MacOS || qPlatform_Windows
-    RequireNotNull (sURLPict); // If this is ever triggered, see class declaration where we delcare this field
-#endif
-#endif
 }
 
 StandardURLStyleMarker::~StandardURLStyleMarker ()
@@ -552,123 +539,10 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
 {
     RequireNotNull (imager);
 
-#if qURLStyleMarkerNewDisplayMode
     FontSpecification fsp         = GetDisplayFont (runElement);
     Led_tString       displayText = GetDisplayString ();
     imager->DrawSegment_ (tablet, fsp, from, from + displayText.length (),
                           TextLayoutBlock_Basic (displayText.c_str (), displayText.c_str () + displayText.length ()), drawInto, useBaseLine, pixelsDrawn);
-#else
-    DistanceType width = 0;
-    MeasureSegmentWidth (imager, runElement, from, to, text, &width);
-    width -= 2 * kDefaultEmbeddingMargin.h;
-    DistanceType height = MeasureSegmentHeight (imager, runElement, from, to) - 2 * kDefaultEmbeddingMargin.v;
-
-    Led_Rect ourBoundsRect     = drawInto - Led_Point (0, imager->GetHScrollPos ());
-    ourBoundsRect.right        = ourBoundsRect.left + width + 2 * kDefaultEmbeddingMargin.h;
-    CoordinateType embedBottom = useBaseLine;
-    CoordinateType embedTop    = embedBottom - height;
-    Assert (embedTop >= drawInto.top);
-    Assert (embedBottom <= drawInto.bottom);
-    Led_Rect innerBoundsRect = Led_Rect (Led_Point (embedTop, ourBoundsRects.left + kDefaultEmbeddingMargin.h), Led_Size (height, width));
-
-    Color foreColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor);
-    Color backColor = imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
-
-#if qPlatform_MacOS
-    tablet->SetPort ();
-#endif
-
-#if qPlatform_MacOS
-    GDI_RGBForeColor (foreColor.GetOSRep ());
-    GDI_RGBBackColor (backColor.GetOSRep ());
-#elif qPlatform_Windows
-    tablet->SetTextColor (foreColor.GetOSRep ());
-    tablet->SetBkColor (backColor.GetOSRep ());
-#endif
-
-    const char* url       = fURLData.PeekAtURLD ();
-    const char* urlEnd    = ::strchr (url, '\r');
-    size_t      urlStrLen = (urlEnd == nullptr) ? strlen (url) : (urlEnd - url);
-    const char* name      = ::strchr (fURLData.PeekAtURLD (), '\r');
-    if (name != nullptr) {
-        ++name; // skip CR
-    }
-    size_t nameStrLen = (name == nullptr) ? 0 : ::strlen (name);
-
-/*
-     *  Draw the marker on the baseline (to from the top of the drawing area).
-     *  And be sure to erase everything in the draw rect!
-     */
-#if qPlatform_MacOS || qPlatform_Windows
-    AssertNotNull (sURLPict);
-#endif
-#if qPlatform_MacOS
-    Rect rr = AsQDRect (innerBoundsRect);
-    PenNormal ();
-    PenSize (2, 2);
-    ::FrameRoundRect (&rr, 2, 2);
-    Rect iconRect   = rr;
-    iconRect.bottom = iconRect.top + Led_GetMacPictHeight (sURLPict);
-    iconRect.right  = iconRect.left + Led_GetMacPictWidth (sURLPict);
-    ::OffsetRect (&iconRect, 2, 2); // take into account border
-
-    ::DrawPicture (sURLPict, &iconRect);
-
-    ::MoveTo (iconRect.right + 3, iconRect.top + 16);
-    ::TextFont (kFontIDTimes);
-    ::TextSize (14);
-    ::TextFace (0);
-    ::DrawText (name, 0, nameStrLen);
-
-    ::MoveTo (iconRect.right + 3, iconRect.top + 28);
-    ::TextFont (kFontIDGeneva);
-    ::TextSize (9);
-    ::DrawText (url, 0, urlStrLen);
-#elif qPlatform_Windows
-    Pen              pen (PS_SOLID, 2, RGB (0, 0, 0));
-    GDI_Obj_Selector penWrapper (tablet, pen);
-    GDI_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
-    tablet->RoundRect (innerBoundsRect.left, innerBoundsRect.top, innerBoundsRect.right, innerBoundsRect.bottom, 2, 2);
-
-    Led_Rect iconRect     = innerBoundsRect;
-    Led_Size dibImageSize = Led_GetDIBImageSize (sURLPict);
-    iconRect.bottom       = iconRect.top + dibImageSize.v;
-    iconRect.right        = iconRect.left + dibImageSize.h;
-    //const BITMAPINFOHEADER&   hdr         =   sURLPict->bmiHeader;
-    const void* lpBits = Led_GetDIBBitsPointer (sURLPict);
-    //const char*               lpBits      =   ((const char*)sURLPict) + Led_ByteSwapFromWindows (hdr.biSize) + Led_GetDIBPalletByteCount (sURLPict);
-    ::StretchDIBits (tablet->m_hDC, iconRect.left, iconRect.top, iconRect.GetWidth (), iconRect.GetHeight (), 0, 0, dibImageSize.h,
-                     dibImageSize.v, lpBits, sURLPict, DIB_RGB_COLORS, SRCCOPY);
-
-    FontObject font1;
-    {
-        LOGFONT lf;
-        memset (&lf, 0, sizeof lf);
-        _tcscpy (lf.lfFaceName, _T ("System"));
-        Verify (font1.CreateFontIndirect (&lf));
-    }
-    GDI_Obj_Selector font1Selector (tablet, font1);
-    if (nameStrLen != 0) {
-        ::TextOutA (*tablet, iconRect.right + 3, iconRect.top + 2, name, nameStrLen);
-    }
-
-    FontObject font2;
-    {
-        LOGFONT lf;
-        memset (&lf, 0, sizeof lf);
-        _tcscpy (lf.lfFaceName, _T ("Arial"));
-        Verify (font2.CreateFontIndirect (&lf));
-        lf.lfHeight = -8;
-    }
-    GDI_Obj_Selector font2Selector (tablet, font2);
-    if (urlStrLen != 0) {
-        ::TextOutA (*tablet, iconRect.right + 3, iconRect.top + 16, url, urlStrLen);
-    }
-#endif
-    if (pixelsDrawn != nullptr) {
-        *pixelsDrawn = ourBoundsRect.GetWidth ();
-    }
-#endif
 }
 
 void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const StyleRunElement& runElement, [[maybe_unused]] size_t from,
@@ -688,7 +562,6 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
      *      See SPR#0821.
      */
 
-#if qURLStyleMarkerNewDisplayMode
     FontSpecification fsp         = GetDisplayFont (runElement);
     Led_tString       displayText = GetDisplayString ();
     if (displayText.empty ()) {
@@ -699,76 +572,6 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
         imager->MeasureSegmentWidth_ (fsp, from, from + displayText.length (), displayText.c_str (), distRes.data ());
         distanceResults[0] = distRes[displayText.length () - 1];
     }
-#else
-    const char* url       = fURLData.PeekAtURLD ();
-    const char* urlEnd    = ::strchr (url, '\r');
-    size_t      urlStrLen = (urlEnd == nullptr) ? strlen (url) : (urlEnd - url);
-    const char* name      = ::strchr (fURLData.PeekAtURLD (), '\r');
-    if (name != nullptr) {
-        ++name; // skip CR
-    }
-    size_t nameStrLen = (name == nullptr) ? 0 : ::strlen (name);
-
-    TextInteractor::Tablet_Acquirer tablet_ (imager);
-    Tablet*                         tablet = tablet_;
-
-#if qPlatform_MacOS
-    tablet->SetPort ();
-#elif qPlatform_Windows
-    Tablet* dc = tablet;
-#endif
-
-#if qPlatform_MacOS
-    Memory::Platform::MacOS locker ((Memory::Platform::MacOS::GenericHandle)sURLPict);
-    // First add in width of picture
-    distanceResults[0] = Led_GetMacPictWidth (sURLPict);
-
-    distanceResults[0] += 2 * 3; // leave room for spacing around text
-
-    // Leave room for text - largest of two strings
-    ::TextFont (kFontIDTimes);
-    ::TextSize (14);
-    ::TextFace (0);
-    DistanceType string1Width = ::TextWidth (name, 0, nameStrLen);
-
-    ::TextFont (kFontIDGeneva);
-    ::TextSize (9);
-    DistanceType string2Width = ::TextWidth (url, 0, urlStrLen);
-
-    distanceResults[0] += max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
-
-#elif qPlatform_Windows
-    // First add in width of picture
-    distanceResults[0] = Led_GetDIBImageSize (sURLPict).h;
-
-    distanceResults[0] += 2 * 3; // leave room for spacing around text
-
-    // Leave room for text - largest of two strings
-    FontObject font1;
-    {
-        LOGFONT lf;
-        memset (&lf, 0, sizeof lf);
-        _tcscpy (lf.lfFaceName, _T ("System"));
-        Verify (font1.CreateFontIndirect (&lf));
-    }
-    GDI_Obj_Selector font1Selector (tablet, font1);
-    DistanceType     string1Width =
-        name == nullptr ? 0 : dc->GetTextExtent (String::FromNarrowSDKString (name).AsSDKString ().c_str (), nameStrLen).cx;
-
-    FontObject font2;
-    {
-        LOGFONT lf;
-        memset (&lf, 0, sizeof lf);
-        _tcscpy (lf.lfFaceName, _T ("Arial"));
-        Verify (font2.CreateFontIndirect (&lf));
-        lf.lfHeight = -8;
-    }
-    GDI_Obj_Selector font2Selector (tablet, font2);
-    DistanceType     string2Width = dc->GetTextExtent (String::FromNarrowSDKString (url).AsSDKString ().c_str (), urlStrLen).cx;
-
-    distanceResults[0] += max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
-#endif
-#endif
 }
 
 DistanceType StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const StyleRunElement& runElement,
@@ -776,20 +579,9 @@ DistanceType StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextImage
 {
     Assert (from + 1 == to);
 
-#if qURLStyleMarkerNewDisplayMode
     FontSpecification fsp         = GetDisplayFont (runElement);
     Led_tString       displayText = GetDisplayString ();
     return imager->MeasureSegmentHeight_ (fsp, from, from + displayText.length ());
-#else
-// this '36' is something of a hack. Really we should set the font into a grafport, and measure font metrics etc.
-// but this is good enuf - I believe - LGP 960314
-#if qPlatform_MacOS
-    Memory::Platform::MacOS::StackBasedHandleLocker locker ((Memory::Platform::MacOS::StackBasedHandleLocker::GenericHandle)sURLPict);
-    return max (Led_GetMacPictHeight (sURLPict), 36) + 2 * kDefaultEmbeddingMargin.v;
-#elif qPlatform_Windows
-    return max (Led_GetDIBImageSize (sURLPict).v, 36) + 2 * kDefaultEmbeddingMargin.v;
-#endif
-#endif
 }
 
 void StandardURLStyleMarker::Write (SinkStream& sink)

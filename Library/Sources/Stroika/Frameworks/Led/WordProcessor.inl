@@ -561,13 +561,12 @@ namespace Stroika::Frameworks::Led {
         fUseTableSelection = useTableSelection;
     }
 
-
     /*
      ********************************************************************************
      ********** WordProcessorTable ***************
      ********************************************************************************
      */
-     inline TWIPS WordProcessorTable::GetCellSpacing () const
+    inline TWIPS WordProcessorTable::GetCellSpacing () const
     {
         return fCellSpacing;
     }
@@ -577,7 +576,7 @@ namespace Stroika::Frameworks::Led {
             fCellSpacing = cellSpacing;
 #if qStroika_Frameworks_Led_SupportGDI
             InvalidateLayout ();
-            #endif
+#endif
         }
     }
     /*
@@ -740,9 +739,6 @@ namespace Stroika::Frameworks::Led {
     }
 #endif
 
-
-
-
     /*
      ********************************************************************************
      ************************ WordProcessorTable::Cell ******************************
@@ -768,7 +764,6 @@ namespace Stroika::Frameworks::Led {
     {
         fCellRep->fCachedBoundsRect = r;
     }
-
 
 #if qStroika_Frameworks_Led_SupportGDI
 
@@ -896,8 +891,6 @@ namespace Stroika::Frameworks::Led {
         return fCachedCurSelFontSpec;
     }
 
-
-
     /*
      ********************************************************************************
      ********** WordProcessor::WordProcessorFlavorPackageInternalizer ***************
@@ -935,7 +928,6 @@ namespace Stroika::Frameworks::Led {
     {
         fUseTableSelection = useTableSelection;
     }
-
 
     /*
      ********************************************************************************

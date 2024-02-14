@@ -313,8 +313,6 @@ void ParagraphDatabaseRep::Invariant_ () const
 }
 #endif
 
-
-
 /*
  ********************************************************************************
  ************************ WordProcessorTable ************************************
@@ -384,10 +382,10 @@ protected:
 WordProcessorTable::WordProcessorTable (AbstractParagraphDatabaseRep* tableOwner, size_t addAt)
 #if qStroika_Frameworks_Led_SupportGDI
     : inherited ()
-    , 
-    #else
+    ,
+#else
     :
-    #endif
+#endif
     fCellSpacing (TWIPS{0})
     , fDefaultCellMargins (TWIPS (15), TWIPS (90), TWIPS{0}, TWIPS{0})
 #if qStroika_Frameworks_Led_SupportGDI
@@ -397,7 +395,7 @@ WordProcessorTable::WordProcessorTable (AbstractParagraphDatabaseRep* tableOwner
     , fSuppressCellUpdatePropagationContext (false)
     , fAllowUpdateInfoPropagationContext (false)
     , fCellUpdatePropationUpdater (nullptr)
-    #endif
+#endif
     , fRowSelStart (0)
     , fRowSelEnd (0)
     , fColSelStart (0)
@@ -412,7 +410,7 @@ WordProcessorTable::WordProcessorTable (AbstractParagraphDatabaseRep* tableOwner
     , fSavedIntraCellInfoValid (false)
     , fCurrentOwningWP (nullptr)
     , fNeedLayout (eNeedFullLayout)
-    #endif
+#endif
     , fRows ()
     , fBorderWidth (Led_CvtScreenPixelsToTWIPSH (1))
     , fBorderColor (Color::kSilver)
@@ -432,7 +430,7 @@ WordProcessorTable::~WordProcessorTable ()
         delete fCellUpdatePropationUpdater;
     }
     Assert (fCurrentOwningWP == nullptr);
-    #endif
+#endif
 }
 
 void WordProcessorTable::FinalizeAddition (AbstractParagraphDatabaseRep* o, size_t addAt)
@@ -443,10 +441,8 @@ void WordProcessorTable::FinalizeAddition (AbstractParagraphDatabaseRep* o, size
     TextStore::SimpleUpdater updater (ts, addAt, addAt + 1);
     ts.ReplaceWithoutUpdate (addAt, addAt, &kEmbeddingSentinelChar, 1);
     ts.AddMarker (this, addAt, 1, o);
-    #endif
+#endif
 }
-
-
 
 /*
  ********************************************************************************
