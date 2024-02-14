@@ -194,7 +194,8 @@
         "cpp_version": "c++20",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
-        "run_on_branch": "v3-Release"
+        "COMMENT-1": "SKIP cuz runs out of disk space",
+        "run_on_branch": "NEVER"
     },
     {},
     {
