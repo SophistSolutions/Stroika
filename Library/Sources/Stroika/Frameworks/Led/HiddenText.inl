@@ -68,23 +68,18 @@ namespace Stroika::Frameworks::Led {
         return fShown;
     }
 
-#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      ********************* HidableTextMarkerHelper<BASECLASS> ***********************
      ********************************************************************************
      */
     template <typename BASECLASS>
-    inline HidableTextMarkerHelper<BASECLASS>::HidableTextMarkerHelper ()
-        : inherited ()
-    {
-    }
-    template <typename BASECLASS>
     int HidableTextMarkerHelper<BASECLASS>::GetPriority () const
     {
         // simpleembedings are priorty 100 - maybe should use ENUM CONST? return 100;       // large enough to override most other markers (esp StyledTextImager::StyleMarker which we know how to aggregate).
         return 200; // large enough to override most other markers (esp StyledTextImager::StyleMarker which we know how to aggregate).
     }
+#if qStroika_Frameworks_Led_SupportGDI
     template <typename BASECLASS>
     void HidableTextMarkerHelper<BASECLASS>::DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet,
                                                           size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
@@ -98,8 +93,7 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <typename BASECLASS>
-    void HidableTextMarkerHelper<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from,
-                                                                  size_t to, const Led_tChar* text, DistanceType* distanceResults) const
+    void HidableTextMarkerHelper<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from,   size_t to, const Led_tChar* text, DistanceType* distanceResults) const
     {
         if (this->IsShown ()) {
             inherited::MeasureSegmentWidth (imager, runElement, from, to, text, distanceResults);
@@ -112,8 +106,7 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <typename BASECLASS>
-    DistanceType HidableTextMarkerHelper<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager,
-                                                                           const StyleRunElement& runElement, size_t from, size_t to) const
+    DistanceType HidableTextMarkerHelper<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager,  const StyleRunElement& runElement, size_t from, size_t to) const
     {
         if (this->IsShown ()) {
             return inherited::MeasureSegmentHeight (imager, runElement, from, to);
@@ -133,21 +126,35 @@ namespace Stroika::Frameworks::Led {
             return 0;
         }
     }
+#endif
 
-    //  class   FontSpecHidableTextMarkerOwner::FontSpecHidableTextMarker
+
+    /*
+     ********************************************************************************
+     *************** HidableTextMarkerOwner::FontSpecHidableTextMarker **************
+     ********************************************************************************
+     */
     inline HidableTextMarkerOwner::FontSpecHidableTextMarker::FontSpecHidableTextMarker (const IncrementalFontSpecification& styleInfo)
         : inherited{}
         , fFontSpecification{styleInfo}
     {
     }
 
-    //  class   UniformHidableTextMarkerOwner
+    /*
+     ********************************************************************************
+     ************************ UniformHidableTextMarkerOwner *************************
+     ********************************************************************************
+     */
     inline bool UniformHidableTextMarkerOwner::IsHidden () const
     {
         return fHidden;
     }
 
-    //  class   ColoredUniformHidableTextMarkerOwner
+    /*
+     ********************************************************************************
+     ************************ ColoredUniformHidableTextMarkerOwner ******************
+     ********************************************************************************
+     */
     inline ColoredUniformHidableTextMarkerOwner::ColoredUniformHidableTextMarkerOwner (TextStore& textStore)
         : inherited{textStore}
         , fColor{Color::kRed}
@@ -172,7 +179,6 @@ namespace Stroika::Frameworks::Led {
         fColored = colored;
         FixupSubMarkers ();
     }
-#endif
 
 }
 

@@ -118,63 +118,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-#if qStroika_Frameworks_Led_SupportGDI
-    /*
-    @CLASS:         StyledTextImager
-    @BASES:         virtual @'TextImager'
-    @DESCRIPTION:   <p>The class StyledTextImager is a @'TextImager' which knows about special markers,
-                either owned by itself, or the TextStore, which it uses to render and
-                measure the text. It is intended that these special markers it uses to
-                render the text (@'StyledTextImager::StyleMarker''s) be general enough to support both standard
-                style runs, as well as other fancier text adornments, like pictures, opendoc
-                embeddings, etc.</p>
-                    <p>You can add arbitrary, and overlapping StyleMarkers to this class, and it will
-                simply render them. Since it must pick ONE StyleMarker to ask todo the drawing,
-                it asks the one with the highest priority (@'StyledTextImager::StyleMarker::GetPriority' ()). If you
-                have some style marker which is smart enuf to pay attention to the
-                overlapping of markers (RARE - IF EVER) it is up to your marker to find which
-                other markers it overlaps with, and handle this combination itself.</p>
-                    <p>This class is intended to make easy things like wrapping keywords with little
-                markers which affect how they are displayed. It is ideal for something like
-                a programming text editor which colors keywords, or a typical web browser
-                that has to keep associated links with parts of the text anyhow (keep it in a
-                marker that subclasses from SytleMarker, and then change the color, or font of
-                your display).</p>
-                    <p>For the more conventional Style-Run type API, see the class @'StandardStyledTextImager'.</p>
-    */
-    class StyledTextImager : public virtual TextImager {
-    private:
-        using inherited = TextImager;
-
-    protected:
-        StyledTextImager () = default;
-
-    public:
-        class StyleMarkerSummarySink;
-        class StyleMarkerSummarySinkForSingleOwner;
-
-    protected:
-        virtual vector<StyleRunElement> SummarizeStyleMarkers (size_t from, size_t to) const;
-        virtual vector<StyleRunElement> SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const;
-
-    protected:
-        // Must OVERRIDE Draw/Measure text routines so style runs get hooked in and have some effect
-        // when this class is mixed in.
-        virtual void DrawSegment (Tablet* tablet, size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
-                                  const Led_Rect& invalidRect, CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text, DistanceType* distanceResults) const override;
-        virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const override;
-        virtual DistanceType MeasureSegmentBaseLine (size_t from, size_t to) const override;
-
-        // Debug support
-    public:
-        nonvirtual void Invariant () const;
-#if qDebug
-    protected:
-        virtual void Invariant_ () const;
-#endif
-    };
-
     /*
     @CLASS:         StyledTextImager::StyleMarkerSummarySink
     @BASES:         @'TextStore::MarkerSink'
@@ -183,7 +126,7 @@ namespace Stroika::Frameworks::Led {
                 @'StandardStyledTextImager::SummarizeStyleMarkers', or subclasses. And you would override it (and that method)
                 to provide an alternate mechanism for combining/interpretting style markers within a region (say when the overlap).</p>
     */
-    class StyledTextImager::StyleMarkerSummarySink : public TextStore::MarkerSink {
+    class StyleMarkerSummarySink : public TextStore::MarkerSink {
     private:
         using inherited = TextStore::MarkerSink;
 
@@ -215,7 +158,7 @@ namespace Stroika::Frameworks::Led {
     @BASES:         @'StyledTextImager::StyleMarkerSummarySink'
     @DESCRIPTION:   <p>Ignore style markers from an owner other than the one given as argument in the constructor.</p>
     */
-    class StyledTextImager::StyleMarkerSummarySinkForSingleOwner : public StyledTextImager::StyleMarkerSummarySink {
+    class StyleMarkerSummarySinkForSingleOwner : public StyleMarkerSummarySink {
     private:
         using inherited = StyleMarkerSummarySink;
 
@@ -262,6 +205,7 @@ namespace Stroika::Frameworks::Led {
         */
         virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const;
 
+#if qStroika_Frameworks_Led_SupportGDI
     public:
         virtual void DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,
                                   const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
@@ -270,6 +214,7 @@ namespace Stroika::Frameworks::Led {
                                           const Led_tChar* text, DistanceType* distanceResults) const override;
         virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
         virtual DistanceType MeasureSegmentBaseLine (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
+#endif
     };
 
     /*
@@ -330,6 +275,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         SimpleStyleMarkerWithExtraDraw () = default;
 
+#if qStroika_Frameworks_Led_SupportGDI
     protected:
         /*
         @METHOD:        SimpleStyleMarkerWithExtraDraw<BASECLASS>::DrawExtra
@@ -338,10 +284,12 @@ namespace Stroika::Frameworks::Led {
         */
         virtual void DrawExtra (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,
                                 const TextLayoutBlock& text, const Led_Rect& drawInto, CoordinateType useBaseLine, DistanceType pixelsDrawn) = 0;
+#endif
 
     protected:
         virtual StyleRunElement MungeRunElement (const StyleRunElement& inRunElt) const;
 
+#if qStroika_Frameworks_Led_SupportGDI
     public:
         virtual void DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,
                                   const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
@@ -350,6 +298,7 @@ namespace Stroika::Frameworks::Led {
                                           const Led_tChar* text, DistanceType* distanceResults) const override;
         virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
         virtual DistanceType MeasureSegmentBaseLine (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
+#endif
     };
 
     /*
@@ -367,13 +316,69 @@ namespace Stroika::Frameworks::Led {
     public:
         SimpleStyleMarkerWithLightUnderline ();
 
+#if qStroika_Frameworks_Led_SupportGDI
     protected:
         virtual void DrawExtra (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,
                                 const TextLayoutBlock& text, const Led_Rect& drawInto, CoordinateType useBaseLine, DistanceType pixelsDrawn) override;
+#endif
 
     public:
         virtual Color GetUnderlineBaseColor () const;
     };
+
+#if qStroika_Frameworks_Led_SupportGDI
+    /*
+    @CLASS:         StyledTextImager
+    @BASES:         virtual @'TextImager'
+    @DESCRIPTION:   <p>The class StyledTextImager is a @'TextImager' which knows about special markers,
+                either owned by itself, or the TextStore, which it uses to render and
+                measure the text. It is intended that these special markers it uses to
+                render the text (@'StyledTextImager::StyleMarker''s) be general enough to support both standard
+                style runs, as well as other fancier text adornments, like pictures, opendoc
+                embeddings, etc.</p>
+                    <p>You can add arbitrary, and overlapping StyleMarkers to this class, and it will
+                simply render them. Since it must pick ONE StyleMarker to ask todo the drawing,
+                it asks the one with the highest priority (@'StyledTextImager::StyleMarker::GetPriority' ()). If you
+                have some style marker which is smart enuf to pay attention to the
+                overlapping of markers (RARE - IF EVER) it is up to your marker to find which
+                other markers it overlaps with, and handle this combination itself.</p>
+                    <p>This class is intended to make easy things like wrapping keywords with little
+                markers which affect how they are displayed. It is ideal for something like
+                a programming text editor which colors keywords, or a typical web browser
+                that has to keep associated links with parts of the text anyhow (keep it in a
+                marker that subclasses from SytleMarker, and then change the color, or font of
+                your display).</p>
+                    <p>For the more conventional Style-Run type API, see the class @'StandardStyledTextImager'.</p>
+    */
+    class StyledTextImager : public virtual TextImager {
+    private:
+        using inherited = TextImager;
+
+    protected:
+        StyledTextImager () = default;
+
+    protected:
+        virtual vector<StyleRunElement> SummarizeStyleMarkers (size_t from, size_t to) const;
+        virtual vector<StyleRunElement> SummarizeStyleMarkers (size_t from, size_t to, const TextLayoutBlock& text) const;
+
+    protected:
+        // Must OVERRIDE Draw/Measure text routines so style runs get hooked in and have some effect
+        // when this class is mixed in.
+        virtual void DrawSegment (Tablet* tablet, size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
+                                  const Led_Rect& invalidRect, CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text, DistanceType* distanceResults) const override;
+        virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const override;
+        virtual DistanceType MeasureSegmentBaseLine (size_t from, size_t to) const override;
+
+        // Debug support
+    public:
+        nonvirtual void Invariant () const;
+#if qDebug
+    protected:
+        virtual void Invariant_ () const;
+#endif
+    };
+
 #endif
 
 }

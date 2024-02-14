@@ -11,10 +11,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-#if qStroika_Frameworks_Led_SupportGDI
-
-using StyleMarkerSummarySink = StyledTextImager::StyleMarkerSummarySink;
-
 /*
  ********************************************************************************
  ********************************** StyleMarker *********************************
@@ -182,7 +178,7 @@ void StyleMarkerSummarySink::CombineElements (StyleRunElement* runElement, Style
             order - NOT logical (internal memory buffer) order. The elements are guarantied not to cross
             any directional boundaries (as returned from the @'TextLayoutBlock::GetScriptRuns' API)</p>
 */
-vector<StyleRunElement> StyledTextImager::StyleMarkerSummarySink::ProduceOutputSummary () const
+vector<StyleRunElement> StyleMarkerSummarySink::ProduceOutputSummary () const
 {
     using ScriptRunElt = TextLayoutBlock::ScriptRunElt;
     // Soon fix to use fText as a REFERENCE. Then we probably should have this code assure its re-ordering is done only once and then cached,
@@ -224,17 +220,15 @@ vector<StyleRunElement> StyledTextImager::StyleMarkerSummarySink::ProduceOutputS
  ******************** StyleMarkerSummarySinkForSingleOwner **********************
  ********************************************************************************
  */
-using StyleMarkerSummarySinkForSingleOwner = StyledTextImager::StyleMarkerSummarySinkForSingleOwner;
-
 StyleMarkerSummarySinkForSingleOwner::StyleMarkerSummarySinkForSingleOwner (const MarkerOwner& owner, size_t from, size_t to)
-    : inherited (from, to)
-    , fOwner (owner)
+    : inherited{from, to}
+    , fOwner{owner}
 {
 }
 
 StyleMarkerSummarySinkForSingleOwner::StyleMarkerSummarySinkForSingleOwner (const MarkerOwner& owner, size_t from, size_t to, const TextLayoutBlock& text)
-    : inherited (from, to, text)
-    , fOwner (owner)
+    : inherited{from, to, text}
+    , fOwner{owner}
 {
 }
 
@@ -267,6 +261,18 @@ void StyleMarkerSummarySinkForSingleOwner::CombineElements (StyleRunElement* run
         }
     }
 }
+
+/*
+ ********************************************************************************
+ ************************** TrivialFontSpecStyleMarker **************************
+ ********************************************************************************
+ */
+int TrivialFontSpecStyleMarker::GetPriority () const
+{
+    return eBaselinePriority + 1;
+}
+
+#if qStroika_Frameworks_Led_SupportGDI
 
 /*
  ********************************************************************************
@@ -504,15 +510,5 @@ void StyledTextImager::Invariant_ () const
 {
 }
 #endif
-
-/*
- ********************************************************************************
- ************************** TrivialFontSpecStyleMarker **************************
- ********************************************************************************
- */
-int TrivialFontSpecStyleMarker::GetPriority () const
-{
-    return eBaselinePriority + 1;
-}
 
 #endif

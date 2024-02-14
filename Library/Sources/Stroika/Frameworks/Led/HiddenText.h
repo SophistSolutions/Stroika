@@ -170,8 +170,6 @@ namespace Stroika::Frameworks::Led {
         friend class HidableTextMarkerOwner;
     };
 
-#if qStroika_Frameworks_Led_SupportGDI
-
     /*
     @CLASS:         HidableTextMarkerHelper<BASECLASS>
     @BASES:         BASECLASS
@@ -187,11 +185,12 @@ namespace Stroika::Frameworks::Led {
         using inherited = BASECLASS;
 
     public:
-        HidableTextMarkerHelper ();
+        HidableTextMarkerHelper () = default;
 
     public:
         virtual int GetPriority () const override;
 
+#if qStroika_Frameworks_Led_SupportGDI
     protected:
         virtual void DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,
                                   const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
@@ -201,6 +200,27 @@ namespace Stroika::Frameworks::Led {
         virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
 
         virtual DistanceType MeasureSegmentBaseLine (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
+#endif
+    };
+
+    /**
+     *      <p>Adds a light dashed underline to the given region. One advantage of
+     *  this over @'HidableTextMarkerOwner::FontSpecHidableTextMarker' is that
+     *  it works well with other embeddings and display markers, cuz it lets them
+     *  do their drawing, and simply adds the underline.</p>
+     */
+    class HidableTextMarkerOwner::LightUnderlineHidableTextMarker
+        : public HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<
+              SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>,
+          public Foundation::Memory::UseBlockAllocationIfAppropriate<LightUnderlineHidableTextMarker> {
+    private:
+        using inherited = HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<
+            SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>;
+
+    public:
+        LightUnderlineHidableTextMarker (const IncrementalFontSpecification& fsp = IncrementalFontSpecification ());
+
+        virtual Color GetUnderlineBaseColor () const override;
     };
 
     /*
@@ -226,28 +246,6 @@ namespace Stroika::Frameworks::Led {
 
     public:
         IncrementalFontSpecification fFontSpecification;
-    };
-
-    /*
-    @CLASS:         HidableTextMarkerOwner::LightUnderlineHidableTextMarker
-    @BASES:         @'HidableTextMarkerHelper<BASECLASS>', where BASECLASS = @'SimpleStyleMarkerWithLightUnderline<BASECLASS>, where BASECLASS = @'HidableTextMarkerOwner::HidableTextMarker'
-    @DESCRIPTION:   <p>Adds a light dashed underline to the given region. One advantage of
-                this over @'HidableTextMarkerOwner::FontSpecHidableTextMarker' is that
-                it works well with other embeddings and display markers, cuz it lets them
-                do their drawing, and simply adds the underline.</p>
-    */
-    class HidableTextMarkerOwner::LightUnderlineHidableTextMarker
-        : public HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<
-              SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>,
-          public Foundation::Memory::UseBlockAllocationIfAppropriate<LightUnderlineHidableTextMarker> {
-    private:
-        using inherited = HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<
-            SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>;
-
-    public:
-        LightUnderlineHidableTextMarker (const IncrementalFontSpecification& fsp = IncrementalFontSpecification ());
-
-        virtual Color GetUnderlineBaseColor () const override;
     };
 
     /*
@@ -279,7 +277,6 @@ namespace Stroika::Frameworks::Led {
         Color fColor;
         bool  fColored;
     };
-#endif
 
 }
 

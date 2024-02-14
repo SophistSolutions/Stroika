@@ -491,6 +491,26 @@ void HidableTextMarkerOwner::Invariant_ () const
 
 /*
  ********************************************************************************
+ ********* HidableTextMarkerOwner::LightUnderlineHidableTextMarker **************
+ ********************************************************************************
+ */
+HidableTextMarkerOwner::LightUnderlineHidableTextMarker::LightUnderlineHidableTextMarker (const IncrementalFontSpecification& fsp)
+{
+    fFontSpecification = fsp;
+}
+
+Color HidableTextMarkerOwner::LightUnderlineHidableTextMarker::GetUnderlineBaseColor () const
+{
+    if (fFontSpecification.GetTextColor_Valid ()) {
+        return fFontSpecification.GetTextColor ();
+    }
+    else {
+        return inherited::GetUnderlineBaseColor ();
+    }
+}
+
+/*
+ ********************************************************************************
  *********************** UniformHidableTextMarkerOwner **************************
  ********************************************************************************
  */
@@ -545,26 +565,6 @@ FontSpecification HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpe
     }
     fsp.MergeIn (fFontSpecification); // give our fontSpec last dibs - so 'deletion' hilighting takes precedence
     return fsp;
-}
-
-/*
- ********************************************************************************
- ********* HidableTextMarkerOwner::LightUnderlineHidableTextMarker **************
- ********************************************************************************
- */
-HidableTextMarkerOwner::LightUnderlineHidableTextMarker::LightUnderlineHidableTextMarker (const IncrementalFontSpecification& fsp)
-{
-    fFontSpecification = fsp;
-}
-
-Color HidableTextMarkerOwner::LightUnderlineHidableTextMarker::GetUnderlineBaseColor () const
-{
-    if (fFontSpecification.GetTextColor_Valid ()) {
-        return fFontSpecification.GetTextColor ();
-    }
-    else {
-        return inherited::GetUnderlineBaseColor ();
-    }
 }
 
 /*

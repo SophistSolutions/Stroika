@@ -829,9 +829,9 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream', for use with the StyledTextIO module,
                 which adds support for a @'WordProcessor::shared_ptr<AbstractParagraphDatabaseRep>'.</p>
     */
-    class WordProcessor::WordProcessorTextIOSinkStream : public StandardStyledTextInteractor::StandardStyledTextIOSinkStream {
+    class WordProcessor::WordProcessorTextIOSinkStream : public StandardStyledTextIOSinkStream {
     private:
-        using inherited = StandardStyledTextInteractor::StandardStyledTextIOSinkStream;
+        using inherited = StandardStyledTextIOSinkStream;
 
     public:
         WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,

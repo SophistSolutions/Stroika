@@ -309,7 +309,6 @@ void StandardStyledTextIOSinkStream::PopContext ()
     fSavedContexts.pop_back ();
 }
 
-
 #if qStroika_Frameworks_Led_SupportGDI
 
 #if qPlatform_MacOS

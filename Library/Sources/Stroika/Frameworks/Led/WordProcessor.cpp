@@ -5341,7 +5341,7 @@ WordProcessorFlavorPackageInternalizer::WordProcessorFlavorPackageInternalizer (
 {
 }
 
-WordProcessor::StandardStyledTextIOSinkStream* WordProcessorFlavorPackageInternalizer::mkStandardStyledTextIOSinkStream (size_t insertionStart)
+StandardStyledTextIOSinkStream* WordProcessorFlavorPackageInternalizer::mkStandardStyledTextIOSinkStream (size_t insertionStart)
 {
     WordProcessorTextIOSinkStream* sinkStream =
         new WordProcessorTextIOSinkStream (PeekAtTextStore (), fStyleDatabase, fParagraphDatabase, fHidableTextDatabase, insertionStart);
