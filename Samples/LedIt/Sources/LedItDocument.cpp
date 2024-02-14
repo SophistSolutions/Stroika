@@ -279,7 +279,7 @@ LedItDocument::LedItDocument ()
 #endif
     fTextStore.AddMarkerOwner (this);
     fStyleDatabase       = make_shared<StyleDatabaseRep> (fTextStore);
-    fParagraphDatabase   = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
+    fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (fTextStore);
     fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
 }
 
@@ -1104,7 +1104,7 @@ BOOL LedItDocument::OnNewDocument ()
     }
     fFileFormat          = eDefaultFormat;
     fStyleDatabase       = make_shared<StyleDatabaseRep> (fTextStore);
-    fParagraphDatabase   = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
+    fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (fTextStore);
     fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
     return TRUE;
 }
@@ -1363,7 +1363,7 @@ BOOL LedItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 
     fCommandHandler.Commit ();
     fStyleDatabase       = make_shared<StyleDatabaseRep> (fTextStore);
-    fParagraphDatabase   = WordProcessor::ParagraphDatabasePtr (new WordProcessor::ParagraphDatabaseRep (fTextStore));
+    fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (fTextStore);
     fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (fTextStore));
 
     // Slight performance hack - get rid of existing style/etc dbases for the current view

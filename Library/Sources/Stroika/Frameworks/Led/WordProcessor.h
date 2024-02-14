@@ -24,6 +24,271 @@
 
 namespace Stroika::Frameworks::Led {
 
+    class IncrementalParagraphInfo;
+
+    /**
+     *      An object which captures the per-paragraph information we store especially in the
+     *          @'WordProcessor' class. The attributes stored include:
+     *              <ul>
+     *                  <li>Justification</li>
+     *                  <li>TabStopList</li>
+     *                  <li>Margin (left and right - NB: we require left < right)</li>
+     *                  <li>FirstIdent (nb this is ADDED to the LHS margin, and CAN BE NEGATIVE</li>
+     *               </ul>
+     */
+    class ParagraphInfo {
+    public:
+        ParagraphInfo ();
+
+    public:
+        nonvirtual Justification GetJustification () const;
+        nonvirtual void          SetJustification (Justification justification);
+
+    private:
+        Justification fJustification;
+
+    public:
+        nonvirtual const StandardTabStopList& GetTabStopList () const;
+        nonvirtual void                       SetTabStopList (const StandardTabStopList& tabStops);
+
+    private:
+        StandardTabStopList fTabStops;
+
+    public:
+        nonvirtual TWIPS GetLeftMargin () const;
+        nonvirtual TWIPS GetRightMargin () const;
+        nonvirtual void  SetMargins (TWIPS lhs, TWIPS rhs);
+
+    private:
+        TWIPS fLeftMargin;
+        TWIPS fRightMargin;
+
+    public:
+        nonvirtual TWIPS GetFirstIndent () const;
+        nonvirtual void  SetFirstIndent (TWIPS firstIndent);
+
+    private:
+        TWIPS fFirstIndent;
+
+    public:
+        nonvirtual TWIPS       GetSpaceBefore () const;
+        nonvirtual void        SetSpaceBefore (TWIPS sb);
+        nonvirtual TWIPS       GetSpaceAfter () const;
+        nonvirtual void        SetSpaceAfter (TWIPS sa);
+        nonvirtual LineSpacing GetLineSpacing () const;
+        nonvirtual void        SetLineSpacing (LineSpacing sl);
+
+    private:
+        TWIPS       fSpaceBefore;
+        TWIPS       fSpaceAfter;
+        LineSpacing fLineSpacing;
+
+    public:
+        nonvirtual ListStyle GetListStyle () const;
+        nonvirtual void      SetListStyle (ListStyle listStyle);
+
+    private:
+        ListStyle fListStyle{eListStyle_None};
+
+    public:
+        nonvirtual unsigned char GetListIndentLevel () const;
+        nonvirtual void          SetListIndentLevel (unsigned char indentLevel);
+
+    private:
+        unsigned char fListIndentLevel;
+
+    public:
+        nonvirtual void MergeIn (const IncrementalParagraphInfo& incParaInfo);
+
+    public:
+        nonvirtual bool operator== (const ParagraphInfo& rhs) const;
+    };
+
+    /**
+     *      Oveerload (hide) the @'WordProcessor::ParagraphInfo' methods, to assert that the
+     *          attribute is valid (for getters) and to set a ValidFlag for the setters. And add methods for
+     *          each attribute to test for validity, and to invalidate.</p>
+     *              <p>These are used if you want to set just part of a @'WordProcessor::ParagraphInfo'.</p>
+     */
+    class IncrementalParagraphInfo : public ParagraphInfo {
+    private:
+        using inherited = ParagraphInfo;
+
+    public:
+        IncrementalParagraphInfo ();
+        explicit IncrementalParagraphInfo (const ParagraphInfo& pi);
+
+    public:
+        nonvirtual Justification GetJustification () const;
+        nonvirtual void          SetJustification (Justification justification);
+        nonvirtual bool          GetJustification_Valid () const;
+        nonvirtual void          InvalidateJustification ();
+
+    private:
+        bool fJustificationValid;
+
+    public:
+        nonvirtual const StandardTabStopList& GetTabStopList () const;
+        nonvirtual void                       SetTabStopList (const StandardTabStopList& tabStops);
+        nonvirtual bool                       GetTabStopList_Valid () const;
+        nonvirtual void                       InvalidateTabStopList ();
+
+    private:
+        bool fTabStopListValid;
+
+    public:
+        nonvirtual TWIPS GetLeftMargin () const;
+        nonvirtual TWIPS GetRightMargin () const;
+        nonvirtual void  SetMargins (TWIPS lhs, TWIPS rhs);
+        nonvirtual bool  GetMargins_Valid () const;
+        nonvirtual void  InvalidateMargins ();
+
+    private:
+        bool fMarginsValid;
+
+    public:
+        nonvirtual TWIPS GetFirstIndent () const;
+        nonvirtual void  SetFirstIndent (TWIPS firstIndent);
+        nonvirtual bool  GetFirstIndent_Valid () const;
+        nonvirtual void  InvalidateFirstIndent ();
+
+    private:
+        bool fFirstIndentValid;
+
+    public:
+        nonvirtual TWIPS       GetSpaceBefore () const;
+        nonvirtual void        SetSpaceBefore (TWIPS sb);
+        nonvirtual bool        GetSpaceBefore_Valid () const;
+        nonvirtual void        InvalidateSpaceBefore ();
+        nonvirtual TWIPS       GetSpaceAfter () const;
+        nonvirtual void        SetSpaceAfter (TWIPS sa);
+        nonvirtual bool        GetSpaceAfter_Valid () const;
+        nonvirtual void        InvalidateSpaceAfter ();
+        nonvirtual LineSpacing GetLineSpacing () const;
+        nonvirtual void        SetLineSpacing (LineSpacing sl);
+        nonvirtual bool        GetLineSpacing_Valid () const;
+        nonvirtual void        InvalidateLineSpacing ();
+
+        nonvirtual ListStyle GetListStyle () const;
+        nonvirtual void      SetListStyle (ListStyle listStyle);
+        nonvirtual bool      GetListStyle_Valid () const;
+        nonvirtual void      InvalidateListStyle ();
+
+        nonvirtual unsigned char GetListIndentLevel () const;
+        nonvirtual void          SetListIndentLevel (unsigned char indentLevel);
+        nonvirtual bool          GetListIndentLevel_Valid () const;
+        nonvirtual void          InvalidateListIndentLevel ();
+
+    private:
+        bool fSpaceBeforeValid;
+        bool fSpaceAfterValid;
+        bool fLineSpacingValid;
+        bool fListStyleValid;
+        bool fListIndentLevelValid;
+
+    public:
+        nonvirtual bool operator== (const IncrementalParagraphInfo& rhs) const;
+    };
+
+    /**
+     */
+    class AbstractParagraphDatabaseRep : public virtual MarkerOwner {
+    private:
+        using inherited = MarkerOwner;
+
+    public:
+        AbstractParagraphDatabaseRep ();
+
+    public:
+        virtual shared_ptr<Partition> GetPartition () const                                    = 0;
+        virtual void                  SetPartition (const shared_ptr<Partition>& partitionPtr) = 0;
+
+    public:
+        virtual const ParagraphInfo&                GetParagraphInfo (size_t charAfterPos) const                          = 0;
+        virtual vector<pair<ParagraphInfo, size_t>> GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const = 0;
+
+        virtual void SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers) = 0;
+        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<IncrementalParagraphInfo, size_t>>& infoForMarkers)    = 0;
+        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers)               = 0;
+
+    private:
+        bool fSomeInvalidTables;
+
+    protected:
+        TWIPS fCachedFarthestRightMarginInDocument;
+
+    private:
+        friend class WordProcessor;
+        // friend class WordProcessor::Table;
+        //friend class WordProcessor::WPIdler;
+    };
+
+    /**
+     */
+    class ParagraphInfoMarker : public Marker {
+    public:
+        ParagraphInfoMarker (ParagraphInfo paragraphInfo = {});
+
+        nonvirtual const ParagraphInfo& GetInfo () const;
+        nonvirtual void                 SetInfo (ParagraphInfo paragraphInfo);
+
+    private:
+        ParagraphInfo fParagraphInfo;
+    };
+
+    DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
+    /**
+     *   <p>A MarkerCover which associates @'WordProcessor::ParagraphInfo' with each paragraph in the next (merging together adjacent
+     *          identical ones). Paragraphs are defined by the @'Partition' object associated
+     *          (@'WordProcessor::ParagraphDatabaseRep::SetPartition').</p>
+     */
+    class ParagraphDatabaseRep : public AbstractParagraphDatabaseRep, private MarkerCover<ParagraphInfoMarker, ParagraphInfo, IncrementalParagraphInfo> {
+    private:
+        using inheritedMC = MarkerCover<ParagraphInfoMarker, ParagraphInfo, IncrementalParagraphInfo>;
+
+    public:
+        using PartitionMarker = PartitioningTextImager::PartitionMarker;
+
+    public:
+        ParagraphDatabaseRep (TextStore& textStore);
+
+    public:
+        virtual shared_ptr<Partition> GetPartition () const override;
+        virtual void                  SetPartition (const shared_ptr<Partition>& partitionPtr) override;
+
+    private:
+        shared_ptr<Partition> fPartition;
+
+    public:
+        static ParagraphInfo GetStaticDefaultParagraphInfo ();
+
+        // override the AbstractParagraphDatabase API
+    public:
+        virtual const ParagraphInfo&                GetParagraphInfo (size_t charAfterPos) const override;
+        virtual vector<pair<ParagraphInfo, size_t>> GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const override;
+        virtual void SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers) override;
+        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<IncrementalParagraphInfo, size_t>>& infoForMarkers) override;
+        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers) override;
+
+    public:
+        virtual void SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers) override;
+        virtual void SetInfos (size_t charAfterPos, const vector<pair<IncrementalParagraphInfo, size_t>>& infoForMarkers) override;
+
+    protected:
+        virtual void NoteCoverRangeDirtied (size_t from, size_t to, const MarkerVector& rangeAndSurroundingsMarkers) override;
+        virtual void ConstrainSetInfoArgs (size_t* charAfterPos, size_t* nTCharsFollowing) override;
+
+    private:
+        nonvirtual void CheckMarkerBounaryConstraints (size_t from, size_t to) noexcept;
+        nonvirtual void CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) noexcept;
+
+#if qDebug
+    protected:
+        virtual void Invariant_ () const override;
+#endif
+    };
+    DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
+
 #if qStroika_Frameworks_Led_SupportGDI
     DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
@@ -85,7 +350,7 @@ namespace Stroika::Frameworks::Led {
         /*
         @CLASS:         WordProcessor::NoParagraphDatabaseAvailable
         @BASES:         @'TextImager::NotFullyInitialized'
-        @DESCRIPTION:   <p>Thrown by @'WordProcessor::GetLayoutMargins' etc when no @'WordProcessor::ParagraphDatabasePtr' available.</p>
+        @DESCRIPTION:   <p>Thrown by @'WordProcessor::GetLayoutMargins' etc when no @':shared_ptr<AbstractParagraphDatabaseRep>' available.</p>
         */
         class NoParagraphDatabaseAvailable : public NotFullyInitialized {};
 #endif
@@ -93,26 +358,15 @@ namespace Stroika::Frameworks::Led {
     public:
         class WPPartition;
 
-        virtual PartitionPtr MakeDefaultPartition () const override;
+        virtual shared_ptr<Partition> MakeDefaultPartition () const override;
 
     public:
-        class ParagraphInfo;
-        class IncrementalParagraphInfo;
-        class ParagraphInfoMarker;
-        class AbstractParagraphDatabaseRep;
-        class ParagraphDatabaseRep;
-        /*
-        @CLASS:         WordProcessor::ParagraphDatabasePtr
-        @BASES:         @'shared_ptr<T>', (T=@'WordProcessor::AbstractParagraphDatabaseRep')
-        @DESCRIPTION:   <p>A shared_ptr (smart pointer) to a @'WordProcessor::AbstractParagraphDatabaseRep'.</p>
-        */
-        using ParagraphDatabasePtr = shared_ptr<AbstractParagraphDatabaseRep>;
-        nonvirtual ParagraphDatabasePtr GetParagraphDatabase () const;
-        nonvirtual void                 SetParagraphDatabase (const ParagraphDatabasePtr& paragraphDatabase);
+        nonvirtual shared_ptr<AbstractParagraphDatabaseRep> GetParagraphDatabase () const;
+        nonvirtual void SetParagraphDatabase (const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase);
 
     private:
-        ParagraphDatabasePtr fParagraphDatabase;
-        bool                 fICreatedParaDB;
+        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+        bool                                     fICreatedParaDB;
 
     protected:
         virtual void    HookParagraphDatabaseChanged ();
@@ -577,284 +831,10 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         WordProcessor::ParagraphInfo
-    @DESCRIPTION:   <p>An object which captures the per-paragraph information we store especially in the
-                @'WordProcessor' class. The attributes stored include:
-                    <ul>
-                        <li>Justification</li>
-                        <li>TabStopList</li>
-                        <li>Margin (left and right - NB: we require left < right)</li>
-                        <li>FirstIdent (nb this is ADDED to the LHS margin, and CAN BE NEGATIVE</li>
-                    </ul>
-                    </p>
-    */
-    class WordProcessor::ParagraphInfo {
-    public:
-        ParagraphInfo ();
-
-    public:
-        nonvirtual Justification GetJustification () const;
-        nonvirtual void          SetJustification (Justification justification);
-
-    private:
-        Justification fJustification;
-
-    public:
-        nonvirtual const StandardTabStopList& GetTabStopList () const;
-        nonvirtual void                       SetTabStopList (const StandardTabStopList& tabStops);
-
-    private:
-        StandardTabStopList fTabStops;
-
-    public:
-        nonvirtual TWIPS GetLeftMargin () const;
-        nonvirtual TWIPS GetRightMargin () const;
-        nonvirtual void  SetMargins (TWIPS lhs, TWIPS rhs);
-
-    private:
-        TWIPS fLeftMargin;
-        TWIPS fRightMargin;
-
-    public:
-        nonvirtual TWIPS GetFirstIndent () const;
-        nonvirtual void  SetFirstIndent (TWIPS firstIndent);
-
-    private:
-        TWIPS fFirstIndent;
-
-    public:
-        nonvirtual TWIPS       GetSpaceBefore () const;
-        nonvirtual void        SetSpaceBefore (TWIPS sb);
-        nonvirtual TWIPS       GetSpaceAfter () const;
-        nonvirtual void        SetSpaceAfter (TWIPS sa);
-        nonvirtual LineSpacing GetLineSpacing () const;
-        nonvirtual void        SetLineSpacing (LineSpacing sl);
-
-    private:
-        TWIPS       fSpaceBefore;
-        TWIPS       fSpaceAfter;
-        LineSpacing fLineSpacing;
-
-    public:
-        nonvirtual ListStyle GetListStyle () const;
-        nonvirtual void      SetListStyle (ListStyle listStyle);
-
-    private:
-        ListStyle fListStyle{eListStyle_None};
-
-    public:
-        nonvirtual unsigned char GetListIndentLevel () const;
-        nonvirtual void          SetListIndentLevel (unsigned char indentLevel);
-
-    private:
-        unsigned char fListIndentLevel;
-
-    public:
-        nonvirtual void MergeIn (const IncrementalParagraphInfo& incParaInfo);
-
-    public:
-        nonvirtual bool operator== (const ParagraphInfo& rhs) const;
-    };
-
-    /*
-    @CLASS:         WordProcessor::IncrementalParagraphInfo
-    @BASES:         @'WordProcessor::ParagraphInfo'
-    @DESCRIPTION:   <p>Overload (hide) the @'WordProcessor::ParagraphInfo' methods, to assert that the
-                attribute is valid (for getters) and to set a ValidFlag for the setters. And add methods for
-                each attribute to test for validity, and to invalidate.</p>
-                    <p>These are used if you want to set just part of a @'WordProcessor::ParagraphInfo'.</p>
-    */
-    class WordProcessor::IncrementalParagraphInfo : public WordProcessor::ParagraphInfo {
-    private:
-        using inherited = ParagraphInfo;
-
-    public:
-        IncrementalParagraphInfo ();
-        explicit IncrementalParagraphInfo (const ParagraphInfo& pi);
-
-    public:
-        nonvirtual Justification GetJustification () const;
-        nonvirtual void          SetJustification (Justification justification);
-        nonvirtual bool          GetJustification_Valid () const;
-        nonvirtual void          InvalidateJustification ();
-
-    private:
-        bool fJustificationValid;
-
-    public:
-        nonvirtual const StandardTabStopList& GetTabStopList () const;
-        nonvirtual void                       SetTabStopList (const StandardTabStopList& tabStops);
-        nonvirtual bool                       GetTabStopList_Valid () const;
-        nonvirtual void                       InvalidateTabStopList ();
-
-    private:
-        bool fTabStopListValid;
-
-    public:
-        nonvirtual TWIPS GetLeftMargin () const;
-        nonvirtual TWIPS GetRightMargin () const;
-        nonvirtual void  SetMargins (TWIPS lhs, TWIPS rhs);
-        nonvirtual bool  GetMargins_Valid () const;
-        nonvirtual void  InvalidateMargins ();
-
-    private:
-        bool fMarginsValid;
-
-    public:
-        nonvirtual TWIPS GetFirstIndent () const;
-        nonvirtual void  SetFirstIndent (TWIPS firstIndent);
-        nonvirtual bool  GetFirstIndent_Valid () const;
-        nonvirtual void  InvalidateFirstIndent ();
-
-    private:
-        bool fFirstIndentValid;
-
-    public:
-        nonvirtual TWIPS       GetSpaceBefore () const;
-        nonvirtual void        SetSpaceBefore (TWIPS sb);
-        nonvirtual bool        GetSpaceBefore_Valid () const;
-        nonvirtual void        InvalidateSpaceBefore ();
-        nonvirtual TWIPS       GetSpaceAfter () const;
-        nonvirtual void        SetSpaceAfter (TWIPS sa);
-        nonvirtual bool        GetSpaceAfter_Valid () const;
-        nonvirtual void        InvalidateSpaceAfter ();
-        nonvirtual LineSpacing GetLineSpacing () const;
-        nonvirtual void        SetLineSpacing (LineSpacing sl);
-        nonvirtual bool        GetLineSpacing_Valid () const;
-        nonvirtual void        InvalidateLineSpacing ();
-
-        nonvirtual ListStyle GetListStyle () const;
-        nonvirtual void      SetListStyle (ListStyle listStyle);
-        nonvirtual bool      GetListStyle_Valid () const;
-        nonvirtual void      InvalidateListStyle ();
-
-        nonvirtual unsigned char GetListIndentLevel () const;
-        nonvirtual void          SetListIndentLevel (unsigned char indentLevel);
-        nonvirtual bool          GetListIndentLevel_Valid () const;
-        nonvirtual void          InvalidateListIndentLevel ();
-
-    private:
-        bool fSpaceBeforeValid;
-        bool fSpaceAfterValid;
-        bool fLineSpacingValid;
-        bool fListStyleValid;
-        bool fListIndentLevelValid;
-
-    public:
-        nonvirtual bool operator== (const IncrementalParagraphInfo& rhs) const;
-    };
-
-    /*
-    @CLASS:         WordProcessor::ParagraphInfoMarker
-    @BASES:         @'Marker'
-    @DESCRIPTION:
-    */
-    class WordProcessor::ParagraphInfoMarker : public Marker {
-    public:
-        ParagraphInfoMarker (ParagraphInfo paragraphInfo = ParagraphInfo ());
-
-        nonvirtual const ParagraphInfo& GetInfo () const;
-        nonvirtual void                 SetInfo (ParagraphInfo paragraphInfo);
-
-    private:
-        ParagraphInfo fParagraphInfo;
-    };
-
-    /*
-    @CLASS:         WordProcessor::AbstractParagraphDatabaseRep
-    @BASES:         virtual @'MarkerOwner'
-    @DESCRIPTION:   <p>.</p>
-    */
-    class WordProcessor::AbstractParagraphDatabaseRep : public virtual MarkerOwner {
-    private:
-        using inherited = MarkerOwner;
-
-    public:
-        AbstractParagraphDatabaseRep ();
-
-    public:
-        using PartitionPtr                                                   = shared_ptr<Partition>;
-        virtual PartitionPtr GetPartition () const                           = 0;
-        virtual void         SetPartition (const PartitionPtr& partitionPtr) = 0;
-
-    public:
-        virtual const ParagraphInfo& GetParagraphInfo (size_t charAfterPos) const = 0;
-        virtual vector<pair<WordProcessor::ParagraphInfo, size_t>> GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const = 0;
-
-        virtual void SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers) = 0;
-        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t>>& infoForMarkers) = 0;
-        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers) = 0;
-
-    private:
-        bool fSomeInvalidTables;
-
-    protected:
-        TWIPS fCachedFarthestRightMarginInDocument;
-
-    private:
-        friend class WordProcessor;
-        friend class WordProcessor::Table;
-        friend class WordProcessor::WPIdler;
-    };
-
-    /*
-    @CLASS:         WordProcessor::ParagraphDatabaseRep
-    @BASES:         @'public WordProcessor::AbstractParagraphDatabaseRep' @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>', (MARKER=@'WordProcessor::ParagraphInfoMarker',MARKERINFO=@'WordProcessor::ParagraphInfo',INCREMENTALMARKERINFO=@'WordProcessor::IncrementalParagraphInfo')
-    @DESCRIPTION:   <p>A MarkerCover which associates @'WordProcessor::ParagraphInfo' with each paragraph in the next (merging together adjacent
-                identical ones). Paragraphs are defined by the @'Partition' object associated
-                (@'WordProcessor::ParagraphDatabaseRep::SetPartition').</p>
-    */
-    class WordProcessor::ParagraphDatabaseRep
-        : public WordProcessor::AbstractParagraphDatabaseRep,
-          private MarkerCover<WordProcessor::ParagraphInfoMarker, WordProcessor::ParagraphInfo, WordProcessor::IncrementalParagraphInfo> {
-    private:
-        using inheritedMC = MarkerCover<ParagraphInfoMarker, ParagraphInfo, IncrementalParagraphInfo>;
-
-    public:
-        ParagraphDatabaseRep (TextStore& textStore);
-
-    public:
-        using PartitionPtr = shared_ptr<Partition>;
-        virtual PartitionPtr GetPartition () const override;
-        virtual void         SetPartition (const PartitionPtr& partitionPtr) override;
-
-    private:
-        PartitionPtr fPartition;
-
-    public:
-        static ParagraphInfo GetStaticDefaultParagraphInfo ();
-
-        // override the AbstractParagraphDatabase API
-    public:
-        virtual const ParagraphInfo& GetParagraphInfo (size_t charAfterPos) const override;
-        virtual vector<pair<WordProcessor::ParagraphInfo, size_t>> GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const override;
-        virtual void SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers) override;
-        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t>>& infoForMarkers) override;
-        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers) override;
-
-    public:
-        virtual void SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers) override;
-        virtual void SetInfos (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t>>& infoForMarkers) override;
-
-    protected:
-        virtual void NoteCoverRangeDirtied (size_t from, size_t to, const MarkerVector& rangeAndSurroundingsMarkers) override;
-        virtual void ConstrainSetInfoArgs (size_t* charAfterPos, size_t* nTCharsFollowing) override;
-
-    private:
-        nonvirtual void CheckMarkerBounaryConstraints (size_t from, size_t to) noexcept;
-        nonvirtual void CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) noexcept;
-
-#if qDebug
-    protected:
-        virtual void Invariant_ () const override;
-#endif
-    };
-
-    /*
     @CLASS:         WordProcessor::WordProcessorTextIOSinkStream
     @BASES:         @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream'
     @DESCRIPTION:   <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream', for use with the StyledTextIO module,
-                which adds support for a @'WordProcessor::ParagraphDatabasePtr'.</p>
+                which adds support for a @'WordProcessor::shared_ptr<AbstractParagraphDatabaseRep>'.</p>
     */
     class WordProcessor::WordProcessorTextIOSinkStream : public StandardStyledTextInteractor::StandardStyledTextIOSinkStream {
     private:
@@ -862,7 +842,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                       const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
+                                       const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
                                        const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart = 0);
         WordProcessorTextIOSinkStream (WordProcessor* wp, size_t insertionStart = 0);
         ~WordProcessorTextIOSinkStream ();
@@ -921,35 +901,35 @@ namespace Stroika::Frameworks::Led {
 
     protected:
         nonvirtual void PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                     const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
+                                     const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
                                      const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart);
         nonvirtual void PopContext ();
 
     private:
         struct Context {
-            WordProcessor::ParagraphDatabasePtr   fParagraphDatabase;
-            WordProcessor::HidableTextDatabasePtr fHidableTextDatabase;
+            shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+            WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
         };
         vector<Context> fSavedContexts;
 
     private:
         using ParaInfoNSize = pair<IncrementalParagraphInfo, size_t>;
-        WordProcessor::ParagraphDatabasePtr   fParagraphDatabase;
-        WordProcessor::HidableTextDatabasePtr fHidableTextDatabase;
-        vector<ParaInfoNSize>                 fSavedParaInfo;
-        IncrementalParagraphInfo              fNewParagraphInfo;
-        bool                                  fTextHidden;
-        DiscontiguousRun<bool>                fHidableTextRuns;
-        bool                                  fEndOfBuffer;
-        bool                                  fIgnoreLastParaAttributes;
-        WordProcessor::Table*                 fCurrentTable;
-        vector<TWIPS>                         fCurrentTableCellWidths;
-        Color                                 fCurrentTableCellColor;
-        vector<size_t>                        fCurrentTableColSpanArray;
-        vector<WordProcessor::Table*>         fTableStack; // for nesting
-        size_t                                fNextTableRow;
-        size_t                                fNextTableCell;
-        size_t                                fCurrentTableCell;
+        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+        WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
+        vector<ParaInfoNSize>                    fSavedParaInfo;
+        IncrementalParagraphInfo                 fNewParagraphInfo;
+        bool                                     fTextHidden;
+        DiscontiguousRun<bool>                   fHidableTextRuns;
+        bool                                     fEndOfBuffer;
+        bool                                     fIgnoreLastParaAttributes;
+        WordProcessor::Table*                    fCurrentTable;
+        vector<TWIPS>                            fCurrentTableCellWidths;
+        Color                                    fCurrentTableCellColor;
+        vector<size_t>                           fCurrentTableColSpanArray;
+        vector<WordProcessor::Table*>            fTableStack; // for nesting
+        size_t                                   fNextTableRow;
+        size_t                                   fNextTableCell;
+        size_t                                   fCurrentTableCell;
 
 #if qDebug
     private:
@@ -963,7 +943,7 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         WordProcessor::WordProcessorTextIOSrcStream
     @BASES:         @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream'
     @DESCRIPTION:   <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream', for use with the StyledTextIO module,
-                which adds support for a @'WordProcessor::ParagraphDatabasePtr'.</p>
+                which adds support for a @'shared_ptr<AbstractParagraphDatabaseRep>'.</p>
     */
     class WordProcessor::WordProcessorTextIOSrcStream : public StandardStyledTextInteractor::StandardStyledTextIOSrcStream {
     private:
@@ -971,7 +951,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                      const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
+                                      const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
                                       const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t selectionStart = 0,
                                       size_t selectionEnd = kBadIndex);
         WordProcessorTextIOSrcStream (WordProcessor* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
@@ -1001,8 +981,8 @@ namespace Stroika::Frameworks::Led {
         class TableIOMapper;
 
     private:
-        WordProcessor::ParagraphDatabasePtr fParagraphDatabase;
-        DiscontiguousRun<bool>              fHidableTextRuns;
+        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+        DiscontiguousRun<bool>                   fHidableTextRuns;
     };
 
     /*
@@ -1047,8 +1027,8 @@ namespace Stroika::Frameworks::Led {
 
     public:
         WordProcessorFlavorPackageInternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
-                                                const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
-                                                const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase);
+                                                const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
+                                                const WordProcessor::HidableTextDatabasePtr&    hidableTextDatabase);
 
     public:
         nonvirtual bool GetOverwriteTableMode () const;
@@ -1070,8 +1050,8 @@ namespace Stroika::Frameworks::Led {
         virtual StandardStyledTextIOSinkStream* mkStandardStyledTextIOSinkStream (size_t insertionStart) override;
 
     protected:
-        WordProcessor::ParagraphDatabasePtr   fParagraphDatabase;
-        WordProcessor::HidableTextDatabasePtr fHidableTextDatabase;
+        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+        WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
     };
 
     /*
@@ -1130,8 +1110,8 @@ namespace Stroika::Frameworks::Led {
 
     public:
         WordProcessorFlavorPackageExternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
-                                                const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
-                                                const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase);
+                                                const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
+                                                const WordProcessor::HidableTextDatabasePtr&    hidableTextDatabase);
 
     public:
         nonvirtual bool GetUseTableSelection () const;
@@ -1144,8 +1124,8 @@ namespace Stroika::Frameworks::Led {
         virtual StandardStyledTextIOSrcStream* mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd) override;
 
     protected:
-        WordProcessor::ParagraphDatabasePtr   fParagraphDatabase;
-        WordProcessor::HidableTextDatabasePtr fHidableTextDatabase;
+        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+        WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
     };
 
     /*
@@ -1389,9 +1369,9 @@ namespace Stroika::Frameworks::Led {
 
     public:
         virtual void GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts,
-                                                    shared_ptr<AbstractStyleDatabaseRep>*  styleDatabase       = nullptr,
-                                                    WordProcessor::ParagraphDatabasePtr*   paragraphDatabase   = nullptr,
-                                                    WordProcessor::HidableTextDatabasePtr* hidableTextDatabase = nullptr);
+                                                    shared_ptr<AbstractStyleDatabaseRep>*     styleDatabase       = nullptr,
+                                                    shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
+                                                    WordProcessor::HidableTextDatabasePtr*    hidableTextDatabase = nullptr);
 
     private:
         WordProcessor* fCurrentOwningWP;
@@ -1498,11 +1478,11 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void       GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase = nullptr,
-                                                             WordProcessor::ParagraphDatabasePtr*   paragraphDatabase   = nullptr,
-                                                             WordProcessor::HidableTextDatabasePtr* hidableTextDatabase = nullptr);
+                                                             shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
+                                                             WordProcessor::HidableTextDatabasePtr*    hidableTextDatabase = nullptr);
         nonvirtual TextStore& GetTextStore () const;
         nonvirtual shared_ptr<AbstractStyleDatabaseRep> GetStyleDatabase () const;
-        nonvirtual WordProcessor::ParagraphDatabasePtr GetParagraphDatabase () const;
+        nonvirtual shared_ptr<AbstractParagraphDatabaseRep> GetParagraphDatabase () const;
         nonvirtual WordProcessor::HidableTextDatabasePtr GetHidableTextDatabase () const;
 
         nonvirtual Color GetBackColor () const;
@@ -1536,14 +1516,14 @@ namespace Stroika::Frameworks::Led {
         virtual void       DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
     public:
-        Table&                                fForTable;
-        TextStore*                            fTextStore;
-        shared_ptr<AbstractStyleDatabaseRep>  fStyleDatabase;
-        WordProcessor::ParagraphDatabasePtr   fParagraphDatabase;
-        WordProcessor::HidableTextDatabasePtr fHidableTextDatabase;
-        Color                                 fBackColor;
-        Led_Rect                              fCachedBoundsRect;
-        TWIPS                                 fCellXWidth;
+        Table&                                   fForTable;
+        TextStore*                               fTextStore;
+        shared_ptr<AbstractStyleDatabaseRep>     fStyleDatabase;
+        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+        WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
+        Color                                    fBackColor;
+        Led_Rect                                 fCachedBoundsRect;
+        TWIPS                                    fCellXWidth;
     };
 
     /*

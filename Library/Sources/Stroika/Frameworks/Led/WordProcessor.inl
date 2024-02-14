@@ -14,121 +14,101 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qStroika_Frameworks_Led_SupportGDI
-
-#if qTemplateGeneratedMixinsSometimesCorrupted
-    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookLosingTextStore ()
-    {
-        StandardStyledTextInteractor::HookLosingTextStore ();
-        WordWrappedTextInteractor::HookLosingTextStore ();
-    }
-    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookGainedNewTextStore ()
-    {
-        StandardStyledTextInteractor::HookGainedNewTextStore ();
-        WordWrappedTextInteractor::HookGainedNewTextStore ();
-    }
-    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::DidUpdateText (const UpdateInfo& updateInfo)
-    {
-        StandardStyledTextInteractor::DidUpdateText (updateInfo);
-        WordWrappedTextInteractor::DidUpdateText (updateInfo);
-    }
-#endif
-
     /*
      ********************************************************************************
-     ************************** WordProcessor::ParagraphInfo ************************
+     ************************************ ParagraphInfo *****************************
      ********************************************************************************
      */
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::GetJustification
+    @METHOD:        ParagraphInfo::GetJustification
     @DESCRIPTION:
         <p>Return the @'Justification' setting.</p>
     */
-    inline Justification WordProcessor::ParagraphInfo::GetJustification () const
+    inline Justification ParagraphInfo::GetJustification () const
     {
         return fJustification;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::SetJustification
+    @METHOD:        ParagraphInfo::SetJustification
     @DESCRIPTION:
         <p>Set the @'Justification' setting.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetJustification (Justification justification)
+    inline void ParagraphInfo::SetJustification (Justification justification)
     {
         fJustification = justification;
     }
-    inline const StandardTabStopList& WordProcessor::ParagraphInfo::GetTabStopList () const
+    inline const StandardTabStopList& ParagraphInfo::GetTabStopList () const
     {
         return fTabStops;
     }
-    inline void WordProcessor::ParagraphInfo::SetTabStopList (const StandardTabStopList& tabStops)
+    inline void ParagraphInfo::SetTabStopList (const StandardTabStopList& tabStops)
     {
         fTabStops = tabStops;
     }
-    inline TWIPS WordProcessor::ParagraphInfo::GetLeftMargin () const
+    inline TWIPS ParagraphInfo::GetLeftMargin () const
     {
         return fLeftMargin;
     }
-    inline TWIPS WordProcessor::ParagraphInfo::GetRightMargin () const
+    inline TWIPS ParagraphInfo::GetRightMargin () const
     {
         return fRightMargin;
     }
-    inline void WordProcessor::ParagraphInfo::SetMargins (TWIPS lhs, TWIPS rhs)
+    inline void ParagraphInfo::SetMargins (TWIPS lhs, TWIPS rhs)
     {
         Require (lhs < rhs);
         fLeftMargin  = lhs;
         fRightMargin = rhs;
     }
-    inline TWIPS WordProcessor::ParagraphInfo::GetFirstIndent () const
+    inline TWIPS ParagraphInfo::GetFirstIndent () const
     {
         return fFirstIndent;
     }
-    inline void WordProcessor::ParagraphInfo::SetFirstIndent (TWIPS firstIndent)
+    inline void ParagraphInfo::SetFirstIndent (TWIPS firstIndent)
     {
         fFirstIndent = firstIndent;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::GetSpaceBefore
+    @METHOD:        ParagraphInfo::GetSpaceBefore
     @DESCRIPTION:
                     <p>Get the 'space before' attribute of the given paragraph. This is the number of TWIPS of space inserted before
                 the paragraph - and defaults to zero. See the RTF \sb tag.</p>
-                    <p>See also @'WordProcessor::ParagraphInfo::SetSpaceBefore'.</p>
+                    <p>See also @'ParagraphInfo::SetSpaceBefore'.</p>
     */
-    inline TWIPS WordProcessor::ParagraphInfo::GetSpaceBefore () const
+    inline TWIPS ParagraphInfo::GetSpaceBefore () const
     {
         return fSpaceBefore;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::SetSpaceBefore
+    @METHOD:        ParagraphInfo::SetSpaceBefore
     @DESCRIPTION:
-            <p>See also @'WordProcessor::ParagraphInfo::GetSpaceBefore'.</p>
+            <p>See also @'ParagraphInfo::GetSpaceBefore'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetSpaceBefore (TWIPS sb)
+    inline void ParagraphInfo::SetSpaceBefore (TWIPS sb)
     {
         fSpaceBefore = sb;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::GetSpaceAfter
+    @METHOD:        ParagraphInfo::GetSpaceAfter
     @DESCRIPTION:
             <p>Get the 'space after' attribute of the given paragraph. This is the number of TWIPS of space appended after
         the paragraph - and defaults to zero. See the RTF \sa tag.</p>
-            <p>See also @'WordProcessor::ParagraphInfo::SetSpaceAfter'.</p>
+            <p>See also @'ParagraphInfo::SetSpaceAfter'.</p>
     */
-    inline TWIPS WordProcessor::ParagraphInfo::GetSpaceAfter () const
+    inline TWIPS ParagraphInfo::GetSpaceAfter () const
     {
         return fSpaceAfter;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::SetSpaceAfter
+    @METHOD:        ParagraphInfo::SetSpaceAfter
     @DESCRIPTION:
-            <p>See also @'WordProcessor::ParagraphInfo::GetSpaceAfter'.</p>
+            <p>See also @'ParagraphInfo::GetSpaceAfter'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetSpaceAfter (TWIPS sa)
+    inline void ParagraphInfo::SetSpaceAfter (TWIPS sa)
     {
         fSpaceAfter = sa;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::GetLineSpacing
+    @METHOD:        ParagraphInfo::GetLineSpacing
     @DESCRIPTION:
             <p>Get the spacing used between rows of a given paragraph. Can either be magic value of 1000 - meaning automatic.</p>
             <p>From the RTF docs:
@@ -140,60 +120,60 @@ namespace Stroika::Frameworks::Led {
                 </blockquote>
             </p>
             <p>See the RTF docs for \slN and \slmultN</p>
-            <p>See also @'WordProcessor::ParagraphInfo::SetLineSpacing'.</p>
+            <p>See also @'ParagraphInfo::SetLineSpacing'.</p>
     */
-    inline LineSpacing WordProcessor::ParagraphInfo::GetLineSpacing () const
+    inline LineSpacing ParagraphInfo::GetLineSpacing () const
     {
         return fLineSpacing;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::SetLineSpacing
+    @METHOD:        ParagraphInfo::SetLineSpacing
     @DESCRIPTION:
-            <p>See also @'WordProcessor::ParagraphInfo::GetLineSpacing'.</p>
+            <p>See also @'ParagraphInfo::GetLineSpacing'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetLineSpacing (LineSpacing sl)
+    inline void ParagraphInfo::SetLineSpacing (LineSpacing sl)
     {
         fLineSpacing = sl;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::GetListStyle
+    @METHOD:        ParagraphInfo::GetListStyle
     @DESCRIPTION:
-            <p>Retrieve the @'WordProcessor::ParagraphInfo::ListStyle' property associated with this paragraph
+            <p>Retrieve the @'ParagraphInfo::ListStyle' property associated with this paragraph
         (e.g. eListStyle_Bullet or eListStyle_None).</p>
     */
-    inline ListStyle WordProcessor::ParagraphInfo::GetListStyle () const
+    inline ListStyle ParagraphInfo::GetListStyle () const
     {
         return fListStyle;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::SetListStyle
+    @METHOD:        ParagraphInfo::SetListStyle
     @DESCRIPTION:
-            <p>See also @'WordProcessor::ParagraphInfo::GetListStyle'.</p>
+            <p>See also @'ParagraphInfo::GetListStyle'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetListStyle (ListStyle listStyle)
+    inline void ParagraphInfo::SetListStyle (ListStyle listStyle)
     {
         fListStyle = listStyle;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::GetListIndentLevel
+    @METHOD:        ParagraphInfo::GetListIndentLevel
     @DESCRIPTION:
-            <p>Retrieve the indent level for the given list. Only valid value if @'WordProcessor::ParagraphInfo::GetListStyle'
+            <p>Retrieve the indent level for the given list. Only valid value if @'ParagraphInfo::GetListStyle'
         is not eListStyle_None.</p>
     */
-    inline unsigned char WordProcessor::ParagraphInfo::GetListIndentLevel () const
+    inline unsigned char ParagraphInfo::GetListIndentLevel () const
     {
         return fListIndentLevel;
     }
     /*
-    @METHOD:        WordProcessor::ParagraphInfo::SetListIndentLevel
+    @METHOD:        ParagraphInfo::SetListIndentLevel
     @DESCRIPTION:
-            <p>See also @'WordProcessor::ParagraphInfo::GetListIndentLevel'.</p>
+            <p>See also @'ParagraphInfo::GetListIndentLevel'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetListIndentLevel (unsigned char indentLevel)
+    inline void ParagraphInfo::SetListIndentLevel (unsigned char indentLevel)
     {
         fListIndentLevel = indentLevel;
     }
-    inline void WordProcessor::ParagraphInfo::MergeIn (const IncrementalParagraphInfo& incParaInfo)
+    inline void ParagraphInfo::MergeIn (const IncrementalParagraphInfo& incParaInfo)
     {
         if (incParaInfo.GetJustification_Valid ()) {
             fJustification = incParaInfo.GetJustification ();
@@ -224,7 +204,7 @@ namespace Stroika::Frameworks::Led {
             fListIndentLevel = incParaInfo.GetListIndentLevel ();
         }
     }
-    inline bool WordProcessor::ParagraphInfo::operator== (const ParagraphInfo& rhs) const
+    inline bool ParagraphInfo::operator== (const ParagraphInfo& rhs) const
     {
         return fJustification == rhs.fJustification and fTabStops == rhs.fTabStops and fLeftMargin == rhs.fLeftMargin and
                fRightMargin == rhs.fRightMargin and fFirstIndent == rhs.fFirstIndent and fSpaceBefore == rhs.fSpaceBefore and
@@ -234,10 +214,10 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ********************* WordProcessor::IncrementalParagraphInfo ******************
+     ********************* IncrementalParagraphInfo ******************
      ********************************************************************************
      */
-    inline WordProcessor::IncrementalParagraphInfo::IncrementalParagraphInfo ()
+    inline IncrementalParagraphInfo::IncrementalParagraphInfo ()
         : fJustificationValid (false)
         , fTabStopListValid (false)
         , fMarginsValid (false)
@@ -249,7 +229,7 @@ namespace Stroika::Frameworks::Led {
         , fListIndentLevelValid (false)
     {
     }
-    inline WordProcessor::IncrementalParagraphInfo::IncrementalParagraphInfo (const ParagraphInfo& pi)
+    inline IncrementalParagraphInfo::IncrementalParagraphInfo (const ParagraphInfo& pi)
         : inherited (pi)
         , fJustificationValid (true)
         , fTabStopListValid (true)
@@ -262,174 +242,174 @@ namespace Stroika::Frameworks::Led {
         , fListIndentLevelValid (true)
     {
     }
-    inline Justification WordProcessor::IncrementalParagraphInfo::GetJustification () const
+    inline Justification IncrementalParagraphInfo::GetJustification () const
     {
         Require (fJustificationValid);
         return inherited::GetJustification ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetJustification (Justification justification)
+    inline void IncrementalParagraphInfo::SetJustification (Justification justification)
     {
         fJustificationValid = true;
         inherited::SetJustification (justification);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetJustification_Valid () const
+    inline bool IncrementalParagraphInfo::GetJustification_Valid () const
     {
         return fJustificationValid;
     }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateJustification ()
+    inline void IncrementalParagraphInfo::InvalidateJustification ()
     {
         fJustificationValid = false;
     }
-    inline const StandardTabStopList& WordProcessor::IncrementalParagraphInfo::GetTabStopList () const
+    inline const StandardTabStopList& IncrementalParagraphInfo::GetTabStopList () const
     {
         Require (fTabStopListValid);
         return inherited::GetTabStopList ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetTabStopList (const StandardTabStopList& tabStops)
+    inline void IncrementalParagraphInfo::SetTabStopList (const StandardTabStopList& tabStops)
     {
         fTabStopListValid = true;
         inherited::SetTabStopList (tabStops);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetTabStopList_Valid () const
+    inline bool IncrementalParagraphInfo::GetTabStopList_Valid () const
     {
         return fTabStopListValid;
     }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateTabStopList ()
+    inline void IncrementalParagraphInfo::InvalidateTabStopList ()
     {
         fTabStopListValid = false;
     }
-    inline TWIPS WordProcessor::IncrementalParagraphInfo::GetLeftMargin () const
+    inline TWIPS IncrementalParagraphInfo::GetLeftMargin () const
     {
         Require (fMarginsValid);
         return inherited::GetLeftMargin ();
     }
-    inline TWIPS WordProcessor::IncrementalParagraphInfo::GetRightMargin () const
+    inline TWIPS IncrementalParagraphInfo::GetRightMargin () const
     {
         Require (fMarginsValid);
         return inherited::GetRightMargin ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetMargins (TWIPS lhs, TWIPS rhs)
+    inline void IncrementalParagraphInfo::SetMargins (TWIPS lhs, TWIPS rhs)
     {
         fMarginsValid = true;
         inherited::SetMargins (lhs, rhs);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetMargins_Valid () const
+    inline bool IncrementalParagraphInfo::GetMargins_Valid () const
     {
         return fMarginsValid;
     }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateMargins ()
+    inline void IncrementalParagraphInfo::InvalidateMargins ()
     {
         fMarginsValid = false;
     }
-    inline TWIPS WordProcessor::IncrementalParagraphInfo::GetFirstIndent () const
+    inline TWIPS IncrementalParagraphInfo::GetFirstIndent () const
     {
         Require (fFirstIndentValid);
         return inherited::GetFirstIndent ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetFirstIndent (TWIPS firstIndent)
+    inline void IncrementalParagraphInfo::SetFirstIndent (TWIPS firstIndent)
     {
         fFirstIndentValid = true;
         inherited::SetFirstIndent (firstIndent);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetFirstIndent_Valid () const
+    inline bool IncrementalParagraphInfo::GetFirstIndent_Valid () const
     {
         return fFirstIndentValid;
     }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateFirstIndent ()
+    inline void IncrementalParagraphInfo::InvalidateFirstIndent ()
     {
         fFirstIndentValid = false;
     }
-    inline TWIPS WordProcessor::IncrementalParagraphInfo::GetSpaceBefore () const
+    inline TWIPS IncrementalParagraphInfo::GetSpaceBefore () const
     {
         Require (fSpaceBeforeValid);
         return inherited::GetSpaceBefore ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetSpaceBefore (TWIPS sb)
+    inline void IncrementalParagraphInfo::SetSpaceBefore (TWIPS sb)
     {
         fSpaceBeforeValid = true;
         inherited::SetSpaceBefore (sb);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetSpaceBefore_Valid () const
+    inline bool IncrementalParagraphInfo::GetSpaceBefore_Valid () const
     {
         return fSpaceBeforeValid;
     }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateSpaceBefore ()
+    inline void IncrementalParagraphInfo::InvalidateSpaceBefore ()
     {
         fSpaceBeforeValid = false;
     }
-    inline TWIPS WordProcessor::IncrementalParagraphInfo::GetSpaceAfter () const
+    inline TWIPS IncrementalParagraphInfo::GetSpaceAfter () const
     {
         Require (fSpaceAfterValid);
         return inherited::GetSpaceAfter ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetSpaceAfter (TWIPS sa)
+    inline void IncrementalParagraphInfo::SetSpaceAfter (TWIPS sa)
     {
         fSpaceAfterValid = true;
         inherited::SetSpaceAfter (sa);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetSpaceAfter_Valid () const
+    inline bool IncrementalParagraphInfo::GetSpaceAfter_Valid () const
     {
         return fSpaceAfterValid;
     }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateSpaceAfter ()
+    inline void IncrementalParagraphInfo::InvalidateSpaceAfter ()
     {
         fSpaceAfterValid = false;
     }
-    inline LineSpacing WordProcessor::IncrementalParagraphInfo::GetLineSpacing () const
+    inline LineSpacing IncrementalParagraphInfo::GetLineSpacing () const
     {
         Require (fLineSpacingValid);
         return inherited::GetLineSpacing ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetLineSpacing (LineSpacing sl)
+    inline void IncrementalParagraphInfo::SetLineSpacing (LineSpacing sl)
     {
         fLineSpacingValid = true;
         inherited::SetLineSpacing (sl);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetLineSpacing_Valid () const
+    inline bool IncrementalParagraphInfo::GetLineSpacing_Valid () const
     {
         return fLineSpacingValid;
     }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateLineSpacing ()
+    inline void IncrementalParagraphInfo::InvalidateLineSpacing ()
     {
         fLineSpacingValid = false;
     }
-    inline ListStyle WordProcessor::IncrementalParagraphInfo::GetListStyle () const
+    inline ListStyle IncrementalParagraphInfo::GetListStyle () const
     {
         Require (fListStyleValid);
         return inherited::GetListStyle ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetListStyle (ListStyle listStyle)
+    inline void IncrementalParagraphInfo::SetListStyle (ListStyle listStyle)
     {
         fListStyleValid = true;
         inherited::SetListStyle (listStyle);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetListStyle_Valid () const
+    inline bool IncrementalParagraphInfo::GetListStyle_Valid () const
     {
         return fListStyleValid;
     }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateListStyle ()
+    inline void IncrementalParagraphInfo::InvalidateListStyle ()
     {
         fListStyleValid = false;
     }
-    inline unsigned char WordProcessor::IncrementalParagraphInfo::GetListIndentLevel () const
+    inline unsigned char IncrementalParagraphInfo::GetListIndentLevel () const
     {
         Require (fListIndentLevelValid);
         return inherited::GetListIndentLevel ();
     }
-    inline void WordProcessor::IncrementalParagraphInfo::SetListIndentLevel (unsigned char indentLevel)
+    inline void IncrementalParagraphInfo::SetListIndentLevel (unsigned char indentLevel)
     {
         fListIndentLevelValid = true;
         inherited::SetListIndentLevel (indentLevel);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetListIndentLevel_Valid () const
+    inline bool IncrementalParagraphInfo::GetListIndentLevel_Valid () const
     {
         return fListIndentLevelValid;
     }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateListIndentLevel ()
+    inline void IncrementalParagraphInfo::InvalidateListIndentLevel ()
     {
         fListIndentLevelValid = false;
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::operator== (const IncrementalParagraphInfo& rhs) const
+    inline bool IncrementalParagraphInfo::operator== (const IncrementalParagraphInfo& rhs) const
     {
         //Justification
         if (GetJustification_Valid () != rhs.GetJustification_Valid ()) {
@@ -506,35 +486,59 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ****************** WordProcessor::AbstractParagraphDatabaseRep *****************
+     ****************** AbstractParagraphDatabaseRep *****************
      ********************************************************************************
      */
-    inline WordProcessor::AbstractParagraphDatabaseRep::AbstractParagraphDatabaseRep ()
+    inline AbstractParagraphDatabaseRep::AbstractParagraphDatabaseRep ()
         : fSomeInvalidTables (false)
         , fCachedFarthestRightMarginInDocument (WordProcessor::kBadCachedFarthestRightMarginInDocument)
     {
     }
 
+#if qStroika_Frameworks_Led_SupportGDI
+
+#if qTemplateGeneratedMixinsSometimesCorrupted
+    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookLosingTextStore ()
+    {
+        StandardStyledTextInteractor::HookLosingTextStore ();
+        WordWrappedTextInteractor::HookLosingTextStore ();
+    }
+    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookGainedNewTextStore ()
+    {
+        StandardStyledTextInteractor::HookGainedNewTextStore ();
+        WordWrappedTextInteractor::HookGainedNewTextStore ();
+    }
+    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::DidUpdateText (const UpdateInfo& updateInfo)
+    {
+        StandardStyledTextInteractor::DidUpdateText (updateInfo);
+        WordWrappedTextInteractor::DidUpdateText (updateInfo);
+    }
+#endif
+
     /*
      ********************************************************************************
-     ************************ WordProcessor::ParagraphInfoMarker ********************
+     ************************ ParagraphInfoMarker ***********************************
      ********************************************************************************
      */
-    inline WordProcessor::ParagraphInfoMarker::ParagraphInfoMarker (ParagraphInfo paragraphInfo)
+    inline ParagraphInfoMarker::ParagraphInfoMarker (ParagraphInfo paragraphInfo)
         : fParagraphInfo (paragraphInfo)
     {
     }
-    inline const WordProcessor::ParagraphInfo& WordProcessor::ParagraphInfoMarker::GetInfo () const
+    inline const ParagraphInfo& ParagraphInfoMarker::GetInfo () const
     {
         return fParagraphInfo;
     }
-    inline void WordProcessor::ParagraphInfoMarker::SetInfo (ParagraphInfo paragraphInfo)
+    inline void ParagraphInfoMarker::SetInfo (ParagraphInfo paragraphInfo)
     {
         fParagraphInfo = paragraphInfo;
     }
 
-    //  class   WordProcessor::ParagraphDatabaseRep
-    inline WordProcessor::ParagraphDatabaseRep::PartitionPtr WordProcessor::ParagraphDatabaseRep::GetPartition () const
+    /*
+     ********************************************************************************
+     ******************************* ParagraphDatabaseRep ***************************
+     ********************************************************************************
+     */
+    inline shared_ptr<Partition> ParagraphDatabaseRep::GetPartition () const
     {
         return fPartition;
     }
@@ -601,7 +605,7 @@ namespace Stroika::Frameworks::Led {
     {
         fSmartQuoteMode = smartQuoteMode;
     }
-    inline WordProcessor::ParagraphDatabasePtr WordProcessor::GetParagraphDatabase () const
+    inline shared_ptr<AbstractParagraphDatabaseRep> WordProcessor::GetParagraphDatabase () const
     {
         return fParagraphDatabase;
     }

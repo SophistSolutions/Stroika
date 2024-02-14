@@ -38,9 +38,7 @@ private:
     using inherited = InteractiveReplaceCommand::SavedTextRep;
 
 public:
-    using ParagraphDatabasePtr = WordProcessor::ParagraphDatabasePtr;
-    using ParagraphInfo        = WordProcessor::ParagraphInfo;
-    using ParaInfoNSize        = pair<ParagraphInfo, size_t>;
+    using ParaInfoNSize = pair<ParagraphInfo, size_t>;
 
 public:
     ParagraphInfoChangeTextRep (WordProcessor* interactor, size_t from, size_t to)
@@ -64,7 +62,7 @@ public:
         WordProcessor* wp = dynamic_cast<WordProcessor*> (interactor);
         RequireNotNull (wp);
         Assert (nBytesToOverwrite == GetLength ()); // For THIS particular kind of update, the length cannot change since we don't save the text
-        ParagraphDatabasePtr paraDBase = wp->GetParagraphDatabase ();
+        shared_ptr<AbstractParagraphDatabaseRep> paraDBase = wp->GetParagraphDatabase ();
         paraDBase->SetParagraphInfo (at, fSavedInfo);
     }
 
@@ -247,7 +245,6 @@ struct DoIt_IndentUnIndentList {
  ********************************* ParagraphInfo ********************************
  ********************************************************************************
  */
-using ParagraphInfo = WordProcessor::ParagraphInfo;
 ParagraphInfo::ParagraphInfo ()
     : fJustification (eLeftJustify)
     , fTabStops ()
@@ -264,27 +261,19 @@ ParagraphInfo::ParagraphInfo ()
 
 /*
  ********************************************************************************
- ****************************** IncrementalParagraphInfo ************************
- ********************************************************************************
- */
-using IncrementalParagraphInfo = WordProcessor::IncrementalParagraphInfo;
-
-/*
- ********************************************************************************
  **************************** ParagraphDatabaseRep ******************************
  ********************************************************************************
  */
-using ParagraphDatabaseRep = WordProcessor::ParagraphDatabaseRep;
 ParagraphDatabaseRep::ParagraphDatabaseRep (TextStore& textStore)
     : inheritedMC (textStore, GetStaticDefaultParagraphInfo ())
     , fPartition ()
 {
     //tmphack test - see if this fixes SPR#1129
     // LGP 2002-10-19 - didnt appear to work so probably get rid of it - but test some more!!!
-    SetPartition (PartitionPtr (new WordProcessor::WPPartition (GetTextStore (), *this)));
+    SetPartition (make_shared<WordProcessor::WPPartition> (GetTextStore (), *this));
 }
 
-void ParagraphDatabaseRep::SetPartition (const PartitionPtr& partitionPtr)
+void ParagraphDatabaseRep::SetPartition (const shared_ptr<Partition>& partitionPtr)
 {
     if (fPartition != partitionPtr) {
         fPartition = partitionPtr;
@@ -296,7 +285,7 @@ void ParagraphDatabaseRep::SetPartition (const PartitionPtr& partitionPtr)
 /*
 @METHOD:        WordProcessor::ParagraphDatabaseRep::GetStaticDefaultParagraphInfo
 @DESCRIPTION:
-    <p>Return the default @'WordProcessor::ParagraphInfo' object used when the paragraph database object is created.</p>
+    <p>Return the default @'ParagraphInfo' object used when the paragraph database object is created.</p>
 */
 ParagraphInfo ParagraphDatabaseRep::GetStaticDefaultParagraphInfo ()
 {
@@ -312,7 +301,7 @@ const ParagraphInfo& ParagraphDatabaseRep::GetParagraphInfo (size_t charAfterPos
     return GetInfo (charAfterPos);
 }
 
-vector<pair<WordProcessor::ParagraphInfo, size_t>> ParagraphDatabaseRep::GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const
+vector<pair<ParagraphInfo, size_t>> ParagraphDatabaseRep::GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const
 {
     return GetInfo (charAfterPos, nTCharsFollowing);
 }
@@ -320,16 +309,16 @@ vector<pair<WordProcessor::ParagraphInfo, size_t>> ParagraphDatabaseRep::GetPara
 void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers)
 {
     if (infoForMarkers.GetMargins_Valid ()) {
-        fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
+        fCachedFarthestRightMarginInDocument = WordProcessor::kBadCachedFarthestRightMarginInDocument;
     }
     SetInfo (charAfterPos, nTCharsFollowing, infoForMarkers);
 }
 
-void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t>>& infoForMarkers)
+void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, const vector<pair<IncrementalParagraphInfo, size_t>>& infoForMarkers)
 {
     for (auto i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
         if ((*i).first.GetMargins_Valid ()) {
-            fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
+            fCachedFarthestRightMarginInDocument = WordProcessor::kBadCachedFarthestRightMarginInDocument;
             break;
         }
     }
@@ -338,7 +327,7 @@ void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, const vector<p
 
 void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers)
 {
-    fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
+    fCachedFarthestRightMarginInDocument = WordProcessor::kBadCachedFarthestRightMarginInDocument;
     SetInfos2 (charAfterPos, infoForMarkers);
 }
 
@@ -353,7 +342,7 @@ void ParagraphDatabaseRep::SetInfo (size_t charAfterPos, size_t nTCharsFollowing
     inheritedMC::SetInfo (charAfterPos, nTCharsFollowing, infoForMarkers);
 }
 
-void ParagraphDatabaseRep::SetInfos (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t>>& infoForMarkers)
+void ParagraphDatabaseRep::SetInfos (size_t charAfterPos, const vector<pair<IncrementalParagraphInfo, size_t>>& infoForMarkers)
 {
     Assert (fPartition.get () != nullptr);
     inheritedMC::SetInfos (charAfterPos, infoForMarkers);
@@ -883,14 +872,14 @@ WordProcessor::CommandNames   WordProcessor::sCommandNames  = WordProcessor::Mak
 WordProcessor::DialogSupport* WordProcessor::sDialogSupport = nullptr;
 
 template <class T, class EXTRACTOR>
-bool CheckForCommonParaValue (EXTRACTOR /*IGNORED_BUT_HERE_FOR_OVERLOADING*/, const WordProcessor::ParagraphDatabasePtr& paraDB,
+bool CheckForCommonParaValue (EXTRACTOR /*IGNORED_BUT_HERE_FOR_OVERLOADING*/, const shared_ptr<AbstractParagraphDatabaseRep>& paraDB,
                               size_t from, size_t to, T* commonValue)
 {
     RequireNotNull (commonValue);
     if (paraDB.get () == nullptr) {
         throw WordProcessor::NoParagraphDatabaseAvailable ();
     }
-    vector<pair<WordProcessor::ParagraphInfo, size_t>> v = paraDB->GetParagraphInfo (from, to - from);
+    vector<pair<ParagraphInfo, size_t>> v = paraDB->GetParagraphInfo (from, to - from);
     Assert (v.size () != 0);
     if (v.size () >= 1) {
         T maybeCommonValue = EXTRACTOR () (v[0].first);
@@ -907,19 +896,19 @@ bool CheckForCommonParaValue (EXTRACTOR /*IGNORED_BUT_HERE_FOR_OVERLOADING*/, co
     }
 }
 struct JustificationExtractor {
-    Justification operator() (const WordProcessor::ParagraphInfo& from)
+    Justification operator() (const ParagraphInfo& from)
     {
         return from.GetJustification ();
     }
 };
 struct TabStopExtractor {
-    StandardTabStopList operator() (const WordProcessor::ParagraphInfo& from)
+    StandardTabStopList operator() (const ParagraphInfo& from)
     {
         return from.GetTabStopList ();
     }
 };
 struct FirstIndentExtractor {
-    TWIPS operator() (const WordProcessor::ParagraphInfo& from)
+    TWIPS operator() (const ParagraphInfo& from)
     {
         return from.GetFirstIndent ();
     }
@@ -945,37 +934,37 @@ struct MarginsRec {
     }
 };
 struct MarginsRecExtractor {
-    MarginsRec operator() (const WordProcessor::ParagraphInfo& from)
+    MarginsRec operator() (const ParagraphInfo& from)
     {
         return MarginsRec (from.GetLeftMargin (), from.GetRightMargin ());
     }
 };
 struct SpaceBeforeExtractor {
-    TWIPS operator() (const WordProcessor::ParagraphInfo& from)
+    TWIPS operator() (const ParagraphInfo& from)
     {
         return from.GetSpaceBefore ();
     }
 };
 struct SpaceAfterExtractor {
-    TWIPS operator() (const WordProcessor::ParagraphInfo& from)
+    TWIPS operator() (const ParagraphInfo& from)
     {
         return from.GetSpaceAfter ();
     }
 };
 struct LineSpacingExtractor {
-    LineSpacing operator() (const WordProcessor::ParagraphInfo& from)
+    LineSpacing operator() (const ParagraphInfo& from)
     {
         return from.GetLineSpacing ();
     }
 };
 struct ListStyleExtractor {
-    ListStyle operator() (const WordProcessor::ParagraphInfo& from)
+    ListStyle operator() (const ParagraphInfo& from)
     {
         return from.GetListStyle ();
     }
 };
 struct ListIndentLevelExtractor {
-    unsigned char operator() (const WordProcessor::ParagraphInfo& from)
+    unsigned char operator() (const ParagraphInfo& from)
     {
         return from.GetListIndentLevel ();
     }
@@ -1068,7 +1057,7 @@ void WordProcessor::HookGainedNewTextStore ()
 void WordProcessor::HookGainedNewTextStore_ ()
 {
     if (fParagraphDatabase.get () == nullptr) {
-        SetParagraphDatabase (ParagraphDatabasePtr ()); // fills in default value since we have a textstore...
+        SetParagraphDatabase (nullptr); // fills in default value since we have a textstore...
     }
     if (fHidableTextDatabase.get () == nullptr) {
         SetHidableTextDatabase (HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (GetTextStore ()))); // fills in default value since we have e textstore...
@@ -1076,16 +1065,16 @@ void WordProcessor::HookGainedNewTextStore_ ()
     }
 }
 
-PartitioningTextImager::PartitionPtr WordProcessor::MakeDefaultPartition () const
+shared_ptr<Partition> WordProcessor::MakeDefaultPartition () const
 {
     // Probably no point in overriding this anymore - LGP 2002-10-20 -- RETHINK??? Perhaps no harm - either...
     RequireNotNull (PeekAtTextStore ());
     if (fParagraphDatabase.get () == nullptr) {
-        return PartitionPtr (new LineBasedPartition (GetTextStore ()));
+        return make_shared<LineBasedPartition> (GetTextStore ());
     }
     else {
         const MarkerOwner* mo = fParagraphDatabase.get ();
-        return PartitionPtr (new WPPartition (GetTextStore (), *const_cast<MarkerOwner*> (mo)));
+        return make_shared<WPPartition> (GetTextStore (), *const_cast<MarkerOwner*> (mo));
     }
 }
 
@@ -1098,12 +1087,12 @@ PartitioningTextImager::PartitionPtr WordProcessor::MakeDefaultPartition () cons
     create/destroy views using that data. Also - so you can subclass it, and provide your own virtual replacement
     database.</p>
 */
-void WordProcessor::SetParagraphDatabase (const ParagraphDatabasePtr& paragraphDatabase)
+void WordProcessor::SetParagraphDatabase (const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase)
 {
     fParagraphDatabase = paragraphDatabase;
     fICreatedParaDB    = false;
     if (fParagraphDatabase.get () == nullptr and PeekAtTextStore () != nullptr) {
-        fParagraphDatabase = ParagraphDatabasePtr (new ParagraphDatabaseRep (GetTextStore ()));
+        fParagraphDatabase = make_shared<ParagraphDatabaseRep> (GetTextStore ());
         fICreatedParaDB    = true;
     }
     //Any newly assigned fParagraphDatabase better share the same Partition we do!
@@ -1112,7 +1101,7 @@ void WordProcessor::SetParagraphDatabase (const ParagraphDatabasePtr& paragraphD
 
 /*
 @METHOD:        WordProcessor::HookParagraphDatabaseChanged
-@DESCRIPTION:   <p>Called whenever the @'WordProcessor::ParagraphDatabasePtr' associated with this @'WordProcessor'
+@DESCRIPTION:   <p>Called whenever the @'WordProcessor::shared_ptr<AbstractParagraphDatabaseRep>' associated with this @'WordProcessor'
     is changed. This means when a new one is provided, created, or disassociated. It does NOT mean that its called when any of the
     data in the paragphrase database changes.</p>
         <p>Usually called by @'WordProcessor::SetParagraphDatabase'. By default, it calls @'WordProcessor::HookParagraphDatabaseChanged_'.</p>
@@ -1473,12 +1462,12 @@ void WordProcessor::SetFirstIndent (size_t from, size_t to, TWIPS firstIndent)
 /*
 @METHOD:        WordProcessor::GetSpaceBefore
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetSpaceBefore'</p>
+    <p>See @'ParagraphInfo::GetSpaceBefore'</p>
 */
 TWIPS WordProcessor::GetSpaceBefore (size_t characterPos) const
 {
     if (fParagraphDatabase.get () == nullptr) {
-        throw NoParagraphDatabaseAvailable ();
+        throw NoParagraphDatabaseAvailable{};
     }
     return fParagraphDatabase->GetParagraphInfo (characterPos).GetSpaceBefore ();
 }
@@ -1486,24 +1475,24 @@ TWIPS WordProcessor::GetSpaceBefore (size_t characterPos) const
 /*
 @METHOD:        WordProcessor::GetSpaceBefore
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetSpaceBefore'</p>
+    <p>See @'ParagraphInfo::GetSpaceBefore'</p>
 */
 bool WordProcessor::GetSpaceBefore (size_t from, size_t to, TWIPS* sb) const
 {
     RequireNotNull (sb);
-    return CheckForCommonParaValue (SpaceBeforeExtractor (), fParagraphDatabase, from, to, sb);
+    return CheckForCommonParaValue (SpaceBeforeExtractor{}, fParagraphDatabase, from, to, sb);
 }
 
 /*
 @METHOD:        WordProcessor::SetSpaceBefore
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetSpaceBefore'</p>
+    <p>See @'ParagraphInfo::GetSpaceBefore'</p>
 */
 void WordProcessor::SetSpaceBefore (size_t from, size_t to, TWIPS sb)
 {
     Require (from <= to);
     if (fParagraphDatabase.get () == nullptr) {
-        throw NoParagraphDatabaseAvailable ();
+        throw NoParagraphDatabaseAvailable{};
     }
     IncrementalParagraphInfo pi;
     pi.SetSpaceBefore (sb);
@@ -1513,7 +1502,7 @@ void WordProcessor::SetSpaceBefore (size_t from, size_t to, TWIPS sb)
 /*
 @METHOD:        WordProcessor::GetSpaceAfter
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetSpaceAfter'</p>
+    <p>See @'ParagraphInfo::GetSpaceAfter'</p>
 */
 TWIPS WordProcessor::GetSpaceAfter (size_t characterPos) const
 {
@@ -1526,7 +1515,7 @@ TWIPS WordProcessor::GetSpaceAfter (size_t characterPos) const
 /*
 @METHOD:        WordProcessor::GetSpaceAfter
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetSpaceAfter'</p>
+    <p>See @'ParagraphInfo::GetSpaceAfter'</p>
 */
 bool WordProcessor::GetSpaceAfter (size_t from, size_t to, TWIPS* sa) const
 {
@@ -1537,7 +1526,7 @@ bool WordProcessor::GetSpaceAfter (size_t from, size_t to, TWIPS* sa) const
 /*
 @METHOD:        WordProcessor::SetSpaceAfter
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetSpaceAfter'</p>
+    <p>See @'ParagraphInfo::GetSpaceAfter'</p>
 */
 void WordProcessor::SetSpaceAfter (size_t from, size_t to, TWIPS sa)
 {
@@ -1553,7 +1542,7 @@ void WordProcessor::SetSpaceAfter (size_t from, size_t to, TWIPS sa)
 /*
 @METHOD:        WordProcessor::GetLineSpacing
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetLineSpacing'</p>
+    <p>See @'ParagraphInfo::GetLineSpacing'</p>
 */
 LineSpacing WordProcessor::GetLineSpacing (size_t characterPos) const
 {
@@ -1566,7 +1555,7 @@ LineSpacing WordProcessor::GetLineSpacing (size_t characterPos) const
 /*
 @METHOD:        WordProcessor::GetLineSpacing
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetLineSpacing'</p>
+    <p>See @'ParagraphInfo::GetLineSpacing'</p>
 */
 bool WordProcessor::GetLineSpacing (size_t from, size_t to, LineSpacing* sl) const
 {
@@ -1577,7 +1566,7 @@ bool WordProcessor::GetLineSpacing (size_t from, size_t to, LineSpacing* sl) con
 /*
 @METHOD:        WordProcessor::SetLineSpacing
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::SetLineSpacing'</p>
+    <p>See @'ParagraphInfo::SetLineSpacing'</p>
 */
 void WordProcessor::SetLineSpacing (size_t from, size_t to, LineSpacing sl)
 {
@@ -1593,7 +1582,7 @@ void WordProcessor::SetLineSpacing (size_t from, size_t to, LineSpacing sl)
 /*
 @METHOD:        WordProcessor::GetListStyle
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetListStyle'</p>
+    <p>See @'ParagraphInfo::GetListStyle'</p>
 */
 ListStyle WordProcessor::GetListStyle (size_t characterPos) const
 {
@@ -1606,7 +1595,7 @@ ListStyle WordProcessor::GetListStyle (size_t characterPos) const
 /*
 @METHOD:        WordProcessor::GetListStyle
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetListStyle'</p>
+    <p>See @'ParagraphInfo::GetListStyle'</p>
 */
 bool WordProcessor::GetListStyle (size_t from, size_t to, ListStyle* listStyle) const
 {
@@ -1617,7 +1606,7 @@ bool WordProcessor::GetListStyle (size_t from, size_t to, ListStyle* listStyle) 
 /*
 @METHOD:        WordProcessor::SetListStyle
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::SetListStyle'</p>
+    <p>See @'ParagraphInfo::SetListStyle'</p>
 */
 void WordProcessor::SetListStyle (size_t from, size_t to, ListStyle listStyle, bool autoFormat)
 {
@@ -1637,7 +1626,7 @@ void WordProcessor::SetListStyle (size_t from, size_t to, ListStyle listStyle, b
 /*
 @METHOD:        WordProcessor::GetListIndentLevel
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetListIndentLevel'</p>
+    <p>See @'ParagraphInfo::GetListIndentLevel'</p>
 */
 unsigned char WordProcessor::GetListIndentLevel (size_t characterPos) const
 {
@@ -1650,7 +1639,7 @@ unsigned char WordProcessor::GetListIndentLevel (size_t characterPos) const
 /*
 @METHOD:        WordProcessor::GetListIndentLevel
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::GetListIndentLevel'</p>
+    <p>See @'ParagraphInfo::GetListIndentLevel'</p>
 */
 bool WordProcessor::GetListIndentLevel (size_t from, size_t to, unsigned char* indentLevel) const
 {
@@ -1661,7 +1650,7 @@ bool WordProcessor::GetListIndentLevel (size_t from, size_t to, unsigned char* i
 /*
 @METHOD:        WordProcessor::SetListIndentLevel
 @DESCRIPTION:
-    <p>See @'WordProcessor::ParagraphInfo::SetListIndentLevel'</p>
+    <p>See @'ParagraphInfo::SetListIndentLevel'</p>
 */
 void WordProcessor::SetListIndentLevel (size_t from, size_t to, unsigned char indentLevel, bool autoFormat)
 {
@@ -2096,7 +2085,7 @@ TWIPS WordProcessor::CalculateFarthestRightMargin () const
 void WordProcessor::InvalidateAllCaches ()
 {
     inherited::InvalidateAllCaches ();
-    ParagraphDatabasePtr pdb = GetParagraphDatabase ();
+    shared_ptr<AbstractParagraphDatabaseRep> pdb = GetParagraphDatabase ();
     if (pdb.get () != nullptr) {
         static_cast<AbstractParagraphDatabaseRep*> (pdb.get ())->fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
     }
@@ -2105,7 +2094,7 @@ void WordProcessor::InvalidateAllCaches ()
 void WordProcessor::TabletChangedMetrics ()
 {
     inherited::TabletChangedMetrics ();
-    ParagraphDatabasePtr pdb = GetParagraphDatabase ();
+    shared_ptr<AbstractParagraphDatabaseRep> pdb = GetParagraphDatabase ();
     if (pdb.get () != nullptr) {
         static_cast<AbstractParagraphDatabaseRep*> (pdb.get ())->fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
     }
@@ -4393,7 +4382,7 @@ inline TWIPS CalcDefaultRHSMargin ()
 
 using WordProcessorTextIOSinkStream = WordProcessor::WordProcessorTextIOSinkStream;
 WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                                              const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
+                                                              const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
                                                               const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart)
     : inherited{textStore, textStyleDatabase, insertionStart}
     , fOverwriteTableMode{false}
@@ -4799,10 +4788,10 @@ void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
     Assert (fNextTableRow > 0);
     Assert (fNextTableCell > 0);
 
-    TextStore*                           ts = nullptr;
-    shared_ptr<AbstractStyleDatabaseRep> styleDatabase;
-    ParagraphDatabasePtr                 paragraphDatabase;
-    HidableTextDatabasePtr               hidableTextDatabase;
+    TextStore*                               ts = nullptr;
+    shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
+    shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
+    HidableTextDatabasePtr                   hidableTextDatabase;
     fCurrentTable->GetCellWordProcessorDatabases (fNextTableRow - 1, fCurrentTableCell, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
     PushContext (ts, styleDatabase, paragraphDatabase, hidableTextDatabase, 0);
     if (GetOverwriteTableMode ()) {
@@ -4897,7 +4886,7 @@ void WordProcessorTextIOSinkStream::SetDefaultCellSpacingForCurrentRow (TWIPS to
 }
 
 void WordProcessorTextIOSinkStream::PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                                 const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
+                                                 const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
                                                  const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart)
 {
     if (GetCachedTextSize () != 0) { // must flush before setting/popping context
@@ -5012,8 +5001,8 @@ void WordProcessorTextIOSinkStream::Flush ()
  */
 using WordProcessorTextIOSrcStream = WordProcessor::WordProcessorTextIOSrcStream;
 WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                                            const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
-                                                            const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase,
+                                                            const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
+                                                            const WordProcessor::HidableTextDatabasePtr&    hidableTextDatabase,
                                                             size_t selectionStart, size_t selectionEnd)
     : inherited{textStore, textStyleDatabase, selectionStart, selectionEnd}
     , fUseTableSelection{false}
@@ -5295,10 +5284,10 @@ StyledTextIOWriter::SrcStream* WordProcessorTextIOSrcStream::TableIOMapper::Make
     size_t vCol = column + fStartCol;
 
     if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessor::Table::ePlainCell) {
-        TextStore*                            ts = nullptr;
-        shared_ptr<AbstractStyleDatabaseRep>  styleDatabase;
-        WordProcessor::ParagraphDatabasePtr   paragraphDatabase;
-        WordProcessor::HidableTextDatabasePtr hidableTextDatabase;
+        TextStore*                               ts = nullptr;
+        shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
+        shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
+        WordProcessor::HidableTextDatabasePtr    hidableTextDatabase;
         fRealTable.GetCellWordProcessorDatabases (vRow, vCol, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
         return new WordProcessorTextIOSrcStream (ts, styleDatabase, paragraphDatabase, hidableTextDatabase);
     }
@@ -5337,7 +5326,7 @@ TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellSpacingFor
 using WordProcessorFlavorPackageInternalizer = WordProcessor::WordProcessorFlavorPackageInternalizer;
 
 WordProcessorFlavorPackageInternalizer::WordProcessorFlavorPackageInternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
-                                                                                const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
+                                                                                const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
                                                                                 const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase)
     : FlavorPackageInternalizer (ts)
     , inherited (ts, styleDatabase)
@@ -5598,7 +5587,7 @@ void WordProcessor::WPPartition::Invariant_ () const
 using WordProcessorFlavorPackageExternalizer = WordProcessor::WordProcessorFlavorPackageExternalizer;
 
 WordProcessorFlavorPackageExternalizer::WordProcessorFlavorPackageExternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
-                                                                                const WordProcessor::ParagraphDatabasePtr& paragraphDatabase,
+                                                                                const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
                                                                                 const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase)
     : FlavorPackageExternalizer (ts)
     , inherited (ts, styleDatabase)
@@ -5682,7 +5671,7 @@ protected:
 @DESCRIPTION:   <p>You generally don't construct a table object directly, but rather using
             @'WordProcessor::InsertTable'.</p>
 */
-Table::Table (WordProcessor::AbstractParagraphDatabaseRep* tableOwner, size_t addAt)
+Table::Table (AbstractParagraphDatabaseRep* tableOwner, size_t addAt)
     : inherited ()
     , fCellSpacing (TWIPS{0})
     , fDefaultCellMargins (TWIPS (15), TWIPS (90), TWIPS{0}, TWIPS{0})
@@ -5725,7 +5714,7 @@ Table::~Table ()
     Assert (fCurrentOwningWP == nullptr);
 }
 
-void Table::FinalizeAddition (WordProcessor::AbstractParagraphDatabaseRep* o, size_t addAt)
+void Table::FinalizeAddition (AbstractParagraphDatabaseRep* o, size_t addAt)
 {
     RequireNotNull (o);
     TextStore&               ts = o->GetTextStore ();
@@ -7125,10 +7114,10 @@ Table::EmbeddedTableWordProcessor* Table::ConstructEmbeddedTableWordProcessor (W
     bool   activeFocusedCell      = GetIntraCellMode (&cellModeRow, &cellModeCol) and cellModeRow == forRow and cellModeCol == forColumn;
     EmbeddedTableWordProcessor* e = new EmbeddedTableWordProcessor (forWordProcessor, *this, forRow, forColumn, activeFocusedCell);
     try {
-        TextStore*                           ts = nullptr;
-        shared_ptr<AbstractStyleDatabaseRep> styleDatabase;
-        ParagraphDatabasePtr                 paragraphDatabase;
-        HidableTextDatabasePtr               hidableTextDatabase;
+        TextStore*                               ts = nullptr;
+        shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
+        shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
+        HidableTextDatabasePtr                   hidableTextDatabase;
         GetCellWordProcessorDatabases (forRow, forColumn, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
         e->SetStyleDatabase (styleDatabase);
         e->SetParagraphDatabase (paragraphDatabase);
@@ -7183,7 +7172,8 @@ void Table::ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e)
             are filled in.</p>
 */
 void Table::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
-                                           WordProcessor::ParagraphDatabasePtr* paragraphDatabase, WordProcessor::HidableTextDatabasePtr* hidableTextDatabase)
+                                           shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
+                                           WordProcessor::HidableTextDatabasePtr*    hidableTextDatabase)
 {
     Require (row < GetRowCount ());
     Require (column < GetColumnCount (row));
@@ -7609,8 +7599,8 @@ WordProcessor::Table::Cell::Cell (Table& forTable, CellMergeFlags mergeFlags)
             are filled in.</p>
 */
 void WordProcessor::Table::Cell::GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
-                                                                WordProcessor::ParagraphDatabasePtr*   paragraphDatabase,
-                                                                WordProcessor::HidableTextDatabasePtr* hidableTextDatabase)
+                                                                shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
+                                                                WordProcessor::HidableTextDatabasePtr*    hidableTextDatabase)
 {
     Require (fCellMergeFlags == ePlainCell);
     if (ts != nullptr) {
@@ -7640,7 +7630,7 @@ shared_ptr<AbstractStyleDatabaseRep> WordProcessor::Table::Cell::GetStyleDatabas
     return fCellRep->fStyleDatabase;
 }
 
-WordProcessor::ParagraphDatabasePtr WordProcessor::Table::Cell::GetParagraphDatabase () const
+shared_ptr<AbstractParagraphDatabaseRep> WordProcessor::Table::Cell::GetParagraphDatabase () const
 {
     Require (fCellMergeFlags == ePlainCell);
     return fCellRep->fParagraphDatabase;
@@ -7683,7 +7673,7 @@ WordProcessor::Table::CellRep::CellRep (Table& forTable)
     fTextStore = new SimpleTextStore ();
     fTextStore->AddMarkerOwner (this);
     fStyleDatabase       = make_shared<StyleDatabaseRep> (*fTextStore);
-    fParagraphDatabase   = ParagraphDatabasePtr (new ParagraphDatabaseRep (*fTextStore));
+    fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (*fTextStore);
     fHidableTextDatabase = HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (*fTextStore));
 }
 

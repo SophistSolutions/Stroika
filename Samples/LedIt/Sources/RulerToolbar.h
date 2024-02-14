@@ -26,7 +26,7 @@ public:
     virtual BOOL Create (CWnd* pParentWnd, DWORD dwStyle, UINT nID);
 
 protected:
-    void Update (const WordProcessor::IncrementalParagraphInfo& pf);
+    void Update (const IncrementalParagraphInfo& pf);
     void Update (const PARAFORMAT& pf);
     void Update (CSize sizePaper, const CRect& rectMargins);
 
@@ -231,8 +231,7 @@ protected:
     void         DrawNumbers (CDC& dc, int nInc, int nTPU);
     void         DrawDiv (CDC& dc, int nInc, int nLargeDiv, int nLength);
     void         DrawTabs (CDC& dc);
-    void         FillInParaFormat (WordProcessor::IncrementalParagraphInfo& pf);
-    void         FillInParaFormat (PARAFORMAT& pf);
+    void         FillInParaFormat (IncrementalParagraphInfo& pf);
     void         SortTabs ();
     void         SetMarginBounds ();
     RulerItem*   GetFreeTab ();

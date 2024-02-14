@@ -200,7 +200,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         shared_ptr<AbstractStyleDatabaseRep> fStyleDatabase;
-        bool             fICreatedDatabase;
+        bool                                 fICreatedDatabase;
 
 // Debug support
 #if qDebug

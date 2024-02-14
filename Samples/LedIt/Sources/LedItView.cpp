@@ -743,7 +743,7 @@ BOOL LedItView::IsSelected (const CObject* pDocItem) const
 }
 #endif
 
-WordProcessor::IncrementalParagraphInfo LedItView::GetParaFormatSelection ()
+IncrementalParagraphInfo LedItView::GetParaFormatSelection ()
 {
     //COULD SPEED TWEEK THIS - LIKE I DID FOR fCachedCurSelJustificationUnique
     IncrementalParagraphInfo ipi;

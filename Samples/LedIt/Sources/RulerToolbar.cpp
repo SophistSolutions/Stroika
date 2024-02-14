@@ -21,8 +21,6 @@ using RulerItem       = RulerBar::RulerItem;
 using CComboRulerItem = RulerBar::CComboRulerItem;
 using CTabRulerItem   = RulerBar::CTabRulerItem;
 
-using IncrementalParagraphInfo = WordProcessor::IncrementalParagraphInfo;
-
 #define HEIGHT 17
 #define RULERBARHEIGHT 17
 
@@ -470,7 +468,7 @@ CSize RulerBar::CalcFixedLayout (BOOL bStretch, BOOL bHorz)
     return m_size;
 }
 
-void RulerBar::Update (const WordProcessor::IncrementalParagraphInfo& pf)
+void RulerBar::Update (const IncrementalParagraphInfo& pf)
 {
     if (pf.GetTabStopList_Valid ()) {
         StandardTabStopList tabStops = pf.GetTabStopList ();
@@ -517,7 +515,7 @@ void RulerBar::Update (CSize sizePaper, const CRect& rectMargins)
 #endif
 }
 
-void RulerBar::FillInParaFormat (WordProcessor::IncrementalParagraphInfo& pf)
+void RulerBar::FillInParaFormat (IncrementalParagraphInfo& pf)
 {
     pf = IncrementalParagraphInfo ();
     //we don't set the justification - just the tabstops (AND SOON THE START/RIGHT INDENT).

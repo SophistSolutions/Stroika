@@ -116,18 +116,18 @@ public:
 public:
     nonvirtual TextStore& GetTextStore ();
     nonvirtual shared_ptr<AbstractStyleDatabaseRep>& GetStyleDatabase ();
-    nonvirtual WordProcessor::ParagraphDatabasePtr& GetParagraphDatabase ();
+    nonvirtual shared_ptr<AbstractParagraphDatabaseRep>& GetParagraphDatabase ();
     nonvirtual WordProcessor::HidableTextDatabasePtr& GetHidableTextDatabase ();
     nonvirtual CommandHandler&                        GetCommandHandler ();
 
 protected:
 public:
-    ChunkedArrayTextStore                 fTextStore;
-    StyledTextIO::RTFInfo                 fRTFInfo;
-    shared_ptr<AbstractStyleDatabaseRep>  fStyleDatabase;
-    WordProcessor::ParagraphDatabasePtr   fParagraphDatabase;
-    WordProcessor::HidableTextDatabasePtr fHidableTextDatabase;
-    MultiLevelUndoCommandHandler          fCommandHandler;
+    ChunkedArrayTextStore                    fTextStore;
+    StyledTextIO::RTFInfo                    fRTFInfo;
+    shared_ptr<AbstractStyleDatabaseRep>     fStyleDatabase;
+    shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+    WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
+    MultiLevelUndoCommandHandler             fCommandHandler;
 
 #if qStroika_FeatureSupported_XWindows
 public:
@@ -208,7 +208,7 @@ inline shared_ptr<AbstractStyleDatabaseRep>& LedItDocument::GetStyleDatabase ()
 {
     return fStyleDatabase;
 }
-inline WordProcessor::ParagraphDatabasePtr& LedItDocument::GetParagraphDatabase ()
+inline shared_ptr<AbstractParagraphDatabaseRep>& LedItDocument::GetParagraphDatabase ()
 {
     return fParagraphDatabase;
 }

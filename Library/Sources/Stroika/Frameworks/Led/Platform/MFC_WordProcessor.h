@@ -83,8 +83,8 @@ namespace Stroika::Frameworks::Led::Platform {
 
         public:
             ControlItemContextInternalizer (COleDocument* doc, TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
-                                            const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
-                                            const WordProcessor::HidableTextDatabasePtr& hiddenTextDatabase)
+                                            const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
+                                            const WordProcessor::HidableTextDatabasePtr&    hiddenTextDatabase)
                 : FlavorPackageInternalizer{ts}
                 , inherited{ts, styleDatabase, paragraphDatabase, hiddenTextDatabase}
                 , fDocument{doc}
