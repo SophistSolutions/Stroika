@@ -12,7 +12,6 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      ***************************** HidableTextMarkerOwner ***************************
@@ -69,6 +68,7 @@ namespace Stroika::Frameworks::Led {
         return fShown;
     }
 
+#if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
      ********************* HidableTextMarkerHelper<BASECLASS> ***********************

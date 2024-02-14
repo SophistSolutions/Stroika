@@ -12,6 +12,24 @@
 
 namespace Stroika::Frameworks::Led {
 
+    /*
+     ********************************************************************************
+     *********************** StandardStyledTextIOSrcStream **************************
+     ********************************************************************************
+     */
+    inline size_t StandardStyledTextIOSrcStream::GetCurOffset () const
+    {
+        return fCurOffset;
+    }
+    inline size_t StandardStyledTextIOSrcStream::GetSelStart () const
+    {
+        return fSelStart;
+    }
+    inline size_t StandardStyledTextIOSrcStream::GetSelEnd () const
+    {
+        return fSelEnd;
+    }
+
 #if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
@@ -87,20 +105,6 @@ namespace Stroika::Frameworks::Led {
     inline const vector<Led_tChar>& StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedText () const
     {
         return fCachedText;
-    }
-
-    //  class   StandardStyledTextInteractor::StandardStyledTextIOSrcStream
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetCurOffset () const
-    {
-        return fCurOffset;
-    }
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelStart () const
-    {
-        return fSelStart;
-    }
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelEnd () const
-    {
-        return fSelEnd;
     }
 #endif
 

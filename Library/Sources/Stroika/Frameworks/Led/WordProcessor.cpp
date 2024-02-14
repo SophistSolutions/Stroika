@@ -5597,7 +5597,7 @@ WordProcessorFlavorPackageExternalizer::WordProcessorFlavorPackageExternalizer (
 {
 }
 
-WordProcessor::StandardStyledTextIOSrcStream* WordProcessorFlavorPackageExternalizer::mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd)
+StandardStyledTextIOSrcStream* WordProcessorFlavorPackageExternalizer::mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd)
 {
     WordProcessorTextIOSrcStream* stream = new WordProcessorTextIOSrcStream (PeekAtTextStore (), fStyleDatabase, fParagraphDatabase,
                                                                              fHidableTextDatabase, selectionStart, selectionEnd);

@@ -44,6 +44,48 @@ namespace Stroika::Frameworks::Led {
     extern const Led_ClipFormat kHTMLClipFormat;
 #endif
 
+    /**
+     *   <p>This is a writer source stream which talks to a StandardStyledTextImager and/or WordProcessor
+     *   class. It knows about StyleDatabases, and ParagraphDatabases, and gets content from them for the
+     *   output writer class.</p>
+     */
+    class StandardStyledTextIOSrcStream : public virtual StyledTextIO::StyledTextIOWriter::SrcStream {
+    private:
+        using inherited = StyledTextIO::StyledTextIOWriter::SrcStream;
+
+    public:
+        StandardStyledTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                       size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
+#if qStroika_Frameworks_Led_SupportGDI
+        StandardStyledTextIOSrcStream (StandardStyledTextImager* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
+#endif
+
+    public:
+        virtual size_t                          readNTChars (Led_tChar* intoBuf, size_t maxTChars) override;
+        virtual size_t                          current_offset () const override;
+        virtual void                            seek_to (size_t to) override;
+        virtual size_t                          GetTotalTextLength () const override;
+        virtual vector<StyledInfoSummaryRecord> GetStyleInfo (size_t from, size_t len) const override;
+#if qStroika_Frameworks_Led_SupportGDI
+        virtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const override;
+#endif
+        virtual Table* GetTableAt (size_t at) const override;
+        virtual void   SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const override;
+        virtual size_t GetEmbeddingMarkerPosOffset () const override;
+
+    public:
+        nonvirtual size_t GetCurOffset () const;
+        nonvirtual size_t GetSelStart () const;
+        nonvirtual size_t GetSelEnd () const;
+
+    private:
+        TextStore*                           fTextStore;
+        shared_ptr<AbstractStyleDatabaseRep> fStyleRunDatabase;
+        size_t                               fCurOffset;
+        size_t                               fSelStart;
+        size_t                               fSelEnd;
+    };
+
 #if qStroika_Frameworks_Led_SupportGDI
     class SimpleEmbeddedObjectStyleMarker;
 
@@ -115,7 +157,6 @@ namespace Stroika::Frameworks::Led {
 
     public:
         class StandardStyledTextIOSinkStream;
-        class StandardStyledTextIOSrcStream;
 
     public:
         class StyledTextFlavorPackageInternalizer;
@@ -246,46 +287,6 @@ namespace Stroika::Frameworks::Led {
         size_t                               fInsertionStart;
         vector<StyledInfoSummaryRecord>      fSavedStyleInfo;
         vector<Led_tChar>                    fCachedText;
-    };
-
-    /*
-    @CLASS:         StandardStyledTextInteractor::StandardStyledTextIOSrcStream
-    @BASES:         @'StyledTextIOWriter::SrcStream'
-    @DESCRIPTION:   <p>This is a writer source stream which talks to a StandardStyledTextImager and/or WordProcessor
-        class. It knows about StyleDatabases, and ParagraphDatabases, and gets content from them for the
-        output writer class.</p>
-    */
-    class StandardStyledTextInteractor::StandardStyledTextIOSrcStream : public virtual StyledTextIO::StyledTextIOWriter::SrcStream {
-    private:
-        using inherited = StyledTextIO::StyledTextIOWriter::SrcStream;
-
-    public:
-        StandardStyledTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                       size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
-        StandardStyledTextIOSrcStream (StandardStyledTextImager* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
-
-    public:
-        virtual size_t                                   readNTChars (Led_tChar* intoBuf, size_t maxTChars) override;
-        virtual size_t                                   current_offset () const override;
-        virtual void                                     seek_to (size_t to) override;
-        virtual size_t                                   GetTotalTextLength () const override;
-        virtual vector<StyledInfoSummaryRecord>          GetStyleInfo (size_t from, size_t len) const override;
-        virtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const override;
-        virtual Table*                                   GetTableAt (size_t at) const override;
-        virtual void   SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const override;
-        virtual size_t GetEmbeddingMarkerPosOffset () const override;
-
-    public:
-        nonvirtual size_t GetCurOffset () const;
-        nonvirtual size_t GetSelStart () const;
-        nonvirtual size_t GetSelEnd () const;
-
-    private:
-        TextStore*                           fTextStore;
-        shared_ptr<AbstractStyleDatabaseRep> fStyleRunDatabase;
-        size_t                               fCurOffset;
-        size_t                               fSelStart;
-        size_t                               fSelEnd;
     };
 
     /*

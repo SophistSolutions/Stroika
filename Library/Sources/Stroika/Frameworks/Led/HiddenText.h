@@ -20,23 +20,22 @@
 
 namespace Stroika::Frameworks::Led {
 
-#if qStroika_Frameworks_Led_SupportGDI
-    /*
-    @DESCRIPTION:   <p>HidableTextMarkerOwner is a @'MarkerOwner' class, collecting together a set of
-        @'HidableTextMarkerOwner::HidableTextMarker' elements. Each of these hidden-text elements can contain
-        either currently hidden text, or text which could potentially be hidden.</p>
-            <p>Note that not all @'HidableTextMarkerOwner::HidableTextMarker' elements need to share the same
-        'hidden' / 'shown' state. Some can be hidden while others shown. And markers of different subclasses of
-        @'HidableTextMarkerOwner::HidableTextMarker' can be collected together in a single, or in multiple
-        @'HidableTextMarkerOwner's.</p>
-            <p>See @'HidableTextMarkerOwner::HidableTextMarker' for more details, and subclasses.</p>
-            <p><em>Implemenation Note:</em><br>
-            I considered implementing this using a map<> for its red-black tree implementation. That might turn out to
-        be faster if you have lots of hidden text. But the APIs STL provides you when you try todo this are not very friendly.
-        I battled them for a while (you must make a map with a second bogus field, and then everywhere try to say 'first' after
-        you access the interator - and thats not so bad in MY code - but when I use the builtin STL helpers - its more of a pain, and
-        then the lookup - find routine was a real pain - cuz I don't want to lookup by Marker* - but by POSITION).</p>
-    */
+    /**
+     *      <p>HidableTextMarkerOwner is a @'MarkerOwner' class, collecting together a set of
+     *  @'HidableTextMarkerOwner::HidableTextMarker' elements. Each of these hidden-text elements can contain
+     *  either currently hidden text, or text which could potentially be hidden.</p>
+     *      <p>Note that not all @'HidableTextMarkerOwner::HidableTextMarker' elements need to share the same
+     *  'hidden' / 'shown' state. Some can be hidden while others shown. And markers of different subclasses of
+     *  @'HidableTextMarkerOwner::HidableTextMarker' can be collected together in a single, or in multiple
+     *  @'HidableTextMarkerOwner's.</p>
+     *      <p>See @'HidableTextMarkerOwner::HidableTextMarker' for more details, and subclasses.</p>
+     *      <p><em>Implemenation Note:</em><br>
+     *      I considered implementing this using a map<> for its red-black tree implementation. That might turn out to
+     *  be faster if you have lots of hidden text. But the APIs STL provides you when you try todo this are not very friendly.
+     *  I battled them for a while (you must make a map with a second bogus field, and then everywhere try to say 'first' after
+     *  you access the interator - and thats not so bad in MY code - but when I use the builtin STL helpers - its more of a pain, and
+     *  then the lookup - find routine was a real pain - cuz I don't want to lookup by Marker* - but by POSITION).</p>
+     */
     class HidableTextMarkerOwner : public MarkerOwner {
     private:
         using inherited = MarkerOwner;
@@ -119,13 +118,13 @@ namespace Stroika::Frameworks::Led {
         friend class HidableTextMarker;
     };
 
-    /*
-    @DESCRIPTION:   <p>UniformHidableTextMarkerOwner is a @'HidableTextMarkerOwner' class, which has a notion of
-        whether or not <em>all</em> the hidden text markers are hidden or not. You can manually change the hidden
-        state of particular markers - if you wish (via @'HidableTextMarkerOwner::HideAll ()' commands with a from/to range).</p>
-            <p>But the default behavior is that all the markers share this hidden or not hidden state, and NEWLY created
-        'hiding' markers inherit this state.</p>
-    */
+    /**
+     *      UniformHidableTextMarkerOwner is a @'HidableTextMarkerOwner' class, which has a notion of
+     *  whether or not <em>all</em> the hidden text markers are hidden or not. You can manually change the hidden
+     *  state of particular markers - if you wish (via @'HidableTextMarkerOwner::HideAll ()' commands with a from/to range).</p>
+     *      <p>But the default behavior is that all the markers share this hidden or not hidden state, and NEWLY created
+     *  'hiding' markers inherit this state.</p>
+     */
     class UniformHidableTextMarkerOwner : public HidableTextMarkerOwner {
     private:
         using inherited = HidableTextMarkerOwner;
@@ -170,6 +169,8 @@ namespace Stroika::Frameworks::Led {
     public:
         friend class HidableTextMarkerOwner;
     };
+
+#if qStroika_Frameworks_Led_SupportGDI
 
     /*
     @CLASS:         HidableTextMarkerHelper<BASECLASS>

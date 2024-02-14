@@ -22,6 +22,8 @@ using namespace Stroika::Frameworks::Led;
 
 #if qStroika_Frameworks_Led_SupportGDI
 
+#endif
+
 /*
  ********************************************************************************
  ****************************** HidableTextMarkerOwner **************************
@@ -594,5 +596,3 @@ ColoredUniformHidableTextMarkerOwner::HidableTextMarker* ColoredUniformHidableTe
     }
     return new LightUnderlineHidableTextMarker (fontSpec);
 }
-
-#endif

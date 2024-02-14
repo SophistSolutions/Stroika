@@ -24,6 +24,126 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
+/*
+ ********************************************************************************
+ ************************** StandardStyledTextIOSrcStream ***********************
+ ********************************************************************************
+ */
+StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                                              size_t selectionStart, size_t selectionEnd)
+    : inherited ()
+    , fTextStore (textStore)
+    , fStyleRunDatabase (textStyleDatabase)
+    , fCurOffset (selectionStart)
+    , fSelStart (selectionStart)
+    , fSelEnd (selectionEnd)
+{
+    RequireNotNull (textStore);
+    Require (textStyleDatabase.get () != nullptr);
+    Require (fSelStart >= 0);
+    Require (fSelEnd >= 0);
+    fSelEnd = min (fSelEnd, textStore->GetEnd ());
+}
+
+#if qStroika_Frameworks_Led_SupportGDI
+StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (StandardStyledTextImager* textImager, size_t selectionStart, size_t selectionEnd)
+    : StandardStyledTextIOSrcStream{textImager->PeekAtTextStore (), textImager->GetStyleDatabase (), selectionStart, selectionEnd}
+{
+}
+#endif
+
+size_t StandardStyledTextIOSrcStream::readNTChars (Led_tChar* intoBuf, size_t maxTChars)
+{
+    AssertNotNull (intoBuf);
+    size_t bytesToRead = min (maxTChars, fSelEnd - fCurOffset);
+    Assert (bytesToRead <= maxTChars);
+    fTextStore->CopyOut (fCurOffset, bytesToRead, intoBuf);
+    fCurOffset += bytesToRead;
+    return bytesToRead;
+}
+
+size_t StandardStyledTextIOSrcStream::current_offset () const
+{
+    return fCurOffset - fSelStart;
+}
+
+void StandardStyledTextIOSrcStream::seek_to (size_t to)
+{
+    Require (to >= 0);
+    to += fSelStart;
+    to         = min (to, fSelEnd);
+    fCurOffset = to;
+    Ensure (fCurOffset >= fSelStart);
+    Ensure (fCurOffset <= fSelEnd);
+}
+
+size_t StandardStyledTextIOSrcStream::GetTotalTextLength () const
+{
+    Assert (fSelEnd >= fSelStart);
+    return (fSelEnd - fSelStart);
+}
+
+vector<StyledInfoSummaryRecord> StandardStyledTextIOSrcStream::GetStyleInfo (size_t from, size_t len) const
+{
+    size_t effectiveFrom = from + fSelStart;
+#if qDebug
+    size_t effectiveTo = effectiveFrom + len;
+#endif
+    Require (effectiveFrom >= fSelStart);
+    Require (effectiveFrom <= fSelEnd);
+#if qDebug
+    Require (effectiveTo >= fSelStart);
+    Require (effectiveTo <= fSelEnd);
+#endif
+    return fStyleRunDatabase->GetStyleInfo (effectiveFrom, len);
+}
+
+#if qStroika_Frameworks_Led_SupportGDI
+vector<SimpleEmbeddedObjectStyleMarker*> StandardStyledTextIOSrcStream::CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const
+{
+    size_t effectiveFrom = from + fSelStart;
+    size_t effectiveTo   = to + fSelStart;
+    Require (effectiveFrom >= fSelStart);
+    Require (effectiveFrom <= fSelEnd);
+    Require (effectiveTo >= fSelStart);
+    Require (effectiveTo <= fSelEnd);
+
+    MarkersOfATypeMarkerSink2Vector<SimpleEmbeddedObjectStyleMarker> result;
+    AssertNotNull (fTextStore);
+    fTextStore->CollectAllMarkersInRangeInto (effectiveFrom, effectiveTo, TextStore::kAnyMarkerOwner, result);
+    return result.fResult;
+}
+#endif
+
+StandardStyledTextIOSrcStream::Table* StandardStyledTextIOSrcStream::GetTableAt (size_t /*at*/) const
+{
+    return nullptr;
+}
+
+void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
+{
+    if (fontNames != nullptr or colorsUsed != nullptr) {
+        size_t                          totalTextLength = GetTotalTextLength ();
+        vector<StyledInfoSummaryRecord> styleRuns;
+        if (totalTextLength != 0) {
+            styleRuns = GetStyleInfo (0, totalTextLength);
+        }
+        for (auto i = styleRuns.begin (); i != styleRuns.end (); ++i) {
+            if (fontNames != nullptr) {
+                fontNames->insert ((*i).GetFontName ());
+            }
+            if (colorsUsed != nullptr) {
+                colorsUsed->insert ((*i).GetTextColor ());
+            }
+        }
+    }
+}
+
+size_t StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const
+{
+    return fSelStart;
+}
+
 #if qStroika_Frameworks_Led_SupportGDI
 
 #if qPlatform_MacOS
@@ -681,134 +801,6 @@ void StandardStyledTextIOSinkStream::PopContext ()
 
 /*
  ********************************************************************************
- **************************** StandardStyledTextIOSrcStream *********************
- ********************************************************************************
- */
-using StandardStyledTextIOSrcStream = StandardStyledTextInteractor::StandardStyledTextIOSrcStream;
-StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                                              size_t selectionStart, size_t selectionEnd)
-    : inherited ()
-    , fTextStore (textStore)
-    , fStyleRunDatabase (textStyleDatabase)
-    , fCurOffset (selectionStart)
-    , fSelStart (selectionStart)
-    , fSelEnd (selectionEnd)
-{
-    RequireNotNull (textStore);
-    Require (textStyleDatabase.get () != nullptr);
-    Require (fSelStart >= 0);
-    Require (fSelEnd >= 0);
-    fSelEnd = min (fSelEnd, textStore->GetEnd ());
-}
-
-StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (StandardStyledTextImager* textImager, size_t selectionStart, size_t selectionEnd)
-    : inherited ()
-    , fTextStore (textImager->PeekAtTextStore ())
-    , fStyleRunDatabase (textImager->GetStyleDatabase ())
-    , fCurOffset (selectionStart)
-    , fSelStart (selectionStart)
-    , fSelEnd (selectionEnd)
-{
-    RequireNotNull (textImager);
-    RequireNotNull (fTextStore);
-    Require (fStyleRunDatabase.get () != nullptr);
-    Require (fSelStart >= 0);
-    Require (fSelEnd >= 0);
-    fSelEnd = min (fSelEnd, fTextStore->GetEnd ());
-}
-
-size_t StandardStyledTextIOSrcStream::readNTChars (Led_tChar* intoBuf, size_t maxTChars)
-{
-    AssertNotNull (intoBuf);
-    size_t bytesToRead = min (maxTChars, fSelEnd - fCurOffset);
-    Assert (bytesToRead <= maxTChars);
-    fTextStore->CopyOut (fCurOffset, bytesToRead, intoBuf);
-    fCurOffset += bytesToRead;
-    return (bytesToRead);
-}
-
-size_t StandardStyledTextIOSrcStream::current_offset () const
-{
-    return (fCurOffset - fSelStart);
-}
-
-void StandardStyledTextIOSrcStream::seek_to (size_t to)
-{
-    Require (to >= 0);
-    to += fSelStart;
-    to         = min (to, fSelEnd);
-    fCurOffset = to;
-    Ensure (fCurOffset >= fSelStart);
-    Ensure (fCurOffset <= fSelEnd);
-}
-
-size_t StandardStyledTextIOSrcStream::GetTotalTextLength () const
-{
-    Assert (fSelEnd >= fSelStart);
-    return (fSelEnd - fSelStart);
-}
-
-vector<StyledInfoSummaryRecord> StandardStyledTextIOSrcStream::GetStyleInfo (size_t from, size_t len) const
-{
-    size_t effectiveFrom = from + fSelStart;
-#if qDebug
-    size_t effectiveTo = effectiveFrom + len;
-#endif
-    Require (effectiveFrom >= fSelStart);
-    Require (effectiveFrom <= fSelEnd);
-#if qDebug
-    Require (effectiveTo >= fSelStart);
-    Require (effectiveTo <= fSelEnd);
-#endif
-    return (fStyleRunDatabase->GetStyleInfo (effectiveFrom, len));
-}
-
-vector<SimpleEmbeddedObjectStyleMarker*> StandardStyledTextIOSrcStream::CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const
-{
-    size_t effectiveFrom = from + fSelStart;
-    size_t effectiveTo   = to + fSelStart;
-    Require (effectiveFrom >= fSelStart);
-    Require (effectiveFrom <= fSelEnd);
-    Require (effectiveTo >= fSelStart);
-    Require (effectiveTo <= fSelEnd);
-
-    MarkersOfATypeMarkerSink2Vector<SimpleEmbeddedObjectStyleMarker> result;
-    AssertNotNull (fTextStore);
-    fTextStore->CollectAllMarkersInRangeInto (effectiveFrom, effectiveTo, TextStore::kAnyMarkerOwner, result);
-    return result.fResult;
-}
-
-StandardStyledTextIOSrcStream::Table* StandardStyledTextIOSrcStream::GetTableAt (size_t /*at*/) const
-{
-    return nullptr;
-}
-
-void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
-{
-    if (fontNames != nullptr or colorsUsed != nullptr) {
-        size_t                          totalTextLength = GetTotalTextLength ();
-        vector<StyledInfoSummaryRecord> styleRuns;
-        if (totalTextLength != 0) {
-            styleRuns = GetStyleInfo (0, totalTextLength);
-        }
-        for (auto i = styleRuns.begin (); i != styleRuns.end (); ++i) {
-            if (fontNames != nullptr) {
-                fontNames->insert ((*i).GetFontName ());
-            }
-            if (colorsUsed != nullptr) {
-                colorsUsed->insert ((*i).GetTextColor ());
-            }
-        }
-    }
-}
-
-size_t StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const
-{
-    return (fSelStart);
-}
-
-/*
- ********************************************************************************
  ************************* StyledTextFlavorPackageInternalizer ******************
  ********************************************************************************
  */
@@ -1216,8 +1208,7 @@ void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_SingleSelectedEmbedd
     @'StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer' can use a dynamicly typed
     SinkStream. So - for example - the internalize methods include paragraph info.</p>
 */
-StandardStyledTextInteractor::StandardStyledTextIOSrcStream*
-StyledTextFlavorPackageExternalizer::mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd)
+StandardStyledTextIOSrcStream* StyledTextFlavorPackageExternalizer::mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd)
 {
     return new StandardStyledTextIOSrcStream (PeekAtTextStore (), fStyleDatabase, selectionStart, selectionEnd);
 }
