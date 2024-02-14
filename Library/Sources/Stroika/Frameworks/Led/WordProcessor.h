@@ -25,8 +25,9 @@
 namespace Stroika::Frameworks::Led {
 
     class IncrementalParagraphInfo;
+    class WordProcessorTable;
 
-    const inline TWIPS kBadCachedFarthestRightMarginInDocument = TWIPS (-1);
+    constexpr inline TWIPS kBadCachedFarthestRightMarginInDocument = TWIPS (-1);
 
     /**
      *  Currently (as of 2024-02-14) tightly coupled with GDI code, so conditionally disable table support if we dont have GDI support.
@@ -228,6 +229,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         friend class WordProcessor;
+        friend class WordProcessorTable;
     };
 
     /**
@@ -296,6 +298,547 @@ namespace Stroika::Frameworks::Led {
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
+    /*
+    @CLASS:         WordProcessorTable
+    @BASES:         @'SimpleEmbeddedObjectStyleMarker'
+    @DESCRIPTION:   <p>A table is an object that can be embedded in a document, and it contains multiple cells.
+                Each cell is basically another word-processor instance.</p>
+                    <p>Since a table is assocated with a paragraph database, and can be viewed and edited
+                simultaneously be multiple views (WordProcessors) - we cannot make long-term assumptions
+                about association of a table with an owning WordProcessor object. Instead - during UI operations
+                like typing and so on - you temporarily associate an owning WP with the given table using
+                @'WordProcessorTable::TemporarilySetOwningWP'</p>
+                    <p>We support having any number of rows, and each row can have a different number of
+                columns (cells). Often however - the number of columns for each row of a table will be the
+                same (as will their widths be equal).</p>
+                    <p>This class may not remain a subclass of simpleembeddedObject stuff - but maybe.</p>
+                    <p>Note that most coordiantes in this routine are presumed to be table relative. Either that - or
+                they are window-rect relative. You can use the methods @'WordProcessorTable::TableCoordinates2Window' and
+                @'WordProcessorTable::WindowCoordinates2Table' to map between them.
+                    </p>
+                    <p>Each cell is surrounded by spacing (see @'WordProcessorTable::GetCellSpacing'.
+                This defaults to zero. If you set it to non-zero - then the borders drawn for cells don't touch the
+                borders for the table itself.</p>
+                    <p>The cell bounds for each cell (@'WordProcessorTable::GetCellBounds') is the area that
+                gets a box drawn around it (on the outside bounds). These 'cell bounds' may not exactly touch each other on the
+                edges by so that they SHARE the border separating each from its sibling. Also - they may not touch because
+                of cell spacing (@'WordProcessorTable::GetCellSpacing').</p>
+                    <p>The actaul 'edit window' within a cell is inset by its cell margins. This value defaults
+                to that provided by @'WordProcessorTable::GetDefaultCellMargins', but at some point (maybe for 3.1?)
+                will be overridable on a per-cell basis.</p>
+    */
+    class WordProcessorTable
+#if qStroika_Frameworks_Led_SupportGDI
+
+        : public SimpleEmbeddedObjectStyleMarker
+
+#endif
+    {
+#if qStroika_Frameworks_Led_SupportGDI
+    private:
+        using inherited = SimpleEmbeddedObjectStyleMarker;
+#endif
+
+    public:
+        WordProcessorTable (AbstractParagraphDatabaseRep* tableOwner, size_t addAt);
+        ~WordProcessorTable ();
+
+#if qStroika_Frameworks_Led_SupportGDI
+    public:
+        using CursorMovementDirection = TextImager::CursorMovementDirection;
+        using CursorMovementUnit      = TextImager::CursorMovementUnit;
+        using UpdateMode              = TextInteractor::UpdateMode;
+        using CursorMovementAction    = TextInteractor::CursorMovementAction;
+        using CommandUpdater          = TextInteractor::CommandUpdater;
+        using CommandNumber           = TextInteractor::CommandNumber;
+#endif
+
+    protected:
+        virtual void FinalizeAddition (AbstractParagraphDatabaseRep* o, size_t addAt);
+
+    public:
+        class Cell;
+
+    protected:
+        class CellRep;
+
+#if qStroika_Frameworks_Led_SupportGDI
+    public:
+        virtual void DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,
+                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to,
+                                          const Led_tChar* text, DistanceType* distanceResults) const override;
+        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
+
+    public:
+        virtual vector<Led_Rect> GetRowHilightRects () const;
+
+    protected:
+        virtual void DrawTableBorders (WordProcessor& owningWP, Tablet* tablet, const Led_Rect& drawInto);
+        virtual void DrawCellBorders (Tablet* tablet, size_t row, size_t column, const Led_Rect& cellBounds);
+
+    public:
+        nonvirtual TWIPS GetCellSpacing () const;
+        nonvirtual void  SetCellSpacing (TWIPS cellSpacing);
+
+    private:
+        TWIPS fCellSpacing;
+
+    public:
+        nonvirtual void GetDefaultCellMargins (TWIPS* top, TWIPS* left, TWIPS* bottom, TWIPS* right) const;
+        nonvirtual void SetDefaultCellMargins (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right);
+
+    private:
+        TWIPS_Rect fDefaultCellMargins; // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
+
+    public:
+        virtual Led_Rect GetCellBounds (size_t row, size_t column) const;
+        virtual Led_Rect GetCellEditorBounds (size_t row, size_t column) const;
+
+        virtual void GetClosestCell (const Led_Point& p, size_t* row, size_t* col) const;
+
+    public:
+        nonvirtual Led_Point TableCoordinates2Window (const Led_Point& p) const;
+        nonvirtual Led_Rect  TableCoordinates2Window (const Led_Rect& r) const;
+        nonvirtual Led_Point WindowCoordinates2Table (const Led_Point& p) const;
+        nonvirtual Led_Rect  WindowCoordinates2Table (const Led_Rect& r) const;
+
+    public:
+        virtual bool     GetCaretShownSituation () const;
+        virtual Led_Rect CalculateCaretRect () const;
+
+    public:
+        virtual bool OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
+                                             bool controlPressed, bool altKeyPressed);
+
+    protected:
+        virtual bool DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit,
+                                             CursorMovementAction action, UpdateMode updateMode, bool scrollToSelection);
+
+    public:
+        virtual bool OnUpdateCommand (CommandUpdater* enabler);
+        virtual bool OnPerformCommand (CommandNumber commandNumber);
+
+    protected:
+        nonvirtual void BreakInGroupedCommands ();
+
+    protected:
+        virtual bool OnUpdateCommand_ApplyToEachSelectedCell (CommandUpdater* enabler);
+        virtual bool OnPerformCommand_ApplyToEachSelectedCell (CommandNumber commandNumber, bool captureChangesForUndo = true);
+
+    public:
+        virtual void OnUpdateCutCommand (CommandUpdater* pCmdUI);
+        virtual void OnCutCommand ();
+        virtual void OnUpdateInsertTableRowAboveCommand (CommandUpdater* pCmdUI);
+        virtual void OnInsertTableRowAboveCommand ();
+        virtual void OnUpdateInsertTableRowBelowCommand (CommandUpdater* pCmdUI);
+        virtual void OnInsertTableRowBelowCommand ();
+        virtual void OnUpdateInsertTableColBeforeCommand (CommandUpdater* pCmdUI);
+        virtual void OnInsertTableColBeforeCommand ();
+        virtual void OnUpdateInsertTableColAfterCommand (CommandUpdater* pCmdUI);
+        virtual void OnInsertTableColAfterCommand ();
+        virtual void OnUpdateRemoveTableRowsCommand (CommandUpdater* pCmdUI);
+        virtual void OnRemoveTableRowsCommand ();
+        virtual void OnUpdateRemoveTableColumnsCommand (CommandUpdater* pCmdUI);
+        virtual void OnRemoveTableColumnsCommand ();
+        virtual void OnUpdateSelectTablePartsCommand (CommandUpdater* enabler);
+        virtual void OnPerformTablePartsCommand (CommandNumber commandNumber);
+
+    protected:
+        nonvirtual void AssureCurSelFontCacheValid (IncrementalFontSpecification* curSelFontSpec);
+
+    public:
+        nonvirtual void InteractiveSetFont (const IncrementalFontSpecification& defaultFont);
+
+        // SimpleEmbeddedObjectStyleMarker overrides
+    public:
+        virtual const char* GetTag () const override;
+        virtual void        Write (SinkStream& sink) override;
+        virtual void        ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
+
+    public:
+        virtual bool ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection);
+        virtual void WhileSimpleMouseTracking (Led_Point newMousePos);
+
+    public:
+        nonvirtual Color GetTableBorderColor () const;
+        nonvirtual void  SetTableBorderColor (Color c);
+
+    public:
+        nonvirtual TWIPS GetTableBorderWidth () const;
+        nonvirtual void  SetTableBorderWidth (TWIPS w);
+
+    public:
+        nonvirtual TWIPS GetColumnWidth (size_t row, size_t column) const;
+        nonvirtual void  SetColumnWidth (size_t row, size_t column, TWIPS colWidth);
+
+    public:
+        nonvirtual Color GetCellColor (size_t row, size_t column) const;
+        nonvirtual void  SetCellColor (size_t row, size_t column, const Color& c);
+
+    public:
+        nonvirtual Cell&       GetCell (size_t row, size_t column);
+        nonvirtual const Cell& GetCell (size_t row, size_t column) const;
+        nonvirtual void        GetRealCell (size_t* row, size_t* column) const;
+        nonvirtual const Cell& GetRealCell (size_t row, size_t column) const;
+
+    public:
+        enum CellMergeFlags {
+            ePlainCell       = 0,
+            eMergeCellLeft   = 1,
+            eMergeCellUp     = 2,
+            eMergeCellLeftUp = eMergeCellLeft + eMergeCellUp,
+            eInvalidCell     = 99
+        };
+
+    public:
+        nonvirtual CellMergeFlags GetCellFlags (size_t row, size_t column) const;
+        nonvirtual bool           CanMergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
+        nonvirtual void           MergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
+        nonvirtual void           UnMergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
+
+    public:
+        nonvirtual void GetCellSelection (size_t* rowSelStart, size_t* rowSelEnd, size_t* colSelStart, size_t* colSelEnd) const;
+        nonvirtual void SetCellSelection (size_t rowSelStart, size_t rowSelEnd, size_t colSelStart, size_t colSelEnd);
+
+    public:
+        nonvirtual bool GetIntraCellMode (size_t* row = nullptr, size_t* col = nullptr) const;
+        nonvirtual void SetIntraCellMode ();
+        nonvirtual void SetIntraCellMode (size_t row, size_t col);
+        nonvirtual void UnSetIntraCellMode ();
+        nonvirtual void GetIntraCellSelection (size_t* selStart, size_t* selEnd) const;
+        nonvirtual void SetIntraCellSelection (size_t selStart, size_t selEnd);
+
+    private:
+        size_t fRowSelStart;
+        size_t fRowSelEnd;
+        size_t fColSelStart;
+        size_t fColSelEnd;
+
+    private:
+        bool   fIntraCellMode;
+        size_t fIntraSelStart;
+        size_t fIntraSelEnd;
+        size_t fIntraCellDragAnchor;
+
+    protected:
+        nonvirtual void SaveIntraCellContextInfo (bool leftSideOfSelectionInteresting, const FontSpecification& intraCellSelectionEmptySelFontSpecification);
+        nonvirtual bool RestoreIntraCellContextInfo (bool* leftSideOfSelectionInteresting, FontSpecification* intraCellSelectionEmptySelFontSpecification);
+        nonvirtual void InvalidateIntraCellContextInfo ();
+
+    private:
+        bool              fSavedLeftSideOfSelectionInteresting;
+        FontSpecification fSavedIntraCellSelectionEmptySelFontSpecification;
+        bool              fSavedIntraCellInfoValid;
+
+    private:
+        size_t fTrackingAnchor_Row;
+        size_t fTrackingAnchor_Col;
+
+    private:
+        class SuppressCellUpdatePropagationContext;
+        bool fSuppressCellUpdatePropagationContext;
+
+    protected:
+        class AllowUpdateInfoPropagationContext;
+        bool                      fAllowUpdateInfoPropagationContext;
+        TextStore::SimpleUpdater* fCellUpdatePropationUpdater;
+
+    protected:
+#if qAccessChecksFailFromTemplatesBug
+    public:
+#endif
+        class EmbeddedTableWordProcessor;
+
+    protected:
+        virtual EmbeddedTableWordProcessor* ConstructEmbeddedTableWordProcessor (WordProcessor& forWordProcessor, size_t forRow, size_t forColumn,
+                                                                                 const Led_Rect& cellWindowRect, bool captureChangesForUndo);
+        virtual void ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e);
+
+    public:
+        virtual void GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts,
+                                                    shared_ptr<AbstractStyleDatabaseRep>*     styleDatabase       = nullptr,
+                                                    shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
+                                                    shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase = nullptr);
+
+    private:
+        WordProcessor* fCurrentOwningWP;
+#if qAccessChecksSometimesBreakForNestedClasses
+    public:
+#endif
+        class TemporarilySetOwningWP;
+        class TemporarilyAllocateCellWP;
+        class TemporarilyAllocateCellWithTablet;
+
+    protected:
+        nonvirtual void InvalidateLayout ();
+        virtual void    PerformLayout ();
+
+    private:
+        enum LayoutFlag {
+            eDone,
+            eNeedFullLayout
+        };
+        mutable LayoutFlag fNeedLayout;
+
+    public:
+        nonvirtual size_t GetRowCount () const;
+        nonvirtual size_t GetColumnCount () const;
+
+    public:
+        nonvirtual size_t GetColumnCount (size_t row) const;
+        nonvirtual size_t GetColumnCount (size_t rowStart, size_t rowEnd) const;
+        nonvirtual void   SetColumnCount (size_t row, size_t columns);
+
+    public:
+        nonvirtual void GetDimensions (size_t* rows, size_t* columns) const;
+        virtual void    SetDimensions (size_t rows, size_t columns);
+        nonvirtual void SetDimensionsAtLeast (size_t rows, size_t columns);
+        virtual void    InsertRow (size_t at, size_t maxRowCopyCount = 0xffffffff);
+        virtual void    DeleteRow (size_t at);
+        virtual void    InsertColumn (size_t at);
+        virtual void    DeleteColumn (size_t at);
+
+    protected:
+        virtual void ReValidateSelection ();
+
+    protected:
+        /*
+        @CLASS:         WordProcessorTable::RowInfo
+        @DESCRIPTION:
+            <p></p>
+        */
+        struct RowInfo {
+        public:
+            RowInfo ();
+
+        public:
+            vector<Cell> fCells;
+
+        public:
+            DistanceType fHeight; // height of the cell itself (not including the border)
+        };
+        vector<RowInfo> fRows;
+
+    private:
+        TWIPS        fBorderWidth;
+        Color        fBorderColor;
+        DistanceType fTotalWidth;
+        DistanceType fTotalHeight;
+
+    protected:
+        class SavedTextRepWSel;
+
+    private:
+        class TableCMD;
+
+    private:
+        friend class SuppressCellUpdatePropagationContext;
+        friend class AllowUpdateInfoPropagationContext;
+        friend class TemporarilySetOwningWP;
+        friend class TemporarilyAllocateCellWP;
+        friend class TemporarilyAllocateCellWithTablet;
+        friend class EmbeddedTableWordProcessor;
+        friend class CellRep;
+        friend class TableCMD;
+        //       friend class WordProcessor::WPIdler;
+        friend class WordProcessor;
+#endif
+    };
+
+    /*
+    @CLASS:         WordProcessor::WordProcessorTextIOSrcStream
+    @BASES:         @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream'
+    @DESCRIPTION:   <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream', for use with the StyledTextIO module,
+                which adds support for a @'shared_ptr<AbstractParagraphDatabaseRep>'.</p>
+    */
+    class WordProcessorTextIOSrcStream : public StandardStyledTextIOSrcStream {
+    private:
+        using inherited = StandardStyledTextIOSrcStream;
+
+    public:
+        WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                      const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
+                                      const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t selectionStart = 0,
+                                      size_t selectionEnd = kBadIndex);
+#if qStroika_Frameworks_Led_SupportGDI
+        WordProcessorTextIOSrcStream (WordProcessor* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
+#endif
+
+    public:
+        nonvirtual bool GetUseTableSelection () const;
+        nonvirtual void SetUseTableSelection (bool useTableSelection);
+
+    private:
+        bool fUseTableSelection;
+
+    public:
+        virtual Justification          GetJustification () const override;
+        virtual StandardTabStopList    GetStandardTabStopList () const override;
+        virtual TWIPS                  GetFirstIndent () const override;
+        virtual void                   GetMargins (TWIPS* lhs, TWIPS* rhs) const override;
+        virtual TWIPS                  GetSpaceBefore () const override;
+        virtual TWIPS                  GetSpaceAfter () const override;
+        virtual LineSpacing            GetLineSpacing () const override;
+        virtual void                   GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const override;
+        virtual Led_tChar              GetSoftLineBreakCharacter () const override;
+        virtual DiscontiguousRun<bool> GetHidableTextRuns () const override;
+#if qStroika_Frameworks_Led_SupportTables
+        virtual SrcStream::Table* GetTableAt (size_t at) const override;
+#endif
+        virtual void SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const override;
+
+    protected:
+        class TableIOMapper;
+
+    private:
+        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+        DiscontiguousRun<bool>                   fHidableTextRuns;
+    };
+
+    /*
+    @CLASS:         WordProcessor::WordProcessorTextIOSrcStream::TableIOMapper
+    @ACCESS:        protected
+    @BASES:         @'StyledTextIOWriter::SrcStream::Table'
+    @DESCRIPTION:   <p></p>
+    */
+    class WordProcessorTextIOSrcStream::TableIOMapper : public StyledTextIO::StyledTextIOWriter::SrcStream::Table {
+    private:
+        using inherited = StyledTextIO::StyledTextIOWriter::SrcStream::Table;
+
+    public:
+        TableIOMapper (WordProcessorTable& realTable, size_t startRow = 0, size_t endRow = static_cast<size_t> (-1), size_t startCol = 0,
+                       size_t endCol = static_cast<size_t> (-1));
+
+    public:
+        virtual size_t                                       GetRows () const override;
+        virtual size_t                                       GetColumns (size_t row) const override;
+        virtual void                                         GetRowInfo (size_t row, vector<CellInfo>* cellInfos) override;
+        virtual StyledTextIO::StyledTextIOWriter::SrcStream* MakeCellSubSrcStream (size_t row, size_t column) override;
+        virtual size_t                                       GetOffsetEnd () const override;
+        virtual TWIPS_Rect                                   GetDefaultCellMarginsForRow (size_t row) const override;
+        virtual TWIPS_Rect                                   GetDefaultCellSpacingForRow (size_t row) const override;
+
+    private:
+        WordProcessorTable& fRealTable;
+        size_t              fStartRow;
+        size_t              fEndRow;
+        size_t              fStartCol;
+        size_t              fEndCol;
+    };
+
+    /*
+    @CLASS:         WordProcessor::WordProcessorTextIOSinkStream
+    @BASES:         @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream'
+    @DESCRIPTION:   <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream', for use with the StyledTextIO module,
+                which adds support for a @'WordProcessor::shared_ptr<AbstractParagraphDatabaseRep>'.</p>
+    */
+    class WordProcessorTextIOSinkStream : public StandardStyledTextIOSinkStream {
+    private:
+        using inherited = StandardStyledTextIOSinkStream;
+
+    public:
+        WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                       const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
+                                       const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart = 0);
+#if qStroika_Frameworks_Led_SupportGDI
+        WordProcessorTextIOSinkStream (WordProcessor* wp, size_t insertionStart = 0);
+#endif
+        ~WordProcessorTextIOSinkStream ();
+
+    private:
+        nonvirtual void CTOR_COMMON ();
+
+    public:
+        nonvirtual bool GetOverwriteTableMode () const;
+        nonvirtual void SetOverwriteTableMode (bool overwriteTableMode);
+
+    private:
+        bool fOverwriteTableMode;
+
+#if !qStroika_Frameworks_Led_NestedTablesSupported
+    public:
+        nonvirtual bool GetNoTablesAllowed () const;
+        nonvirtual void SetNoTablesAllowed (bool noTablesAllowed);
+
+    private:
+        bool fNoTablesAllowed;
+#endif
+
+    public:
+        virtual void AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
+        virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
+        virtual void AppendSoftLineBreak () override;
+        virtual void SetJustification (Justification justification) override;
+        virtual void SetStandardTabStopList (const StandardTabStopList& tabStops) override;
+        virtual void SetFirstIndent (TWIPS tx) override;
+        virtual void SetLeftMargin (TWIPS lhs) override;
+        virtual void SetRightMargin (TWIPS rhs) override;
+        virtual void SetSpaceBefore (TWIPS sb) override;
+        virtual void SetSpaceAfter (TWIPS sa) override;
+        virtual void SetLineSpacing (LineSpacing sl) override;
+        virtual void SetTextHidden (bool hidden) override;
+        virtual void StartTable () override;
+        virtual void EndTable () override;
+        virtual void StartTableRow () override;
+        virtual void EndTableRow () override;
+        virtual void StartTableCell (size_t colSpan) override;
+        virtual void EndTableCell () override;
+        virtual void SetListStyle (ListStyle listStyle) override;
+        virtual void SetListIndentLevel (unsigned char indentLevel) override;
+        virtual void SetTableBorderColor (Color c) override;
+        virtual void SetTableBorderWidth (TWIPS bWidth) override;
+        virtual void SetCellWidths (const vector<TWIPS>& cellWidths) override;
+        virtual void SetCellBackColor (const Color c) override;
+        virtual void SetDefaultCellMarginsForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right) override;
+        virtual void SetDefaultCellSpacingForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right) override;
+        virtual void EndOfBuffer () override;
+        virtual void Flush () override;
+
+    public:
+        nonvirtual void SetIgnoreLastParaAttributes (bool ignoreLastParaAttributes);
+
+    protected:
+        nonvirtual void PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                     const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
+                                     const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart);
+        nonvirtual void PopContext ();
+
+    private:
+        struct Context {
+            shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+            shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
+        };
+        vector<Context> fSavedContexts;
+
+    private:
+        using ParaInfoNSize = pair<IncrementalParagraphInfo, size_t>;
+        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+        shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
+        vector<ParaInfoNSize>                    fSavedParaInfo;
+        IncrementalParagraphInfo                 fNewParagraphInfo;
+        bool                                     fTextHidden;
+        DiscontiguousRun<bool>                   fHidableTextRuns;
+        bool                                     fEndOfBuffer;
+        bool                                     fIgnoreLastParaAttributes;
+        WordProcessorTable*                      fCurrentTable;
+        vector<TWIPS>                            fCurrentTableCellWidths;
+        Color                                    fCurrentTableCellColor;
+        vector<size_t>                           fCurrentTableColSpanArray;
+        vector<WordProcessorTable*>              fTableStack; // for nesting
+        size_t                                   fNextTableRow;
+        size_t                                   fNextTableCell;
+        size_t                                   fCurrentTableCell;
+
+#if qDebug
+    private:
+        unsigned int fTableOpenLevel;
+        bool         fTableRowOpen;
+        bool         fTableCellOpen;
+#endif
+    };
+
 #if qStroika_Frameworks_Led_SupportGDI
     DISABLE_COMPILER_MSC_WARNING_START (4250) // inherits via dominance warning
     /*
@@ -341,10 +884,6 @@ namespace Stroika::Frameworks::Led {
 
     private:
         bool fSmartQuoteMode;
-
-    public:
-        class WordProcessorTextIOSinkStream;
-        class WordProcessorTextIOSrcStream;
 
     public:
         class WordProcessorFlavorPackageInternalizer;
@@ -478,16 +1017,15 @@ namespace Stroika::Frameworks::Led {
         virtual bool ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor) override;
         virtual void WhileSimpleMouseTracking (Led_Point newMousePos, size_t dragAnchor) override;
 
-        // Table support
+        // WordProcessorTable support
     public:
-        class Table;
-        virtual Table* InsertTable (size_t at);
+        virtual WordProcessorTable* InsertTable (size_t at);
 
-        nonvirtual vector<Table*> GetTablesInRange (size_t from, size_t to = static_cast<size_t> (-1)) const;
-        nonvirtual Table*         GetTableAt (size_t from) const;
+        nonvirtual vector<WordProcessorTable*> GetTablesInRange (size_t from, size_t to = static_cast<size_t> (-1)) const;
+        nonvirtual WordProcessorTable*         GetTableAt (size_t from) const;
 
     public:
-        nonvirtual Table* GetActiveTable () const;
+        nonvirtual WordProcessorTable* GetActiveTable () const;
 
     public:
         struct CommandNames;
@@ -819,197 +1357,9 @@ namespace Stroika::Frameworks::Led {
         nonvirtual DistanceType CalcSpaceToEat (size_t rowContainingCharPos) const;
 
     private:
-        friend class Table;
         friend class AbstractParagraphDatabaseRep;
         friend class ParagraphDatabaseRep;
-    };
-
-    /*
-    @CLASS:         WordProcessor::WordProcessorTextIOSinkStream
-    @BASES:         @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream'
-    @DESCRIPTION:   <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream', for use with the StyledTextIO module,
-                which adds support for a @'WordProcessor::shared_ptr<AbstractParagraphDatabaseRep>'.</p>
-    */
-    class WordProcessor::WordProcessorTextIOSinkStream : public StandardStyledTextIOSinkStream {
-    private:
-        using inherited = StandardStyledTextIOSinkStream;
-
-    public:
-        WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                       const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                       const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart = 0);
-        WordProcessorTextIOSinkStream (WordProcessor* wp, size_t insertionStart = 0);
-        ~WordProcessorTextIOSinkStream ();
-
-    private:
-        nonvirtual void CTOR_COMMON ();
-
-    public:
-        nonvirtual bool GetOverwriteTableMode () const;
-        nonvirtual void SetOverwriteTableMode (bool overwriteTableMode);
-
-    private:
-        bool fOverwriteTableMode;
-
-#if !qStroika_Frameworks_Led_NestedTablesSupported
-    public:
-        nonvirtual bool GetNoTablesAllowed () const;
-        nonvirtual void SetNoTablesAllowed (bool noTablesAllowed);
-
-    private:
-        bool fNoTablesAllowed;
-#endif
-
-    public:
-        virtual void AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
-        virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
-        virtual void AppendSoftLineBreak () override;
-        virtual void SetJustification (Justification justification) override;
-        virtual void SetStandardTabStopList (const StandardTabStopList& tabStops) override;
-        virtual void SetFirstIndent (TWIPS tx) override;
-        virtual void SetLeftMargin (TWIPS lhs) override;
-        virtual void SetRightMargin (TWIPS rhs) override;
-        virtual void SetSpaceBefore (TWIPS sb) override;
-        virtual void SetSpaceAfter (TWIPS sa) override;
-        virtual void SetLineSpacing (LineSpacing sl) override;
-        virtual void SetTextHidden (bool hidden) override;
-        virtual void StartTable () override;
-        virtual void EndTable () override;
-        virtual void StartTableRow () override;
-        virtual void EndTableRow () override;
-        virtual void StartTableCell (size_t colSpan) override;
-        virtual void EndTableCell () override;
-        virtual void SetListStyle (ListStyle listStyle) override;
-        virtual void SetListIndentLevel (unsigned char indentLevel) override;
-        virtual void SetTableBorderColor (Color c) override;
-        virtual void SetTableBorderWidth (TWIPS bWidth) override;
-        virtual void SetCellWidths (const vector<TWIPS>& cellWidths) override;
-        virtual void SetCellBackColor (const Color c) override;
-        virtual void SetDefaultCellMarginsForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right) override;
-        virtual void SetDefaultCellSpacingForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right) override;
-        virtual void EndOfBuffer () override;
-        virtual void Flush () override;
-
-    public:
-        nonvirtual void SetIgnoreLastParaAttributes (bool ignoreLastParaAttributes);
-
-    protected:
-        nonvirtual void PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                     const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                     const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart);
-        nonvirtual void PopContext ();
-
-    private:
-        struct Context {
-            shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
-            shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
-        };
-        vector<Context> fSavedContexts;
-
-    private:
-        using ParaInfoNSize = pair<IncrementalParagraphInfo, size_t>;
-        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
-        shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
-        vector<ParaInfoNSize>                    fSavedParaInfo;
-        IncrementalParagraphInfo                 fNewParagraphInfo;
-        bool                                     fTextHidden;
-        DiscontiguousRun<bool>                   fHidableTextRuns;
-        bool                                     fEndOfBuffer;
-        bool                                     fIgnoreLastParaAttributes;
-        WordProcessor::Table*                    fCurrentTable;
-        vector<TWIPS>                            fCurrentTableCellWidths;
-        Color                                    fCurrentTableCellColor;
-        vector<size_t>                           fCurrentTableColSpanArray;
-        vector<WordProcessor::Table*>            fTableStack; // for nesting
-        size_t                                   fNextTableRow;
-        size_t                                   fNextTableCell;
-        size_t                                   fCurrentTableCell;
-
-#if qDebug
-    private:
-        unsigned int fTableOpenLevel;
-        bool         fTableRowOpen;
-        bool         fTableCellOpen;
-#endif
-    };
-
-    /*
-    @CLASS:         WordProcessor::WordProcessorTextIOSrcStream
-    @BASES:         @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream'
-    @DESCRIPTION:   <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream', for use with the StyledTextIO module,
-                which adds support for a @'shared_ptr<AbstractParagraphDatabaseRep>'.</p>
-    */
-    class WordProcessor::WordProcessorTextIOSrcStream : public StandardStyledTextIOSrcStream {
-    private:
-        using inherited = StandardStyledTextIOSrcStream;
-
-    public:
-        WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                      const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                      const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t selectionStart = 0,
-                                      size_t selectionEnd = kBadIndex);
-        WordProcessorTextIOSrcStream (WordProcessor* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
-
-    public:
-        nonvirtual bool GetUseTableSelection () const;
-        nonvirtual void SetUseTableSelection (bool useTableSelection);
-
-    private:
-        bool fUseTableSelection;
-
-    public:
-        virtual Justification          GetJustification () const override;
-        virtual StandardTabStopList    GetStandardTabStopList () const override;
-        virtual TWIPS                  GetFirstIndent () const override;
-        virtual void                   GetMargins (TWIPS* lhs, TWIPS* rhs) const override;
-        virtual TWIPS                  GetSpaceBefore () const override;
-        virtual TWIPS                  GetSpaceAfter () const override;
-        virtual LineSpacing            GetLineSpacing () const override;
-        virtual void                   GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const override;
-        virtual Led_tChar              GetSoftLineBreakCharacter () const override;
-        virtual DiscontiguousRun<bool> GetHidableTextRuns () const override;
-#if qStroika_Frameworks_Led_SupportTables
-        virtual Table* GetTableAt (size_t at) const override;
-#endif
-        virtual void SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const override;
-
-    protected:
-        class TableIOMapper;
-
-    private:
-        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
-        DiscontiguousRun<bool>                   fHidableTextRuns;
-    };
-
-    /*
-    @CLASS:         WordProcessor::WordProcessorTextIOSrcStream::TableIOMapper
-    @ACCESS:        protected
-    @BASES:         @'StyledTextIOWriter::SrcStream::Table'
-    @DESCRIPTION:   <p></p>
-    */
-    class WordProcessor::WordProcessorTextIOSrcStream::TableIOMapper : public StyledTextIO::StyledTextIOWriter::SrcStream::Table {
-    private:
-        using inherited = StyledTextIO::StyledTextIOWriter::SrcStream::Table;
-
-    public:
-        TableIOMapper (WordProcessor::Table& realTable, size_t startRow = 0, size_t endRow = static_cast<size_t> (-1), size_t startCol = 0,
-                       size_t endCol = static_cast<size_t> (-1));
-
-    public:
-        virtual size_t                                       GetRows () const override;
-        virtual size_t                                       GetColumns (size_t row) const override;
-        virtual void                                         GetRowInfo (size_t row, vector<CellInfo>* cellInfos) override;
-        virtual StyledTextIO::StyledTextIOWriter::SrcStream* MakeCellSubSrcStream (size_t row, size_t column) override;
-        virtual size_t                                       GetOffsetEnd () const override;
-        virtual TWIPS_Rect                                   GetDefaultCellMarginsForRow (size_t row) const override;
-        virtual TWIPS_Rect                                   GetDefaultCellSpacingForRow (size_t row) const override;
-
-    private:
-        WordProcessor::Table& fRealTable;
-        size_t                fStartRow;
-        size_t                fEndRow;
-        size_t                fStartCol;
-        size_t                fEndCol;
+        friend class WordProcessorTable;
     };
 
     /*
@@ -1060,7 +1410,6 @@ namespace Stroika::Frameworks::Led {
     public:
         using PartitionMarker = PartitioningTextImager::PartitionMarker;
         using UpdateInfo      = MarkerOwner::UpdateInfo;
-        using Table           = WordProcessor::Table;
 
     private:
         using inherited = LineBasedPartition;
@@ -1069,7 +1418,7 @@ namespace Stroika::Frameworks::Led {
         WPPartition (TextStore& textStore, MarkerOwner& tableMarkerOwner);
 
     protected:
-        virtual vector<Table*> GetTablesInRange (size_t from, size_t to = static_cast<size_t> (-1)) const;
+        virtual vector<WordProcessorTable*> GetTablesInRange (size_t from, size_t to = static_cast<size_t> (-1)) const;
 
     protected:
         virtual void FinalConstruct () override;
@@ -1092,7 +1441,7 @@ namespace Stroika::Frameworks::Led {
         MarkerOwner& fTableMarkerOwner;
 
     private:
-        friend class WordProcessor::Table;
+        friend class WordProcessorTable;
     };
 
     /*
@@ -1125,341 +1474,12 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         WordProcessor::Table
-    @BASES:         @'SimpleEmbeddedObjectStyleMarker'
-    @DESCRIPTION:   <p>A table is an object that can be embedded in a document, and it contains multiple cells.
-                Each cell is basically another word-processor instance.</p>
-                    <p>Since a table is assocated with a paragraph database, and can be viewed and edited
-                simultaneously be multiple views (WordProcessors) - we cannot make long-term assumptions
-                about association of a table with an owning WordProcessor object. Instead - during UI operations
-                like typing and so on - you temporarily associate an owning WP with the given table using
-                @'WordProcessor::Table::TemporarilySetOwningWP'</p>
-                    <p>We support having any number of rows, and each row can have a different number of
-                columns (cells). Often however - the number of columns for each row of a table will be the
-                same (as will their widths be equal).</p>
-                    <p>This class may not remain a subclass of simpleembeddedObject stuff - but maybe.</p>
-                    <p>Note that most coordiantes in this routine are presumed to be table relative. Either that - or
-                they are window-rect relative. You can use the methods @'WordProcessor::Table::TableCoordinates2Window' and
-                @'WordProcessor::Table::WindowCoordinates2Table' to map between them.
-                    </p>
-                    <p>Each cell is surrounded by spacing (see @'WordProcessor::Table::GetCellSpacing'.
-                This defaults to zero. If you set it to non-zero - then the borders drawn for cells don't touch the
-                borders for the table itself.</p>
-                    <p>The cell bounds for each cell (@'WordProcessor::Table::GetCellBounds') is the area that
-                gets a box drawn around it (on the outside bounds). These 'cell bounds' may not exactly touch each other on the
-                edges by so that they SHARE the border separating each from its sibling. Also - they may not touch because
-                of cell spacing (@'WordProcessor::Table::GetCellSpacing').</p>
-                    <p>The actaul 'edit window' within a cell is inset by its cell margins. This value defaults
-                to that provided by @'WordProcessor::Table::GetDefaultCellMargins', but at some point (maybe for 3.1?)
-                will be overridable on a per-cell basis.</p>
+    @CLASS:         WordProcessorTable::Cell
+    @DESCRIPTION:   <p>Used internally by the @'WordProcessorTable' code.</p>
     */
-    class WordProcessor::Table : public SimpleEmbeddedObjectStyleMarker {
-    private:
-        using inherited = SimpleEmbeddedObjectStyleMarker;
-
+    class WordProcessorTable::Cell {
     public:
-        Table (AbstractParagraphDatabaseRep* tableOwner, size_t addAt);
-        ~Table ();
-
-    protected:
-        virtual void FinalizeAddition (AbstractParagraphDatabaseRep* o, size_t addAt);
-
-    public:
-        class Cell;
-
-    protected:
-        class CellRep;
-
-    public:
-        virtual void DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet, size_t from, size_t to,
-                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to,
-                                          const Led_tChar* text, DistanceType* distanceResults) const override;
-        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const StyleRunElement& runElement, size_t from, size_t to) const override;
-
-    public:
-        virtual vector<Led_Rect> GetRowHilightRects () const;
-
-    protected:
-        virtual void DrawTableBorders (WordProcessor& owningWP, Tablet* tablet, const Led_Rect& drawInto);
-        virtual void DrawCellBorders (Tablet* tablet, size_t row, size_t column, const Led_Rect& cellBounds);
-
-    public:
-        nonvirtual TWIPS GetCellSpacing () const;
-        nonvirtual void  SetCellSpacing (TWIPS cellSpacing);
-
-    private:
-        TWIPS fCellSpacing;
-
-    public:
-        nonvirtual void GetDefaultCellMargins (TWIPS* top, TWIPS* left, TWIPS* bottom, TWIPS* right) const;
-        nonvirtual void SetDefaultCellMargins (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right);
-
-    private:
-        TWIPS_Rect fDefaultCellMargins; // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
-
-    public:
-        virtual Led_Rect GetCellBounds (size_t row, size_t column) const;
-        virtual Led_Rect GetCellEditorBounds (size_t row, size_t column) const;
-
-        virtual void GetClosestCell (const Led_Point& p, size_t* row, size_t* col) const;
-
-    public:
-        nonvirtual Led_Point TableCoordinates2Window (const Led_Point& p) const;
-        nonvirtual Led_Rect  TableCoordinates2Window (const Led_Rect& r) const;
-        nonvirtual Led_Point WindowCoordinates2Table (const Led_Point& p) const;
-        nonvirtual Led_Rect  WindowCoordinates2Table (const Led_Rect& r) const;
-
-    public:
-        virtual bool     GetCaretShownSituation () const;
-        virtual Led_Rect CalculateCaretRect () const;
-
-    public:
-        virtual bool OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
-                                             bool controlPressed, bool altKeyPressed);
-
-    protected:
-        virtual bool DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit,
-                                             CursorMovementAction action, UpdateMode updateMode, bool scrollToSelection);
-
-    public:
-        virtual bool OnUpdateCommand (CommandUpdater* enabler);
-        virtual bool OnPerformCommand (CommandNumber commandNumber);
-
-    protected:
-        nonvirtual void BreakInGroupedCommands ();
-
-    protected:
-        virtual bool OnUpdateCommand_ApplyToEachSelectedCell (CommandUpdater* enabler);
-        virtual bool OnPerformCommand_ApplyToEachSelectedCell (CommandNumber commandNumber, bool captureChangesForUndo = true);
-
-    public:
-        virtual void OnUpdateCutCommand (CommandUpdater* pCmdUI);
-        virtual void OnCutCommand ();
-        virtual void OnUpdateInsertTableRowAboveCommand (CommandUpdater* pCmdUI);
-        virtual void OnInsertTableRowAboveCommand ();
-        virtual void OnUpdateInsertTableRowBelowCommand (CommandUpdater* pCmdUI);
-        virtual void OnInsertTableRowBelowCommand ();
-        virtual void OnUpdateInsertTableColBeforeCommand (CommandUpdater* pCmdUI);
-        virtual void OnInsertTableColBeforeCommand ();
-        virtual void OnUpdateInsertTableColAfterCommand (CommandUpdater* pCmdUI);
-        virtual void OnInsertTableColAfterCommand ();
-        virtual void OnUpdateRemoveTableRowsCommand (CommandUpdater* pCmdUI);
-        virtual void OnRemoveTableRowsCommand ();
-        virtual void OnUpdateRemoveTableColumnsCommand (CommandUpdater* pCmdUI);
-        virtual void OnRemoveTableColumnsCommand ();
-        virtual void OnUpdateSelectTablePartsCommand (CommandUpdater* enabler);
-        virtual void OnPerformTablePartsCommand (CommandNumber commandNumber);
-
-    protected:
-        nonvirtual void AssureCurSelFontCacheValid (IncrementalFontSpecification* curSelFontSpec);
-
-    public:
-        nonvirtual void InteractiveSetFont (const IncrementalFontSpecification& defaultFont);
-
-        // SimpleEmbeddedObjectStyleMarker overrides
-    public:
-        virtual const char* GetTag () const override;
-        virtual void        Write (SinkStream& sink) override;
-        virtual void        ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
-
-    public:
-        virtual bool ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection);
-        virtual void WhileSimpleMouseTracking (Led_Point newMousePos);
-
-    public:
-        nonvirtual Color GetTableBorderColor () const;
-        nonvirtual void  SetTableBorderColor (Color c);
-
-    public:
-        nonvirtual TWIPS GetTableBorderWidth () const;
-        nonvirtual void  SetTableBorderWidth (TWIPS w);
-
-    public:
-        nonvirtual TWIPS GetColumnWidth (size_t row, size_t column) const;
-        nonvirtual void  SetColumnWidth (size_t row, size_t column, TWIPS colWidth);
-
-    public:
-        nonvirtual Color GetCellColor (size_t row, size_t column) const;
-        nonvirtual void  SetCellColor (size_t row, size_t column, const Color& c);
-
-    public:
-        nonvirtual Cell&       GetCell (size_t row, size_t column);
-        nonvirtual const Cell& GetCell (size_t row, size_t column) const;
-        nonvirtual void        GetRealCell (size_t* row, size_t* column) const;
-        nonvirtual const Cell& GetRealCell (size_t row, size_t column) const;
-
-    public:
-        enum CellMergeFlags {
-            ePlainCell       = 0,
-            eMergeCellLeft   = 1,
-            eMergeCellUp     = 2,
-            eMergeCellLeftUp = eMergeCellLeft + eMergeCellUp,
-            eInvalidCell     = 99
-        };
-
-    public:
-        nonvirtual CellMergeFlags GetCellFlags (size_t row, size_t column) const;
-        nonvirtual bool           CanMergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
-        nonvirtual void           MergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
-        nonvirtual void           UnMergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
-
-    public:
-        nonvirtual void GetCellSelection (size_t* rowSelStart, size_t* rowSelEnd, size_t* colSelStart, size_t* colSelEnd) const;
-        nonvirtual void SetCellSelection (size_t rowSelStart, size_t rowSelEnd, size_t colSelStart, size_t colSelEnd);
-
-    public:
-        nonvirtual bool GetIntraCellMode (size_t* row = nullptr, size_t* col = nullptr) const;
-        nonvirtual void SetIntraCellMode ();
-        nonvirtual void SetIntraCellMode (size_t row, size_t col);
-        nonvirtual void UnSetIntraCellMode ();
-        nonvirtual void GetIntraCellSelection (size_t* selStart, size_t* selEnd) const;
-        nonvirtual void SetIntraCellSelection (size_t selStart, size_t selEnd);
-
-    private:
-        size_t fRowSelStart;
-        size_t fRowSelEnd;
-        size_t fColSelStart;
-        size_t fColSelEnd;
-
-    private:
-        bool   fIntraCellMode;
-        size_t fIntraSelStart;
-        size_t fIntraSelEnd;
-        size_t fIntraCellDragAnchor;
-
-    protected:
-        nonvirtual void SaveIntraCellContextInfo (bool leftSideOfSelectionInteresting, const FontSpecification& intraCellSelectionEmptySelFontSpecification);
-        nonvirtual bool RestoreIntraCellContextInfo (bool* leftSideOfSelectionInteresting, FontSpecification* intraCellSelectionEmptySelFontSpecification);
-        nonvirtual void InvalidateIntraCellContextInfo ();
-
-    private:
-        bool              fSavedLeftSideOfSelectionInteresting;
-        FontSpecification fSavedIntraCellSelectionEmptySelFontSpecification;
-        bool              fSavedIntraCellInfoValid;
-
-    private:
-        size_t fTrackingAnchor_Row;
-        size_t fTrackingAnchor_Col;
-
-    private:
-        class SuppressCellUpdatePropagationContext;
-        bool fSuppressCellUpdatePropagationContext;
-
-    protected:
-        class AllowUpdateInfoPropagationContext;
-        bool                      fAllowUpdateInfoPropagationContext;
-        TextStore::SimpleUpdater* fCellUpdatePropationUpdater;
-
-    protected:
-#if qAccessChecksFailFromTemplatesBug
-    public:
-#endif
-        class EmbeddedTableWordProcessor;
-
-    protected:
-        virtual EmbeddedTableWordProcessor* ConstructEmbeddedTableWordProcessor (WordProcessor& forWordProcessor, size_t forRow, size_t forColumn,
-                                                                                 const Led_Rect& cellWindowRect, bool captureChangesForUndo);
-        virtual void ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e);
-
-    public:
-        virtual void GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts,
-                                                    shared_ptr<AbstractStyleDatabaseRep>*     styleDatabase       = nullptr,
-                                                    shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
-                                                    shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase = nullptr);
-
-    private:
-        WordProcessor* fCurrentOwningWP;
-#if qAccessChecksSometimesBreakForNestedClasses
-    public:
-#endif
-        class TemporarilySetOwningWP;
-        class TemporarilyAllocateCellWP;
-        class TemporarilyAllocateCellWithTablet;
-
-    protected:
-        nonvirtual void InvalidateLayout ();
-        virtual void    PerformLayout ();
-
-    private:
-        enum LayoutFlag {
-            eDone,
-            eNeedFullLayout
-        };
-        mutable LayoutFlag fNeedLayout;
-
-    public:
-        nonvirtual size_t GetRowCount () const;
-        nonvirtual size_t GetColumnCount () const;
-
-    public:
-        nonvirtual size_t GetColumnCount (size_t row) const;
-        nonvirtual size_t GetColumnCount (size_t rowStart, size_t rowEnd) const;
-        nonvirtual void   SetColumnCount (size_t row, size_t columns);
-
-    public:
-        nonvirtual void GetDimensions (size_t* rows, size_t* columns) const;
-        virtual void    SetDimensions (size_t rows, size_t columns);
-        nonvirtual void SetDimensionsAtLeast (size_t rows, size_t columns);
-        virtual void    InsertRow (size_t at, size_t maxRowCopyCount = 0xffffffff);
-        virtual void    DeleteRow (size_t at);
-        virtual void    InsertColumn (size_t at);
-        virtual void    DeleteColumn (size_t at);
-
-    protected:
-        virtual void ReValidateSelection ();
-
-    protected:
-        /*
-        @CLASS:         WordProcessor::Table::RowInfo
-        @DESCRIPTION:
-            <p></p>
-        */
-        struct RowInfo {
-        public:
-            RowInfo ();
-
-        public:
-            vector<Cell> fCells;
-
-        public:
-            DistanceType fHeight; // height of the cell itself (not including the border)
-        };
-        vector<RowInfo> fRows;
-
-    private:
-        TWIPS        fBorderWidth;
-        Color        fBorderColor;
-        DistanceType fTotalWidth;
-        DistanceType fTotalHeight;
-
-    protected:
-        class SavedTextRepWSel;
-
-    private:
-        class TableCMD;
-
-    private:
-        friend class SuppressCellUpdatePropagationContext;
-        friend class AllowUpdateInfoPropagationContext;
-        friend class TemporarilySetOwningWP;
-        friend class TemporarilyAllocateCellWP;
-        friend class TemporarilyAllocateCellWithTablet;
-        friend class EmbeddedTableWordProcessor;
-        friend class CellRep;
-        friend class TableCMD;
-        friend class WordProcessor::WPIdler;
-        friend class WordProcessor;
-    };
-
-    /*
-    @CLASS:         WordProcessor::Table::Cell
-    @DESCRIPTION:   <p>Used internally by the @'WordProcessor::Table' code.</p>
-    */
-    class WordProcessor::Table::Cell {
-    public:
-        Cell (Table& forTable, CellMergeFlags mergeFlags);
+        Cell (WordProcessorTable& forTable, CellMergeFlags mergeFlags);
 
     public:
         nonvirtual CellMergeFlags GetCellMergeFlags () const;
@@ -1490,15 +1510,15 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         WordProcessor::Table::CellRep
-    @DESCRIPTION:   <p>Used internally by the @'WordProcessor::Table' code.</p>
+    @CLASS:         WordProcessorTable::CellRep
+    @DESCRIPTION:   <p>Used internally by the @'WordProcessorTable' code.</p>
     */
-    class WordProcessor::Table::CellRep : public MarkerOwner, public Foundation::Memory::UseBlockAllocationIfAppropriate<CellRep> {
+    class WordProcessorTable::CellRep : public MarkerOwner, public Foundation::Memory::UseBlockAllocationIfAppropriate<CellRep> {
     private:
         using inherited = MarkerOwner;
 
     public:
-        CellRep (Table& forTable);
+        CellRep (WordProcessorTable& forTable);
         ~CellRep ();
 
     public:
@@ -1507,7 +1527,7 @@ namespace Stroika::Frameworks::Led {
         virtual void       DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
 
     public:
-        Table&                                   fForTable;
+        WordProcessorTable&                      fForTable;
         TextStore*                               fTextStore;
         shared_ptr<AbstractStyleDatabaseRep>     fStyleDatabase;
         shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
@@ -1518,60 +1538,60 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         WordProcessor::Table::SuppressCellUpdatePropagationContext
+    @CLASS:         WordProcessorTable::SuppressCellUpdatePropagationContext
     @ACCESS:        private
     @DESCRIPTION:   <p>.</p>
     */
-    class WordProcessor::Table::SuppressCellUpdatePropagationContext {
+    class WordProcessorTable::SuppressCellUpdatePropagationContext {
     public:
-        SuppressCellUpdatePropagationContext (Table& t);
+        SuppressCellUpdatePropagationContext (WordProcessorTable& t);
         ~SuppressCellUpdatePropagationContext ();
 
     private:
-        Table& fTable;
-        bool   fOldVal;
+        WordProcessorTable& fTable;
+        bool                fOldVal;
     };
 
     /*
-    @CLASS:         WordProcessor::Table::AllowUpdateInfoPropagationContext
+    @CLASS:         WordProcessorTable::AllowUpdateInfoPropagationContext
     @ACCESS:        protected
     @DESCRIPTION:   <p>.</p>
     */
-    class WordProcessor::Table::AllowUpdateInfoPropagationContext {
+    class WordProcessorTable::AllowUpdateInfoPropagationContext {
     public:
-        AllowUpdateInfoPropagationContext (Table& t);
+        AllowUpdateInfoPropagationContext (WordProcessorTable& t);
         ~AllowUpdateInfoPropagationContext ();
 
     private:
-        Table& fTable;
-        bool   fOldVal;
+        WordProcessorTable& fTable;
+        bool                fOldVal;
     };
 
     /*
-    @CLASS:         WordProcessor::Table::EmbeddedTableWordProcessor
+    @CLASS:         WordProcessorTable::EmbeddedTableWordProcessor
     @BASES:         @'WordProcessor'
-    @DESCRIPTION:   <p>Used internally by the @'WordProcessor::Table' code for mini embedded word processor objects
+    @DESCRIPTION:   <p>Used internally by the @'WordProcessorTable' code for mini embedded word processor objects
                 in each cell. A subclass of these are constructed by @'WordProcessor::ConstructEmbeddedTableWordProcessor'</p>
                     <p>Note that we choose to instantiate this WP object with a WindowRect in the same coordinates as
                 the the owning tables WindowRect: not relative to that table.
                 </p>
     */
-    class WordProcessor::Table::EmbeddedTableWordProcessor : public WordProcessor {
+    class WordProcessorTable::EmbeddedTableWordProcessor : public WordProcessor {
     private:
         using inherited = WordProcessor;
 
     public:
-        EmbeddedTableWordProcessor (WordProcessor& owningWordProcessor, Table& owningTable, size_t tRow, size_t tCol, bool activeEditCell);
+        EmbeddedTableWordProcessor (WordProcessor& owningWordProcessor, WordProcessorTable& owningTable, size_t tRow, size_t tCol, bool activeEditCell);
 
     public:
-        nonvirtual WordProcessor& GetOwningWordProcessor () const;
-        nonvirtual Table&         GetOwningTable () const;
+        nonvirtual WordProcessor&      GetOwningWordProcessor () const;
+        nonvirtual WordProcessorTable& GetOwningTable () const;
 
     private:
-        WordProcessor& fOwningWordProcessor;
-        Table&         fOwningTable;
-        size_t         fTableRow;
-        size_t         fTableColumn;
+        WordProcessor&      fOwningWordProcessor;
+        WordProcessorTable& fOwningTable;
+        size_t              fTableRow;
+        size_t              fTableColumn;
 
     public:
         nonvirtual void SaveMiscActiveFocusInfo ();
@@ -1640,19 +1660,19 @@ namespace Stroika::Frameworks::Led {
     private:
         Tablet* fUpdateTablet; // assigned in stack-based fasion during update/draw calls.
     private:
-        friend class WordProcessor::Table;
-        friend class WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet;
-        friend class WordProcessor::Table::EmbeddedTableWordProcessor::DisableRefreshContext;
-        friend class WordProcessor::Table::TemporarilyAllocateCellWithTablet;
+        friend class WordProcessorTable;
+        friend class WordProcessorTable::EmbeddedTableWordProcessor::TemporarilyUseTablet;
+        friend class WordProcessorTable::EmbeddedTableWordProcessor::DisableRefreshContext;
+        friend class WordProcessorTable::TemporarilyAllocateCellWithTablet;
     };
 
     /*
     @CLASS:         InteractiveReplaceCommand::SavedTextRep
-    @BASES:         @'WordProcessor::Table::SavedTextRepWSel'
+    @BASES:         @'WordProcessorTable::SavedTextRepWSel'
     @DESCRIPTION:
     */
-    class WordProcessor::Table::SavedTextRepWSel : public InteractiveReplaceCommand::SavedTextRep,
-                                                   public Foundation::Memory::UseBlockAllocationIfAppropriate<SavedTextRepWSel> {
+    class WordProcessorTable::SavedTextRepWSel : public InteractiveReplaceCommand::SavedTextRep,
+                                                 public Foundation::Memory::UseBlockAllocationIfAppropriate<SavedTextRepWSel> {
     private:
         using inherited = InteractiveReplaceCommand::SavedTextRep;
 
@@ -1663,7 +1683,7 @@ namespace Stroika::Frameworks::Led {
         };
 
     public:
-        SavedTextRepWSel (SavedTextRep* delegateTo, Table& table, WPRelativeFlag wPRelativeFlag);
+        SavedTextRepWSel (SavedTextRep* delegateTo, WordProcessorTable& table, WPRelativeFlag wPRelativeFlag);
 
     public:
         virtual size_t GetLength () const override;
@@ -1684,15 +1704,15 @@ namespace Stroika::Frameworks::Led {
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
     /*
-    @CLASS:         WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet
+    @CLASS:         WordProcessorTable::EmbeddedTableWordProcessor::TemporarilyUseTablet
     @DESCRIPTION:   <p>Utility class to use (with caution), to temporarily force a given tablet to be
-                used for a given @'WordProcessor::Table::EmbeddedTableWordProcessor'. NB: This causes
+                used for a given @'WordProcessorTable::EmbeddedTableWordProcessor'. NB: This causes
                 the @'TextImager::TabletChangedMetrics' method by default
                 (unless called with special arg).</p>
     */
-    class WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet {
+    class WordProcessorTable::EmbeddedTableWordProcessor::TemporarilyUseTablet {
     public:
-        using EmbeddedTableWordProcessor = WordProcessor::Table::EmbeddedTableWordProcessor;
+        using EmbeddedTableWordProcessor = WordProcessorTable::EmbeddedTableWordProcessor;
 
     public:
         enum DoTextMetricsChangedCall {
@@ -1709,14 +1729,14 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         WordProcessor::Table::EmbeddedTableWordProcessor::DisableRefreshContext
+    @CLASS:         WordProcessorTable::EmbeddedTableWordProcessor::DisableRefreshContext
     @ACCESS:        private
     @DESCRIPTION:   <p>Utility class to use (with caution), to temporarily force a given tablet to be
-                used for a given @'WordProcessor::Table::EmbeddedTableWordProcessor'. NB: This causes
+                used for a given @'WordProcessorTable::EmbeddedTableWordProcessor'. NB: This causes
                 the @'TextImager::TabletChangedMetrics' method by default
                 (unless called with special arg).</p>
     */
-    class WordProcessor::Table::EmbeddedTableWordProcessor::DisableRefreshContext {
+    class WordProcessorTable::EmbeddedTableWordProcessor::DisableRefreshContext {
     public:
         DisableRefreshContext (EmbeddedTableWordProcessor& wp);
         ~DisableRefreshContext ();
@@ -1727,33 +1747,33 @@ namespace Stroika::Frameworks::Led {
     };
 
     /*
-    @CLASS:         WordProcessor::Table::TemporarilySetOwningWP
+    @CLASS:         WordProcessorTable::TemporarilySetOwningWP
     @DESCRIPTION:   <p>Since a table is assocated with a paragraph database, and can be viewed and edited
                 simultaneously be multiple views (WordProcessors) - we cannot make long-term assumptions
                 about association of a table with an owning WordProcessor object. Instead - during UI operations
                 like typing and so on - we temporarily associate an owning WP with the given table using
                 this class.</p>
     */
-    class WordProcessor::Table::TemporarilySetOwningWP {
+    class WordProcessorTable::TemporarilySetOwningWP {
     public:
-        TemporarilySetOwningWP (const Table& forTable, WordProcessor& forWordProcessor);
+        TemporarilySetOwningWP (const WordProcessorTable& forTable, WordProcessor& forWordProcessor);
         ~TemporarilySetOwningWP ();
 
     private:
-        Table&         fOwningTable;
-        WordProcessor* fSavedTableOwningWP; // in case references are nested, though I'm not sure this can happen
+        WordProcessorTable& fOwningTable;
+        WordProcessor*      fSavedTableOwningWP; // in case references are nested, though I'm not sure this can happen
     };
 
     /*
-    @CLASS:         WordProcessor::Table::TemporarilyAllocateCellWP
+    @CLASS:         WordProcessorTable::TemporarilyAllocateCellWP
     @DESCRIPTION:   <p></p>
     */
-    class WordProcessor::Table::TemporarilyAllocateCellWP {
+    class WordProcessorTable::TemporarilyAllocateCellWP {
     public:
-        using EmbeddedTableWordProcessor = WordProcessor::Table::EmbeddedTableWordProcessor;
+        using EmbeddedTableWordProcessor = WordProcessorTable::EmbeddedTableWordProcessor;
 
     public:
-        TemporarilyAllocateCellWP (Table& forTable, WordProcessor& forWordProcessor, size_t forRow, size_t forColumn,
+        TemporarilyAllocateCellWP (WordProcessorTable& forTable, WordProcessor& forWordProcessor, size_t forRow, size_t forColumn,
                                    const Led_Rect& cellWindowRect, bool captureChangesForUndo = true);
         ~TemporarilyAllocateCellWP ();
 
@@ -1762,20 +1782,20 @@ namespace Stroika::Frameworks::Led {
         nonvirtual EmbeddedTableWordProcessor* operator->();
 
     private:
-        Table&                      fOwningTable;
+        WordProcessorTable&         fOwningTable;
         EmbeddedTableWordProcessor* fCellEditor;
     };
 
     /*
-    @CLASS:         WordProcessor::Table::TemporarilyAllocateCellWithTablet
+    @CLASS:         WordProcessorTable::TemporarilyAllocateCellWithTablet
     @DESCRIPTION:   <p></p>
     */
-    class WordProcessor::Table::TemporarilyAllocateCellWithTablet {
+    class WordProcessorTable::TemporarilyAllocateCellWithTablet {
     public:
         using Tablet_Acquirer = TextInteractor::Tablet_Acquirer; // needed for GCC 2.96 - seems like the requirement maybe a compiler bug... LGP 2003-04-18
 
     public:
-        TemporarilyAllocateCellWithTablet (Table& forTable, size_t row, size_t column, bool captureChangesForUndo = true);
+        TemporarilyAllocateCellWithTablet (WordProcessorTable& forTable, size_t row, size_t column, bool captureChangesForUndo = true);
 
     public:
         using TemporarilyUseTablet = EmbeddedTableWordProcessor::TemporarilyUseTablet;

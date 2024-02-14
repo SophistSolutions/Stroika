@@ -31,6 +31,14 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
+#if qStroika_Frameworks_Led_SupportGDI
+using InteractiveModeUpdater = WordProcessor::InteractiveModeUpdater;
+using UndoableContextHelper  = WordProcessor::UndoableContextHelper;
+using Tablet_Acquirer  = WordProcessor::Tablet_Acquirer;
+
+#endif
+
+
 /*
  ********************************************************************************
  ********************************* ParagraphInfo ********************************
@@ -538,13 +546,12 @@ void WordProcessor::WPIdler::SpendIdleTime ()
         Foundation::Time::TimePointSeconds          startTime = Time::GetTickCount ();
         Foundation::Time::TimePointSeconds          endTime   = startTime + kMaxTime;
         AssertNotNull (fWP);
-        using Table                    = WordProcessor::Table;
-        vector<Table*> tables          = fWP->GetTablesInRange (0, fWP->GetEnd ());
-        bool           maybeMoreTables = false;
+        vector<WordProcessorTable*> tables          = fWP->GetTablesInRange (0, fWP->GetEnd ());
+        bool                        maybeMoreTables = false;
         for (auto i = tables.begin (); i != tables.end (); ++i) {
-            Table* t = *i;
-            if (t->fNeedLayout != Table::eDone) {
-                Table::TemporarilySetOwningWP owningWPSetter (*t, *fWP);
+            WordProcessorTable* t = *i;
+            if (t->fNeedLayout != WordProcessorTable::eDone) {
+                WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*t, *fWP);
                 t->PerformLayout ();
                 if (endTime < Time::GetTickCount ()) {
                     maybeMoreTables = true;
@@ -1007,11 +1014,11 @@ void WordProcessor::HookLosingTextStore ()
 void WordProcessor::HookLosingTextStore_ ()
 {
     {
-        MarkersOfATypeMarkerSink2Vector<Table> tables;
+        MarkersOfATypeMarkerSink2Vector<WordProcessorTable> tables;
         GetTextStore ().CollectAllMarkersInRangeInto (GetTextStore ().GetStart (), GetTextStore ().GetEnd (), this, tables);
 #if qConstNonConstPtrConversionsWithTemplatedMemberFunctionBug
-        Table**       t  = Traversal::Iterator2Pointer (tables.fResultArray.begin ());
-        Table* const* tt = t;
+        WordProcessorTable**       t  = Traversal::Iterator2Pointer (tables.fResultArray.begin ());
+        WordProcessorTable* const* tt = t;
         GetTextStore ().RemoveAndDeleteMarkers (tt, tables.fResult.size ());
 #else
         GetTextStore ().RemoveAndDeleteMarkers (Containers::Start (tables.fResult), tables.fResult.size ());
@@ -1226,7 +1233,7 @@ void WordProcessor::HookExternalizerChanged ()
 */
 void WordProcessor::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, bool updateCursorPosition, bool autoScroll, UpdateMode updateMode)
 {
-    Table* t = GetActiveTable ();
+    WordProcessorTable* t = GetActiveTable ();
     if (t != nullptr) {
         WordProcessorFlavorPackageInternalizer* internalizerRep =
             dynamic_cast<WordProcessorFlavorPackageInternalizer*> (static_cast<FlavorPackageInternalizer*> (GetInternalizer ().get ()));
@@ -1712,9 +1719,9 @@ void WordProcessor::SetSelection (size_t start, size_t end)
     // fully selected. Note that we need not worry about the selection range within an UNSELECTED table
     // because that is ignored, and its forcibly reset upon new selection (or at least should be) - LGP 2003-03-17
     if (oldSelStart != start or oldSelEnd != end) {
-        vector<Table*> tables;
-        size_t         checkRangeStart1 = start;
-        size_t         checkRangeEnd1   = oldSelStart;
+        vector<WordProcessorTable*> tables;
+        size_t                      checkRangeStart1 = start;
+        size_t                      checkRangeEnd1   = oldSelStart;
         if (checkRangeStart1 < checkRangeEnd1) {
             tables = GetTablesInRange (checkRangeStart1, checkRangeEnd1);
         }
@@ -1722,12 +1729,12 @@ void WordProcessor::SetSelection (size_t start, size_t end)
         size_t checkRangeStart2 = FindPreviousCharacter (oldSelEnd); // back one to handle the case where we had one char selected
         size_t checkRangeEnd2   = end;
         if (checkRangeStart2 < checkRangeEnd2) {
-            vector<Table*> tables2 = GetTablesInRange (checkRangeStart2, checkRangeEnd2);
+            vector<WordProcessorTable*> tables2 = GetTablesInRange (checkRangeStart2, checkRangeEnd2);
             tables.insert (tables.end (), tables2.begin (), tables2.end ()); // append the vectors
         }
         for (auto i = tables.begin (); i != tables.end (); ++i) {
-            Table*                        t = *i;
-            Table::TemporarilySetOwningWP owningWPSetter (*t, *const_cast<WordProcessor*> (this));
+            WordProcessorTable*                        t = *i;
+            WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*t, *const_cast<WordProcessor*> (this));
             t->SetCellSelection (0, t->GetRowCount (), 0, t->GetColumnCount ());
         }
     }
@@ -1745,7 +1752,7 @@ bool WordProcessor::GetCaretShownSituation () const
         return true;
     }
 
-    Table* table = GetActiveTable ();
+    WordProcessorTable* table = GetActiveTable ();
     if (table != nullptr) {
         return table->GetCaretShownSituation ();
     }
@@ -1758,9 +1765,9 @@ bool WordProcessor::GetCaretShownSituation () const
 */
 Led_Rect WordProcessor::CalculateCaretRect () const
 {
-    Table* table = GetActiveTable ();
+    WordProcessorTable* table = GetActiveTable ();
     if (table != nullptr) {
-        Table::TemporarilySetOwningWP owningWPSetter (*table, *const_cast<WordProcessor*> (this));
+        WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*table, *const_cast<WordProcessor*> (this));
         return table->CalculateCaretRect ();
     }
     return inherited::CalculateCaretRect ();
@@ -1774,9 +1781,9 @@ Led_Rect WordProcessor::CalculateCaretRect () const
 void WordProcessor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
                                             bool controlPressed, bool altKeyPressed)
 {
-    Table* table = GetActiveTable ();
+    WordProcessorTable* table = GetActiveTable ();
     if (table != nullptr) {
-        Table::TemporarilySetOwningWP owningWPSetter (*table, *const_cast<WordProcessor*> (this));
+        WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*table, *const_cast<WordProcessor*> (this));
         if (table->OnTypedNormalCharacter (theChar, optionPressed, shiftPressed, commandPressed, controlPressed, altKeyPressed)) {
             return;
         }
@@ -1838,11 +1845,11 @@ bool WordProcessor::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount
     tstClickRect.left += kHMargin;
     tstClickRect.right -= kHMargin;
     if (tstClickRect.Contains (clickedAt)) {
-        vector<Table*> tables = GetTablesInRange (clickedOnChar, clickedOnChar + 1);
+        vector<WordProcessorTable*> tables = GetTablesInRange (clickedOnChar, clickedOnChar + 1);
         Assert (tables.size () == 0 or tables.size () == 1);
         if (tables.size () == 1) {
-            Table*                        t = tables[0];
-            Table::TemporarilySetOwningWP owningWPSetter (*t, *const_cast<WordProcessor*> (this));
+            WordProcessorTable*                        t = tables[0];
+            WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*t, *const_cast<WordProcessor*> (this));
             if (clickCount == 1) {
                 // In this case - it really doesn't matter if we pick the LHS or RHS of the embedding
                 // as the drag anchor...
@@ -1870,11 +1877,11 @@ void WordProcessor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t drag
      *  changing.
      */
     if ((clickedOnChar == dragAnchor or clickedOnChar + 1 == dragAnchor) and (oldSelEnd - oldSelStart == 1)) {
-        vector<Table*> tables = GetTablesInRange (clickedOnChar, clickedOnChar + 1);
+        vector<WordProcessorTable*> tables = GetTablesInRange (clickedOnChar, clickedOnChar + 1);
         if (tables.size () == 1) {
-            Table*                        t        = tables[0];
-            Led_Rect                      charRect = GetCharWindowLocation (t->GetStart ());
-            Table::TemporarilySetOwningWP owningWPSetter (*t, *const_cast<WordProcessor*> (this));
+            WordProcessorTable*                        t        = tables[0];
+            Led_Rect                                   charRect = GetCharWindowLocation (t->GetStart ());
+            WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*t, *const_cast<WordProcessor*> (this));
             // must adjust/be careful about charRect.GetOrigin () in case out of range... not sure what args to REALLY pass in !
             t->WhileSimpleMouseTracking (newMousePos - charRect.GetOrigin ());
             return;
@@ -1890,12 +1897,12 @@ void WordProcessor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t drag
 
 /*
 @METHOD:        WordProcessor::InsertTable
-@DESCRIPTION:   <p>Create a @'Table' object at the given location in the document. The table object is returned you that you can then
+@DESCRIPTION:   <p>Create a @'WordProcessorTable' object at the given location in the document. The table object is returned you that you can then
             call specific methods to add rows and columns etc.</p>
 */
-WordProcessor::Table* WordProcessor::InsertTable (size_t at)
+WordProcessorTable* WordProcessor::InsertTable (size_t at)
 {
-    Table* t = new Table (fParagraphDatabase.get (), at);
+    WordProcessorTable* t = new WordProcessorTable (fParagraphDatabase.get (), at);
     t->SetDimensions (1, 1); //tmphack so we have at least one sentinel - auto-delete table when it becomes empty?
     //like the embeddings it owns!
     // LGP 2002-11-15
@@ -1907,14 +1914,14 @@ WordProcessor::Table* WordProcessor::InsertTable (size_t at)
 @DESCRIPTION:   <p>Generate a list of all tables obejcts in the given range. Grabs all tables from 'from' to 'to' with from defaulting
             to the start of the buffer, and 'to' defaulting to the end of the buffer.</p>
 */
-vector<WordProcessor::Table*> WordProcessor::GetTablesInRange (size_t from, size_t to) const
+vector<WordProcessorTable*> WordProcessor::GetTablesInRange (size_t from, size_t to) const
 {
     if (to == static_cast<size_t> (-1)) {
         to = GetTextStore ().GetLength ();
     }
     Require (from <= to);
     Require (to <= GetTextStore ().GetLength () + 1);
-    MarkersOfATypeMarkerSink2Vector<Table> result;
+    MarkersOfATypeMarkerSink2Vector<WordProcessorTable> result;
     if (fParagraphDatabase.get () != nullptr) {
         GetTextStore ().CollectAllMarkersInRangeInto (from, to, fParagraphDatabase.get (), result);
     }
@@ -1925,11 +1932,11 @@ vector<WordProcessor::Table*> WordProcessor::GetTablesInRange (size_t from, size
 @METHOD:        WordProcessor::GetTableAt
 @DESCRIPTION:   <p>Return the table which starts at offset 'from'. If there is no table there - return nullptr.</p>
 */
-WordProcessor::Table* WordProcessor::GetTableAt (size_t from) const
+WordProcessorTable* WordProcessor::GetTableAt (size_t from) const
 {
     size_t to = from + 1;
     Require (to <= GetTextStore ().GetLength () + 1);
-    MarkerOfATypeMarkerSink<Table> result;
+    MarkerOfATypeMarkerSink<WordProcessorTable> result;
     if (fParagraphDatabase.get () != nullptr) {
         GetTextStore ().CollectAllMarkersInRangeInto (from, to, fParagraphDatabase.get (), result);
     }
@@ -2110,11 +2117,10 @@ void WordProcessor::AssureCurSelFontCacheValid () const
 {
     if (not fCachedCurSelFontSpecValid) {
         Assert (GetSelectionEnd () >= GetSelectionStart ());
-        size_t selectionLength = GetSelectionEnd () - GetSelectionStart ();
-
-        Table* aT = GetActiveTable ();
+        size_t              selectionLength = GetSelectionEnd () - GetSelectionStart ();
+        WordProcessorTable* aT              = GetActiveTable ();
         if (aT != nullptr) {
-            Table::TemporarilySetOwningWP owningWPSetter (*aT, *const_cast<WordProcessor*> (this));
+            WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*aT, *const_cast<WordProcessor*> (this));
             aT->AssureCurSelFontCacheValid (&fCachedCurSelFontSpec);
             fCachedCurSelJustification       = eLeftJustify;
             fCachedCurSelJustificationUnique = false;
@@ -2130,9 +2136,9 @@ void WordProcessor::AssureCurSelFontCacheValid () const
 void WordProcessor::DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit, CursorMovementAction action,
                                             UpdateMode updateMode, bool scrollToSelection)
 {
-    Table* table = GetActiveTable ();
+    WordProcessorTable* table = GetActiveTable ();
     if (table != nullptr) {
-        Table::TemporarilySetOwningWP owningWPSetter (*table, *const_cast<WordProcessor*> (this));
+        WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*table, *const_cast<WordProcessor*> (this));
         if (table->DoSingleCharCursorEdit (direction, movementUnit, action, updateMode, false)) {
             if (scrollToSelection) {
                 ScrollToSelection ();
@@ -2147,9 +2153,9 @@ bool WordProcessor::OnUpdateCommand (CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
 
-    Table* aT = GetActiveTable ();
+    WordProcessorTable* aT = GetActiveTable ();
     if (aT != nullptr) {
-        Table::TemporarilySetOwningWP owningWPSetter (*aT, *const_cast<WordProcessor*> (this));
+        WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*aT, *const_cast<WordProcessor*> (this));
         if (aT->OnUpdateCommand (enabler)) {
             return true;
         }
@@ -2280,9 +2286,9 @@ bool WordProcessor::OnUpdateCommand (CommandUpdater* enabler)
 
 bool WordProcessor::OnPerformCommand (CommandNumber commandNumber)
 {
-    Table* aT = GetActiveTable ();
+    WordProcessorTable* aT = GetActiveTable ();
     if (aT != nullptr) {
-        Table::TemporarilySetOwningWP owningWPSetter (*aT, *const_cast<WordProcessor*> (this));
+        WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*aT, *const_cast<WordProcessor*> (this));
         if (aT->OnPerformCommand (commandNumber)) {
             return true;
         }
@@ -2429,9 +2435,9 @@ bool WordProcessor::PassAlongCommandToIntraCellModeTableCell (CommandNumber comm
                  *  is already done - then pass on the command to our parent (which will select a wider
                  *  unit). (see SPR#1615).
                  */
-            Table* aT  = GetActiveTable ();
-            size_t row = 0;
-            size_t col = 0;
+            WordProcessorTable* aT  = GetActiveTable ();
+            size_t              row = 0;
+            size_t              col = 0;
             if (aT != nullptr and aT->GetIntraCellMode (&row, &col)) {
                 size_t intraCellStart = 0;
                 size_t intraCellEnd   = 0;
@@ -2904,7 +2910,7 @@ void WordProcessor::OnInsertTableCommand ()
         UndoableContextHelper context (*this, GetCommandNames ().fInsertTableCommandName, false);
         {
             // Put up dialog ROW/COL and then insert columns...
-            Table* t = InsertTable (GetSelectionStart ()); // ignore return result cuz kept track of internally and automatically deleted...
+            WordProcessorTable* t = InsertTable (GetSelectionStart ()); // ignore return result cuz kept track of internally and automatically deleted...
             //tmphack - SHOULD come from dialog we launch in here to let user specify
             t->SetDimensions (rows, cols);
             {
@@ -2986,7 +2992,7 @@ void WordProcessor::OnUpdateSelectedEmbeddingExtendedCommand (CommandUpdater* en
     SimpleEmbeddedObjectStyleMarker* embedding = GetSoleSelectedEmbedding ();
     if (enabler->GetCmdID () == kSelectedEmbeddingProperties_CmdID) {
         enabler->SetEnabled (embedding != nullptr);
-        Table* t = GetActiveTable ();
+        WordProcessorTable* t = GetActiveTable ();
         enabler->SetText (t == nullptr ? GetCommandNames ().fGenericEmbeddingPropertiesCommandName.c_str ()
                                        : GetCommandNames ().fTablePropertiesCommandName.c_str ());
     }
@@ -3022,7 +3028,7 @@ bool WordProcessor::OnSelectedEmbeddingExtendedCommand (CommandNumber cmdNum)
                 }
             }
         }
-        else if (dynamic_cast<Table*> (embedding) != nullptr) {
+        else if (dynamic_cast<WordProcessorTable*> (embedding) != nullptr) {
             OnEditTablePropertiesDialog ();
         }
         else {
@@ -3041,7 +3047,7 @@ bool WordProcessor::OnSelectedEmbeddingExtendedCommand (CommandNumber cmdNum)
 
 void WordProcessor::OnEditTablePropertiesDialog ()
 {
-    Table* t = GetActiveTable ();
+    WordProcessorTable* t = GetActiveTable ();
     AssertNotNull (t);
 
     /*
@@ -3354,7 +3360,7 @@ SDKString WordProcessor::GetPrettyTypeName (SimpleEmbeddedObjectStyleMarker* m)
         return GetCommandNames ().fEmbeddingTypeName_ImageMacPict;
     }
 #endif
-    else if (dynamic_cast<Table*> (m) != nullptr) {
+    else if (dynamic_cast<WordProcessorTable*> (m) != nullptr) {
         return GetCommandNames ().fEmbeddingTypeName_Table;
     }
     else {
@@ -3447,10 +3453,10 @@ InteractiveReplaceCommand::SavedTextRep* WordProcessor::InteractiveUndoHelperMak
         return new EmptySelectionParagraphSavedTextRep (this, selStart, selEnd, regionStart);
     }
     else {
-        SavedTextRep* basicRep = inherited::InteractiveUndoHelperMakeTextRep (regionStart, regionEnd, selStart, selEnd);
-        Table*        aT       = GetActiveTable ();
+        SavedTextRep*       basicRep = inherited::InteractiveUndoHelperMakeTextRep (regionStart, regionEnd, selStart, selEnd);
+        WordProcessorTable* aT       = GetActiveTable ();
         if (aT != nullptr) {
-            return new Table::SavedTextRepWSel (basicRep, *aT, Table::SavedTextRepWSel::eWPAbove);
+            return new WordProcessorTable::SavedTextRepWSel (basicRep, *aT, WordProcessorTable::SavedTextRepWSel::eWPAbove);
         }
         return basicRep;
     }
@@ -3462,9 +3468,9 @@ InteractiveReplaceCommand::SavedTextRep* WordProcessor::InteractiveUndoHelperMak
 */
 void WordProcessor::InteractiveSetFont (const IncrementalFontSpecification& defaultFont)
 {
-    Table* aT = GetActiveTable ();
+    WordProcessorTable* aT = GetActiveTable ();
     if (aT != nullptr) {
-        Table::TemporarilySetOwningWP owningWPSetter (*aT, *this);
+        WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*aT, *this);
         aT->InteractiveSetFont (defaultFont);
         return;
     }
@@ -3600,11 +3606,11 @@ void WordProcessor::DrawBefore (const Led_Rect& subsetToDraw, bool printing)
     // and computation
 
     // Check the current window-display region has no unprocessed tables, and process any if needed
-    vector<Table*> tables = GetTablesInRange (winStart, winEnd);
+    vector<WordProcessorTable*> tables = GetTablesInRange (winStart, winEnd);
     for (auto i = tables.begin (); i != tables.end (); ++i) {
-        Table* t = *i;
-        if (t->fNeedLayout != Table::eDone) {
-            Table::TemporarilySetOwningWP owningWPSetter (*t, *this);
+        WordProcessorTable* t = *i;
+        if (t->fNeedLayout != WordProcessorTable::eDone) {
+            WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*t, *this);
             t->PerformLayout ();
         }
     }
@@ -3640,7 +3646,7 @@ void WordProcessor::DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowR
                  */
                 bool allowLists = true;
                 if (rowEnd - rowStart == 1) {
-                    vector<Table*> tables = GetTablesInRange (rowStart, rowEnd);
+                    vector<WordProcessorTable*> tables = GetTablesInRange (rowStart, rowEnd);
                     if (tables.size () == 1) {
                         allowLists = false;
                     }
@@ -3698,11 +3704,11 @@ vector<Led_Rect> WordProcessor::GetRowHilightRects (const TextLayoutBlock& text,
 {
     size_t len = rowEnd - rowStart;
     if (len == 1 and text.PeekAtRealText ()[0] == kEmbeddingSentinelChar) {
-        vector<Table*> tables = GetTablesInRange (rowStart, rowEnd);
+        vector<WordProcessorTable*> tables = GetTablesInRange (rowStart, rowEnd);
         Assert (tables.size () <= 1);
         if (not tables.empty ()) {
-            Table*                        table = tables[0];
-            Table::TemporarilySetOwningWP owningWPSetter (*table, *const_cast<WordProcessor*> (this));
+            WordProcessorTable*                        table = tables[0];
+            WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*table, *const_cast<WordProcessor*> (this));
             return table->GetRowHilightRects ();
         }
     }
@@ -3816,10 +3822,10 @@ DistanceType WordProcessor::MeasureSegmentHeight (size_t from, size_t to) const
      *  expensive call to GetTablesInRange () except when needed. See SPR#1336.
      */
     if (pmEnd - pmStart == 1) {
-        vector<Table*> tables = GetTablesInRange (pmStart, pmEnd);
+        vector<WordProcessorTable*> tables = GetTablesInRange (pmStart, pmEnd);
         if (tables.size () == 1) {
             if constexpr (qDebug) {
-                Table* t = tables[0];
+                WordProcessorTable* t = tables[0];
                 Assert (t->GetStart () == pmStart);
                 Assert (t->GetEnd () == pmEnd);
             }
@@ -3919,7 +3925,7 @@ void WordProcessor::AdjustBestRowLength (size_t textStart, const Led_tChar* text
     for (const Led_tChar* cur = &text[0]; cur < end; cur = Led_NextChar (cur)) {
         if (*cur == kEmbeddingSentinelChar) {
             // Check if its inside a table - and if yes - then rowLength=1
-            vector<Table*> tables = GetTablesInRange (textStart + cur - text, textStart + cur - text + 1);
+            vector<WordProcessorTable*> tables = GetTablesInRange (textStart + cur - text, textStart + cur - text + 1);
             if (not tables.empty ()) {
                 Assert (cur == text);
                 size_t newBestRowLength = (cur - text) + 1;
@@ -3967,10 +3973,10 @@ DistanceType WordProcessor::MeasureSegmentBaseLine (size_t from, size_t to) cons
      *  expensive call to GetTablesInRange () except when needed. See SPR#1336.
      */
     if (pmEnd - pmStart == 1) {
-        vector<Table*> tables = GetTablesInRange (pmStart, pmEnd);
+        vector<WordProcessorTable*> tables = GetTablesInRange (pmStart, pmEnd);
         if (tables.size () == 1) {
             if constexpr (qDebug) {
-                Table* t = tables[0];
+                WordProcessorTable* t = tables[0];
                 Assert (t->GetStart () == pmStart);
                 Assert (t->GetEnd () == pmEnd);
             }
@@ -4278,7 +4284,7 @@ void WordProcessor::GetLayoutMargins (RowReference row, CoordinateType* lhs, Coo
                 bool   allowLists = true;
                 size_t pmEnd      = pm->GetEnd ();
                 if (pmEnd - pmStart == 1) {
-                    vector<Table*> tables = GetTablesInRange (pmStart, pmEnd);
+                    vector<WordProcessorTable*> tables = GetTablesInRange (pmStart, pmEnd);
                     if (tables.size () == 1) {
                         allowLists = false;
                     }
@@ -4373,14 +4379,15 @@ DistanceType WordProcessor::CalcSpaceToEat (size_t rowContainingCharPos) const
  *************************** WordProcessorTextIOSinkStream **********************
  ********************************************************************************
  */
-inline TWIPS CalcDefaultRHSMargin ()
-{
-    const int kRTF_SPEC_DefaultInches = 6; // HACK - see comments in SinkStreamDestination::SetRightMargin ()
-    int       rhsTWIPS                = kRTF_SPEC_DefaultInches * 1440;
-    return TWIPS (rhsTWIPS);
+namespace {
+    inline TWIPS CalcDefaultRHSMargin_ ()
+    {
+        const int kRTF_SPEC_DefaultInches = 6; // HACK - see comments in SinkStreamDestination::SetRightMargin ()
+        int       rhsTWIPS                = kRTF_SPEC_DefaultInches * 1440;
+        return TWIPS (rhsTWIPS);
+    }
 }
 
-using WordProcessorTextIOSinkStream = WordProcessor::WordProcessorTextIOSinkStream;
 WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                               const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
                                                               const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart)
@@ -4473,7 +4480,7 @@ void WordProcessorTextIOSinkStream::CTOR_COMMON ()
     fNewParagraphInfo.SetJustification (eLeftJustify);
     fNewParagraphInfo.SetTabStopList (WordProcessor::GetDefaultStandardTabStopList ());
     fNewParagraphInfo.SetFirstIndent (TWIPS{0});
-    fNewParagraphInfo.SetMargins (TWIPS{0}, CalcDefaultRHSMargin ());
+    fNewParagraphInfo.SetMargins (TWIPS{0}, CalcDefaultRHSMargin_ ());
     fNewParagraphInfo.SetListStyle (eListStyle_None);
     fNewParagraphInfo.SetSpaceBefore (TWIPS{0});
     fNewParagraphInfo.SetSpaceAfter (TWIPS{0});
@@ -4606,9 +4613,9 @@ void WordProcessorTextIOSinkStream::StartTable ()
 #endif
 
     if (GetOverwriteTableMode ()) {
-        TextStore&                     ts             = GetTextStore ();
-        size_t                         realCoordStart = GetInsertionStart ();
-        MarkerOfATypeMarkerSink<Table> maybeTable;
+        TextStore&                                  ts             = GetTextStore ();
+        size_t                                      realCoordStart = GetInsertionStart ();
+        MarkerOfATypeMarkerSink<WordProcessorTable> maybeTable;
         Assert (realCoordStart <= ts.GetEnd ());
         ts.CollectAllMarkersInRangeInto (ts.FindPreviousCharacter (realCoordStart), realCoordStart, fParagraphDatabase.get (), maybeTable);
         if (maybeTable.fResult != nullptr) {
@@ -4623,7 +4630,7 @@ void WordProcessorTextIOSinkStream::StartTable ()
     }
 
     if (fCurrentTable == nullptr) {
-        fCurrentTable = new Table (fParagraphDatabase.get (), current_offset () + GetOriginalStart ());
+        fCurrentTable = new WordProcessorTable (fParagraphDatabase.get (), current_offset () + GetOriginalStart ());
         SetInsertionStart (GetInsertionStart () + 1); // cuz we added a row which adds a sentinel
         fNextTableRow     = 0;
         fNextTableCell    = 0;
@@ -4999,7 +5006,6 @@ void WordProcessorTextIOSinkStream::Flush ()
  *************************** WordProcessorTextIOSrcStream ***********************
  ********************************************************************************
  */
-using WordProcessorTextIOSrcStream = WordProcessor::WordProcessorTextIOSrcStream;
 WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                             const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
                                                             const shared_ptr<HidableTextMarkerOwner>&       hidableTextDatabase,
@@ -5120,7 +5126,7 @@ LineSpacing WordProcessorTextIOSrcStream::GetLineSpacing () const
 @METHOD:        WordProcessor::WordProcessorTextIOSrcStream::GetListStyleInfo
 @DESCRIPTION:
 */
-void WordProcessor::WordProcessorTextIOSrcStream::GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const
+void WordProcessorTextIOSrcStream::GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const
 {
     RequireNotNull (listStyle);
     RequireNotNull (indentLevel);
@@ -5148,9 +5154,9 @@ DiscontiguousRun<bool> WordProcessorTextIOSrcStream::GetHidableTextRuns () const
 WordProcessorTextIOSrcStream::Table* WordProcessorTextIOSrcStream::GetTableAt (size_t at) const
 {
     Require (fParagraphDatabase.get () != nullptr);
-    TextStore&                                    ts             = fParagraphDatabase->GetTextStore ();
-    size_t                                        realCoordStart = GetEmbeddingMarkerPosOffset () + at;
-    MarkerOfATypeMarkerSink<WordProcessor::Table> maybeTable;
+    TextStore&                                  ts             = fParagraphDatabase->GetTextStore ();
+    size_t                                      realCoordStart = GetEmbeddingMarkerPosOffset () + at;
+    MarkerOfATypeMarkerSink<WordProcessorTable> maybeTable;
     ts.CollectAllMarkersInRangeInto (realCoordStart, realCoordStart + 1, fParagraphDatabase.get (), maybeTable);
     if (maybeTable.fResult == nullptr) {
         return nullptr;
@@ -5182,9 +5188,8 @@ void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* f
     inherited::SummarizeFontAndColorTable (fontNames, colorsUsed);
 
     {
-        using Table                               = WordProcessor::Table;
-        TextStore&                             ts = fParagraphDatabase->GetTextStore ();
-        MarkersOfATypeMarkerSink2Vector<Table> tables;
+        TextStore&                                          ts = fParagraphDatabase->GetTextStore ();
+        MarkersOfATypeMarkerSink2Vector<WordProcessorTable> tables;
         ts.CollectAllMarkersInRangeInto (GetSelStart (), GetSelEnd (), fParagraphDatabase.get (), tables);
         for (auto i = tables.fResult.begin (); i != tables.fResult.end (); ++i) {
             TableIOMapper tiom (**i);
@@ -5215,7 +5220,7 @@ void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* f
  *********** WordProcessor::WordProcessorTextIOSrcStream::TableIOMapper *********
  ********************************************************************************
  */
-WordProcessorTextIOSrcStream::TableIOMapper::TableIOMapper (WordProcessor::Table& realTable, size_t startRow, size_t endRow, size_t startCol, size_t endCol)
+WordProcessorTextIOSrcStream::TableIOMapper::TableIOMapper (WordProcessorTable& realTable, size_t startRow, size_t endRow, size_t startCol, size_t endCol)
     : fRealTable{realTable}
     , fStartRow{startRow}
     , fEndRow{endRow}
@@ -5262,7 +5267,7 @@ void WordProcessorTextIOSrcStream::TableIOMapper::GetRowInfo (size_t row, vector
     cellInfos->clear ();
     for (size_t c = 0; c < columns; ++c) {
         size_t vCol = c + fStartCol;
-        if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessor::Table::ePlainCell) {
+        if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessorTable::ePlainCell) {
             CellInfo cellInfo;
             cellInfo.f_clcbpat = fRealTable.GetCellColor (vRow, vCol);
             cellInfo.f_cellx   = fRealTable.GetColumnWidth (vRow, vCol);
@@ -5285,7 +5290,7 @@ StyledTextIOWriter::SrcStream* WordProcessorTextIOSrcStream::TableIOMapper::Make
     size_t vRow = row + fStartRow;
     size_t vCol = column + fStartCol;
 
-    if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessor::Table::ePlainCell) {
+    if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessorTable::ePlainCell) {
         TextStore*                               ts = nullptr;
         shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
         shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
@@ -5369,25 +5374,25 @@ WordProcessor::WPPartition::WPPartition (TextStore& textStore, MarkerOwner& tabl
     Invariant ();
 }
 
-vector<WordProcessor::Table*> WordProcessor::WPPartition::GetTablesInRange (size_t from, size_t to) const
+vector<WordProcessorTable*> WordProcessor::WPPartition::GetTablesInRange (size_t from, size_t to) const
 {
     if (to == static_cast<size_t> (-1)) {
         to = GetTextStore ().GetLength ();
     }
     Require (from <= to);
     Require (to <= GetTextStore ().GetLength () + 1);
-    MarkersOfATypeMarkerSink2Vector<Table> result;
+    MarkersOfATypeMarkerSink2Vector<WordProcessorTable> result;
     GetTextStore ().CollectAllMarkersInRangeInto (from, to, &fTableMarkerOwner, result);
     return result.fResult;
 }
 
-WordProcessor::Table* WordProcessor::GetActiveTable () const
+WordProcessorTable* WordProcessor::GetActiveTable () const
 {
     size_t selStart = 0;
     size_t selEnd   = 0;
     GetSelection (&selStart, &selEnd);
     if (selEnd - selStart == 1) {
-        vector<WordProcessor::Table*> tables = GetTablesInRange (selStart, selEnd);
+        vector<WordProcessorTable*> tables = GetTablesInRange (selStart, selEnd);
         Assert (tables.size () <= 1);
         if (tables.size () == 1) {
             EnsureNotNull (tables[0]);
@@ -5420,10 +5425,9 @@ void WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t from, 
     TextStore& ts = GetTextStore ();
 
     // must go one forward/back to make sure we get new chars inserted BEFORE a table or just after one
-    //  vector<Table*>  tables  =   GetTablesInRange (from, to);
-    vector<Table*> tables = GetTablesInRange (ts.FindPreviousCharacter (from), ts.FindNextCharacter (to));
+    vector<WordProcessorTable*> tables = GetTablesInRange (ts.FindPreviousCharacter (from), ts.FindNextCharacter (to));
     for (auto i = tables.begin (); i != tables.end (); ++i) {
-        Table* t = *i;
+        WordProcessorTable* t = *i;
         if (t->GetLength () != 0) {
             size_t tableEnd = t->GetEnd ();
             // may need logic similar to that below
@@ -5505,14 +5509,14 @@ bool WordProcessor::WPPartition::NeedToCoalesce (PartitionMarker* pm) noexcept
                 ++trEnd;
             }
 
-            vector<Table*> tables = GetTablesInRange (trStart, trEnd);
+            vector<WordProcessorTable*> tables = GetTablesInRange (trStart, trEnd);
             if (not tables.empty ()) {
                 if (tables.size () == 2) {
                     // then we must split between the two and so NO need to coalese
                     return false;
                 }
                 else if (tables.size () == 1) {
-                    Table* table = tables[0];
+                    WordProcessorTable* table = tables[0];
                     // If table contains this point - then coalese - otherwise don't
                     if (table->GetStart () == pm->GetEnd ()) {
                         return false;
@@ -5551,10 +5555,10 @@ void WordProcessor::WPPartition::Invariant_ () const
         CopyOut (start, len, buf.data ());
         for (size_t i = 1; i < len; ++i) {
             Assert (buf[i - 1] != '\n');
-            vector<Table*> tables = GetTablesInRange (start + i - 1, start + i);
+            vector<WordProcessorTable*> tables = GetTablesInRange (start + i - 1, start + i);
             if (not tables.empty ()) {
                 Assert (tables.size () == 1);
-                Table* t = tables[0];
+                WordProcessorTable* t = tables[0];
                 if (t->GetLength () != 0) {
                     Assert (t->GetStart () == start);
                     Assert (t->GetLength () == len);
@@ -5569,9 +5573,9 @@ void WordProcessor::WPPartition::Invariant_ () const
     /*
      *  Assure that for ALL existing tables, their starts and ends correspond to PM start/ends.
      */
-    vector<Table*> tables = GetTablesInRange (0, GetTextStore ().GetLength ());
+    vector<WordProcessorTable*> tables = GetTablesInRange (0, GetTextStore ().GetLength ());
     for (auto i = tables.begin (); i != tables.end (); ++i) {
-        Table* t = *i;
+        WordProcessorTable* t = *i;
         if (t->GetLength () != 0) {
             PartitionMarker* pm = GetPartitionMarkerContainingPosition (t->GetStart ());
             Assert (t->GetStart () == pm->GetStart ());
@@ -5609,12 +5613,10 @@ StandardStyledTextIOSrcStream* WordProcessorFlavorPackageExternalizer::mkStandar
 
 /*
  ********************************************************************************
- ************************************* Table ************************************
+ ************************ WordProcessorTable ************************************
  ********************************************************************************
  */
-using Table = WordProcessor::Table;
-
-class WordProcessor::Table::TableCMD : public InteractiveReplaceCommand, public Memory::UseBlockAllocationIfAppropriate<TableCMD> {
+class WordProcessorTable::TableCMD : public InteractiveReplaceCommand, public Memory::UseBlockAllocationIfAppropriate<TableCMD> {
 private:
     using inherited = InteractiveReplaceCommand;
 
@@ -5630,29 +5632,29 @@ public:
 public:
     virtual void Do (TextInteractor& interactor) override
     {
-        WordProcessor& owningWP = dynamic_cast<WordProcessor&> (interactor);
-        Table*         aT       = owningWP.GetTableAt (fTableAt);
+        WordProcessor&      owningWP = dynamic_cast<WordProcessor&> (interactor);
+        WordProcessorTable* aT       = owningWP.GetTableAt (fTableAt);
         AssertNotNull (aT);
-        Table::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
-        Table::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
+        WordProcessorTable::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
+        WordProcessorTable::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
         inherited::Do (*wp);
     }
     virtual void UnDo (TextInteractor& interactor) override
     {
-        WordProcessor& owningWP = dynamic_cast<WordProcessor&> (interactor);
-        Table*         aT       = owningWP.GetTableAt (fTableAt);
+        WordProcessor&      owningWP = dynamic_cast<WordProcessor&> (interactor);
+        WordProcessorTable* aT       = owningWP.GetTableAt (fTableAt);
         AssertNotNull (aT);
-        Table::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
-        Table::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
+        WordProcessorTable::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
+        WordProcessorTable::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
         inherited::UnDo (*wp);
     }
     virtual void ReDo (TextInteractor& interactor) override
     {
-        WordProcessor& owningWP = dynamic_cast<WordProcessor&> (interactor);
-        Table*         aT       = owningWP.GetTableAt (fTableAt);
+        WordProcessor&      owningWP = dynamic_cast<WordProcessor&> (interactor);
+        WordProcessorTable* aT       = owningWP.GetTableAt (fTableAt);
         AssertNotNull (aT);
-        Table::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
-        Table::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
+        WordProcessorTable::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
+        WordProcessorTable::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
         inherited::ReDo (*wp);
     }
 
@@ -5663,17 +5665,17 @@ protected:
 };
 
 /*
- *  can only be called inside the context of WordProcessor::Table::TemporarilySetOwningWP
+ *  can only be called inside the context of WordProcessorTable::TemporarilySetOwningWP
  *  since that is what provides our external (window) coordinate system
  */
 #define Led_Require_CurrentOwningWP() RequireNotNull (fCurrentOwningWP)
 
 /*
-@METHOD:        WordProcessor::Table::Table
+@METHOD:        WordProcessorTable::WordProcessorTable
 @DESCRIPTION:   <p>You generally don't construct a table object directly, but rather using
             @'WordProcessor::InsertTable'.</p>
 */
-Table::Table (AbstractParagraphDatabaseRep* tableOwner, size_t addAt)
+WordProcessorTable::WordProcessorTable (AbstractParagraphDatabaseRep* tableOwner, size_t addAt)
     : inherited ()
     , fCellSpacing (TWIPS{0})
     , fDefaultCellMargins (TWIPS (15), TWIPS (90), TWIPS{0}, TWIPS{0})
@@ -5705,7 +5707,7 @@ Table::Table (AbstractParagraphDatabaseRep* tableOwner, size_t addAt)
     FinalizeAddition (tableOwner, addAt);
 }
 
-Table::~Table ()
+WordProcessorTable::~WordProcessorTable ()
 {
     if (fCellUpdatePropationUpdater != nullptr) {
         Assert (false); // This should only happen if an earlier update was aborted (throw). NOT really a bug
@@ -5716,7 +5718,7 @@ Table::~Table ()
     Assert (fCurrentOwningWP == nullptr);
 }
 
-void Table::FinalizeAddition (AbstractParagraphDatabaseRep* o, size_t addAt)
+void WordProcessorTable::FinalizeAddition (AbstractParagraphDatabaseRep* o, size_t addAt)
 {
     RequireNotNull (o);
     TextStore&               ts = o->GetTextStore ();
@@ -5725,9 +5727,9 @@ void Table::FinalizeAddition (AbstractParagraphDatabaseRep* o, size_t addAt)
     ts.AddMarker (this, addAt, 1, o);
 }
 
-void Table::DrawSegment (const StyledTextImager* imager, const StyleRunElement& /*runElement*/, Tablet* tablet,
-                         [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
-                         const Led_Rect& drawInto, const Led_Rect& invalidRect, CoordinateType /*useBaseLine*/, DistanceType* pixelsDrawn)
+void WordProcessorTable::DrawSegment (const StyledTextImager* imager, const StyleRunElement& /*runElement*/, Tablet* tablet,
+                                      [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
+                                      const Led_Rect& drawInto, const Led_Rect& invalidRect, CoordinateType /*useBaseLine*/, DistanceType* pixelsDrawn)
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
     Assert (from + 1 == to);
@@ -5738,7 +5740,7 @@ void Table::DrawSegment (const StyledTextImager* imager, const StyleRunElement& 
 
     WordProcessor& owningWP = *dynamic_cast<WordProcessor*> (const_cast<StyledTextImager*> (imager));
 
-    Table::TemporarilySetOwningWP owningWPSetter (*this, owningWP);
+    WordProcessorTable::TemporarilySetOwningWP owningWPSetter (*this, owningWP);
 
     DistanceType bwv     = Led_CvtScreenPixelsFromTWIPSV (fBorderWidth);
     Led_Rect     rowRect = drawInto;
@@ -5790,8 +5792,9 @@ Done:
     }
 }
 
-void Table::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, const StyleRunElement& /*runElement*/, [[maybe_unused]] size_t from,
-                                 [[maybe_unused]] size_t to, [[maybe_unused]] const Led_tChar* text, DistanceType* distanceResults) const
+void WordProcessorTable::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, const StyleRunElement& /*runElement*/,
+                                              [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+                                              [[maybe_unused]] const Led_tChar* text, DistanceType* distanceResults) const
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
     Assert (from + 1 == to);
@@ -5799,8 +5802,8 @@ void Table::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager
     distanceResults[0] = fTotalWidth;
 }
 
-DistanceType Table::MeasureSegmentHeight ([[maybe_unused]] const StyledTextImager* imager, const StyleRunElement& /*runElement*/,
-                                          [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
+DistanceType WordProcessorTable::MeasureSegmentHeight ([[maybe_unused]] const StyledTextImager* imager, const StyleRunElement& /*runElement*/,
+                                                       [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
     Assert (from + 1 == to);
@@ -5810,11 +5813,11 @@ DistanceType Table::MeasureSegmentHeight ([[maybe_unused]] const StyledTextImage
 }
 
 /*
-@METHOD:        WordProcessor::Table::GetRowHilightRects
+@METHOD:        WordProcessorTable::GetRowHilightRects
 @DESCRIPTION:   <p>Provide table-specific selection hilight behavior (so only the selected cells
             or rows or columns are hilighted)</p>
 */
-vector<Led_Rect> Table::GetRowHilightRects () const
+vector<Led_Rect> WordProcessorTable::GetRowHilightRects () const
 {
     Led_Require_CurrentOwningWP ();
 
@@ -5865,7 +5868,7 @@ vector<Led_Rect> Table::GetRowHilightRects () const
             }
 
             if (rowSelEnd - rowSelStart == 1 and colSelEnd - colSelStart == 1 and GetIntraCellMode ()) {
-                TemporarilyAllocateCellWithTablet wp (*const_cast<Table*> (this), rowSelStart, colSelStart);
+                TemporarilyAllocateCellWithTablet wp (*const_cast<WordProcessorTable*> (this), rowSelStart, colSelStart);
                 vector<Led_Rect> cellHilightRegions = wp->GetSelectionWindowRects (wp->GetSelectionStart (), wp->GetSelectionEnd ());
                 for (auto i = cellHilightRegions.begin (); i != cellHilightRegions.end (); ++i) {
                     result.push_back (*i);
@@ -5906,11 +5909,11 @@ vector<Led_Rect> Table::GetRowHilightRects () const
 }
 
 /*
-@METHOD:        WordProcessor::Table::DrawTableBorders
+@METHOD:        WordProcessorTable::DrawTableBorders
 @ACCESS:        protected
 @DESCRIPTION:   <p></p>
 */
-void Table::DrawTableBorders (WordProcessor& owningWP, Tablet* tablet, const Led_Rect& drawInto)
+void WordProcessorTable::DrawTableBorders (WordProcessor& owningWP, Tablet* tablet, const Led_Rect& drawInto)
 {
 #if 0
     //Don't delete this code - cuz we MAY want to display (somehow) the border for the table as
@@ -5930,13 +5933,13 @@ void Table::DrawTableBorders (WordProcessor& owningWP, Tablet* tablet, const Led
 }
 
 /*
-@METHOD:        WordProcessor::Table::DrawCellBorders
+@METHOD:        WordProcessorTable::DrawCellBorders
 @ACCESS:        protected
 @DESCRIPTION:   <p>Draw the borders on the given cell with bounds (in tablet drawing coordinates - corrected for scrolling
             and the location of the table of the given cell). Note it is assumed the cellBounds argument does NOT take
             into account space for the border itself. We draw the border just OUTSIDE the cell.</p>
 */
-void Table::DrawCellBorders (Tablet* tablet, size_t /*row*/, size_t /*column*/, const Led_Rect& cellBounds)
+void WordProcessorTable::DrawCellBorders (Tablet* tablet, size_t /*row*/, size_t /*column*/, const Led_Rect& cellBounds)
 {
     CoordinateType bw = Led_CvtScreenPixelsFromTWIPSH (fBorderWidth);
     // Draw outside of the frame of the cell.
@@ -5944,26 +5947,26 @@ void Table::DrawCellBorders (Tablet* tablet, size_t /*row*/, size_t /*column*/, 
 }
 
 /*
-@METHOD:        WordProcessor::Table::GetCellBounds
+@METHOD:        WordProcessorTable::GetCellBounds
 @ACCESS:        public
 @DESCRIPTION:   <p>Retrieve the bounding rectangle for the given cell, NOT including its border.
             The rectange is relative to the table itself. Note that the border is drawn
             just outside the cell bounds.</p>
-                <p>See also @'WordProcessor::Table::GetCellEditorBounds'</p>
+                <p>See also @'WordProcessorTable::GetCellEditorBounds'</p>
 */
-Led_Rect Table::GetCellBounds (size_t row, size_t column) const
+Led_Rect WordProcessorTable::GetCellBounds (size_t row, size_t column) const
 {
     Require (GetCellFlags (row, column) == ePlainCell);
     return GetCell (row, column).GetCachedBoundsRect ();
 }
 
 /*
-@METHOD:        WordProcessor::Table::GetCellEditorBounds
+@METHOD:        WordProcessorTable::GetCellEditorBounds
 @ACCESS:        public
-@DESCRIPTION:   <p>Similar to @'WordProcessor::Table::GetCellBounds' but it takes into account the cell margin,
+@DESCRIPTION:   <p>Similar to @'WordProcessorTable::GetCellBounds' but it takes into account the cell margin,
             and insets the cell bounds to return just where the embedded WP bounds lie.</p>
 */
-Led_Rect Table::GetCellEditorBounds (size_t row, size_t column) const
+Led_Rect WordProcessorTable::GetCellEditorBounds (size_t row, size_t column) const
 {
     Require (GetCellFlags (row, column) == ePlainCell);
     Led_Rect   cellBounds     = GetCellBounds (row, column);
@@ -5982,11 +5985,11 @@ Led_Rect Table::GetCellEditorBounds (size_t row, size_t column) const
 }
 
 /*
-@METHOD:        WordProcessor::Table::GetClosestCell
+@METHOD:        WordProcessorTable::GetClosestCell
 @ACCESS:        public
 @DESCRIPTION:   <p>Point 'p' must be relative to the table bounds itself.</p>
 */
-void Table::GetClosestCell (const Led_Point& p, size_t* row, size_t* col) const
+void WordProcessorTable::GetClosestCell (const Led_Point& p, size_t* row, size_t* col) const
 {
     RequireNotNull (row);
     RequireNotNull (col);
@@ -6034,31 +6037,31 @@ void Table::GetClosestCell (const Led_Point& p, size_t* row, size_t* col) const
     *col = ci;
 }
 
-Led_Point Table::TableCoordinates2Window (const Led_Point& p) const
+Led_Point WordProcessorTable::TableCoordinates2Window (const Led_Point& p) const
 {
     Led_Require_CurrentOwningWP ();
     Led_Point tableWROrigin = fCurrentOwningWP->GetCharWindowLocation (GetStart ()).GetTopLeft ();
     return p + tableWROrigin;
 }
 
-Led_Rect Table::TableCoordinates2Window (const Led_Rect& r) const
+Led_Rect WordProcessorTable::TableCoordinates2Window (const Led_Rect& r) const
 {
     return Led_Rect (TableCoordinates2Window (r.GetOrigin ()), r.GetSize ());
 }
 
-Led_Point Table::WindowCoordinates2Table (const Led_Point& p) const
+Led_Point WordProcessorTable::WindowCoordinates2Table (const Led_Point& p) const
 {
     Led_Require_CurrentOwningWP ();
     Led_Point tableWROrigin = fCurrentOwningWP->GetCharWindowLocation (GetStart ()).GetTopLeft ();
     return p - tableWROrigin;
 }
 
-Led_Rect Table::WindowCoordinates2Table (const Led_Rect& r) const
+Led_Rect WordProcessorTable::WindowCoordinates2Table (const Led_Rect& r) const
 {
     return Led_Rect (WindowCoordinates2Table (r.GetOrigin ()), r.GetSize ());
 }
 
-bool Table::GetCaretShownSituation () const
+bool WordProcessorTable::GetCaretShownSituation () const
 {
     if (GetIntraCellMode ()) {
         size_t selStart = 0;
@@ -6070,10 +6073,10 @@ bool Table::GetCaretShownSituation () const
 }
 
 /*
-@METHOD:        Table::CalculateCaretRect
+@METHOD:        WordProcessorTable::CalculateCaretRect
 @DESCRIPTION:   <p></p>
 */
-Led_Rect Table::CalculateCaretRect () const
+Led_Rect WordProcessorTable::CalculateCaretRect () const
 {
     Led_Require_CurrentOwningWP ();
     if (GetIntraCellMode ()) {
@@ -6084,15 +6087,18 @@ Led_Rect Table::CalculateCaretRect () const
             size_t row = 0;
             size_t col = 0;
             (void)GetIntraCellMode (&row, &col);
-            TemporarilyAllocateCellWithTablet wp (*const_cast<Table*> (this), row, col);
+            TemporarilyAllocateCellWithTablet wp (*const_cast<WordProcessorTable*> (this), row, col);
             return wp->CalculateCaretRect ();
         }
     }
     return (Led_Rect (0, 0, 0, 0));
 }
 
-bool Table::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed)
+bool WordProcessorTable::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
+                                                 bool controlPressed, bool altKeyPressed)
 {
+    using InteractiveModeUpdater = WordProcessor::InteractiveModeUpdater;
+    using UndoableContextHelper  = WordProcessor::UndoableContextHelper;
     Led_Require_CurrentOwningWP ();
 
     size_t rowSelStart = 0;
@@ -6128,8 +6134,9 @@ bool Table::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool 
     return true; // handled
 }
 
-bool Table::DoSingleCharCursorEdit (TextInteractor::CursorMovementDirection direction, TextInteractor::CursorMovementUnit movementUnit,
-                                    TextInteractor::CursorMovementAction action, TextInteractor::UpdateMode updateMode, bool scrollToSelection)
+bool WordProcessorTable::DoSingleCharCursorEdit (TextInteractor::CursorMovementDirection direction,
+                                                 TextInteractor::CursorMovementUnit movementUnit, TextInteractor::CursorMovementAction action,
+                                                 TextInteractor::UpdateMode updateMode, bool scrollToSelection)
 {
     size_t row = 0;
     size_t col = 0;
@@ -6143,7 +6150,7 @@ bool Table::DoSingleCharCursorEdit (TextInteractor::CursorMovementDirection dire
     return false;
 }
 
-bool Table::OnUpdateCommand (TextInteractor::CommandUpdater* enabler)
+bool WordProcessorTable::OnUpdateCommand (TextInteractor::CommandUpdater* enabler)
 {
     Led_Require_CurrentOwningWP ();
     RequireNotNull (enabler);
@@ -6154,7 +6161,7 @@ bool Table::OnUpdateCommand (TextInteractor::CommandUpdater* enabler)
         if (fCurrentOwningWP->PassAlongCommandToIntraCellModeTableCell (enabler->GetCmdID ())) {
             TemporarilyAllocateCellWithTablet wp (*this, row, col);
             [[maybe_unused]] bool             result = wp->OnUpdateCommand (enabler);
-            if (enabler->GetCmdID () == kSelectedEmbeddingProperties_CmdID and not enabler->GetEnabled ()) {
+            if (enabler->GetCmdID () == WordProcessor::kSelectedEmbeddingProperties_CmdID and not enabler->GetEnabled ()) {
                 // SPR#1487: so default command handling will take care of it and we'll see the properties command
                 return false;
             }
@@ -6163,39 +6170,39 @@ bool Table::OnUpdateCommand (TextInteractor::CommandUpdater* enabler)
     }
 
     switch (enabler->GetCmdID ()) {
-        case kCut_CmdID: {
+        case WordProcessor::kCut_CmdID: {
             OnUpdateCutCommand (enabler);
             return true;
         }
-        case kInsertTableRowAbove_CmdID: {
+        case WordProcessor::kInsertTableRowAbove_CmdID: {
             OnUpdateInsertTableRowAboveCommand (enabler);
             return true;
         }
-        case kInsertTableRowBelow_CmdID: {
+        case WordProcessor::kInsertTableRowBelow_CmdID: {
             OnUpdateInsertTableRowBelowCommand (enabler);
             return true;
         }
-        case kInsertTableColBefore_CmdID: {
+        case WordProcessor::kInsertTableColBefore_CmdID: {
             OnUpdateInsertTableColBeforeCommand (enabler);
             return true;
         }
-        case kInsertTableColAfter_CmdID: {
+        case WordProcessor::kInsertTableColAfter_CmdID: {
             OnUpdateInsertTableColAfterCommand (enabler);
             return true;
         }
-        case kRemoveTableColumns_CmdID: {
+        case WordProcessor::kRemoveTableColumns_CmdID: {
             OnUpdateRemoveTableColumnsCommand (enabler);
             return true;
         }
-        case kRemoveTableRows_CmdID: {
+        case WordProcessor::kRemoveTableRows_CmdID: {
             OnUpdateRemoveTableRowsCommand (enabler);
             return true;
         }
-        case kSelectTableIntraCellAll_CmdID:
-        case kSelectTableCell_CmdID:
-        case kSelectTableRow_CmdID:
-        case kSelectTableColumn_CmdID:
-        case kSelectTable_CmdID: {
+        case WordProcessor::kSelectTableIntraCellAll_CmdID:
+        case WordProcessor::kSelectTableCell_CmdID:
+        case WordProcessor::kSelectTableRow_CmdID:
+        case WordProcessor::kSelectTableColumn_CmdID:
+        case WordProcessor::kSelectTable_CmdID: {
             OnUpdateSelectTablePartsCommand (enabler);
             return true;
         }
@@ -6208,7 +6215,7 @@ bool Table::OnUpdateCommand (TextInteractor::CommandUpdater* enabler)
     return false;
 }
 
-bool Table::OnPerformCommand (TextInteractor::CommandNumber commandNumber)
+bool WordProcessorTable::OnPerformCommand (TextInteractor::CommandNumber commandNumber)
 {
     Led_Require_CurrentOwningWP ();
 
@@ -6224,39 +6231,39 @@ bool Table::OnPerformCommand (TextInteractor::CommandNumber commandNumber)
     }
 
     switch (commandNumber) {
-        case kCut_CmdID: {
+        case WordProcessor::kCut_CmdID: {
             OnCutCommand ();
             return true;
         }
-        case kInsertTableRowAbove_CmdID: {
+        case WordProcessor::kInsertTableRowAbove_CmdID: {
             OnInsertTableRowAboveCommand ();
             return true;
         }
-        case kInsertTableRowBelow_CmdID: {
+        case WordProcessor::kInsertTableRowBelow_CmdID: {
             OnInsertTableRowBelowCommand ();
             return true;
         }
-        case kInsertTableColBefore_CmdID: {
+        case WordProcessor::kInsertTableColBefore_CmdID: {
             OnInsertTableColBeforeCommand ();
             return true;
         }
-        case kInsertTableColAfter_CmdID: {
+        case WordProcessor::kInsertTableColAfter_CmdID: {
             OnInsertTableColAfterCommand ();
             return true;
         }
-        case kRemoveTableColumns_CmdID: {
+        case WordProcessor::kRemoveTableColumns_CmdID: {
             OnRemoveTableColumnsCommand ();
             return true;
         }
-        case kRemoveTableRows_CmdID: {
+        case WordProcessor::kRemoveTableRows_CmdID: {
             OnRemoveTableRowsCommand ();
             return true;
         }
-        case kSelectTableIntraCellAll_CmdID:
-        case kSelectTableCell_CmdID:
-        case kSelectTableRow_CmdID:
-        case kSelectTableColumn_CmdID:
-        case kSelectTable_CmdID: {
+        case WordProcessor::kSelectTableIntraCellAll_CmdID:
+        case WordProcessor::kSelectTableCell_CmdID:
+        case WordProcessor::kSelectTableRow_CmdID:
+        case WordProcessor::kSelectTableColumn_CmdID:
+        case WordProcessor::kSelectTable_CmdID: {
             OnPerformTablePartsCommand (commandNumber);
             return true;
         }
@@ -6269,13 +6276,13 @@ bool Table::OnPerformCommand (TextInteractor::CommandNumber commandNumber)
     return false;
 }
 
-void Table::BreakInGroupedCommands ()
+void WordProcessorTable::BreakInGroupedCommands ()
 {
     Led_Require_CurrentOwningWP ();
     fCurrentOwningWP->BreakInGroupedCommands ();
 }
 
-bool Table::OnUpdateCommand_ApplyToEachSelectedCell (TextInteractor::CommandUpdater* enabler)
+bool WordProcessorTable::OnUpdateCommand_ApplyToEachSelectedCell (TextInteractor::CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
     Led_Require_CurrentOwningWP ();
@@ -6297,7 +6304,7 @@ bool Table::OnUpdateCommand_ApplyToEachSelectedCell (TextInteractor::CommandUpda
     return result;
 }
 
-bool Table::OnPerformCommand_ApplyToEachSelectedCell (TextInteractor::CommandNumber commandNumber, bool captureChangesForUndo)
+bool WordProcessorTable::OnPerformCommand_ApplyToEachSelectedCell (TextInteractor::CommandNumber commandNumber, bool captureChangesForUndo)
 {
     Led_Require_CurrentOwningWP ();
     if (captureChangesForUndo) {
@@ -6325,7 +6332,7 @@ bool Table::OnPerformCommand_ApplyToEachSelectedCell (TextInteractor::CommandNum
     return result;
 }
 
-void Table::OnUpdateCutCommand (TextInteractor::CommandUpdater* enabler)
+void WordProcessorTable::OnUpdateCutCommand (TextInteractor::CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
     Led_Require_CurrentOwningWP ();
@@ -6337,7 +6344,7 @@ void Table::OnUpdateCutCommand (TextInteractor::CommandUpdater* enabler)
     enabler->SetEnabled (rowSelStart != rowSelEnd and colSelStart != colSelEnd);
 }
 
-void Table::OnCutCommand ()
+void WordProcessorTable::OnCutCommand ()
 {
     Led_Require_CurrentOwningWP ();
     AllowUpdateInfoPropagationContext AUIPC (*this);
@@ -6351,14 +6358,14 @@ void Table::OnCutCommand ()
     undoContext.CommandComplete ();
 }
 
-void Table::OnUpdateInsertTableRowAboveCommand (TextInteractor::CommandUpdater* enabler)
+void WordProcessorTable::OnUpdateInsertTableRowAboveCommand (TextInteractor::CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
     Led_Require_CurrentOwningWP ();
     enabler->SetEnabled (true);
 }
 
-void Table::OnInsertTableRowAboveCommand ()
+void WordProcessorTable::OnInsertTableRowAboveCommand ()
 {
     Led_Require_CurrentOwningWP ();
     AllowUpdateInfoPropagationContext AUIPC (*this);
@@ -6377,14 +6384,14 @@ void Table::OnInsertTableRowAboveCommand ()
     BreakInGroupedCommands ();
 }
 
-void Table::OnUpdateInsertTableRowBelowCommand (TextInteractor::CommandUpdater* enabler)
+void WordProcessorTable::OnUpdateInsertTableRowBelowCommand (TextInteractor::CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
     Led_Require_CurrentOwningWP ();
     enabler->SetEnabled (true);
 }
 
-void Table::OnInsertTableRowBelowCommand ()
+void WordProcessorTable::OnInsertTableRowBelowCommand ()
 {
     Led_Require_CurrentOwningWP ();
     AllowUpdateInfoPropagationContext AUIPC (*this);
@@ -6402,14 +6409,14 @@ void Table::OnInsertTableRowBelowCommand ()
     BreakInGroupedCommands ();
 }
 
-void Table::OnUpdateInsertTableColBeforeCommand (TextInteractor::CommandUpdater* enabler)
+void WordProcessorTable::OnUpdateInsertTableColBeforeCommand (TextInteractor::CommandUpdater* enabler)
 {
     Led_Require_CurrentOwningWP ();
     RequireNotNull (enabler);
     enabler->SetEnabled (true);
 }
 
-void Table::OnInsertTableColBeforeCommand ()
+void WordProcessorTable::OnInsertTableColBeforeCommand ()
 {
     Led_Require_CurrentOwningWP ();
     AllowUpdateInfoPropagationContext AUIPC (*this);
@@ -6426,14 +6433,14 @@ void Table::OnInsertTableColBeforeCommand ()
     BreakInGroupedCommands ();
 }
 
-void Table::OnUpdateInsertTableColAfterCommand (TextInteractor::CommandUpdater* enabler)
+void WordProcessorTable::OnUpdateInsertTableColAfterCommand (TextInteractor::CommandUpdater* enabler)
 {
     Led_Require_CurrentOwningWP ();
     RequireNotNull (enabler);
     enabler->SetEnabled (true);
 }
 
-void Table::OnInsertTableColAfterCommand ()
+void WordProcessorTable::OnInsertTableColAfterCommand ()
 {
     Led_Require_CurrentOwningWP ();
     AllowUpdateInfoPropagationContext AUIPC (*this);
@@ -6450,7 +6457,7 @@ void Table::OnInsertTableColAfterCommand ()
     BreakInGroupedCommands ();
 }
 
-void Table::OnUpdateRemoveTableRowsCommand (TextInteractor::CommandUpdater* pCmdUI)
+void WordProcessorTable::OnUpdateRemoveTableRowsCommand (TextInteractor::CommandUpdater* pCmdUI)
 {
     Led_Require_CurrentOwningWP ();
     RequireNotNull (pCmdUI);
@@ -6462,7 +6469,7 @@ void Table::OnUpdateRemoveTableRowsCommand (TextInteractor::CommandUpdater* pCmd
     pCmdUI->SetEnabled (colSelStart == 0 and colSelEnd == GetColumnCount (rowSelStart, rowSelEnd));
 }
 
-void Table::OnRemoveTableRowsCommand ()
+void WordProcessorTable::OnRemoveTableRowsCommand ()
 {
     Led_Require_CurrentOwningWP ();
     AllowUpdateInfoPropagationContext AUIPC (*this);
@@ -6493,7 +6500,7 @@ void Table::OnRemoveTableRowsCommand ()
     context.CommandComplete ();
 }
 
-void Table::OnUpdateRemoveTableColumnsCommand (TextInteractor::CommandUpdater* pCmdUI)
+void WordProcessorTable::OnUpdateRemoveTableColumnsCommand (TextInteractor::CommandUpdater* pCmdUI)
 {
     Led_Require_CurrentOwningWP ();
     RequireNotNull (pCmdUI);
@@ -6505,7 +6512,7 @@ void Table::OnUpdateRemoveTableColumnsCommand (TextInteractor::CommandUpdater* p
     pCmdUI->SetEnabled (rowSelStart == 0 and rowSelEnd == GetRowCount ());
 }
 
-void Table::OnRemoveTableColumnsCommand ()
+void WordProcessorTable::OnRemoveTableColumnsCommand ()
 {
     Led_Require_CurrentOwningWP ();
     AllowUpdateInfoPropagationContext AUIPC (*this);
@@ -6537,16 +6544,16 @@ void Table::OnRemoveTableColumnsCommand ()
     BreakInGroupedCommands ();
 }
 
-void Table::OnUpdateSelectTablePartsCommand (TextInteractor::CommandUpdater* enabler)
+void WordProcessorTable::OnUpdateSelectTablePartsCommand (TextInteractor::CommandUpdater* enabler)
 {
     switch (enabler->GetCmdID ()) {
-        case kSelectTableIntraCellAll_CmdID: {
+        case WordProcessor::kSelectTableIntraCellAll_CmdID: {
             enabler->SetEnabled (GetIntraCellMode ());
         } break;
-        case kSelectTableCell_CmdID: {
+        case WordProcessor::kSelectTableCell_CmdID: {
             enabler->SetEnabled (GetIntraCellMode ());
         } break;
-        case kSelectTableRow_CmdID: {
+        case WordProcessor::kSelectTableRow_CmdID: {
             size_t rowSelStart = 0;
             size_t rowSelEnd   = 0;
             size_t colSelStart = 0;
@@ -6555,7 +6562,7 @@ void Table::OnUpdateSelectTablePartsCommand (TextInteractor::CommandUpdater* ena
             size_t maxColSelEnd = GetColumnCount (rowSelStart, rowSelEnd);
             enabler->SetEnabled (colSelStart != 0 or colSelEnd != maxColSelEnd);
         } break;
-        case kSelectTableColumn_CmdID: {
+        case WordProcessor::kSelectTableColumn_CmdID: {
             size_t rowSelStart = 0;
             size_t rowSelEnd   = 0;
             size_t colSelStart = 0;
@@ -6563,7 +6570,7 @@ void Table::OnUpdateSelectTablePartsCommand (TextInteractor::CommandUpdater* ena
             GetCellSelection (&rowSelStart, &rowSelEnd, &colSelStart, &colSelEnd);
             enabler->SetEnabled (rowSelStart != 0 or rowSelEnd != GetRowCount ());
         } break;
-        case kSelectTable_CmdID: {
+        case WordProcessor::kSelectTable_CmdID: {
             size_t rowSelStart = 0;
             size_t rowSelEnd   = 0;
             size_t colSelStart = 0;
@@ -6574,10 +6581,10 @@ void Table::OnUpdateSelectTablePartsCommand (TextInteractor::CommandUpdater* ena
     }
 }
 
-void Table::OnPerformTablePartsCommand (TextInteractor::CommandNumber commandNumber)
+void WordProcessorTable::OnPerformTablePartsCommand (TextInteractor::CommandNumber commandNumber)
 {
     switch (commandNumber) {
-        case kSelectTableIntraCellAll_CmdID: {
+        case WordProcessor::kSelectTableIntraCellAll_CmdID: {
             size_t row = 0;
             size_t col = 0;
             if (GetIntraCellMode (&row, &col)) {
@@ -6588,10 +6595,10 @@ void Table::OnPerformTablePartsCommand (TextInteractor::CommandNumber commandNum
                 Led_BeepNotify ();
             }
         } break;
-        case kSelectTableCell_CmdID: {
+        case WordProcessor::kSelectTableCell_CmdID: {
             UnSetIntraCellMode ();
         } break;
-        case kSelectTableRow_CmdID: {
+        case WordProcessor::kSelectTableRow_CmdID: {
             size_t rowSelStart = 0;
             size_t rowSelEnd   = 0;
             size_t colSelStart = 0;
@@ -6601,7 +6608,7 @@ void Table::OnPerformTablePartsCommand (TextInteractor::CommandNumber commandNum
             colSelEnd   = GetColumnCount (rowSelStart, rowSelEnd);
             SetCellSelection (rowSelStart, rowSelEnd, colSelStart, colSelEnd);
         } break;
-        case kSelectTableColumn_CmdID: {
+        case WordProcessor::kSelectTableColumn_CmdID: {
             size_t rowSelStart = 0;
             size_t rowSelEnd   = 0;
             size_t colSelStart = 0;
@@ -6611,13 +6618,13 @@ void Table::OnPerformTablePartsCommand (TextInteractor::CommandNumber commandNum
             rowSelEnd   = GetRowCount ();
             SetCellSelection (rowSelStart, rowSelEnd, colSelStart, colSelEnd);
         } break;
-        case kSelectTable_CmdID: {
+        case WordProcessor::kSelectTable_CmdID: {
             SetCellSelection (0, GetRowCount (), 0, GetColumnCount ());
         } break;
     }
 }
 
-void Table::AssureCurSelFontCacheValid (IncrementalFontSpecification* curSelFontSpec)
+void WordProcessorTable::AssureCurSelFontCacheValid (IncrementalFontSpecification* curSelFontSpec)
 {
     RequireNotNull (curSelFontSpec);
     {
@@ -6652,10 +6659,10 @@ void Table::AssureCurSelFontCacheValid (IncrementalFontSpecification* curSelFont
 }
 
 /*
-@METHOD:        WordProcessor::Table::InteractiveSetFont
+@METHOD:        WordProcessorTable::InteractiveSetFont
 @DESCRIPTION:   <p>Apply the given font specification to the selectable table cells.</p>
 */
-void Table::InteractiveSetFont (const IncrementalFontSpecification& defaultFont)
+void WordProcessorTable::InteractiveSetFont (const IncrementalFontSpecification& defaultFont)
 {
     Led_Require_CurrentOwningWP ();
 
@@ -6691,12 +6698,12 @@ void Table::InteractiveSetFont (const IncrementalFontSpecification& defaultFont)
     undoContext.CommandComplete ();
 }
 
-void Table::Write ([[maybe_unused]] SinkStream& sink)
+void WordProcessorTable::Write ([[maybe_unused]] SinkStream& sink)
 {
     //  sink.write (fData, fLength);
 }
 
-void Table::ExternalizeFlavors ([[maybe_unused]] WriterFlavorPackage& flavorPackage)
+void WordProcessorTable::ExternalizeFlavors ([[maybe_unused]] WriterFlavorPackage& flavorPackage)
 {
     // save done another way - AS RTF - not sure why this is never called - but
     // probably lose the whole SimpleEmbedding guy for tables - and just handle directly what
@@ -6704,7 +6711,7 @@ void Table::ExternalizeFlavors ([[maybe_unused]] WriterFlavorPackage& flavorPack
     //  flavorPackage.AddFlavorData (fFormat, fLength, fData);
 }
 
-const char* Table::GetTag () const
+const char* WordProcessorTable::GetTag () const
 {
     //tmphack
     return "table";
@@ -6712,13 +6719,13 @@ const char* Table::GetTag () const
 }
 
 /*
-@METHOD:        WordProcessor::Table::ProcessSimpleClick
+@METHOD:        WordProcessorTable::ProcessSimpleClick
 @DESCRIPTION:   <p></p>
 */
-bool Table::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection)
+bool WordProcessorTable::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection)
 {
 #if 0
-    DbgTrace ("ENTERING Table::ProcessSimpleClick (this= 0x%x, clickedAt=(%d,%d), clickCount=%d, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
+    DbgTrace ("ENTERING WordProcessorTable::ProcessSimpleClick (this= 0x%x, clickedAt=(%d,%d), clickCount=%d, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
               this, clickedAt.v, clickedAt.h, clickCount, fRowSelStart, fRowSelEnd, fColSelStart, fColSelEnd, fIntraCellMode, fIntraSelStart, fIntraSelStart
              );
 #endif
@@ -6790,17 +6797,17 @@ bool Table::ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool e
         }
     }
 #if 0
-    DbgTrace ("EXITING Table::ProcessSimpleClick (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
+    DbgTrace ("EXITING WordProcessorTable::ProcessSimpleClick (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
               this, fRowSelStart, fRowSelEnd, fColSelStart, fColSelEnd, fIntraCellMode, fIntraSelStart, fIntraSelStart
              );
 #endif
     return true;
 }
 
-void Table::WhileSimpleMouseTracking (Led_Point newMousePos)
+void WordProcessorTable::WhileSimpleMouseTracking (Led_Point newMousePos)
 {
 #if 0
-    DbgTrace ("ENTERING Table::WhileSimpleMouseTracking (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
+    DbgTrace ("ENTERING WordProcessorTable::WhileSimpleMouseTracking (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
               this, fRowSelStart, fRowSelEnd, fColSelStart, fColSelEnd, fIntraCellMode, fIntraSelStart, fIntraSelStart
              );
 #endif
@@ -6852,33 +6859,33 @@ void Table::WhileSimpleMouseTracking (Led_Point newMousePos)
         }
     }
 #if 0
-    DbgTrace ("EXITING Table::WhileSimpleMouseTracking (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
+    DbgTrace ("EXITING WordProcessorTable::WhileSimpleMouseTracking (this= 0x%x, rowSelStart=%d, rowSelEnd=%d, colSelStart=%d, colSelEnd=%d, intraCellMode=%d intraCellStart=%d, intraCellEnd=%d)\n",
               this, fRowSelStart, fRowSelEnd, fColSelStart, fColSelEnd, fIntraCellMode, fIntraSelStart, fIntraSelStart
              );
 #endif
 }
 
-Color Table::GetTableBorderColor () const
+Color WordProcessorTable::GetTableBorderColor () const
 {
     return fBorderColor;
 }
 
-void Table::SetTableBorderColor (Color c)
+void WordProcessorTable::SetTableBorderColor (Color c)
 {
     fBorderColor = c;
 }
 
-TWIPS Table::GetTableBorderWidth () const
+TWIPS WordProcessorTable::GetTableBorderWidth () const
 {
     return fBorderWidth;
 }
 
-void Table::SetTableBorderWidth (TWIPS w)
+void WordProcessorTable::SetTableBorderWidth (TWIPS w)
 {
     fBorderWidth = w;
 }
 
-TWIPS Table::GetColumnWidth (size_t row, size_t column) const
+TWIPS WordProcessorTable::GetColumnWidth (size_t row, size_t column) const
 {
     if (GetCellFlags (row, column) != ePlainCell) {
         return TWIPS{0}; // NOT REALLY SURE WHAT THIS SHOULD DO!!!
@@ -6887,29 +6894,29 @@ TWIPS Table::GetColumnWidth (size_t row, size_t column) const
     return GetCell (row, column).GetCellXWidth ();
 }
 
-void Table::SetColumnWidth (size_t row, size_t column, TWIPS colWidth)
+void WordProcessorTable::SetColumnWidth (size_t row, size_t column, TWIPS colWidth)
 {
     GetCell (row, column).SetCellXWidth (colWidth);
     InvalidateLayout ();
 }
 
-Color Table::GetCellColor (size_t row, size_t column) const
+Color WordProcessorTable::GetCellColor (size_t row, size_t column) const
 {
     return GetCell (row, column).GetBackColor ();
 }
 
-void Table::SetCellColor (size_t row, size_t column, const Color& c)
+void WordProcessorTable::SetCellColor (size_t row, size_t column, const Color& c)
 {
     Cell cell = GetCell (row, column);
     cell.SetBackColor (c);
 }
 
 /*
-@METHOD:        WordProcessor::Table::GetRealCell
+@METHOD:        WordProcessorTable::GetRealCell
 @DESCRIPTION:   <p>Take the given row/column and modify them in place to assure they refer to the appropriate REAL cell.
             If they refer to a merge-cell, refer back to the owning REAL cell. </p>
 */
-void Table::GetRealCell (size_t* row, size_t* column) const
+void WordProcessorTable::GetRealCell (size_t* row, size_t* column) const
 {
     RequireNotNull (row);
     RequireNotNull (column);
@@ -6947,13 +6954,13 @@ void Table::GetRealCell (size_t* row, size_t* column) const
     }
 }
 
-const Table::Cell& Table::GetRealCell (size_t row, size_t column) const
+const WordProcessorTable::Cell& WordProcessorTable::GetRealCell (size_t row, size_t column) const
 {
     GetRealCell (&row, &column);
     return GetCell (row, column);
 }
 
-bool Table::CanMergeCells (size_t fromRow, size_t fromCol, [[maybe_unused]] size_t toRow, [[maybe_unused]] size_t toCol)
+bool WordProcessorTable::CanMergeCells (size_t fromRow, size_t fromCol, [[maybe_unused]] size_t toRow, [[maybe_unused]] size_t toCol)
 {
     Require (fromRow <= toRow);
     Require (fromCol <= toCol);
@@ -6965,7 +6972,7 @@ bool Table::CanMergeCells (size_t fromRow, size_t fromCol, [[maybe_unused]] size
 }
 
 /*
-@METHOD:        WordProcessor::Table::MergeCells
+@METHOD:        WordProcessorTable::MergeCells
 @ACCESS:        public
 @DESCRIPTION:   <p>Merge all the cells in the given range. The row positions bound a range of cells, so for example,
             if <code>toCol-fromCol==2</code> then 2 columns are being merged, and if <code>toRow-fromRow==1</code>
@@ -6978,7 +6985,7 @@ bool Table::CanMergeCells (size_t fromRow, size_t fromCol, [[maybe_unused]] size
             probably be more fully supported.
             </p>
 */
-void Table::MergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol)
+void WordProcessorTable::MergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol)
 {
     Require (fromRow <= toRow);
     Require (fromCol <= toCol);
@@ -7001,7 +7008,7 @@ void Table::MergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toC
     }
 }
 
-void Table::UnMergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol)
+void WordProcessorTable::UnMergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol)
 {
     Require (fromRow <= toRow);
     Require (fromCol <= toCol);
@@ -7023,10 +7030,10 @@ void Table::UnMergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t t
 }
 
 /*
-@METHOD:        WordProcessor::Table::SetCellSelection
-@DESCRIPTION:   <p>See @'WordProcessor::Table::GetCellSelection'.</p>
+@METHOD:        WordProcessorTable::SetCellSelection
+@DESCRIPTION:   <p>See @'WordProcessorTable::GetCellSelection'.</p>
 */
-void Table::SetCellSelection (size_t rowSelStart, size_t rowSelEnd, size_t colSelStart, size_t colSelEnd)
+void WordProcessorTable::SetCellSelection (size_t rowSelStart, size_t rowSelEnd, size_t colSelStart, size_t colSelEnd)
 {
     Ensure (rowSelStart <= rowSelEnd);
     Ensure (rowSelEnd <= GetRowCount ());
@@ -7046,13 +7053,13 @@ void Table::SetCellSelection (size_t rowSelStart, size_t rowSelEnd, size_t colSe
         }
     }
 #if 0
-    DbgTrace ("Table::SetCellSelection (table=0x%x, tickCount=%f, rs=%d, re=%d, cs=%d, ce=%d, changed=%d)\n",
+    DbgTrace ("WordProcessorTable::SetCellSelection (table=0x%x, tickCount=%f, rs=%d, re=%d, cs=%d, ce=%d, changed=%d)\n",
               this, Time::GetTickCount (), rowSelStart, rowSelEnd, colSelStart, colSelEnd, changed
              );
 #endif
 }
 
-void Table::SetIntraCellMode ()
+void WordProcessorTable::SetIntraCellMode ()
 {
     Require (fRowSelEnd - fRowSelStart == 1);
     Require (fColSelEnd - fColSelStart == 1);
@@ -7068,7 +7075,7 @@ void Table::SetIntraCellMode ()
     }
 }
 
-void Table::SetIntraCellMode (size_t row, size_t col)
+void WordProcessorTable::SetIntraCellMode (size_t row, size_t col)
 {
     if (not fIntraCellMode) {
         SetCellSelection (row, row + 1, col, col + 1);
@@ -7076,7 +7083,7 @@ void Table::SetIntraCellMode (size_t row, size_t col)
     }
 }
 
-void Table::UnSetIntraCellMode ()
+void WordProcessorTable::UnSetIntraCellMode ()
 {
     if (fIntraCellMode) {
         fIntraCellMode = false;
@@ -7086,11 +7093,11 @@ void Table::UnSetIntraCellMode ()
     }
 }
 
-void Table::SetIntraCellSelection (size_t selStart, size_t selEnd)
+void WordProcessorTable::SetIntraCellSelection (size_t selStart, size_t selEnd)
 {
     if (fIntraSelStart != selStart or fIntraSelEnd != selEnd) {
 #if 0
-        DbgTrace ("Table::SetIntraCellSelection (selStart = %d, selEnd = %d)- oldSel=(%d,%d), tickcount=%f\n", selStart, selEnd, fIntraSelStart, fIntraSelEnd, Time::GetTickCount ());
+        DbgTrace ("WordProcessorTable::SetIntraCellSelection (selStart = %d, selEnd = %d)- oldSel=(%d,%d), tickcount=%f\n", selStart, selEnd, fIntraSelStart, fIntraSelEnd, Time::GetTickCount ());
 #endif
         if (fCurrentOwningWP != nullptr) {
             fCurrentOwningWP->fCachedCurSelFontSpecValid = false;
@@ -7101,15 +7108,17 @@ void Table::SetIntraCellSelection (size_t selStart, size_t selEnd)
 }
 
 /*
-@METHOD:        WordProcessor::Table::ConstructEmbeddedTableWordProcessor
+@METHOD:        WordProcessorTable::ConstructEmbeddedTableWordProcessor
 @ACCESS:        protected
-@DESCRIPTION:   <p>Called internally by the @'WordProcessor::Table' code to instantiate mini embedded
+@DESCRIPTION:   <p>Called internally by the @'WordProcessorTable' code to instantiate mini embedded
             word processor objects (@'EmbeddedTableWordProcessor') to be in each cell. Objects created
             with this method should be released with a call to
-            @'WordProcessor::Table::ReleaseEmbeddedTableWordProcessor'.</p>
+            @'WordProcessorTable::ReleaseEmbeddedTableWordProcessor'.</p>
 */
-Table::EmbeddedTableWordProcessor* Table::ConstructEmbeddedTableWordProcessor (WordProcessor& forWordProcessor, size_t forRow, size_t forColumn,
-                                                                               const Led_Rect& cellWindowRect, bool captureChangesForUndo)
+WordProcessorTable::EmbeddedTableWordProcessor* WordProcessorTable::ConstructEmbeddedTableWordProcessor (WordProcessor& forWordProcessor,
+                                                                                                         size_t forRow, size_t forColumn,
+                                                                                                         const Led_Rect& cellWindowRect,
+                                                                                                         bool captureChangesForUndo)
 {
     size_t cellModeRow            = 0;
     size_t cellModeCol            = 0;
@@ -7126,7 +7135,7 @@ Table::EmbeddedTableWordProcessor* Table::ConstructEmbeddedTableWordProcessor (W
         e->SetHidableTextDatabase (hidableTextDatabase);
         e->SpecifyTextStore (ts);
         e->SetWindowRect (cellWindowRect);
-        e->SetDefaultTextColor (eDefaultBackgroundColor, GetCellColor (forRow, forColumn));
+        e->SetDefaultTextColor (WordProcessor::eDefaultBackgroundColor, GetCellColor (forRow, forColumn));
         if (captureChangesForUndo) {
             e->SetCommandHandler (forWordProcessor.GetCommandHandler ());
         }
@@ -7135,7 +7144,7 @@ Table::EmbeddedTableWordProcessor* Table::ConstructEmbeddedTableWordProcessor (W
             using TemporarilyUseTablet = EmbeddedTableWordProcessor::TemporarilyUseTablet;
 
             AssertNotNull (fCurrentOwningWP);
-            Tablet_Acquirer      tablet (fCurrentOwningWP);
+            WordProcessor::Tablet_Acquirer tablet (fCurrentOwningWP);
             TemporarilyUseTablet tmpUseTablet (*e, tablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall);
 
             e->SetSelectionShown (true, TextInteractor::eNoUpdate); // set TRUE so stuff that changes the selection does the proper invalidation
@@ -7150,14 +7159,14 @@ Table::EmbeddedTableWordProcessor* Table::ConstructEmbeddedTableWordProcessor (W
 }
 
 /*
-@METHOD:        WordProcessor::Table::ReleaseEmbeddedTableWordProcessor
+@METHOD:        WordProcessorTable::ReleaseEmbeddedTableWordProcessor
 @ACCESS:        protected
-@DESCRIPTION:   <p>Release word @'WordProcessor::Table::EmbeddedTableWordProcessor' objects
-            allocated with @'WordProcessor::Table::ConstructEmbeddedTableWordProcessor'.
+@DESCRIPTION:   <p>Release word @'WordProcessorTable::EmbeddedTableWordProcessor' objects
+            allocated with @'WordProcessorTable::ConstructEmbeddedTableWordProcessor'.
             This may not neccesarily DELETE them as they could
             be cached (for example - if they are the currently active cell, and are blinking the caret etc...</p>
 */
-void Table::ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e)
+void WordProcessorTable::ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e)
 {
     RequireNotNull (e);
     e->SaveMiscActiveFocusInfo ();
@@ -7167,14 +7176,15 @@ void Table::ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e)
 }
 
 /*
-@METHOD:        WordProcessor::Table::GetCellWordProcessorDatabases
+@METHOD:        WordProcessorTable::GetCellWordProcessorDatabases
 @ACCESS:        public
 @DESCRIPTION:   <p>Retrieve  the various databases (textstore, style etc) associated
             with the given cell. Arguments CAN be null. Only non-null pointer values
             are filled in.</p>
 */
-void Table::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
-                                           shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase, shared_ptr<HidableTextMarkerOwner>* hidableTextDatabase)
+void WordProcessorTable::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
+                                                        shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
+                                                        shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase)
 {
     Require (row < GetRowCount ());
     Require (column < GetColumnCount (row));
@@ -7194,11 +7204,11 @@ void Table::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore*
 }
 
 /*
-@METHOD:        WordProcessor::Table::PerformLayout
+@METHOD:        WordProcessorTable::PerformLayout
 @ACCESS:        protected
 @DESCRIPTION:   <p></p>
 */
-void Table::PerformLayout ()
+void WordProcessorTable::PerformLayout ()
 {
     Require (fNeedLayout != eDone);
 
@@ -7318,13 +7328,13 @@ void Table::PerformLayout ()
     }
 }
 
-size_t Table::GetColumnCount (size_t row) const
+size_t WordProcessorTable::GetColumnCount (size_t row) const
 {
     Require (row < GetRowCount ());
     return fRows[row].fCells.size ();
 }
 
-size_t Table::GetColumnCount (size_t rowStart, size_t rowEnd) const
+size_t WordProcessorTable::GetColumnCount (size_t rowStart, size_t rowEnd) const
 {
     Require (rowStart <= GetRowCount ());
     Require (rowEnd <= GetRowCount ());
@@ -7335,7 +7345,7 @@ size_t Table::GetColumnCount (size_t rowStart, size_t rowEnd) const
     return colCount;
 }
 
-void Table::SetColumnCount (size_t row, size_t columns)
+void WordProcessorTable::SetColumnCount (size_t row, size_t columns)
 {
     Require (row < GetRowCount ());
     size_t curColCount = fRows[row].fCells.size ();
@@ -7354,11 +7364,11 @@ void Table::SetColumnCount (size_t row, size_t columns)
 }
 
 /*
-@METHOD:        WordProcessor::Table::GetDimensions
+@METHOD:        WordProcessorTable::GetDimensions
 @DESCRIPTION:   <p>Return the number of rows and columns in the given table. Pointer parameters CAN be null,
             and that value is just not returned.</p>
 */
-void Table::GetDimensions (size_t* rows, size_t* columns) const
+void WordProcessorTable::GetDimensions (size_t* rows, size_t* columns) const
 {
     if (rows != nullptr) {
         *rows = fRows.size ();
@@ -7373,13 +7383,13 @@ void Table::GetDimensions (size_t* rows, size_t* columns) const
 }
 
 /*
-@METHOD:        WordProcessor::Table::SetDimensions
+@METHOD:        WordProcessorTable::SetDimensions
 @DESCRIPTION:   <p>Specifies the number of rows and columns desired. If rows or columns need to be created, they will be
             appended. If rows/columns need to be destroyed - they will be desroyed from the end (right/bottom). If you need
-            more specific control, then call @'WordProcessor::Table::InsertRow', @'WordProcessor::Table::DeleteRow',
-            @'WordProcessor::Table::InsertColumn', or @'WordProcessor::Table::DeleteColumn' directly.</p>
+            more specific control, then call @'WordProcessorTable::InsertRow', @'WordProcessorTable::DeleteRow',
+            @'WordProcessorTable::InsertColumn', or @'WordProcessorTable::DeleteColumn' directly.</p>
 */
-void Table::SetDimensions (size_t rows, size_t columns)
+void WordProcessorTable::SetDimensions (size_t rows, size_t columns)
 {
     size_t oldRows    = 0;
     size_t oldColumns = 0;
@@ -7412,12 +7422,12 @@ void Table::SetDimensions (size_t rows, size_t columns)
 }
 
 /*
-@METHOD:        WordProcessor::Table::SetDimensionsAtLeast
-@DESCRIPTION:   <p>Calls @'WordProcessor::Table::GetDimensions' and
-            @'WordProcessor::Table::SetDimensions' to assure
+@METHOD:        WordProcessorTable::SetDimensionsAtLeast
+@DESCRIPTION:   <p>Calls @'WordProcessorTable::GetDimensions' and
+            @'WordProcessorTable::SetDimensions' to assure
             there are <em>at least</em> the given number of rows and columns.</p>
 */
-void Table::SetDimensionsAtLeast (size_t rows, size_t columns)
+void WordProcessorTable::SetDimensionsAtLeast (size_t rows, size_t columns)
 {
     size_t r = 0;
     size_t c = 0;
@@ -7428,13 +7438,13 @@ void Table::SetDimensionsAtLeast (size_t rows, size_t columns)
 }
 
 /*
-@METHOD:        WordProcessor::Table::InsertRow
+@METHOD:        WordProcessorTable::InsertRow
 @DESCRIPTION:   <p>Insert a new blank row at the given 'at' offset. Must be
             between 0 and the current number of rows (inclusive). Get the
             number of columns and the size of those columns from the adjacent
             row, but copying a maximum of 'maxRowCopyCount' columns.</p>
 */
-void Table::InsertRow (size_t at, size_t maxRowCopyCount)
+void WordProcessorTable::InsertRow (size_t at, size_t maxRowCopyCount)
 {
     Require (at <= GetRowCount ());
     Require (maxRowCopyCount >= 1);
@@ -7466,10 +7476,10 @@ void Table::InsertRow (size_t at, size_t maxRowCopyCount)
 }
 
 /*
-@METHOD:        WordProcessor::Table::DeleteRow
+@METHOD:        WordProcessorTable::DeleteRow
 @DESCRIPTION:   <p>Delete the given row at the given 'at' offset.</p>
 */
-void Table::DeleteRow (size_t at)
+void WordProcessorTable::DeleteRow (size_t at)
 {
     Require (at < GetRowCount ());
 
@@ -7483,11 +7493,11 @@ void Table::DeleteRow (size_t at)
 }
 
 /*
-@METHOD:        WordProcessor::Table::InsertColumn
+@METHOD:        WordProcessorTable::InsertColumn
 @DESCRIPTION:   <p>Insert a new blank column at the given 'at' offset. Must be between
             0 and the current number of columns (inclusive).</p>
 */
-void Table::InsertColumn (size_t at)
+void WordProcessorTable::InsertColumn (size_t at)
 {
     Require (at <= GetColumnCount ());
 
@@ -7525,10 +7535,10 @@ void Table::InsertColumn (size_t at)
 }
 
 /*
-@METHOD:        WordProcessor::Table::DeleteColumn
+@METHOD:        WordProcessorTable::DeleteColumn
 @DESCRIPTION:   <p>Delete the given column at the given 'at' offset.</p>
 */
-void Table::DeleteColumn (size_t at)
+void WordProcessorTable::DeleteColumn (size_t at)
 {
     Require (at < GetColumnCount ());
     // BUT - allow for the fact that some rows may have fewer columns than GetColumnCount ()...
@@ -7549,12 +7559,12 @@ void Table::DeleteColumn (size_t at)
 }
 
 /*
-@METHOD:        WordProcessor::Table::ReValidateSelection
+@METHOD:        WordProcessorTable::ReValidateSelection
 @ACCESS:        protected
 @DESCRIPTION:   <p>Called internally when something happens that could invalidate the selection. Assure its
             still valid.</p>
 */
-void Table::ReValidateSelection ()
+void WordProcessorTable::ReValidateSelection ()
 {
     size_t rowCount = GetRowCount ();
 
@@ -7583,25 +7593,25 @@ void Table::ReValidateSelection ()
 
 /*
  ********************************************************************************
- ************************** WordProcessor::Table::Cell **************************
+ ************************** WordProcessorTable::Cell **************************
  ********************************************************************************
  */
-WordProcessor::Table::Cell::Cell (Table& forTable, CellMergeFlags mergeFlags)
+WordProcessorTable::Cell::Cell (WordProcessorTable& forTable, CellMergeFlags mergeFlags)
     : fCellRep (mergeFlags == ePlainCell ? (new CellRep (forTable)) : nullptr)
     , fCellMergeFlags (mergeFlags)
 {
 }
 
 /*
-@METHOD:        WordProcessor::Table::Cell::GetCellWordProcessorDatabases
+@METHOD:        WordProcessorTable::Cell::GetCellWordProcessorDatabases
 @ACCESS:        public
 @DESCRIPTION:   <p>Retrieve  the various databases (textstore, style etc) associated with the given cell. Arguments
             CAN be null. Only non-null pointer valeus
             are filled in.</p>
 */
-void WordProcessor::Table::Cell::GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
-                                                                shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
-                                                                shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase)
+void WordProcessorTable::Cell::GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
+                                                              shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
+                                                              shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase)
 {
     Require (fCellMergeFlags == ePlainCell);
     if (ts != nullptr) {
@@ -7618,38 +7628,38 @@ void WordProcessor::Table::Cell::GetCellWordProcessorDatabases (TextStore** ts, 
     }
 }
 
-TextStore& WordProcessor::Table::Cell::GetTextStore () const
+TextStore& WordProcessorTable::Cell::GetTextStore () const
 {
     Require (fCellMergeFlags == ePlainCell);
     EnsureNotNull (fCellRep->fTextStore);
     return *fCellRep->fTextStore;
 }
 
-shared_ptr<AbstractStyleDatabaseRep> WordProcessor::Table::Cell::GetStyleDatabase () const
+shared_ptr<AbstractStyleDatabaseRep> WordProcessorTable::Cell::GetStyleDatabase () const
 {
     Require (fCellMergeFlags == ePlainCell);
     return fCellRep->fStyleDatabase;
 }
 
-shared_ptr<AbstractParagraphDatabaseRep> WordProcessor::Table::Cell::GetParagraphDatabase () const
+shared_ptr<AbstractParagraphDatabaseRep> WordProcessorTable::Cell::GetParagraphDatabase () const
 {
     Require (fCellMergeFlags == ePlainCell);
     return fCellRep->fParagraphDatabase;
 }
 
-shared_ptr<HidableTextMarkerOwner> WordProcessor::Table::Cell::GetHidableTextDatabase () const
+shared_ptr<HidableTextMarkerOwner> WordProcessorTable::Cell::GetHidableTextDatabase () const
 {
     Require (fCellMergeFlags == ePlainCell);
     return fCellRep->fHidableTextDatabase;
 }
 
-Color WordProcessor::Table::Cell::GetBackColor () const
+Color WordProcessorTable::Cell::GetBackColor () const
 {
     Require (fCellMergeFlags == ePlainCell);
     return fCellRep->fBackColor;
 }
 
-void WordProcessor::Table::Cell::SetBackColor (Color c)
+void WordProcessorTable::Cell::SetBackColor (Color c)
 {
     Require (fCellMergeFlags == ePlainCell);
     fCellRep->fBackColor = c;
@@ -7657,10 +7667,10 @@ void WordProcessor::Table::Cell::SetBackColor (Color c)
 
 /*
  ********************************************************************************
- ************************ WordProcessor::Table::CellRep *************************
+ ************************ WordProcessorTable::CellRep *************************
  ********************************************************************************
  */
-WordProcessor::Table::CellRep::CellRep (Table& forTable)
+WordProcessorTable::CellRep::CellRep (WordProcessorTable& forTable)
     : fForTable (forTable)
     , fTextStore (nullptr)
     , fStyleDatabase ()
@@ -7678,7 +7688,7 @@ WordProcessor::Table::CellRep::CellRep (Table& forTable)
     fHidableTextDatabase = make_shared<UniformHidableTextMarkerOwner> (*fTextStore);
 }
 
-WordProcessor::Table::CellRep::~CellRep ()
+WordProcessorTable::CellRep::~CellRep ()
 {
     Require (fStyleDatabase.use_count () == 1);       // hack to debug SPR#1465
     Require (fParagraphDatabase.use_count () == 1);   // ''
@@ -7692,12 +7702,12 @@ WordProcessor::Table::CellRep::~CellRep ()
     delete fTextStore;
 }
 
-TextStore* WordProcessor::Table::CellRep::PeekAtTextStore () const
+TextStore* WordProcessorTable::CellRep::PeekAtTextStore () const
 {
     return fTextStore;
 }
 
-void WordProcessor::Table::CellRep::AboutToUpdateText (const UpdateInfo& updateInfo)
+void WordProcessorTable::CellRep::AboutToUpdateText (const UpdateInfo& updateInfo)
 {
     inherited::AboutToUpdateText (updateInfo);
     if (fForTable.fAllowUpdateInfoPropagationContext and updateInfo.fRealContentUpdate) {
@@ -7713,7 +7723,7 @@ void WordProcessor::Table::CellRep::AboutToUpdateText (const UpdateInfo& updateI
     }
 }
 
-void WordProcessor::Table::CellRep::DidUpdateText (const TextInteractor::UpdateInfo& updateInfo) noexcept
+void WordProcessorTable::CellRep::DidUpdateText (const TextInteractor::UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
 
@@ -7734,11 +7744,11 @@ void WordProcessor::Table::CellRep::DidUpdateText (const TextInteractor::UpdateI
  */
 
 /*
-@METHOD:        WordProcessor::Table::EmbeddedTableWordProcessor::EmbeddedTableWordProcessor
+@METHOD:        WordProcessorTable::EmbeddedTableWordProcessor::EmbeddedTableWordProcessor
 @DESCRIPTION:   <p></p>
 */
-WordProcessor::Table::EmbeddedTableWordProcessor::EmbeddedTableWordProcessor (WordProcessor& owningWordProcessor, Table& owningTable,
-                                                                              size_t tRow, size_t tCol, bool activeEditCell)
+WordProcessorTable::EmbeddedTableWordProcessor::EmbeddedTableWordProcessor (WordProcessor& owningWordProcessor, WordProcessorTable& owningTable,
+                                                                            size_t tRow, size_t tCol, bool activeEditCell)
     : inherited ()
     , fOwningWordProcessor (owningWordProcessor)
     , fOwningTable (owningTable)
@@ -7753,17 +7763,17 @@ WordProcessor::Table::EmbeddedTableWordProcessor::EmbeddedTableWordProcessor (Wo
     SetImageUsingOffscreenBitmaps (false);
 }
 
-WordProcessor::Table& WordProcessor::Table::EmbeddedTableWordProcessor::GetOwningTable () const
+WordProcessorTable& WordProcessorTable::EmbeddedTableWordProcessor::GetOwningTable () const
 {
     return fOwningTable;
 }
 
-WordProcessor& WordProcessor::Table::EmbeddedTableWordProcessor::GetOwningWordProcessor () const
+WordProcessor& WordProcessorTable::EmbeddedTableWordProcessor::GetOwningWordProcessor () const
 {
     return fOwningWordProcessor;
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::SaveMiscActiveFocusInfo ()
+void WordProcessorTable::EmbeddedTableWordProcessor::SaveMiscActiveFocusInfo ()
 {
     if (fActiveEditCell) {
         fOwningTable.SetIntraCellSelection (GetSelectionStart (), GetSelectionEnd ());
@@ -7771,7 +7781,7 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::SaveMiscActiveFocusInfo (
     }
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::RestoreMiscActiveFocusInfo ()
+void WordProcessorTable::EmbeddedTableWordProcessor::RestoreMiscActiveFocusInfo ()
 {
     if (fActiveEditCell) {
         DisableRefreshContext                DFR (*this);
@@ -7794,7 +7804,7 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::RestoreMiscActiveFocusInf
 }
 
 #if !qStroika_Frameworks_Led_NestedTablesSupported
-void WordProcessor::Table::EmbeddedTableWordProcessor::HookInternalizerChanged ()
+void WordProcessorTable::EmbeddedTableWordProcessor::HookInternalizerChanged ()
 {
     inherited::HookInternalizerChanged ();
     WordProcessorFlavorPackageInternalizer* internalizerRep =
@@ -7804,35 +7814,34 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::HookInternalizerChanged (
 }
 #endif
 
-bool WordProcessor::Table::EmbeddedTableWordProcessor::OnCopyCommand_Before ()
+bool WordProcessorTable::EmbeddedTableWordProcessor::OnCopyCommand_Before ()
 {
     return fOwningWordProcessor.OnCopyCommand_Before ();
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::OnCopyCommand_After ()
+void WordProcessorTable::EmbeddedTableWordProcessor::OnCopyCommand_After ()
 {
     fOwningWordProcessor.OnCopyCommand_After ();
 }
 
-bool WordProcessor::Table::EmbeddedTableWordProcessor::OnPasteCommand_Before ()
+bool WordProcessorTable::EmbeddedTableWordProcessor::OnPasteCommand_Before ()
 {
     return fOwningWordProcessor.OnPasteCommand_Before ();
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::OnPasteCommand_After ()
+void WordProcessorTable::EmbeddedTableWordProcessor::OnPasteCommand_After ()
 {
     fOwningWordProcessor.OnPasteCommand_After ();
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::DrawRowHilight (Tablet* /*tablet*/, const Led_Rect& /*currentRowRect*/,
-                                                                       const Led_Rect& /*invalidRowRect*/, const TextLayoutBlock& /*text*/,
-                                                                       size_t /*rowStart*/, size_t /*rowEnd*/
+void WordProcessorTable::EmbeddedTableWordProcessor::DrawRowHilight (Tablet* /*tablet*/, const Led_Rect& /*currentRowRect*/, const Led_Rect& /*invalidRowRect*/,
+                                                                     const TextLayoutBlock& /*text*/, size_t /*rowStart*/, size_t /*rowEnd*/
 )
 {
-    // Do nothing... - taken care if via owning Table and OVERRIDE of GetRowHilightRects
+    // Do nothing... - taken care if via owning WordProcessorTable and OVERRIDE of GetRowHilightRects
 }
 
-Tablet* WordProcessor::Table::EmbeddedTableWordProcessor::AcquireTablet () const
+Tablet* WordProcessorTable::EmbeddedTableWordProcessor::AcquireTablet () const
 {
     if (fUpdateTablet != nullptr) {
         return fUpdateTablet;
@@ -7842,7 +7851,7 @@ Tablet* WordProcessor::Table::EmbeddedTableWordProcessor::AcquireTablet () const
     return fOwningWordProcessor.AcquireTablet ();
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::ReleaseTablet (Tablet* tablet) const
+void WordProcessorTable::EmbeddedTableWordProcessor::ReleaseTablet (Tablet* tablet) const
 {
     if (tablet == fUpdateTablet) {
         return;
@@ -7852,7 +7861,7 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::ReleaseTablet (Tablet* ta
     fOwningWordProcessor.ReleaseTablet (tablet);
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const
+void WordProcessorTable::EmbeddedTableWordProcessor::RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const
 {
 #if 0
     DbgTrace ("EmbeddedTableWordProcessor::RefreshWindowRect_ (suppressRefreshCalls = %d, updadeMode=%d)\n", fSuppressRefreshCalls, updateMode);
@@ -7866,19 +7875,19 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::RefreshWindowRect_ (const
     }
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::UpdateWindowRect_ (const Led_Rect& /*windowRectArea*/) const
+void WordProcessorTable::EmbeddedTableWordProcessor::UpdateWindowRect_ (const Led_Rect& /*windowRectArea*/) const
 {
     throw CannotUpdateNow ();
 }
 
-bool WordProcessor::Table::EmbeddedTableWordProcessor::QueryInputKeyStrokesPending () const
+bool WordProcessorTable::EmbeddedTableWordProcessor::QueryInputKeyStrokesPending () const
 {
     return true; // a bit of a hack to encourage display code to do a refresh instead of an Update () call
     // (which would be OK - but it generates a needless exception) - LGP 2003-05-02
     //return fOwningWordProcessor.QueryInputKeyStrokesPending ();
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::SetDefaultUpdateMode (UpdateMode defaultUpdateMode)
+void WordProcessorTable::EmbeddedTableWordProcessor::SetDefaultUpdateMode (UpdateMode defaultUpdateMode)
 {
     if (defaultUpdateMode == eImmediateUpdate) {
         defaultUpdateMode = eDelayedUpdate;
@@ -7886,7 +7895,7 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::SetDefaultUpdateMode (Upd
     inherited::SetDefaultUpdateMode (defaultUpdateMode);
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const
+void WordProcessorTable::EmbeddedTableWordProcessor::GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const
 {
     if (rhs != nullptr) {
         inherited::GetLayoutMargins (row, lhs, nullptr);
@@ -7903,9 +7912,9 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::GetLayoutMargins (RowRefe
     }
 }
 
-void WordProcessor::Table::EmbeddedTableWordProcessor::PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep,
-                                                                                      InteractiveReplaceCommand::SavedTextRep** afterRep,
-                                                                                      size_t startOfInsert, const SDKString& cmdName)
+void WordProcessorTable::EmbeddedTableWordProcessor::PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep,
+                                                                                    InteractiveReplaceCommand::SavedTextRep** afterRep,
+                                                                                    size_t startOfInsert, const SDKString& cmdName)
 {
     RequireNotNull (beforeRep);
     RequireNotNull (afterRep);
@@ -7932,13 +7941,13 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::PostInteractiveUndoPostHe
 }
 
 InteractiveReplaceCommand::SavedTextRep*
-WordProcessor::Table::EmbeddedTableWordProcessor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd)
+WordProcessorTable::EmbeddedTableWordProcessor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd)
 {
     InteractiveReplaceCommand::SavedTextRep* tableStateRep = inherited::InteractiveUndoHelperMakeTextRep (regionStart, regionEnd, selStart, selEnd);
     return new SavedTextRepWSel (tableStateRep, fOwningTable, SavedTextRepWSel::eWPDirect);
 }
 
-DistanceType WordProcessor::Table::EmbeddedTableWordProcessor::GetDesiredHeight () const
+DistanceType WordProcessorTable::EmbeddedTableWordProcessor::GetDesiredHeight () const
 {
     if (not fDesiredHeightValid) {
         RowReference startingRow = GetRowReferenceContainingPosition (0);
@@ -7955,10 +7964,10 @@ DistanceType WordProcessor::Table::EmbeddedTableWordProcessor::GetDesiredHeight 
 
 /*
  ********************************************************************************
- ****************** WordProcessor::Table::SavedTextRepWSel **********************
+ ****************** WordProcessorTable::SavedTextRepWSel **********************
  ********************************************************************************
  */
-WordProcessor::Table::SavedTextRepWSel::SavedTextRepWSel (SavedTextRep* delegateTo, Table& table, WPRelativeFlag wPRelativeFlag)
+WordProcessorTable::SavedTextRepWSel::SavedTextRepWSel (SavedTextRep* delegateTo, WordProcessorTable& table, WPRelativeFlag wPRelativeFlag)
     : inherited (table.GetStart (), table.GetEnd ())
     , fWPRelativeFlag (wPRelativeFlag)
     , fRealRep (delegateTo)
@@ -7978,21 +7987,21 @@ WordProcessor::Table::SavedTextRepWSel::SavedTextRepWSel (SavedTextRep* delegate
     }
 }
 
-size_t WordProcessor::Table::SavedTextRepWSel::GetLength () const
+size_t WordProcessorTable::SavedTextRepWSel::GetLength () const
 {
     return fRealRep->GetLength ();
 }
 
-void WordProcessor::Table::SavedTextRepWSel::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
+void WordProcessorTable::SavedTextRepWSel::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
 {
     fRealRep->InsertSelf (interactor, at, nBytesToOverwrite);
 }
 
-void WordProcessor::Table::SavedTextRepWSel::ApplySelection (TextInteractor* interactor)
+void WordProcessorTable::SavedTextRepWSel::ApplySelection (TextInteractor* interactor)
 {
     fRealRep->ApplySelection (interactor);
 
-    Table* aT = nullptr;
+    WordProcessorTable* aT = nullptr;
     if (fWPRelativeFlag == eWPDirect) {
         EmbeddedTableWordProcessor* wp = dynamic_cast<EmbeddedTableWordProcessor*> (interactor);
         aT                             = &wp->GetOwningTable ();

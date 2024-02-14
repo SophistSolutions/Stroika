@@ -486,7 +486,7 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ****************** AbstractParagraphDatabaseRep *****************
+     *************************** AbstractParagraphDatabaseRep ***********************
      ********************************************************************************
      */
     inline AbstractParagraphDatabaseRep::AbstractParagraphDatabaseRep ()
@@ -495,29 +495,9 @@ namespace Stroika::Frameworks::Led {
     {
     }
 
-#if qStroika_Frameworks_Led_SupportGDI
-
-#if qTemplateGeneratedMixinsSometimesCorrupted
-    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookLosingTextStore ()
-    {
-        StandardStyledTextInteractor::HookLosingTextStore ();
-        WordWrappedTextInteractor::HookLosingTextStore ();
-    }
-    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookGainedNewTextStore ()
-    {
-        StandardStyledTextInteractor::HookGainedNewTextStore ();
-        WordWrappedTextInteractor::HookGainedNewTextStore ();
-    }
-    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::DidUpdateText (const UpdateInfo& updateInfo)
-    {
-        StandardStyledTextInteractor::DidUpdateText (updateInfo);
-        WordWrappedTextInteractor::DidUpdateText (updateInfo);
-    }
-#endif
-
     /*
      ********************************************************************************
-     ************************ ParagraphInfoMarker ***********************************
+     *************************** ParagraphInfoMarker ********************************
      ********************************************************************************
      */
     inline ParagraphInfoMarker::ParagraphInfoMarker (ParagraphInfo paragraphInfo)
@@ -548,20 +528,20 @@ namespace Stroika::Frameworks::Led {
      ******************* WordProcessor::WordProcessorTextIOSinkStream ***************
      ********************************************************************************
      */
-    inline bool WordProcessor::WordProcessorTextIOSinkStream::GetOverwriteTableMode () const
+    inline bool WordProcessorTextIOSinkStream::GetOverwriteTableMode () const
     {
         return fOverwriteTableMode;
     }
-    inline void WordProcessor::WordProcessorTextIOSinkStream::SetOverwriteTableMode (bool overwriteTableMode)
+    inline void WordProcessorTextIOSinkStream::SetOverwriteTableMode (bool overwriteTableMode)
     {
         fOverwriteTableMode = overwriteTableMode;
     }
 #if !qStroika_Frameworks_Led_NestedTablesSupported
-    inline bool WordProcessor::WordProcessorTextIOSinkStream::GetNoTablesAllowed () const
+    inline bool WordProcessorTextIOSinkStream::GetNoTablesAllowed () const
     {
         return fNoTablesAllowed;
     }
-    inline void WordProcessor::WordProcessorTextIOSinkStream::SetNoTablesAllowed (bool noTablesAllowed)
+    inline void WordProcessorTextIOSinkStream::SetNoTablesAllowed (bool noTablesAllowed)
     {
         fNoTablesAllowed = noTablesAllowed;
     }
@@ -572,14 +552,34 @@ namespace Stroika::Frameworks::Led {
      ******************* WordProcessor::WordProcessorTextIOSrcStream ****************
      ********************************************************************************
      */
-    inline bool WordProcessor::WordProcessorTextIOSrcStream::GetUseTableSelection () const
+    inline bool WordProcessorTextIOSrcStream::GetUseTableSelection () const
     {
         return fUseTableSelection;
     }
-    inline void WordProcessor::WordProcessorTextIOSrcStream::SetUseTableSelection (bool useTableSelection)
+    inline void WordProcessorTextIOSrcStream::SetUseTableSelection (bool useTableSelection)
     {
         fUseTableSelection = useTableSelection;
     }
+
+#if qStroika_Frameworks_Led_SupportGDI
+
+#if qTemplateGeneratedMixinsSometimesCorrupted
+    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookLosingTextStore ()
+    {
+        StandardStyledTextInteractor::HookLosingTextStore ();
+        WordWrappedTextInteractor::HookLosingTextStore ();
+    }
+    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::HookGainedNewTextStore ()
+    {
+        StandardStyledTextInteractor::HookGainedNewTextStore ();
+        WordWrappedTextInteractor::HookGainedNewTextStore ();
+    }
+    inline void InteractorInteractorMixinHelper<StandardStyledTextInteractor, WordWrappedTextInteractor>::DidUpdateText (const UpdateInfo& updateInfo)
+    {
+        StandardStyledTextInteractor::DidUpdateText (updateInfo);
+        WordWrappedTextInteractor::DidUpdateText (updateInfo);
+    }
+#endif
 
     /*
      ********************************************************************************
@@ -689,36 +689,36 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ********************* WordProcessor::Table::RowInfo ****************************
+     *********************** WordProcessorTable::RowInfo ****************************
      ********************************************************************************
      */
-    inline WordProcessor::Table::RowInfo::RowInfo ()
+    inline WordProcessorTable::RowInfo::RowInfo ()
         : fHeight (0)
     {
     }
 
     /*
      ********************************************************************************
-     ************************ WordProcessor::Table::Cell ****************************
+     ************************ WordProcessorTable::Cell ****************************
      ********************************************************************************
      */
-    inline WordProcessor::Table::CellMergeFlags WordProcessor::Table::Cell::GetCellMergeFlags () const
+    inline WordProcessorTable::CellMergeFlags WordProcessorTable::Cell::GetCellMergeFlags () const
     {
         return fCellMergeFlags;
     }
-    inline TWIPS WordProcessor::Table::Cell::GetCellXWidth () const
+    inline TWIPS WordProcessorTable::Cell::GetCellXWidth () const
     {
         return fCellRep->fCellXWidth;
     }
-    inline void WordProcessor::Table::Cell::SetCellXWidth (TWIPS width)
+    inline void WordProcessorTable::Cell::SetCellXWidth (TWIPS width)
     {
         fCellRep->fCellXWidth = width;
     }
-    inline Led_Rect WordProcessor::Table::Cell::GetCachedBoundsRect () const
+    inline Led_Rect WordProcessorTable::Cell::GetCachedBoundsRect () const
     {
         return fCellRep->fCachedBoundsRect;
     }
-    inline void WordProcessor::Table::Cell::SetCachedBoundsRect (Led_Rect r)
+    inline void WordProcessorTable::Cell::SetCachedBoundsRect (Led_Rect r)
     {
         fCellRep->fCachedBoundsRect = r;
     }
@@ -761,19 +761,19 @@ namespace Stroika::Frameworks::Led {
         fUseTableSelection = useTableSelection;
     }
 
-    //class WordProcessor::Table
-    inline TWIPS WordProcessor::Table::GetCellSpacing () const
+    //class WordProcessorTable
+    inline TWIPS WordProcessorTable::GetCellSpacing () const
     {
         return fCellSpacing;
     }
-    inline void WordProcessor::Table::SetCellSpacing (TWIPS cellSpacing)
+    inline void WordProcessorTable::SetCellSpacing (TWIPS cellSpacing)
     {
         if (fCellSpacing != cellSpacing) {
             fCellSpacing = cellSpacing;
             InvalidateLayout ();
         }
     }
-    inline void WordProcessor::Table::GetDefaultCellMargins (TWIPS* top, TWIPS* left, TWIPS* bottom, TWIPS* right) const
+    inline void WordProcessorTable::GetDefaultCellMargins (TWIPS* top, TWIPS* left, TWIPS* bottom, TWIPS* right) const
     {
         if (top != nullptr) {
             *top = fDefaultCellMargins.GetTop ();
@@ -788,7 +788,7 @@ namespace Stroika::Frameworks::Led {
             *right = fDefaultCellMargins.GetRight ();
         }
     }
-    inline void WordProcessor::Table::SetDefaultCellMargins (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right)
+    inline void WordProcessorTable::SetDefaultCellMargins (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right)
     {
         if (top != fDefaultCellMargins.GetTop () or left != fDefaultCellMargins.GetLeft () or bottom != fDefaultCellMargins.GetBottom () or
             right != fDefaultCellMargins.GetRight ()) {
@@ -799,7 +799,7 @@ namespace Stroika::Frameworks::Led {
             InvalidateLayout ();
         }
     }
-    inline void WordProcessor::Table::InvalidateLayout ()
+    inline void WordProcessorTable::InvalidateLayout ()
     {
         if (fNeedLayout != eNeedFullLayout) {
             AbstractParagraphDatabaseRep* o = dynamic_cast<AbstractParagraphDatabaseRep*> (GetOwner ());
@@ -808,19 +808,19 @@ namespace Stroika::Frameworks::Led {
             fNeedLayout           = eNeedFullLayout;
         }
     }
-    inline size_t WordProcessor::Table::GetRowCount () const
+    inline size_t WordProcessorTable::GetRowCount () const
     {
         size_t rows = 0;
         GetDimensions (&rows, nullptr);
         return rows;
     }
-    inline size_t WordProcessor::Table::GetColumnCount () const
+    inline size_t WordProcessorTable::GetColumnCount () const
     {
         size_t columns = 0;
         GetDimensions (nullptr, &columns);
         return columns;
     }
-    inline WordProcessor::Table::Cell& WordProcessor::Table::GetCell (size_t row, size_t column)
+    inline WordProcessorTable::Cell& WordProcessorTable::GetCell (size_t row, size_t column)
     {
         Require (row < GetRowCount ());
         Require (column < GetColumnCount (row));
@@ -828,7 +828,7 @@ namespace Stroika::Frameworks::Led {
         Assert (fRows[row].fCells.size () == GetColumnCount (row));
         return fRows[row].fCells[column];
     }
-    inline const WordProcessor::Table::Cell& WordProcessor::Table::GetCell (size_t row, size_t column) const
+    inline const WordProcessorTable::Cell& WordProcessorTable::GetCell (size_t row, size_t column) const
     {
         Require (row < GetRowCount ());
         Require (column < GetColumnCount (row));
@@ -836,7 +836,7 @@ namespace Stroika::Frameworks::Led {
         Assert (fRows[row].fCells.size () == GetColumnCount (row));
         return fRows[row].fCells[column];
     }
-    inline WordProcessor::Table::CellMergeFlags WordProcessor::Table::GetCellFlags (size_t row, size_t column) const
+    inline WordProcessorTable::CellMergeFlags WordProcessorTable::GetCellFlags (size_t row, size_t column) const
     {
         Require (row < GetRowCount ());
         const RowInfo& rowInfo = fRows[row];
@@ -848,7 +848,7 @@ namespace Stroika::Frameworks::Led {
         }
     }
     /*
-    @METHOD:        WordProcessor::Table::GetCellSelection
+    @METHOD:        WordProcessorTable::GetCellSelection
     @DESCRIPTION:   <p>Retrieve the cell selection range for the given table. Note that we always have a rectangular
                 table selection (could be in whole rows or columns or not). The special case of a single cell selection
                 may indicate that the ENTIRE cell is selected, or just a subset (which is decided by ITS GetCellSelection property).
@@ -857,9 +857,9 @@ namespace Stroika::Frameworks::Led {
                 and so if rowSelStart==rowSelEnd then this implies NO SELECTION, and if rowSelStart + 1 == rowSelEnd and
                 colSelStart + 1 = colSelEnd then we have selected a single cell.
                 </p>
-                    <p>See @'WordProcessor::Table::SetCellSelection'.</p>
+                    <p>See @'WordProcessorTable::SetCellSelection'.</p>
     */
-    inline void WordProcessor::Table::GetCellSelection (size_t* rowSelStart, size_t* rowSelEnd, size_t* colSelStart, size_t* colSelEnd) const
+    inline void WordProcessorTable::GetCellSelection (size_t* rowSelStart, size_t* rowSelEnd, size_t* colSelStart, size_t* colSelEnd) const
     {
         Ensure (fRowSelStart <= fRowSelEnd);
         Ensure (fRowSelEnd <= GetRowCount ());
@@ -879,14 +879,14 @@ namespace Stroika::Frameworks::Led {
         }
     }
     /*
-    @METHOD:        WordProcessor::Table::GetIntraCellMode
+    @METHOD:        WordProcessorTable::GetIntraCellMode
     @ACCESS:        public
     @DESCRIPTION:   <p>Return true if the editor is in 'intraCell' editing mode. This edit mode means that the
                 current selection is a mini-editor inside of a cell. This is not the same as having selected
                 a single cell. It means characters typed go to the focused WP inside the currently selected
                 cell.</p>
     */
-    inline bool WordProcessor::Table::GetIntraCellMode (size_t* row, size_t* col) const
+    inline bool WordProcessorTable::GetIntraCellMode (size_t* row, size_t* col) const
     {
         if (fIntraCellMode) {
             Assert (fRowSelEnd == fRowSelStart + 1);
@@ -900,21 +900,20 @@ namespace Stroika::Frameworks::Led {
         }
         return fIntraCellMode;
     }
-    inline void WordProcessor::Table::GetIntraCellSelection (size_t* selStart, size_t* selEnd) const
+    inline void WordProcessorTable::GetIntraCellSelection (size_t* selStart, size_t* selEnd) const
     {
         RequireNotNull (selStart);
         RequireNotNull (selEnd);
         *selStart = fIntraSelStart;
         *selEnd   = fIntraSelEnd;
     }
-    inline void WordProcessor::Table::SaveIntraCellContextInfo (bool                     leftSideOfSelectionInteresting,
-                                                                const FontSpecification& intraCellSelectionEmptySelFontSpecification)
+    inline void WordProcessorTable::SaveIntraCellContextInfo (bool leftSideOfSelectionInteresting, const FontSpecification& intraCellSelectionEmptySelFontSpecification)
     {
         fSavedIntraCellInfoValid                          = true;
         fSavedLeftSideOfSelectionInteresting              = leftSideOfSelectionInteresting;
         fSavedIntraCellSelectionEmptySelFontSpecification = intraCellSelectionEmptySelFontSpecification;
     }
-    inline bool WordProcessor::Table::RestoreIntraCellContextInfo (bool* leftSideOfSelectionInteresting, FontSpecification* intraCellSelectionEmptySelFontSpecification)
+    inline bool WordProcessorTable::RestoreIntraCellContextInfo (bool* leftSideOfSelectionInteresting, FontSpecification* intraCellSelectionEmptySelFontSpecification)
     {
         RequireNotNull (leftSideOfSelectionInteresting);
         RequireNotNull (intraCellSelectionEmptySelFontSpecification);
@@ -927,50 +926,50 @@ namespace Stroika::Frameworks::Led {
             return false;
         }
     }
-    inline void WordProcessor::Table::InvalidateIntraCellContextInfo ()
+    inline void WordProcessorTable::InvalidateIntraCellContextInfo ()
     {
         fSavedIntraCellInfoValid = false;
     }
 
     /*
      ********************************************************************************
-     ****** WordProcessor::Table::SuppressCellUpdatePropagationContext **************
+     ****** WordProcessorTable::SuppressCellUpdatePropagationContext **************
      ********************************************************************************
      */
-    inline WordProcessor::Table::SuppressCellUpdatePropagationContext::SuppressCellUpdatePropagationContext (WordProcessor::Table& t)
+    inline WordProcessorTable::SuppressCellUpdatePropagationContext::SuppressCellUpdatePropagationContext (WordProcessorTable& t)
         : fTable (t)
         , fOldVal (t.fSuppressCellUpdatePropagationContext)
     {
         t.fSuppressCellUpdatePropagationContext = true;
     }
-    inline WordProcessor::Table::SuppressCellUpdatePropagationContext::~SuppressCellUpdatePropagationContext ()
+    inline WordProcessorTable::SuppressCellUpdatePropagationContext::~SuppressCellUpdatePropagationContext ()
     {
         fTable.fSuppressCellUpdatePropagationContext = fOldVal;
     }
 
     /*
      ********************************************************************************
-     ********* WordProcessor::Table::AllowUpdateInfoPropagationContext **************
+     ********* WordProcessorTable::AllowUpdateInfoPropagationContext **************
      ********************************************************************************
      */
-    inline WordProcessor::Table::AllowUpdateInfoPropagationContext::AllowUpdateInfoPropagationContext (WordProcessor::Table& t)
+    inline WordProcessorTable::AllowUpdateInfoPropagationContext::AllowUpdateInfoPropagationContext (WordProcessorTable& t)
         : fTable (t)
         , fOldVal (t.fAllowUpdateInfoPropagationContext)
     {
         t.fAllowUpdateInfoPropagationContext = true;
     }
-    inline WordProcessor::Table::AllowUpdateInfoPropagationContext::~AllowUpdateInfoPropagationContext ()
+    inline WordProcessorTable::AllowUpdateInfoPropagationContext::~AllowUpdateInfoPropagationContext ()
     {
         fTable.fAllowUpdateInfoPropagationContext = fOldVal;
     }
 
     /*
      ********************************************************************************
-     *** WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet *****
+     *** WordProcessorTable::EmbeddedTableWordProcessor::TemporarilyUseTablet *****
      ********************************************************************************
      */
-    inline WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet::TemporarilyUseTablet (WordProcessor::Table::EmbeddedTableWordProcessor& editor,
-                                                                                                         Tablet* t, DoTextMetricsChangedCall tmChanged)
+    inline WordProcessorTable::EmbeddedTableWordProcessor::TemporarilyUseTablet::TemporarilyUseTablet (WordProcessorTable::EmbeddedTableWordProcessor& editor,
+                                                                                                       Tablet* t, DoTextMetricsChangedCall tmChanged)
         : fEditor (editor)
         , fOldTablet (editor.fUpdateTablet)
         , fDoTextMetricsChangedCall (tmChanged)
@@ -980,7 +979,7 @@ namespace Stroika::Frameworks::Led {
             editor.TabletChangedMetrics ();
         }
     }
-    inline WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet::~TemporarilyUseTablet ()
+    inline WordProcessorTable::EmbeddedTableWordProcessor::TemporarilyUseTablet::~TemporarilyUseTablet ()
     {
         fEditor.fUpdateTablet = fOldTablet;
         if (fDoTextMetricsChangedCall == eDoTextMetricsChangedCall) {
@@ -990,16 +989,16 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     *** WordProcessor::Table::EmbeddedTableWordProcessor::DisableRefreshContext ****
+     *** WordProcessorTable::EmbeddedTableWordProcessor::DisableRefreshContext ****
      ********************************************************************************
      */
-    inline WordProcessor::Table::EmbeddedTableWordProcessor::DisableRefreshContext::DisableRefreshContext (WordProcessor::Table::EmbeddedTableWordProcessor& wp)
+    inline WordProcessorTable::EmbeddedTableWordProcessor::DisableRefreshContext::DisableRefreshContext (WordProcessorTable::EmbeddedTableWordProcessor& wp)
         : fWP (wp)
         , fOldVal (wp.fSuppressRefreshCalls)
     {
         wp.fSuppressRefreshCalls = true;
     }
-    inline WordProcessor::Table::EmbeddedTableWordProcessor::DisableRefreshContext::~DisableRefreshContext ()
+    inline WordProcessorTable::EmbeddedTableWordProcessor::DisableRefreshContext::~DisableRefreshContext ()
     {
         if (fWP.fSuppressRefreshCalls != fOldVal) {
             fWP.fSuppressRefreshCalls = fOldVal;
@@ -1011,48 +1010,48 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ******************* WordProcessor::Table::TemporarilySetOwningWP ***************
+     ******************* WordProcessorTable::TemporarilySetOwningWP *****************
      ********************************************************************************
      */
-    inline WordProcessor::Table::TemporarilySetOwningWP::TemporarilySetOwningWP (const Table& forTable, WordProcessor& forWordProcessor)
-        : fOwningTable (const_cast<Table&> (forTable))
+    inline WordProcessorTable::TemporarilySetOwningWP::TemporarilySetOwningWP (const WordProcessorTable& forTable, WordProcessor& forWordProcessor)
+        : fOwningTable (const_cast<WordProcessorTable&> (forTable))
         , fSavedTableOwningWP (forTable.fCurrentOwningWP)
     {
         fOwningTable.fCurrentOwningWP = &forWordProcessor;
     }
-    inline WordProcessor::Table::TemporarilySetOwningWP::~TemporarilySetOwningWP ()
+    inline WordProcessorTable::TemporarilySetOwningWP::~TemporarilySetOwningWP ()
     {
         fOwningTable.fCurrentOwningWP = fSavedTableOwningWP;
     }
 
     /*
      ********************************************************************************
-     ******************* WordProcessor::Table::TemporarilyAllocateCellWP ************
+     ******************* WordProcessorTable::TemporarilyAllocateCellWP **************
      ********************************************************************************
      */
-    inline WordProcessor::Table::TemporarilyAllocateCellWP::TemporarilyAllocateCellWP (Table& forTable, WordProcessor& forWordProcessor,
-                                                                                       size_t forRow, size_t forColumn,
-                                                                                       const Led_Rect& cellWindowRect, bool captureChangesForUndo)
+    inline WordProcessorTable::TemporarilyAllocateCellWP::TemporarilyAllocateCellWP (WordProcessorTable& forTable, WordProcessor& forWordProcessor,
+                                                                                     size_t forRow, size_t forColumn,
+                                                                                     const Led_Rect& cellWindowRect, bool captureChangesForUndo)
         : fOwningTable (forTable)
         , fCellEditor (forTable.ConstructEmbeddedTableWordProcessor (forWordProcessor, forRow, forColumn, cellWindowRect, captureChangesForUndo))
     {
     }
-    inline WordProcessor::Table::TemporarilyAllocateCellWP::~TemporarilyAllocateCellWP ()
+    inline WordProcessorTable::TemporarilyAllocateCellWP::~TemporarilyAllocateCellWP ()
     {
         AssertNotNull (fCellEditor);
         fOwningTable.ReleaseEmbeddedTableWordProcessor (fCellEditor);
     }
-    inline WordProcessor::Table::TemporarilyAllocateCellWP::operator WordProcessor::Table::EmbeddedTableWordProcessor* ()
+    inline WordProcessorTable::TemporarilyAllocateCellWP::operator WordProcessorTable::EmbeddedTableWordProcessor* ()
     {
         AssertNotNull (fCellEditor);
         return fCellEditor;
     }
-    inline WordProcessor::Table::EmbeddedTableWordProcessor& WordProcessor::Table::TemporarilyAllocateCellWP::operator& ()
+    inline WordProcessorTable::EmbeddedTableWordProcessor& WordProcessorTable::TemporarilyAllocateCellWP::operator& ()
     {
         AssertNotNull (fCellEditor);
         return *fCellEditor;
     }
-    inline WordProcessor::Table::EmbeddedTableWordProcessor* WordProcessor::Table::TemporarilyAllocateCellWP::operator->()
+    inline WordProcessorTable::EmbeddedTableWordProcessor* WordProcessorTable::TemporarilyAllocateCellWP::operator->()
     {
         AssertNotNull (fCellEditor);
         return fCellEditor;
@@ -1060,26 +1059,26 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     *********** WordProcessor::Table::TemporarilyAllocateCellWithTablet ************
+     *********** WordProcessorTable::TemporarilyAllocateCellWithTablet ************
      ********************************************************************************
      */
-    inline WordProcessor::Table::TemporarilyAllocateCellWithTablet::TemporarilyAllocateCellWithTablet (WordProcessor::Table& forTable, size_t row,
-                                                                                                       size_t column, bool captureChangesForUndo)
+    inline WordProcessorTable::TemporarilyAllocateCellWithTablet::TemporarilyAllocateCellWithTablet (WordProcessorTable& forTable, size_t row,
+                                                                                                     size_t column, bool captureChangesForUndo)
         : fWP (forTable, *forTable.fCurrentOwningWP, row, column,
                forTable.TableCoordinates2Window (forTable.GetCellEditorBounds (row, column)), captureChangesForUndo)
         , fTablet (forTable.fCurrentOwningWP)
         , fTmpUseTablet (*fWP, fTablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall)
     {
     }
-    inline WordProcessor::Table::TemporarilyAllocateCellWithTablet::operator WordProcessor::Table::EmbeddedTableWordProcessor* ()
+    inline WordProcessorTable::TemporarilyAllocateCellWithTablet::operator WordProcessorTable::EmbeddedTableWordProcessor* ()
     {
         return fWP;
     }
-    inline WordProcessor::Table::EmbeddedTableWordProcessor& WordProcessor::Table::TemporarilyAllocateCellWithTablet::operator& ()
+    inline WordProcessorTable::EmbeddedTableWordProcessor& WordProcessorTable::TemporarilyAllocateCellWithTablet::operator& ()
     {
         return *fWP;
     }
-    inline WordProcessor::Table::EmbeddedTableWordProcessor* WordProcessor::Table::TemporarilyAllocateCellWithTablet::operator->()
+    inline WordProcessorTable::EmbeddedTableWordProcessor* WordProcessorTable::TemporarilyAllocateCellWithTablet::operator->()
     {
         return fWP;
     }
