@@ -205,7 +205,7 @@ namespace Stroika::Frameworks::Led {
                         <p>By default, it just returns the default font associated with the imager.</p>
         */
         virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const;
-        #endif
+#endif
 
 #if qStroika_Frameworks_Led_SupportGDI
     public:
@@ -237,7 +237,7 @@ namespace Stroika::Frameworks::Led {
 #if qStroika_Frameworks_Led_SupportGDI
     protected:
         virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const override;
-        #endif
+#endif
 
     public:
         IncrementalFontSpecification fFontSpecification;

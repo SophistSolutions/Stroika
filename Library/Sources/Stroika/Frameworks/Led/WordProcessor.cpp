@@ -5144,6 +5144,7 @@ DiscontiguousRun<bool> WordProcessorTextIOSrcStream::GetHidableTextRuns () const
     return fHidableTextRuns;
 }
 
+#if qStroika_Frameworks_Led_SupportTables
 WordProcessorTextIOSrcStream::Table* WordProcessorTextIOSrcStream::GetTableAt (size_t at) const
 {
     Require (fParagraphDatabase.get () != nullptr);
@@ -5174,6 +5175,7 @@ WordProcessorTextIOSrcStream::Table* WordProcessorTextIOSrcStream::GetTableAt (s
         }
     }
 }
+#endif
 
 void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
 {

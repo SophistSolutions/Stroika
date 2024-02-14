@@ -122,9 +122,6 @@ namespace Stroika::Frameworks::Led {
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
-
-
-
     /*
     @CLASS:         SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper
     @BASES:         BASECLASS
@@ -148,12 +145,11 @@ namespace Stroika::Frameworks::Led {
 #if qStroika_Frameworks_Led_SupportGDI
     protected:
         virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const override;
-        #endif
+#endif
 
     private:
         mutable FontSpecification fFSP;
     };
-
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*

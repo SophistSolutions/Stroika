@@ -142,7 +142,6 @@ namespace Stroika::Frameworks::Led {
         friend class HidableTextMarkerOwner;
     };
 
-
     /*
     @CLASS:         HidableTextMarkerHelper<BASECLASS>
     @BASES:         BASECLASS
@@ -222,9 +221,6 @@ namespace Stroika::Frameworks::Led {
     public:
         IncrementalFontSpecification fFontSpecification;
     };
-
-
-
 
     /**
      *      UniformHidableTextMarkerOwner is a @'HidableTextMarkerOwner' class, which has a notion of

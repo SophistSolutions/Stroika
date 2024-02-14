@@ -29,6 +29,13 @@ namespace Stroika::Frameworks::Led {
     const inline TWIPS kBadCachedFarthestRightMarginInDocument = TWIPS (-1);
 
     /**
+     *  Currently (as of 2024-02-14) tightly coupled with GDI code, so conditionally disable table support if we dont have GDI support.
+     */
+#ifndef qStroika_Frameworks_Led_SupportTables
+#define qStroika_Frameworks_Led_SupportTables qStroika_Frameworks_Led_SupportGDI
+#endif
+
+    /**
      *      An object which captures the per-paragraph information we store especially in the
      *          @'WordProcessor' class. The attributes stored include:
      *              <ul>
@@ -221,8 +228,6 @@ namespace Stroika::Frameworks::Led {
 
     private:
         friend class WordProcessor;
-        // friend class WordProcessor::Table;
-        //friend class WordProcessor::WPIdler;
     };
 
     /**
@@ -346,16 +351,12 @@ namespace Stroika::Frameworks::Led {
         class WordProcessorFlavorPackageExternalizer;
 
     public:
-#if qTroubleLookingUpBaseClassInNestedClassDeclaration_VC6
-        class NoParagraphDatabaseAvailable : public TextImager::NotFullyInitialized {};
-#else
         /*
         @CLASS:         WordProcessor::NoParagraphDatabaseAvailable
         @BASES:         @'TextImager::NotFullyInitialized'
         @DESCRIPTION:   <p>Thrown by @'WordProcessor::GetLayoutMargins' etc when no @':shared_ptr<AbstractParagraphDatabaseRep>' available.</p>
         */
         class NoParagraphDatabaseAvailable : public NotFullyInitialized {};
-#endif
 
     public:
         class WPPartition;
@@ -967,8 +968,10 @@ namespace Stroika::Frameworks::Led {
         virtual void                   GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const override;
         virtual Led_tChar              GetSoftLineBreakCharacter () const override;
         virtual DiscontiguousRun<bool> GetHidableTextRuns () const override;
-        virtual Table*                 GetTableAt (size_t at) const override;
-        virtual void                   SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const override;
+#if qStroika_Frameworks_Led_SupportTables
+        virtual Table* GetTableAt (size_t at) const override;
+#endif
+        virtual void SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const override;
 
     protected:
         class TableIOMapper;
@@ -1443,13 +1446,8 @@ namespace Stroika::Frameworks::Led {
         friend class TemporarilySetOwningWP;
         friend class TemporarilyAllocateCellWP;
         friend class TemporarilyAllocateCellWithTablet;
-#if 1
         friend class EmbeddedTableWordProcessor;
         friend class CellRep;
-#else
-        friend class WordProcessor::Table::EmbeddedTableWordProcessor;
-        friend class WordProcessor::Table::CellRep;
-#endif
         friend class TableCMD;
         friend class WordProcessor::WPIdler;
         friend class WordProcessor;
