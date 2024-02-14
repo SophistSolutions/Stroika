@@ -195,7 +195,7 @@
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false --all-available-third-party-components",
         "COMMENT-1": "SKIP cuz runs out of disk space",
-        "run_on_branch": "NEVER"
+        "run_on_branch": "never"
     },
     {},
     {
