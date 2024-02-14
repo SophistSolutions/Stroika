@@ -30,6 +30,50 @@ namespace Stroika::Frameworks::Led {
         return fSelEnd;
     }
 
+    /*
+     ********************************************************************************
+     *********************** StandardStyledTextIOSrcStream **************************
+     ********************************************************************************
+     */
+    inline TextStore& StandardStyledTextIOSinkStream::GetTextStore () const
+    {
+        EnsureNotNull (fTextStore);
+        return *fTextStore;
+    }
+    inline shared_ptr<AbstractStyleDatabaseRep> StandardStyledTextIOSinkStream::GetStyleDatabase () const
+    {
+        return fStyleRunDatabase;
+    }
+    /*
+    @METHOD:        StandardStyledTextIOSinkStream::GetInsertionStart
+    @DESCRIPTION:   <p>Returns where (in TextStore marker coordinates - not relative to the sinkstream) where the next character
+                will be inserted. See also @'StandardStyledTextIOSinkStream::SetInsertionStart'</p>
+    */
+    inline size_t StandardStyledTextIOSinkStream::GetInsertionStart () const
+    {
+        return fInsertionStart;
+    }
+    /*
+    @METHOD:        StandardStyledTextIOSinkStream::SetInsertionStart
+    @DESCRIPTION:   <p>See also @'StandardStyledTextIOSinkStream::GetInsertionStart'</p>
+    */
+    inline void StandardStyledTextIOSinkStream::SetInsertionStart (size_t insertionStart)
+    {
+        fInsertionStart = insertionStart;
+    }
+    inline size_t StandardStyledTextIOSinkStream::GetOriginalStart () const
+    {
+        return fOriginalStart;
+    }
+    inline size_t StandardStyledTextIOSinkStream::GetCachedTextSize () const
+    {
+        return fCachedText.size ();
+    }
+    inline const vector<Led_tChar>& StandardStyledTextIOSinkStream::GetCachedText () const
+    {
+        return fCachedText;
+    }
+
 #if qStroika_Frameworks_Led_SupportGDI
     /*
      ********************************************************************************
@@ -65,46 +109,6 @@ namespace Stroika::Frameworks::Led {
 #else
         sCommandNames = cmdNames;
 #endif
-    }
-
-    //  class   StandardStyledTextInteractor::StandardStyledTextIOSinkStream
-    inline TextStore& StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetTextStore () const
-    {
-        EnsureNotNull (fTextStore);
-        return *fTextStore;
-    }
-    inline shared_ptr<AbstractStyleDatabaseRep> StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetStyleDatabase () const
-    {
-        return fStyleRunDatabase;
-    }
-    /*
-    @METHOD:        StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart
-    @DESCRIPTION:   <p>Returns where (in TextStore marker coordinates - not relative to the sinkstream) where the next character
-                will be inserted. See also @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart'</p>
-    */
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart () const
-    {
-        return fInsertionStart;
-    }
-    /*
-    @METHOD:        StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart
-    @DESCRIPTION:   <p>See also @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart'</p>
-    */
-    inline void StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart (size_t insertionStart)
-    {
-        fInsertionStart = insertionStart;
-    }
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetOriginalStart () const
-    {
-        return fOriginalStart;
-    }
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedTextSize () const
-    {
-        return fCachedText.size ();
-    }
-    inline const vector<Led_tChar>& StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedText () const
-    {
-        return fCachedText;
     }
 #endif
 

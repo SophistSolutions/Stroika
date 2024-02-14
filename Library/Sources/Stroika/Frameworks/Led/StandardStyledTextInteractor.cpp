@@ -144,6 +144,172 @@ size_t StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const
     return fSelStart;
 }
 
+/*
+ ********************************************************************************
+ ************************* StandardStyledTextIOSinkStream ***********************
+ ********************************************************************************
+ */
+StandardStyledTextIOSinkStream::StandardStyledTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                                                size_t insertionStart)
+    : fTextStore{textStore}
+    , fStyleRunDatabase{textStyleDatabase}
+    , fOriginalStart{insertionStart}
+    , fInsertionStart{insertionStart}
+{
+    RequireNotNull (textStore);
+    Require (textStyleDatabase.get () != nullptr);
+}
+
+StandardStyledTextIOSinkStream::~StandardStyledTextIOSinkStream ()
+{
+    try {
+        Flush ();
+    }
+    catch (...) {
+        // ignore, cuz cannot fail out of DTOR
+    }
+}
+
+size_t StandardStyledTextIOSinkStream::current_offset () const
+{
+    return fInsertionStart - fOriginalStart;
+}
+
+void StandardStyledTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec)
+{
+    RequireNotNull (text);
+    AssertNotNull (fTextStore);
+
+    //  If caching, append the text to an array. Coun't on the array to have efficient
+    //  growing properties (does for MSVC50 - grows by factor of two, so log-n append times).
+    fCachedText.insert (fCachedText.end (), text, text + nTChars);
+
+    /*
+     * Keep track of the style changes that need to be applied later. If there is NO spec specified, use the one from
+     * the previous section. Check for 'nTChars == 0' - don't append empty info-summary records.
+     */
+    if (nTChars != 0) {
+        if (fontSpec == nullptr) {
+            if (fSavedStyleInfo.size () == 0) {
+                fSavedStyleInfo.push_back (StyledInfoSummaryRecord (fStyleRunDatabase->GetStyleInfo (fOriginalStart, 0)[0], nTChars));
+            }
+            else {
+                fSavedStyleInfo.back ().fLength += nTChars;
+            }
+        }
+        else {
+            fSavedStyleInfo.push_back (StyledInfoSummaryRecord (*fontSpec, nTChars));
+        }
+    }
+    fInsertionStart += nTChars;
+}
+
+void StandardStyledTextIOSinkStream::ApplyStyle (size_t from, size_t to, const vector<StyledInfoSummaryRecord>& styleRuns)
+{
+    Require (from <= to);
+    if (GetCachedTextSize () != 0) {
+        Flush ();
+    }
+    fStyleRunDatabase->SetStyleInfo (fOriginalStart + from, to - from, styleRuns);
+}
+
+FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const
+{
+    return GetStaticDefaultFont ();
+}
+
+void StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at)
+{
+    RequireNotNull (embedding);
+    if (GetCachedTextSize () != 0) {
+        Flush ();
+    }
+    size_t    effectiveFrom = fOriginalStart + at;
+    Led_tChar testSentinel;
+    AssertNotNull (fTextStore);
+    fTextStore->CopyOut (effectiveFrom, 1, &testSentinel);
+    if (testSentinel != kEmbeddingSentinelChar) {
+        Execution::Throw (DataExchange::BadFormatException::kThe);
+    }
+    Stroika::Frameworks::Led::InsertEmbeddingForExistingSentinel (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase.get ());
+}
+
+void StandardStyledTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
+{
+    RequireNotNull (embedding);
+    AssertNotNull (fTextStore);
+    if (GetCachedTextSize () != 0) {
+        Flush ();
+    }
+    AddEmbedding (embedding, *fTextStore, fInsertionStart, fStyleRunDatabase.get ());
+    ++fInsertionStart;
+}
+
+void StandardStyledTextIOSinkStream::AppendSoftLineBreak ()
+{
+    // Bogus implementation - usually overriden...
+    AppendText (LED_TCHAR_OF ("\n"), 1, nullptr);
+}
+
+void StandardStyledTextIOSinkStream::InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner)
+{
+    Require (at <= current_offset ());
+    RequireNotNull (m);
+    RequireNotNull (markerOwner);
+    AssertNotNull (fTextStore);
+    if (GetCachedTextSize () != 0) {
+        Flush ();
+    }
+    {
+        TextStore::SimpleUpdater u (*fTextStore, fOriginalStart + at, fOriginalStart + at + length);
+        fTextStore->AddMarker (m, fOriginalStart + at, length, markerOwner);
+    }
+}
+
+void StandardStyledTextIOSinkStream::Flush ()
+{
+    if (GetCachedTextSize () != 0) {
+        AssertNotNull (fTextStore);
+        size_t dataSize      = fCachedText.size ();
+        size_t whereToInsert = fInsertionStart - dataSize;
+        fTextStore->Replace (whereToInsert, whereToInsert, Traversal::Iterator2Pointer (fCachedText.begin ()), dataSize);
+        fCachedText.clear ();
+
+        // Flush the cached style info
+        fStyleRunDatabase->SetStyleInfo (whereToInsert, dataSize, fSavedStyleInfo.size (), Traversal::Iterator2Pointer (fSavedStyleInfo.begin ()));
+        fSavedStyleInfo.clear ();
+    }
+    Ensure (fSavedStyleInfo.size () == 0);
+}
+
+void StandardStyledTextIOSinkStream::PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase, size_t insertionStart)
+{
+    Require (GetCachedTextSize () == 0); // must flush before setting/popping context
+
+    Context c;
+    c.fTextStore        = fTextStore;
+    c.fStyleRunDatabase = fStyleRunDatabase;
+    c.fInsertionStart   = fInsertionStart;
+    c.fOriginalStart    = fOriginalStart;
+    fSavedContexts.push_back (c);
+    fTextStore        = ts;
+    fStyleRunDatabase = textStyleDatabase;
+    fInsertionStart   = insertionStart;
+    fOriginalStart    = insertionStart;
+}
+
+void StandardStyledTextIOSinkStream::PopContext ()
+{
+    Require (GetCachedTextSize () == 0); // must flush before setting/popping context
+    Require (not fSavedContexts.empty ());
+    fTextStore        = fSavedContexts.back ().fTextStore;
+    fStyleRunDatabase = fSavedContexts.back ().fStyleRunDatabase;
+    fInsertionStart   = fSavedContexts.back ().fInsertionStart;
+    fOriginalStart    = fSavedContexts.back ().fOriginalStart;
+    fSavedContexts.pop_back ();
+}
+
+
 #if qStroika_Frameworks_Led_SupportGDI
 
 #if qPlatform_MacOS
@@ -622,181 +788,11 @@ InteractiveReplaceCommand::SavedTextRep* StandardStyledTextInteractor::Interacti
 {
     if (regionStart == regionEnd) {
         // optimization, cuz these are smaller
-        return new EmptySelStyleTextRep (this, selStart, selEnd);
+        return new EmptySelStyleTextRep{this, selStart, selEnd};
     }
     else {
         return TextInteractor::InteractiveUndoHelperMakeTextRep (regionStart, regionEnd, selStart, selEnd);
     }
-}
-
-/*
- ********************************************************************************
- ************************* StandardStyledTextIOSinkStream ***********************
- ********************************************************************************
- */
-using StandardStyledTextIOSinkStream = StandardStyledTextInteractor::StandardStyledTextIOSinkStream;
-StandardStyledTextIOSinkStream::StandardStyledTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                                                size_t insertionStart)
-    : inherited ()
-    , fSavedContexts ()
-    , fTextStore (textStore)
-    , fStyleRunDatabase (textStyleDatabase)
-    , fOriginalStart (insertionStart)
-    , fInsertionStart (insertionStart)
-    , fSavedStyleInfo ()
-    , fCachedText ()
-{
-    RequireNotNull (textStore);
-    Require (textStyleDatabase.get () != nullptr);
-}
-
-StandardStyledTextIOSinkStream::~StandardStyledTextIOSinkStream ()
-{
-    try {
-        Flush ();
-    }
-    catch (...) {
-        // ignore, cuz cannot fail out of DTOR
-    }
-}
-
-size_t StandardStyledTextIOSinkStream::current_offset () const
-{
-    return (fInsertionStart - fOriginalStart);
-}
-
-void StandardStyledTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec)
-{
-    RequireNotNull (text);
-    AssertNotNull (fTextStore);
-
-    //  If caching, append the text to an array. Coun't on the array to have efficient
-    //  growing properties (does for MSVC50 - grows by factor of two, so log-n append times).
-    fCachedText.insert (fCachedText.end (), text, text + nTChars);
-
-    /*
-     * Keep track of the style changes that need to be applied later. If there is NO spec specified, use the one from
-     * the previous section. Check for 'nTChars == 0' - don't append empty info-summary records.
-     */
-    if (nTChars != 0) {
-        if (fontSpec == nullptr) {
-            if (fSavedStyleInfo.size () == 0) {
-                fSavedStyleInfo.push_back (StyledInfoSummaryRecord (fStyleRunDatabase->GetStyleInfo (fOriginalStart, 0)[0], nTChars));
-            }
-            else {
-                fSavedStyleInfo.back ().fLength += nTChars;
-            }
-        }
-        else {
-            fSavedStyleInfo.push_back (StyledInfoSummaryRecord (*fontSpec, nTChars));
-        }
-    }
-    fInsertionStart += nTChars;
-}
-
-void StandardStyledTextIOSinkStream::ApplyStyle (size_t from, size_t to, const vector<StyledInfoSummaryRecord>& styleRuns)
-{
-    Require (from <= to);
-    if (GetCachedTextSize () != 0) {
-        Flush ();
-    }
-    fStyleRunDatabase->SetStyleInfo (fOriginalStart + from, to - from, styleRuns);
-}
-
-FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const
-{
-    return GetStaticDefaultFont ();
-}
-
-void StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at)
-{
-    RequireNotNull (embedding);
-    if (GetCachedTextSize () != 0) {
-        Flush ();
-    }
-    size_t    effectiveFrom = fOriginalStart + at;
-    Led_tChar testSentinel;
-    AssertNotNull (fTextStore);
-    fTextStore->CopyOut (effectiveFrom, 1, &testSentinel);
-    if (testSentinel != kEmbeddingSentinelChar) {
-        Execution::Throw (DataExchange::BadFormatException::kThe);
-    }
-    Stroika::Frameworks::Led::InsertEmbeddingForExistingSentinel (embedding, *fTextStore, effectiveFrom, fStyleRunDatabase.get ());
-}
-
-void StandardStyledTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
-{
-    RequireNotNull (embedding);
-    AssertNotNull (fTextStore);
-    if (GetCachedTextSize () != 0) {
-        Flush ();
-    }
-    AddEmbedding (embedding, *fTextStore, fInsertionStart, fStyleRunDatabase.get ());
-    ++fInsertionStart;
-}
-
-void StandardStyledTextIOSinkStream::AppendSoftLineBreak ()
-{
-    // Bogus implementation - usually overriden...
-    AppendText (LED_TCHAR_OF ("\n"), 1, nullptr);
-}
-
-void StandardStyledTextIOSinkStream::InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner)
-{
-    Require (at <= current_offset ());
-    RequireNotNull (m);
-    RequireNotNull (markerOwner);
-    AssertNotNull (fTextStore);
-    if (GetCachedTextSize () != 0) {
-        Flush ();
-    }
-    {
-        TextStore::SimpleUpdater u (*fTextStore, fOriginalStart + at, fOriginalStart + at + length);
-        fTextStore->AddMarker (m, fOriginalStart + at, length, markerOwner);
-    }
-}
-
-void StandardStyledTextIOSinkStream::Flush ()
-{
-    if (GetCachedTextSize () != 0) {
-        AssertNotNull (fTextStore);
-        size_t dataSize      = fCachedText.size ();
-        size_t whereToInsert = fInsertionStart - dataSize;
-        fTextStore->Replace (whereToInsert, whereToInsert, Traversal::Iterator2Pointer (fCachedText.begin ()), dataSize);
-        fCachedText.clear ();
-
-        // Flush the cached style info
-        fStyleRunDatabase->SetStyleInfo (whereToInsert, dataSize, fSavedStyleInfo.size (), Traversal::Iterator2Pointer (fSavedStyleInfo.begin ()));
-        fSavedStyleInfo.clear ();
-    }
-    Ensure (fSavedStyleInfo.size () == 0);
-}
-
-void StandardStyledTextIOSinkStream::PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase, size_t insertionStart)
-{
-    Require (GetCachedTextSize () == 0); // must flush before setting/popping context
-
-    Context c;
-    c.fTextStore        = fTextStore;
-    c.fStyleRunDatabase = fStyleRunDatabase;
-    c.fInsertionStart   = fInsertionStart;
-    c.fOriginalStart    = fOriginalStart;
-    fSavedContexts.push_back (c);
-    fTextStore        = ts;
-    fStyleRunDatabase = textStyleDatabase;
-    fInsertionStart   = insertionStart;
-    fOriginalStart    = insertionStart;
-}
-
-void StandardStyledTextIOSinkStream::PopContext ()
-{
-    Require (GetCachedTextSize () == 0); // must flush before setting/popping context
-    Require (not fSavedContexts.empty ());
-    fTextStore        = fSavedContexts.back ().fTextStore;
-    fStyleRunDatabase = fSavedContexts.back ().fStyleRunDatabase;
-    fInsertionStart   = fSavedContexts.back ().fInsertionStart;
-    fOriginalStart    = fSavedContexts.back ().fOriginalStart;
-    fSavedContexts.pop_back ();
 }
 
 /*
@@ -1083,7 +1079,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_OtherRegisteredEmbed
             @'StandardStyledTextInteractor::StyledTextFlavorPackageInternalizer' can use a dynamicly typed
             SinkStream. So - for example - the externalize methods include paragraph info.</p>
 */
-StandardStyledTextInteractor::StandardStyledTextIOSinkStream* StyledTextFlavorPackageInternalizer::mkStandardStyledTextIOSinkStream (size_t insertionStart)
+StandardStyledTextIOSinkStream* StyledTextFlavorPackageInternalizer::mkStandardStyledTextIOSinkStream (size_t insertionStart)
 {
     return new StandardStyledTextIOSinkStream (PeekAtTextStore (), fStyleDatabase, insertionStart);
 }

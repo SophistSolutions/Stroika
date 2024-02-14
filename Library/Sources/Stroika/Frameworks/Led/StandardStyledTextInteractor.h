@@ -86,6 +86,69 @@ namespace Stroika::Frameworks::Led {
         size_t                               fSelEnd;
     };
 
+    /**
+     *      <p>This is a writer sink stream which talks to a StandardStyledTextImager and/or WordProcessor
+     *  class. It knows about StyleDatabases, and ParagraphDatabases, and writes content to them from the
+     *  input reader class.</p>
+     */
+    class StandardStyledTextIOSinkStream : public virtual StyledTextIO::StyledTextIOReader::SinkStream {
+    private:
+        using inherited = StyledTextIO::StyledTextIOReader::SinkStream;
+
+    public:
+        StandardStyledTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase, size_t insertionStart = 0);
+        ~StandardStyledTextIOSinkStream ();
+
+    public:
+        // if fontSpec is nullptr, use default. Probably later we will return and update the fontspec with
+        // ApplyStyle
+        virtual size_t            current_offset () const override;
+        virtual void              AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
+        virtual void              ApplyStyle (size_t from, size_t to, const vector<StyledInfoSummaryRecord>& styleRuns) override;
+        virtual FontSpecification GetDefaultFontSpec () const override;
+#if qStroika_Frameworks_Led_SupportGDI
+        virtual void InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
+        virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
+#endif
+        virtual void AppendSoftLineBreak () override;
+        virtual void InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
+        virtual void Flush () override;
+
+    public:
+        nonvirtual size_t GetInsertionStart () const;
+        nonvirtual void   SetInsertionStart (size_t insertionStart);
+        nonvirtual size_t GetOriginalStart () const;
+        nonvirtual size_t GetCachedTextSize () const;
+
+    protected:
+        nonvirtual const vector<Led_tChar>& GetCachedText () const;
+
+    protected:
+        nonvirtual TextStore& GetTextStore () const;
+        nonvirtual shared_ptr<AbstractStyleDatabaseRep> GetStyleDatabase () const;
+
+    protected:
+        nonvirtual void PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase, size_t insertionStart);
+        nonvirtual void PopContext ();
+
+    private:
+        struct Context {
+            TextStore*                           fTextStore;
+            shared_ptr<AbstractStyleDatabaseRep> fStyleRunDatabase;
+            size_t                               fOriginalStart;
+            size_t                               fInsertionStart;
+        };
+        vector<Context> fSavedContexts;
+
+    private:
+        TextStore*                           fTextStore{nullptr};
+        shared_ptr<AbstractStyleDatabaseRep> fStyleRunDatabase{nullptr};
+        size_t                               fOriginalStart{0};
+        size_t                               fInsertionStart{0};
+        vector<StyledInfoSummaryRecord>      fSavedStyleInfo{};
+        vector<Led_tChar>                    fCachedText{};
+    };
+
 #if qStroika_Frameworks_Led_SupportGDI
     class SimpleEmbeddedObjectStyleMarker;
 
@@ -156,9 +219,6 @@ namespace Stroika::Frameworks::Led {
         virtual bool CanAcceptFlavor (Led_ClipFormat clipFormat) const override;
 
     public:
-        class StandardStyledTextIOSinkStream;
-
-    public:
         class StyledTextFlavorPackageInternalizer;
         class StyledTextFlavorPackageExternalizer;
 
@@ -222,71 +282,6 @@ namespace Stroika::Frameworks::Led {
     */
     struct StandardStyledTextInteractor::CommandNames {
         SDKString fFontChangeCommandName;
-    };
-
-    /*
-    @CLASS:         StandardStyledTextInteractor::StandardStyledTextIOSinkStream
-    @BASES:         @'StyledTextIOReader::SinkStream'
-    @DESCRIPTION:   <p>This is a writer sink stream which talks to a StandardStyledTextImager and/or WordProcessor
-        class. It knows about StyleDatabases, and ParagraphDatabases, and writes content to them from the
-        input reader class.</p>
-    */
-    class StandardStyledTextInteractor::StandardStyledTextIOSinkStream : public virtual StyledTextIO::StyledTextIOReader::SinkStream {
-    private:
-        using inherited = StyledTextIO::StyledTextIOReader::SinkStream;
-
-    public:
-        StandardStyledTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase, size_t insertionStart = 0);
-        ~StandardStyledTextIOSinkStream ();
-
-    public:
-        // if fontSpec is nullptr, use default. Probably later we will return and update the fontspec with
-        // ApplyStyle
-        virtual size_t            current_offset () const override;
-        virtual void              AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
-        virtual void              ApplyStyle (size_t from, size_t to, const vector<StyledInfoSummaryRecord>& styleRuns) override;
-        virtual FontSpecification GetDefaultFontSpec () const override;
-#if qStroika_Frameworks_Led_SupportGDI
-        virtual void InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
-        virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
-#endif
-        virtual void AppendSoftLineBreak () override;
-        virtual void InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
-        virtual void Flush () override;
-
-    public:
-        nonvirtual size_t GetInsertionStart () const;
-        nonvirtual void   SetInsertionStart (size_t insertionStart);
-        nonvirtual size_t GetOriginalStart () const;
-        nonvirtual size_t GetCachedTextSize () const;
-
-    protected:
-        nonvirtual const vector<Led_tChar>& GetCachedText () const;
-
-    protected:
-        nonvirtual TextStore& GetTextStore () const;
-        nonvirtual shared_ptr<AbstractStyleDatabaseRep> GetStyleDatabase () const;
-
-    protected:
-        nonvirtual void PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase, size_t insertionStart);
-        nonvirtual void PopContext ();
-
-    private:
-        struct Context {
-            TextStore*                           fTextStore;
-            shared_ptr<AbstractStyleDatabaseRep> fStyleRunDatabase;
-            size_t                               fOriginalStart;
-            size_t                               fInsertionStart;
-        };
-        vector<Context> fSavedContexts;
-
-    private:
-        TextStore*                           fTextStore;
-        shared_ptr<AbstractStyleDatabaseRep> fStyleRunDatabase;
-        size_t                               fOriginalStart;
-        size_t                               fInsertionStart;
-        vector<StyledInfoSummaryRecord>      fSavedStyleInfo;
-        vector<Led_tChar>                    fCachedText;
     };
 
     /*
