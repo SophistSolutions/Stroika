@@ -380,7 +380,7 @@ const inline TWIPS kBadCachedFarthestRightMarginInDocument = TWIPS (-1);
 
     private:
         shared_ptr<HidableTextMarkerOwner> fHidableTextDatabase;
-        bool                   fICreatedHidableTextDB;
+        bool                               fICreatedHidableTextDB;
 
     protected:
         virtual void    HookHidableTextDatabaseChanged ();

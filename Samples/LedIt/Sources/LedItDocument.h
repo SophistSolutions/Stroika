@@ -118,7 +118,7 @@ public:
     nonvirtual shared_ptr<AbstractStyleDatabaseRep>& GetStyleDatabase ();
     nonvirtual shared_ptr<AbstractParagraphDatabaseRep>& GetParagraphDatabase ();
     nonvirtual shared_ptr<HidableTextMarkerOwner>& GetHidableTextDatabase ();
-    nonvirtual CommandHandler&                        GetCommandHandler ();
+    nonvirtual CommandHandler&                     GetCommandHandler ();
 
 protected:
 public:

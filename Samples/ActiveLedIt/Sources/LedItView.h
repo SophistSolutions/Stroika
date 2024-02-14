@@ -53,9 +53,9 @@ public:
     virtual void    FireUserCommand (const wstring& internalCmdName)                                                                    = 0;
 
 public:
-    ChunkedArrayTextStore                 fTextStore;
-    MultiLevelUndoCommandHandler          fCommandHandler;
-    shared_ptr<HidableTextMarkerOwner>    fHidableTextDatabase;
+    ChunkedArrayTextStore              fTextStore;
+    MultiLevelUndoCommandHandler       fCommandHandler;
+    shared_ptr<HidableTextMarkerOwner> fHidableTextDatabase;
 };
 
 using LedItViewAlmostBASE = Led_MFC_ExceptionHandlerHelper<Led_MFC_X<WordProcessor>>;

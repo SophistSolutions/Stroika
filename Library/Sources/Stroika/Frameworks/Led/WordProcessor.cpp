@@ -1067,7 +1067,7 @@ void WordProcessor::HookGainedNewTextStore_ ()
         SetParagraphDatabase (nullptr); // fills in default value since we have a textstore...
     }
     if (fHidableTextDatabase.get () == nullptr) {
-        SetHidableTextDatabase (make_shared< UniformHidableTextMarkerOwner > (GetTextStore ())); // fills in default value since we have e textstore...
+        SetHidableTextDatabase (make_shared<UniformHidableTextMarkerOwner> (GetTextStore ())); // fills in default value since we have e textstore...
         fICreatedHidableTextDB = true; // do this AFTER above call - cuz WordProcessor::SetHidableTextDatabase () sets flag FALSE (so for case when others call it)
     }
 }
@@ -7680,7 +7680,7 @@ WordProcessor::Table::CellRep::CellRep (Table& forTable)
     fTextStore->AddMarkerOwner (this);
     fStyleDatabase       = make_shared<StyleDatabaseRep> (*fTextStore);
     fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (*fTextStore);
-    fHidableTextDatabase = make_shared< UniformHidableTextMarkerOwner> (*fTextStore);
+    fHidableTextDatabase = make_shared<UniformHidableTextMarkerOwner> (*fTextStore);
 }
 
 WordProcessor::Table::CellRep::~CellRep ()
