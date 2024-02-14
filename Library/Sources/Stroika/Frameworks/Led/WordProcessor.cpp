@@ -31,6 +31,286 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
+
+
+/*
+ ********************************************************************************
+ ********************************* ParagraphInfo ********************************
+ ********************************************************************************
+ */
+ParagraphInfo::ParagraphInfo ()
+    : fJustification (eLeftJustify)
+    , fTabStops ()
+    , fLeftMargin (0)
+    , fRightMargin (1)
+    , fFirstIndent (0)
+    , fSpaceBefore (TWIPS{0})
+    , fSpaceAfter (TWIPS{0})
+    , fLineSpacing ()
+    , fListStyle (eListStyle_None)
+    , fListIndentLevel (0)
+{
+}
+
+/*
+ ********************************************************************************
+ **************************** ParagraphDatabaseRep ******************************
+ ********************************************************************************
+ */
+ParagraphDatabaseRep::ParagraphDatabaseRep (TextStore& textStore)
+    : inheritedMC (textStore, GetStaticDefaultParagraphInfo ())
+    , fPartition ()
+{
+    #if qStroika_Frameworks_Led_SupportGDI
+    //tmphack test - see if this fixes SPR#1129
+    // LGP 2002-10-19 - didnt appear to work so probably get rid of it - but test some more!!!
+    SetPartition (make_shared<WPPartition> (GetTextStore (), *this));
+    #else
+    SetPartition (make_shared<LineBasedPartition> (GetTextStore ()));
+    #endif
+}
+
+void ParagraphDatabaseRep::SetPartition (const shared_ptr<Partition>& partitionPtr)
+{
+    if (fPartition != partitionPtr) {
+        fPartition = partitionPtr;
+        // Re-align all the partition elts as close as possible to those appropriate for the new partition.
+        CheckMarkerBounaryConstraints (0, GetTextStore ().GetEnd ());
+    }
+}
+
+/*
+@METHOD:        WordProcessor::ParagraphDatabaseRep::GetStaticDefaultParagraphInfo
+@DESCRIPTION:
+    <p>Return the default @'ParagraphInfo' object used when the paragraph database object is created.</p>
+*/
+ParagraphInfo ParagraphDatabaseRep::GetStaticDefaultParagraphInfo ()
+{
+    ParagraphInfo defaultPi;
+    const int     kDefaultInches = 6;
+    defaultPi.SetMargins (TWIPS{0}, TWIPS (kDefaultInches * 1440));
+    defaultPi.SetJustification (eLeftJustify);
+    return defaultPi;
+}
+
+const ParagraphInfo& ParagraphDatabaseRep::GetParagraphInfo (size_t charAfterPos) const
+{
+    return GetInfo (charAfterPos);
+}
+
+vector<pair<ParagraphInfo, size_t>> ParagraphDatabaseRep::GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const
+{
+    return GetInfo (charAfterPos, nTCharsFollowing);
+}
+
+void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers)
+{
+    if (infoForMarkers.GetMargins_Valid ()) {
+        fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
+    }
+    SetInfo (charAfterPos, nTCharsFollowing, infoForMarkers);
+}
+
+void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, const vector<pair<IncrementalParagraphInfo, size_t>>& infoForMarkers)
+{
+    for (auto i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
+        if ((*i).first.GetMargins_Valid ()) {
+            fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
+            break;
+        }
+    }
+    SetInfos (charAfterPos, infoForMarkers);
+}
+
+void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers)
+{
+    fCachedFarthestRightMarginInDocument = kBadCachedFarthestRightMarginInDocument;
+    SetInfos2 (charAfterPos, infoForMarkers);
+}
+
+/*
+@METHOD:        WordProcessor::ParagraphDatabaseRep::SetInfo
+@DESCRIPTION:   <p>Override @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::SetInfos' to assure we have a partition
+            associated with us before allowing changes. This partition can be changed later.</p>
+*/
+void ParagraphDatabaseRep::SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers)
+{
+    Assert (fPartition.get () != nullptr);
+    inheritedMC::SetInfo (charAfterPos, nTCharsFollowing, infoForMarkers);
+}
+
+void ParagraphDatabaseRep::SetInfos (size_t charAfterPos, const vector<pair<IncrementalParagraphInfo, size_t>>& infoForMarkers)
+{
+    Assert (fPartition.get () != nullptr);
+    inheritedMC::SetInfos (charAfterPos, infoForMarkers);
+}
+
+/*
+@METHOD:        WordProcessor::ParagraphDatabaseRep::NoteCoverRangeDirtied
+@ACCESS:        protected
+@DESCRIPTION:   <p>Override @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::NoteCoverRangeDirtied'
+            to assure we check boundary contraints (assure paragraph cover markers end on paragraph boundaries,
+            as defined by our partition).</p>
+*/
+void ParagraphDatabaseRep::NoteCoverRangeDirtied (size_t from, size_t to, const MarkerVector& rangeAndSurroundingsMarkers)
+{
+    inheritedMC::NoteCoverRangeDirtied (from, to, rangeAndSurroundingsMarkers);
+    CheckMarkerBounaryConstraints (rangeAndSurroundingsMarkers);
+}
+
+void ParagraphDatabaseRep::ConstrainSetInfoArgs (size_t* charAfterPos, size_t* nTCharsFollowing)
+{
+    RequireNotNull (charAfterPos);
+    RequireNotNull (nTCharsFollowing);
+
+    size_t           from      = *charAfterPos;
+    size_t           to        = from + *nTCharsFollowing;
+    PartitionMarker* startPara = fPartition->GetPartitionMarkerContainingPosition (from);
+    PartitionMarker* endPara   = (to <= startPara->GetEnd ()) ? startPara : fPartition->GetPartitionMarkerContainingPosition (to);
+    // If the 'to' position happens to be the exact start of a paritition, it would have also been the end of the previous
+    // parition. Take it to be the end of the previous one (unless that would imply no selection)
+    if (startPara != endPara and endPara->GetStart () == to) {
+        endPara = endPara->GetPrevious ();
+    }
+    size_t bigFrom = startPara->GetStart ();
+    size_t bigEnd  = min (endPara->GetEnd (), GetTextStore ().GetEnd () + 1);
+
+    *charAfterPos     = bigFrom;
+    *nTCharsFollowing = bigEnd - bigFrom;
+}
+
+/*
+@METHOD:        WordProcessor::ParagraphDatabaseRep::CheckMarkerBounaryConstraints
+@ACCESS:        private
+@DESCRIPTION:   <p>Called internally to check that all the paragraph info records in the MarkerCover
+            respect the contraint that they start and end on paragraph boundaries.</p>
+*/
+void ParagraphDatabaseRep::CheckMarkerBounaryConstraints (size_t from, size_t to) noexcept
+{
+    if (fPartition.get () != nullptr) {
+        MarkerVector markers = CollectAllInRange_OrSurroundings (from, to);
+        sort (markers.begin (), markers.end (), LessThan<ParagraphInfoMarker> ());
+        CheckMarkerBounaryConstraints (markers);
+    }
+}
+
+void ParagraphDatabaseRep::CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) noexcept
+{
+    /*
+     *  For each paragraph style run, check if its edges fall on paragraph (as specified by the partition) boundaries.
+     *  If not - then adjust the style runs so they do.
+     */
+    if (fPartition.get () != nullptr) {
+        for (auto i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
+            ParagraphInfoMarker* m = *i;
+            AssertNotNull (m);
+            size_t m_start; // Use these temporaries as speed tweeks -LGP990310
+            size_t m_end;
+            m->GetRange (&m_start, &m_end);
+            size_t m_length = m_end - m_start;
+
+            // Ignore zero-length ParagraphInfoMarkers - they will soon be culled...
+            Assert (m->GetLength () == m_length);
+            if (m_length != 0) {
+                Assert (m_start == m->GetStart ());
+                PartitionMarker* partitionElt = fPartition->GetPartitionMarkerContainingPosition (m_start);
+                Assert (partitionElt->GetStart () == m->GetStart ()); // cuz we fix these up in order, and can only adjust ends of
+                // cur marker, and start of following one
+                Assert (m->GetEnd () == m_end);
+                size_t partitionElt_end;
+                for (; (partitionElt_end = partitionElt->GetEnd ()) < m_end;) {
+                    partitionElt = partitionElt->GetNext ();
+                    AssertNotNull (partitionElt); // must get to end by markerpos before last marker
+                }
+                Assert (partitionElt_end == partitionElt->GetEnd ());
+
+                /*
+                 *      We've now walked all the pms in this ParagraphInfoMarker, and if the last pm end was the same as
+                 *  our ParagraphInfoMarker end, were all set. If they are unequal (cuz of how we walked the list), then
+                 *  the PM extends PAST our ParagraphInfoMarker end. If so, we must adjust the boundaries between the
+                 *  current ParagraphInfoMarker and the following one.
+                 *
+                 *      Now we have an arbitrary choice to make. Do we move the ParagraphInfoMarker to the right, or to
+                 *  the left. This is completely arbitrary, and the only significance is that if we move to the right
+                 *  then we lose ParagraphInfo styling of the following sentence when merging them together, and
+                 *  if we go the other way, we get the opposite effect.
+                 *
+                 *      For now, chose to move the ParagraphInfoMarker to the RIGHT.
+                 *
+                 *      Note - this arbitrary choice has some UI consequences. I've tried (as part of SPR#1072 (2001-11-08)) to
+                 *  compare what Led does with MSWord2k, and WordPad. WordPad and MSWord2k behave identically, but somewhat inconsistently
+                 *  within themselves. If you have two paras with different style info, if you select the SINGLE NL between the two and delete
+                 *  it, the paras are merged with the info from the first paragraph. If you select TWO chars - then the paras are merged
+                 *  with the info from the second. VERY strange.
+                 *
+                 *      Anyhow - for now - with Led - I've decided to adopt the principle that the info resides (logically) in the
+                 *  paragraph-termitating character. That implies that when the paragraphs are merged - we copy the info from the
+                 *  FOLLOWING paragraph. -- LGP 2001-11-08- SPR#1072.
+                 */
+                Assert (m->GetEnd () == m_end);
+                if (partitionElt_end != m_end) {
+                    MarkerVector markers = CollectAllNonEmptyInRange (m_end, m_end + 1);
+                    Assert (markers.size () == 1); // Better be exactly ONE following marker
+                    ParagraphInfoMarker* followingMarker = markers[0];
+                    Assert (m_end == followingMarker->GetStart ()); // Assure these markers I'm operating on are already continguous
+                    Assert (partitionElt_end == partitionElt->GetEnd ());
+                    GetTextStore ().SetMarkerEnd (m, partitionElt_end);
+                    Assert (followingMarker->GetEnd () >= partitionElt->GetEnd ()); // Cannot set negative length
+                    Assert (partitionElt_end == partitionElt->GetEnd ());
+                    GetTextStore ().SetMarkerStart (followingMarker, partitionElt_end);
+                    IncrementalParagraphInfo followingInfo = IncrementalParagraphInfo (followingMarker->GetInfo ());
+                    if (followingMarker->GetLength () == 0) {
+                        fMarkersToBeDeleted.AccumulateMarkerForDeletion (followingMarker);
+                        Assert (partitionElt_end == m->GetEnd ());
+                        CheckForMerges (partitionElt_end);
+                    }
+                    /*
+                     *  When we combine two paragraph markers, we must choose which paragraphs info to keep.
+                     *  We choose to keep the marker info from the second marker. SPR#1038.
+                     *
+                     *  But, do this carefully - just to the last partition element's worth of text - not to the last
+                     *  paragraph style run element (which could be multiple paragraphs). This was the crux of the fix
+                     *  in SPR#1072 (2001-11-08).
+                     */
+                    SetInfoInnerLoop (partitionElt->GetStart (), partitionElt->GetEnd (), followingInfo,
+                                      UpdateInfo (partitionElt->GetStart (), partitionElt->GetEnd (), LED_TCHAR_OF (""), 0, false, false), nullptr);
+                    CullZerod (partitionElt->GetStart ());
+                    CullZerod (partitionElt->GetEnd ());
+                }
+            }
+        }
+    }
+}
+
+#if qDebug
+void ParagraphDatabaseRep::Invariant_ () const
+{
+    inheritedMC::Invariant_ ();
+
+    // Check partition in-sync with our marker alignments
+    if (fPartition.get () != nullptr) {
+        // all effected text is diff if we did a replace or not - if no, then from-to,
+        // else from to from+textInserted (cuz from-to deleted)
+        MarkerVector markers = CollectAllInRange_OrSurroundings (0, GetTextStore ().GetLength () + 1);
+        sort (markers.begin (), markers.end (), LessThan<ParagraphInfoMarker> ());
+        PartitionMarker*     lastPartitionElt        = nullptr;
+        for (auto i = markers.begin (); i != markers.end (); ++i) {
+            ParagraphInfoMarker* m = *i;
+            Assert (m->GetLength () != 0);
+            PartitionMarker* curPartitionElt = fPartition->GetPartitionMarkerContainingPosition (m->GetStart ());
+            Assert (curPartitionElt != lastPartitionElt); // cuz then we would have multiple ParagraphInfos in a single PartitionElt
+            Assert (curPartitionElt->GetStart () == m->GetStart ()); // partElt boundary must always match start
+            Assert (curPartitionElt->GetEnd () <= m->GetEnd ());     // ParagraphInfo contains either one or more (but not less
+            // or partial) partition elts
+            lastPartitionElt        = curPartitionElt;
+        }
+    }
+}
+#endif
+
+
+
+
 #if qStroika_Frameworks_Led_SupportGDI
 
 class ParagraphInfoChangeTextRep : public InteractiveReplaceCommand::SavedTextRep {
@@ -240,278 +520,6 @@ struct DoIt_IndentUnIndentList {
     }
 };
 
-/*
- ********************************************************************************
- ********************************* ParagraphInfo ********************************
- ********************************************************************************
- */
-ParagraphInfo::ParagraphInfo ()
-    : fJustification (eLeftJustify)
-    , fTabStops ()
-    , fLeftMargin (0)
-    , fRightMargin (1)
-    , fFirstIndent (0)
-    , fSpaceBefore (TWIPS{0})
-    , fSpaceAfter (TWIPS{0})
-    , fLineSpacing ()
-    , fListStyle (eListStyle_None)
-    , fListIndentLevel (0)
-{
-}
-
-/*
- ********************************************************************************
- **************************** ParagraphDatabaseRep ******************************
- ********************************************************************************
- */
-ParagraphDatabaseRep::ParagraphDatabaseRep (TextStore& textStore)
-    : inheritedMC (textStore, GetStaticDefaultParagraphInfo ())
-    , fPartition ()
-{
-    //tmphack test - see if this fixes SPR#1129
-    // LGP 2002-10-19 - didnt appear to work so probably get rid of it - but test some more!!!
-    SetPartition (make_shared<WordProcessor::WPPartition> (GetTextStore (), *this));
-}
-
-void ParagraphDatabaseRep::SetPartition (const shared_ptr<Partition>& partitionPtr)
-{
-    if (fPartition != partitionPtr) {
-        fPartition = partitionPtr;
-        // Re-align all the partition elts as close as possible to those appropriate for the new partition.
-        CheckMarkerBounaryConstraints (0, GetTextStore ().GetEnd ());
-    }
-}
-
-/*
-@METHOD:        WordProcessor::ParagraphDatabaseRep::GetStaticDefaultParagraphInfo
-@DESCRIPTION:
-    <p>Return the default @'ParagraphInfo' object used when the paragraph database object is created.</p>
-*/
-ParagraphInfo ParagraphDatabaseRep::GetStaticDefaultParagraphInfo ()
-{
-    ParagraphInfo defaultPi;
-    const int     kDefaultInches = 6;
-    defaultPi.SetMargins (TWIPS{0}, TWIPS (kDefaultInches * 1440));
-    defaultPi.SetJustification (eLeftJustify);
-    return defaultPi;
-}
-
-const ParagraphInfo& ParagraphDatabaseRep::GetParagraphInfo (size_t charAfterPos) const
-{
-    return GetInfo (charAfterPos);
-}
-
-vector<pair<ParagraphInfo, size_t>> ParagraphDatabaseRep::GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const
-{
-    return GetInfo (charAfterPos, nTCharsFollowing);
-}
-
-void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers)
-{
-    if (infoForMarkers.GetMargins_Valid ()) {
-        fCachedFarthestRightMarginInDocument = WordProcessor::kBadCachedFarthestRightMarginInDocument;
-    }
-    SetInfo (charAfterPos, nTCharsFollowing, infoForMarkers);
-}
-
-void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, const vector<pair<IncrementalParagraphInfo, size_t>>& infoForMarkers)
-{
-    for (auto i = infoForMarkers.begin (); i != infoForMarkers.end (); ++i) {
-        if ((*i).first.GetMargins_Valid ()) {
-            fCachedFarthestRightMarginInDocument = WordProcessor::kBadCachedFarthestRightMarginInDocument;
-            break;
-        }
-    }
-    SetInfos (charAfterPos, infoForMarkers);
-}
-
-void ParagraphDatabaseRep::SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers)
-{
-    fCachedFarthestRightMarginInDocument = WordProcessor::kBadCachedFarthestRightMarginInDocument;
-    SetInfos2 (charAfterPos, infoForMarkers);
-}
-
-/*
-@METHOD:        WordProcessor::ParagraphDatabaseRep::SetInfo
-@DESCRIPTION:   <p>Override @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::SetInfos' to assure we have a partition
-            associated with us before allowing changes. This partition can be changed later.</p>
-*/
-void ParagraphDatabaseRep::SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers)
-{
-    Assert (fPartition.get () != nullptr);
-    inheritedMC::SetInfo (charAfterPos, nTCharsFollowing, infoForMarkers);
-}
-
-void ParagraphDatabaseRep::SetInfos (size_t charAfterPos, const vector<pair<IncrementalParagraphInfo, size_t>>& infoForMarkers)
-{
-    Assert (fPartition.get () != nullptr);
-    inheritedMC::SetInfos (charAfterPos, infoForMarkers);
-}
-
-/*
-@METHOD:        WordProcessor::ParagraphDatabaseRep::NoteCoverRangeDirtied
-@ACCESS:        protected
-@DESCRIPTION:   <p>Override @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::NoteCoverRangeDirtied'
-            to assure we check boundary contraints (assure paragraph cover markers end on paragraph boundaries,
-            as defined by our partition).</p>
-*/
-void ParagraphDatabaseRep::NoteCoverRangeDirtied (size_t from, size_t to, const MarkerVector& rangeAndSurroundingsMarkers)
-{
-    inheritedMC::NoteCoverRangeDirtied (from, to, rangeAndSurroundingsMarkers);
-    CheckMarkerBounaryConstraints (rangeAndSurroundingsMarkers);
-}
-
-void ParagraphDatabaseRep::ConstrainSetInfoArgs (size_t* charAfterPos, size_t* nTCharsFollowing)
-{
-    RequireNotNull (charAfterPos);
-    RequireNotNull (nTCharsFollowing);
-
-    size_t           from      = *charAfterPos;
-    size_t           to        = from + *nTCharsFollowing;
-    PartitionMarker* startPara = fPartition->GetPartitionMarkerContainingPosition (from);
-    PartitionMarker* endPara   = (to <= startPara->GetEnd ()) ? startPara : fPartition->GetPartitionMarkerContainingPosition (to);
-    // If the 'to' position happens to be the exact start of a paritition, it would have also been the end of the previous
-    // parition. Take it to be the end of the previous one (unless that would imply no selection)
-    if (startPara != endPara and endPara->GetStart () == to) {
-        endPara = endPara->GetPrevious ();
-    }
-    size_t bigFrom = startPara->GetStart ();
-    size_t bigEnd  = min (endPara->GetEnd (), GetTextStore ().GetEnd () + 1);
-
-    *charAfterPos     = bigFrom;
-    *nTCharsFollowing = bigEnd - bigFrom;
-}
-
-/*
-@METHOD:        WordProcessor::ParagraphDatabaseRep::CheckMarkerBounaryConstraints
-@ACCESS:        private
-@DESCRIPTION:   <p>Called internally to check that all the paragraph info records in the MarkerCover
-            respect the contraint that they start and end on paragraph boundaries.</p>
-*/
-void ParagraphDatabaseRep::CheckMarkerBounaryConstraints (size_t from, size_t to) noexcept
-{
-    if (fPartition.get () != nullptr) {
-        MarkerVector markers = CollectAllInRange_OrSurroundings (from, to);
-        sort (markers.begin (), markers.end (), LessThan<ParagraphInfoMarker> ());
-        CheckMarkerBounaryConstraints (markers);
-    }
-}
-
-void ParagraphDatabaseRep::CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) noexcept
-{
-    /*
-     *  For each paragraph style run, check if its edges fall on paragraph (as specified by the partition) boundaries.
-     *  If not - then adjust the style runs so they do.
-     */
-    if (fPartition.get () != nullptr) {
-        for (auto i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
-            ParagraphInfoMarker* m = *i;
-            AssertNotNull (m);
-            size_t m_start; // Use these temporaries as speed tweeks -LGP990310
-            size_t m_end;
-            m->GetRange (&m_start, &m_end);
-            size_t m_length = m_end - m_start;
-
-            // Ignore zero-length ParagraphInfoMarkers - they will soon be culled...
-            Assert (m->GetLength () == m_length);
-            if (m_length != 0) {
-                Assert (m_start == m->GetStart ());
-                PartitionMarker* partitionElt = fPartition->GetPartitionMarkerContainingPosition (m_start);
-                Assert (partitionElt->GetStart () == m->GetStart ()); // cuz we fix these up in order, and can only adjust ends of
-                // cur marker, and start of following one
-                Assert (m->GetEnd () == m_end);
-                size_t partitionElt_end;
-                for (; (partitionElt_end = partitionElt->GetEnd ()) < m_end;) {
-                    partitionElt = partitionElt->GetNext ();
-                    AssertNotNull (partitionElt); // must get to end by markerpos before last marker
-                }
-                Assert (partitionElt_end == partitionElt->GetEnd ());
-
-                /*
-                 *      We've now walked all the pms in this ParagraphInfoMarker, and if the last pm end was the same as
-                 *  our ParagraphInfoMarker end, were all set. If they are unequal (cuz of how we walked the list), then
-                 *  the PM extends PAST our ParagraphInfoMarker end. If so, we must adjust the boundaries between the
-                 *  current ParagraphInfoMarker and the following one.
-                 *
-                 *      Now we have an arbitrary choice to make. Do we move the ParagraphInfoMarker to the right, or to
-                 *  the left. This is completely arbitrary, and the only significance is that if we move to the right
-                 *  then we lose ParagraphInfo styling of the following sentence when merging them together, and
-                 *  if we go the other way, we get the opposite effect.
-                 *
-                 *      For now, chose to move the ParagraphInfoMarker to the RIGHT.
-                 *
-                 *      Note - this arbitrary choice has some UI consequences. I've tried (as part of SPR#1072 (2001-11-08)) to
-                 *  compare what Led does with MSWord2k, and WordPad. WordPad and MSWord2k behave identically, but somewhat inconsistently
-                 *  within themselves. If you have two paras with different style info, if you select the SINGLE NL between the two and delete
-                 *  it, the paras are merged with the info from the first paragraph. If you select TWO chars - then the paras are merged
-                 *  with the info from the second. VERY strange.
-                 *
-                 *      Anyhow - for now - with Led - I've decided to adopt the principle that the info resides (logically) in the
-                 *  paragraph-termitating character. That implies that when the paragraphs are merged - we copy the info from the
-                 *  FOLLOWING paragraph. -- LGP 2001-11-08- SPR#1072.
-                 */
-                Assert (m->GetEnd () == m_end);
-                if (partitionElt_end != m_end) {
-                    MarkerVector markers = CollectAllNonEmptyInRange (m_end, m_end + 1);
-                    Assert (markers.size () == 1); // Better be exactly ONE following marker
-                    ParagraphInfoMarker* followingMarker = markers[0];
-                    Assert (m_end == followingMarker->GetStart ()); // Assure these markers I'm operating on are already continguous
-                    Assert (partitionElt_end == partitionElt->GetEnd ());
-                    GetTextStore ().SetMarkerEnd (m, partitionElt_end);
-                    Assert (followingMarker->GetEnd () >= partitionElt->GetEnd ()); // Cannot set negative length
-                    Assert (partitionElt_end == partitionElt->GetEnd ());
-                    GetTextStore ().SetMarkerStart (followingMarker, partitionElt_end);
-                    IncrementalParagraphInfo followingInfo = IncrementalParagraphInfo (followingMarker->GetInfo ());
-                    if (followingMarker->GetLength () == 0) {
-                        fMarkersToBeDeleted.AccumulateMarkerForDeletion (followingMarker);
-                        Assert (partitionElt_end == m->GetEnd ());
-                        CheckForMerges (partitionElt_end);
-                    }
-                    /*
-                     *  When we combine two paragraph markers, we must choose which paragraphs info to keep.
-                     *  We choose to keep the marker info from the second marker. SPR#1038.
-                     *
-                     *  But, do this carefully - just to the last partition element's worth of text - not to the last
-                     *  paragraph style run element (which could be multiple paragraphs). This was the crux of the fix
-                     *  in SPR#1072 (2001-11-08).
-                     */
-                    SetInfoInnerLoop (partitionElt->GetStart (), partitionElt->GetEnd (), followingInfo,
-                                      UpdateInfo (partitionElt->GetStart (), partitionElt->GetEnd (), LED_TCHAR_OF (""), 0, false, false), nullptr);
-                    CullZerod (partitionElt->GetStart ());
-                    CullZerod (partitionElt->GetEnd ());
-                }
-            }
-        }
-    }
-}
-
-#if qDebug
-void ParagraphDatabaseRep::Invariant_ () const
-{
-    inheritedMC::Invariant_ ();
-
-    // Check partition in-sync with our marker alignments
-    if (fPartition.get () != nullptr) {
-        // all effected text is diff if we did a replace or not - if no, then from-to,
-        // else from to from+textInserted (cuz from-to deleted)
-        MarkerVector markers = CollectAllInRange_OrSurroundings (0, GetTextStore ().GetLength () + 1);
-        sort (markers.begin (), markers.end (), LessThan<ParagraphInfoMarker> ());
-        PartitionMarker*     lastPartitionElt        = nullptr;
-        ParagraphInfoMarker* lastParagraphInfoMarker = nullptr;
-        for (auto i = markers.begin (); i != markers.end (); ++i) {
-            ParagraphInfoMarker* m = *i;
-            Assert (m->GetLength () != 0);
-            PartitionMarker* curPartitionElt = fPartition->GetPartitionMarkerContainingPosition (m->GetStart ());
-            Assert (curPartitionElt != lastPartitionElt); // cuz then we would have multiple ParagraphInfos in a single PartitionElt
-            Assert (curPartitionElt->GetStart () == m->GetStart ()); // partElt boundary must always match start
-            Assert (curPartitionElt->GetEnd () <= m->GetEnd ());     // ParagraphInfo contains either one or more (but not less
-            // or partial) partition elts
-            lastPartitionElt        = curPartitionElt;
-            lastParagraphInfoMarker = m;
-        }
-    }
-}
-#endif
 
 /*
  ********************************************************************************
@@ -970,7 +978,6 @@ struct ListIndentLevelExtractor {
     }
 };
 
-const TWIPS WordProcessor::kBadCachedFarthestRightMarginInDocument = TWIPS (-1);
 
 WordProcessor::WordProcessor ()
     : inherited ()

@@ -499,6 +499,7 @@ NotherRead:
         // (we could loop filling/emtpying buffer, but that would be needless copying).
         Assert (false); // NYI
 #if qPlatform_POSIX
+    // @todo err check and incrmeent bytesLeftToCopy and handle non-posix code...
         ::read (fFileDescriptor, reinterpret_cast<byte*> (buffer) + bytesCopiedSoFar, bytesLeftToCopy); //we need something like this!!!
 #endif
     }

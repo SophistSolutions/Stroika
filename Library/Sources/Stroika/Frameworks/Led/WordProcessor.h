@@ -26,6 +26,8 @@ namespace Stroika::Frameworks::Led {
 
     class IncrementalParagraphInfo;
 
+const inline TWIPS kBadCachedFarthestRightMarginInDocument = TWIPS (-1);
+
     /**
      *      An object which captures the per-paragraph information we store especially in the
      *          @'WordProcessor' class. The attributes stored include:
@@ -247,7 +249,7 @@ namespace Stroika::Frameworks::Led {
         using inheritedMC = MarkerCover<ParagraphInfoMarker, ParagraphInfo, IncrementalParagraphInfo>;
 
     public:
-        using PartitionMarker = PartitioningTextImager::PartitionMarker;
+        using PartitionMarker = Partition::PartitionMarker;
 
     public:
         ParagraphDatabaseRep (TextStore& textStore);
@@ -625,9 +627,6 @@ namespace Stroika::Frameworks::Led {
         nonvirtual TWIPS GetFarthestRightMarginInDocument () const;
         nonvirtual TWIPS CalculateFarthestRightMarginInWindow () const;
         virtual TWIPS    CalculateFarthestRightMargin () const;
-
-    private:
-        static const TWIPS kBadCachedFarthestRightMarginInDocument;
 
     protected:
         virtual void InvalidateAllCaches () override;

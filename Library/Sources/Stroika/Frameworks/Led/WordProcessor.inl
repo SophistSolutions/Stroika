@@ -491,7 +491,7 @@ namespace Stroika::Frameworks::Led {
      */
     inline AbstractParagraphDatabaseRep::AbstractParagraphDatabaseRep ()
         : fSomeInvalidTables (false)
-        , fCachedFarthestRightMarginInDocument (WordProcessor::kBadCachedFarthestRightMarginInDocument)
+        , fCachedFarthestRightMarginInDocument (kBadCachedFarthestRightMarginInDocument)
     {
     }
 
