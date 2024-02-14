@@ -227,7 +227,7 @@ const Led_ClipFormat StandardMacPictureStyleMarker::kClipFormat = kPICTClipForma
 // LGP 960429
 const Led_ClipFormat StandardMacPictureStyleMarker::kClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("Mac PICT Format")));
 #endif
-const Led_PrivateEmbeddingTag StandardMacPictureStyleMarker::kEmbeddingTag = "Pict2";
+constexpr Led_PrivateEmbeddingTag StandardMacPictureStyleMarker::kEmbeddingTag = "Pict2";
 
 #if qPlatform_Windows
 const Led_DIB* StandardMacPictureStyleMarker::sUnsupportedFormatPict = nullptr;
@@ -356,7 +356,7 @@ const Led_ClipFormat StandardDIBStyleMarker::kClipFormat = CF_DIB;
 #elif qStroika_FeatureSupported_XWindows
 const Led_ClipFormat StandardDIBStyleMarker::kClipFormat     = 666;    // X-TMP-HACK-LGP991214
 #endif
-const Led_PrivateEmbeddingTag StandardDIBStyleMarker::kEmbeddingTag = "DIB";
+constexpr Led_PrivateEmbeddingTag StandardDIBStyleMarker::kEmbeddingTag = "DIB";
 
 #if qPlatform_MacOS
 Led_Picture** StandardDIBStyleMarker::sUnsupportedFormatPict = nullptr;
@@ -496,7 +496,7 @@ const Led_DIB* StandardURLStyleMarker::sURLPict = nullptr;
 #endif
 
 #endif
-const Led_PrivateEmbeddingTag StandardURLStyleMarker::kEmbeddingTag = "URL";
+constexpr Led_PrivateEmbeddingTag StandardURLStyleMarker::kEmbeddingTag = "URL";
 
 StandardURLStyleMarker::StandardURLStyleMarker (const Led_URLD& urlData)
     : SimpleEmbeddedObjectStyleMarker ()
@@ -896,8 +896,8 @@ FontSpecification StandardURLStyleMarker::GetDisplayFont (const StyleRunElement&
  */
 const Led_ClipFormat StandardMacPictureWithURLStyleMarker::kClipFormats[]   = {kPICTClipFormat, StandardURLStyleMarker::kURLDClipFormat};
 const size_t         StandardMacPictureWithURLStyleMarker::kClipFormatCount = sizeof (kClipFormats) / sizeof (kClipFormats[0]);
-const Led_PrivateEmbeddingTag StandardMacPictureWithURLStyleMarker::kEmbeddingTag = "Pict&URL";
-const Led_PrivateEmbeddingTag StandardMacPictureWithURLStyleMarker::kOld1EmbeddingTag = "PictWEmbd"; // Only used in Led 2.0b7 - I believe - LGP 960427
+constexpr Led_PrivateEmbeddingTag StandardMacPictureWithURLStyleMarker::kEmbeddingTag = "Pict&URL";
+constexpr Led_PrivateEmbeddingTag StandardMacPictureWithURLStyleMarker::kOld1EmbeddingTag = "PictWEmbd"; // Only used in Led 2.0b7 - I believe - LGP 960427
 
 StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (const Led_Picture* pictData, size_t picSize, const Led_URLD& urlData)
     : SimpleEmbeddedObjectStyleMarker ()

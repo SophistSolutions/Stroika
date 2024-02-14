@@ -64,9 +64,8 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (imager);
         return (imager->MeasureSegmentBaseLine_ (this->MakeFontSpec (imager, runElement), from, to));
     }
-    #endif
+#endif
 
-    
     /*
      ********************************************************************************
      ************* SimpleStyleMarkerByIncrementalFontSpec<BASECLASS> ****************
@@ -86,8 +85,7 @@ namespace Stroika::Frameworks::Led {
         fsp.MergeIn (fFontSpecification);
         return fsp;
     }
-    #endif
-
+#endif
 
     /*
      ********************************************************************************
@@ -98,7 +96,6 @@ namespace Stroika::Frameworks::Led {
         : inherited{styleInfo}
     {
     }
-
 
     /*
      ********************************************************************************

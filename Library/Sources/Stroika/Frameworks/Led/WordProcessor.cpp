@@ -313,8 +313,6 @@ void ParagraphDatabaseRep::Invariant_ () const
 }
 #endif
 
-
-
 /*
  ********************************************************************************
  *************************** WordProcessorTextIOSinkStream **********************
@@ -1265,10 +1263,6 @@ TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellSpacingFor
     TWIPS cellSpacing = fRealTable.GetCellSpacing ();
     return TWIPS_Rect (cellSpacing, cellSpacing, TWIPS{0}, TWIPS{0}); // carefull - TLBR sb cellSpacing and last 2 args to TWIPS_Rect::CTOR are height/width!
 }
-
-
-
-
 
 #if qStroika_Frameworks_Led_SupportGDI
 

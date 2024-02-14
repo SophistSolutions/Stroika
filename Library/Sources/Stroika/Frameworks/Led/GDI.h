@@ -175,10 +175,10 @@ namespace Stroika::Frameworks::Led {
         using CoordinateType = COORD_TYPE;
 
     public:
-        Point_Base ();
-        Point_Base (COORD_TYPE newV, COORD_TYPE newH);
+        constexpr Point_Base ();
+        constexpr Point_Base (COORD_TYPE newV, COORD_TYPE newH);
         template <typename OTHER_POINT_BASE_TYPE>
-        explicit Point_Base (OTHER_POINT_BASE_TYPE o)
+        constexpr explicit Point_Base (OTHER_POINT_BASE_TYPE o)
             : v (COORD_TYPE (o.v))
             , h (COORD_TYPE (o.h))
         {
@@ -206,9 +206,9 @@ namespace Stroika::Frameworks::Led {
         using THIS_TYPE      = Rect_Base<POINT_TYPE, SIZE_TYPE>;
 
     public:
-        Rect_Base ();
-        Rect_Base (CoordinateType newTop, CoordinateType newLeft, DistanceType newHeight, DistanceType newWidth);
-        Rect_Base (POINT_TYPE origin, SIZE_TYPE size);
+        constexpr Rect_Base ();
+        constexpr Rect_Base (CoordinateType newTop, CoordinateType newLeft, DistanceType newHeight, DistanceType newWidth);
+        constexpr Rect_Base (POINT_TYPE origin, SIZE_TYPE size);
 
     public:
         nonvirtual CoordinateType GetTop () const;

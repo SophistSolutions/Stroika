@@ -21,19 +21,19 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     template <typename COORD_TYPE>
-    inline Point_Base<COORD_TYPE>::Point_Base ()
+    constexpr Point_Base<COORD_TYPE>::Point_Base ()
         : v (COORD_TYPE (0))
         , h (COORD_TYPE (0))
     {
     }
     template <typename COORD_TYPE>
-    inline Point_Base<COORD_TYPE>::Point_Base (COORD_TYPE newV, COORD_TYPE newH)
+    constexpr Point_Base<COORD_TYPE>::Point_Base (COORD_TYPE newV, COORD_TYPE newH)
         : v (newV)
         , h (newH)
     {
     }
     template <typename COORD_TYPE>
-    inline Point_Base<COORD_TYPE> operator+ (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
+    constexpr Point_Base<COORD_TYPE> operator+ (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
     {
         Led_Point result = lhs;
         result.v += rhs.v;

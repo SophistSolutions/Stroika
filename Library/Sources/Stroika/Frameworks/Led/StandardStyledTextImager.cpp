@@ -55,7 +55,6 @@ DistanceType StandardStyleMarker::MeasureSegmentBaseLine (const StyledTextImager
 }
 #endif
 
-
 /*
  ********************************************************************************
  **************** StandardStyledTextImager::StyleDatabaseRep ********************
@@ -127,8 +126,6 @@ void StyleDatabaseRep::Invariant_ () const
     inheritedMC::Invariant_ ();
 }
 #endif
-
-
 
 #if qStroika_Frameworks_Led_SupportGDI
 /*
