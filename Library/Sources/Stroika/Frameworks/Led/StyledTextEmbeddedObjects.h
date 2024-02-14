@@ -34,9 +34,9 @@ namespace Stroika::Frameworks::Led {
         *  which you might be confusing with a sentinel.
         */
 #if qOverrideDefaultSentinelValue
-    const Led_tChar kEmbeddingSentinelChar = qOverrideDefaultSentinelValue;
+    constexpr Led_tChar kEmbeddingSentinelChar = qOverrideDefaultSentinelValue;
 #else
-    const Led_tChar kEmbeddingSentinelChar = '\0';
+    constexpr Led_tChar kEmbeddingSentinelChar = '\0';
 #endif
 
     // Its up to you in your application for each one of these you want to support to add a line such

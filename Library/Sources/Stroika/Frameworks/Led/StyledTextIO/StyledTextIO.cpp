@@ -719,7 +719,11 @@ void StyledTextIOWriterSinkStream_FileDescriptor::Flush ()
         Assert (fOutputBufferSize != 0);
         [[maybe_unused]] size_t bytesInWindow = fBufferWindowEnd - fBufferWindowStart;
         Assert (fOutputBufferSize >= bytesInWindow);
-        Assert (false);
+        AssertNotImplemented ();
+#if qPlatform_POSIX
+        // VERY VERY ROUGH WRONG DRAFT
+        ::write (fFileDescriptor, reinterpret_cast<byte*> (fOutputBuffer), bytesInWindow); //we need something like this!!!
+#endif
         fFurthestDiskWriteAt = fBufferWindowEnd;
         fBufferWindowStart   = 0; // mark as no window now
         fBufferWindowEnd     = 0;

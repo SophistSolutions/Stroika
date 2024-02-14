@@ -697,12 +697,8 @@ namespace Stroika::Frameworks::Led {
         DiscontiguousRun<bool>                   fHidableTextRuns;
     };
 
-    /*
-    @CLASS:         WordProcessor::WordProcessorTextIOSrcStream::TableIOMapper
-    @ACCESS:        protected
-    @BASES:         @'StyledTextIOWriter::SrcStream::Table'
-    @DESCRIPTION:   <p></p>
-    */
+    /**
+     */
     class WordProcessorTextIOSrcStream::TableIOMapper : public StyledTextIO::StyledTextIOWriter::SrcStream::Table {
     private:
         using inherited = StyledTextIO::StyledTextIOWriter::SrcStream::Table;
@@ -728,12 +724,10 @@ namespace Stroika::Frameworks::Led {
         size_t              fEndCol;
     };
 
-    /*
-    @CLASS:         WordProcessor::WordProcessorTextIOSinkStream
-    @BASES:         @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream'
-    @DESCRIPTION:   <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream', for use with the StyledTextIO module,
-                which adds support for a @'WordProcessor::shared_ptr<AbstractParagraphDatabaseRep>'.</p>
-    */
+    /**
+     *      <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream', for use with the StyledTextIO module,
+     *  which adds support for a @'WordProcessor::shared_ptr<AbstractParagraphDatabaseRep>'.</p>
+     */
     class WordProcessorTextIOSinkStream : public StandardStyledTextIOSinkStream {
     private:
         using inherited = StandardStyledTextIOSinkStream;
@@ -768,7 +762,9 @@ namespace Stroika::Frameworks::Led {
 
     public:
         virtual void AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
+#if qStroika_Frameworks_Led_SupportGDI
         virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
+#endif
         virtual void AppendSoftLineBreak () override;
         virtual void SetJustification (Justification justification) override;
         virtual void SetStandardTabStopList (const StandardTabStopList& tabStops) override;
