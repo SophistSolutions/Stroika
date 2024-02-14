@@ -26,7 +26,7 @@ using namespace Stroika::Frameworks::Led::Platform;
 class LedItViewController {
 public:
     LedItViewController ();
-    ~LedItViewController ();
+    virtual ~LedItViewController () = default;
 
 public:
     virtual void OnBrowseHelpCommand ()                            = 0;

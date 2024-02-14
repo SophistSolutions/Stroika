@@ -26,7 +26,7 @@ namespace Stroika::Frameworks::Led {
 
     class IncrementalParagraphInfo;
 
-const inline TWIPS kBadCachedFarthestRightMarginInDocument = TWIPS (-1);
+    const inline TWIPS kBadCachedFarthestRightMarginInDocument = TWIPS (-1);
 
     /**
      *      An object which captures the per-paragraph information we store especially in the

@@ -104,7 +104,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual const vector<MarkerOwner*>& GetMarkerOwners () const noexcept;
 
     private:
-        vector<MarkerOwner*> fMarkerOwners;
+        vector<MarkerOwner*> fMarkerOwners{};
 
         // Retrieve the text
     public:
@@ -295,7 +295,7 @@ namespace Stroika::Frameworks::Led {
         */
         class InlineBufferMarkerSink : public MarkerSink {
         public:
-            InlineBufferMarkerSink ();
+            InlineBufferMarkerSink () = default;
 
             virtual void Append (Marker* m) override;
 
@@ -360,7 +360,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void                   SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
 
     private:
-        mutable shared_ptr<TextBreaks> fTextBreaker;
+        mutable shared_ptr<TextBreaks> fTextBreaker{};
 
     public:
         nonvirtual void FindWordBreaks (size_t afterPosition, size_t* wordStartResult, size_t* wordEndResult, bool* wordReal,
@@ -419,14 +419,14 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual TextStore* PeekAtTextStore () const override;
 
-        /*
-            *      Debugging support.
-            *      Note that all these calls (either fail to compile with debug off,
-            *  or produce NO-CODE when debug is off. So they can be called freely (though
-            *  they might be QUITE expensive when debug on - so SOME conservatism may
-            *  be in order).
-            */
     public:
+        /**
+         *      Debugging support.
+         *      Note that all these calls (either fail to compile with debug off,
+         *  or produce NO-CODE when debug is off. So they can be called freely (though
+         *  they might be QUITE expensive when debug on - so SOME conservatism may
+         *  be in order).
+         */
         nonvirtual void Invariant () const;
 
 #if qDebug

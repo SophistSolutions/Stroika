@@ -280,7 +280,7 @@ LedItDocument::LedItDocument ()
     fTextStore.AddMarkerOwner (this);
     fStyleDatabase       = make_shared<StyleDatabaseRep> (fTextStore);
     fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (fTextStore);
-    fHidableTextDatabase = make_sahred<UniformHidableTextMarkerOwner> (fTextStore);
+    fHidableTextDatabase = make_shared<UniformHidableTextMarkerOwner> (fTextStore);
 }
 
 LedItDocument::~LedItDocument ()

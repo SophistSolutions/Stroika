@@ -486,11 +486,7 @@ LedItViewController::LedItViewController ()
     , fHidableTextDatabase ()
 
 {
-    fHidableTextDatabase = make_sahred<ColoredUniformHidableTextMarkerOwner> (fTextStore);
-}
-
-LedItViewController::~LedItViewController ()
-{
+    fHidableTextDatabase = make_shared<ColoredUniformHidableTextMarkerOwner> (fTextStore);
 }
 
 /*

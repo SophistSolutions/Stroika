@@ -31,8 +31,6 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-
-
 /*
  ********************************************************************************
  ********************************* ParagraphInfo ********************************
@@ -61,13 +59,13 @@ ParagraphDatabaseRep::ParagraphDatabaseRep (TextStore& textStore)
     : inheritedMC (textStore, GetStaticDefaultParagraphInfo ())
     , fPartition ()
 {
-    #if qStroika_Frameworks_Led_SupportGDI
+#if qStroika_Frameworks_Led_SupportGDI
     //tmphack test - see if this fixes SPR#1129
     // LGP 2002-10-19 - didnt appear to work so probably get rid of it - but test some more!!!
-    SetPartition (make_shared<WPPartition> (GetTextStore (), *this));
-    #else
+    SetPartition (make_shared<WordProcessor::WPPartition> (GetTextStore (), *this));
+#else
     SetPartition (make_shared<LineBasedPartition> (GetTextStore ()));
-    #endif
+#endif
 }
 
 void ParagraphDatabaseRep::SetPartition (const shared_ptr<Partition>& partitionPtr)
@@ -293,7 +291,7 @@ void ParagraphDatabaseRep::Invariant_ () const
         // else from to from+textInserted (cuz from-to deleted)
         MarkerVector markers = CollectAllInRange_OrSurroundings (0, GetTextStore ().GetLength () + 1);
         sort (markers.begin (), markers.end (), LessThan<ParagraphInfoMarker> ());
-        PartitionMarker*     lastPartitionElt        = nullptr;
+        PartitionMarker* lastPartitionElt = nullptr;
         for (auto i = markers.begin (); i != markers.end (); ++i) {
             ParagraphInfoMarker* m = *i;
             Assert (m->GetLength () != 0);
@@ -302,14 +300,11 @@ void ParagraphDatabaseRep::Invariant_ () const
             Assert (curPartitionElt->GetStart () == m->GetStart ()); // partElt boundary must always match start
             Assert (curPartitionElt->GetEnd () <= m->GetEnd ());     // ParagraphInfo contains either one or more (but not less
             // or partial) partition elts
-            lastPartitionElt        = curPartitionElt;
+            lastPartitionElt = curPartitionElt;
         }
     }
 }
 #endif
-
-
-
 
 #if qStroika_Frameworks_Led_SupportGDI
 
@@ -519,7 +514,6 @@ struct DoIt_IndentUnIndentList {
         return wp->GetCommandNames ().fIndentLevelChangeCommandName;
     }
 };
-
 
 /*
  ********************************************************************************
@@ -977,7 +971,6 @@ struct ListIndentLevelExtractor {
         return from.GetListIndentLevel ();
     }
 };
-
 
 WordProcessor::WordProcessor ()
     : inherited ()
@@ -4894,7 +4887,7 @@ void WordProcessorTextIOSinkStream::SetDefaultCellSpacingForCurrentRow (TWIPS to
 
 void WordProcessorTextIOSinkStream::PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                  const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                 const WordProcessor::shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart)
+                                                 const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart)
 {
     if (GetCachedTextSize () != 0) { // must flush before setting/popping context
         Flush ();

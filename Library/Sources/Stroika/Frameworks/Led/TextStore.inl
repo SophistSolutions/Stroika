@@ -13,11 +13,10 @@
 namespace Stroika::Frameworks::Led {
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
-    //  class   TextStore::SimpleUpdater
+     ********************************************************************************
+     *************************** TextStore::SimpleUpdater ***************************
+     ********************************************************************************
+     */
     inline TextStore::SimpleUpdater::SimpleUpdater (TextStore& ts, const UpdateInfo& updateInfo)
         : fTextStore (ts)
         , fMarkerSink ()
@@ -51,7 +50,11 @@ namespace Stroika::Frameworks::Led {
         fCanceled = true;
     }
 
-    //  class   TextStore::SearchParameters
+    /*
+     ********************************************************************************
+     ************************ TextStore::SearchParameters ***************************
+     ********************************************************************************
+     */
     inline TextStore::SearchParameters::SearchParameters (const Led_tString& searchString, bool wrap, bool wholeWord, bool caseSensative)
         : fMatchString (searchString)
         , fWrapSearch (wrap)
@@ -60,23 +63,23 @@ namespace Stroika::Frameworks::Led {
     {
     }
 
-    //  class   TextStore::VectorMarkerSink
+    /*
+     ********************************************************************************
+     ************************ TextStore::VectorMarkerSink ***************************
+     ********************************************************************************
+     */
     inline TextStore::VectorMarkerSink::VectorMarkerSink (vector<Marker*>* markers)
         : fMarkers (markers)
     {
         RequireNotNull (fMarkers);
     }
 
-    //  class   TextStore::InlineBufferMarkerSink
-    inline TextStore::InlineBufferMarkerSink::InlineBufferMarkerSink ()
-        : fMarkers{0}
-    {
-    }
-
-    //  class   TextStore
+    /*
+     ********************************************************************************
+     ************************************ TextStore *********************************
+     ********************************************************************************
+     */
     inline TextStore::TextStore ()
-        : fMarkerOwners ()
-        , fTextBreaker ()
     {
         fMarkerOwners.push_back (this);
     }
@@ -94,7 +97,6 @@ namespace Stroika::Frameworks::Led {
         Require (owner->PeekAtTextStore () == this);
 #endif
         Require (find (fMarkerOwners.begin (), fMarkerOwners.end (), owner) == fMarkerOwners.end ());
-        //          fMarkerOwners.push_back (owner);
         PUSH_BACK (fMarkerOwners, owner);
     }
     /*
@@ -309,7 +311,6 @@ namespace Stroika::Frameworks::Led {
             return false;
         }
     }
-
     /*
     @METHOD:        TextStore::Overlap
     @DESCRIPTION:   <p>The idea here is to test if a marker overlaps with a given range of the document. But
@@ -399,7 +400,11 @@ namespace Stroika::Frameworks::Led {
         }
     }
 
-    //  class   MarkerOfATypeMarkerSink
+    /*
+     ********************************************************************************
+     ************************** MarkerOfATypeMarkerSink<T> **************************
+     ********************************************************************************
+     */
     template <typename T>
     inline MarkerOfATypeMarkerSink<T>::MarkerOfATypeMarkerSink ()
         : fResult (nullptr)
@@ -416,7 +421,11 @@ namespace Stroika::Frameworks::Led {
         }
     }
 
-    //  class   MarkersOfATypeMarkerSink2Vector
+    /*
+     ********************************************************************************
+     ******************** MarkersOfATypeMarkerSink2Vector<T> ************************
+     ********************************************************************************
+     */
     template <typename T>
     inline MarkersOfATypeMarkerSink2Vector<T>::MarkersOfATypeMarkerSink2Vector ()
         : fResult ()
@@ -428,12 +437,15 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (m);
         T* tMarker = dynamic_cast<T*> (m);
         if (tMarker != nullptr) {
-            //fResult.push_back (tMarker);
             PUSH_BACK (fResult, tMarker);
         }
     }
 
-    //  class   MarkersOfATypeMarkerSink2SmallStackBuffer
+    /*
+     ********************************************************************************
+     ************ MarkersOfATypeMarkerSink2SmallStackBuffer<T> **********************
+     ********************************************************************************
+     */
     template <typename T>
     inline MarkersOfATypeMarkerSink2SmallStackBuffer<T>::MarkersOfATypeMarkerSink2SmallStackBuffer ()
         : fResult ()
