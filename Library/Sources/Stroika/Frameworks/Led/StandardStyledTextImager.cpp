@@ -55,8 +55,82 @@ DistanceType StandardStyleMarker::MeasureSegmentBaseLine (const StyledTextImager
 }
 #endif
 
-#if qStroika_Frameworks_Led_SupportGDI
 
+/*
+ ********************************************************************************
+ **************** StandardStyledTextImager::StyleDatabaseRep ********************
+ ********************************************************************************
+ */
+StyleDatabaseRep::StyleDatabaseRep (TextStore& textStore)
+    : inheritedMC{textStore, GetStaticDefaultFont ()}
+{
+}
+
+vector<StyledInfoSummaryRecord> StyleDatabaseRep::GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const
+{
+    MarkerVector standardStyleMarkers = GetInfoMarkers (charAfterPos, nTCharsFollowing);
+
+    vector<StyledInfoSummaryRecord> result;
+    size_t                          tCharsSoFar           = 0;
+    size_t                          nStandardStyleMarkers = standardStyleMarkers.size ();
+    for (size_t i = 0; i < nStandardStyleMarkers; ++i) {
+        StandardStyleMarker* marker = standardStyleMarkers[i];
+        AssertNotNull (marker);
+        size_t markerStart;
+        size_t markerEnd;
+        marker->GetRange (&markerStart, &markerEnd);
+
+        // for i==START and END, we may have to include only partial lengths of the
+        // markers - for the INTERNAL markers, use their whole length
+        size_t length = markerEnd - markerStart;
+        if (i == 0) {
+            Assert (charAfterPos >= markerStart);
+            Assert (charAfterPos - markerStart < length);
+            length -= (charAfterPos - markerStart);
+        }
+        if (i == nStandardStyleMarkers - 1) {
+            Assert (length >= nTCharsFollowing - tCharsSoFar); // must be preserving, or shortening...
+            length = nTCharsFollowing - tCharsSoFar;
+        }
+        Assert (length > 0 or nTCharsFollowing == 0);
+        Assert (length <= nTCharsFollowing);
+        result.push_back (StyledInfoSummaryRecord (marker->fFontSpecification, length));
+        tCharsSoFar += length;
+    }
+    Assert (tCharsSoFar == nTCharsFollowing);
+    return result;
+}
+
+void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo)
+{
+    SetInfo (charAfterPos, nTCharsFollowing, styleInfo);
+}
+
+void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const StyledInfoSummaryRecord* styleInfos)
+{
+    size_t setAt           = charAfterPos;
+    size_t lengthUsedSoFar = 0;
+    for (size_t i = 0; i < nStyleInfos and lengthUsedSoFar < nTCharsFollowing; ++i) {
+        StyledInfoSummaryRecord isr    = styleInfos[i];
+        size_t                  length = isr.fLength;
+        Assert (nTCharsFollowing >= lengthUsedSoFar);
+        length = min (nTCharsFollowing - lengthUsedSoFar, length);
+        SetStyleInfo (setAt, length, IncrementalFontSpecification{isr});
+        setAt += length;
+        lengthUsedSoFar += length;
+    }
+}
+
+#if qDebug
+void StyleDatabaseRep::Invariant_ () const
+{
+    inheritedMC::Invariant_ ();
+}
+#endif
+
+
+
+#if qStroika_Frameworks_Led_SupportGDI
 /*
  ********************************************************************************
  ****************************** StandardStyledTextImager ************************
@@ -365,83 +439,6 @@ void StandardStyledTextImager::Invariant_ () const
     if (fStyleDatabase.get () != nullptr) {
         fStyleDatabase->Invariant ();
     }
-}
-#endif
-
-/*
- ********************************************************************************
- **************** StandardStyledTextImager::StyleDatabaseRep ********************
- ********************************************************************************
- */
-StyleDatabaseRep::StyleDatabaseRep (TextStore& textStore)
-    : inheritedMC (textStore, GetStaticDefaultFont ())
-{
-}
-
-vector<StyledInfoSummaryRecord> StyleDatabaseRep::GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const
-{
-    MarkerVector standardStyleMarkers = GetInfoMarkers (charAfterPos, nTCharsFollowing);
-
-    vector<StyledInfoSummaryRecord> result;
-    size_t                          tCharsSoFar           = 0;
-    size_t                          nStandardStyleMarkers = standardStyleMarkers.size ();
-    for (size_t i = 0; i < nStandardStyleMarkers; ++i) {
-        StandardStyleMarker* marker = standardStyleMarkers[i];
-        AssertNotNull (marker);
-        size_t markerStart;
-        size_t markerEnd;
-        marker->GetRange (&markerStart, &markerEnd);
-
-        // for i==START and END, we may have to include only partial lengths of the
-        // markers - for the INTERNAL markers, use their whole length
-        size_t length = markerEnd - markerStart;
-        if (i == 0) {
-            Assert (charAfterPos >= markerStart);
-            Assert (charAfterPos - markerStart < length);
-            length -= (charAfterPos - markerStart);
-        }
-        if (i == nStandardStyleMarkers - 1) {
-            Assert (length >= nTCharsFollowing - tCharsSoFar); // must be preserving, or shortening...
-            length = nTCharsFollowing - tCharsSoFar;
-        }
-        Assert (length > 0 or nTCharsFollowing == 0);
-        Assert (length <= nTCharsFollowing);
-        result.push_back (StyledInfoSummaryRecord (marker->fFontSpecification, length));
-        tCharsSoFar += length;
-    }
-    Assert (tCharsSoFar == nTCharsFollowing);
-    return result;
-}
-
-void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalFontSpecification& styleInfo)
-{
-    SetInfo (charAfterPos, nTCharsFollowing, styleInfo);
-}
-#if 0
-void    StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<StyledInfoSummaryRecord>& styleInfos)
-{
-    SetStyleInfo (charAfterPos, nTCharsFollowing, styleInfos.size (), &styleInfos.front ());
-}
-#endif
-void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const StyledInfoSummaryRecord* styleInfos)
-{
-    size_t setAt           = charAfterPos;
-    size_t lengthUsedSoFar = 0;
-    for (size_t i = 0; i < nStyleInfos and lengthUsedSoFar < nTCharsFollowing; ++i) {
-        StyledInfoSummaryRecord isr    = styleInfos[i];
-        size_t                  length = isr.fLength;
-        Assert (nTCharsFollowing >= lengthUsedSoFar);
-        length = min (nTCharsFollowing - lengthUsedSoFar, length);
-        SetStyleInfo (setAt, length, IncrementalFontSpecification (isr));
-        setAt += length;
-        lengthUsedSoFar += length;
-    }
-}
-
-#if qDebug
-void StyleDatabaseRep::Invariant_ () const
-{
-    inheritedMC::Invariant_ ();
 }
 #endif
 

@@ -664,7 +664,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void SetUseTableSelection (bool useTableSelection);
 
     private:
-        bool fUseTableSelection;
+        bool fUseTableSelection{false};
 
     public:
         virtual Justification          GetJustification () const override;
@@ -1445,7 +1445,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void SetUseTableSelection (bool useTableSelection);
 
     private:
-        bool fUseTableSelection;
+        bool fUseTableSelection{false};
 
     protected:
         virtual StandardStyledTextIOSrcStream* mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd) override;

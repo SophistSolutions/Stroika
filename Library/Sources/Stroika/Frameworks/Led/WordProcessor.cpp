@@ -313,6 +313,963 @@ void ParagraphDatabaseRep::Invariant_ () const
 }
 #endif
 
+
+
+/*
+ ********************************************************************************
+ *************************** WordProcessorTextIOSinkStream **********************
+ ********************************************************************************
+ */
+namespace {
+    inline TWIPS CalcDefaultRHSMargin_ ()
+    {
+        const int kRTF_SPEC_DefaultInches = 6; // HACK - see comments in SinkStreamDestination::SetRightMargin ()
+        int       rhsTWIPS                = kRTF_SPEC_DefaultInches * 1440;
+        return TWIPS (rhsTWIPS);
+    }
+}
+
+WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                                              const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
+                                                              const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart)
+    : inherited{textStore, textStyleDatabase, insertionStart}
+    , fOverwriteTableMode{false}
+    ,
+#if !qStroika_Frameworks_Led_NestedTablesSupported
+    fNoTablesAllowed{false}
+    ,
+#endif
+    fSavedContexts{}
+    , fParagraphDatabase{paragraphDatabase}
+    , fHidableTextDatabase{hidableTextDatabase}
+    , fSavedParaInfo{}
+    , fNewParagraphInfo{}
+    , fTextHidden{false}
+    , fHidableTextRuns{}
+    , fEndOfBuffer{false}
+    , fIgnoreLastParaAttributes{false}
+    , fCurrentTable{nullptr}
+    , fCurrentTableCellWidths{}
+    , fCurrentTableCellColor{Color::kWhite}
+    , fCurrentTableColSpanArray{}
+    , fTableStack{}
+    , fNextTableRow{0}
+    , fNextTableCell{0}
+    , fCurrentTableCell{size_t (-1)}
+#if qDebug
+    , fTableOpenLevel{0}
+    , fTableRowOpen{false}
+    , fTableCellOpen{false}
+#endif
+{
+    CTOR_COMMON ();
+}
+
+WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (WordProcessor* wp, size_t insertionStart)
+    : inherited{&wp->GetTextStore (), wp->GetStyleDatabase (), insertionStart}
+    , fOverwriteTableMode{false}
+    ,
+#if !qStroika_Frameworks_Led_NestedTablesSupported
+    fNoTablesAllowed{false}
+    ,
+#endif
+    fSavedContexts{}
+    , fParagraphDatabase{wp->GetParagraphDatabase ()}
+    , fHidableTextDatabase{wp->GetHidableTextDatabase ()}
+    , fSavedParaInfo{}
+    , fNewParagraphInfo{}
+    , fTextHidden{false}
+    , fHidableTextRuns{}
+    , fEndOfBuffer{false}
+    , fIgnoreLastParaAttributes{false}
+    , fCurrentTable{nullptr}
+    , fCurrentTableCellWidths{}
+    , fCurrentTableCellColor{Color::kWhite}
+    , fCurrentTableColSpanArray{}
+    , fTableStack{}
+    , fNextTableRow{0}
+    , fNextTableCell{0}
+    , fCurrentTableCell{size_t (-1)}
+#if qDebug
+    , fTableOpenLevel{0}
+    , fTableRowOpen{false}
+    , fTableCellOpen{false}
+#endif
+{
+    CTOR_COMMON ();
+}
+
+WordProcessorTextIOSinkStream::~WordProcessorTextIOSinkStream ()
+{
+#if qDebug
+    Assert (fTableOpenLevel == 0);
+    Assert (not fTableRowOpen);
+    Assert (not fTableCellOpen);
+#endif
+    try {
+        Flush ();
+        Ensure (GetCachedTextSize () == 0); // If flush succeeds, then these must be zero
+        Ensure (fSavedParaInfo.size () == 0);
+    }
+    catch (...) {
+        // ignore, cuz cannot fail out of DTOR
+    }
+}
+
+void WordProcessorTextIOSinkStream::CTOR_COMMON ()
+{
+    fNewParagraphInfo.SetJustification (eLeftJustify);
+    fNewParagraphInfo.SetTabStopList (WordProcessor::GetDefaultStandardTabStopList ());
+    fNewParagraphInfo.SetFirstIndent (TWIPS{0});
+    fNewParagraphInfo.SetMargins (TWIPS{0}, CalcDefaultRHSMargin_ ());
+    fNewParagraphInfo.SetListStyle (eListStyle_None);
+    fNewParagraphInfo.SetSpaceBefore (TWIPS{0});
+    fNewParagraphInfo.SetSpaceAfter (TWIPS{0});
+}
+
+void WordProcessorTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec)
+{
+    RequireNotNull (text);
+    inherited::AppendText (text, nTChars, fontSpec);
+    if (fSavedParaInfo.size () == 0) {
+        fSavedParaInfo.push_back (ParaInfoNSize (fNewParagraphInfo, nTChars));
+    }
+    else if (fSavedParaInfo.back ().first == fNewParagraphInfo) {
+        fSavedParaInfo.back ().second += nTChars;
+    }
+    else {
+        fSavedParaInfo.push_back (ParaInfoNSize (fNewParagraphInfo, nTChars));
+    }
+    if (fHidableTextRuns.size () != 0 and fHidableTextRuns.back ().fData == fTextHidden) {
+        fHidableTextRuns.back ().fElementLength += nTChars;
+    }
+    else {
+        fHidableTextRuns.push_back (DiscontiguousRunElement<bool> (0, nTChars, fTextHidden));
+    }
+}
+
+void WordProcessorTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
+{
+    RequireNotNull (embedding);
+    if (GetCachedTextSize () != 0) {
+        Flush ();
+    }
+    size_t whereToStartHiddenArea = GetInsertionStart ();
+    inherited::AppendEmbedding (embedding);
+    if (fTextHidden) {
+        fHidableTextDatabase->MakeRegionHidable (whereToStartHiddenArea, whereToStartHiddenArea + 1);
+    }
+}
+
+void WordProcessorTextIOSinkStream::AppendSoftLineBreak ()
+{
+    AppendText (&WordWrappedTextImager::kSoftLineBreakChar, 1, nullptr);
+}
+
+void WordProcessorTextIOSinkStream::SetJustification (Justification justification)
+{
+    fNewParagraphInfo.SetJustification (justification);
+}
+
+void WordProcessorTextIOSinkStream::SetStandardTabStopList (const StandardTabStopList& tabStops)
+{
+    fNewParagraphInfo.SetTabStopList (tabStops);
+}
+
+void WordProcessorTextIOSinkStream::SetFirstIndent (TWIPS tx)
+{
+    fNewParagraphInfo.SetFirstIndent (tx);
+}
+
+void WordProcessorTextIOSinkStream::SetLeftMargin (TWIPS lhs)
+{
+    fNewParagraphInfo.SetMargins (lhs, max (TWIPS (lhs + 1), fNewParagraphInfo.GetRightMargin ()));
+}
+
+void WordProcessorTextIOSinkStream::SetRightMargin (TWIPS rhs)
+{
+    fNewParagraphInfo.SetMargins (fNewParagraphInfo.GetLeftMargin (), max (TWIPS (fNewParagraphInfo.GetLeftMargin () + 1), rhs));
+}
+
+void WordProcessorTextIOSinkStream::SetSpaceBefore (TWIPS sb)
+{
+    fNewParagraphInfo.SetSpaceBefore (sb);
+}
+
+void WordProcessorTextIOSinkStream::SetSpaceAfter (TWIPS sa)
+{
+    fNewParagraphInfo.SetSpaceAfter (sa);
+}
+
+void WordProcessorTextIOSinkStream::SetLineSpacing (LineSpacing sl)
+{
+    fNewParagraphInfo.SetLineSpacing (sl);
+}
+
+void WordProcessorTextIOSinkStream::SetTextHidden (bool hidden)
+{
+    fTextHidden = hidden;
+}
+
+void WordProcessorTextIOSinkStream::StartTable ()
+{
+#if qDebug
+    // NB: because of nested tables - we COULD be starting a table inside another table.
+    // If we are - then we must be inside a table cell (so row/cell must be open). Otherwise, they
+    // must both be closed
+    if (fTableOpenLevel == 0) {
+        // we are NOT in a non-nested case, and so NONE should be open
+        Assert (fTableOpenLevel == 0);
+        Assert (not fTableRowOpen);
+        Assert (not fTableCellOpen);
+    }
+    else {
+        // we must be in a nested case, and so BOTH should be open
+        Assert (fTableRowOpen);
+        Assert (fTableCellOpen);
+    }
+    // either way - one we start a new table - they must both be closed
+    fTableRowOpen  = false;
+    fTableCellOpen = false;
+    ++fTableOpenLevel;
+#endif
+#if !qStroika_Frameworks_Led_NestedTablesSupported
+    if (GetNoTablesAllowed ()) {
+        return;
+    }
+#endif
+
+    if (GetCachedTextSize () != 0) {
+        // Because we address directly into the textstore here - we need any pending writes to actually go in so the right stuff
+        // is already in the textstore.
+        Flush ();
+    }
+
+#if qStroika_Frameworks_Led_NestedTablesSupported
+    if (fCurrentTable != nullptr) {
+        // when we support nested tables for REAL - we need to also save other context like fCurrentTableCellWidths / fCurrentTableColSpanArray
+        fTableStack.push_back (fCurrentTable);
+    }
+    fCurrentTable = nullptr;
+#endif
+
+    if (GetOverwriteTableMode ()) {
+        TextStore&                                  ts             = GetTextStore ();
+        size_t                                      realCoordStart = GetInsertionStart ();
+        MarkerOfATypeMarkerSink<WordProcessorTable> maybeTable;
+        Assert (realCoordStart <= ts.GetEnd ());
+        ts.CollectAllMarkersInRangeInto (ts.FindPreviousCharacter (realCoordStart), realCoordStart, fParagraphDatabase.get (), maybeTable);
+        if (maybeTable.fResult != nullptr) {
+            fCurrentTable      = maybeTable.fResult;
+            size_t rowSelStart = 0;
+            size_t colSelStart = 0;
+            fCurrentTable->GetCellSelection (&rowSelStart, nullptr, &colSelStart, nullptr);
+            fNextTableRow     = rowSelStart;
+            fNextTableCell    = colSelStart;
+            fCurrentTableCell = size_t (-1);
+        }
+    }
+
+    if (fCurrentTable == nullptr) {
+        fCurrentTable = new WordProcessorTable (fParagraphDatabase.get (), current_offset () + GetOriginalStart ());
+        SetInsertionStart (GetInsertionStart () + 1); // cuz we added a row which adds a sentinel
+        fNextTableRow     = 0;
+        fNextTableCell    = 0;
+        fCurrentTableCell = size_t (-1);
+    }
+}
+
+void WordProcessorTextIOSinkStream::EndTable ()
+{
+#if qDebug
+    Require (fTableOpenLevel >= 1);
+    Require (not fTableRowOpen); // caller must close row/cell before closing table
+    Require (not fTableCellOpen);
+    // if this is a nested table, then the parent scope must have had an open cell/row, and otherwise,
+    // NO
+    --fTableOpenLevel;
+    if (fTableOpenLevel > 0) {
+        fTableRowOpen  = true;
+        fTableCellOpen = true;
+    }
+    else {
+        fTableRowOpen  = false;
+        fTableCellOpen = false;
+    }
+#endif
+#if !qStroika_Frameworks_Led_NestedTablesSupported
+    if (GetNoTablesAllowed ()) {
+        AppendText (LED_TCHAR_OF ("\n"), 1, nullptr);
+        return;
+    }
+#endif
+    if (fCurrentTable != nullptr) {
+        // Be careful to protect against unbalanced start/ends cuz of bad StyledTextIO input data
+        fCurrentTable = nullptr;
+#if qStroika_Frameworks_Led_NestedTablesSupported
+        if (not fTableStack.empty ()) {
+            fCurrentTable = fTableStack.back ();
+            fTableStack.pop_back ();
+        }
+#endif
+    }
+}
+
+void WordProcessorTextIOSinkStream::StartTableRow ()
+{
+#if qDebug
+    Require (fTableOpenLevel >= 1);
+    Require (not fTableRowOpen);
+    Require (not fTableCellOpen);
+    fTableRowOpen = true;
+#endif
+#if !qStroika_Frameworks_Led_NestedTablesSupported
+    if (GetNoTablesAllowed ()) {
+        fNextTableCell = 0;
+        AppendText (LED_TCHAR_OF ("\n"), 1, nullptr);
+        return;
+    }
+#endif
+    RequireNotNull (fCurrentTable);
+    ++fNextTableRow;
+    if (GetOverwriteTableMode ()) {
+        if (fNextTableRow > fCurrentTable->GetRowCount ()) {
+            fCurrentTable->InsertRow (fNextTableRow - 1, 1);
+        }
+        size_t colSelStart = 0;
+        fCurrentTable->GetCellSelection (nullptr, nullptr, &colSelStart, nullptr);
+        fNextTableCell = min (fCurrentTable->GetColumnCount (fNextTableRow - 1) - 1, colSelStart);
+    }
+    else {
+        fNextTableCell = 0;
+        fCurrentTable->InsertRow (fNextTableRow - 1, 1);
+    }
+    fCurrentTableColSpanArray.clear ();
+}
+
+void WordProcessorTextIOSinkStream::EndTableRow ()
+{
+#if qDebug
+    Require (fTableOpenLevel >= 1);
+    Require (fTableRowOpen);
+    Require (not fTableCellOpen);
+    fTableRowOpen = false;
+#endif
+#if !qStroika_Frameworks_Led_NestedTablesSupported
+    if (GetNoTablesAllowed ()) {
+        return;
+    }
+#endif
+    AssertNotNull (fCurrentTable);
+    size_t nCellsInThisRow = fCurrentTableCellWidths.size ();
+
+    while (nCellsInThisRow > fCurrentTableColSpanArray.size ()) {
+        // treat missing startcell/endcell pairs as just colWidth = 1
+        fCurrentTableColSpanArray.push_back (1);
+    }
+
+    if (nCellsInThisRow != fCurrentTableColSpanArray.size ()) {
+        // For HTML readers - they don't (generally) call SetCellWidths - and so
+        // we don't get extra cells generated in that way. -- LGP 2003-05-22
+        nCellsInThisRow = min (nCellsInThisRow, fCurrentTableColSpanArray.size ());
+    }
+    fCurrentTable->SetColumnCount (fNextTableRow - 1, max (nCellsInThisRow, fCurrentTable->GetColumnCount (fNextTableRow - 1)));
+
+    size_t col = 0;
+    for (size_t cellIdx = 0; cellIdx < nCellsInThisRow; ++cellIdx) {
+        size_t nColsInThisCell = fCurrentTableColSpanArray[cellIdx];
+        Assert (nColsInThisCell >= 1);
+        Assert (col < fCurrentTable->GetColumnCount ());
+
+        TWIPS thisCellWidth = fCurrentTableCellWidths[cellIdx];
+        if (nColsInThisCell == 1) {
+            Assert (fNextTableRow > 0);
+            fCurrentTable->SetColumnWidth (fNextTableRow - 1, col, thisCellWidth);
+        }
+        else {
+            // not sure what to do in this case. All we know is the width of some SET of columns. We don't know how to apportion it between
+            // columns. Assume that if it matters - it was specified elsewhere. I COULD use the info based on the existing colwidths
+            // to at least set properly the last colwidth...
+            TWIPS prevColWidths = TWIPS{0};
+            for (size_t i = col; i < col + nColsInThisCell; ++i) {
+                Assert (fNextTableRow > 0);
+                prevColWidths += fCurrentTable->GetColumnWidth (fNextTableRow - 1, i);
+            }
+            if (prevColWidths < thisCellWidth) {
+                Assert (fNextTableRow > 0);
+                fCurrentTable->SetColumnWidth (fNextTableRow - 1, col, thisCellWidth - prevColWidths);
+            }
+        }
+
+        col += nColsInThisCell;
+    }
+}
+
+void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
+{
+#if qDebug
+
+    Require (fTableOpenLevel >= 1);
+    Require (fTableRowOpen);
+    Require (not fTableCellOpen);
+    fTableCellOpen = true;
+#endif
+
+#if !qStroika_Frameworks_Led_NestedTablesSupported
+    if (GetNoTablesAllowed ()) {
+        if (fNextTableCell >= 1) {
+            AppendText (LED_TCHAR_OF ("\t"), 1, nullptr);
+        }
+        ++fNextTableCell;
+        return;
+    }
+#endif
+    Require (colSpan >= 1);
+
+    fCurrentTableCell = fNextTableCell;
+    fCurrentTableColSpanArray.push_back (colSpan);
+    fNextTableCell += colSpan;
+
+    AssertNotNull (fCurrentTable);
+    fCurrentTable->SetColumnCount (fNextTableRow - 1, max (fNextTableCell, fCurrentTable->GetColumnCount (fNextTableRow - 1)));
+
+    Assert (fNextTableRow > 0);
+    Assert (fNextTableCell > 0);
+
+    TextStore*                               ts = nullptr;
+    shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
+    shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
+    shared_ptr<HidableTextMarkerOwner>       hidableTextDatabase;
+    fCurrentTable->GetCellWordProcessorDatabases (fNextTableRow - 1, fCurrentTableCell, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
+    PushContext (ts, styleDatabase, paragraphDatabase, hidableTextDatabase, 0);
+    if (GetOverwriteTableMode ()) {
+        ts->Replace (0, ts->GetLength (), nullptr, 0);
+    }
+}
+
+void WordProcessorTextIOSinkStream::EndTableCell ()
+{
+#if qDebug
+    Require (fTableOpenLevel >= 1);
+    Require (fTableRowOpen);
+    Require (fTableCellOpen);
+    fTableCellOpen = false;
+#endif
+#if !qStroika_Frameworks_Led_NestedTablesSupported
+    if (GetNoTablesAllowed ()) {
+        return;
+    }
+#endif
+    Flush ();
+    fCurrentTable->SetCellColor (fNextTableRow - 1, fCurrentTableCell, fCurrentTableCellColor);
+    PopContext ();
+}
+
+void WordProcessorTextIOSinkStream::SetListStyle (ListStyle listStyle)
+{
+    fNewParagraphInfo.SetListStyle (listStyle);
+}
+
+void WordProcessorTextIOSinkStream::SetListIndentLevel (unsigned char indentLevel)
+{
+    fNewParagraphInfo.SetListIndentLevel (indentLevel);
+}
+
+void WordProcessorTextIOSinkStream::SetIgnoreLastParaAttributes (bool ignoreLastParaAttributes)
+{
+    fIgnoreLastParaAttributes = ignoreLastParaAttributes;
+}
+
+void WordProcessorTextIOSinkStream::SetTableBorderColor (Color c)
+{
+    if (fCurrentTable != nullptr) {
+        fCurrentTable->SetTableBorderColor (c);
+    }
+}
+
+void WordProcessorTextIOSinkStream::SetTableBorderWidth (TWIPS bWidth)
+{
+    if (fCurrentTable != nullptr) {
+        fCurrentTable->SetTableBorderWidth (bWidth);
+    }
+}
+
+void WordProcessorTextIOSinkStream::SetCellWidths (const vector<TWIPS>& cellWidths)
+{
+    if (fCurrentTable != nullptr) {
+        fCurrentTableCellWidths = cellWidths;
+    }
+}
+
+void WordProcessorTextIOSinkStream::SetCellBackColor (const Color c)
+{
+    if (fCurrentTable != nullptr) {
+        fCurrentTableCellColor = c;
+    }
+}
+
+void WordProcessorTextIOSinkStream::SetDefaultCellMarginsForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right)
+{
+    // RTF spec seems to indicate that default cell margins can be specified on
+    // a per-row basis, whereas the MSWord XP UI seems to do it on a per-table basis. Anyhow, no
+    // matter - as for now - all WE support is on a per table basis, so just update that
+    //              -- LGP 2003-04-30
+    if (fCurrentTable != nullptr) {
+        fCurrentTable->SetDefaultCellMargins (top, left, bottom, right);
+    }
+}
+
+void WordProcessorTextIOSinkStream::SetDefaultCellSpacingForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right)
+{
+    // RTF spec seems to indicate that default cell spacing can be specified on
+    // a per-row basis, whereas the MSWord XP UI seems to do it on a per-table basis. Anyhow, no
+    // matter - as for now - all WE support is on a per table basis, so just update that
+    // Also, the spec allows for a separate value for top/left/bottom/right. Our WP table layout
+    // class just uses a single spacing value, so compress them into one for now... (see SPR#1396)
+    //              -- LGP 2003-04-30
+    if (fCurrentTable != nullptr) {
+        TWIPS aveSpacing = TWIPS ((top + left + bottom + right) / 4);
+        fCurrentTable->SetCellSpacing (aveSpacing);
+    }
+}
+
+void WordProcessorTextIOSinkStream::PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                                 const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
+                                                 const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart)
+{
+    if (GetCachedTextSize () != 0) { // must flush before setting/popping context
+        Flush ();
+    }
+    inherited::PushContext (ts, textStyleDatabase, insertionStart);
+    Context c;
+    c.fHidableTextDatabase = fHidableTextDatabase;
+    c.fParagraphDatabase   = fParagraphDatabase;
+    fSavedContexts.push_back (c);
+    fHidableTextDatabase = hidableTextDatabase;
+    fParagraphDatabase   = paragraphDatabase;
+}
+
+void WordProcessorTextIOSinkStream::PopContext ()
+{
+    Require (GetCachedTextSize () == 0); // must flush before setting/popping context
+    Require (not fSavedContexts.empty ());
+    inherited::PopContext ();
+    fHidableTextDatabase = fSavedContexts.back ().fHidableTextDatabase;
+    fParagraphDatabase   = fSavedContexts.back ().fParagraphDatabase;
+    fSavedContexts.pop_back ();
+}
+
+void WordProcessorTextIOSinkStream::EndOfBuffer ()
+{
+    fEndOfBuffer = true;
+}
+
+void WordProcessorTextIOSinkStream::Flush ()
+{
+    size_t stripParaCharCount = 0;
+    if (fEndOfBuffer and fIgnoreLastParaAttributes) {
+        const vector<Led_tChar>& t = GetCachedText ();
+        {
+            for (auto i = t.rbegin (); i != t.rend (); ++i) {
+                if (*i == '\n') {
+                    break;
+                }
+                else {
+                    ++stripParaCharCount;
+                }
+            }
+        }
+    }
+
+    size_t dataSize      = GetCachedTextSize ();
+    size_t whereToInsert = GetInsertionStart () - dataSize;
+    inherited::Flush ();
+
+    // Flush the cached paragraph info
+    {
+        if constexpr (qDebug) {
+            size_t curInsert = whereToInsert;
+            for (auto i = fSavedParaInfo.begin (); i != fSavedParaInfo.end (); ++i) {
+                curInsert += (*i).second;
+            }
+            Assert (curInsert == GetInsertionStart ());
+        }
+        if (stripParaCharCount != 0) {
+            Assert (fSavedParaInfo.size () > 0);
+            vector<ParaInfoNSize>::iterator i = fSavedParaInfo.end () - 1;
+            if ((*i).second > stripParaCharCount) {
+                (*i).second -= stripParaCharCount;
+            }
+            else {
+                fSavedParaInfo.resize (fSavedParaInfo.size () - 1);
+            }
+        }
+        fParagraphDatabase->SetParagraphInfo (whereToInsert, fSavedParaInfo);
+        fSavedParaInfo.clear ();
+    }
+
+    /*
+     *  Somewhat of an inelegant hack to work around SPR#1074. The issue is that when we read in an RTF (or other)
+     *  document, we don't SET the region just past the end of the document. Still - we use this internally to
+     *  store the paragraph info of the last paragraph if it has zero characters (really just if it has
+     *  no terminating NL).
+     *
+     *  For a future release, consider finding a more elegant solution to this. This is the most we can hope
+     *  todo so late in the development cycle.
+     *
+     *      LGP 2001-11-09 - SPR#1074.
+     */
+    if (fEndOfBuffer and not fIgnoreLastParaAttributes and whereToInsert == fParagraphDatabase->GetTextStore ().GetEnd ()) {
+        fParagraphDatabase->SetParagraphInfo (whereToInsert, 1,
+                                              IncrementalParagraphInfo (fParagraphDatabase->GetParagraphInfo (
+                                                  fParagraphDatabase->GetTextStore ().FindPreviousCharacter (whereToInsert))));
+    }
+
+    // Flush the cached hidable text info
+    {
+        vector<pair<size_t, size_t>> hidePairs;
+        size_t                       curInsert = whereToInsert;
+        for (auto i = fHidableTextRuns.begin (); i != fHidableTextRuns.end (); ++i) {
+            if ((*i).fData) {
+                hidePairs.push_back (pair<size_t, size_t> (curInsert, curInsert + (*i).fElementLength));
+            }
+            curInsert += (*i).fElementLength;
+        }
+        for (auto i = hidePairs.rbegin (); i != hidePairs.rend (); ++i) {
+            fHidableTextDatabase->MakeRegionHidable ((*i).first, (*i).second);
+        }
+        fHidableTextRuns.clear ();
+    }
+}
+
+/*
+ ********************************************************************************
+ *************************** WordProcessorTextIOSrcStream ***********************
+ ********************************************************************************
+ */
+WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
+                                                            const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
+                                                            const shared_ptr<HidableTextMarkerOwner>&       hidableTextDatabase,
+                                                            size_t selectionStart, size_t selectionEnd)
+    : inherited{textStore, textStyleDatabase, selectionStart, selectionEnd}
+    , fParagraphDatabase{paragraphDatabase}
+    , fHidableTextRuns{}
+{
+
+    if (hidableTextDatabase.get () != nullptr) {
+        fHidableTextRuns = hidableTextDatabase->GetHidableRegions (selectionStart, selectionEnd);
+    }
+}
+
+#if qStroika_Frameworks_Led_SupportGDI
+WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (WordProcessor* textImager, size_t selectionStart, size_t selectionEnd)
+    : inherited (textImager, selectionStart, selectionEnd)
+    , fParagraphDatabase (textImager->GetParagraphDatabase ())
+    , fHidableTextRuns ()
+{
+    shared_ptr<HidableTextMarkerOwner> hidableTextDatabase = textImager->GetHidableTextDatabase ();
+    if (hidableTextDatabase.get () != nullptr) {
+        fHidableTextRuns = hidableTextDatabase->GetHidableRegions (selectionStart, selectionEnd);
+    }
+}
+#endif
+
+Justification WordProcessorTextIOSrcStream::GetJustification () const
+{
+    if (fParagraphDatabase.get () == nullptr) {
+        return inherited::GetJustification ();
+    }
+    else {
+        return fParagraphDatabase->GetParagraphInfo (GetCurOffset ()).GetJustification ();
+    }
+}
+
+StandardTabStopList WordProcessorTextIOSrcStream::GetStandardTabStopList () const
+{
+    if (fParagraphDatabase.get () == nullptr) {
+        return inherited::GetStandardTabStopList ();
+    }
+    else {
+        return fParagraphDatabase->GetParagraphInfo (GetCurOffset ()).GetTabStopList ();
+    }
+}
+
+TWIPS WordProcessorTextIOSrcStream::GetFirstIndent () const
+{
+    if (fParagraphDatabase.get () == nullptr) {
+        return inherited::GetFirstIndent ();
+    }
+    else {
+        return fParagraphDatabase->GetParagraphInfo (GetCurOffset ()).GetFirstIndent ();
+    }
+}
+
+void WordProcessorTextIOSrcStream::GetMargins (TWIPS* lhs, TWIPS* rhs) const
+{
+    RequireNotNull (lhs);
+    RequireNotNull (rhs);
+    if (fParagraphDatabase.get () == nullptr) {
+        inherited::GetMargins (lhs, rhs);
+    }
+    else {
+        ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (GetCurOffset ());
+        *lhs             = pi.GetLeftMargin ();
+        *rhs             = pi.GetRightMargin ();
+    }
+}
+
+/*
+@METHOD:        WordProcessor::WordProcessorTextIOSrcStream::GetSpaceBefore
+@DESCRIPTION:
+*/
+TWIPS WordProcessorTextIOSrcStream::GetSpaceBefore () const
+{
+    if (fParagraphDatabase.get () == nullptr) {
+        return inherited::GetSpaceBefore ();
+    }
+    else {
+        ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (GetCurOffset ());
+        return pi.GetSpaceBefore ();
+    }
+}
+
+/*
+@METHOD:        WordProcessor::WordProcessorTextIOSrcStream::GetSpaceAfter
+@DESCRIPTION:
+*/
+TWIPS WordProcessorTextIOSrcStream::GetSpaceAfter () const
+{
+    if (fParagraphDatabase.get () == nullptr) {
+        return inherited::GetSpaceAfter ();
+    }
+    else {
+        ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (GetCurOffset ());
+        return pi.GetSpaceAfter ();
+    }
+}
+
+/*
+@METHOD:        WordProcessor::WordProcessorTextIOSrcStream::GetLineSpacing
+@DESCRIPTION:
+*/
+LineSpacing WordProcessorTextIOSrcStream::GetLineSpacing () const
+{
+    if (fParagraphDatabase.get () == nullptr) {
+        return inherited::GetLineSpacing ();
+    }
+    else {
+        ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (GetCurOffset ());
+        return pi.GetLineSpacing ();
+    }
+}
+
+/*
+@METHOD:        WordProcessor::WordProcessorTextIOSrcStream::GetListStyleInfo
+@DESCRIPTION:
+*/
+void WordProcessorTextIOSrcStream::GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const
+{
+    RequireNotNull (listStyle);
+    RequireNotNull (indentLevel);
+    if (fParagraphDatabase.get () == nullptr) {
+        inherited::GetListStyleInfo (listStyle, indentLevel);
+    }
+    else {
+        ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (GetCurOffset ());
+        *listStyle       = pi.GetListStyle ();
+        *indentLevel     = pi.GetListIndentLevel ();
+    }
+}
+
+Led_tChar WordProcessorTextIOSrcStream::GetSoftLineBreakCharacter () const
+{
+    return WordWrappedTextImager::kSoftLineBreakChar;
+}
+
+DiscontiguousRun<bool> WordProcessorTextIOSrcStream::GetHidableTextRuns () const
+{
+    return fHidableTextRuns;
+}
+
+#if qStroika_Frameworks_Led_SupportTables
+WordProcessorTextIOSrcStream::Table* WordProcessorTextIOSrcStream::GetTableAt (size_t at) const
+{
+    Require (fParagraphDatabase.get () != nullptr);
+    TextStore&                                  ts             = fParagraphDatabase->GetTextStore ();
+    size_t                                      realCoordStart = GetEmbeddingMarkerPosOffset () + at;
+    MarkerOfATypeMarkerSink<WordProcessorTable> maybeTable;
+    ts.CollectAllMarkersInRangeInto (realCoordStart, realCoordStart + 1, fParagraphDatabase.get (), maybeTable);
+    if (maybeTable.fResult == nullptr) {
+        return nullptr;
+    }
+    else {
+        /*
+         *  Make sure we create a TableIOMapper for just the subset of the document selected. For now, this just
+         *  applies to ROWS (no support yet for selecting columns).
+         */
+        [[maybe_unused]] size_t realCoordEnd = min (maybeTable.fResult->GetEnd (), GetSelEnd ());
+        Assert (realCoordStart < realCoordEnd);
+        if (fUseTableSelection) {
+            size_t rowSelStart = 0;
+            size_t rowSelEnd   = 0;
+            size_t colSelStart = 0;
+            size_t colSelEnd   = 0;
+            maybeTable.fResult->GetCellSelection (&rowSelStart, &rowSelEnd, &colSelStart, &colSelEnd);
+            return new TableIOMapper{*maybeTable.fResult, rowSelStart, rowSelEnd, colSelStart, colSelEnd};
+        }
+        else {
+            return new TableIOMapper{*maybeTable.fResult};
+        }
+    }
+}
+#endif
+
+void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
+{
+    inherited::SummarizeFontAndColorTable (fontNames, colorsUsed);
+
+    {
+        TextStore&                                          ts = fParagraphDatabase->GetTextStore ();
+        MarkersOfATypeMarkerSink2Vector<WordProcessorTable> tables;
+        ts.CollectAllMarkersInRangeInto (GetSelStart (), GetSelEnd (), fParagraphDatabase.get (), tables);
+        for (auto i = tables.fResult.begin (); i != tables.fResult.end (); ++i) {
+            TableIOMapper tiom (**i);
+            size_t        rows = tiom.GetRows ();
+            for (size_t r = 0; r < rows; ++r) {
+                size_t columns = tiom.GetColumns (r);
+                for (size_t c = 0; c < columns; ++c) {
+                    unique_ptr<StyledTextIOWriter::SrcStream> subSrcStream (tiom.MakeCellSubSrcStream (r, c));
+                    if (subSrcStream.get () != nullptr) {
+                        subSrcStream.get ()->SummarizeFontAndColorTable (fontNames, colorsUsed);
+                    }
+                }
+                if (colorsUsed != nullptr) {
+                    using CellInfo = StyledTextIOWriter::SrcStream::Table::CellInfo;
+                    vector<CellInfo> cellInfos;
+                    tiom.GetRowInfo (r, &cellInfos);
+                    for (auto ci = cellInfos.begin (); ci != cellInfos.end (); ++ci) {
+                        colorsUsed->insert ((*ci).f_clcbpat);
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+ ********************************************************************************
+ *********** WordProcessor::WordProcessorTextIOSrcStream::TableIOMapper *********
+ ********************************************************************************
+ */
+WordProcessorTextIOSrcStream::TableIOMapper::TableIOMapper (WordProcessorTable& realTable, size_t startRow, size_t endRow, size_t startCol, size_t endCol)
+    : fRealTable{realTable}
+    , fStartRow{startRow}
+    , fEndRow{endRow}
+    , fStartCol{startCol}
+    , fEndCol{endCol}
+{
+    if (fEndRow == static_cast<size_t> (-1)) {
+        fEndRow = fRealTable.GetRowCount ();
+    }
+    if (fEndCol == static_cast<size_t> (-1)) {
+        fEndCol = fRealTable.GetColumnCount ();
+    }
+
+    Ensure (fStartRow < fEndRow); // must be at least one row
+    Ensure (fStartCol < fEndCol); // ditto for columns
+    Ensure (fEndRow <= fRealTable.GetRowCount ());
+    Ensure (fEndCol <= fRealTable.GetColumnCount ());
+}
+
+size_t WordProcessorTextIOSrcStream::TableIOMapper::GetRows () const
+{
+    return fEndRow - fStartRow;
+}
+
+size_t WordProcessorTextIOSrcStream::TableIOMapper::GetColumns (size_t row) const
+{
+    size_t vRow         = row + fStartRow;
+    size_t realColCount = fRealTable.GetColumnCount (vRow);
+    size_t pinnedColEnd = min (realColCount, fEndCol);
+
+    Assert (pinnedColEnd > fStartCol); // not sure how to deal with this failing - can it?
+    // I guess we just pin result at zero??? - LGP 2003-04-11
+    return pinnedColEnd - fStartCol;
+}
+
+void WordProcessorTextIOSrcStream::TableIOMapper::GetRowInfo (size_t row, vector<CellInfo>* cellInfos)
+{
+    Require (row < GetRows ());
+
+    size_t vRow = row + fStartRow;
+
+    RequireNotNull (cellInfos);
+    size_t columns = GetColumns (row);
+    cellInfos->clear ();
+    for (size_t c = 0; c < columns; ++c) {
+        size_t vCol = c + fStartCol;
+        if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessorTable::ePlainCell) {
+            CellInfo cellInfo;
+            cellInfo.f_clcbpat = fRealTable.GetCellColor (vRow, vCol);
+            cellInfo.f_cellx   = fRealTable.GetColumnWidth (vRow, vCol);
+            cellInfos->push_back (cellInfo);
+        }
+        else {
+            // if any previous real cell, append this guys colwidth to him...
+            if (not cellInfos->empty ()) {
+                cellInfos->back ().f_cellx += fRealTable.GetColumnWidth (vRow, vCol);
+            }
+        }
+    }
+}
+
+StyledTextIOWriter::SrcStream* WordProcessorTextIOSrcStream::TableIOMapper::MakeCellSubSrcStream (size_t row, size_t column)
+{
+    Require (row < GetRows ());
+    Require (column < GetColumns (row));
+
+    size_t vRow = row + fStartRow;
+    size_t vCol = column + fStartCol;
+
+    if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessorTable::ePlainCell) {
+        TextStore*                               ts = nullptr;
+        shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
+        shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
+        shared_ptr<HidableTextMarkerOwner>       hidableTextDatabase;
+        fRealTable.GetCellWordProcessorDatabases (vRow, vCol, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
+        return new WordProcessorTextIOSrcStream (ts, styleDatabase, paragraphDatabase, hidableTextDatabase);
+    }
+    else {
+        return nullptr;
+    }
+}
+
+size_t WordProcessorTextIOSrcStream::TableIOMapper::GetOffsetEnd () const
+{
+    // The current implementation of tables uses a single embedding object with a single sentinel character
+    // for the entire table (no matter how many rows)
+    return 1;
+}
+
+TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellMarginsForRow (size_t /*row*/) const
+{
+    // Right now - our table implementation just has ONE value for the entire table
+    TWIPS_Rect cellMargins = TWIPS_Rect (TWIPS{0}, TWIPS{0}, TWIPS{0}, TWIPS{0});
+    fRealTable.GetDefaultCellMargins (&cellMargins.top, &cellMargins.left, &cellMargins.bottom, &cellMargins.right);
+    return cellMargins;
+}
+
+TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellSpacingForRow (size_t /*row*/) const
+{
+    // Right now - our table implementation just has ONE value for the entire table
+    TWIPS cellSpacing = fRealTable.GetCellSpacing ();
+    return TWIPS_Rect (cellSpacing, cellSpacing, TWIPS{0}, TWIPS{0}); // carefull - TLBR sb cellSpacing and last 2 args to TWIPS_Rect::CTOR are height/width!
+}
+
+
+
+
+
 #if qStroika_Frameworks_Led_SupportGDI
 
 class ParagraphInfoChangeTextRep : public InteractiveReplaceCommand::SavedTextRep {
@@ -4375,957 +5332,6 @@ DistanceType WordProcessor::CalcSpaceToEat (size_t rowContainingCharPos) const
 
 /*
  ********************************************************************************
- *************************** WordProcessorTextIOSinkStream **********************
- ********************************************************************************
- */
-namespace {
-    inline TWIPS CalcDefaultRHSMargin_ ()
-    {
-        const int kRTF_SPEC_DefaultInches = 6; // HACK - see comments in SinkStreamDestination::SetRightMargin ()
-        int       rhsTWIPS                = kRTF_SPEC_DefaultInches * 1440;
-        return TWIPS (rhsTWIPS);
-    }
-}
-
-WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                                              const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                              const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart)
-    : inherited{textStore, textStyleDatabase, insertionStart}
-    , fOverwriteTableMode{false}
-    ,
-#if !qStroika_Frameworks_Led_NestedTablesSupported
-    fNoTablesAllowed{false}
-    ,
-#endif
-    fSavedContexts{}
-    , fParagraphDatabase{paragraphDatabase}
-    , fHidableTextDatabase{hidableTextDatabase}
-    , fSavedParaInfo{}
-    , fNewParagraphInfo{}
-    , fTextHidden{false}
-    , fHidableTextRuns{}
-    , fEndOfBuffer{false}
-    , fIgnoreLastParaAttributes{false}
-    , fCurrentTable{nullptr}
-    , fCurrentTableCellWidths{}
-    , fCurrentTableCellColor{Color::kWhite}
-    , fCurrentTableColSpanArray{}
-    , fTableStack{}
-    , fNextTableRow{0}
-    , fNextTableCell{0}
-    , fCurrentTableCell{size_t (-1)}
-#if qDebug
-    , fTableOpenLevel{0}
-    , fTableRowOpen{false}
-    , fTableCellOpen{false}
-#endif
-{
-    CTOR_COMMON ();
-}
-
-WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (WordProcessor* wp, size_t insertionStart)
-    : inherited{&wp->GetTextStore (), wp->GetStyleDatabase (), insertionStart}
-    , fOverwriteTableMode{false}
-    ,
-#if !qStroika_Frameworks_Led_NestedTablesSupported
-    fNoTablesAllowed{false}
-    ,
-#endif
-    fSavedContexts{}
-    , fParagraphDatabase{wp->GetParagraphDatabase ()}
-    , fHidableTextDatabase{wp->GetHidableTextDatabase ()}
-    , fSavedParaInfo{}
-    , fNewParagraphInfo{}
-    , fTextHidden{false}
-    , fHidableTextRuns{}
-    , fEndOfBuffer{false}
-    , fIgnoreLastParaAttributes{false}
-    , fCurrentTable{nullptr}
-    , fCurrentTableCellWidths{}
-    , fCurrentTableCellColor{Color::kWhite}
-    , fCurrentTableColSpanArray{}
-    , fTableStack{}
-    , fNextTableRow{0}
-    , fNextTableCell{0}
-    , fCurrentTableCell{size_t (-1)}
-#if qDebug
-    , fTableOpenLevel{0}
-    , fTableRowOpen{false}
-    , fTableCellOpen{false}
-#endif
-{
-    CTOR_COMMON ();
-}
-
-WordProcessorTextIOSinkStream::~WordProcessorTextIOSinkStream ()
-{
-#if qDebug
-    Assert (fTableOpenLevel == 0);
-    Assert (not fTableRowOpen);
-    Assert (not fTableCellOpen);
-#endif
-    try {
-        Flush ();
-        Ensure (GetCachedTextSize () == 0); // If flush succeeds, then these must be zero
-        Ensure (fSavedParaInfo.size () == 0);
-    }
-    catch (...) {
-        // ignore, cuz cannot fail out of DTOR
-    }
-}
-
-void WordProcessorTextIOSinkStream::CTOR_COMMON ()
-{
-    fNewParagraphInfo.SetJustification (eLeftJustify);
-    fNewParagraphInfo.SetTabStopList (WordProcessor::GetDefaultStandardTabStopList ());
-    fNewParagraphInfo.SetFirstIndent (TWIPS{0});
-    fNewParagraphInfo.SetMargins (TWIPS{0}, CalcDefaultRHSMargin_ ());
-    fNewParagraphInfo.SetListStyle (eListStyle_None);
-    fNewParagraphInfo.SetSpaceBefore (TWIPS{0});
-    fNewParagraphInfo.SetSpaceAfter (TWIPS{0});
-}
-
-void WordProcessorTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec)
-{
-    RequireNotNull (text);
-    inherited::AppendText (text, nTChars, fontSpec);
-    if (fSavedParaInfo.size () == 0) {
-        fSavedParaInfo.push_back (ParaInfoNSize (fNewParagraphInfo, nTChars));
-    }
-    else if (fSavedParaInfo.back ().first == fNewParagraphInfo) {
-        fSavedParaInfo.back ().second += nTChars;
-    }
-    else {
-        fSavedParaInfo.push_back (ParaInfoNSize (fNewParagraphInfo, nTChars));
-    }
-    if (fHidableTextRuns.size () != 0 and fHidableTextRuns.back ().fData == fTextHidden) {
-        fHidableTextRuns.back ().fElementLength += nTChars;
-    }
-    else {
-        fHidableTextRuns.push_back (DiscontiguousRunElement<bool> (0, nTChars, fTextHidden));
-    }
-}
-
-void WordProcessorTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
-{
-    RequireNotNull (embedding);
-    if (GetCachedTextSize () != 0) {
-        Flush ();
-    }
-    size_t whereToStartHiddenArea = GetInsertionStart ();
-    inherited::AppendEmbedding (embedding);
-    if (fTextHidden) {
-        fHidableTextDatabase->MakeRegionHidable (whereToStartHiddenArea, whereToStartHiddenArea + 1);
-    }
-}
-
-void WordProcessorTextIOSinkStream::AppendSoftLineBreak ()
-{
-    AppendText (&WordWrappedTextImager::kSoftLineBreakChar, 1, nullptr);
-}
-
-void WordProcessorTextIOSinkStream::SetJustification (Justification justification)
-{
-    fNewParagraphInfo.SetJustification (justification);
-}
-
-void WordProcessorTextIOSinkStream::SetStandardTabStopList (const StandardTabStopList& tabStops)
-{
-    fNewParagraphInfo.SetTabStopList (tabStops);
-}
-
-void WordProcessorTextIOSinkStream::SetFirstIndent (TWIPS tx)
-{
-    fNewParagraphInfo.SetFirstIndent (tx);
-}
-
-void WordProcessorTextIOSinkStream::SetLeftMargin (TWIPS lhs)
-{
-    fNewParagraphInfo.SetMargins (lhs, max (TWIPS (lhs + 1), fNewParagraphInfo.GetRightMargin ()));
-}
-
-void WordProcessorTextIOSinkStream::SetRightMargin (TWIPS rhs)
-{
-    fNewParagraphInfo.SetMargins (fNewParagraphInfo.GetLeftMargin (), max (TWIPS (fNewParagraphInfo.GetLeftMargin () + 1), rhs));
-}
-
-void WordProcessorTextIOSinkStream::SetSpaceBefore (TWIPS sb)
-{
-    fNewParagraphInfo.SetSpaceBefore (sb);
-}
-
-void WordProcessorTextIOSinkStream::SetSpaceAfter (TWIPS sa)
-{
-    fNewParagraphInfo.SetSpaceAfter (sa);
-}
-
-void WordProcessorTextIOSinkStream::SetLineSpacing (LineSpacing sl)
-{
-    fNewParagraphInfo.SetLineSpacing (sl);
-}
-
-void WordProcessorTextIOSinkStream::SetTextHidden (bool hidden)
-{
-    fTextHidden = hidden;
-}
-
-void WordProcessorTextIOSinkStream::StartTable ()
-{
-#if qDebug
-    // NB: because of nested tables - we COULD be starting a table inside another table.
-    // If we are - then we must be inside a table cell (so row/cell must be open). Otherwise, they
-    // must both be closed
-    if (fTableOpenLevel == 0) {
-        // we are NOT in a non-nested case, and so NONE should be open
-        Assert (fTableOpenLevel == 0);
-        Assert (not fTableRowOpen);
-        Assert (not fTableCellOpen);
-    }
-    else {
-        // we must be in a nested case, and so BOTH should be open
-        Assert (fTableRowOpen);
-        Assert (fTableCellOpen);
-    }
-    // either way - one we start a new table - they must both be closed
-    fTableRowOpen  = false;
-    fTableCellOpen = false;
-    ++fTableOpenLevel;
-#endif
-#if !qStroika_Frameworks_Led_NestedTablesSupported
-    if (GetNoTablesAllowed ()) {
-        return;
-    }
-#endif
-
-    if (GetCachedTextSize () != 0) {
-        // Because we address directly into the textstore here - we need any pending writes to actually go in so the right stuff
-        // is already in the textstore.
-        Flush ();
-    }
-
-#if qStroika_Frameworks_Led_NestedTablesSupported
-    if (fCurrentTable != nullptr) {
-        // when we support nested tables for REAL - we need to also save other context like fCurrentTableCellWidths / fCurrentTableColSpanArray
-        fTableStack.push_back (fCurrentTable);
-    }
-    fCurrentTable = nullptr;
-#endif
-
-    if (GetOverwriteTableMode ()) {
-        TextStore&                                  ts             = GetTextStore ();
-        size_t                                      realCoordStart = GetInsertionStart ();
-        MarkerOfATypeMarkerSink<WordProcessorTable> maybeTable;
-        Assert (realCoordStart <= ts.GetEnd ());
-        ts.CollectAllMarkersInRangeInto (ts.FindPreviousCharacter (realCoordStart), realCoordStart, fParagraphDatabase.get (), maybeTable);
-        if (maybeTable.fResult != nullptr) {
-            fCurrentTable      = maybeTable.fResult;
-            size_t rowSelStart = 0;
-            size_t colSelStart = 0;
-            fCurrentTable->GetCellSelection (&rowSelStart, nullptr, &colSelStart, nullptr);
-            fNextTableRow     = rowSelStart;
-            fNextTableCell    = colSelStart;
-            fCurrentTableCell = size_t (-1);
-        }
-    }
-
-    if (fCurrentTable == nullptr) {
-        fCurrentTable = new WordProcessorTable (fParagraphDatabase.get (), current_offset () + GetOriginalStart ());
-        SetInsertionStart (GetInsertionStart () + 1); // cuz we added a row which adds a sentinel
-        fNextTableRow     = 0;
-        fNextTableCell    = 0;
-        fCurrentTableCell = size_t (-1);
-    }
-}
-
-void WordProcessorTextIOSinkStream::EndTable ()
-{
-#if qDebug
-    Require (fTableOpenLevel >= 1);
-    Require (not fTableRowOpen); // caller must close row/cell before closing table
-    Require (not fTableCellOpen);
-    // if this is a nested table, then the parent scope must have had an open cell/row, and otherwise,
-    // NO
-    --fTableOpenLevel;
-    if (fTableOpenLevel > 0) {
-        fTableRowOpen  = true;
-        fTableCellOpen = true;
-    }
-    else {
-        fTableRowOpen  = false;
-        fTableCellOpen = false;
-    }
-#endif
-#if !qStroika_Frameworks_Led_NestedTablesSupported
-    if (GetNoTablesAllowed ()) {
-        AppendText (LED_TCHAR_OF ("\n"), 1, nullptr);
-        return;
-    }
-#endif
-    if (fCurrentTable != nullptr) {
-        // Be careful to protect against unbalanced start/ends cuz of bad StyledTextIO input data
-        fCurrentTable = nullptr;
-#if qStroika_Frameworks_Led_NestedTablesSupported
-        if (not fTableStack.empty ()) {
-            fCurrentTable = fTableStack.back ();
-            fTableStack.pop_back ();
-        }
-#endif
-    }
-}
-
-void WordProcessorTextIOSinkStream::StartTableRow ()
-{
-#if qDebug
-    Require (fTableOpenLevel >= 1);
-    Require (not fTableRowOpen);
-    Require (not fTableCellOpen);
-    fTableRowOpen = true;
-#endif
-#if !qStroika_Frameworks_Led_NestedTablesSupported
-    if (GetNoTablesAllowed ()) {
-        fNextTableCell = 0;
-        AppendText (LED_TCHAR_OF ("\n"), 1, nullptr);
-        return;
-    }
-#endif
-    RequireNotNull (fCurrentTable);
-    ++fNextTableRow;
-    if (GetOverwriteTableMode ()) {
-        if (fNextTableRow > fCurrentTable->GetRowCount ()) {
-            fCurrentTable->InsertRow (fNextTableRow - 1, 1);
-        }
-        size_t colSelStart = 0;
-        fCurrentTable->GetCellSelection (nullptr, nullptr, &colSelStart, nullptr);
-        fNextTableCell = min (fCurrentTable->GetColumnCount (fNextTableRow - 1) - 1, colSelStart);
-    }
-    else {
-        fNextTableCell = 0;
-        fCurrentTable->InsertRow (fNextTableRow - 1, 1);
-    }
-    fCurrentTableColSpanArray.clear ();
-}
-
-void WordProcessorTextIOSinkStream::EndTableRow ()
-{
-#if qDebug
-    Require (fTableOpenLevel >= 1);
-    Require (fTableRowOpen);
-    Require (not fTableCellOpen);
-    fTableRowOpen = false;
-#endif
-#if !qStroika_Frameworks_Led_NestedTablesSupported
-    if (GetNoTablesAllowed ()) {
-        return;
-    }
-#endif
-    AssertNotNull (fCurrentTable);
-    size_t nCellsInThisRow = fCurrentTableCellWidths.size ();
-
-    while (nCellsInThisRow > fCurrentTableColSpanArray.size ()) {
-        // treat missing startcell/endcell pairs as just colWidth = 1
-        fCurrentTableColSpanArray.push_back (1);
-    }
-
-    if (nCellsInThisRow != fCurrentTableColSpanArray.size ()) {
-        // For HTML readers - they don't (generally) call SetCellWidths - and so
-        // we don't get extra cells generated in that way. -- LGP 2003-05-22
-        nCellsInThisRow = min (nCellsInThisRow, fCurrentTableColSpanArray.size ());
-    }
-    fCurrentTable->SetColumnCount (fNextTableRow - 1, max (nCellsInThisRow, fCurrentTable->GetColumnCount (fNextTableRow - 1)));
-
-    size_t col = 0;
-    for (size_t cellIdx = 0; cellIdx < nCellsInThisRow; ++cellIdx) {
-        size_t nColsInThisCell = fCurrentTableColSpanArray[cellIdx];
-        Assert (nColsInThisCell >= 1);
-        Assert (col < fCurrentTable->GetColumnCount ());
-
-        TWIPS thisCellWidth = fCurrentTableCellWidths[cellIdx];
-        if (nColsInThisCell == 1) {
-            Assert (fNextTableRow > 0);
-            fCurrentTable->SetColumnWidth (fNextTableRow - 1, col, thisCellWidth);
-        }
-        else {
-            // not sure what to do in this case. All we know is the width of some SET of columns. We don't know how to apportion it between
-            // columns. Assume that if it matters - it was specified elsewhere. I COULD use the info based on the existing colwidths
-            // to at least set properly the last colwidth...
-            TWIPS prevColWidths = TWIPS{0};
-            for (size_t i = col; i < col + nColsInThisCell; ++i) {
-                Assert (fNextTableRow > 0);
-                prevColWidths += fCurrentTable->GetColumnWidth (fNextTableRow - 1, i);
-            }
-            if (prevColWidths < thisCellWidth) {
-                Assert (fNextTableRow > 0);
-                fCurrentTable->SetColumnWidth (fNextTableRow - 1, col, thisCellWidth - prevColWidths);
-            }
-        }
-
-        col += nColsInThisCell;
-    }
-}
-
-void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
-{
-#if qDebug
-
-    Require (fTableOpenLevel >= 1);
-    Require (fTableRowOpen);
-    Require (not fTableCellOpen);
-    fTableCellOpen = true;
-#endif
-
-#if !qStroika_Frameworks_Led_NestedTablesSupported
-    if (GetNoTablesAllowed ()) {
-        if (fNextTableCell >= 1) {
-            AppendText (LED_TCHAR_OF ("\t"), 1, nullptr);
-        }
-        ++fNextTableCell;
-        return;
-    }
-#endif
-    Require (colSpan >= 1);
-
-    fCurrentTableCell = fNextTableCell;
-    fCurrentTableColSpanArray.push_back (colSpan);
-    fNextTableCell += colSpan;
-
-    AssertNotNull (fCurrentTable);
-    fCurrentTable->SetColumnCount (fNextTableRow - 1, max (fNextTableCell, fCurrentTable->GetColumnCount (fNextTableRow - 1)));
-
-    Assert (fNextTableRow > 0);
-    Assert (fNextTableCell > 0);
-
-    TextStore*                               ts = nullptr;
-    shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
-    shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
-    shared_ptr<HidableTextMarkerOwner>       hidableTextDatabase;
-    fCurrentTable->GetCellWordProcessorDatabases (fNextTableRow - 1, fCurrentTableCell, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
-    PushContext (ts, styleDatabase, paragraphDatabase, hidableTextDatabase, 0);
-    if (GetOverwriteTableMode ()) {
-        ts->Replace (0, ts->GetLength (), nullptr, 0);
-    }
-}
-
-void WordProcessorTextIOSinkStream::EndTableCell ()
-{
-#if qDebug
-    Require (fTableOpenLevel >= 1);
-    Require (fTableRowOpen);
-    Require (fTableCellOpen);
-    fTableCellOpen = false;
-#endif
-#if !qStroika_Frameworks_Led_NestedTablesSupported
-    if (GetNoTablesAllowed ()) {
-        return;
-    }
-#endif
-    Flush ();
-    fCurrentTable->SetCellColor (fNextTableRow - 1, fCurrentTableCell, fCurrentTableCellColor);
-    PopContext ();
-}
-
-void WordProcessorTextIOSinkStream::SetListStyle (ListStyle listStyle)
-{
-    fNewParagraphInfo.SetListStyle (listStyle);
-}
-
-void WordProcessorTextIOSinkStream::SetListIndentLevel (unsigned char indentLevel)
-{
-    fNewParagraphInfo.SetListIndentLevel (indentLevel);
-}
-
-void WordProcessorTextIOSinkStream::SetIgnoreLastParaAttributes (bool ignoreLastParaAttributes)
-{
-    fIgnoreLastParaAttributes = ignoreLastParaAttributes;
-}
-
-void WordProcessorTextIOSinkStream::SetTableBorderColor (Color c)
-{
-    if (fCurrentTable != nullptr) {
-        fCurrentTable->SetTableBorderColor (c);
-    }
-}
-
-void WordProcessorTextIOSinkStream::SetTableBorderWidth (TWIPS bWidth)
-{
-    if (fCurrentTable != nullptr) {
-        fCurrentTable->SetTableBorderWidth (bWidth);
-    }
-}
-
-void WordProcessorTextIOSinkStream::SetCellWidths (const vector<TWIPS>& cellWidths)
-{
-    if (fCurrentTable != nullptr) {
-        fCurrentTableCellWidths = cellWidths;
-    }
-}
-
-void WordProcessorTextIOSinkStream::SetCellBackColor (const Color c)
-{
-    if (fCurrentTable != nullptr) {
-        fCurrentTableCellColor = c;
-    }
-}
-
-void WordProcessorTextIOSinkStream::SetDefaultCellMarginsForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right)
-{
-    // RTF spec seems to indicate that default cell margins can be specified on
-    // a per-row basis, whereas the MSWord XP UI seems to do it on a per-table basis. Anyhow, no
-    // matter - as for now - all WE support is on a per table basis, so just update that
-    //              -- LGP 2003-04-30
-    if (fCurrentTable != nullptr) {
-        fCurrentTable->SetDefaultCellMargins (top, left, bottom, right);
-    }
-}
-
-void WordProcessorTextIOSinkStream::SetDefaultCellSpacingForCurrentRow (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right)
-{
-    // RTF spec seems to indicate that default cell spacing can be specified on
-    // a per-row basis, whereas the MSWord XP UI seems to do it on a per-table basis. Anyhow, no
-    // matter - as for now - all WE support is on a per table basis, so just update that
-    // Also, the spec allows for a separate value for top/left/bottom/right. Our WP table layout
-    // class just uses a single spacing value, so compress them into one for now... (see SPR#1396)
-    //              -- LGP 2003-04-30
-    if (fCurrentTable != nullptr) {
-        TWIPS aveSpacing = TWIPS ((top + left + bottom + right) / 4);
-        fCurrentTable->SetCellSpacing (aveSpacing);
-    }
-}
-
-void WordProcessorTextIOSinkStream::PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                                 const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                 const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart)
-{
-    if (GetCachedTextSize () != 0) { // must flush before setting/popping context
-        Flush ();
-    }
-    inherited::PushContext (ts, textStyleDatabase, insertionStart);
-    Context c;
-    c.fHidableTextDatabase = fHidableTextDatabase;
-    c.fParagraphDatabase   = fParagraphDatabase;
-    fSavedContexts.push_back (c);
-    fHidableTextDatabase = hidableTextDatabase;
-    fParagraphDatabase   = paragraphDatabase;
-}
-
-void WordProcessorTextIOSinkStream::PopContext ()
-{
-    Require (GetCachedTextSize () == 0); // must flush before setting/popping context
-    Require (not fSavedContexts.empty ());
-    inherited::PopContext ();
-    fHidableTextDatabase = fSavedContexts.back ().fHidableTextDatabase;
-    fParagraphDatabase   = fSavedContexts.back ().fParagraphDatabase;
-    fSavedContexts.pop_back ();
-}
-
-void WordProcessorTextIOSinkStream::EndOfBuffer ()
-{
-    fEndOfBuffer = true;
-}
-
-void WordProcessorTextIOSinkStream::Flush ()
-{
-    size_t stripParaCharCount = 0;
-    if (fEndOfBuffer and fIgnoreLastParaAttributes) {
-        const vector<Led_tChar>& t = GetCachedText ();
-        {
-            for (auto i = t.rbegin (); i != t.rend (); ++i) {
-                if (*i == '\n') {
-                    break;
-                }
-                else {
-                    ++stripParaCharCount;
-                }
-            }
-        }
-    }
-
-    size_t dataSize      = GetCachedTextSize ();
-    size_t whereToInsert = GetInsertionStart () - dataSize;
-    inherited::Flush ();
-
-    // Flush the cached paragraph info
-    {
-        if constexpr (qDebug) {
-            size_t curInsert = whereToInsert;
-            for (auto i = fSavedParaInfo.begin (); i != fSavedParaInfo.end (); ++i) {
-                curInsert += (*i).second;
-            }
-            Assert (curInsert == GetInsertionStart ());
-        }
-        if (stripParaCharCount != 0) {
-            Assert (fSavedParaInfo.size () > 0);
-            vector<ParaInfoNSize>::iterator i = fSavedParaInfo.end () - 1;
-            if ((*i).second > stripParaCharCount) {
-                (*i).second -= stripParaCharCount;
-            }
-            else {
-                fSavedParaInfo.resize (fSavedParaInfo.size () - 1);
-            }
-        }
-        fParagraphDatabase->SetParagraphInfo (whereToInsert, fSavedParaInfo);
-        fSavedParaInfo.clear ();
-    }
-
-    /*
-     *  Somewhat of an inelegant hack to work around SPR#1074. The issue is that when we read in an RTF (or other)
-     *  document, we don't SET the region just past the end of the document. Still - we use this internally to
-     *  store the paragraph info of the last paragraph if it has zero characters (really just if it has
-     *  no terminating NL).
-     *
-     *  For a future release, consider finding a more elegant solution to this. This is the most we can hope
-     *  todo so late in the development cycle.
-     *
-     *      LGP 2001-11-09 - SPR#1074.
-     */
-    if (fEndOfBuffer and not fIgnoreLastParaAttributes and whereToInsert == fParagraphDatabase->GetTextStore ().GetEnd ()) {
-        fParagraphDatabase->SetParagraphInfo (whereToInsert, 1,
-                                              IncrementalParagraphInfo (fParagraphDatabase->GetParagraphInfo (
-                                                  fParagraphDatabase->GetTextStore ().FindPreviousCharacter (whereToInsert))));
-    }
-
-    // Flush the cached hidable text info
-    {
-        vector<pair<size_t, size_t>> hidePairs;
-        size_t                       curInsert = whereToInsert;
-        for (auto i = fHidableTextRuns.begin (); i != fHidableTextRuns.end (); ++i) {
-            if ((*i).fData) {
-                hidePairs.push_back (pair<size_t, size_t> (curInsert, curInsert + (*i).fElementLength));
-            }
-            curInsert += (*i).fElementLength;
-        }
-        for (auto i = hidePairs.rbegin (); i != hidePairs.rend (); ++i) {
-            fHidableTextDatabase->MakeRegionHidable ((*i).first, (*i).second);
-        }
-        fHidableTextRuns.clear ();
-    }
-}
-
-/*
- ********************************************************************************
- *************************** WordProcessorTextIOSrcStream ***********************
- ********************************************************************************
- */
-WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
-                                                            const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                            const shared_ptr<HidableTextMarkerOwner>&       hidableTextDatabase,
-                                                            size_t selectionStart, size_t selectionEnd)
-    : inherited{textStore, textStyleDatabase, selectionStart, selectionEnd}
-    , fUseTableSelection{false}
-    , fParagraphDatabase{paragraphDatabase}
-    , fHidableTextRuns{}
-{
-
-    if (hidableTextDatabase.get () != nullptr) {
-        fHidableTextRuns = hidableTextDatabase->GetHidableRegions (selectionStart, selectionEnd);
-    }
-}
-
-WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (WordProcessor* textImager, size_t selectionStart, size_t selectionEnd)
-    : inherited (textImager, selectionStart, selectionEnd)
-    , fUseTableSelection (false)
-    , fParagraphDatabase (textImager->GetParagraphDatabase ())
-    , fHidableTextRuns ()
-{
-    shared_ptr<HidableTextMarkerOwner> hidableTextDatabase = textImager->GetHidableTextDatabase ();
-    if (hidableTextDatabase.get () != nullptr) {
-        fHidableTextRuns = hidableTextDatabase->GetHidableRegions (selectionStart, selectionEnd);
-    }
-}
-
-Justification WordProcessorTextIOSrcStream::GetJustification () const
-{
-    if (fParagraphDatabase.get () == nullptr) {
-        return inherited::GetJustification ();
-    }
-    else {
-        return fParagraphDatabase->GetParagraphInfo (GetCurOffset ()).GetJustification ();
-    }
-}
-
-StandardTabStopList WordProcessorTextIOSrcStream::GetStandardTabStopList () const
-{
-    if (fParagraphDatabase.get () == nullptr) {
-        return inherited::GetStandardTabStopList ();
-    }
-    else {
-        return fParagraphDatabase->GetParagraphInfo (GetCurOffset ()).GetTabStopList ();
-    }
-}
-
-TWIPS WordProcessorTextIOSrcStream::GetFirstIndent () const
-{
-    if (fParagraphDatabase.get () == nullptr) {
-        return inherited::GetFirstIndent ();
-    }
-    else {
-        return fParagraphDatabase->GetParagraphInfo (GetCurOffset ()).GetFirstIndent ();
-    }
-}
-
-void WordProcessorTextIOSrcStream::GetMargins (TWIPS* lhs, TWIPS* rhs) const
-{
-    RequireNotNull (lhs);
-    RequireNotNull (rhs);
-    if (fParagraphDatabase.get () == nullptr) {
-        inherited::GetMargins (lhs, rhs);
-    }
-    else {
-        ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (GetCurOffset ());
-        *lhs             = pi.GetLeftMargin ();
-        *rhs             = pi.GetRightMargin ();
-    }
-}
-
-/*
-@METHOD:        WordProcessor::WordProcessorTextIOSrcStream::GetSpaceBefore
-@DESCRIPTION:
-*/
-TWIPS WordProcessorTextIOSrcStream::GetSpaceBefore () const
-{
-    if (fParagraphDatabase.get () == nullptr) {
-        return inherited::GetSpaceBefore ();
-    }
-    else {
-        ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (GetCurOffset ());
-        return pi.GetSpaceBefore ();
-    }
-}
-
-/*
-@METHOD:        WordProcessor::WordProcessorTextIOSrcStream::GetSpaceAfter
-@DESCRIPTION:
-*/
-TWIPS WordProcessorTextIOSrcStream::GetSpaceAfter () const
-{
-    if (fParagraphDatabase.get () == nullptr) {
-        return inherited::GetSpaceAfter ();
-    }
-    else {
-        ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (GetCurOffset ());
-        return pi.GetSpaceAfter ();
-    }
-}
-
-/*
-@METHOD:        WordProcessor::WordProcessorTextIOSrcStream::GetLineSpacing
-@DESCRIPTION:
-*/
-LineSpacing WordProcessorTextIOSrcStream::GetLineSpacing () const
-{
-    if (fParagraphDatabase.get () == nullptr) {
-        return inherited::GetLineSpacing ();
-    }
-    else {
-        ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (GetCurOffset ());
-        return pi.GetLineSpacing ();
-    }
-}
-
-/*
-@METHOD:        WordProcessor::WordProcessorTextIOSrcStream::GetListStyleInfo
-@DESCRIPTION:
-*/
-void WordProcessorTextIOSrcStream::GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const
-{
-    RequireNotNull (listStyle);
-    RequireNotNull (indentLevel);
-    if (fParagraphDatabase.get () == nullptr) {
-        inherited::GetListStyleInfo (listStyle, indentLevel);
-    }
-    else {
-        ParagraphInfo pi = fParagraphDatabase->GetParagraphInfo (GetCurOffset ());
-        *listStyle       = pi.GetListStyle ();
-        *indentLevel     = pi.GetListIndentLevel ();
-    }
-}
-
-Led_tChar WordProcessorTextIOSrcStream::GetSoftLineBreakCharacter () const
-{
-    return WordWrappedTextImager::kSoftLineBreakChar;
-}
-
-DiscontiguousRun<bool> WordProcessorTextIOSrcStream::GetHidableTextRuns () const
-{
-    return fHidableTextRuns;
-}
-
-#if qStroika_Frameworks_Led_SupportTables
-WordProcessorTextIOSrcStream::Table* WordProcessorTextIOSrcStream::GetTableAt (size_t at) const
-{
-    Require (fParagraphDatabase.get () != nullptr);
-    TextStore&                                  ts             = fParagraphDatabase->GetTextStore ();
-    size_t                                      realCoordStart = GetEmbeddingMarkerPosOffset () + at;
-    MarkerOfATypeMarkerSink<WordProcessorTable> maybeTable;
-    ts.CollectAllMarkersInRangeInto (realCoordStart, realCoordStart + 1, fParagraphDatabase.get (), maybeTable);
-    if (maybeTable.fResult == nullptr) {
-        return nullptr;
-    }
-    else {
-        /*
-         *  Make sure we create a TableIOMapper for just the subset of the document selected. For now, this just
-         *  applies to ROWS (no support yet for selecting columns).
-         */
-        [[maybe_unused]] size_t realCoordEnd = min (maybeTable.fResult->GetEnd (), GetSelEnd ());
-        Assert (realCoordStart < realCoordEnd);
-        if (fUseTableSelection) {
-            size_t rowSelStart = 0;
-            size_t rowSelEnd   = 0;
-            size_t colSelStart = 0;
-            size_t colSelEnd   = 0;
-            maybeTable.fResult->GetCellSelection (&rowSelStart, &rowSelEnd, &colSelStart, &colSelEnd);
-            return new TableIOMapper (*maybeTable.fResult, rowSelStart, rowSelEnd, colSelStart, colSelEnd);
-        }
-        else {
-            return new TableIOMapper (*maybeTable.fResult);
-        }
-    }
-}
-#endif
-
-void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
-{
-    inherited::SummarizeFontAndColorTable (fontNames, colorsUsed);
-
-    {
-        TextStore&                                          ts = fParagraphDatabase->GetTextStore ();
-        MarkersOfATypeMarkerSink2Vector<WordProcessorTable> tables;
-        ts.CollectAllMarkersInRangeInto (GetSelStart (), GetSelEnd (), fParagraphDatabase.get (), tables);
-        for (auto i = tables.fResult.begin (); i != tables.fResult.end (); ++i) {
-            TableIOMapper tiom (**i);
-            size_t        rows = tiom.GetRows ();
-            for (size_t r = 0; r < rows; ++r) {
-                size_t columns = tiom.GetColumns (r);
-                for (size_t c = 0; c < columns; ++c) {
-                    unique_ptr<StyledTextIOWriter::SrcStream> subSrcStream (tiom.MakeCellSubSrcStream (r, c));
-                    if (subSrcStream.get () != nullptr) {
-                        subSrcStream.get ()->SummarizeFontAndColorTable (fontNames, colorsUsed);
-                    }
-                }
-                if (colorsUsed != nullptr) {
-                    using CellInfo = StyledTextIOWriter::SrcStream::Table::CellInfo;
-                    vector<CellInfo> cellInfos;
-                    tiom.GetRowInfo (r, &cellInfos);
-                    for (auto ci = cellInfos.begin (); ci != cellInfos.end (); ++ci) {
-                        colorsUsed->insert ((*ci).f_clcbpat);
-                    }
-                }
-            }
-        }
-    }
-}
-
-/*
- ********************************************************************************
- *********** WordProcessor::WordProcessorTextIOSrcStream::TableIOMapper *********
- ********************************************************************************
- */
-WordProcessorTextIOSrcStream::TableIOMapper::TableIOMapper (WordProcessorTable& realTable, size_t startRow, size_t endRow, size_t startCol, size_t endCol)
-    : fRealTable{realTable}
-    , fStartRow{startRow}
-    , fEndRow{endRow}
-    , fStartCol{startCol}
-    , fEndCol{endCol}
-{
-    if (fEndRow == static_cast<size_t> (-1)) {
-        fEndRow = fRealTable.GetRowCount ();
-    }
-    if (fEndCol == static_cast<size_t> (-1)) {
-        fEndCol = fRealTable.GetColumnCount ();
-    }
-
-    Ensure (fStartRow < fEndRow); // must be at least one row
-    Ensure (fStartCol < fEndCol); // ditto for columns
-    Ensure (fEndRow <= fRealTable.GetRowCount ());
-    Ensure (fEndCol <= fRealTable.GetColumnCount ());
-}
-
-size_t WordProcessorTextIOSrcStream::TableIOMapper::GetRows () const
-{
-    return fEndRow - fStartRow;
-}
-
-size_t WordProcessorTextIOSrcStream::TableIOMapper::GetColumns (size_t row) const
-{
-    size_t vRow         = row + fStartRow;
-    size_t realColCount = fRealTable.GetColumnCount (vRow);
-    size_t pinnedColEnd = min (realColCount, fEndCol);
-
-    Assert (pinnedColEnd > fStartCol); // not sure how to deal with this failing - can it?
-    // I guess we just pin result at zero??? - LGP 2003-04-11
-    return pinnedColEnd - fStartCol;
-}
-
-void WordProcessorTextIOSrcStream::TableIOMapper::GetRowInfo (size_t row, vector<CellInfo>* cellInfos)
-{
-    Require (row < GetRows ());
-
-    size_t vRow = row + fStartRow;
-
-    RequireNotNull (cellInfos);
-    size_t columns = GetColumns (row);
-    cellInfos->clear ();
-    for (size_t c = 0; c < columns; ++c) {
-        size_t vCol = c + fStartCol;
-        if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessorTable::ePlainCell) {
-            CellInfo cellInfo;
-            cellInfo.f_clcbpat = fRealTable.GetCellColor (vRow, vCol);
-            cellInfo.f_cellx   = fRealTable.GetColumnWidth (vRow, vCol);
-            cellInfos->push_back (cellInfo);
-        }
-        else {
-            // if any previous real cell, append this guys colwidth to him...
-            if (not cellInfos->empty ()) {
-                cellInfos->back ().f_cellx += fRealTable.GetColumnWidth (vRow, vCol);
-            }
-        }
-    }
-}
-
-StyledTextIOWriter::SrcStream* WordProcessorTextIOSrcStream::TableIOMapper::MakeCellSubSrcStream (size_t row, size_t column)
-{
-    Require (row < GetRows ());
-    Require (column < GetColumns (row));
-
-    size_t vRow = row + fStartRow;
-    size_t vCol = column + fStartCol;
-
-    if (fRealTable.GetCellFlags (vRow, vCol) == WordProcessorTable::ePlainCell) {
-        TextStore*                               ts = nullptr;
-        shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
-        shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
-        shared_ptr<HidableTextMarkerOwner>       hidableTextDatabase;
-        fRealTable.GetCellWordProcessorDatabases (vRow, vCol, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
-        return new WordProcessorTextIOSrcStream (ts, styleDatabase, paragraphDatabase, hidableTextDatabase);
-    }
-    else {
-        return nullptr;
-    }
-}
-
-size_t WordProcessorTextIOSrcStream::TableIOMapper::GetOffsetEnd () const
-{
-    // The current implementation of tables uses a single embedding object with a single sentinel character
-    // for the entire table (no matter how many rows)
-    return 1;
-}
-
-TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellMarginsForRow (size_t /*row*/) const
-{
-    // Right now - our table implementation just has ONE value for the entire table
-    TWIPS_Rect cellMargins = TWIPS_Rect (TWIPS{0}, TWIPS{0}, TWIPS{0}, TWIPS{0});
-    fRealTable.GetDefaultCellMargins (&cellMargins.top, &cellMargins.left, &cellMargins.bottom, &cellMargins.right);
-    return cellMargins;
-}
-
-TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellSpacingForRow (size_t /*row*/) const
-{
-    // Right now - our table implementation just has ONE value for the entire table
-    TWIPS cellSpacing = fRealTable.GetCellSpacing ();
-    return TWIPS_Rect (cellSpacing, cellSpacing, TWIPS{0}, TWIPS{0}); // carefull - TLBR sb cellSpacing and last 2 args to TWIPS_Rect::CTOR are height/width!
-}
-
-/*
- ********************************************************************************
  ********************* WordProcessorFlavorPackageInternalizer *******************
  ********************************************************************************
  */
@@ -5596,7 +5602,6 @@ WordProcessorFlavorPackageExternalizer::WordProcessorFlavorPackageExternalizer (
                                                                                 const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase)
     : FlavorPackageExternalizer (ts)
     , inherited (ts, styleDatabase)
-    , fUseTableSelection (false)
     , fParagraphDatabase (paragraphDatabase)
     , fHidableTextDatabase (hidableTextDatabase)
 {

@@ -192,7 +192,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = BASECLASS;
 
     protected:
-        SimpleStyleMarkerByFontSpec ();
+        SimpleStyleMarkerByFontSpec () = default;
 
 #if qStroika_Frameworks_Led_SupportGDI
     protected:
@@ -318,7 +318,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = BASECLASS;
 
     public:
-        SimpleStyleMarkerWithLightUnderline ();
+        SimpleStyleMarkerWithLightUnderline () = default;
 
 #if qStroika_Frameworks_Led_SupportGDI
     protected:

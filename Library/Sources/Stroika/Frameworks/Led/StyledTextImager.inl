@@ -14,7 +14,7 @@ namespace Stroika::Frameworks::Led {
 
     /*
      ********************************************************************************
-     ********************************* StyleRunElement ***********************************
+     ********************************* StyleRunElement ******************************
      ********************************************************************************
      */
     inline StyleRunElement::StyleRunElement (StyleMarker* marker, size_t length)
@@ -23,26 +23,12 @@ namespace Stroika::Frameworks::Led {
     {
     }
 
-#if qStroika_Frameworks_Led_SupportGDI
-
     /*
      ********************************************************************************
-     ********************************* StyledTextImager ***********************************
+     ******************* SimpleStyleMarkerByFontSpec<BASECLASS> *********************
      ********************************************************************************
      */
-    inline void StyledTextImager::Invariant () const
-    {
-#if qDebug and qStroika_Frameworks_Led_HeavyDebugging
-        Invariant_ ();
-#endif
-    }
-
-    // class SimpleStyleMarkerByFontSpec<BASECLASS>
-    template <class BASECLASS>
-    inline SimpleStyleMarkerByFontSpec<BASECLASS>::SimpleStyleMarkerByFontSpec ()
-        : inherited{}
-    {
-    }
+#if qStroika_Frameworks_Led_SupportGDI
     template <class BASECLASS>
     FontSpecification SimpleStyleMarkerByFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& /*runElement*/) const
     {
@@ -78,13 +64,20 @@ namespace Stroika::Frameworks::Led {
         RequireNotNull (imager);
         return (imager->MeasureSegmentBaseLine_ (this->MakeFontSpec (imager, runElement), from, to));
     }
+    #endif
 
-    // class SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>
+    
+    /*
+     ********************************************************************************
+     ************* SimpleStyleMarkerByIncrementalFontSpec<BASECLASS> ****************
+     ********************************************************************************
+     */
     template <class BASECLASS>
     inline SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::SimpleStyleMarkerByIncrementalFontSpec (const IncrementalFontSpecification& styleInfo)
-        : fFontSpecification (styleInfo)
+        : fFontSpecification{styleInfo}
     {
     }
+#if qStroika_Frameworks_Led_SupportGDI
     template <class BASECLASS>
     FontSpecification SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>::MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const
     {
@@ -93,14 +86,25 @@ namespace Stroika::Frameworks::Led {
         fsp.MergeIn (fFontSpecification);
         return fsp;
     }
+    #endif
 
-    // class TrivialFontSpecStyleMarker
+
+    /*
+     ********************************************************************************
+     *************************** TrivialFontSpecStyleMarker *************************
+     ********************************************************************************
+     */
     inline TrivialFontSpecStyleMarker::TrivialFontSpecStyleMarker (const IncrementalFontSpecification& styleInfo)
-        : inherited (styleInfo)
+        : inherited{styleInfo}
     {
     }
 
-    // class SimpleStyleMarkerWithExtraDraw<BASECLASS>
+
+    /*
+     ********************************************************************************
+     ********************** SimpleStyleMarkerWithExtraDraw<BASECLASS> ***************
+     ********************************************************************************
+     */
     template <class BASECLASS>
     StyleRunElement SimpleStyleMarkerWithExtraDraw<BASECLASS>::MungeRunElement (const StyleRunElement& inRunElt) const
     {
@@ -118,6 +122,7 @@ namespace Stroika::Frameworks::Led {
         }
         return newRunElement;
     }
+#if qStroika_Frameworks_Led_SupportGDI
     template <class BASECLASS>
     void SimpleStyleMarkerWithExtraDraw<BASECLASS>::DrawSegment (const StyledTextImager* imager, const StyleRunElement& runElement, Tablet* tablet,
                                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
@@ -174,13 +179,14 @@ namespace Stroika::Frameworks::Led {
             return (re.fMarker->MeasureSegmentBaseLine (imager, re, from, to));
         }
     }
+#endif
 
-    // class SimpleStyleMarkerWithLightUnderline<BASECLASS>
-    template <typename BASECLASS>
-    inline SimpleStyleMarkerWithLightUnderline<BASECLASS>::SimpleStyleMarkerWithLightUnderline ()
-        : inherited ()
-    {
-    }
+    /*
+     ********************************************************************************
+     ************* SimpleStyleMarkerWithLightUnderline<BASECLASS> *******************
+     ********************************************************************************
+     */
+#if qStroika_Frameworks_Led_SupportGDI
     template <typename BASECLASS>
     void SimpleStyleMarkerWithLightUnderline<BASECLASS>::DrawExtra (const StyledTextImager* /*imager*/, const StyleRunElement& /*runElement*/,
                                                                     Tablet* tablet, size_t /*from*/, size_t /*to*/, const TextLayoutBlock& /*text*/,
@@ -202,10 +208,24 @@ namespace Stroika::Frameworks::Led {
         tablet->MoveTo (Led_Point (underlineAt, drawInto.left));
         tablet->LineTo (Led_Point (underlineAt, drawInto.left + pixelsDrawn));
     }
+#endif
     template <typename BASECLASS>
-    Color SimpleStyleMarkerWithLightUnderline<BASECLASS>::GetUnderlineBaseColor () const
+    inline Color SimpleStyleMarkerWithLightUnderline<BASECLASS>::GetUnderlineBaseColor () const
     {
         return Color::kBlack;
+    }
+
+#if qStroika_Frameworks_Led_SupportGDI
+    /*
+     ********************************************************************************
+     *************************** StyledTextImager ***********************************
+     ********************************************************************************
+     */
+    inline void StyledTextImager::Invariant () const
+    {
+#if qDebug and qStroika_Frameworks_Led_HeavyDebugging
+        Invariant_ ();
+#endif
     }
 #endif
 
