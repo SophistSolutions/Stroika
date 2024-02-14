@@ -1086,7 +1086,7 @@ void ActiveLedItControl::LoadFile (LPCTSTR filename)
     size_t                    size = 0;
     DoReadFile (filename, &buffer, &size);
 
-    StyledTextIOSrcStream_Memory                 source{buffer.data (), size};
+    StyledTextIOSrcStream_Memory  source{buffer.data (), size};
     WordProcessorTextIOSinkStream sink (&fEditor);
 
     Led_FileFormat format = GuessFormatFromName (filename);
@@ -1168,8 +1168,8 @@ ReRead:
 
 void ActiveLedItControl::SaveFile (LPCTSTR filename)
 {
-    WordProcessorTextIOSrcStream source (&fEditor);
-    StyledTextIOWriterSinkStream_Memory         sink;
+    WordProcessorTextIOSrcStream        source (&fEditor);
+    StyledTextIOWriterSinkStream_Memory sink;
     switch (GuessFormatFromName (filename)) {
         case eTextFormat: {
             StyledTextIOWriter_PlainText textWriter (&source, &sink);
@@ -1201,27 +1201,27 @@ void ActiveLedItControl::SaveFile (LPCTSTR filename)
 
 void ActiveLedItControl::SaveFileCRLF (LPCTSTR filename)
 {
-    WordProcessorTextIOSrcStream source (&fEditor);
-    StyledTextIOWriterSinkStream_Memory         sink;
-    StyledTextIOWriter_PlainText                textWriter (&source, &sink);
+    WordProcessorTextIOSrcStream        source (&fEditor);
+    StyledTextIOWriterSinkStream_Memory sink;
+    StyledTextIOWriter_PlainText        textWriter (&source, &sink);
     textWriter.Write ();
     WriteBytesToFile (filename, sink.PeekAtData (), sink.GetLength ());
 }
 
 void ActiveLedItControl::SaveFileRTF (LPCTSTR filename)
 {
-    WordProcessorTextIOSrcStream source (&fEditor);
-    StyledTextIOWriterSinkStream_Memory         sink;
-    StyledTextIOWriter_RTF                      textWriter (&source, &sink);
+    WordProcessorTextIOSrcStream        source (&fEditor);
+    StyledTextIOWriterSinkStream_Memory sink;
+    StyledTextIOWriter_RTF              textWriter (&source, &sink);
     textWriter.Write ();
     WriteBytesToFile (filename, sink.PeekAtData (), sink.GetLength ());
 }
 
 void ActiveLedItControl::SaveFileHTML (LPCTSTR filename)
 {
-    WordProcessorTextIOSrcStream source (&fEditor);
-    StyledTextIOWriterSinkStream_Memory         sink;
-    StyledTextIOWriter_HTML                     textWriter (&source, &sink);
+    WordProcessorTextIOSrcStream        source (&fEditor);
+    StyledTextIOWriterSinkStream_Memory sink;
+    StyledTextIOWriter_HTML             textWriter (&source, &sink);
     textWriter.Write ();
     WriteBytesToFile (filename, sink.PeekAtData (), sink.GetLength ());
 }
@@ -2050,7 +2050,7 @@ void ActiveLedItControl::SetBufferText (LPCTSTR text)
         StyledTextIOSrcStream_Memory source (text, text == NULL ? 0 : ::_tcslen (text));
 #endif
         WordProcessorTextIOSinkStream sink (&fEditor);
-        StyledTextIOReader_PlainText                 textReader (&source, &sink);
+        StyledTextIOReader_PlainText  textReader (&source, &sink);
         fEditor.Replace (0, fEditor.GetEnd (), LED_TCHAR_OF (""), 0); // clear out current text
         textReader.Read ();
         fEditor.SetEmptySelectionStyle ();
@@ -2092,9 +2092,9 @@ BSTR ActiveLedItControl::GetBufferTextAsRTF ()
 
 string ActiveLedItControl::GetBufferTextAsRTF_ ()
 {
-    WordProcessorTextIOSrcStream source (&fEditor);
-    StyledTextIOWriterSinkStream_Memory         sink;
-    StyledTextIOWriter_RTF                      textWriter (&source, &sink);
+    WordProcessorTextIOSrcStream        source (&fEditor);
+    StyledTextIOWriterSinkStream_Memory sink;
+    StyledTextIOWriter_RTF              textWriter (&source, &sink);
     textWriter.Write ();
     size_t                    len = sink.GetLength ();
     Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
@@ -2110,10 +2110,10 @@ void ActiveLedItControl::SetBufferTextAsRTF (LPCTSTR text)
         TextInteractor::TemporarilySetUpdateMode tsum (fEditor, m_hWnd == NULL ? TextInteractor::eNoUpdate : TextInteractor::eDefaultUpdate);
         fCommandHandler.Commit ();
 
-        string                                       s = String::FromSDKString (text).AsNarrowSDKString ();
-        StyledTextIOSrcStream_Memory                 source (s.c_str (), s.length ());
+        string                        s = String::FromSDKString (text).AsNarrowSDKString ();
+        StyledTextIOSrcStream_Memory  source (s.c_str (), s.length ());
         WordProcessorTextIOSinkStream sink (&fEditor);
-        StyledTextIOReader_RTF                       textReader (&source, &sink);
+        StyledTextIOReader_RTF        textReader (&source, &sink);
         fEditor.Replace (0, fEditor.GetEnd (), LED_TCHAR_OF (""), 0); // clear out current text
         textReader.Read ();
         fEditor.SetEmptySelectionStyle ();
@@ -2124,9 +2124,9 @@ void ActiveLedItControl::SetBufferTextAsRTF (LPCTSTR text)
 BSTR ActiveLedItControl::GetBufferTextAsHTML ()
 {
     try {
-        WordProcessorTextIOSrcStream source (&fEditor);
-        StyledTextIOWriterSinkStream_Memory         sink;
-        StyledTextIOWriter_HTML                     textWriter (&source, &sink);
+        WordProcessorTextIOSrcStream        source (&fEditor);
+        StyledTextIOWriterSinkStream_Memory sink;
+        StyledTextIOWriter_HTML             textWriter (&source, &sink);
         textWriter.Write ();
         size_t                    len = sink.GetLength ();
         Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
@@ -2144,10 +2144,10 @@ void ActiveLedItControl::SetBufferTextAsHTML (LPCTSTR text)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        string                                       s = String::FromSDKString (text).AsNarrowSDKString ();
-        StyledTextIOSrcStream_Memory                 source (s.c_str (), s.length ());
+        string                        s = String::FromSDKString (text).AsNarrowSDKString ();
+        StyledTextIOSrcStream_Memory  source (s.c_str (), s.length ());
         WordProcessorTextIOSinkStream sink (&fEditor);
-        StyledTextIOReader_HTML                      textReader (&source, &sink);
+        StyledTextIOReader_HTML       textReader (&source, &sink);
         fEditor.Replace (0, fEditor.GetEnd (), LED_TCHAR_OF (""), 0); // clear out current text
         textReader.Read ();
         fEditor.SetEmptySelectionStyle ();
@@ -3709,9 +3709,9 @@ void ActiveLedItControl::SetSelText (LPCTSTR text)
 BSTR ActiveLedItControl::GetSelTextAsRTF ()
 {
     try {
-        WordProcessorTextIOSrcStream source (&fEditor, fEditor.GetSelectionStart (), fEditor.GetSelectionEnd ());
-        StyledTextIOWriterSinkStream_Memory         sink;
-        StyledTextIOWriter_RTF                      textWriter (&source, &sink);
+        WordProcessorTextIOSrcStream        source (&fEditor, fEditor.GetSelectionStart (), fEditor.GetSelectionEnd ());
+        StyledTextIOWriterSinkStream_Memory sink;
+        StyledTextIOWriter_RTF              textWriter (&source, &sink);
         textWriter.Write ();
         size_t                    len = sink.GetLength ();
         Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
@@ -3729,9 +3729,9 @@ void ActiveLedItControl::SetSelTextAsRTF (LPCTSTR text)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        StyledTextIOSrcStream_Memory                 source (text, text == NULL ? 0 : ::_tcslen (text));
+        StyledTextIOSrcStream_Memory  source (text, text == NULL ? 0 : ::_tcslen (text));
         WordProcessorTextIOSinkStream sink (&fEditor, fEditor.GetSelectionStart ());
-        StyledTextIOReader_RTF                       textReader (&source, &sink);
+        StyledTextIOReader_RTF        textReader (&source, &sink);
         fEditor.Replace (fEditor.GetSelectionStart (), fEditor.GetSelectionEnd (), LED_TCHAR_OF (""), 0);
         textReader.Read ();
         fEditor.SetEmptySelectionStyle ();
@@ -3744,9 +3744,9 @@ void ActiveLedItControl::SetSelTextAsRTF (LPCTSTR text)
 BSTR ActiveLedItControl::GetSelTextAsHTML ()
 {
     try {
-        WordProcessorTextIOSrcStream source (&fEditor, fEditor.GetSelectionStart (), fEditor.GetSelectionEnd ());
-        StyledTextIOWriterSinkStream_Memory         sink;
-        StyledTextIOWriter_HTML                     textWriter (&source, &sink);
+        WordProcessorTextIOSrcStream        source (&fEditor, fEditor.GetSelectionStart (), fEditor.GetSelectionEnd ());
+        StyledTextIOWriterSinkStream_Memory sink;
+        StyledTextIOWriter_HTML             textWriter (&source, &sink);
         textWriter.Write ();
         size_t                    len = sink.GetLength ();
         Memory::StackBuffer<char> buf{Memory::eUninitialized, len + 1};
@@ -3764,9 +3764,9 @@ void ActiveLedItControl::SetSelTextAsHTML (LPCTSTR text)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        StyledTextIOSrcStream_Memory                 source (text, text == NULL ? 0 : ::_tcslen (text));
+        StyledTextIOSrcStream_Memory  source (text, text == NULL ? 0 : ::_tcslen (text));
         WordProcessorTextIOSinkStream sink (&fEditor, fEditor.GetSelectionStart ());
-        StyledTextIOReader_HTML                      textReader (&source, &sink);
+        StyledTextIOReader_HTML       textReader (&source, &sink);
         fEditor.Replace (fEditor.GetSelectionStart (), fEditor.GetSelectionEnd (), LED_TCHAR_OF (""), 0);
         textReader.Read ();
         fEditor.SetEmptySelectionStyle ();

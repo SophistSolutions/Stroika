@@ -1202,8 +1202,8 @@ void LedItDocument::Serialize (CArchive& ar)
     if (ar.IsStoring ()) {
         Require (fFileFormat != eUnknownFormat); // We must have chosen a file format by now...
 
-        WordProcessorTextIOSrcStream source{&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase};
-        StyledTextIOWriterSinkStream_Memory         sink;
+        WordProcessorTextIOSrcStream        source{&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase};
+        StyledTextIOWriterSinkStream_Memory sink;
 
         switch (fFileFormat) {
             case eTextFormat: {
@@ -1260,7 +1260,7 @@ void LedItDocument::Serialize (CArchive& ar)
         if (ar.Read (buf.data (), nLen) != nLen) {
             AfxThrowArchiveException (CArchiveException::endOfFile);
         }
-        StyledTextIOSrcStream_Memory                 source{buf.data (), nLen};
+        StyledTextIOSrcStream_Memory  source{buf.data (), nLen};
         WordProcessorTextIOSinkStream sink{&fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase};
 
     ReRead:

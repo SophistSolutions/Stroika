@@ -34,10 +34,9 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 #if qStroika_Frameworks_Led_SupportGDI
 using InteractiveModeUpdater = WordProcessor::InteractiveModeUpdater;
 using UndoableContextHelper  = WordProcessor::UndoableContextHelper;
-using Tablet_Acquirer  = WordProcessor::Tablet_Acquirer;
+using Tablet_Acquirer        = WordProcessor::Tablet_Acquirer;
 
 #endif
-
 
 /*
  ********************************************************************************
@@ -7145,7 +7144,7 @@ WordProcessorTable::EmbeddedTableWordProcessor* WordProcessorTable::ConstructEmb
 
             AssertNotNull (fCurrentOwningWP);
             WordProcessor::Tablet_Acquirer tablet (fCurrentOwningWP);
-            TemporarilyUseTablet tmpUseTablet (*e, tablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall);
+            TemporarilyUseTablet           tmpUseTablet (*e, tablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall);
 
             e->SetSelectionShown (true, TextInteractor::eNoUpdate); // set TRUE so stuff that changes the selection does the proper invalidation
             e->RestoreMiscActiveFocusInfo ();

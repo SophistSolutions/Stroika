@@ -550,6 +550,7 @@ void UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
     }
 }
 
+
 #if qStroika_Frameworks_Led_SupportGDI
 /*
  ********************************************************************************
