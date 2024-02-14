@@ -115,7 +115,7 @@ namespace Stroika::Frameworks::Led {
     };
 
     /**
-     *      Oveerload (hide) the @'WordProcessor::ParagraphInfo' methods, to assert that the
+     *      Overload (hide) the @'WordProcessor::ParagraphInfo' methods, to assert that the
      *          attribute is valid (for getters) and to set a ValidFlag for the setters. And add methods for
      *          each attribute to test for validity, and to invalidate.</p>
      *              <p>These are used if you want to set just part of a @'WordProcessor::ParagraphInfo'.</p>
@@ -329,9 +329,7 @@ namespace Stroika::Frameworks::Led {
     */
     class WordProcessorTable
 #if qStroika_Frameworks_Led_SupportGDI
-
         : public SimpleEmbeddedObjectStyleMarker
-
 #endif
     {
 #if qStroika_Frameworks_Led_SupportGDI
@@ -564,9 +562,6 @@ namespace Stroika::Frameworks::Led {
 
     private:
         WordProcessor* fCurrentOwningWP;
-#if qAccessChecksSometimesBreakForNestedClasses
-    public:
-#endif
         class TemporarilySetOwningWP;
         class TemporarilyAllocateCellWP;
         class TemporarilyAllocateCellWithTablet;
@@ -647,12 +642,10 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-    /*
-    @CLASS:         WordProcessor::WordProcessorTextIOSrcStream
-    @BASES:         @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream'
-    @DESCRIPTION:   <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream', for use with the StyledTextIO module,
-                which adds support for a @'shared_ptr<AbstractParagraphDatabaseRep>'.</p>
-    */
+    /**
+     *      <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream', for use with the StyledTextIO module,
+     *  which adds support for a @'shared_ptr<AbstractParagraphDatabaseRep>'.</p>
+     */
     class WordProcessorTextIOSrcStream : public StandardStyledTextIOSrcStream {
     private:
         using inherited = StandardStyledTextIOSrcStream;
@@ -992,14 +985,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         virtual void SetSelection (size_t start, size_t end) override;
-#if qUsingMemberNameToOverloadInTemplateClassBug
-        void SetSelection (size_t start, size_t end, TextInteractor::UpdateMode updateMode)
-        {
-            TextInteractor::SetSelection (start, end, updateMode);
-        }
-#else
         using TextInteractor::SetSelection;
-#endif
 
     public:
         virtual bool     GetCaretShownSituation () const override;
@@ -1648,9 +1634,6 @@ namespace Stroika::Frameworks::Led {
         bool fSuppressRefreshCalls;
 
     private:
-#if qAccessChecksSometimesBreakForNestedClasses
-    public:
-#endif
         class TemporarilyUseTablet;
 
     private:
@@ -1662,11 +1645,8 @@ namespace Stroika::Frameworks::Led {
         friend class WordProcessorTable::TemporarilyAllocateCellWithTablet;
     };
 
-    /*
-    @CLASS:         InteractiveReplaceCommand::SavedTextRep
-    @BASES:         @'WordProcessorTable::SavedTextRepWSel'
-    @DESCRIPTION:
-    */
+    /**
+     */
     class WordProcessorTable::SavedTextRepWSel : public InteractiveReplaceCommand::SavedTextRep,
                                                  public Foundation::Memory::UseBlockAllocationIfAppropriate<SavedTextRepWSel> {
     private:
@@ -1760,10 +1740,8 @@ namespace Stroika::Frameworks::Led {
         WordProcessor*      fSavedTableOwningWP; // in case references are nested, though I'm not sure this can happen
     };
 
-    /*
-    @CLASS:         WordProcessorTable::TemporarilyAllocateCellWP
-    @DESCRIPTION:   <p></p>
-    */
+    /**
+     */
     class WordProcessorTable::TemporarilyAllocateCellWP {
     public:
         using EmbeddedTableWordProcessor = WordProcessorTable::EmbeddedTableWordProcessor;
@@ -1782,10 +1760,8 @@ namespace Stroika::Frameworks::Led {
         EmbeddedTableWordProcessor* fCellEditor;
     };
 
-    /*
-    @CLASS:         WordProcessorTable::TemporarilyAllocateCellWithTablet
-    @DESCRIPTION:   <p></p>
-    */
+    /**
+     */
     class WordProcessorTable::TemporarilyAllocateCellWithTablet {
     public:
         using Tablet_Acquirer = TextInteractor::Tablet_Acquirer; // needed for GCC 2.96 - seems like the requirement maybe a compiler bug... LGP 2003-04-18
@@ -1904,11 +1880,8 @@ namespace Stroika::Frameworks::Led {
         Color fCellBackgroundColor;
     };
 
-    /*
-    @CLASS:         EmptySelectionParagraphSavedTextRep<BASECLASS>
-    @BASES:         @'StandardStyledTextInteractor::EmptySelStyleTextRep'
-    @DESCRIPTION:
-    */
+    /**
+     */
     class WordProcessor::EmptySelectionParagraphSavedTextRep : public StandardStyledTextInteractor::EmptySelStyleTextRep {
     private:
         using inherited = StandardStyledTextInteractor::EmptySelStyleTextRep;
