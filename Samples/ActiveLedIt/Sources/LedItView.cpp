@@ -486,7 +486,7 @@ LedItViewController::LedItViewController ()
     , fHidableTextDatabase ()
 
 {
-    fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new ColoredUniformHidableTextMarkerOwner (fTextStore));
+    fHidableTextDatabase = make_sahred< ColoredUniformHidableTextMarkerOwner >(fTextStore);
 }
 
 LedItViewController::~LedItViewController ()

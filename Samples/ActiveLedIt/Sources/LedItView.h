@@ -55,7 +55,7 @@ public:
 public:
     ChunkedArrayTextStore                 fTextStore;
     MultiLevelUndoCommandHandler          fCommandHandler;
-    WordProcessor::HidableTextDatabasePtr fHidableTextDatabase;
+    shared_ptr<HidableTextMarkerOwner>    fHidableTextDatabase;
 };
 
 using LedItViewAlmostBASE = Led_MFC_ExceptionHandlerHelper<Led_MFC_X<WordProcessor>>;

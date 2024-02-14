@@ -117,7 +117,7 @@ public:
     nonvirtual TextStore& GetTextStore ();
     nonvirtual shared_ptr<AbstractStyleDatabaseRep>& GetStyleDatabase ();
     nonvirtual shared_ptr<AbstractParagraphDatabaseRep>& GetParagraphDatabase ();
-    nonvirtual WordProcessor::HidableTextDatabasePtr& GetHidableTextDatabase ();
+    nonvirtual shared_ptr<HidableTextMarkerOwner>& GetHidableTextDatabase ();
     nonvirtual CommandHandler&                        GetCommandHandler ();
 
 protected:
@@ -126,7 +126,7 @@ public:
     StyledTextIO::RTFInfo                    fRTFInfo;
     shared_ptr<AbstractStyleDatabaseRep>     fStyleDatabase;
     shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
-    WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
+    shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
     MultiLevelUndoCommandHandler             fCommandHandler;
 
 #if qStroika_FeatureSupported_XWindows
@@ -212,7 +212,7 @@ inline shared_ptr<AbstractParagraphDatabaseRep>& LedItDocument::GetParagraphData
 {
     return fParagraphDatabase;
 }
-inline WordProcessor::HidableTextDatabasePtr& LedItDocument::GetHidableTextDatabase ()
+inline shared_ptr<HidableTextMarkerOwner>& LedItDocument::GetHidableTextDatabase ()
 {
     return fHidableTextDatabase;
 }

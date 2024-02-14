@@ -373,17 +373,11 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void HookParagraphDatabaseChanged_ ();
 
     public:
-        /*
-        @CLASS:         WordProcessor::HidableTextDatabasePtr
-        @BASES:         @'shared_ptr<T>', (T=@'HidableTextMarkerOwner')
-        @DESCRIPTION:   <p>A shared_ptr (smart pointer) to a @'HidableTextMarkerOwner'.</p>
-        */
-        using HidableTextDatabasePtr = shared_ptr<HidableTextMarkerOwner>;
-        nonvirtual HidableTextDatabasePtr GetHidableTextDatabase () const;
-        nonvirtual void                   SetHidableTextDatabase (const HidableTextDatabasePtr& hidableTextDatabase);
+        nonvirtual shared_ptr<HidableTextMarkerOwner> GetHidableTextDatabase () const;
+        nonvirtual void SetHidableTextDatabase (const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase);
 
     private:
-        HidableTextDatabasePtr fHidableTextDatabase;
+        shared_ptr<HidableTextMarkerOwner> fHidableTextDatabase;
         bool                   fICreatedHidableTextDB;
 
     protected:
@@ -843,7 +837,7 @@ namespace Stroika::Frameworks::Led {
     public:
         WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                        const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                       const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart = 0);
+                                       const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart = 0);
         WordProcessorTextIOSinkStream (WordProcessor* wp, size_t insertionStart = 0);
         ~WordProcessorTextIOSinkStream ();
 
@@ -902,20 +896,20 @@ namespace Stroika::Frameworks::Led {
     protected:
         nonvirtual void PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                      const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                     const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart);
+                                     const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart);
         nonvirtual void PopContext ();
 
     private:
         struct Context {
             shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
-            WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
+            shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
         };
         vector<Context> fSavedContexts;
 
     private:
         using ParaInfoNSize = pair<IncrementalParagraphInfo, size_t>;
         shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
-        WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
+        shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
         vector<ParaInfoNSize>                    fSavedParaInfo;
         IncrementalParagraphInfo                 fNewParagraphInfo;
         bool                                     fTextHidden;
@@ -952,7 +946,7 @@ namespace Stroika::Frameworks::Led {
     public:
         WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                       const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                      const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t selectionStart = 0,
+                                      const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t selectionStart = 0,
                                       size_t selectionEnd = kBadIndex);
         WordProcessorTextIOSrcStream (WordProcessor* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
 
@@ -1028,7 +1022,7 @@ namespace Stroika::Frameworks::Led {
     public:
         WordProcessorFlavorPackageInternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
                                                 const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                const WordProcessor::HidableTextDatabasePtr&    hidableTextDatabase);
+                                                const shared_ptr<HidableTextMarkerOwner>&       hidableTextDatabase);
 
     public:
         nonvirtual bool GetOverwriteTableMode () const;
@@ -1051,7 +1045,7 @@ namespace Stroika::Frameworks::Led {
 
     protected:
         shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
-        WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
+        shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
     };
 
     /*
@@ -1111,7 +1105,7 @@ namespace Stroika::Frameworks::Led {
     public:
         WordProcessorFlavorPackageExternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
                                                 const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                const WordProcessor::HidableTextDatabasePtr&    hidableTextDatabase);
+                                                const shared_ptr<HidableTextMarkerOwner>&       hidableTextDatabase);
 
     public:
         nonvirtual bool GetUseTableSelection () const;
@@ -1125,7 +1119,7 @@ namespace Stroika::Frameworks::Led {
 
     protected:
         shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
-        WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
+        shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
     };
 
     /*
@@ -1371,7 +1365,7 @@ namespace Stroika::Frameworks::Led {
         virtual void GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts,
                                                     shared_ptr<AbstractStyleDatabaseRep>*     styleDatabase       = nullptr,
                                                     shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
-                                                    WordProcessor::HidableTextDatabasePtr*    hidableTextDatabase = nullptr);
+                                                    shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase = nullptr);
 
     private:
         WordProcessor* fCurrentOwningWP;
@@ -1479,11 +1473,11 @@ namespace Stroika::Frameworks::Led {
     public:
         nonvirtual void       GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase = nullptr,
                                                              shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
-                                                             WordProcessor::HidableTextDatabasePtr*    hidableTextDatabase = nullptr);
+                                                             shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase = nullptr);
         nonvirtual TextStore& GetTextStore () const;
         nonvirtual shared_ptr<AbstractStyleDatabaseRep> GetStyleDatabase () const;
         nonvirtual shared_ptr<AbstractParagraphDatabaseRep> GetParagraphDatabase () const;
-        nonvirtual WordProcessor::HidableTextDatabasePtr GetHidableTextDatabase () const;
+        nonvirtual shared_ptr<HidableTextMarkerOwner> GetHidableTextDatabase () const;
 
         nonvirtual Color GetBackColor () const;
         nonvirtual void  SetBackColor (Color c);
@@ -1520,7 +1514,7 @@ namespace Stroika::Frameworks::Led {
         TextStore*                               fTextStore;
         shared_ptr<AbstractStyleDatabaseRep>     fStyleDatabase;
         shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
-        WordProcessor::HidableTextDatabasePtr    fHidableTextDatabase;
+        shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
         Color                                    fBackColor;
         Led_Rect                                 fCachedBoundsRect;
         TWIPS                                    fCellXWidth;

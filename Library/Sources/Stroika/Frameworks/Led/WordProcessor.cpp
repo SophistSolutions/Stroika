@@ -1031,7 +1031,7 @@ void WordProcessor::HookLosingTextStore_ ()
         }
     }
     if (fICreatedHidableTextDB) {
-        SetHidableTextDatabase (HidableTextDatabasePtr ());
+        SetHidableTextDatabase (nullptr);
         fICreatedHidableTextDB = false;
     }
     //to try to avoid circular links that cause things to not get freed. - LGP 2000/04/24
@@ -1060,7 +1060,7 @@ void WordProcessor::HookGainedNewTextStore_ ()
         SetParagraphDatabase (nullptr); // fills in default value since we have a textstore...
     }
     if (fHidableTextDatabase.get () == nullptr) {
-        SetHidableTextDatabase (HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (GetTextStore ()))); // fills in default value since we have e textstore...
+        SetHidableTextDatabase (make_shared< UniformHidableTextMarkerOwner > (GetTextStore ())); // fills in default value since we have e textstore...
         fICreatedHidableTextDB = true; // do this AFTER above call - cuz WordProcessor::SetHidableTextDatabase () sets flag FALSE (so for case when others call it)
     }
 }
@@ -1136,7 +1136,7 @@ void WordProcessor::HookParagraphDatabaseChanged_ ()
 @METHOD:        WordProcessor::SetHidableTextDatabase
 @DESCRIPTION:   <p>This method allows the caller to specify the database of hidden-text information associated
     with the given word processor. If not called, a default will be used, and automatically deleted.</p>
-        <p>This API exists so that you can share a single database @'WordProcessor::HidableTextDatabasePtr'
+        <p>This API exists so that you can share a single database @'shared_ptr<HidableTextMarkerOwner>'
     with multiple views. And so you can save it associated with a document (or some such object), and dynamically
     create/destroy views using that data. Also - so you can subclass it, and provide your own virtual replacement
     database, or other subclass of the hidable text API.</p>
@@ -1144,7 +1144,7 @@ void WordProcessor::HookParagraphDatabaseChanged_ ()
     and pass nullptr. Do this after the  @'WordProcessor::HookGainedNewTextStore ()' OVERRIDE - since that method
     will create one of these by default.</p>
 */
-void WordProcessor::SetHidableTextDatabase (const HidableTextDatabasePtr& hidableTextDatabase)
+void WordProcessor::SetHidableTextDatabase (const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase)
 {
     //to try to avoid circular links that cause things to not get freed. - LGP 2000/04/24
     if (fHidableTextDatabase.get () != nullptr) {
@@ -1159,7 +1159,7 @@ void WordProcessor::SetHidableTextDatabase (const HidableTextDatabasePtr& hidabl
 
 /*
 @METHOD:        WordProcessor::HookHidableTextDatabaseChanged
-@DESCRIPTION:   <p>Called whenever the @'WordProcessor::HidableTextDatabasePtr' associated with this @'WordProcessor'
+@DESCRIPTION:   <p>Called whenever the @'WordProcessor::shared_ptr<HidableTextMarkerOwner>' associated with this @'WordProcessor'
     is changed. This means when a new one is provided, created, or disassociated. It does NOT mean that its called when any of the
     data in the hidable text database changes.</p>
         <p>Usually called by @'WordProcessor::SetHidableTextDatabase'. By default, it calls @'WordProcessor::HookHidableTextDatabaseChanged_'.</p>
@@ -3796,7 +3796,7 @@ DistanceType WordProcessor::MeasureSegmentHeight (size_t from, size_t to) const
     DistanceType    d      = inherited::MeasureSegmentHeight (from, to);
 
     if (d == 0) {
-        HidableTextDatabasePtr hdb = GetHidableTextDatabase ();
+        shared_ptr<HidableTextMarkerOwner> hdb = GetHidableTextDatabase ();
         if (hdb.get () != nullptr) {
             DiscontiguousRun<bool> regions = hdb->GetHidableRegions (from, to);
             if (not regions.empty ()) {
@@ -3947,7 +3947,7 @@ DistanceType WordProcessor::MeasureSegmentBaseLine (size_t from, size_t to) cons
     DistanceType d = inherited::MeasureSegmentBaseLine (from, to);
 
     if (d == 0) {
-        HidableTextDatabasePtr hdb = GetHidableTextDatabase ();
+        shared_ptr<HidableTextMarkerOwner> hdb = GetHidableTextDatabase ();
         if (hdb.get () != nullptr) {
             DiscontiguousRun<bool> regions = hdb->GetHidableRegions (from, to);
             if (not regions.empty ()) {
@@ -4081,7 +4081,7 @@ size_t WordProcessor::ComputeRelativePosition (size_t fromPos, CursorMovementDir
      *  Note sure this is right - esp about to-end/to-start stuff?? But seems to work
      *  halfway decently. -- LGP 2000-08-07
      */
-    HidableTextDatabasePtr hdb = GetHidableTextDatabase ();
+    shared_ptr<HidableTextMarkerOwner> hdb = GetHidableTextDatabase ();
     if (hdb.get () == nullptr) {
     Again:
         if (direction == eCursorBack or direction == eCursorToStart) {
@@ -4383,7 +4383,7 @@ inline TWIPS CalcDefaultRHSMargin ()
 using WordProcessorTextIOSinkStream = WordProcessor::WordProcessorTextIOSinkStream;
 WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                               const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                              const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart)
+                                                              const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart)
     : inherited{textStore, textStyleDatabase, insertionStart}
     , fOverwriteTableMode{false}
     ,
@@ -4791,7 +4791,7 @@ void WordProcessorTextIOSinkStream::StartTableCell (size_t colSpan)
     TextStore*                               ts = nullptr;
     shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
     shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
-    HidableTextDatabasePtr                   hidableTextDatabase;
+    shared_ptr<HidableTextMarkerOwner>       hidableTextDatabase;
     fCurrentTable->GetCellWordProcessorDatabases (fNextTableRow - 1, fCurrentTableCell, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
     PushContext (ts, styleDatabase, paragraphDatabase, hidableTextDatabase, 0);
     if (GetOverwriteTableMode ()) {
@@ -4887,7 +4887,7 @@ void WordProcessorTextIOSinkStream::SetDefaultCellSpacingForCurrentRow (TWIPS to
 
 void WordProcessorTextIOSinkStream::PushContext (TextStore* ts, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                  const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                 const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart)
+                                                 const WordProcessor::shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase, size_t insertionStart)
 {
     if (GetCachedTextSize () != 0) { // must flush before setting/popping context
         Flush ();
@@ -5002,7 +5002,7 @@ void WordProcessorTextIOSinkStream::Flush ()
 using WordProcessorTextIOSrcStream = WordProcessor::WordProcessorTextIOSrcStream;
 WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (TextStore* textStore, const shared_ptr<AbstractStyleDatabaseRep>& textStyleDatabase,
                                                             const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                            const WordProcessor::HidableTextDatabasePtr&    hidableTextDatabase,
+                                                            const shared_ptr<HidableTextMarkerOwner>&       hidableTextDatabase,
                                                             size_t selectionStart, size_t selectionEnd)
     : inherited{textStore, textStyleDatabase, selectionStart, selectionEnd}
     , fUseTableSelection{false}
@@ -5021,7 +5021,7 @@ WordProcessorTextIOSrcStream::WordProcessorTextIOSrcStream (WordProcessor* textI
     , fParagraphDatabase (textImager->GetParagraphDatabase ())
     , fHidableTextRuns ()
 {
-    WordProcessor::HidableTextDatabasePtr hidableTextDatabase = textImager->GetHidableTextDatabase ();
+    shared_ptr<HidableTextMarkerOwner> hidableTextDatabase = textImager->GetHidableTextDatabase ();
     if (hidableTextDatabase.get () != nullptr) {
         fHidableTextRuns = hidableTextDatabase->GetHidableRegions (selectionStart, selectionEnd);
     }
@@ -5287,7 +5287,7 @@ StyledTextIOWriter::SrcStream* WordProcessorTextIOSrcStream::TableIOMapper::Make
         TextStore*                               ts = nullptr;
         shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
         shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
-        WordProcessor::HidableTextDatabasePtr    hidableTextDatabase;
+        shared_ptr<HidableTextMarkerOwner>       hidableTextDatabase;
         fRealTable.GetCellWordProcessorDatabases (vRow, vCol, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
         return new WordProcessorTextIOSrcStream (ts, styleDatabase, paragraphDatabase, hidableTextDatabase);
     }
@@ -5327,7 +5327,7 @@ using WordProcessorFlavorPackageInternalizer = WordProcessor::WordProcessorFlavo
 
 WordProcessorFlavorPackageInternalizer::WordProcessorFlavorPackageInternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
                                                                                 const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                                                const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase)
+                                                                                const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase)
     : FlavorPackageInternalizer (ts)
     , inherited (ts, styleDatabase)
     , fOverwriteTableMode (false)
@@ -5588,7 +5588,7 @@ using WordProcessorFlavorPackageExternalizer = WordProcessor::WordProcessorFlavo
 
 WordProcessorFlavorPackageExternalizer::WordProcessorFlavorPackageExternalizer (TextStore& ts, const shared_ptr<AbstractStyleDatabaseRep>& styleDatabase,
                                                                                 const shared_ptr<AbstractParagraphDatabaseRep>& paragraphDatabase,
-                                                                                const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase)
+                                                                                const shared_ptr<HidableTextMarkerOwner>& hidableTextDatabase)
     : FlavorPackageExternalizer (ts)
     , inherited (ts, styleDatabase)
     , fUseTableSelection (false)
@@ -7117,7 +7117,7 @@ Table::EmbeddedTableWordProcessor* Table::ConstructEmbeddedTableWordProcessor (W
         TextStore*                               ts = nullptr;
         shared_ptr<AbstractStyleDatabaseRep>     styleDatabase;
         shared_ptr<AbstractParagraphDatabaseRep> paragraphDatabase;
-        HidableTextDatabasePtr                   hidableTextDatabase;
+        shared_ptr<HidableTextMarkerOwner>       hidableTextDatabase;
         GetCellWordProcessorDatabases (forRow, forColumn, &ts, &styleDatabase, &paragraphDatabase, &hidableTextDatabase);
         e->SetStyleDatabase (styleDatabase);
         e->SetParagraphDatabase (paragraphDatabase);
@@ -7172,8 +7172,7 @@ void Table::ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e)
             are filled in.</p>
 */
 void Table::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
-                                           shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
-                                           WordProcessor::HidableTextDatabasePtr*    hidableTextDatabase)
+                                           shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase, shared_ptr<HidableTextMarkerOwner>* hidableTextDatabase)
 {
     Require (row < GetRowCount ());
     Require (column < GetColumnCount (row));
@@ -7600,7 +7599,7 @@ WordProcessor::Table::Cell::Cell (Table& forTable, CellMergeFlags mergeFlags)
 */
 void WordProcessor::Table::Cell::GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
                                                                 shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
-                                                                WordProcessor::HidableTextDatabasePtr*    hidableTextDatabase)
+                                                                shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase)
 {
     Require (fCellMergeFlags == ePlainCell);
     if (ts != nullptr) {
@@ -7636,7 +7635,7 @@ shared_ptr<AbstractParagraphDatabaseRep> WordProcessor::Table::Cell::GetParagrap
     return fCellRep->fParagraphDatabase;
 }
 
-WordProcessor::HidableTextDatabasePtr WordProcessor::Table::Cell::GetHidableTextDatabase () const
+shared_ptr<HidableTextMarkerOwner> WordProcessor::Table::Cell::GetHidableTextDatabase () const
 {
     Require (fCellMergeFlags == ePlainCell);
     return fCellRep->fHidableTextDatabase;
@@ -7674,7 +7673,7 @@ WordProcessor::Table::CellRep::CellRep (Table& forTable)
     fTextStore->AddMarkerOwner (this);
     fStyleDatabase       = make_shared<StyleDatabaseRep> (*fTextStore);
     fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (*fTextStore);
-    fHidableTextDatabase = HidableTextDatabasePtr (new UniformHidableTextMarkerOwner (*fTextStore));
+    fHidableTextDatabase = make_shared< UniformHidableTextMarkerOwner> (*fTextStore);
 }
 
 WordProcessor::Table::CellRep::~CellRep ()

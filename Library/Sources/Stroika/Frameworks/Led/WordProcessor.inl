@@ -609,7 +609,7 @@ namespace Stroika::Frameworks::Led {
     {
         return fParagraphDatabase;
     }
-    inline WordProcessor::HidableTextDatabasePtr WordProcessor::GetHidableTextDatabase () const
+    inline shared_ptr<HidableTextMarkerOwner> WordProcessor::GetHidableTextDatabase () const
     {
         return fHidableTextDatabase;
     }
