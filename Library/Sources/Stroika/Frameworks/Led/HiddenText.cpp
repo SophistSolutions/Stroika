@@ -550,6 +550,7 @@ void UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
     }
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 /*
  ********************************************************************************
  ************* HidableTextMarkerOwner::FontSpecHidableTextMarker ****************
@@ -566,6 +567,7 @@ FontSpecification HidableTextMarkerOwner::FontSpecHidableTextMarker::MakeFontSpe
     fsp.MergeIn (fFontSpecification); // give our fontSpec last dibs - so 'deletion' hilighting takes precedence
     return fsp;
 }
+#endif
 
 /*
  ********************************************************************************

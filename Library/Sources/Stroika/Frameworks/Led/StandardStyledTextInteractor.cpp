@@ -218,6 +218,7 @@ FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const
     return GetStaticDefaultFont ();
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 void StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinel (SimpleEmbeddedObjectStyleMarker* embedding, size_t at)
 {
     RequireNotNull (embedding);
@@ -244,6 +245,7 @@ void StandardStyledTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleM
     AddEmbedding (embedding, *fTextStore, fInsertionStart, fStyleRunDatabase.get ());
     ++fInsertionStart;
 }
+#endif
 
 void StandardStyledTextIOSinkStream::AppendSoftLineBreak ()
 {

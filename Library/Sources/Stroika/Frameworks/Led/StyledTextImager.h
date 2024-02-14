@@ -194,6 +194,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         SimpleStyleMarkerByFontSpec ();
 
+#if qStroika_Frameworks_Led_SupportGDI
     protected:
         /*
         @METHOD:        SimpleStyleMarkerByFontSpec<BASECLASS>::MakeFontSpec
@@ -204,6 +205,7 @@ namespace Stroika::Frameworks::Led {
                         <p>By default, it just returns the default font associated with the imager.</p>
         */
         virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const;
+        #endif
 
 #if qStroika_Frameworks_Led_SupportGDI
     public:
@@ -232,8 +234,10 @@ namespace Stroika::Frameworks::Led {
     public:
         SimpleStyleMarkerByIncrementalFontSpec (const IncrementalFontSpecification& styleInfo = IncrementalFontSpecification ());
 
+#if qStroika_Frameworks_Led_SupportGDI
     protected:
         virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const override;
+        #endif
 
     public:
         IncrementalFontSpecification fFontSpecification;

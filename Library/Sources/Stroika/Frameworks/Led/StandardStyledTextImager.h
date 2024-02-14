@@ -122,6 +122,39 @@ namespace Stroika::Frameworks::Led {
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 
+
+
+
+    /*
+    @CLASS:         SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper
+    @BASES:         BASECLASS
+    @DESCRIPTION:   <p>Simple helper class so that @'SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>' will use the font specification of any
+                embedded @'StandardStyledTextImager::StandardStyleMarker' will have its associated @'FontSpecification' copied out and used
+                in the FontSpec.</p>
+                    <p>As a kludge - this class depends on the user ALSO using the template @'SimpleStyleMarkerWithExtraDraw<BASECLASS>'. We override
+                its @'SimpleStyleMarkerWithExtraDraw<BASECLASS>::MungeRunElement' () method. This isn't strictly necesary, but it saves us alot of code.
+                That way - we can just change the RunElt to return nullptr for the marker - and then the caller will use its default algorithm, and call
+                the MakeFontSpec () method.</p>
+                    <p>The nature of class class could change in the future - so its not recomended that anyone directly use it.</p>
+    */
+    template <class BASECLASS>
+    class SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper : public BASECLASS {
+    private:
+        using inherited = BASECLASS;
+
+    protected:
+        virtual StyleRunElement MungeRunElement (const StyleRunElement& inRunElt) const override;
+
+#if qStroika_Frameworks_Led_SupportGDI
+    protected:
+        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const override;
+        #endif
+
+    private:
+        mutable FontSpecification fFSP;
+    };
+
+
 #if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         StandardStyledTextImager
@@ -209,32 +242,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     };
 
-    /*
-    @CLASS:         SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper
-    @BASES:         BASECLASS
-    @DESCRIPTION:   <p>Simple helper class so that @'SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>' will use the font specification of any
-                embedded @'StandardStyledTextImager::StandardStyleMarker' will have its associated @'FontSpecification' copied out and used
-                in the FontSpec.</p>
-                    <p>As a kludge - this class depends on the user ALSO using the template @'SimpleStyleMarkerWithExtraDraw<BASECLASS>'. We override
-                its @'SimpleStyleMarkerWithExtraDraw<BASECLASS>::MungeRunElement' () method. This isn't strictly necesary, but it saves us alot of code.
-                That way - we can just change the RunElt to return nullptr for the marker - and then the caller will use its default algorithm, and call
-                the MakeFontSpec () method.</p>
-                    <p>The nature of class class could change in the future - so its not recomended that anyone directly use it.</p>
-    */
-    template <class BASECLASS>
-    class SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper : public BASECLASS {
-    private:
-        using inherited = BASECLASS;
-
-    protected:
-        virtual StyleRunElement MungeRunElement (const StyleRunElement& inRunElt) const override;
-
-    protected:
-        virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const override;
-
-    private:
-        mutable FontSpecification fFSP;
-    };
 #endif
 
 }

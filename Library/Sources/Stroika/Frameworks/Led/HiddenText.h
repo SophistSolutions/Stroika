@@ -119,34 +119,6 @@ namespace Stroika::Frameworks::Led {
     };
 
     /**
-     *      UniformHidableTextMarkerOwner is a @'HidableTextMarkerOwner' class, which has a notion of
-     *  whether or not <em>all</em> the hidden text markers are hidden or not. You can manually change the hidden
-     *  state of particular markers - if you wish (via @'HidableTextMarkerOwner::HideAll ()' commands with a from/to range).</p>
-     *      <p>But the default behavior is that all the markers share this hidden or not hidden state, and NEWLY created
-     *  'hiding' markers inherit this state.</p>
-     */
-    class UniformHidableTextMarkerOwner : public HidableTextMarkerOwner {
-    private:
-        using inherited = HidableTextMarkerOwner;
-
-    public:
-        UniformHidableTextMarkerOwner (TextStore& textStore);
-
-    public:
-        virtual void HideAll () override;
-        virtual void ShowAll () override;
-
-    public:
-        nonvirtual bool IsHidden () const;
-
-    public:
-        virtual void MakeRegionHidable (size_t from, size_t to) override;
-
-    private:
-        bool fHidden;
-    };
-
-    /**
      */
     class HidableTextMarkerOwner::HidableTextMarker : public StyleMarker {
     private:
@@ -169,6 +141,7 @@ namespace Stroika::Frameworks::Led {
     public:
         friend class HidableTextMarkerOwner;
     };
+
 
     /*
     @CLASS:         HidableTextMarkerHelper<BASECLASS>
@@ -241,19 +214,50 @@ namespace Stroika::Frameworks::Led {
     public:
         FontSpecHidableTextMarker (const IncrementalFontSpecification& styleInfo);
 
+#if qStroika_Frameworks_Led_SupportGDI
     protected:
         virtual FontSpecification MakeFontSpec (const StyledTextImager* imager, const StyleRunElement& runElement) const override;
+#endif
 
     public:
         IncrementalFontSpecification fFontSpecification;
     };
 
-    /*
-    @CLASS:         ColoredUniformHidableTextMarkerOwner
-    @BASES:         @'UniformHidableTextMarkerOwner'
-    @DESCRIPTION:   <p>A @'UniformHidableTextMarkerOwner' where you can specify (simply) a color for the
-                hidable text markers (when they are shown).</p>
-    */
+
+
+
+    /**
+     *      UniformHidableTextMarkerOwner is a @'HidableTextMarkerOwner' class, which has a notion of
+     *  whether or not <em>all</em> the hidden text markers are hidden or not. You can manually change the hidden
+     *  state of particular markers - if you wish (via @'HidableTextMarkerOwner::HideAll ()' commands with a from/to range).</p>
+     *      <p>But the default behavior is that all the markers share this hidden or not hidden state, and NEWLY created
+     *  'hiding' markers inherit this state.</p>
+     */
+    class UniformHidableTextMarkerOwner : public HidableTextMarkerOwner {
+    private:
+        using inherited = HidableTextMarkerOwner;
+
+    public:
+        UniformHidableTextMarkerOwner (TextStore& textStore);
+
+    public:
+        virtual void HideAll () override;
+        virtual void ShowAll () override;
+
+    public:
+        nonvirtual bool IsHidden () const;
+
+    public:
+        virtual void MakeRegionHidable (size_t from, size_t to) override;
+
+    private:
+        bool fHidden;
+    };
+
+    /**
+     *      <p>A @'UniformHidableTextMarkerOwner' where you can specify (simply) a color for the
+     *  hidable text markers (when they are shown).</p>
+     */
     class ColoredUniformHidableTextMarkerOwner : public UniformHidableTextMarkerOwner {
     private:
         using inherited = UniformHidableTextMarkerOwner;
