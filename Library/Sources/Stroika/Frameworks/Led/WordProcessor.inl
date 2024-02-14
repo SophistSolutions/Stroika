@@ -561,6 +561,215 @@ namespace Stroika::Frameworks::Led {
         fUseTableSelection = useTableSelection;
     }
 
+
+    /*
+     ********************************************************************************
+     ********** WordProcessorTable ***************
+     ********************************************************************************
+     */
+     inline TWIPS WordProcessorTable::GetCellSpacing () const
+    {
+        return fCellSpacing;
+    }
+    inline void WordProcessorTable::SetCellSpacing (TWIPS cellSpacing)
+    {
+        if (fCellSpacing != cellSpacing) {
+            fCellSpacing = cellSpacing;
+#if qStroika_Frameworks_Led_SupportGDI
+            InvalidateLayout ();
+            #endif
+        }
+    }
+    /*
+    @METHOD:        WordProcessorTable::GetCellSelection
+    @DESCRIPTION:   <p>Retrieve the cell selection range for the given table. Note that we always have a rectangular
+                table selection (could be in whole rows or columns or not). The special case of a single cell selection
+                may indicate that the ENTIRE cell is selected, or just a subset (which is decided by ITS GetCellSelection property).
+                </p>
+                    <p>Like marker positions and STL iterators, we use the selEnd to be just PAST the end of the selected cell,
+                and so if rowSelStart==rowSelEnd then this implies NO SELECTION, and if rowSelStart + 1 == rowSelEnd and
+                colSelStart + 1 = colSelEnd then we have selected a single cell.
+                </p>
+                    <p>See @'WordProcessorTable::SetCellSelection'.</p>
+    */
+    inline void WordProcessorTable::GetCellSelection (size_t* rowSelStart, size_t* rowSelEnd, size_t* colSelStart, size_t* colSelEnd) const
+    {
+        Ensure (fRowSelStart <= fRowSelEnd);
+        Ensure (fRowSelEnd <= GetRowCount ());
+        Ensure (fColSelStart <= fColSelEnd);
+        Ensure (fColSelEnd <= GetColumnCount ());
+        if (rowSelStart != nullptr) {
+            *rowSelStart = fRowSelStart;
+        }
+        if (rowSelEnd != nullptr) {
+            *rowSelEnd = fRowSelEnd;
+        }
+        if (colSelStart != nullptr) {
+            *colSelStart = fColSelStart;
+        }
+        if (colSelEnd != nullptr) {
+            *colSelEnd = fColSelEnd;
+        }
+    }
+    inline size_t WordProcessorTable::GetRowCount () const
+    {
+        size_t rows = 0;
+        GetDimensions (&rows, nullptr);
+        return rows;
+    }
+    inline size_t WordProcessorTable::GetColumnCount () const
+    {
+        size_t columns = 0;
+        GetDimensions (nullptr, &columns);
+        return columns;
+    }
+#if qStroika_Frameworks_Led_SupportGDI
+    inline void WordProcessorTable::GetDefaultCellMargins (TWIPS* top, TWIPS* left, TWIPS* bottom, TWIPS* right) const
+    {
+        if (top != nullptr) {
+            *top = fDefaultCellMargins.GetTop ();
+        }
+        if (left != nullptr) {
+            *left = fDefaultCellMargins.GetLeft ();
+        }
+        if (bottom != nullptr) {
+            *bottom = fDefaultCellMargins.GetBottom ();
+        }
+        if (right != nullptr) {
+            *right = fDefaultCellMargins.GetRight ();
+        }
+    }
+    inline void WordProcessorTable::SetDefaultCellMargins (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right)
+    {
+        if (top != fDefaultCellMargins.GetTop () or left != fDefaultCellMargins.GetLeft () or bottom != fDefaultCellMargins.GetBottom () or
+            right != fDefaultCellMargins.GetRight ()) {
+            fDefaultCellMargins.top    = top;
+            fDefaultCellMargins.left   = left;
+            fDefaultCellMargins.bottom = bottom;
+            fDefaultCellMargins.right  = right;
+            InvalidateLayout ();
+        }
+    }
+    inline void WordProcessorTable::InvalidateLayout ()
+    {
+        if (fNeedLayout != eNeedFullLayout) {
+            AbstractParagraphDatabaseRep* o = dynamic_cast<AbstractParagraphDatabaseRep*> (GetOwner ());
+            AssertNotNull (o);
+            o->fSomeInvalidTables = true;
+            fNeedLayout           = eNeedFullLayout;
+        }
+    }
+    inline WordProcessorTable::Cell& WordProcessorTable::GetCell (size_t row, size_t column)
+    {
+        Require (row < GetRowCount ());
+        Require (column < GetColumnCount (row));
+        Assert (fRows.size () == GetRowCount ());
+        Assert (fRows[row].fCells.size () == GetColumnCount (row));
+        return fRows[row].fCells[column];
+    }
+    inline const WordProcessorTable::Cell& WordProcessorTable::GetCell (size_t row, size_t column) const
+    {
+        Require (row < GetRowCount ());
+        Require (column < GetColumnCount (row));
+        Assert (fRows.size () == GetRowCount ());
+        Assert (fRows[row].fCells.size () == GetColumnCount (row));
+        return fRows[row].fCells[column];
+    }
+    inline WordProcessorTable::CellMergeFlags WordProcessorTable::GetCellFlags (size_t row, size_t column) const
+    {
+        Require (row < GetRowCount ());
+        const RowInfo& rowInfo = fRows[row];
+        if (column < rowInfo.fCells.size ()) {
+            return rowInfo.fCells[column].GetCellMergeFlags ();
+        }
+        else {
+            return eInvalidCell;
+        }
+    }
+    /*
+    @METHOD:        WordProcessorTable::GetIntraCellMode
+    @ACCESS:        public
+    @DESCRIPTION:   <p>Return true if the editor is in 'intraCell' editing mode. This edit mode means that the
+                current selection is a mini-editor inside of a cell. This is not the same as having selected
+                a single cell. It means characters typed go to the focused WP inside the currently selected
+                cell.</p>
+    */
+    inline bool WordProcessorTable::GetIntraCellMode (size_t* row, size_t* col) const
+    {
+        if (fIntraCellMode) {
+            Assert (fRowSelEnd == fRowSelStart + 1);
+            if (row != nullptr) {
+                *row = fRowSelStart;
+            }
+            Assert (fColSelEnd == fColSelStart + 1);
+            if (col != nullptr) {
+                *col = fColSelStart;
+            }
+        }
+        return fIntraCellMode;
+    }
+    inline void WordProcessorTable::GetIntraCellSelection (size_t* selStart, size_t* selEnd) const
+    {
+        RequireNotNull (selStart);
+        RequireNotNull (selEnd);
+        *selStart = fIntraSelStart;
+        *selEnd   = fIntraSelEnd;
+    }
+    inline void WordProcessorTable::SaveIntraCellContextInfo (bool leftSideOfSelectionInteresting, const FontSpecification& intraCellSelectionEmptySelFontSpecification)
+    {
+        fSavedIntraCellInfoValid                          = true;
+        fSavedLeftSideOfSelectionInteresting              = leftSideOfSelectionInteresting;
+        fSavedIntraCellSelectionEmptySelFontSpecification = intraCellSelectionEmptySelFontSpecification;
+    }
+    inline bool WordProcessorTable::RestoreIntraCellContextInfo (bool* leftSideOfSelectionInteresting, FontSpecification* intraCellSelectionEmptySelFontSpecification)
+    {
+        RequireNotNull (leftSideOfSelectionInteresting);
+        RequireNotNull (intraCellSelectionEmptySelFontSpecification);
+        if (fSavedIntraCellInfoValid) {
+            *leftSideOfSelectionInteresting              = fSavedLeftSideOfSelectionInteresting;
+            *intraCellSelectionEmptySelFontSpecification = fSavedIntraCellSelectionEmptySelFontSpecification;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    inline void WordProcessorTable::InvalidateIntraCellContextInfo ()
+    {
+        fSavedIntraCellInfoValid = false;
+    }
+#endif
+
+
+
+
+    /*
+     ********************************************************************************
+     ************************ WordProcessorTable::Cell ******************************
+     ********************************************************************************
+     */
+    inline WordProcessorTable::CellMergeFlags WordProcessorTable::Cell::GetCellMergeFlags () const
+    {
+        return fCellMergeFlags;
+    }
+    inline TWIPS WordProcessorTable::Cell::GetCellXWidth () const
+    {
+        return fCellRep->fCellXWidth;
+    }
+    inline void WordProcessorTable::Cell::SetCellXWidth (TWIPS width)
+    {
+        fCellRep->fCellXWidth = width;
+    }
+    inline Led_Rect WordProcessorTable::Cell::GetCachedBoundsRect () const
+    {
+        return fCellRep->fCachedBoundsRect;
+    }
+    inline void WordProcessorTable::Cell::SetCachedBoundsRect (Led_Rect r)
+    {
+        fCellRep->fCachedBoundsRect = r;
+    }
+
+
 #if qStroika_Frameworks_Led_SupportGDI
 
 #if qTemplateGeneratedMixinsSometimesCorrupted
@@ -687,41 +896,7 @@ namespace Stroika::Frameworks::Led {
         return fCachedCurSelFontSpec;
     }
 
-    /*
-     ********************************************************************************
-     *********************** WordProcessorTable::RowInfo ****************************
-     ********************************************************************************
-     */
-    inline WordProcessorTable::RowInfo::RowInfo ()
-        : fHeight (0)
-    {
-    }
 
-    /*
-     ********************************************************************************
-     ************************ WordProcessorTable::Cell ****************************
-     ********************************************************************************
-     */
-    inline WordProcessorTable::CellMergeFlags WordProcessorTable::Cell::GetCellMergeFlags () const
-    {
-        return fCellMergeFlags;
-    }
-    inline TWIPS WordProcessorTable::Cell::GetCellXWidth () const
-    {
-        return fCellRep->fCellXWidth;
-    }
-    inline void WordProcessorTable::Cell::SetCellXWidth (TWIPS width)
-    {
-        fCellRep->fCellXWidth = width;
-    }
-    inline Led_Rect WordProcessorTable::Cell::GetCachedBoundsRect () const
-    {
-        return fCellRep->fCachedBoundsRect;
-    }
-    inline void WordProcessorTable::Cell::SetCachedBoundsRect (Led_Rect r)
-    {
-        fCellRep->fCachedBoundsRect = r;
-    }
 
     /*
      ********************************************************************************
@@ -761,175 +936,6 @@ namespace Stroika::Frameworks::Led {
         fUseTableSelection = useTableSelection;
     }
 
-    //class WordProcessorTable
-    inline TWIPS WordProcessorTable::GetCellSpacing () const
-    {
-        return fCellSpacing;
-    }
-    inline void WordProcessorTable::SetCellSpacing (TWIPS cellSpacing)
-    {
-        if (fCellSpacing != cellSpacing) {
-            fCellSpacing = cellSpacing;
-            InvalidateLayout ();
-        }
-    }
-    inline void WordProcessorTable::GetDefaultCellMargins (TWIPS* top, TWIPS* left, TWIPS* bottom, TWIPS* right) const
-    {
-        if (top != nullptr) {
-            *top = fDefaultCellMargins.GetTop ();
-        }
-        if (left != nullptr) {
-            *left = fDefaultCellMargins.GetLeft ();
-        }
-        if (bottom != nullptr) {
-            *bottom = fDefaultCellMargins.GetBottom ();
-        }
-        if (right != nullptr) {
-            *right = fDefaultCellMargins.GetRight ();
-        }
-    }
-    inline void WordProcessorTable::SetDefaultCellMargins (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right)
-    {
-        if (top != fDefaultCellMargins.GetTop () or left != fDefaultCellMargins.GetLeft () or bottom != fDefaultCellMargins.GetBottom () or
-            right != fDefaultCellMargins.GetRight ()) {
-            fDefaultCellMargins.top    = top;
-            fDefaultCellMargins.left   = left;
-            fDefaultCellMargins.bottom = bottom;
-            fDefaultCellMargins.right  = right;
-            InvalidateLayout ();
-        }
-    }
-    inline void WordProcessorTable::InvalidateLayout ()
-    {
-        if (fNeedLayout != eNeedFullLayout) {
-            AbstractParagraphDatabaseRep* o = dynamic_cast<AbstractParagraphDatabaseRep*> (GetOwner ());
-            AssertNotNull (o);
-            o->fSomeInvalidTables = true;
-            fNeedLayout           = eNeedFullLayout;
-        }
-    }
-    inline size_t WordProcessorTable::GetRowCount () const
-    {
-        size_t rows = 0;
-        GetDimensions (&rows, nullptr);
-        return rows;
-    }
-    inline size_t WordProcessorTable::GetColumnCount () const
-    {
-        size_t columns = 0;
-        GetDimensions (nullptr, &columns);
-        return columns;
-    }
-    inline WordProcessorTable::Cell& WordProcessorTable::GetCell (size_t row, size_t column)
-    {
-        Require (row < GetRowCount ());
-        Require (column < GetColumnCount (row));
-        Assert (fRows.size () == GetRowCount ());
-        Assert (fRows[row].fCells.size () == GetColumnCount (row));
-        return fRows[row].fCells[column];
-    }
-    inline const WordProcessorTable::Cell& WordProcessorTable::GetCell (size_t row, size_t column) const
-    {
-        Require (row < GetRowCount ());
-        Require (column < GetColumnCount (row));
-        Assert (fRows.size () == GetRowCount ());
-        Assert (fRows[row].fCells.size () == GetColumnCount (row));
-        return fRows[row].fCells[column];
-    }
-    inline WordProcessorTable::CellMergeFlags WordProcessorTable::GetCellFlags (size_t row, size_t column) const
-    {
-        Require (row < GetRowCount ());
-        const RowInfo& rowInfo = fRows[row];
-        if (column < rowInfo.fCells.size ()) {
-            return rowInfo.fCells[column].GetCellMergeFlags ();
-        }
-        else {
-            return eInvalidCell;
-        }
-    }
-    /*
-    @METHOD:        WordProcessorTable::GetCellSelection
-    @DESCRIPTION:   <p>Retrieve the cell selection range for the given table. Note that we always have a rectangular
-                table selection (could be in whole rows or columns or not). The special case of a single cell selection
-                may indicate that the ENTIRE cell is selected, or just a subset (which is decided by ITS GetCellSelection property).
-                </p>
-                    <p>Like marker positions and STL iterators, we use the selEnd to be just PAST the end of the selected cell,
-                and so if rowSelStart==rowSelEnd then this implies NO SELECTION, and if rowSelStart + 1 == rowSelEnd and
-                colSelStart + 1 = colSelEnd then we have selected a single cell.
-                </p>
-                    <p>See @'WordProcessorTable::SetCellSelection'.</p>
-    */
-    inline void WordProcessorTable::GetCellSelection (size_t* rowSelStart, size_t* rowSelEnd, size_t* colSelStart, size_t* colSelEnd) const
-    {
-        Ensure (fRowSelStart <= fRowSelEnd);
-        Ensure (fRowSelEnd <= GetRowCount ());
-        Ensure (fColSelStart <= fColSelEnd);
-        Ensure (fColSelEnd <= GetColumnCount ());
-        if (rowSelStart != nullptr) {
-            *rowSelStart = fRowSelStart;
-        }
-        if (rowSelEnd != nullptr) {
-            *rowSelEnd = fRowSelEnd;
-        }
-        if (colSelStart != nullptr) {
-            *colSelStart = fColSelStart;
-        }
-        if (colSelEnd != nullptr) {
-            *colSelEnd = fColSelEnd;
-        }
-    }
-    /*
-    @METHOD:        WordProcessorTable::GetIntraCellMode
-    @ACCESS:        public
-    @DESCRIPTION:   <p>Return true if the editor is in 'intraCell' editing mode. This edit mode means that the
-                current selection is a mini-editor inside of a cell. This is not the same as having selected
-                a single cell. It means characters typed go to the focused WP inside the currently selected
-                cell.</p>
-    */
-    inline bool WordProcessorTable::GetIntraCellMode (size_t* row, size_t* col) const
-    {
-        if (fIntraCellMode) {
-            Assert (fRowSelEnd == fRowSelStart + 1);
-            if (row != nullptr) {
-                *row = fRowSelStart;
-            }
-            Assert (fColSelEnd == fColSelStart + 1);
-            if (col != nullptr) {
-                *col = fColSelStart;
-            }
-        }
-        return fIntraCellMode;
-    }
-    inline void WordProcessorTable::GetIntraCellSelection (size_t* selStart, size_t* selEnd) const
-    {
-        RequireNotNull (selStart);
-        RequireNotNull (selEnd);
-        *selStart = fIntraSelStart;
-        *selEnd   = fIntraSelEnd;
-    }
-    inline void WordProcessorTable::SaveIntraCellContextInfo (bool leftSideOfSelectionInteresting, const FontSpecification& intraCellSelectionEmptySelFontSpecification)
-    {
-        fSavedIntraCellInfoValid                          = true;
-        fSavedLeftSideOfSelectionInteresting              = leftSideOfSelectionInteresting;
-        fSavedIntraCellSelectionEmptySelFontSpecification = intraCellSelectionEmptySelFontSpecification;
-    }
-    inline bool WordProcessorTable::RestoreIntraCellContextInfo (bool* leftSideOfSelectionInteresting, FontSpecification* intraCellSelectionEmptySelFontSpecification)
-    {
-        RequireNotNull (leftSideOfSelectionInteresting);
-        RequireNotNull (intraCellSelectionEmptySelFontSpecification);
-        if (fSavedIntraCellInfoValid) {
-            *leftSideOfSelectionInteresting              = fSavedLeftSideOfSelectionInteresting;
-            *intraCellSelectionEmptySelFontSpecification = fSavedIntraCellSelectionEmptySelFontSpecification;
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    inline void WordProcessorTable::InvalidateIntraCellContextInfo ()
-    {
-        fSavedIntraCellInfoValid = false;
-    }
 
     /*
      ********************************************************************************

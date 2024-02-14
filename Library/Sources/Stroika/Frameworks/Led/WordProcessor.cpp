@@ -313,6 +313,141 @@ void ParagraphDatabaseRep::Invariant_ () const
 }
 #endif
 
+
+
+/*
+ ********************************************************************************
+ ************************ WordProcessorTable ************************************
+ ********************************************************************************
+ */
+#if qStroika_Frameworks_Led_SupportGDI
+class WordProcessorTable::TableCMD : public InteractiveReplaceCommand, public Memory::UseBlockAllocationIfAppropriate<TableCMD> {
+private:
+    using inherited = InteractiveReplaceCommand;
+
+public:
+    TableCMD (size_t tableAt, size_t tRow, size_t tCol, SavedTextRep* beforeRegion, SavedTextRep* afterRegion, size_t at, const SDKString& cmdName)
+        : inherited (beforeRegion, afterRegion, at, cmdName)
+        , fTableAt (tableAt)
+        , fTableRow (tRow)
+        , fTableColumn (tCol)
+    {
+    }
+
+public:
+    virtual void Do (TextInteractor& interactor) override
+    {
+        WordProcessor&      owningWP = dynamic_cast<WordProcessor&> (interactor);
+        WordProcessorTable* aT       = owningWP.GetTableAt (fTableAt);
+        AssertNotNull (aT);
+        WordProcessorTable::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
+        WordProcessorTable::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
+        inherited::Do (*wp);
+    }
+    virtual void UnDo (TextInteractor& interactor) override
+    {
+        WordProcessor&      owningWP = dynamic_cast<WordProcessor&> (interactor);
+        WordProcessorTable* aT       = owningWP.GetTableAt (fTableAt);
+        AssertNotNull (aT);
+        WordProcessorTable::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
+        WordProcessorTable::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
+        inherited::UnDo (*wp);
+    }
+    virtual void ReDo (TextInteractor& interactor) override
+    {
+        WordProcessor&      owningWP = dynamic_cast<WordProcessor&> (interactor);
+        WordProcessorTable* aT       = owningWP.GetTableAt (fTableAt);
+        AssertNotNull (aT);
+        WordProcessorTable::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
+        WordProcessorTable::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
+        inherited::ReDo (*wp);
+    }
+
+protected:
+    size_t fTableAt;
+    size_t fTableRow;
+    size_t fTableColumn;
+};
+#endif
+
+/*
+ *  can only be called inside the context of WordProcessorTable::TemporarilySetOwningWP
+ *  since that is what provides our external (window) coordinate system
+ */
+#define Led_Require_CurrentOwningWP() RequireNotNull (fCurrentOwningWP)
+
+/*
+@METHOD:        WordProcessorTable::WordProcessorTable
+@DESCRIPTION:   <p>You generally don't construct a table object directly, but rather using
+            @'WordProcessor::InsertTable'.</p>
+*/
+WordProcessorTable::WordProcessorTable (AbstractParagraphDatabaseRep* tableOwner, size_t addAt)
+#if qStroika_Frameworks_Led_SupportGDI
+    : inherited ()
+    , 
+    #else
+    :
+    #endif
+    fCellSpacing (TWIPS{0})
+    , fDefaultCellMargins (TWIPS (15), TWIPS (90), TWIPS{0}, TWIPS{0})
+#if qStroika_Frameworks_Led_SupportGDI
+    , // LHS and RHS both 90 TWIPS (tricky CTOR - last arg is WIDTH - not RHS).
+    fTrackingAnchor_Row (0)
+    , fTrackingAnchor_Col (0)
+    , fSuppressCellUpdatePropagationContext (false)
+    , fAllowUpdateInfoPropagationContext (false)
+    , fCellUpdatePropationUpdater (nullptr)
+    #endif
+    , fRowSelStart (0)
+    , fRowSelEnd (0)
+    , fColSelStart (0)
+    , fColSelEnd (0)
+    , fIntraCellMode (false)
+    , fIntraSelStart (0)
+    , fIntraSelEnd (0)
+    , fIntraCellDragAnchor (0)
+#if qStroika_Frameworks_Led_SupportGDI
+    , fSavedLeftSideOfSelectionInteresting (false)
+    , fSavedIntraCellSelectionEmptySelFontSpecification ()
+    , fSavedIntraCellInfoValid (false)
+    , fCurrentOwningWP (nullptr)
+    , fNeedLayout (eNeedFullLayout)
+    #endif
+    , fRows ()
+    , fBorderWidth (Led_CvtScreenPixelsToTWIPSH (1))
+    , fBorderColor (Color::kSilver)
+    , fTotalWidth (0)
+    , fTotalHeight (0)
+{
+    FinalizeAddition (tableOwner, addAt);
+}
+
+WordProcessorTable::~WordProcessorTable ()
+{
+#if qStroika_Frameworks_Led_SupportGDI
+    if (fCellUpdatePropationUpdater != nullptr) {
+        Assert (false); // This should only happen if an earlier update was aborted (throw). NOT really a bug
+        // if this gets triggered. Just for informational purposes (debugging) only
+        fCellUpdatePropationUpdater->Cancel ();
+        delete fCellUpdatePropationUpdater;
+    }
+    Assert (fCurrentOwningWP == nullptr);
+    #endif
+}
+
+void WordProcessorTable::FinalizeAddition (AbstractParagraphDatabaseRep* o, size_t addAt)
+{
+    RequireNotNull (o);
+#if qStroika_Frameworks_Led_SupportGDI
+    TextStore&               ts = o->GetTextStore ();
+    TextStore::SimpleUpdater updater (ts, addAt, addAt + 1);
+    ts.ReplaceWithoutUpdate (addAt, addAt, &kEmbeddingSentinelChar, 1);
+    ts.AddMarker (this, addAt, 1, o);
+    #endif
+}
+
+
+
 /*
  ********************************************************************************
  *************************** WordProcessorTextIOSinkStream **********************
@@ -363,6 +498,7 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (TextStore* textSto
     CTOR_COMMON ();
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (WordProcessor* wp, size_t insertionStart)
     : inherited{&wp->GetTextStore (), wp->GetStyleDatabase (), insertionStart}
     , fOverwriteTableMode{false}
@@ -396,6 +532,7 @@ WordProcessorTextIOSinkStream::WordProcessorTextIOSinkStream (WordProcessor* wp,
 {
     CTOR_COMMON ();
 }
+#endif
 
 WordProcessorTextIOSinkStream::~WordProcessorTextIOSinkStream ()
 {
@@ -417,7 +554,7 @@ WordProcessorTextIOSinkStream::~WordProcessorTextIOSinkStream ()
 void WordProcessorTextIOSinkStream::CTOR_COMMON ()
 {
     fNewParagraphInfo.SetJustification (eLeftJustify);
-    fNewParagraphInfo.SetTabStopList (WordProcessor::GetDefaultStandardTabStopList ());
+    fNewParagraphInfo.SetTabStopList (StandardTabStopList{});
     fNewParagraphInfo.SetFirstIndent (TWIPS{0});
     fNewParagraphInfo.SetMargins (TWIPS{0}, CalcDefaultRHSMargin_ ());
     fNewParagraphInfo.SetListStyle (eListStyle_None);
@@ -446,6 +583,7 @@ void WordProcessorTextIOSinkStream::AppendText (const Led_tChar* text, size_t nT
     }
 }
 
+#if qStroika_Frameworks_Led_SupportGDI
 void WordProcessorTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)
 {
     RequireNotNull (embedding);
@@ -458,10 +596,11 @@ void WordProcessorTextIOSinkStream::AppendEmbedding (SimpleEmbeddedObjectStyleMa
         fHidableTextDatabase->MakeRegionHidable (whereToStartHiddenArea, whereToStartHiddenArea + 1);
     }
 }
+#endif
 
 void WordProcessorTextIOSinkStream::AppendSoftLineBreak ()
 {
-    AppendText (&WordWrappedTextImager::kSoftLineBreakChar, 1, nullptr);
+    AppendText (&kSoftLineBreakChar, 1, nullptr);
 }
 
 void WordProcessorTextIOSinkStream::SetJustification (Justification justification)
@@ -1081,7 +1220,7 @@ void WordProcessorTextIOSrcStream::GetListStyleInfo (ListStyle* listStyle, unsig
 
 Led_tChar WordProcessorTextIOSrcStream::GetSoftLineBreakCharacter () const
 {
-    return WordWrappedTextImager::kSoftLineBreakChar;
+    return kSoftLineBreakChar;
 }
 
 DiscontiguousRun<bool> WordProcessorTextIOSrcStream::GetHidableTextRuns () const
@@ -5609,122 +5748,6 @@ StandardStyledTextIOSrcStream* WordProcessorFlavorPackageExternalizer::mkStandar
     return stream;
 }
 
-/*
- ********************************************************************************
- ************************ WordProcessorTable ************************************
- ********************************************************************************
- */
-class WordProcessorTable::TableCMD : public InteractiveReplaceCommand, public Memory::UseBlockAllocationIfAppropriate<TableCMD> {
-private:
-    using inherited = InteractiveReplaceCommand;
-
-public:
-    TableCMD (size_t tableAt, size_t tRow, size_t tCol, SavedTextRep* beforeRegion, SavedTextRep* afterRegion, size_t at, const SDKString& cmdName)
-        : inherited (beforeRegion, afterRegion, at, cmdName)
-        , fTableAt (tableAt)
-        , fTableRow (tRow)
-        , fTableColumn (tCol)
-    {
-    }
-
-public:
-    virtual void Do (TextInteractor& interactor) override
-    {
-        WordProcessor&      owningWP = dynamic_cast<WordProcessor&> (interactor);
-        WordProcessorTable* aT       = owningWP.GetTableAt (fTableAt);
-        AssertNotNull (aT);
-        WordProcessorTable::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
-        WordProcessorTable::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
-        inherited::Do (*wp);
-    }
-    virtual void UnDo (TextInteractor& interactor) override
-    {
-        WordProcessor&      owningWP = dynamic_cast<WordProcessor&> (interactor);
-        WordProcessorTable* aT       = owningWP.GetTableAt (fTableAt);
-        AssertNotNull (aT);
-        WordProcessorTable::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
-        WordProcessorTable::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
-        inherited::UnDo (*wp);
-    }
-    virtual void ReDo (TextInteractor& interactor) override
-    {
-        WordProcessor&      owningWP = dynamic_cast<WordProcessor&> (interactor);
-        WordProcessorTable* aT       = owningWP.GetTableAt (fTableAt);
-        AssertNotNull (aT);
-        WordProcessorTable::TemporarilySetOwningWP            owningWPSetter (*aT, owningWP);
-        WordProcessorTable::TemporarilyAllocateCellWithTablet wp (*aT, fTableRow, fTableColumn);
-        inherited::ReDo (*wp);
-    }
-
-protected:
-    size_t fTableAt;
-    size_t fTableRow;
-    size_t fTableColumn;
-};
-
-/*
- *  can only be called inside the context of WordProcessorTable::TemporarilySetOwningWP
- *  since that is what provides our external (window) coordinate system
- */
-#define Led_Require_CurrentOwningWP() RequireNotNull (fCurrentOwningWP)
-
-/*
-@METHOD:        WordProcessorTable::WordProcessorTable
-@DESCRIPTION:   <p>You generally don't construct a table object directly, but rather using
-            @'WordProcessor::InsertTable'.</p>
-*/
-WordProcessorTable::WordProcessorTable (AbstractParagraphDatabaseRep* tableOwner, size_t addAt)
-    : inherited ()
-    , fCellSpacing (TWIPS{0})
-    , fDefaultCellMargins (TWIPS (15), TWIPS (90), TWIPS{0}, TWIPS{0})
-    , // LHS and RHS both 90 TWIPS (tricky CTOR - last arg is WIDTH - not RHS).
-    fTrackingAnchor_Row (0)
-    , fTrackingAnchor_Col (0)
-    , fSuppressCellUpdatePropagationContext (false)
-    , fAllowUpdateInfoPropagationContext (false)
-    , fCellUpdatePropationUpdater (nullptr)
-    , fRowSelStart (0)
-    , fRowSelEnd (0)
-    , fColSelStart (0)
-    , fColSelEnd (0)
-    , fIntraCellMode (false)
-    , fIntraSelStart (0)
-    , fIntraSelEnd (0)
-    , fIntraCellDragAnchor (0)
-    , fSavedLeftSideOfSelectionInteresting (false)
-    , fSavedIntraCellSelectionEmptySelFontSpecification ()
-    , fSavedIntraCellInfoValid (false)
-    , fCurrentOwningWP (nullptr)
-    , fNeedLayout (eNeedFullLayout)
-    , fRows ()
-    , fBorderWidth (Led_CvtScreenPixelsToTWIPSH (1))
-    , fBorderColor (Color::kSilver)
-    , fTotalWidth (0)
-    , fTotalHeight (0)
-{
-    FinalizeAddition (tableOwner, addAt);
-}
-
-WordProcessorTable::~WordProcessorTable ()
-{
-    if (fCellUpdatePropationUpdater != nullptr) {
-        Assert (false); // This should only happen if an earlier update was aborted (throw). NOT really a bug
-        // if this gets triggered. Just for informational purposes (debugging) only
-        fCellUpdatePropationUpdater->Cancel ();
-        delete fCellUpdatePropationUpdater;
-    }
-    Assert (fCurrentOwningWP == nullptr);
-}
-
-void WordProcessorTable::FinalizeAddition (AbstractParagraphDatabaseRep* o, size_t addAt)
-{
-    RequireNotNull (o);
-    TextStore&               ts = o->GetTextStore ();
-    TextStore::SimpleUpdater updater (ts, addAt, addAt + 1);
-    ts.ReplaceWithoutUpdate (addAt, addAt, &kEmbeddingSentinelChar, 1);
-    ts.AddMarker (this, addAt, 1, o);
-}
-
 void WordProcessorTable::DrawSegment (const StyledTextImager* imager, const StyleRunElement& /*runElement*/, Tablet* tablet,
                                       [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                       const Led_Rect& drawInto, const Led_Rect& invalidRect, CoordinateType /*useBaseLine*/, DistanceType* pixelsDrawn)
@@ -7360,6 +7383,7 @@ void WordProcessorTable::SetColumnCount (size_t row, size_t columns)
         }
     }
 }
+#endif
 
 /*
 @METHOD:        WordProcessorTable::GetDimensions
@@ -7379,6 +7403,8 @@ void WordProcessorTable::GetDimensions (size_t* rows, size_t* columns) const
         *columns = maxCols;
     }
 }
+
+#if qStroika_Frameworks_Led_SupportGDI
 
 /*
 @METHOD:        WordProcessorTable::SetDimensions

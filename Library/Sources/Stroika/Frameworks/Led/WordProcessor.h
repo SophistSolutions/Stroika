@@ -375,6 +375,7 @@ namespace Stroika::Frameworks::Led {
     protected:
         virtual void DrawTableBorders (WordProcessor& owningWP, Tablet* tablet, const Led_Rect& drawInto);
         virtual void DrawCellBorders (Tablet* tablet, size_t row, size_t column, const Led_Rect& cellBounds);
+#endif
 
     public:
         nonvirtual TWIPS GetCellSpacing () const;
@@ -390,6 +391,7 @@ namespace Stroika::Frameworks::Led {
     private:
         TWIPS_Rect fDefaultCellMargins; // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
 
+#if qStroika_Frameworks_Led_SupportGDI
     public:
         virtual Led_Rect GetCellBounds (size_t row, size_t column) const;
         virtual Led_Rect GetCellEditorBounds (size_t row, size_t column) const;
@@ -458,6 +460,7 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual bool ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection);
         virtual void WhileSimpleMouseTracking (Led_Point newMousePos);
+#endif
 
     public:
         nonvirtual Color GetTableBorderColor () const;
@@ -500,6 +503,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void GetCellSelection (size_t* rowSelStart, size_t* rowSelEnd, size_t* colSelStart, size_t* colSelEnd) const;
         nonvirtual void SetCellSelection (size_t rowSelStart, size_t rowSelEnd, size_t colSelStart, size_t colSelEnd);
 
+#if qStroika_Frameworks_Led_SupportGDI
     public:
         nonvirtual bool GetIntraCellMode (size_t* row = nullptr, size_t* col = nullptr) const;
         nonvirtual void SetIntraCellMode ();
@@ -507,6 +511,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void UnSetIntraCellMode ();
         nonvirtual void GetIntraCellSelection (size_t* selStart, size_t* selEnd) const;
         nonvirtual void SetIntraCellSelection (size_t selStart, size_t selEnd);
+#endif
 
     private:
         size_t fRowSelStart;
@@ -520,6 +525,7 @@ namespace Stroika::Frameworks::Led {
         size_t fIntraSelEnd;
         size_t fIntraCellDragAnchor;
 
+#if qStroika_Frameworks_Led_SupportGDI
     protected:
         nonvirtual void SaveIntraCellContextInfo (bool leftSideOfSelectionInteresting, const FontSpecification& intraCellSelectionEmptySelFontSpecification);
         nonvirtual bool RestoreIntraCellContextInfo (bool* leftSideOfSelectionInteresting, FontSpecification* intraCellSelectionEmptySelFontSpecification);
@@ -553,6 +559,7 @@ namespace Stroika::Frameworks::Led {
         virtual EmbeddedTableWordProcessor* ConstructEmbeddedTableWordProcessor (WordProcessor& forWordProcessor, size_t forRow, size_t forColumn,
                                                                                  const Led_Rect& cellWindowRect, bool captureChangesForUndo);
         virtual void ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e);
+#endif
 
     public:
         virtual void GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts,
@@ -560,6 +567,7 @@ namespace Stroika::Frameworks::Led {
                                                     shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
                                                     shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase = nullptr);
 
+#if qStroika_Frameworks_Led_SupportGDI
     private:
         WordProcessor* fCurrentOwningWP;
         class TemporarilySetOwningWP;
@@ -576,6 +584,7 @@ namespace Stroika::Frameworks::Led {
             eNeedFullLayout
         };
         mutable LayoutFlag fNeedLayout;
+#endif
 
     public:
         nonvirtual size_t GetRowCount () const;
@@ -595,8 +604,10 @@ namespace Stroika::Frameworks::Led {
         virtual void    InsertColumn (size_t at);
         virtual void    DeleteColumn (size_t at);
 
+#if qStroika_Frameworks_Led_SupportGDI
     protected:
         virtual void ReValidateSelection ();
+#endif
 
     protected:
         /*
@@ -606,13 +617,13 @@ namespace Stroika::Frameworks::Led {
         */
         struct RowInfo {
         public:
-            RowInfo ();
+            RowInfo () = default;
 
         public:
             vector<Cell> fCells;
 
         public:
-            DistanceType fHeight; // height of the cell itself (not including the border)
+            DistanceType fHeight{0}; // height of the cell itself (not including the border)
         };
         vector<RowInfo> fRows;
 
@@ -621,6 +632,8 @@ namespace Stroika::Frameworks::Led {
         Color        fBorderColor;
         DistanceType fTotalWidth;
         DistanceType fTotalHeight;
+
+#if qStroika_Frameworks_Led_SupportGDI
 
     protected:
         class SavedTextRepWSel;
@@ -641,6 +654,74 @@ namespace Stroika::Frameworks::Led {
         friend class WordProcessor;
 #endif
     };
+
+    
+    /*
+    @CLASS:         WordProcessorTable::Cell
+    @DESCRIPTION:   <p>Used internally by the @'WordProcessorTable' code.</p>
+    */
+    class WordProcessorTable::Cell {
+    public:
+        Cell (WordProcessorTable& forTable, CellMergeFlags mergeFlags);
+
+    public:
+        nonvirtual CellMergeFlags GetCellMergeFlags () const;
+
+    private:
+        CellMergeFlags fCellMergeFlags;
+
+    public:
+        nonvirtual void       GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase = nullptr,
+                                                             shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
+                                                             shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase = nullptr);
+        nonvirtual TextStore& GetTextStore () const;
+        nonvirtual shared_ptr<AbstractStyleDatabaseRep> GetStyleDatabase () const;
+        nonvirtual shared_ptr<AbstractParagraphDatabaseRep> GetParagraphDatabase () const;
+        nonvirtual shared_ptr<HidableTextMarkerOwner> GetHidableTextDatabase () const;
+
+        nonvirtual Color GetBackColor () const;
+        nonvirtual void  SetBackColor (Color c);
+
+        nonvirtual TWIPS GetCellXWidth () const;
+        nonvirtual void  SetCellXWidth (TWIPS width);
+
+        nonvirtual Led_Rect GetCachedBoundsRect () const;
+        nonvirtual void     SetCachedBoundsRect (Led_Rect r);
+
+    public:
+        shared_ptr<CellRep> fCellRep;
+    };
+
+    /*
+    @CLASS:         WordProcessorTable::CellRep
+    @DESCRIPTION:   <p>Used internally by the @'WordProcessorTable' code.</p>
+    */
+    class WordProcessorTable::CellRep : public MarkerOwner, public Foundation::Memory::UseBlockAllocationIfAppropriate<CellRep> {
+    private:
+        using inherited = MarkerOwner;
+
+    public:
+        CellRep (WordProcessorTable& forTable);
+        ~CellRep ();
+
+    public:
+        virtual TextStore* PeekAtTextStore () const override;
+        virtual void       AboutToUpdateText (const UpdateInfo& updateInfo) override;
+        virtual void       DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
+
+    public:
+        WordProcessorTable&                      fForTable;
+        TextStore*                               fTextStore;
+        shared_ptr<AbstractStyleDatabaseRep>     fStyleDatabase;
+        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
+        shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
+        Color                                    fBackColor;
+        Led_Rect                                 fCachedBoundsRect;
+        TWIPS                                    fCellXWidth;
+    };
+
+
+
 
     /**
      *      <p>A @'StandardStyledTextInteractor::StandardStyledTextIOSrcStream', for use with the StyledTextIO module,
@@ -1453,70 +1534,6 @@ namespace Stroika::Frameworks::Led {
     protected:
         shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
         shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
-    };
-
-    /*
-    @CLASS:         WordProcessorTable::Cell
-    @DESCRIPTION:   <p>Used internally by the @'WordProcessorTable' code.</p>
-    */
-    class WordProcessorTable::Cell {
-    public:
-        Cell (WordProcessorTable& forTable, CellMergeFlags mergeFlags);
-
-    public:
-        nonvirtual CellMergeFlags GetCellMergeFlags () const;
-
-    private:
-        CellMergeFlags fCellMergeFlags;
-
-    public:
-        nonvirtual void       GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase = nullptr,
-                                                             shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
-                                                             shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase = nullptr);
-        nonvirtual TextStore& GetTextStore () const;
-        nonvirtual shared_ptr<AbstractStyleDatabaseRep> GetStyleDatabase () const;
-        nonvirtual shared_ptr<AbstractParagraphDatabaseRep> GetParagraphDatabase () const;
-        nonvirtual shared_ptr<HidableTextMarkerOwner> GetHidableTextDatabase () const;
-
-        nonvirtual Color GetBackColor () const;
-        nonvirtual void  SetBackColor (Color c);
-
-        nonvirtual TWIPS GetCellXWidth () const;
-        nonvirtual void  SetCellXWidth (TWIPS width);
-
-        nonvirtual Led_Rect GetCachedBoundsRect () const;
-        nonvirtual void     SetCachedBoundsRect (Led_Rect r);
-
-    public:
-        shared_ptr<CellRep> fCellRep;
-    };
-
-    /*
-    @CLASS:         WordProcessorTable::CellRep
-    @DESCRIPTION:   <p>Used internally by the @'WordProcessorTable' code.</p>
-    */
-    class WordProcessorTable::CellRep : public MarkerOwner, public Foundation::Memory::UseBlockAllocationIfAppropriate<CellRep> {
-    private:
-        using inherited = MarkerOwner;
-
-    public:
-        CellRep (WordProcessorTable& forTable);
-        ~CellRep ();
-
-    public:
-        virtual TextStore* PeekAtTextStore () const override;
-        virtual void       AboutToUpdateText (const UpdateInfo& updateInfo) override;
-        virtual void       DidUpdateText (const UpdateInfo& updateInfo) noexcept override;
-
-    public:
-        WordProcessorTable&                      fForTable;
-        TextStore*                               fTextStore;
-        shared_ptr<AbstractStyleDatabaseRep>     fStyleDatabase;
-        shared_ptr<AbstractParagraphDatabaseRep> fParagraphDatabase;
-        shared_ptr<HidableTextMarkerOwner>       fHidableTextDatabase;
-        Color                                    fBackColor;
-        Led_Rect                                 fCachedBoundsRect;
-        TWIPS                                    fCellXWidth;
     };
 
     /*

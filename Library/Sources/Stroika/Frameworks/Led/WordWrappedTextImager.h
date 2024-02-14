@@ -30,6 +30,12 @@ namespace Stroika::Frameworks::Led {
 #define qDefaultLedSoftLineBreakChar '\001'
 #endif
 
+
+/**
+ *       <p>Sentinel character used to mark a soft line-break.</p>
+ */
+constexpr Led_tChar kSoftLineBreakChar = qDefaultLedSoftLineBreakChar;
+
 #if qStroika_Frameworks_Led_SupportGDI
     /*
     @CLASS:         WordWrappedTextImager
@@ -45,14 +51,6 @@ namespace Stroika::Frameworks::Led {
 
     private:
         using inherited = MultiRowTextImager;
-
-    public:
-        /*
-        @METHOD:        WordWrappedTextImager::kSoftLineBreakChar
-        @DESCRIPTION:
-                <p>Sentinel character used to mark a soft line-break.</p>
-        */
-        static const Led_tChar kSoftLineBreakChar;
 
     public:
         /*

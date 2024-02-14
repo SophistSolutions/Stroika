@@ -61,7 +61,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::Rect_Base
     @DESCRIPTION:   <p>No-argument constructor leaves object uninitialized (garbage data).</p>
     */
-    inline Rect_Base<POINT_TYPE, SIZE_TYPE>::Rect_Base ()
+    constexpr Rect_Base<POINT_TYPE, SIZE_TYPE>::Rect_Base ()
         : top (CoordinateType (0))
         , left (CoordinateType (0))
         , bottom (CoordinateType (0))
@@ -73,7 +73,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        Rect_Base<POINT_TYPE,SIZE_TYPE>::Rect_Base
     @DESCRIPTION:   <p>Initialize with argument top, left, height, width.</p>
     */
-    inline Rect_Base<POINT_TYPE, SIZE_TYPE>::Rect_Base (CoordinateType newTop, CoordinateType newLeft, DistanceType newHeight, DistanceType newWidth)
+    constexpr Rect_Base<POINT_TYPE, SIZE_TYPE>::Rect_Base (CoordinateType newTop, CoordinateType newLeft, DistanceType newHeight, DistanceType newWidth)
         : top (newTop)
         , left (newLeft)
         , bottom (newTop + newHeight)
@@ -81,7 +81,7 @@ namespace Stroika::Frameworks::Led {
     {
     }
     template <typename POINT_TYPE, typename SIZE_TYPE>
-    inline Rect_Base<POINT_TYPE, SIZE_TYPE>::Rect_Base (POINT_TYPE origin, SIZE_TYPE size)
+    constexpr Rect_Base<POINT_TYPE, SIZE_TYPE>::Rect_Base (POINT_TYPE origin, SIZE_TYPE size)
         : top (origin.v)
         , left (origin.h)
         , bottom (origin.v + size.v)
