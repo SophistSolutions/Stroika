@@ -98,13 +98,7 @@ namespace Stroika::Frameworks::Led {
         using CommandNumber = int;
 
     public:
-#if qCannotStaticlyInitializeConstantsDataMembersInClassDeclaration
-        enum {
-            kNoCommand_CmdID = 0
-        };
-#else
         static const CommandNumber kNoCommand_CmdID = 0;
-#endif
 
     public:
         enum {
