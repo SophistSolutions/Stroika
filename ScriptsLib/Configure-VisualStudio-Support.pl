@@ -99,7 +99,14 @@ sub GetDefaultToolsBuildDir ()
 
 ### @todo consider somehow redoing this logic with use of vswhere, but not 100% sure how to fetch efficiently to use
 	@VSDIRs = bsd_glob (toCygPath_ ("$VSDIR\\*"));
+	my $nVSDirs = @VSDIRs;
+	if ($nVSDirs == 0) {
+		die ("No 'VSDIR' found automatically");
+	}
 	$VSDIR = fromCygPath_ (@VSDIRs[0]);
+	if ($nVSDirs > 1) {
+		print ("Configure Warning: Multiple VSDirs found: using $VSDIR\n");
+	}
 	if (! (-e toCygPath_ ($VSDIR))) {
 		die ("directory '$VSDIR' doesn't exist");
 	}
@@ -193,7 +200,11 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 	my $HOSTSTR="HostX64";
 	if ($ARCH eq "x86") {
 		my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x86");
-		my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
+		my $nEXEDirs = @exe32Dirs;
+		my $exe32Dir = fromCygPath_ (@exe32Dirs[$nEXEDirs-1]);
+		if ($nEXEDirs > 1) {
+			print(`ScriptsLib/PrintLevelLeader \$(($MAKE_INDENT_LEVEL+2))` . "Configure Warning: Multiple Compiler directories found: using $exe32Dir\n");
+		}
 		$resEnv{"AS"} = toExternallyUsedPath_ ($exe32Dir . "\\ml");
 		$resEnv{"CC"} = toExternallyUsedPath_ ($exe32Dir . "\\cl");
 		$resEnv{"LD"} = toExternallyUsedPath_ ($exe32Dir . "\\link");
@@ -202,7 +213,11 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 	}
 	elsif ($ARCH eq "x86_64") {
 		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/$HOSTSTR/x64");
-		my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
+		my $nEXEDirs = @exe64Dir;
+		my $exe64Dir = fromCygPath_ (@exe64Dirs[$nEXEDirs-1]);
+		if ($nEXEDirs > 1) {
+			print(`ScriptsLib/PrintLevelLeader \$(($MAKE_INDENT_LEVEL+2))` . "Configure Warning: Multiple Compiler directories found: using $exe64Dir\n");
+		}
 		$resEnv{"AS"} = toExternallyUsedPath_ ($exe64Dir . "\\ml64");
 		$resEnv{"CC"} = toExternallyUsedPath_ ($exe64Dir . "\\cl");
 		$resEnv{"LD"} = toExternallyUsedPath_ ($exe64Dir . "\\link");
