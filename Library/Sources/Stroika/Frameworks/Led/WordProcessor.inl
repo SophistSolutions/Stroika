@@ -622,7 +622,6 @@ namespace Stroika::Frameworks::Led {
         GetDimensions (nullptr, &columns);
         return columns;
     }
-#if qStroika_Frameworks_Led_SupportGDI
     inline void WordProcessorTable::GetDefaultCellMargins (TWIPS* top, TWIPS* left, TWIPS* bottom, TWIPS* right) const
     {
         if (top != nullptr) {
@@ -737,7 +736,6 @@ namespace Stroika::Frameworks::Led {
     {
         fSavedIntraCellInfoValid = false;
     }
-#endif
 
     /*
      ********************************************************************************

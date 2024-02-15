@@ -567,7 +567,6 @@ namespace Stroika::Frameworks::Led {
                                                     shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
                                                     shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase = nullptr);
 
-#if qStroika_Frameworks_Led_SupportGDI
     private:
         WordProcessor* fCurrentOwningWP;
         class TemporarilySetOwningWP;
@@ -576,7 +575,9 @@ namespace Stroika::Frameworks::Led {
 
     protected:
         nonvirtual void InvalidateLayout ();
-        virtual void    PerformLayout ();
+#if qStroika_Frameworks_Led_SupportGDI
+        virtual void PerformLayout ();
+#endif
 
     private:
         enum LayoutFlag {
@@ -584,7 +585,6 @@ namespace Stroika::Frameworks::Led {
             eNeedFullLayout
         };
         mutable LayoutFlag fNeedLayout;
-#endif
 
     public:
         nonvirtual size_t GetRowCount () const;

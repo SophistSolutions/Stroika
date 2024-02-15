@@ -496,6 +496,41 @@ void WordProcessorTable::SetCellColor (size_t row, size_t column, const Color& c
     cell.SetBackColor (c);
 }
 
+size_t WordProcessorTable::GetColumnCount (size_t row) const
+{
+    Require (row < GetRowCount ());
+    return fRows[row].fCells.size ();
+}
+
+size_t WordProcessorTable::GetColumnCount (size_t rowStart, size_t rowEnd) const
+{
+    Require (rowStart <= GetRowCount ());
+    Require (rowEnd <= GetRowCount ());
+    size_t colCount = 0;
+    for (size_t ri = rowStart; ri < rowEnd; ++ri) {
+        colCount = max (colCount, fRows[ri].fCells.size ());
+    }
+    return colCount;
+}
+
+void WordProcessorTable::SetColumnCount (size_t row, size_t columns)
+{
+    Require (row < GetRowCount ());
+    size_t curColCount = fRows[row].fCells.size ();
+    if (curColCount != columns) {
+        vector<Cell>& rowCells = fRows[row].fCells;
+        while (curColCount < columns) {
+            Cell cell (*this, ePlainCell);
+            rowCells.push_back (cell);
+            ++curColCount;
+        }
+        while (curColCount > columns) {
+            --curColCount;
+            rowCells.erase (rowCells.begin () + curColCount);
+        }
+    }
+}
+
 /*
  ********************************************************************************
  *************************** WordProcessorTextIOSinkStream **********************
@@ -7351,40 +7386,6 @@ void WordProcessorTable::PerformLayout ()
     }
 }
 
-size_t WordProcessorTable::GetColumnCount (size_t row) const
-{
-    Require (row < GetRowCount ());
-    return fRows[row].fCells.size ();
-}
-
-size_t WordProcessorTable::GetColumnCount (size_t rowStart, size_t rowEnd) const
-{
-    Require (rowStart <= GetRowCount ());
-    Require (rowEnd <= GetRowCount ());
-    size_t colCount = 0;
-    for (size_t ri = rowStart; ri < rowEnd; ++ri) {
-        colCount = max (colCount, fRows[ri].fCells.size ());
-    }
-    return colCount;
-}
-
-void WordProcessorTable::SetColumnCount (size_t row, size_t columns)
-{
-    Require (row < GetRowCount ());
-    size_t curColCount = fRows[row].fCells.size ();
-    if (curColCount != columns) {
-        vector<Cell>& rowCells = fRows[row].fCells;
-        while (curColCount < columns) {
-            Cell cell (*this, ePlainCell);
-            rowCells.push_back (cell);
-            ++curColCount;
-        }
-        while (curColCount > columns) {
-            --curColCount;
-            rowCells.erase (rowCells.begin () + curColCount);
-        }
-    }
-}
 #endif
 
 /*
