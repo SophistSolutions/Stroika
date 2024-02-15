@@ -48,21 +48,21 @@ namespace Stroika::Frameworks::Led {
      */
     class ParagraphInfo {
     public:
-        ParagraphInfo ();
+        constexpr ParagraphInfo () = default;
 
     public:
         nonvirtual Justification GetJustification () const;
         nonvirtual void          SetJustification (Justification justification);
 
     private:
-        Justification fJustification;
+        Justification fJustification{eLeftJustify};
 
     public:
         nonvirtual const StandardTabStopList& GetTabStopList () const;
         nonvirtual void                       SetTabStopList (const StandardTabStopList& tabStops);
 
     private:
-        StandardTabStopList fTabStops;
+        StandardTabStopList fTabStops{};
 
     public:
         nonvirtual TWIPS GetLeftMargin () const;
@@ -70,15 +70,15 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  SetMargins (TWIPS lhs, TWIPS rhs);
 
     private:
-        TWIPS fLeftMargin;
-        TWIPS fRightMargin;
+        TWIPS fLeftMargin{0};
+        TWIPS fRightMargin{1};
 
     public:
         nonvirtual TWIPS GetFirstIndent () const;
         nonvirtual void  SetFirstIndent (TWIPS firstIndent);
 
     private:
-        TWIPS fFirstIndent;
+        TWIPS fFirstIndent{0};
 
     public:
         nonvirtual TWIPS       GetSpaceBefore () const;
@@ -89,9 +89,9 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void        SetLineSpacing (LineSpacing sl);
 
     private:
-        TWIPS       fSpaceBefore;
-        TWIPS       fSpaceAfter;
-        LineSpacing fLineSpacing;
+        TWIPS       fSpaceBefore{0};
+        TWIPS       fSpaceAfter{0};
+        LineSpacing fLineSpacing{};
 
     public:
         nonvirtual ListStyle GetListStyle () const;
@@ -105,13 +105,13 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void          SetListIndentLevel (unsigned char indentLevel);
 
     private:
-        unsigned char fListIndentLevel;
+        unsigned char fListIndentLevel{0};
 
     public:
         nonvirtual void MergeIn (const IncrementalParagraphInfo& incParaInfo);
 
     public:
-        nonvirtual bool operator== (const ParagraphInfo& rhs) const;
+        constexpr bool operator== (const ParagraphInfo&) const = default;
     };
 
     /**
@@ -119,6 +119,10 @@ namespace Stroika::Frameworks::Led {
      *          attribute is valid (for getters) and to set a ValidFlag for the setters. And add methods for
      *          each attribute to test for validity, and to invalidate.</p>
      *              <p>These are used if you want to set just part of a @'WordProcessor::ParagraphInfo'.</p>
+     * 
+     *  @todo REDO using:
+     *      optioanl of each ParagraphInfo fields
+     *      no subclass - instead conversion operator to ParagraphInfo (with defaults for stuff not specified?)
      */
     class IncrementalParagraphInfo : public ParagraphInfo {
     private:

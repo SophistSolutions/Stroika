@@ -1461,18 +1461,18 @@ namespace Stroika::Frameworks::Led {
      ************************************* LineSpacing ******************************
      ********************************************************************************
      */
-    inline LineSpacing::LineSpacing (Rule rule)
+    constexpr LineSpacing::LineSpacing (Rule rule)
         : fRule{rule}
     {
         Require (rule == eSingleSpace or rule == eOnePointFiveSpace or rule == eDoubleSpace);
     }
-    inline LineSpacing::LineSpacing (Rule rule, TWIPS twips)
+    constexpr LineSpacing::LineSpacing (Rule rule, TWIPS twips)
         : fRule{rule}
         , fArg{static_cast<unsigned> (twips)}
     {
         Require (rule == eAtLeastTWIPSSpacing or rule == eExactTWIPSSpacing);
     }
-    inline LineSpacing::LineSpacing (Rule rule, unsigned lineCount)
+    constexpr LineSpacing::LineSpacing (Rule rule, unsigned lineCount)
         : fRule{rule}
         , fArg{lineCount}
     {
@@ -1489,7 +1489,7 @@ namespace Stroika::Frameworks::Led {
                 break;
         }
     }
-    inline bool LineSpacing::operator== (LineSpacing rhs) const
+    constexpr bool LineSpacing::operator== (const LineSpacing& rhs) const
     {
         if (fRule != rhs.fRule) {
             return false;

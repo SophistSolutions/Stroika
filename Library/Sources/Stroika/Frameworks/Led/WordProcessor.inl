@@ -204,17 +204,10 @@ namespace Stroika::Frameworks::Led {
             fListIndentLevel = incParaInfo.GetListIndentLevel ();
         }
     }
-    inline bool ParagraphInfo::operator== (const ParagraphInfo& rhs) const
-    {
-        return fJustification == rhs.fJustification and fTabStops == rhs.fTabStops and fLeftMargin == rhs.fLeftMargin and
-               fRightMargin == rhs.fRightMargin and fFirstIndent == rhs.fFirstIndent and fSpaceBefore == rhs.fSpaceBefore and
-               fSpaceAfter == rhs.fSpaceAfter and fLineSpacing == rhs.fLineSpacing and fListStyle == rhs.fListStyle and
-               fListIndentLevel == rhs.fListIndentLevel;
-    }
 
     /*
      ********************************************************************************
-     ********************* IncrementalParagraphInfo ******************
+     ****************************** IncrementalParagraphInfo ************************
      ********************************************************************************
      */
     inline IncrementalParagraphInfo::IncrementalParagraphInfo ()

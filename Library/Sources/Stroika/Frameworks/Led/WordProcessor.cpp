@@ -35,27 +35,8 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 using InteractiveModeUpdater = WordProcessor::InteractiveModeUpdater;
 using UndoableContextHelper  = WordProcessor::UndoableContextHelper;
 using Tablet_Acquirer        = WordProcessor::Tablet_Acquirer;
-
 #endif
 
-/*
- ********************************************************************************
- ********************************* ParagraphInfo ********************************
- ********************************************************************************
- */
-ParagraphInfo::ParagraphInfo ()
-    : fJustification (eLeftJustify)
-    , fTabStops ()
-    , fLeftMargin (0)
-    , fRightMargin (1)
-    , fFirstIndent (0)
-    , fSpaceBefore (TWIPS{0})
-    , fSpaceAfter (TWIPS{0})
-    , fLineSpacing ()
-    , fListStyle (eListStyle_None)
-    , fListIndentLevel (0)
-{
-}
 
 /*
  ********************************************************************************

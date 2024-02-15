@@ -493,11 +493,13 @@ namespace Stroika::Frameworks::Led {
         unsigned fArg{0};
 
     public:
-        LineSpacing () = default;
-        LineSpacing (Rule rule);
-        LineSpacing (Rule rule, TWIPS twips);
-        LineSpacing (Rule rule, unsigned lineCount);
-        bool operator== (LineSpacing rhs) const;
+        constexpr LineSpacing () = default;
+        constexpr LineSpacing (Rule rule);
+        constexpr LineSpacing (Rule rule, TWIPS twips);
+        constexpr LineSpacing (Rule rule, unsigned lineCount);
+
+    public:
+        constexpr bool operator== (const LineSpacing& rhs) const;
     };
 
     class IncrementalFontSpecification;
