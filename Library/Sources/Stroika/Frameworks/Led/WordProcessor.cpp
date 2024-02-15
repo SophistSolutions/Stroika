@@ -37,7 +37,6 @@ using UndoableContextHelper  = WordProcessor::UndoableContextHelper;
 using Tablet_Acquirer        = WordProcessor::Tablet_Acquirer;
 #endif
 
-
 /*
  ********************************************************************************
  **************************** ParagraphDatabaseRep ******************************
