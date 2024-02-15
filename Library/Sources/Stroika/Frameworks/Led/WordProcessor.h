@@ -632,7 +632,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
 #if qStroika_Frameworks_Led_SupportGDI
-        TWIPS fBorderWidth{Led_CvtScreenPixelsToTWIPSH (1)}
+        TWIPS fBorderWidth{Led_CvtScreenPixelsToTWIPSH (1)};
 #else
         TWIPS fBorderWidth{1};
 #endif

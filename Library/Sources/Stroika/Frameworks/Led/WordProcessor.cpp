@@ -491,7 +491,6 @@ void WordProcessorTable::SetColumnCount (size_t row, size_t columns)
     }
 }
 
-<<<<<<< HEAD
 /*
 @METHOD:        WordProcessorTable::GetCellWordProcessorDatabases
 @ACCESS:        public
