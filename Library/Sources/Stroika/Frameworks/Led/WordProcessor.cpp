@@ -491,6 +491,159 @@ void WordProcessorTable::SetColumnCount (size_t row, size_t columns)
     }
 }
 
+
+
+/*
+ ********************************************************************************
+ ************************** WordProcessorTable::Cell **************************
+ ********************************************************************************
+ */
+WordProcessorTable::Cell::Cell (WordProcessorTable& forTable, CellMergeFlags mergeFlags)
+    : fCellMergeFlags {mergeFlags}
+    , fCellRep {mergeFlags == ePlainCell ? (new CellRep (forTable)) : nullptr}
+{
+}
+
+/*
+@METHOD:        WordProcessorTable::Cell::GetCellWordProcessorDatabases
+@ACCESS:        public
+@DESCRIPTION:   <p>Retrieve  the various databases (textstore, style etc) associated with the given cell. Arguments
+            CAN be null. Only non-null pointer valeus
+            are filled in.</p>
+*/
+void WordProcessorTable::Cell::GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
+                                                              shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
+                                                              shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase)
+{
+    Require (fCellMergeFlags == ePlainCell);
+    if (ts != nullptr) {
+        *ts = &GetTextStore ();
+    }
+    if (styleDatabase != nullptr) {
+        *styleDatabase = GetStyleDatabase ();
+    }
+    if (paragraphDatabase != nullptr) {
+        *paragraphDatabase = GetParagraphDatabase ();
+    }
+    if (hidableTextDatabase != nullptr) {
+        *hidableTextDatabase = GetHidableTextDatabase ();
+    }
+}
+
+TextStore& WordProcessorTable::Cell::GetTextStore () const
+{
+    Require (fCellMergeFlags == ePlainCell);
+    EnsureNotNull (fCellRep->fTextStore);
+    return *fCellRep->fTextStore;
+}
+
+shared_ptr<AbstractStyleDatabaseRep> WordProcessorTable::Cell::GetStyleDatabase () const
+{
+    Require (fCellMergeFlags == ePlainCell);
+    return fCellRep->fStyleDatabase;
+}
+
+shared_ptr<AbstractParagraphDatabaseRep> WordProcessorTable::Cell::GetParagraphDatabase () const
+{
+    Require (fCellMergeFlags == ePlainCell);
+    return fCellRep->fParagraphDatabase;
+}
+
+shared_ptr<HidableTextMarkerOwner> WordProcessorTable::Cell::GetHidableTextDatabase () const
+{
+    Require (fCellMergeFlags == ePlainCell);
+    return fCellRep->fHidableTextDatabase;
+}
+
+Color WordProcessorTable::Cell::GetBackColor () const
+{
+    Require (fCellMergeFlags == ePlainCell);
+    return fCellRep->fBackColor;
+}
+
+void WordProcessorTable::Cell::SetBackColor (Color c)
+{
+    Require (fCellMergeFlags == ePlainCell);
+    fCellRep->fBackColor = c;
+}
+
+/*
+ ********************************************************************************
+ ************************ WordProcessorTable::CellRep ***************************
+ ********************************************************************************
+ */
+WordProcessorTable::CellRep::CellRep (WordProcessorTable& forTable)
+    : fForTable (forTable)
+    , fTextStore (nullptr)
+    , fStyleDatabase ()
+    , fParagraphDatabase ()
+    , fHidableTextDatabase ()
+    , fBackColor (Color::kWhite)
+    , fCachedBoundsRect (Led_Rect (0, 0, 0, 0))
+#if qStroika_Frameworks_Led_SupportGDI
+    , fCellXWidth (Led_CvtScreenPixelsToTWIPSH (75)) // This should be overridden someplace - depending on how the table is constructed - but
+// in case its not, and until it is, leave in a vaguely reasonable number - LGP 2003-04-17
+#else
+    , fCellXWidth {75}
+#endif
+{
+    fTextStore = new SimpleTextStore ();
+    fTextStore->AddMarkerOwner (this);
+    fStyleDatabase       = make_shared<StyleDatabaseRep> (*fTextStore);
+    fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (*fTextStore);
+    fHidableTextDatabase = make_shared<UniformHidableTextMarkerOwner> (*fTextStore);
+}
+
+WordProcessorTable::CellRep::~CellRep ()
+{
+    Require (fStyleDatabase.use_count () == 1);       // hack to debug SPR#1465
+    Require (fParagraphDatabase.use_count () == 1);   // ''
+    Require (fHidableTextDatabase.use_count () == 1); // ''
+    fStyleDatabase.reset ();
+    fParagraphDatabase.reset ();
+    fHidableTextDatabase.reset ();
+    if (fTextStore != nullptr) {
+        fTextStore->RemoveMarkerOwner (this);
+    }
+    delete fTextStore;
+}
+
+TextStore* WordProcessorTable::CellRep::PeekAtTextStore () const
+{
+    return fTextStore;
+}
+
+void WordProcessorTable::CellRep::AboutToUpdateText (const UpdateInfo& updateInfo)
+{
+    inherited::AboutToUpdateText (updateInfo);
+    if (fForTable.fAllowUpdateInfoPropagationContext and updateInfo.fRealContentUpdate) {
+        if (fForTable.fCellUpdatePropationUpdater != nullptr) {
+            Assert (false); // This should only happen if an earlier update was aborted (throw). NOT really a bug
+            // if this gets triggered. Just for informational purposes (debugging) only
+            fForTable.fCellUpdatePropationUpdater->Cancel ();
+            delete fForTable.fCellUpdatePropationUpdater;
+            fForTable.fCellUpdatePropationUpdater = nullptr;
+        }
+        fForTable.fCellUpdatePropationUpdater =
+            new TextStore::SimpleUpdater (fForTable.GetOwner ()->GetTextStore (), fForTable.GetStart (), fForTable.GetEnd ());
+    }
+}
+
+void WordProcessorTable::CellRep::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+{
+    inherited::DidUpdateText (updateInfo);
+    if (not fForTable.fSuppressCellUpdatePropagationContext) {
+        fForTable.InvalidateLayout ();
+    }
+    if (fForTable.fAllowUpdateInfoPropagationContext and updateInfo.fRealContentUpdate) {
+        AssertNotNull (fForTable.fCellUpdatePropationUpdater);
+        delete fForTable.fCellUpdatePropationUpdater; // NB: This calls the DidUpdate calls for the table itself and its owners...
+        fForTable.fCellUpdatePropationUpdater = nullptr;
+    }
+}
+
+
+
 /*
  ********************************************************************************
  *************************** WordProcessorTextIOSinkStream **********************
@@ -7593,150 +7746,6 @@ void WordProcessorTable::ReValidateSelection ()
     SetCellSelection (rowSelStart, rowSelEnd, colSelStart, colSelEnd);
 }
 
-/*
- ********************************************************************************
- ************************** WordProcessorTable::Cell **************************
- ********************************************************************************
- */
-WordProcessorTable::Cell::Cell (WordProcessorTable& forTable, CellMergeFlags mergeFlags)
-    : fCellRep (mergeFlags == ePlainCell ? (new CellRep (forTable)) : nullptr)
-    , fCellMergeFlags (mergeFlags)
-{
-}
-
-/*
-@METHOD:        WordProcessorTable::Cell::GetCellWordProcessorDatabases
-@ACCESS:        public
-@DESCRIPTION:   <p>Retrieve  the various databases (textstore, style etc) associated with the given cell. Arguments
-            CAN be null. Only non-null pointer valeus
-            are filled in.</p>
-*/
-void WordProcessorTable::Cell::GetCellWordProcessorDatabases (TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
-                                                              shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
-                                                              shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase)
-{
-    Require (fCellMergeFlags == ePlainCell);
-    if (ts != nullptr) {
-        *ts = &GetTextStore ();
-    }
-    if (styleDatabase != nullptr) {
-        *styleDatabase = GetStyleDatabase ();
-    }
-    if (paragraphDatabase != nullptr) {
-        *paragraphDatabase = GetParagraphDatabase ();
-    }
-    if (hidableTextDatabase != nullptr) {
-        *hidableTextDatabase = GetHidableTextDatabase ();
-    }
-}
-
-TextStore& WordProcessorTable::Cell::GetTextStore () const
-{
-    Require (fCellMergeFlags == ePlainCell);
-    EnsureNotNull (fCellRep->fTextStore);
-    return *fCellRep->fTextStore;
-}
-
-shared_ptr<AbstractStyleDatabaseRep> WordProcessorTable::Cell::GetStyleDatabase () const
-{
-    Require (fCellMergeFlags == ePlainCell);
-    return fCellRep->fStyleDatabase;
-}
-
-shared_ptr<AbstractParagraphDatabaseRep> WordProcessorTable::Cell::GetParagraphDatabase () const
-{
-    Require (fCellMergeFlags == ePlainCell);
-    return fCellRep->fParagraphDatabase;
-}
-
-shared_ptr<HidableTextMarkerOwner> WordProcessorTable::Cell::GetHidableTextDatabase () const
-{
-    Require (fCellMergeFlags == ePlainCell);
-    return fCellRep->fHidableTextDatabase;
-}
-
-Color WordProcessorTable::Cell::GetBackColor () const
-{
-    Require (fCellMergeFlags == ePlainCell);
-    return fCellRep->fBackColor;
-}
-
-void WordProcessorTable::Cell::SetBackColor (Color c)
-{
-    Require (fCellMergeFlags == ePlainCell);
-    fCellRep->fBackColor = c;
-}
-
-/*
- ********************************************************************************
- ************************ WordProcessorTable::CellRep ***************************
- ********************************************************************************
- */
-WordProcessorTable::CellRep::CellRep (WordProcessorTable& forTable)
-    : fForTable (forTable)
-    , fTextStore (nullptr)
-    , fStyleDatabase ()
-    , fParagraphDatabase ()
-    , fHidableTextDatabase ()
-    , fBackColor (Color::kWhite)
-    , fCachedBoundsRect (Led_Rect (0, 0, 0, 0))
-    , fCellXWidth (Led_CvtScreenPixelsToTWIPSH (75)) // This should be overridden someplace - depending on how the table is constructed - but
-// in case its not, and until it is, leave in a vaguely reasonable number - LGP 2003-04-17
-{
-    fTextStore = new SimpleTextStore ();
-    fTextStore->AddMarkerOwner (this);
-    fStyleDatabase       = make_shared<StyleDatabaseRep> (*fTextStore);
-    fParagraphDatabase   = make_shared<ParagraphDatabaseRep> (*fTextStore);
-    fHidableTextDatabase = make_shared<UniformHidableTextMarkerOwner> (*fTextStore);
-}
-
-WordProcessorTable::CellRep::~CellRep ()
-{
-    Require (fStyleDatabase.use_count () == 1);       // hack to debug SPR#1465
-    Require (fParagraphDatabase.use_count () == 1);   // ''
-    Require (fHidableTextDatabase.use_count () == 1); // ''
-    fStyleDatabase.reset ();
-    fParagraphDatabase.reset ();
-    fHidableTextDatabase.reset ();
-    if (fTextStore != nullptr) {
-        fTextStore->RemoveMarkerOwner (this);
-    }
-    delete fTextStore;
-}
-
-TextStore* WordProcessorTable::CellRep::PeekAtTextStore () const
-{
-    return fTextStore;
-}
-
-void WordProcessorTable::CellRep::AboutToUpdateText (const UpdateInfo& updateInfo)
-{
-    inherited::AboutToUpdateText (updateInfo);
-    if (fForTable.fAllowUpdateInfoPropagationContext and updateInfo.fRealContentUpdate) {
-        if (fForTable.fCellUpdatePropationUpdater != nullptr) {
-            Assert (false); // This should only happen if an earlier update was aborted (throw). NOT really a bug
-            // if this gets triggered. Just for informational purposes (debugging) only
-            fForTable.fCellUpdatePropationUpdater->Cancel ();
-            delete fForTable.fCellUpdatePropationUpdater;
-            fForTable.fCellUpdatePropationUpdater = nullptr;
-        }
-        fForTable.fCellUpdatePropationUpdater =
-            new TextStore::SimpleUpdater (fForTable.GetOwner ()->GetTextStore (), fForTable.GetStart (), fForTable.GetEnd ());
-    }
-}
-
-void WordProcessorTable::CellRep::DidUpdateText (const TextInteractor::UpdateInfo& updateInfo) noexcept
-{
-    inherited::DidUpdateText (updateInfo);
-    if (not fForTable.fSuppressCellUpdatePropagationContext) {
-        fForTable.InvalidateLayout ();
-    }
-    if (fForTable.fAllowUpdateInfoPropagationContext and updateInfo.fRealContentUpdate) {
-        AssertNotNull (fForTable.fCellUpdatePropationUpdater);
-        delete fForTable.fCellUpdatePropationUpdater; // NB: This calls the DidUpdate calls for the table itself and its owners...
-        fForTable.fCellUpdatePropationUpdater = nullptr;
-    }
-}
 
 /*
  ********************************************************************************
