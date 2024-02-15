@@ -20,7 +20,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-
 /*
  ********************************************************************************
  ****************************** HidableTextMarkerOwner **************************
@@ -159,7 +158,7 @@ void HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 
     // Update other markers and owners - since this change can affect the display
     {
-        TextStore::SimpleUpdater updater {fTextStore, from, to};
+        TextStore::SimpleUpdater updater{fTextStore, from, to};
 
         // iterate through markers, and eliminate all but one of them. The last one - if it exists - we'll enlarge.
         for (auto i = hidableTextMarkersInRange.begin (); i != hidableTextMarkersInRange.end (); ++i) {
@@ -231,9 +230,9 @@ void HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
 
     // Update other markers and owners - since this change can affect the display
     {
-        TextStore::SimpleUpdater updater {fTextStore, from, to};
+        TextStore::SimpleUpdater updater{fTextStore, from, to};
         {
-            sort (hidableTextMarkersInRange.begin (), hidableTextMarkersInRange.end (), LessThan<HidableTextMarker> {});
+            sort (hidableTextMarkersInRange.begin (), hidableTextMarkersInRange.end (), LessThan<HidableTextMarker>{});
 
             // iterate through markers, and eliminate all of them, except maybe on the endpoints - if they have stuff outside
             // this range
@@ -265,7 +264,7 @@ void HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
      *  Note 100% sure this is a good enough test - but I hope so - LGP 2000/04/24
      */
     {
-        TextStore::SimpleUpdater updater {fTextStore, to, pastSelMarker.GetEnd ()};
+        TextStore::SimpleUpdater updater{fTextStore, to, pastSelMarker.GetEnd ()};
     }
 
     Invariant ();
@@ -368,7 +367,7 @@ void HidableTextMarkerOwner::CollapseMarker (HidableTextMarker* m)
     size_t start = 0;
     size_t end   = 0;
     m->GetRange (&start, &end);
-    TextStore::SimpleUpdater updater {fTextStore, start, end, false};
+    TextStore::SimpleUpdater updater{fTextStore, start, end, false};
     m->fShown = false;
 }
 
@@ -416,7 +415,7 @@ HidableTextMarkerOwner::HidableTextMarker* HidableTextMarkerOwner::MakeHidableTe
                 return new FontSpecHidableTextMarker (fontSpec);
 
      */
-    return new LightUnderlineHidableTextMarker {};
+    return new LightUnderlineHidableTextMarker{};
 }
 
 TextStore* HidableTextMarkerOwner::PeekAtTextStore () const

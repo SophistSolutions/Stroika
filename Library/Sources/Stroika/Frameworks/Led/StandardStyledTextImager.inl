@@ -45,7 +45,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline StandardStyleMarker::StandardStyleMarker (const FontSpecification& styleInfo)
-        : fFontSpecification {styleInfo}
+        : fFontSpecification{styleInfo}
     {
     }
     inline FontSpecification StandardStyleMarker::GetInfo () const
