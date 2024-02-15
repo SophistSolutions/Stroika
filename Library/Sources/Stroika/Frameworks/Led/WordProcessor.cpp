@@ -491,11 +491,39 @@ void WordProcessorTable::SetColumnCount (size_t row, size_t columns)
     }
 }
 
+/*
+@METHOD:        WordProcessorTable::GetCellWordProcessorDatabases
+@ACCESS:        public
+@DESCRIPTION:   <p>Retrieve  the various databases (textstore, style etc) associated
+            with the given cell. Arguments CAN be null. Only non-null pointer values
+            are filled in.</p>
+*/
+void WordProcessorTable::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
+                                                        shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
+                                                        shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase)
+{
+    Require (row < GetRowCount ());
+    Require (column < GetColumnCount (row));
+    const Cell& c = GetCell (row, column);
+    if (ts != nullptr) {
+        *ts = &c.GetTextStore ();
+    }
+    if (styleDatabase != nullptr) {
+        *styleDatabase = c.GetStyleDatabase ();
+    }
+    if (paragraphDatabase != nullptr) {
+        *paragraphDatabase = c.GetParagraphDatabase ();
+    }
+    if (hidableTextDatabase != nullptr) {
+        *hidableTextDatabase = c.GetHidableTextDatabase ();
+    }
+}
+
 
 
 /*
  ********************************************************************************
- ************************** WordProcessorTable::Cell **************************
+ ************************** WordProcessorTable::Cell ****************************
  ********************************************************************************
  */
 WordProcessorTable::Cell::Cell (WordProcessorTable& forTable, CellMergeFlags mergeFlags)
@@ -7344,34 +7372,6 @@ void WordProcessorTable::ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordPro
     e->SetCommandHandler (nullptr);
     e->SpecifyTextStore (nullptr);
     delete e;
-}
-
-/*
-@METHOD:        WordProcessorTable::GetCellWordProcessorDatabases
-@ACCESS:        public
-@DESCRIPTION:   <p>Retrieve  the various databases (textstore, style etc) associated
-            with the given cell. Arguments CAN be null. Only non-null pointer values
-            are filled in.</p>
-*/
-void WordProcessorTable::GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts, shared_ptr<AbstractStyleDatabaseRep>* styleDatabase,
-                                                        shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase,
-                                                        shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase)
-{
-    Require (row < GetRowCount ());
-    Require (column < GetColumnCount (row));
-    const Cell& c = GetCell (row, column);
-    if (ts != nullptr) {
-        *ts = &c.GetTextStore ();
-    }
-    if (styleDatabase != nullptr) {
-        *styleDatabase = c.GetStyleDatabase ();
-    }
-    if (paragraphDatabase != nullptr) {
-        *paragraphDatabase = c.GetParagraphDatabase ();
-    }
-    if (hidableTextDatabase != nullptr) {
-        *hidableTextDatabase = c.GetHidableTextDatabase ();
-    }
 }
 
 /*
