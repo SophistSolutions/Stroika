@@ -491,6 +491,7 @@ void WordProcessorTable::SetColumnCount (size_t row, size_t columns)
     }
 }
 
+<<<<<<< HEAD
 /*
 @METHOD:        WordProcessorTable::GetCellWordProcessorDatabases
 @ACCESS:        public
@@ -527,8 +528,8 @@ void WordProcessorTable::GetCellWordProcessorDatabases (size_t row, size_t colum
  ********************************************************************************
  */
 WordProcessorTable::Cell::Cell (WordProcessorTable& forTable, CellMergeFlags mergeFlags)
-    : fCellMergeFlags {mergeFlags}
-    , fCellRep {mergeFlags == ePlainCell ? (new CellRep (forTable)) : nullptr}
+    : fCellMergeFlags{mergeFlags}
+    , fCellRep{mergeFlags == ePlainCell ? (new CellRep (forTable)) : nullptr}
 {
 }
 
@@ -612,7 +613,7 @@ WordProcessorTable::CellRep::CellRep (WordProcessorTable& forTable)
     , fCellXWidth (Led_CvtScreenPixelsToTWIPSH (75)) // This should be overridden someplace - depending on how the table is constructed - but
 // in case its not, and until it is, leave in a vaguely reasonable number - LGP 2003-04-17
 #else
-    , fCellXWidth {75}
+    , fCellXWidth{75}
 #endif
 {
     fTextStore = new SimpleTextStore ();
@@ -669,8 +670,6 @@ void WordProcessorTable::CellRep::DidUpdateText (const UpdateInfo& updateInfo) n
         fForTable.fCellUpdatePropationUpdater = nullptr;
     }
 }
-
-
 
 /*
  ********************************************************************************
@@ -7745,7 +7744,6 @@ void WordProcessorTable::ReValidateSelection ()
     }
     SetCellSelection (rowSelStart, rowSelEnd, colSelStart, colSelEnd);
 }
-
 
 /*
  ********************************************************************************
