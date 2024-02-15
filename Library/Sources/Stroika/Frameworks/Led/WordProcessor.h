@@ -330,14 +330,14 @@ namespace Stroika::Frameworks::Led {
     class WordProcessorTable
 #if qStroika_Frameworks_Led_SupportGDI
         : public SimpleEmbeddedObjectStyleMarker
-    #else
-    : public StyleMarker
+#else
+        : public StyleMarker
 #endif
     {
     private:
 #if qStroika_Frameworks_Led_SupportGDI
         using inherited = SimpleEmbeddedObjectStyleMarker;
-        #else
+#else
         using inherited = StyleMarker;
 #endif
 
@@ -393,8 +393,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void SetDefaultCellMargins (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right);
 
     private:
-     // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
-     // LHS and RHS both 90 TWIPS (tricky CTOR - last arg is WIDTH - not RHS).
+        // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
+        // LHS and RHS both 90 TWIPS (tricky CTOR - last arg is WIDTH - not RHS).
         TWIPS_Rect fDefaultCellMargins{TWIPS (15), TWIPS (90), TWIPS{0}, TWIPS{0}};
 
 #if qStroika_Frameworks_Led_SupportGDI
@@ -536,7 +536,7 @@ namespace Stroika::Frameworks::Led {
 
     private:
         bool              fSavedLeftSideOfSelectionInteresting{false};
-        FontSpecification fSavedIntraCellSelectionEmptySelFontSpecification {};
+        FontSpecification fSavedIntraCellSelectionEmptySelFontSpecification{};
         bool              fSavedIntraCellInfoValid{false};
 
     private:
@@ -574,7 +574,7 @@ namespace Stroika::Frameworks::Led {
         class TemporarilySetOwningWP;
         class TemporarilyAllocateCellWP;
         class TemporarilyAllocateCellWithTablet;
-        #endif
+#endif
 
     protected:
         nonvirtual void InvalidateLayout ();
@@ -587,7 +587,7 @@ namespace Stroika::Frameworks::Led {
             eDone,
             eNeedFullLayout
         };
-        mutable LayoutFlag fNeedLayout {eNeedFullLayout};
+        mutable LayoutFlag fNeedLayout{eNeedFullLayout};
 
     public:
         nonvirtual size_t GetRowCount () const;
@@ -632,9 +632,9 @@ namespace Stroika::Frameworks::Led {
 
     private:
 #if qStroika_Frameworks_Led_SupportGDI
-        TWIPS        fBorderWidth {Led_CvtScreenPixelsToTWIPSH (1)}
+        TWIPS fBorderWidth{Led_CvtScreenPixelsToTWIPSH (1)}
 #else
-        TWIPS        fBorderWidth{1};
+        TWIPS fBorderWidth{1};
 #endif
         Color        fBorderColor{Color::kSilver};
         DistanceType fTotalWidth{0};
