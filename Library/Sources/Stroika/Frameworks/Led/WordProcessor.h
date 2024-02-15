@@ -330,11 +330,15 @@ namespace Stroika::Frameworks::Led {
     class WordProcessorTable
 #if qStroika_Frameworks_Led_SupportGDI
         : public SimpleEmbeddedObjectStyleMarker
+    #else
+    : public StyleMarker
 #endif
     {
-#if qStroika_Frameworks_Led_SupportGDI
     private:
+#if qStroika_Frameworks_Led_SupportGDI
         using inherited = SimpleEmbeddedObjectStyleMarker;
+        #else
+        using inherited = StyleMarker;
 #endif
 
     public:
@@ -382,14 +386,16 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void  SetCellSpacing (TWIPS cellSpacing);
 
     private:
-        TWIPS fCellSpacing;
+        TWIPS fCellSpacing{TWIPS{0}};
 
     public:
         nonvirtual void GetDefaultCellMargins (TWIPS* top, TWIPS* left, TWIPS* bottom, TWIPS* right) const;
         nonvirtual void SetDefaultCellMargins (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right);
 
     private:
-        TWIPS_Rect fDefaultCellMargins; // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
+     // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
+     // LHS and RHS both 90 TWIPS (tricky CTOR - last arg is WIDTH - not RHS).
+        TWIPS_Rect fDefaultCellMargins{TWIPS (15), TWIPS (90), TWIPS{0}, TWIPS{0}};
 
 #if qStroika_Frameworks_Led_SupportGDI
     public:
@@ -503,7 +509,6 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void GetCellSelection (size_t* rowSelStart, size_t* rowSelEnd, size_t* colSelStart, size_t* colSelEnd) const;
         nonvirtual void SetCellSelection (size_t rowSelStart, size_t rowSelEnd, size_t colSelStart, size_t colSelEnd);
 
-#if qStroika_Frameworks_Led_SupportGDI
     public:
         nonvirtual bool GetIntraCellMode (size_t* row = nullptr, size_t* col = nullptr) const;
         nonvirtual void SetIntraCellMode ();
@@ -511,48 +516,44 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void UnSetIntraCellMode ();
         nonvirtual void GetIntraCellSelection (size_t* selStart, size_t* selEnd) const;
         nonvirtual void SetIntraCellSelection (size_t selStart, size_t selEnd);
-#endif
 
     private:
-        size_t fRowSelStart;
-        size_t fRowSelEnd;
-        size_t fColSelStart;
-        size_t fColSelEnd;
+        size_t fRowSelStart{0};
+        size_t fRowSelEnd{0};
+        size_t fColSelStart{0};
+        size_t fColSelEnd{0};
 
     private:
-        bool   fIntraCellMode;
-        size_t fIntraSelStart;
-        size_t fIntraSelEnd;
-        size_t fIntraCellDragAnchor;
+        bool   fIntraCellMode{false};
+        size_t fIntraSelStart{0};
+        size_t fIntraSelEnd{0};
+        size_t fIntraCellDragAnchor{0};
 
-#if qStroika_Frameworks_Led_SupportGDI
     protected:
         nonvirtual void SaveIntraCellContextInfo (bool leftSideOfSelectionInteresting, const FontSpecification& intraCellSelectionEmptySelFontSpecification);
         nonvirtual bool RestoreIntraCellContextInfo (bool* leftSideOfSelectionInteresting, FontSpecification* intraCellSelectionEmptySelFontSpecification);
         nonvirtual void InvalidateIntraCellContextInfo ();
 
     private:
-        bool              fSavedLeftSideOfSelectionInteresting;
-        FontSpecification fSavedIntraCellSelectionEmptySelFontSpecification;
-        bool              fSavedIntraCellInfoValid;
+        bool              fSavedLeftSideOfSelectionInteresting{false};
+        FontSpecification fSavedIntraCellSelectionEmptySelFontSpecification {};
+        bool              fSavedIntraCellInfoValid{false};
 
     private:
-        size_t fTrackingAnchor_Row;
-        size_t fTrackingAnchor_Col;
+        size_t fTrackingAnchor_Row{0};
+        size_t fTrackingAnchor_Col{0};
 
     private:
         class SuppressCellUpdatePropagationContext;
-        bool fSuppressCellUpdatePropagationContext;
+        bool fSuppressCellUpdatePropagationContext{false};
 
     protected:
         class AllowUpdateInfoPropagationContext;
         bool                      fAllowUpdateInfoPropagationContext;
-        TextStore::SimpleUpdater* fCellUpdatePropationUpdater;
+        TextStore::SimpleUpdater* fCellUpdatePropationUpdater{nullptr};
 
+#if qStroika_Frameworks_Led_SupportGDI
     protected:
-#if qAccessChecksFailFromTemplatesBug
-    public:
-#endif
         class EmbeddedTableWordProcessor;
 
     protected:
@@ -567,11 +568,13 @@ namespace Stroika::Frameworks::Led {
                                                     shared_ptr<AbstractParagraphDatabaseRep>* paragraphDatabase   = nullptr,
                                                     shared_ptr<HidableTextMarkerOwner>*       hidableTextDatabase = nullptr);
 
+#if qStroika_Frameworks_Led_SupportGDI
     private:
-        WordProcessor* fCurrentOwningWP;
+        WordProcessor* fCurrentOwningWP{nullptr};
         class TemporarilySetOwningWP;
         class TemporarilyAllocateCellWP;
         class TemporarilyAllocateCellWithTablet;
+        #endif
 
     protected:
         nonvirtual void InvalidateLayout ();
@@ -584,7 +587,7 @@ namespace Stroika::Frameworks::Led {
             eDone,
             eNeedFullLayout
         };
-        mutable LayoutFlag fNeedLayout;
+        mutable LayoutFlag fNeedLayout {eNeedFullLayout};
 
     public:
         nonvirtual size_t GetRowCount () const;
@@ -628,10 +631,14 @@ namespace Stroika::Frameworks::Led {
         vector<RowInfo> fRows;
 
     private:
-        TWIPS        fBorderWidth;
-        Color        fBorderColor;
-        DistanceType fTotalWidth;
-        DistanceType fTotalHeight;
+#if qStroika_Frameworks_Led_SupportGDI
+        TWIPS        fBorderWidth {Led_CvtScreenPixelsToTWIPSH (1)}
+#else
+        TWIPS        fBorderWidth{1};
+#endif
+        Color        fBorderColor{Color::kSilver};
+        DistanceType fTotalWidth{0};
+        DistanceType fTotalHeight{0};
 
 #if qStroika_Frameworks_Led_SupportGDI
 
@@ -1682,13 +1689,13 @@ namespace Stroika::Frameworks::Led {
     private:
         WPRelativeFlag           fWPRelativeFlag;
         unique_ptr<SavedTextRep> fRealRep;
-        size_t                   fRowSelStart;
-        size_t                   fRowSelEnd;
-        size_t                   fColSelStart;
-        size_t                   fColSelEnd;
-        bool                     fIntraCellMode;
-        size_t                   fIntraCellSelStart;
-        size_t                   fIntraCellSelEnd;
+        size_t                   fRowSelStart{0};
+        size_t                   fRowSelEnd{0};
+        size_t                   fColSelStart{0};
+        size_t                   fColSelEnd{0};
+        bool                     fIntraCellMode{false};
+        size_t                   fIntraCellSelStart{0};
+        size_t                   fIntraCellSelEnd{0};
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 

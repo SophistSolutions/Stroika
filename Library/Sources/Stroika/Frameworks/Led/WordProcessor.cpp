@@ -315,7 +315,7 @@ void ParagraphDatabaseRep::Invariant_ () const
 
 /*
  ********************************************************************************
- ************************ WordProcessorTable ************************************
+ ***************************** WordProcessorTable *******************************
  ********************************************************************************
  */
 #if qStroika_Frameworks_Led_SupportGDI
@@ -380,46 +380,6 @@ protected:
             @'WordProcessor::InsertTable'.</p>
 */
 WordProcessorTable::WordProcessorTable (AbstractParagraphDatabaseRep* tableOwner, size_t addAt)
-#if qStroika_Frameworks_Led_SupportGDI
-    : inherited ()
-    ,
-#else
-    :
-#endif
-    fCellSpacing (TWIPS{0})
-    , fDefaultCellMargins (TWIPS (15), TWIPS (90), TWIPS{0}, TWIPS{0})
-#if qStroika_Frameworks_Led_SupportGDI
-    , // LHS and RHS both 90 TWIPS (tricky CTOR - last arg is WIDTH - not RHS).
-    fTrackingAnchor_Row (0)
-    , fTrackingAnchor_Col (0)
-    , fSuppressCellUpdatePropagationContext (false)
-    , fAllowUpdateInfoPropagationContext (false)
-    , fCellUpdatePropationUpdater (nullptr)
-#endif
-    , fRowSelStart (0)
-    , fRowSelEnd (0)
-    , fColSelStart (0)
-    , fColSelEnd (0)
-    , fIntraCellMode (false)
-    , fIntraSelStart (0)
-    , fIntraSelEnd (0)
-    , fIntraCellDragAnchor (0)
-#if qStroika_Frameworks_Led_SupportGDI
-    , fSavedLeftSideOfSelectionInteresting (false)
-    , fSavedIntraCellSelectionEmptySelFontSpecification ()
-    , fSavedIntraCellInfoValid (false)
-    , fCurrentOwningWP (nullptr)
-    , fNeedLayout (eNeedFullLayout)
-#endif
-    , fRows ()
-#if qStroika_Frameworks_Led_SupportGDI
-    , fBorderWidth (Led_CvtScreenPixelsToTWIPSH (1))
-#else
-    , fBorderWidth (1)
-#endif
-    , fBorderColor (Color::kSilver)
-    , fTotalWidth (0)
-    , fTotalHeight (0)
 {
     FinalizeAddition (tableOwner, addAt);
 }
@@ -7768,7 +7728,6 @@ void WordProcessorTable::CellRep::AboutToUpdateText (const UpdateInfo& updateInf
 void WordProcessorTable::CellRep::DidUpdateText (const TextInteractor::UpdateInfo& updateInfo) noexcept
 {
     inherited::DidUpdateText (updateInfo);
-
     if (not fForTable.fSuppressCellUpdatePropagationContext) {
         fForTable.InvalidateLayout ();
     }
