@@ -111,7 +111,6 @@ namespace Stroika::Frameworks::Led {
         virtual size_t ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const = 0;
     };
 
-
 #if qStroika_Frameworks_Led_SupportClipboard
     /**
      *     <p>NB: On windows - it is REQUIRED the ClipboardFlavorPackage objects only be
@@ -129,7 +128,7 @@ namespace Stroika::Frameworks::Led {
         static map<Led_ClipFormat, vector<char>> sPrivateClipData;
 #endif
     };
-    #endif
+#endif
 
     /**
      *    <p>Abstraction wrapping both Drag&Drop packages, and clipboard access. Used by @'FlavorPackageExternalizer'.</p>
@@ -138,7 +137,6 @@ namespace Stroika::Frameworks::Led {
     public:
         virtual void AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf) = 0;
     };
-
 
 #if qStroika_Frameworks_Led_SupportClipboard
     /**
