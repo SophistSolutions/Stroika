@@ -560,9 +560,9 @@ namespace {
                 EXPECT_TRUE (tmp == "4/5/1903 12:01:41 AM" or tmp == "04/05/1903 12:01:41 AM");
 #else
 #if qCompilerAndStdLib_locale_pctX_print_time_Buggy
-                EXPECT_TRUE (tmp == "Sun Apr  5 00:01:41 1903");
+                EXPECT_EQ (tmp, "Sun Apr  5 00:01:41 1903");
 #else
-                EXPECT_TRUE (tmp == "Sun 05 Apr 1903 12:01:41 AM");
+                EXPECT_EQ(tmp , "Sun 05 Apr 1903 12:01:41 AM");
 #endif
 #endif
             }
@@ -575,7 +575,7 @@ namespace {
             DateTime dt{d, TimeOfDay{101}};
             TestRoundTripFormatThenParseNoChange_ (dt);
             String tmp = dt.Format (locale{});
-            EXPECT_TRUE (tmp == "Mon Apr  6 00:01:41 1903");
+            EXPECT_EQ (tmp , "Mon Apr  6 00:01:41 1903");       // see qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy if fails
             DateTime dt2{d, TimeOfDay{60}};
             TestRoundTripFormatThenParseNoChange_ (dt2);
             // want a variant that does this formatting!
