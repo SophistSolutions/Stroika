@@ -257,7 +257,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline bool Led_ClipboardObjectAcquire::GoodClip () const
     {
-#if  qPlatform_Windows
+#if qPlatform_Windows
         return (fOSClipHandle != nullptr and fLockedData != nullptr);
 #else
         return false; // X-TMP-HACK-LGP991213
