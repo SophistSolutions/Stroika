@@ -1324,7 +1324,7 @@ namespace {
 #if qCompilerAndStdLib_locale_utf8_string_convert_Buggy
 // sigh - fails to convert unicode characters
 #else
-                EXPECT_TRUE (not initializedLocale);                                             // else means throw from conversion which would be bad
+                EXPECT_TRUE (not initializedLocale); // else means throw from conversion which would be bad
 #endif
             }
             catch (...) {
@@ -1525,7 +1525,7 @@ namespace {
             EXPECT_TRUE (u8string{u8"phred"} == String::FromUTF8 (u8"phred").AsUTF8<u8string> ());
             EXPECT_TRUE (u8string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
         }
-        {// clang-format off
+        { // clang-format off
             // examples from https://en.wikipedia.org/wiki/UTF-8#Encoding
             {
                 char8_t dollarSign[] = u8"$";
@@ -1599,7 +1599,7 @@ namespace {
             // Intentionally no operator+ etc stuff for utf8 because type of u8"" is same as "", so no way to overload
         }
     }
-// clang-format on
+    // clang-format on
 }
 
 namespace {

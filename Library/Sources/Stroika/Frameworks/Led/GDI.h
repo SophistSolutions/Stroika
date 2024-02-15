@@ -140,7 +140,7 @@ namespace Stroika::Frameworks::Led {
     public:
         FontObject () = default;
         ~FontObject ();
-        nonvirtual operator HFONT () const;
+        nonvirtual      operator HFONT () const;
         nonvirtual int  GetObject (int nCount, LPVOID lpObject) const;
         nonvirtual BOOL DeleteObject ();
         nonvirtual BOOL CreateFontIndirect (const LOGFONT* lpLogFont);
@@ -158,7 +158,7 @@ namespace Stroika::Frameworks::Led {
     public:
         Brush (COLORREF crColor);
         ~Brush ();
-        nonvirtual operator HBRUSH () const;
+        nonvirtual      operator HBRUSH () const;
         nonvirtual BOOL Attach (HBRUSH hObject);
         nonvirtual BOOL DeleteObject ();
 
@@ -409,7 +409,7 @@ namespace Stroika::Frameworks::Led {
     public:
         Pen (int nPenStyle, int nWidth, COLORREF crColor);
         ~Pen ();
-        nonvirtual operator HPEN () const;
+        nonvirtual      operator HPEN () const;
         nonvirtual BOOL Attach (HPEN hObject);
         nonvirtual BOOL DeleteObject ();
 
@@ -728,10 +728,10 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InvalidateStyle_Extended ();
         nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-        nonvirtual bool   GetStyle_Strikeout () const;
-        nonvirtual bool   GetStyle_Strikeout_Valid () const;
-        nonvirtual void   InvalidateStyle_Strikeout ();
-        nonvirtual void   SetStyle_Strikeout (bool isStrikeout);
+        nonvirtual bool GetStyle_Strikeout () const;
+        nonvirtual bool GetStyle_Strikeout_Valid () const;
+        nonvirtual void InvalidateStyle_Strikeout ();
+        nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
 
         /*
@@ -787,8 +787,8 @@ namespace Stroika::Frameworks::Led {
         bool fStyleValid_Condensed : 1;
         bool fStyleValid_Extended : 1;
 #elif qPlatform_Windows
-        bool              fStyleValid_Strikeout : 1;
-        bool              fDidSetOSRepCallFlag : 1;
+        bool fStyleValid_Strikeout : 1;
+        bool fDidSetOSRepCallFlag : 1;
 #endif
         bool fFontSizeValid : 1;
         bool fFontSizeIncrementValid : 1;
@@ -1052,12 +1052,12 @@ namespace Stroika::Frameworks::Led {
         nonvirtual BOOL    GetTextMetrics (LPTEXTMETRIC lpMetrics) const;
         nonvirtual HBITMAP SelectObject (HBITMAP hBitmap);
 #if defined(STRICT)
-        nonvirtual HFONT   SelectObject (HFONT hFont);
+        nonvirtual HFONT SelectObject (HFONT hFont);
 #endif
-        nonvirtual POINT   SetWindowOrg (int x, int y);
-        nonvirtual int     GetDeviceCaps (int nIndex) const;
-        nonvirtual BOOL    Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
-        nonvirtual HDC     Detach ();
+        nonvirtual POINT SetWindowOrg (int x, int y);
+        nonvirtual int   GetDeviceCaps (int nIndex) const;
+        nonvirtual BOOL  Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
+        nonvirtual HDC   Detach ();
 #elif qStroika_FeatureSupported_XWindows
     public:
         nonvirtual void SetFont (const FontSpecification& fontSpec);
@@ -1227,7 +1227,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void DeleteObject ();
-        nonvirtual operator HBITMAP () const;
+        nonvirtual      operator HBITMAP () const;
 
     public:
         nonvirtual Led_Size GetImageSize () const;

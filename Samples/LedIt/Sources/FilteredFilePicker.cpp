@@ -172,7 +172,7 @@ bool FilteredSFGetDLog::PickFile (FSSpec* result, bool* typeSpecified, size_t* t
 
     fMainDialog = NULL; // in case PickFile () called multiple times
 
-    Point                    where        = {-1, -1};
+    Point where = {-1, -1};
 #if defined(powerc)
     static RoutineDescriptor dlgProcHook_ = BUILD_ROUTINE_DESCRIPTOR (uppDlgHookYDProcInfo, SFGetDlgHook);
     RoutineDescriptor*       dlgProcHook  = &dlgProcHook_;
@@ -182,7 +182,7 @@ bool FilteredSFGetDLog::PickFile (FSSpec* result, bool* typeSpecified, size_t* t
     DlgHookYDProcPtr    dlgProcHook = &SFGetDlgHook;
     FileFilterYDProcPtr fileFilter  = &SFFilterProc;
 #endif
-    StandardFileReply        sfResult;
+    StandardFileReply sfResult;
     ::CustomGetFile (fileFilter, -1, NULL, &sfResult, 0, where, dlgProcHook, NULL, NULL, NULL, this);
 
     if (typeSpecified != NULL) {
@@ -524,14 +524,14 @@ bool FilteredSFPutDLog::PickFile (ConstStr255Param defaultName, FSSpec* result, 
     Str255 saveAsPrompt;
     ::GetIndString (saveAsPrompt, STRx_Standards, str_SaveAs);
 
-    Point                    where        = {-1, -1};
+    Point where = {-1, -1};
 #if defined(powerc)
     static RoutineDescriptor dlgProcHook_ = BUILD_ROUTINE_DESCRIPTOR (uppDlgHookYDProcInfo, SFPutDlgHook);
     RoutineDescriptor*       dlgProcHook  = &dlgProcHook_;
 #else
-    DlgHookYDProcPtr    dlgProcHook = &SFPutDlgHook;
+    DlgHookYDProcPtr dlgProcHook = &SFPutDlgHook;
 #endif
-    StandardFileReply        sfResult;
+    StandardFileReply sfResult;
     ::CustomPutFile (saveAsPrompt, defaultName, &sfResult, 0, where, dlgProcHook, NULL, NULL, NULL, this);
 
     userPickGood = sfResult.sfGood;

@@ -101,7 +101,7 @@ namespace {
                 Led_tChar charBuf[10 * 1024]; // buffer size doesn't matter much - but just has to be larger than the largest undef word we ever want to find...
                 bool   firstTry    = true;
                 size_t startRegion = fTI.GetSelectionEnd ();
-            SecondTry : {
+            SecondTry: {
                 // regardless of the startRegion - back up the search to the start of the interesected word. The only
                 // exception is if the size of our charBuf isn't big enough to go past the startRegion position (cuz
                 // then we'd be going backwards, and risk never moving forwards, in case of a large word)

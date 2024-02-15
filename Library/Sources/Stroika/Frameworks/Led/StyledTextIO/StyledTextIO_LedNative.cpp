@@ -762,7 +762,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
 #if qPlatform_Windows
         nChars = CodeCvt<Led_tChar>{static_cast<CodePage> (CP_ACP)}.Characters2Bytes (span{buf}, as_writable_bytes (span{result})).size ();
 #else
-        nChars    = CodeCvt<Led_tChar>{locale{}}.Characters2Bytes (span{buf}, as_writable_bytes (span{result})).size ();
+        nChars = CodeCvt<Led_tChar>{locale{}}.Characters2Bytes (span{buf}, as_writable_bytes (span{result})).size ();
 #endif
         {
             uint32_t encodedTL = 0;

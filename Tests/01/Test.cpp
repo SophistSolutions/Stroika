@@ -77,7 +77,7 @@ namespace {
 #if qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
                 auto tmp = Cache::Factory::LRUCache_WithHash<string, string>{}(10, 10, hash<string>{});
 #else
-                LRUCache                          tmp = Cache::Factory::LRUCache_WithHash<string, string>{}(10, 10, hash<string>{});
+                LRUCache tmp = Cache::Factory::LRUCache_WithHash<string, string>{}(10, 10, hash<string>{});
 #endif
                 tmp.Add ("a", "1");
                 tmp.Add ("b", "2");

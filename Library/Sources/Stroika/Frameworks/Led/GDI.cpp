@@ -1265,8 +1265,8 @@ Tablet::Tablet (Display* display, Drawable drawable)
      *  Since we don't know for sure the drawable is a window - catch the error and ignore it. Don't let
      *  XErrorHandler do anything bad.
      */
-    int (*oldErrHandler) (Display*, XErrorEvent*) = ::XSetErrorHandler (IgnoreXErrorHandler);
-    Status s                                      = ::XGetWindowAttributes (display, drawable, &wa);
+    int    (*oldErrHandler) (Display*, XErrorEvent*) = ::XSetErrorHandler (IgnoreXErrorHandler);
+    Status s                                         = ::XGetWindowAttributes (display, drawable, &wa);
     ::XSetErrorHandler (oldErrHandler);
     if (s != 0 and wa.map_installed) {
         fColormap = wa.colormap;
@@ -1441,7 +1441,7 @@ void Tablet::FrameRegion (const Region& r, const Color& c)
     Brush brush = Brush (c.GetOSRep ());
     (void)::FrameRgn (*this, r, brush, 1, 1);
 #else
-    Assert (false);                                  // NYI
+    Assert (false); // NYI
 #endif
 }
 
@@ -2503,7 +2503,7 @@ Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceTy
              *  Since we don't know for sure the drawable is a window - catch the error and ignore it. Don't let
              *  XErrorHandler do anything bad.
              */
-            int (*oldErrHandler) (Display*, XErrorEvent*) = ::XSetErrorHandler (Tablet::IgnoreXErrorHandler);
+            int    (*oldErrHandler) (Display*, XErrorEvent*) = ::XSetErrorHandler (Tablet::IgnoreXErrorHandler);
             Status s = ::XGetWindowAttributes (fOrigTablet->fDisplay, fOrigTablet->fDrawable, &winAttrs);
             ::XSetErrorHandler (oldErrHandler);
             if (s == 0) {
@@ -2680,8 +2680,8 @@ void Globals::InvalidateGlobals ()
     fLogPixelsV = 72;
 #elif qPlatform_Windows
     WindowDC screenDC (nullptr);
-    fLogPixelsH              = ::GetDeviceCaps (screenDC, LOGPIXELSX);
-    fLogPixelsV              = ::GetDeviceCaps (screenDC, LOGPIXELSY);
+    fLogPixelsH = ::GetDeviceCaps (screenDC, LOGPIXELSX);
+    fLogPixelsV = ::GetDeviceCaps (screenDC, LOGPIXELSY);
 #elif qStroika_FeatureSupported_XWindows
     /*
      *  Either 75 or 100??? Not sure which is best

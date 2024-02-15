@@ -193,7 +193,7 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
     if (errno_t e = ::gmtime_s (&tmTimeDataBuf, &unixTime)) {
         ThrowPOSIXErrNo (e);
     };
-    ::tm*        tmTimeData = &tmTimeDataBuf;
+    ::tm* tmTimeData = &tmTimeDataBuf;
 #else
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
@@ -765,7 +765,7 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
     wstring formatPatternWS = formatPattern.As<wstring> ();
     tmput.put (oss, oss, ' ', &when, formatPatternWS.c_str (), formatPatternWS.c_str () + formatPatternWS.length ());
     // docs aren't clear about expectations, but glibc (gcc8) produces trailing whitespace which
-    // is not good. Unsure if thats glibc bug or my correction here makes sense -- LGP 2018-10-16
+    // is not good. Unsure if that's a glibc bug or my correction here makes sense -- LGP 2018-10-16
     return String{oss.str ()}.RTrim ();
 }
 

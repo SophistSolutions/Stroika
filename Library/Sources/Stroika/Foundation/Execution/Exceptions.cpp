@@ -185,6 +185,7 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
             case WAIT_TIMEOUT:            // errc::timed_out
             case ERROR_INTERNET_TIMEOUT:  // ""
                 AssertNotReached (); // should have been caught above in if (ec == errc::... checks) - so thats not working - maybe need to add this switch or debug
+                    // qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy???
                 break;
         }
     }

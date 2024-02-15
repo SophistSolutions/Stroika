@@ -186,7 +186,7 @@ namespace CommonTests {
 #if qDebug
                 const size_t K = 200;
 #else
-                const size_t           K = 500;
+                const size_t K = 500;
 #endif
                 size_t i;
 

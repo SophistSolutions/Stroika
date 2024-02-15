@@ -373,7 +373,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
     using Led_ClipFormat = CLIPFORMAT;
 #elif qStroika_FeatureSupported_XWindows
-    using Led_ClipFormat                 = long;
+    using Led_ClipFormat = long;
 #else
     // used in a lot of places to exchange info, even if not to a real clipboad, so keep type defined for now ... --LGP 2024-02-11
     enum Led_ClipFormat : unsigned short {
@@ -418,7 +418,7 @@ namespace Stroika::Frameworks::Led {
     Foundation::Time::DurationSeconds Led_GetDoubleClickTime (); // time-interval which defines how quick we consider two consecutive clicks a dbl-click
 
 #if qStroika_FeatureSupported_XWindows
-    extern void (*gBeepNotifyCallBackProc) ();
+    extern void   (*gBeepNotifyCallBackProc) ();
     unsigned long LedTickCount2XTime (float ledTickCount);
     void          SyncronizeLedXTickCount (unsigned long xTickCount);
 #endif

@@ -52,7 +52,7 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
     template <int SZ>
-    inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ],
+    inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t              (&serializedFieldName)[SZ],
                                                                   const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields)
         : StructFieldInfo{Characters::String::FromStringConstant (serializedFieldName), fieldMetaInfo, {}, nullFields}
     {

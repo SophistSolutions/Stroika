@@ -104,7 +104,7 @@ namespace {
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALCommand> c = (IDispatch*)fDisp;
 #else
-            CComQIPtr<IALCommand>            c    = fDisp;
+            CComQIPtr<IALCommand> c = fDisp;
 #endif
             CComBSTR name;
             ThrowIfErrorHRESULT (c->get_InternalName (&name));
@@ -123,7 +123,7 @@ namespace {
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALAcceleratorElement> c = (IDispatch*)fDisp;
 #else
-            CComQIPtr<IALAcceleratorElement> c    = fDisp;
+            CComQIPtr<IALAcceleratorElement> c = fDisp;
 #endif
             CComBSTR name;
             ThrowIfErrorHRESULT (c->get_CommandInternalName (&name));
@@ -386,7 +386,7 @@ STDMETHODIMP AL_CommandListHelper::GeneratePopupMenu (IDispatch* acceleratorTabl
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALCommand> alc = (IDispatch*)*i;
 #else
-            CComQIPtr<IALCommand>            alc  = *i;
+            CComQIPtr<IALCommand> alc = *i;
 #endif
             CComBSTR cmdName;
             ThrowIfErrorHRESULT (alc->get_Name (&cmdName));
@@ -409,7 +409,7 @@ STDMETHODIMP AL_CommandListHelper::LookupCommand (BSTR internalName, IDispatch**
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALCommand> alc = (IDispatch*)*i;
 #else
-            CComQIPtr<IALCommand>            alc  = *i;
+            CComQIPtr<IALCommand> alc = *i;
 #endif
             CComBSTR iName;
             ThrowIfErrorHRESULT (alc->get_InternalName (&iName));
@@ -422,7 +422,7 @@ STDMETHODIMP AL_CommandListHelper::LookupCommand (BSTR internalName, IDispatch**
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALCommandList> alcl = (IDispatch*)*i;
 #else
-            CComQIPtr<IALCommandList>        alcl = *i;
+            CComQIPtr<IALCommandList> alcl = *i;
 #endif
             if (alcl.p != NULL) {
                 // If its a popup menu - recurse
@@ -775,7 +775,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::Lookup (BSTR cmdInternalName, IDispat
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALAcceleratorElement> ae = (IDispatch*)*i;
 #else
-            CComQIPtr<IALAcceleratorElement> ae   = *i;
+            CComQIPtr<IALAcceleratorElement> ae = *i;
 #endif
             CComBSTR itsInternalCmdName;
             ThrowIfErrorHRESULT (ae->get_CommandInternalName (&itsInternalCmdName));
@@ -854,7 +854,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                     CComQIPtr<IALCommand> alc = (IDispatch*)e;
 #else
-                    CComQIPtr<IALCommand>            alc         = e;
+                    CComQIPtr<IALCommand> alc = e;
 #endif
                     CComBSTR bicCmdName;
                     ThrowIfErrorHRESULT (alc->get_InternalName (&bicCmdName));

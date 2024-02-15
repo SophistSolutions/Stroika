@@ -2614,7 +2614,7 @@ void ActiveLedItControl::OLE_SetToolbarList (VARIANT& newValue)
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbarList> tbl = (IDispatch*)fToolbarList;
 #else
-            CComQIPtr<IALToolbarList>      tbl        = fToolbarList;
+            CComQIPtr<IALToolbarList> tbl = fToolbarList;
 #endif
             if (tbl.p != NULL) {
                 tbl->NotifyOfOwningActiveLedIt (NULL, NULL);
@@ -2634,7 +2634,7 @@ void ActiveLedItControl::OLE_SetToolbarList (VARIANT& newValue)
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
             CComQIPtr<IALToolbarList> tbl = (IDispatch*)fToolbarList;
 #else
-            CComQIPtr<IALToolbarList>      tbl        = fToolbarList;
+            CComQIPtr<IALToolbarList> tbl = fToolbarList;
 #endif
             if (tbl.p != NULL) {
                 tbl->NotifyOfOwningActiveLedIt (CComQIPtr<IDispatch> (GetControllingUnknown ()), m_hWnd);
@@ -3577,7 +3577,7 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (const ToolBarIconSpec& s)
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
     CComQIPtr<IALIconButtonToolbarElement> iconButton = (IDispatch*)item;
 #else
-    CComQIPtr<IALIconButtonToolbarElement> iconButton    = item;
+    CComQIPtr<IALIconButtonToolbarElement> iconButton = item;
 #endif
 
     ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant{s.fCmdName}));
@@ -3591,7 +3591,7 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID, CComPtr<IDi
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
     CComQIPtr<IALIconButtonToolbarElement> iconButton = (IDispatch*)item;
 #else
-    CComQIPtr<IALIconButtonToolbarElement> iconButton    = item;
+    CComQIPtr<IALIconButtonToolbarElement> iconButton = item;
 #endif
 
     ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant{cmdList}));

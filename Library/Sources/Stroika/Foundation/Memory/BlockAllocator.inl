@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Memory {
             return sLock_;
         }
 
-        void                        DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
+        void DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
 #endif
     }
 

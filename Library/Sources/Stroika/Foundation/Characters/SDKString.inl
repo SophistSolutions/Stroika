@@ -170,7 +170,7 @@ namespace Stroika::Foundation::Characters {
 #if qTargetPlatformSDKUseswchar_t
         return SDK2Narrow (span{s}, allowMissing); // delegate work
 #else
-        return s;                         // short-circuit so optimizer opportunity
+        return s; // short-circuit so optimizer opportunity
 #endif
     }
 
@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Characters {
 #if qTargetPlatformSDKUseswchar_t
         return s; // short-circuit so optimizer opportunity
 #else
-        return SDK2Wide (span{s});        // delegate work
+        return SDK2Wide (span{s}); // delegate work
 #endif
     }
 #if qTargetPlatformSDKUseswchar_t

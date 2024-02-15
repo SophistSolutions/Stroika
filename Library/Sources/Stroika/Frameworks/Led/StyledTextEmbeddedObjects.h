@@ -76,8 +76,8 @@ namespace Stroika::Frameworks::Led {
             };
 
         public:
-            size_t                  fFormatTagCount;
-            Led_PrivateEmbeddingTag fEmbeddingTag;
+            size_t                           fFormatTagCount;
+            Led_PrivateEmbeddingTag          fEmbeddingTag;
             SimpleEmbeddedObjectStyleMarker* (*fReadFromMemory) (const char* embeddingTag, const void* data, size_t len);
             SimpleEmbeddedObjectStyleMarker* (*fReadFromFlavorPackage) (ReaderFlavorPackage& flavorPackage);
 
@@ -90,7 +90,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void  AddAssoc (Assoc assoc);
-        nonvirtual void  AddAssoc (const char* embeddingTag,
+        nonvirtual void  AddAssoc (const char*                      embeddingTag,
                                    SimpleEmbeddedObjectStyleMarker* (*memReader) (const char* embeddingTag, const void* data, size_t len));
         nonvirtual void  AddAssoc (Led_ClipFormat clipFormat, const char* embeddingTag,
                                    SimpleEmbeddedObjectStyleMarker* (*memReader) (const char* embeddingTag, const void* data, size_t len),

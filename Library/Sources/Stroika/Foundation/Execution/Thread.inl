@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Execution {
         stop_token  fStopToken_; // initialized in Ptr::Start() before ThreadMain_ called
         jthread     fThread_;
 #else
-        thread               fThread_;
+        thread fThread_;
 #endif
         atomic<bool>  fStartEverInitiated_{false};
         atomic<bool>  fThreadValid_{false}; // protect a few accesses to fThread so we dont check if until assignment definitely completed

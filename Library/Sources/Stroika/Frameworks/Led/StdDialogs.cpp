@@ -1416,7 +1416,7 @@ void Led_StdDialogHelper_FindDialog::OnDontFindButton ()
 #elif qPlatform_Windows
     fFindText = Led_SDKString2tString (GetItemText (kLedStdDlg_FindBox_FindText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    fFindText                     = Led_SDKString2tString (GetItemText (fLookupTextWidget));
+    fFindText = Led_SDKString2tString (GetItemText (fLookupTextWidget));
 #endif
 
 #if qPlatform_Windows
@@ -1641,8 +1641,8 @@ void Led_StdDialogHelper_ReplaceDialog::SaveItems ()
     fFindText    = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_FindText));
     fReplaceText = Led_SDKString2tString (GetItemText (kLedStdDlg_ReplaceBox_ReplaceText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    fFindText                     = Led_SDKString2tString (GetItemText (fLookupTextWidget));
-    fReplaceText                  = Led_SDKString2tString (GetItemText (fReplaceTextWidget));
+    fFindText    = Led_SDKString2tString (GetItemText (fLookupTextWidget));
+    fReplaceText = Led_SDKString2tString (GetItemText (fReplaceTextWidget));
 #endif
 
 #if qPlatform_Windows
@@ -2723,9 +2723,9 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeButton ()
 #if qSupportLedDialogWidgets
     Led_tString changeText = fChangeTextWidget.GetText ();
 #elif qPlatform_Windows
-    Led_tString changeText        = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
+    Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Led_tString changeText        = Led_SDKString2tString (GetItemText (fChangeTextWidget));
+    Led_tString changeText = Led_SDKString2tString (GetItemText (fChangeTextWidget));
 #endif
     fCallback.DoChange (changeText);
     DoFindNextCall ();
@@ -2736,9 +2736,9 @@ void Led_StdDialogHelper_SpellCheckDialog::OnChangeAllButton ()
 #if qSupportLedDialogWidgets
     Led_tString changeText = fChangeTextWidget.GetText ();
 #elif qPlatform_Windows
-    Led_tString changeText        = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
+    Led_tString changeText = Led_SDKString2tString (GetItemText (kLedStdDlg_SpellCheckBox_ChangeText));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-    Led_tString changeText        = Led_SDKString2tString (GetItemText (fChangeTextWidget));
+    Led_tString changeText = Led_SDKString2tString (GetItemText (fChangeTextWidget));
 #endif
     fCallback.DoChangeAll (changeText);
     DoFindNextCall ();

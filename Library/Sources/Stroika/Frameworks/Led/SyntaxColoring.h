@@ -88,7 +88,7 @@ namespace Stroika::Frameworks::Led {
             const Led_tChar** fKeywords;
             size_t            fNKeywords;
             size_t            fMaxKeywordLength;
-            int (*fCmpFunction) (const Led_tChar*, const Led_tChar*, size_t);
+            int               (*fCmpFunction) (const Led_tChar*, const Led_tChar*, size_t);
         };
 
     public:

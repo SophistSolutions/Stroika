@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Streams::SharedMemoryStream {
                             return nullopt;
                         }
                     } break;
-                    [[likely]] case eBlockIfNoDataAvailable : {
+                    [[likely]] case eBlockIfNoDataAvailable: {
                         fMoreDataWaiter_.Wait ();
                     } break;
                 }

@@ -907,7 +907,7 @@ unsigned int Configuration::GetNumberOfLogicalCPUCores (const chrono::duration<d
         return sysConfigLogCores;
     };
 #else
-    auto compute     = computeViaGetSystemConfiguration_CPU; // maybe choose based on OS, etc???, like if I know which library does a good job with std::thread::hardware_concurrency
+    auto compute = computeViaGetSystemConfiguration_CPU; // maybe choose based on OS, etc???, like if I know which library does a good job with std::thread::hardware_concurrency
 #endif
 
     static atomic<Time::TimePointSeconds> sCachedAt_    = Time::TimePointSeconds{};

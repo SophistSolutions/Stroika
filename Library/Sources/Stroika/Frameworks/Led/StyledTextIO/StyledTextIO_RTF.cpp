@@ -4636,7 +4636,7 @@ void StyledTextIOWriter_RTF::WriteHexCharDataBlock (size_t nBytes, const void* r
 void StyledTextIOWriter_RTF::WriteRTFHexByte (unsigned char theByte)
 {
     unsigned char hiNibble  = (theByte) >> 4;
-    unsigned char lowNibble = (theByte)&0xf;
+    unsigned char lowNibble = (theByte) & 0xf;
     Require (hiNibble <= 0xf);
     Require (lowNibble <= 0xf);
     write (ConvertWriteSingleHexDigit_ (hiNibble));

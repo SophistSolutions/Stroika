@@ -262,10 +262,10 @@ namespace {
 #define ZLIB_FILEFUNC_MODE_CREATE (8)
 
     typedef voidpf (*open_file_func) (voidpf opaque, const char* filename, int mode);
-    typedef uLong (*read_file_func) (voidpf opaque, voidpf stream, void* buf, uLong size);
-    typedef uLong (*write_file_func) (voidpf opaque, voidpf stream, const void* buf, uLong size);
-    typedef int (*close_file_func) (voidpf opaque, voidpf stream);
-    typedef int (*testerror_file_func) (voidpf opaque, voidpf stream);
+    typedef uLong  (*read_file_func) (voidpf opaque, voidpf stream, void* buf, uLong size);
+    typedef uLong  (*write_file_func) (voidpf opaque, voidpf stream, const void* buf, uLong size);
+    typedef int    (*close_file_func) (voidpf opaque, voidpf stream);
+    typedef int    (*testerror_file_func) (voidpf opaque, voidpf stream);
 
     typedef long (*tell_file_func) (voidpf opaque, voidpf stream);
     typedef long (*seek_file_func) (voidpf opaque, voidpf stream, uLong offset, int origin);
@@ -283,8 +283,8 @@ namespace {
     };
 
     typedef ZPOS64_T (*tell64_file_func) (voidpf opaque, voidpf stream);
-    typedef long (*seek64_file_func) (voidpf opaque, voidpf stream, ZPOS64_T offset, int origin);
-    typedef voidpf (*open64_file_func) (voidpf opaque, const void* filename, int mode);
+    typedef long     (*seek64_file_func) (voidpf opaque, voidpf stream, ZPOS64_T offset, int origin);
+    typedef voidpf   (*open64_file_func) (voidpf opaque, const void* filename, int mode);
 
     struct zlib_filefunc64_def {
         open64_file_func    zopen64_file;
@@ -1371,7 +1371,7 @@ namespace {
         ZPOS64_T uDate;
         uDate        = (ZPOS64_T)(ulDosDate >> 16);
         ptm->tm_mday = (uInt)(uDate & 0x1f);
-        ptm->tm_mon  = (uInt)((((uDate)&0x1E0) / 0x20) - 1);
+        ptm->tm_mon  = (uInt)((((uDate) & 0x1E0) / 0x20) - 1);
         ptm->tm_year = (uInt)(((uDate & 0x0FE00) / 0x0200) + 1980);
 
         ptm->tm_hour = (uInt)((ulDosDate & 0xF800) / 0x800);
