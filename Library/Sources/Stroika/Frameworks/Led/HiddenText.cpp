@@ -20,9 +20,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-#if qStroika_Frameworks_Led_SupportGDI
-
-#endif
 
 /*
  ********************************************************************************
@@ -32,8 +29,8 @@ using namespace Stroika::Frameworks::Led;
 HidableTextMarkerOwner::HidableTextMarkerOwner (TextStore& textStore)
     : fTextStore{textStore}
 {
-    SetInternalizer (shared_ptr<FlavorPackageInternalizer> ()); // sets default
-    SetExternalizer (shared_ptr<FlavorPackageExternalizer> ()); // DITTO
+    SetInternalizer (nullptr); // sets default
+    SetExternalizer (nullptr); // DITTO
     fTextStore.AddMarkerOwner (this);
 }
 
@@ -162,7 +159,7 @@ void HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 
     // Update other markers and owners - since this change can affect the display
     {
-        TextStore::SimpleUpdater updater (fTextStore, from, to);
+        TextStore::SimpleUpdater updater {fTextStore, from, to};
 
         // iterate through markers, and eliminate all but one of them. The last one - if it exists - we'll enlarge.
         for (auto i = hidableTextMarkersInRange.begin (); i != hidableTextMarkersInRange.end (); ++i) {
@@ -234,9 +231,9 @@ void HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
 
     // Update other markers and owners - since this change can affect the display
     {
-        TextStore::SimpleUpdater updater (fTextStore, from, to);
+        TextStore::SimpleUpdater updater {fTextStore, from, to};
         {
-            sort (hidableTextMarkersInRange.begin (), hidableTextMarkersInRange.end (), LessThan<HidableTextMarker> ());
+            sort (hidableTextMarkersInRange.begin (), hidableTextMarkersInRange.end (), LessThan<HidableTextMarker> {});
 
             // iterate through markers, and eliminate all of them, except maybe on the endpoints - if they have stuff outside
             // this range
@@ -268,7 +265,7 @@ void HidableTextMarkerOwner::MakeRegionUnHidable (size_t from, size_t to)
      *  Note 100% sure this is a good enough test - but I hope so - LGP 2000/04/24
      */
     {
-        TextStore::SimpleUpdater updater (fTextStore, to, pastSelMarker.GetEnd ());
+        TextStore::SimpleUpdater updater {fTextStore, to, pastSelMarker.GetEnd ()};
     }
 
     Invariant ();
@@ -368,11 +365,10 @@ void HidableTextMarkerOwner::CollapseMarker (HidableTextMarker* m)
 {
     RequireNotNull (m);
     Require (m->fShown);
-
     size_t start = 0;
     size_t end   = 0;
     m->GetRange (&start, &end);
-    TextStore::SimpleUpdater updater (fTextStore, start, end, false);
+    TextStore::SimpleUpdater updater {fTextStore, start, end, false};
     m->fShown = false;
 }
 
@@ -384,7 +380,6 @@ void HidableTextMarkerOwner::ReifyMarker (HidableTextMarker* m)
 {
     RequireNotNull (m);
     Require (not m->fShown);
-
     {
         size_t start = 0;
         size_t end   = 0;
@@ -421,7 +416,7 @@ HidableTextMarkerOwner::HidableTextMarker* HidableTextMarkerOwner::MakeHidableTe
                 return new FontSpecHidableTextMarker (fontSpec);
 
      */
-    return new LightUnderlineHidableTextMarker ();
+    return new LightUnderlineHidableTextMarker {};
 }
 
 TextStore* HidableTextMarkerOwner::PeekAtTextStore () const
@@ -516,7 +511,6 @@ Color HidableTextMarkerOwner::LightUnderlineHidableTextMarker::GetUnderlineBaseC
  */
 UniformHidableTextMarkerOwner::UniformHidableTextMarkerOwner (TextStore& textStore)
     : inherited{textStore}
-    , fHidden{false}
 {
 }
 

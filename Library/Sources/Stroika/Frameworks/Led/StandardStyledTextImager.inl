@@ -45,8 +45,7 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
     inline StandardStyleMarker::StandardStyleMarker (const FontSpecification& styleInfo)
-        : StyleMarker ()
-        , fFontSpecification (styleInfo)
+        : fFontSpecification {styleInfo}
     {
     }
     inline FontSpecification StandardStyleMarker::GetInfo () const
@@ -91,7 +90,6 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #if qStroika_Frameworks_Led_SupportGDI
-
     /*
      ********************************************************************************
      *************************** StandardStyledTextImager ***************************
@@ -124,7 +122,6 @@ namespace Stroika::Frameworks::Led {
     {
         fStyleDatabase->SetStyleInfo (charAfterPos, nTCharsFollowing, nStyleInfos, styleInfos);
     }
-
 #endif
 
 }

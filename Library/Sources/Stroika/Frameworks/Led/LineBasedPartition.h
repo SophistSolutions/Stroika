@@ -17,14 +17,12 @@
 
 namespace Stroika::Frameworks::Led {
 
-    /*
-    @CLASS:         LineBasedPartition
-    @BASES:         virtual @'Partition'
-    @DESCRIPTION:   <p>Partition which implements the partitioning based on NL characters.</p>
-                    <p>As of Led 3.0, it is the only concrete partition supported, and its the overwhelmingly
-                most likely one you would want to use. But - in some applications (notably LogoVista Translator Assistant) -
-                it can be quite handy being able to override how this partitioning takes place.</p>
-    */
+    /**
+     *              <p>Partition which implements the partitioning based on NL characters.</p>
+     *              <p>As of Led 3.0, it is the only concrete partition supported, and its the overwhelmingly
+     *          most likely one you would want to use. But - in some applications (notably LogoVista Translator Assistant) -
+     *          it can be quite handy being able to override how this partitioning takes place.</p>
+     */
     class LineBasedPartition : public Partition {
     private:
         using inherited = Partition;

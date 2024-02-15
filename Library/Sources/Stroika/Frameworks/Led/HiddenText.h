@@ -247,7 +247,7 @@ namespace Stroika::Frameworks::Led {
         virtual void MakeRegionHidable (size_t from, size_t to) override;
 
     private:
-        bool fHidden;
+        bool fHidden{false};
     };
 
     /**
