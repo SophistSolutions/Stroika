@@ -393,6 +393,8 @@ namespace Stroika::Frameworks::Led {
 #endif
     const Led_ClipFormat kBadClipFormat = (Led_ClipFormat)(0);
 
+
+#if qStroika_Frameworks_Led_SupportClipboard
     class Led_ClipboardObjectAcquire {
     public:
         Led_ClipboardObjectAcquire (Led_ClipFormat clipType);
@@ -411,6 +413,7 @@ namespace Stroika::Frameworks::Led {
 #endif
         void* fLockedData;
     };
+    #endif
 
     void Led_BeepNotify ();
     Foundation::Time::DurationSeconds Led_GetDoubleClickTime (); // time-interval which defines how quick we consider two consecutive clicks a dbl-click

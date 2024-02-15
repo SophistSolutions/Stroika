@@ -197,6 +197,7 @@ size_t Led::Led_SkrunchOutSpecialChars (Led_tChar* text, size_t textLen, Led_tCh
     return textLen - charsSkipped;
 }
 
+#if qStroika_Frameworks_Led_SupportClipboard
 /*
  ********************************************************************************
  ************************** Led_ClipboardObjectAcquire **************************
@@ -223,6 +224,7 @@ Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
     }
 #endif
 }
+#endif
 
 #if qPlatform_Windows
 /*

@@ -30,13 +30,11 @@ namespace Stroika::Frameworks::Led {
     class ReaderFlavorPackage;
     class WriterFlavorPackage;
 
-    /*
-    @CLASS:         FlavorPackageExternalizer
-    @BASES:         virtual @'MarkerOwner'
-    @DESCRIPTION:   <p>Helper class for implementing externalizing. Can be subclassed to add new formats.
-        Call it with a @'WriterFlavorPackage', and a range to copy from, and the externalizing will be done.</p>
-            <p>See also @'FlavorPackageInternalizer'.</p>
-    */
+    /**
+     *      <p>Helper class for implementing externalizing. Can be subclassed to add new formats.
+     *  Call it with a @'WriterFlavorPackage', and a range to copy from, and the externalizing will be done.</p>
+     *      <p>See also @'FlavorPackageInternalizer'.</p>
+     */
     class FlavorPackageExternalizer : public virtual MarkerOwner {
     private:
         using inherited = MarkerOwner;
@@ -56,13 +54,11 @@ namespace Stroika::Frameworks::Led {
         TextStore& fTextStore;
     };
 
-    /*
-    @CLASS:         FlavorPackageInternalizer
-    @BASES:         virtual @'MarkerOwner'
-    @DESCRIPTION:   <p>Helper class for implementing internalizing. Can be subclassed to add new formats.
-        Call it with a @'ReaderFlavorPackage', and a range to insert it into, and the internalizing will be done.</p>
-            <p>See also @'FlavorPackageExternalizer'.</p>
-    */
+    /**
+     *      <p>Helper class for implementing internalizing. Can be subclassed to add new formats.
+     *  Call it with a @'ReaderFlavorPackage', and a range to insert it into, and the internalizing will be done.</p>
+     *      <p>See also @'FlavorPackageExternalizer'.</p>
+     */
     class FlavorPackageInternalizer : public virtual MarkerOwner {
     private:
         using inherited = MarkerOwner;
@@ -115,14 +111,14 @@ namespace Stroika::Frameworks::Led {
         virtual size_t ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const = 0;
     };
 
-    /*
-    @CLASS:         ReaderClipboardFlavorPackage
-    @BASES:         @'ReaderFlavorPackage'
-    @DESCRIPTION:   <p>NB: On windows - it is REQUIRED the ClipboardFlavorPackage objects only be
-        created in the context of Open/Close clipboard operations (for example done in
-        OnPasteCommand_Before/OnPasteCommand_After - so typically no problem).</p>
-                    <p>NB: For X-Windows, the clip data is just stored in the global variable ReaderClipboardFlavorPackage::sPrivateClipData.</p>
-    */
+
+#if qStroika_Frameworks_Led_SupportClipboard
+    /**
+     *     <p>NB: On windows - it is REQUIRED the ClipboardFlavorPackage objects only be
+     *  created in the context of Open/Close clipboard operations (for example done in
+     *  OnPasteCommand_Before/OnPasteCommand_After - so typically no problem).</p>
+     *      <p>NB: For X-Windows, the clip data is just stored in the global variable ReaderClipboardFlavorPackage::sPrivateClipData.</p>
+     */
     class ReaderClipboardFlavorPackage : public ReaderFlavorPackage {
     public:
         virtual bool   GetFlavorAvailable (Led_ClipFormat clipFormat) const override;
@@ -133,34 +129,33 @@ namespace Stroika::Frameworks::Led {
         static map<Led_ClipFormat, vector<char>> sPrivateClipData;
 #endif
     };
+    #endif
 
-    /*
-    @CLASS:         WriterFlavorPackage
-    @DESCRIPTION:   <p>Abstraction wrapping both Drag&Drop packages, and clipboard access. Used by @'FlavorPackageExternalizer'.</p>
-    */
+    /**
+     *    <p>Abstraction wrapping both Drag&Drop packages, and clipboard access. Used by @'FlavorPackageExternalizer'.</p>
+     */
     class WriterFlavorPackage {
     public:
         virtual void AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf) = 0;
     };
 
-    /*
-    @CLASS:         WriterClipboardFlavorPackage
-    @BASES:         @'WriterFlavorPackage'
-    @DESCRIPTION:   <p>NB: On windows - it is REQUIRED the ClipboardFlavorPackage objects only be
-        created in the context of Open/Close clipboard operations (for example done in
-        OnCopyCommand_Before/OnCopyCommand_After - so typically no problem).</p>
-                    <p>See also @'ReaderClipboardFlavorPackage'.</p>
-    */
+
+#if qStroika_Frameworks_Led_SupportClipboard
+    /**
+     *      <p>NB: On windows - it is REQUIRED the ClipboardFlavorPackage objects only be
+     *  created in the context of Open/Close clipboard operations (for example done in
+     *  OnCopyCommand_Before/OnCopyCommand_After - so typically no problem).</p>
+     *      <p>See also @'ReaderClipboardFlavorPackage'.</p>
+     */
     class WriterClipboardFlavorPackage : public WriterFlavorPackage {
     public:
         virtual void AddFlavorData (Led_ClipFormat clipFormat, size_t bufSize, const void* buf) override;
     };
+#endif
 
-    /*
-    @CLASS:         ReadWriteMemBufferPackage
-    @BASES:         @'ReaderFlavorPackage', @'WriterFlavorPackage'
-    @DESCRIPTION:   <p>Dual purpose, store-and-reuse package. Useful for undo.</p>
-    */
+    /**
+     *   <p>Dual purpose, store-and-reuse package. Useful for undo.</p>
+     */
     class ReadWriteMemBufferPackage : public ReaderFlavorPackage, public WriterFlavorPackage {
     public:
         ReadWriteMemBufferPackage ();

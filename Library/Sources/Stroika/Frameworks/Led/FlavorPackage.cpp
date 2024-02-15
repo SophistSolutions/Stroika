@@ -291,6 +291,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
     return true;
 }
 
+#if qStroika_Frameworks_Led_SupportClipboard
 /*
  ********************************************************************************
  *************************** ReaderClipboardFlavorPackage ***********************
@@ -357,7 +358,9 @@ size_t ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, 
     }
 #endif
 }
+#endif
 
+#if qStroika_Frameworks_Led_SupportClipboard
 /*
  ********************************************************************************
  **************************** WriterClipboardFlavorPackage **********************
@@ -388,6 +391,7 @@ void WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, siz
         clipFormat, vector<char> (reinterpret_cast<const char*> (buf), reinterpret_cast<const char*> (buf) + bufSize)));
 #endif
 }
+#endif
 
 /*
  ********************************************************************************

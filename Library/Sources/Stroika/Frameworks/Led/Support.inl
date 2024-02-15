@@ -14,6 +14,11 @@
 
 namespace Stroika::Frameworks::Led {
 
+    /*
+     ********************************************************************************
+     ************************************* Led_tStrlen ******************************
+     ********************************************************************************
+     */
     inline size_t Led_tStrlen (const Led_tChar* s)
     {
         RequireNotNull (s);
@@ -69,6 +74,11 @@ namespace Stroika::Frameworks::Led {
         return Configuration::EndianConverter (src, Configuration::Endian::eBig, Configuration::GetEndianness ());
     }
 
+    /*
+     ********************************************************************************
+     ************************** Led_ByteSwapFromWindows *****************************
+     ********************************************************************************
+     */
     inline unsigned short Led_ByteSwapFromWindows (unsigned short src)
     {
         return Configuration::EndianConverter (src, Configuration::Endian::eLittle, Configuration::GetEndianness ());
@@ -214,7 +224,7 @@ namespace Stroika::Frameworks::Led {
         return static_cast<char> (digitValue + '0');
     }
 
-#if qStroika_Frameworks_Led_SupportGDI
+#if qStroika_Frameworks_Led_SupportClipboard
     /*
      ********************************************************************************
      ************************** Led_ClipboardObjectAcquire **************************
@@ -222,18 +232,7 @@ namespace Stroika::Frameworks::Led {
      */
     inline bool Led_ClipboardObjectAcquire::FormatAvailable (Led_ClipFormat clipType)
     {
-#if qPlatform_MacOS
-#if TARGET_CARBON
-        ScrapRef scrap = nullptr;
-        Led_ThrowIfOSStatus (::GetCurrentScrap (&scrap));
-        ScrapFlavorFlags flags = 0;
-        return (::GetScrapFlavorFlags (scrap, clipType, &flags) == noErr);
-#else
-        long scrapOffset = 0;
-        long result      = ::GetScrap (nullptr, clipType, &scrapOffset);
-        return (result > 0);
-#endif
-#elif qPlatform_Windows
+#if qPlatform_Windows
         return (!!::IsClipboardFormatAvailable (clipType));
 #elif qStroika_FeatureSupported_XWindows
         // Wild guess - no good answer yet - LGP 2003-05-06
@@ -255,17 +254,10 @@ namespace Stroika::Frameworks::Led {
             ::GlobalUnlock (fLockedData);
         }
 #endif
-
-// For mac me must delete - could unlock too - but no need
-#if qPlatform_MacOS
-        if (fOSClipHandle != nullptr) {
-            ::DisposeHandle (fOSClipHandle);
-        }
-#endif
     }
     inline bool Led_ClipboardObjectAcquire::GoodClip () const
     {
-#if qPlatform_MacOS || qPlatform_Windows
+#if  qPlatform_Windows
         return (fOSClipHandle != nullptr and fLockedData != nullptr);
 #else
         return false; // X-TMP-HACK-LGP991213
@@ -279,9 +271,7 @@ namespace Stroika::Frameworks::Led {
     inline size_t Led_ClipboardObjectAcquire::GetDataLength () const
     {
         Assert (GoodClip ());
-#if qPlatform_MacOS
-        return (::GetHandleSize (fOSClipHandle));
-#elif qPlatform_Windows
+#if qPlatform_Windows
         return (::GlobalSize (fOSClipHandle));
 #endif
     }
