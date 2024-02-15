@@ -500,8 +500,6 @@ void WordProcessorTable::GetCellWordProcessorDatabases (size_t row, size_t colum
     }
 }
 
-
-
 /*
  ********************************************************************************
  ************************** WordProcessorTable::Cell ****************************
