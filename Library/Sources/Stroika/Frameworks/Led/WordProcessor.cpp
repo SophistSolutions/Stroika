@@ -448,7 +448,6 @@ void WordProcessorTable::FinalizeAddition (AbstractParagraphDatabaseRep* o, size
 #endif
 }
 
-
 Color WordProcessorTable::GetTableBorderColor () const
 {
     return fBorderColor;
@@ -483,7 +482,7 @@ void WordProcessorTable::SetColumnWidth (size_t row, size_t column, TWIPS colWid
     GetCell (row, column).SetCellXWidth (colWidth);
 #if qStroika_Frameworks_Led_SupportGDI
     InvalidateLayout ();
-    #endif
+#endif
 }
 
 Color WordProcessorTable::GetCellColor (size_t row, size_t column) const
@@ -507,7 +506,7 @@ namespace {
     {
         const int kRTF_SPEC_DefaultInches = 6; // HACK - see comments in SinkStreamDestination::SetRightMargin ()
         int       rhsTWIPS                = kRTF_SPEC_DefaultInches * 1440;
-        return TWIPS {rhsTWIPS};
+        return TWIPS{rhsTWIPS};
     }
 }
 
@@ -6935,7 +6934,6 @@ void WordProcessorTable::WhileSimpleMouseTracking (Led_Point newMousePos)
 #endif
 }
 
-
 /*
 @METHOD:        WordProcessorTable::GetRealCell
 @DESCRIPTION:   <p>Take the given row/column and modify them in place to assure they refer to the appropriate REAL cell.
@@ -7501,7 +7499,7 @@ void WordProcessorTable::InsertRow (size_t at, size_t maxRowCopyCount)
 
     InvalidateIntraCellContextInfo ();
     InvalidateLayout ();
-    #endif
+#endif
 }
 
 /*
@@ -7515,14 +7513,14 @@ void WordProcessorTable::DeleteRow (size_t at)
 
     TextStore&               ts = GetOwner ()->GetTextStore ();
     TextStore::SimpleUpdater updater (ts, GetStart (), GetEnd ());
-    #endif
+#endif
 
     fRows.erase (fRows.begin () + at);
 #if qStroika_Frameworks_Led_SupportGDI
     InvalidateIntraCellContextInfo ();
     InvalidateLayout ();
     ReValidateSelection ();
-    #endif
+#endif
 }
 
 /*
@@ -7536,7 +7534,7 @@ void WordProcessorTable::InsertColumn (size_t at)
 #if qStroika_Frameworks_Led_SupportGDI
     TextStore&               ts = GetOwner ()->GetTextStore ();
     TextStore::SimpleUpdater updater (ts, GetStart (), GetEnd ());
-    TWIPS newColWidth = Led_CvtScreenPixelsToTWIPSH (100);
+    TWIPS                    newColWidth = Led_CvtScreenPixelsToTWIPSH (100);
 #else
     TWIPS newColWidth = TWIPS (100);
 #endif
@@ -7569,7 +7567,7 @@ void WordProcessorTable::InsertColumn (size_t at)
 
     InvalidateIntraCellContextInfo ();
     InvalidateLayout ();
-    #endif
+#endif
 }
 
 /*
@@ -7584,7 +7582,7 @@ void WordProcessorTable::DeleteColumn (size_t at)
 #if qStroika_Frameworks_Led_SupportGDI
     TextStore&               ts = GetOwner ()->GetTextStore ();
     TextStore::SimpleUpdater updater (ts, GetStart (), GetEnd ());
-    #endif
+#endif
 
     size_t rowCount = fRows.size ();
     for (size_t ri = 0; ri < rowCount; ++ri) {
@@ -7597,7 +7595,7 @@ void WordProcessorTable::DeleteColumn (size_t at)
     InvalidateIntraCellContextInfo ();
     InvalidateLayout ();
     ReValidateSelection ();
-    #endif
+#endif
 }
 #if qStroika_Frameworks_Led_SupportGDI
 

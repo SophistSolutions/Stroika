@@ -909,7 +909,7 @@ namespace Stroika::Frameworks::Led {
     TWIPS          Led_CvtScreenPixelsToTWIPSH (CoordinateType from);
     CoordinateType Led_CvtScreenPixelsFromTWIPSV (TWIPS from);
     CoordinateType Led_CvtScreenPixelsFromTWIPSH (TWIPS from);
-    #endif
+#endif
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*

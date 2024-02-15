@@ -190,11 +190,7 @@ namespace Stroika::Frameworks::Led {
         static CommandNames        MakeDefaultCommandNames ();
 
     private:
-#if qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
-        static CommandNames& sCommandNames ();
-#else
         static CommandNames sCommandNames;
-#endif
 
     protected:
         virtual void    HookLosingTextStore () override;

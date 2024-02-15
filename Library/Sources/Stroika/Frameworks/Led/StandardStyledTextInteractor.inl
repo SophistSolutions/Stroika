@@ -92,11 +92,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline const StandardStyledTextInteractor::CommandNames& StandardStyledTextInteractor::GetCommandNames ()
     {
-#if qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
-        return sCommandNames ();
-#else
         return sCommandNames;
-#endif
     }
     /*
     @METHOD:        StandardStyledTextInteractor::SetCommandNames
@@ -104,11 +100,7 @@ namespace Stroika::Frameworks::Led {
     */
     inline void StandardStyledTextInteractor::SetCommandNames (const StandardStyledTextInteractor::CommandNames& cmdNames)
     {
-#if qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
-        sCommandNames () = cmdNames;
-#else
         sCommandNames = cmdNames;
-#endif
     }
 #endif
 

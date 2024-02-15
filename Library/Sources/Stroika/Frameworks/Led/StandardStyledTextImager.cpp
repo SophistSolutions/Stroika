@@ -25,7 +25,6 @@ void AbstractStyleDatabaseRep::Invariant_ () const
  *************** StandardStyledTextImager::StandardStyleMarker ******************
  ********************************************************************************
  */
-
 #if qStroika_Frameworks_Led_SupportGDI
 void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const StyleRunElement& /*runElement*/, Tablet* tablet, size_t from,
                                        size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
@@ -133,12 +132,6 @@ void StyleDatabaseRep::Invariant_ () const
  ****************************** StandardStyledTextImager ************************
  ********************************************************************************
  */
-StandardStyledTextImager::StandardStyledTextImager ()
-    : fStyleDatabase (nullptr)
-    , fICreatedDatabase (false)
-{
-}
-
 void StandardStyledTextImager::HookLosingTextStore ()
 {
     inherited::HookLosingTextStore ();
@@ -344,7 +337,7 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
         }
     }
 
-    return (fontSpec);
+    return fontSpec;
 }
 
 #if qPlatform_MacOS

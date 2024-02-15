@@ -337,15 +337,7 @@ Led_ClipFormat kHTMLClipFormat       = 0;
  *************************** StandardStyledTextInteractor ***********************
  ********************************************************************************
  */
-#if qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
-StandardStyledTextInteractor::CommandNames& StandardStyledTextInteractor::sCommandNames ()
-{
-    static CommandNames commandNames = MakeDefaultCommandNames ();
-    return commandNames;
-}
-#else
 StandardStyledTextInteractor::CommandNames StandardStyledTextInteractor::sCommandNames = StandardStyledTextInteractor::MakeDefaultCommandNames ();
-#endif
 
 StandardStyledTextInteractor::StandardStyledTextInteractor ()
     : fEmptySelectionStyleSuppressMode (false)

@@ -58,8 +58,6 @@ namespace Stroika::Frameworks::Led {
         fFontSpecification = fsp;
     }
 
-
-    
     /*
      ********************************************************************************
      ** SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS> **
@@ -90,7 +88,7 @@ namespace Stroika::Frameworks::Led {
     {
         return fFSP;
     }
-    #endif
+#endif
 
 #if qStroika_Frameworks_Led_SupportGDI
 

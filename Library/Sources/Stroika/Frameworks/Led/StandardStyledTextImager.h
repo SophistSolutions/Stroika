@@ -176,7 +176,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = StyledTextImager;
 
     protected:
-        StandardStyledTextImager ();
+        StandardStyledTextImager ()          = default;
         virtual ~StandardStyledTextImager () = default;
 
     protected:
@@ -228,8 +228,8 @@ namespace Stroika::Frameworks::Led {
         virtual void HookStyleDatabaseChanged ();
 
     private:
-        shared_ptr<AbstractStyleDatabaseRep> fStyleDatabase;
-        bool                                 fICreatedDatabase;
+        shared_ptr<AbstractStyleDatabaseRep> fStyleDatabase{nullptr};
+        bool                                 fICreatedDatabase{false};
 
 // Debug support
 #if qDebug
