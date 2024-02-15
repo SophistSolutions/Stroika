@@ -904,10 +904,12 @@ namespace Stroika::Frameworks::Led {
     XRectangle AsXRect (const Led_Rect& r);
 #endif
 
+#if qStroika_Frameworks_Led_SupportGDI
     TWIPS          Led_CvtScreenPixelsToTWIPSV (CoordinateType from);
     TWIPS          Led_CvtScreenPixelsToTWIPSH (CoordinateType from);
     CoordinateType Led_CvtScreenPixelsFromTWIPSV (TWIPS from);
     CoordinateType Led_CvtScreenPixelsFromTWIPSH (TWIPS from);
+    #endif
 
 #if qStroika_Frameworks_Led_SupportGDI
     /*

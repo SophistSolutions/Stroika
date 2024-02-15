@@ -412,7 +412,11 @@ WordProcessorTable::WordProcessorTable (AbstractParagraphDatabaseRep* tableOwner
     , fNeedLayout (eNeedFullLayout)
 #endif
     , fRows ()
+#if qStroika_Frameworks_Led_SupportGDI
     , fBorderWidth (Led_CvtScreenPixelsToTWIPSH (1))
+#else
+    , fBorderWidth (1)
+#endif
     , fBorderColor (Color::kSilver)
     , fTotalWidth (0)
     , fTotalHeight (0)
@@ -444,6 +448,55 @@ void WordProcessorTable::FinalizeAddition (AbstractParagraphDatabaseRep* o, size
 #endif
 }
 
+
+Color WordProcessorTable::GetTableBorderColor () const
+{
+    return fBorderColor;
+}
+
+void WordProcessorTable::SetTableBorderColor (Color c)
+{
+    fBorderColor = c;
+}
+
+TWIPS WordProcessorTable::GetTableBorderWidth () const
+{
+    return fBorderWidth;
+}
+
+void WordProcessorTable::SetTableBorderWidth (TWIPS w)
+{
+    fBorderWidth = w;
+}
+
+TWIPS WordProcessorTable::GetColumnWidth (size_t row, size_t column) const
+{
+    if (GetCellFlags (row, column) != ePlainCell) {
+        return TWIPS{0}; // NOT REALLY SURE WHAT THIS SHOULD DO!!!
+    }
+
+    return GetCell (row, column).GetCellXWidth ();
+}
+
+void WordProcessorTable::SetColumnWidth (size_t row, size_t column, TWIPS colWidth)
+{
+    GetCell (row, column).SetCellXWidth (colWidth);
+#if qStroika_Frameworks_Led_SupportGDI
+    InvalidateLayout ();
+    #endif
+}
+
+Color WordProcessorTable::GetCellColor (size_t row, size_t column) const
+{
+    return GetCell (row, column).GetBackColor ();
+}
+
+void WordProcessorTable::SetCellColor (size_t row, size_t column, const Color& c)
+{
+    Cell cell = GetCell (row, column);
+    cell.SetBackColor (c);
+}
+
 /*
  ********************************************************************************
  *************************** WordProcessorTextIOSinkStream **********************
@@ -454,7 +507,7 @@ namespace {
     {
         const int kRTF_SPEC_DefaultInches = 6; // HACK - see comments in SinkStreamDestination::SetRightMargin ()
         int       rhsTWIPS                = kRTF_SPEC_DefaultInches * 1440;
-        return TWIPS (rhsTWIPS);
+        return TWIPS {rhsTWIPS};
     }
 }
 
@@ -6882,51 +6935,6 @@ void WordProcessorTable::WhileSimpleMouseTracking (Led_Point newMousePos)
 #endif
 }
 
-Color WordProcessorTable::GetTableBorderColor () const
-{
-    return fBorderColor;
-}
-
-void WordProcessorTable::SetTableBorderColor (Color c)
-{
-    fBorderColor = c;
-}
-
-TWIPS WordProcessorTable::GetTableBorderWidth () const
-{
-    return fBorderWidth;
-}
-
-void WordProcessorTable::SetTableBorderWidth (TWIPS w)
-{
-    fBorderWidth = w;
-}
-
-TWIPS WordProcessorTable::GetColumnWidth (size_t row, size_t column) const
-{
-    if (GetCellFlags (row, column) != ePlainCell) {
-        return TWIPS{0}; // NOT REALLY SURE WHAT THIS SHOULD DO!!!
-    }
-
-    return GetCell (row, column).GetCellXWidth ();
-}
-
-void WordProcessorTable::SetColumnWidth (size_t row, size_t column, TWIPS colWidth)
-{
-    GetCell (row, column).SetCellXWidth (colWidth);
-    InvalidateLayout ();
-}
-
-Color WordProcessorTable::GetCellColor (size_t row, size_t column) const
-{
-    return GetCell (row, column).GetBackColor ();
-}
-
-void WordProcessorTable::SetCellColor (size_t row, size_t column, const Color& c)
-{
-    Cell cell = GetCell (row, column);
-    cell.SetBackColor (c);
-}
 
 /*
 @METHOD:        WordProcessorTable::GetRealCell
@@ -7400,8 +7408,6 @@ void WordProcessorTable::GetDimensions (size_t* rows, size_t* columns) const
     }
 }
 
-#if qStroika_Frameworks_Led_SupportGDI
-
 /*
 @METHOD:        WordProcessorTable::SetDimensions
 @DESCRIPTION:   <p>Specifies the number of rows and columns desired. If rows or columns need to be created, they will be
@@ -7468,10 +7474,11 @@ void WordProcessorTable::InsertRow (size_t at, size_t maxRowCopyCount)
 {
     Require (at <= GetRowCount ());
     Require (maxRowCopyCount >= 1);
+#if qStroika_Frameworks_Led_SupportGDI
 
     TextStore&               ts = GetOwner ()->GetTextStore ();
     TextStore::SimpleUpdater updater (ts, GetStart (), GetEnd ());
-
+#endif
     RowInfo newRow;
 
     // Copy row count and row width from adjoining row. COULD be smarter about this - taking a HINT as
@@ -7490,9 +7497,11 @@ void WordProcessorTable::InsertRow (size_t at, size_t maxRowCopyCount)
     }
 
     fRows.insert (fRows.begin () + at, newRow);
+#if qStroika_Frameworks_Led_SupportGDI
 
     InvalidateIntraCellContextInfo ();
     InvalidateLayout ();
+    #endif
 }
 
 /*
@@ -7502,14 +7511,18 @@ void WordProcessorTable::InsertRow (size_t at, size_t maxRowCopyCount)
 void WordProcessorTable::DeleteRow (size_t at)
 {
     Require (at < GetRowCount ());
+#if qStroika_Frameworks_Led_SupportGDI
 
     TextStore&               ts = GetOwner ()->GetTextStore ();
     TextStore::SimpleUpdater updater (ts, GetStart (), GetEnd ());
+    #endif
 
     fRows.erase (fRows.begin () + at);
+#if qStroika_Frameworks_Led_SupportGDI
     InvalidateIntraCellContextInfo ();
     InvalidateLayout ();
     ReValidateSelection ();
+    #endif
 }
 
 /*
@@ -7520,12 +7533,15 @@ void WordProcessorTable::DeleteRow (size_t at)
 void WordProcessorTable::InsertColumn (size_t at)
 {
     Require (at <= GetColumnCount ());
-
+#if qStroika_Frameworks_Led_SupportGDI
     TextStore&               ts = GetOwner ()->GetTextStore ();
     TextStore::SimpleUpdater updater (ts, GetStart (), GetEnd ());
+    TWIPS newColWidth = Led_CvtScreenPixelsToTWIPSH (100);
+#else
+    TWIPS newColWidth = TWIPS (100);
+#endif
 
     // Grab default size for new column from first row/prev (or next) col
-    TWIPS newColWidth = Led_CvtScreenPixelsToTWIPSH (100);
     if (fRows.size () > 0) {
         size_t nColsInRow = GetColumnCount (0);
         //size_t useCol     = at;
@@ -7549,9 +7565,11 @@ void WordProcessorTable::InsertColumn (size_t at)
         vector<Cell>& rowCells = fRows[ri].fCells;
         rowCells.insert (rowCells.begin () + at, newCol[ri]);
     }
+#if qStroika_Frameworks_Led_SupportGDI
 
     InvalidateIntraCellContextInfo ();
     InvalidateLayout ();
+    #endif
 }
 
 /*
@@ -7563,8 +7581,10 @@ void WordProcessorTable::DeleteColumn (size_t at)
     Require (at < GetColumnCount ());
     // BUT - allow for the fact that some rows may have fewer columns than GetColumnCount ()...
 
+#if qStroika_Frameworks_Led_SupportGDI
     TextStore&               ts = GetOwner ()->GetTextStore ();
     TextStore::SimpleUpdater updater (ts, GetStart (), GetEnd ());
+    #endif
 
     size_t rowCount = fRows.size ();
     for (size_t ri = 0; ri < rowCount; ++ri) {
@@ -7573,10 +7593,13 @@ void WordProcessorTable::DeleteColumn (size_t at)
             rowCells.erase (rowCells.begin () + at);
         }
     }
+#if qStroika_Frameworks_Led_SupportGDI
     InvalidateIntraCellContextInfo ();
     InvalidateLayout ();
     ReValidateSelection ();
+    #endif
 }
+#if qStroika_Frameworks_Led_SupportGDI
 
 /*
 @METHOD:        WordProcessorTable::ReValidateSelection
@@ -7687,7 +7710,7 @@ void WordProcessorTable::Cell::SetBackColor (Color c)
 
 /*
  ********************************************************************************
- ************************ WordProcessorTable::CellRep *************************
+ ************************ WordProcessorTable::CellRep ***************************
  ********************************************************************************
  */
 WordProcessorTable::CellRep::CellRep (WordProcessorTable& forTable)

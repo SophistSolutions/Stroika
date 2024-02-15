@@ -58,6 +58,40 @@ namespace Stroika::Frameworks::Led {
         fFontSpecification = fsp;
     }
 
+
+    
+    /*
+     ********************************************************************************
+     ** SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS> **
+     ********************************************************************************
+     */
+    template <class BASECLASS>
+    StyleRunElement SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::MungeRunElement (const StyleRunElement& inRunElt) const
+    {
+        using SSM = StandardStyleMarker;
+
+        fFSP                   = FontSpecification{};
+        StyleRunElement result = inherited::MungeRunElement (inRunElt);
+        for (auto i = result.fSupercededMarkers.begin (); i != result.fSupercededMarkers.end (); ++i) {
+            if (SSM* ssm = dynamic_cast<SSM*> (*i)) {
+                fFSP = ssm->fFontSpecification;
+            }
+        }
+        if (SSM* ssm = dynamic_cast<SSM*> (result.fMarker)) {
+            fFSP           = ssm->fFontSpecification;
+            result.fMarker = nullptr;
+        }
+        return result;
+    }
+#if qStroika_Frameworks_Led_SupportGDI
+    template <class BASECLASS>
+    FontSpecification SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::MakeFontSpec (const StyledTextImager* /*imager*/,
+                                                                                                                const StyleRunElement& /*runElement*/) const
+    {
+        return fFSP;
+    }
+    #endif
+
 #if qStroika_Frameworks_Led_SupportGDI
 
     /*
@@ -93,35 +127,6 @@ namespace Stroika::Frameworks::Led {
         fStyleDatabase->SetStyleInfo (charAfterPos, nTCharsFollowing, nStyleInfos, styleInfos);
     }
 
-    /*
-     ********************************************************************************
-     ** SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS> **
-     ********************************************************************************
-     */
-    template <class BASECLASS>
-    StyleRunElement SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::MungeRunElement (const StyleRunElement& inRunElt) const
-    {
-        using SSM = StandardStyleMarker;
-
-        fFSP                   = FontSpecification{};
-        StyleRunElement result = inherited::MungeRunElement (inRunElt);
-        for (auto i = result.fSupercededMarkers.begin (); i != result.fSupercededMarkers.end (); ++i) {
-            if (SSM* ssm = dynamic_cast<SSM*> (*i)) {
-                fFSP = ssm->fFontSpecification;
-            }
-        }
-        if (SSM* ssm = dynamic_cast<SSM*> (result.fMarker)) {
-            fFSP           = ssm->fFontSpecification;
-            result.fMarker = nullptr;
-        }
-        return result;
-    }
-    template <class BASECLASS>
-    FontSpecification SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<BASECLASS>::MakeFontSpec (const StyledTextImager* /*imager*/,
-                                                                                                                const StyleRunElement& /*runElement*/) const
-    {
-        return fFSP;
-    }
 #endif
 
 }
