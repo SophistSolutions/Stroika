@@ -450,6 +450,8 @@ namespace Stroika::Frameworks::Service {
 
         optional<MajorOperation> fMajorOperation;
         Sequence<String>         fUnusedArguments;
+
+        optional<Time::Duration> fRunFor;
     };
 
     /**

@@ -67,7 +67,7 @@ namespace {
 Main::CommandArgs::CommandArgs (const Sequence<String>& args)
 {
     bool didFirst = false;
-    for (const String& si : args) {
+    for (Iterator<String> si = args.begin (); si != args.end (); ++si) {
         if (not didFirst) {
             // skip argv[0]
             // @todo - nice to try args.SubSequence (1)....
@@ -90,17 +90,25 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
         };
         bool found = false;
         for (const auto& i : kPairs_) {
-            if (Execution::MatchesCommandLineArgument (si, i.first)) {
+            if (Execution::MatchesCommandLineArgument (*si, i.first)) {
                 if (found) {
                     Execution::Throw (
-                        Execution::InvalidCommandLineArgument{L"Only one major command-line option can be specified at a time"});
+                        Execution::InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
                 }
                 found           = true;
                 fMajorOperation = i.second;
             }
         }
+        if (not found and Execution::MatchesCommandLineArgument (*si, "runFor") ) {
+            ++si;
+            if (not si) {
+                Execution::Throw (Execution::RuntimeErrorException{"Bad arg to runFor"});
+            }
+            fRunFor =    Time::Duration{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*si)};
+            found = true;
+        }
         if (not found) {
-            fUnusedArguments.push_back (si);
+            fUnusedArguments.push_back (*si);
         }
     }
 }
@@ -195,11 +203,7 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream::Ptr<Charac
             RunAsService ();
         } break;
         case CommandArgs::MajorOperation::eRunDirectly: {
-            optional<Time::Duration> runFor;
-            if (args.fUnusedArguments.size () >= 1) {
-                runFor = Time::Duration{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (args.fUnusedArguments[0])};
-            }
-            RunDirectly (runFor);
+            RunDirectly (args.fRunFor);
         } break;
         case CommandArgs::MajorOperation::eStart: {
             if (out != nullptr) {
