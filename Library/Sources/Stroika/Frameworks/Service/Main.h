@@ -18,6 +18,7 @@
 #include "../../Foundation/Execution/Synchronized.h"
 #include "../../Foundation/Execution/Thread.h"
 #include "../../Foundation/Streams/OutputStream.h"
+#include "../../Foundation/Time/Duration.h"
 
 #if qPlatform_POSIX
 #include "../../Foundation/Execution/SignalHandlers.h"
@@ -103,27 +104,27 @@ namespace Stroika::Frameworks::Service {
      *
      *  This concept exists on both UNIX and Windows, but is implemented differently.
      *
-     *  There are two different dimentions along which you can subtype the behavior of a service application:
+     *  There are two different dimensions along which you can subtype the behavior of a service application:
      *      (1) the functionality the service provides
      *      (2) the OS service mechanism to use
      *
      *  Users of this class will themselves address #1, by subclassing from the IApplicationRep, and providing their application
      *  behavior. But users can also select different 'service implementation' strategies by selecting the IServiceIntegrationRep subtype
-     *  to pass into the constructor. What serice implementation strategies are available will depend on the OS you've built for,
+     *  to pass into the constructor. What service implementation strategies are available will depend on the OS you've built for,
      *  and often on command-line app arguments.
      *
      *  This class is sort of like a singleton, in that it can be instantiated only once, never copied, etc. But
      *  its unusual for the singleton pattern, since the user must explicitly construct it. The owner controls its lifetime.
      *
-     *  Note that this class provides a convient wrapper on requesting actions on the underlying service
+     *  Note that this class provides a convenient wrapper on requesting actions on the underlying service
      *  from EITEHR the process in which the service is run, or from any other process (via IPC - specific to the process
      *  service backend implementation).
      *
      *  This class is 'final' - since the intended use is to provide polymorphic behavior via the REP classes passed
      *  in to the CTOR.
      *
-     *  Miscelaneous Notes:
-     *      o   No need for a --daemonize option for --Run-As-Service, because thats essentially
+     *  Miscellaneous Notes:
+     *      o   No need for a --daemonize option for --Run-As-Service, because that's essentially
      *          what the --start command does
      *
      *  \par Example Usage
@@ -223,7 +224,7 @@ namespace Stroika::Frameworks::Service {
          *  When this function returns, the calling main() should exit. The caller should also be prepared for
          *  exceptions to be thrown by Run - for example - in case of bad command line arguments.
          *
-         *  Note also - some command line arguments are interpretted as meaning to send messages to another process
+         *  Note also - some command line arguments are interpreted as meaning to send messages to another process
          *  hosing the service. While others cause this process to become the process main process, and run until
          *  told to exit.
          */
@@ -289,7 +290,7 @@ namespace Stroika::Frameworks::Service {
          *  When that happens, the calling application should exit.
          *
          *  When using RunDirectly - other operations like 'status' and 'kill' etc - will NOT function.
-         *  This bypasses the backend service mechanism - and just runs the applicaiton-specific code (typically
+         *  This bypasses the backend service mechanism - and just runs the application-specific code (typically
          *  so that can be debugged, but possibly also for testing or other purposes).
          *
          *  If the startup of the service fails due to exception, it will be propagated back to the caller.
@@ -372,8 +373,8 @@ namespace Stroika::Frameworks::Service {
      */
     struct Main::CommandNames {
 
-        static inline const wchar_t kInstall[]   = L"Install";
-        static inline const wchar_t kUnInstall[] = L"UnInstall";
+        static inline constexpr string_view kInstall   = "Install"sv;
+        static inline constexpr string_view kUnInstall = "UnInstall"sv;
 
         /**
          *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
@@ -382,7 +383,7 @@ namespace Stroika::Frameworks::Service {
          *  This is typically called INDRECTLY via a special fork/exec as a result of a kStart command, or its called from
          *  init as part of system startup.
          */
-        static inline const wchar_t kRunAsService[] = L"Run-As-Service";
+        static inline constexpr string_view kRunAsService = "Run-As-Service"sv;
 
         /**
          *  kRunDirectly is mostly a debug-handy/debug-friendly variant of RunAsService().
@@ -391,37 +392,43 @@ namespace Stroika::Frameworks::Service {
          *  When that happens, the calling application should exit.
          *
          *  When using kRunDirectly - other operations like 'status' and 'kill' etc - will NOT function.
-         *  This bypasses the backend service mechanism - and just runs the applicaiton-specific code (typically
+         *  This bypasses the backend service mechanism - and just runs the application-specific code (typically
          *  so that can be debugged, but possibly also for testing or other purposes).
          */
-        static const inline wchar_t kRunDirectly[] = L"Run-Directly";
+        static inline constexpr string_view kRunDirectly = "Run-Directly"sv;
 
-        static const inline wchar_t kRunDirectlyFor[] = L"Run-Directly-For";
+        static inline constexpr string_view kRunDirectlyFor = "Run-Directly-For"sv;
 
         /*
          *  The kStart command tells the service to start running. It returns an error
          *  if the service is already started.
          */
-        static inline const wchar_t kStart[] = L"Start";
+        static inline constexpr string_view kStart = "Start"sv;
 
         /**
          *  The kStop command tells the service to start terminate
          */
-        static inline const wchar_t kStop[] = L"Stop";
+        static inline constexpr string_view kStop = "Stop"sv;
+
         //DOCUMENT EACH
         //NEATLY
         // KILL termiantes (kill-9)
         //
-        static inline const wchar_t kForcedStop[] = L"ForcedStop";
-        // restart synonmy for stop (no error if not already running), and then start
-        static inline const wchar_t kRestart[]       = L"Restart";
-        static inline const wchar_t kForcedRestart[] = L"ForcedRestart";
+        static inline constexpr string_view kForcedStop = "ForcedStop"sv;
+
+        // restart synonym for stop (no error if not already running), and then start
+        static inline constexpr string_view kRestart = "Restart"sv;
+
+        static inline constexpr string_view kForcedRestart = "ForcedRestart"sv;
+
         // If service knows how to find its own config files - recheck them
-        static inline const wchar_t kReloadConfiguration[] = L"Reload-Configuration";
+        static inline constexpr string_view kReloadConfiguration = "Reload-Configuration"sv;
+
         // SIGSTOP
-        static inline const wchar_t kPause[] = L"Pause";
+        static inline constexpr string_view kPause = "Pause"sv;
+
         // SIGCONT
-        static inline const wchar_t kContinue[] = L"Continue";
+        static inline constexpr string_view kContinue = "Continue"sv;
     };
 
     /**
@@ -430,14 +437,15 @@ namespace Stroika::Frameworks::Service {
      *  but will ignore unrecognized arguments.
      */
     struct Main::CommandArgs {
-        CommandArgs () = default;
+        /**
+         */
         CommandArgs (const Sequence<String>& args);
 
         enum class MajorOperation {
             eInstall,
             eUnInstall,
             eRunServiceMain,
-            eRunDirectly, // if provided, first fUnusedArguments treated as floating point number of seconds
+            eRunDirectly, // uses fRunFor if provided
             eStart,
             eStop,
             eForcedStop,
@@ -448,16 +456,24 @@ namespace Stroika::Frameworks::Service {
             eContinue,
         };
 
+        /**
+         */
         optional<MajorOperation> fMajorOperation;
-        Sequence<String>         fUnusedArguments;
 
+        /**
+         *  If provided, how long to run for in RunDirectly commands, else treat as run infinitely
+         */
         optional<Time::Duration> fRunFor;
+
+        /**
+         */
+        Sequence<String> fUnusedArguments;
     };
 
     /**
-     * To use this class you must implement your own Rep (to represent the running service).
+     * To use this interface users of the Framework::Service module must implement (to represent the running service).
      *
-     *  MainLoop () is automatically setup to run on its own thread. Betware, the OnXXX
+     *  MainLoop () is automatically setup to run on its own thread. Beware, the OnXXX
      *  events maybe called on this object, but from any thread so be careful of thread safety!
      */
     class Main::IApplicationRep {
@@ -477,7 +493,7 @@ namespace Stroika::Frameworks::Service {
          *  Note - for multi-argument sequences, the implementer must set state so its prepared for the next
          *  argument.
          *
-         *  This function MAY raise an exception if it receives unrecognized argumetns, and shoudl not
+         *  This function MAY raise an exception if it receives unrecognized arguments, and should not
          *  print an error message in that case.
          */
         virtual bool HandleCommandLineArgument (const String& s);
@@ -524,7 +540,7 @@ namespace Stroika::Frameworks::Service {
      */
     class Main::SimpleIApplicationRepHelper : public Main::IApplicationRep {
     public:
-        SimpleIApplicationRepHelper ();
+        SimpleIApplicationRepHelper () = default;
     };
 
     /**
@@ -544,7 +560,7 @@ namespace Stroika::Frameworks::Service {
 
     protected:
         /**
-         *  Only legel to attach if _GetAttachedAppRep() == nullptr, and only legal to detach if _GetAttachedAppRep () != nullptr.
+         *  Only legal to attach if _GetAttachedAppRep() == nullptr, and only legal to detach if _GetAttachedAppRep () != nullptr.
          *
          *  Must be attached before other methods can be called (at least most - document which).
          *
@@ -578,13 +594,13 @@ namespace Stroika::Frameworks::Service {
 
     protected:
         /**
-         *  (only supported if (need service supports install-uninstlal-fetautre)
+         *  (only supported if (need service supports install-feature)
          */
         virtual void _Install () = 0;
 
     protected:
         /**
-         *  (only supported if (need service supports install-uninstlal-fetautre)
+         *  (only supported if (need service supports uninstall-feature)
          */
         virtual void _UnInstall () = 0;
 
@@ -651,7 +667,7 @@ namespace Stroika::Frameworks::Service {
     };
 
     /**
-     *  Run with absolultely minimal OS integration support. Count on the app itself to make service calls
+     *  Run with absolutely minimal OS integration support. Count on the app itself to make service calls
      *  to start/stop
      */
     class Main::RunNoFrillsService : public Main::IServiceIntegrationRep {

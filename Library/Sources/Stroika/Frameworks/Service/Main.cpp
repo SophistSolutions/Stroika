@@ -92,20 +92,19 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
         for (const auto& i : kPairs_) {
             if (Execution::MatchesCommandLineArgument (*si, i.first)) {
                 if (found) {
-                    Execution::Throw (
-                        Execution::InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
+                    Execution::Throw (Execution::InvalidCommandLineArgument{"Only one major command-line option can be specified at a time"sv});
                 }
                 found           = true;
                 fMajorOperation = i.second;
             }
         }
-        if (not found and Execution::MatchesCommandLineArgument (*si, "runFor") ) {
+        if (not found and Execution::MatchesCommandLineArgument (*si, "runFor")) {
             ++si;
             if (not si) {
                 Execution::Throw (Execution::RuntimeErrorException{"Bad arg to runFor"});
             }
-            fRunFor =    Time::Duration{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*si)};
-            found = true;
+            fRunFor = Time::Duration{Characters::FloatConversion::ToFloat<Time::DurationSeconds::rep> (*si)};
+            found   = true;
         }
         if (not found) {
             fUnusedArguments.push_back (*si);
