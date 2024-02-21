@@ -114,8 +114,16 @@ namespace Stroika::Foundation::Containers {
      *          ThreeWayComparer support is NOT provided for Mapping, because there is no intrinsic ordering among the elements
      *          of the mapping (keys) - even if there was some way to compare the values.
      */
-    template <Mapping_IKey KEY_TYPE, Mapping_IMappedValue MAPPED_VALUE_TYPE>
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class [[nodiscard]] Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
+    public:
+        /**
+         *  Note - use static_assert rather than typename constraints because sometimes (like VariantValue use of Mapping<String,VariantValue>)
+         *  constraint evaluation is a problem with incomplete types.
+         */
+        static_assert (Mapping_IKey<KEY_TYPE>);
+        static_assert (Mapping_IMappedValue<MAPPED_VALUE_TYPE>);
+
     private:
         using inherited = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
 
@@ -658,7 +666,7 @@ namespace Stroika::Foundation::Containers {
      *  Protected abstract interface to support concrete implementations of
      *  the Mapping<T> container API.
      */
-    template <Mapping_IKey KEY_TYPE, Mapping_IMappedValue MAPPED_VALUE_TYPE>
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep {
     private:
         using inherited = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep;
@@ -689,7 +697,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   Not to be confused with GetKeyEqualsComparer () which compares KEY ELEMENTS of Mapping for equality.
      */
-    template <Mapping_IKey KEY_TYPE, Mapping_IMappedValue MAPPED_VALUE_TYPE>
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename VALUE_EQUALS_COMPARER>
     struct Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer
         : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
