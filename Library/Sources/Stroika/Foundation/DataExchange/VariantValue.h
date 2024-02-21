@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2024.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Memory_VariantValue_h_
@@ -10,7 +11,7 @@
 #include <map>
 #include <vector>
 
-#if __has_include("boost/json/value.hpp")
+#if qHasFeature_boost
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\""); // for g++-13 g++-release-sanitize_address_undefined warning: 'long unsigned int __atomic_sub_fetch_8(volatile void*, long unsigned int, int)' writing 8 bytes into a region of size 0 overflows the destination [-Wstringop-overflow=
 #include <boost/json/value.hpp>
 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
@@ -36,17 +37,18 @@ namespace Stroika::Foundation::DataExchange {
     using Characters::String;
     using Containers::Mapping;
     using Containers::Sequence;
+    using Memory::BLOB;
     using Time::Date;
     using Time::DateTime;
 
     /**
-     * \brief   Simple variant-value (case variant union) object, with (variant) basic types analagous to a value in any weakly typed language (like JavaScript, Lisp, etc)
+     * \brief   Simple variant-value (case variant union) object, with (variant) basic types analogous to a value in any weakly typed language (like JavaScript, Lisp, etc)
      *
      *  These objects are internally efficiently copied (shared_ptr), but have copy
-     *  by value semantics (since they are never modifyable).
+     *  by value semantics (since they are never modifiable).
      *
      *  Design Notes:
-     *      o   This is very similar to std::variant, but generally simpler to use because of brevety,
+     *      o   This is similar to std::variant, but generally simpler to use because of brevity,
      *          and a well chosen (see COM, or JSON) but useful predefined set of things that are shared in the
      *          variant.
      *
@@ -54,7 +56,7 @@ namespace Stroika::Foundation::DataExchange {
      *          types because these are constructed from existing already constructed VariantValue
      *          objects, and can never be modified thereafter.
      *
-     *      o   Note that this VariantValue is analagous to, and inspired by, the Microsoft
+     *      o   Note that this VariantValue is analogous to, and inspired by, the Microsoft
      *          COM VARIANT object type.
      *
      *      o   The reason we chose to interpret As<T>() as generating an exception, instead of an
@@ -84,15 +86,15 @@ namespace Stroika::Foundation::DataExchange {
      *
      *          EQUALSCOMPARER:
      *
-     *          If exactTypeMatchOnly is true, no type coersion takes place, but by default types
-     *          are automatically coereced, if reasonable, so that they can be compared for equality.
+     *          If exactTypeMatchOnly is true, no type coercion takes place, but by default types
+     *          are automatically coerced, if reasonable, so that they can be compared for equality.
      *
      *          When comparing two items, at least one of which is a floating point number, the other type
-     *          is coereced into a floating point number and  @Math::NearlyEquals() is used
-     *          (because often these values come from serializaiton/deserializaiton which loses a tiny bit of precision).
+     *          is coerced into a floating point number and  @Math::NearlyEquals() is used
+     *          (because often these values come from serialization/deserialization which loses a tiny bit of precision).
      *          Note that NANs compare as equal, and Equals ("NAN", Math::nan<double> ()) compares as true.
      *
-     *          When comparing any other types (except Map or Array) with a String, the to types are coerceced
+     *          When comparing any other types (except Map or Array) with a String, the to types are coerced
      *          into Strings, and compared as strings.
      * 
      *  TODO:
@@ -105,15 +107,12 @@ namespace Stroika::Foundation::DataExchange {
      *
      *      @todo   Add SINFAE CTOR template, so we can lose explicit map<> CTOR, and handle other
      *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
-     *              maps 'convertible' key and convertabile 'value' types.
+     *              maps 'convertible' key and convertible 'value' types.
      *
      *      @todo   Use Debug::AssertExternallySynchronizedMutex<> to assure not used from multiple threads.
      *
      *      @todo   Re-review the signed/unsigned compare etc code. I think its all correct, but its tricky enough to
-     *              warrent a careful review
-     *
-     *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
-     *              Though probably not.
+     *              warrant a careful review
      */
     class [[nodiscard]] VariantValue {
     private:
@@ -201,11 +200,13 @@ namespace Stroika::Foundation::DataExchange {
          *          A few are marked as explicit, only because its too easy to accidentally invoke 
          *          (as with https://stroika.atlassian.net/browse/STK-739) - Iterable<VariantValue> or Set<VariantValue> etc...
          *          Roughly, explicit types can be used directly, and composite (aggregating) types are explicit.
+         * 
+         *  \todo Can shorten this a bit using templates and concepts (integral, floating_point etc - like I did for "StringIsh").
          */
         VariantValue () = default;
         VariantValue (nullptr_t);
         VariantValue (bool val);
-        VariantValue (const Memory::BLOB& val);
+        VariantValue (const BLOB& val);
         VariantValue (signed char val);
         VariantValue (short int val);
         VariantValue (int val);
@@ -237,7 +238,7 @@ namespace Stroika::Foundation::DataExchange {
         template <typename T>
         VariantValue (const optional<T>& val)
             requires (is_convertible_v<T, VariantValue>);
-#if __has_include("boost/json/value.hpp")
+#if qHasFeature_boost
         VariantValue (const boost::json::value& val);
 #endif
 
@@ -294,21 +295,7 @@ namespace Stroika::Foundation::DataExchange {
          *  If the caller attempts a conversion that isn't supported, or doesn't make sense
          *  then DataExchange::BadFormatException will be thrown (not assertion error).
          *
-         *      Only specifically specialized variants are supported. Supported (RETURNTYPE) types include:
-         *          o   bool
-         *          o   Memory::BLOB
-         *          o   signed char, signed short, int, long int, long long int (any of the 5 signed int types)
-         *          o   unsigned char, unsigned short, unsigned int, unsigned long int, unsigned long long int (any of the 5 unsigned int types)
-         *          o   float, double, long double
-         *          o   Date
-         *          o   DateTime
-         *          o   wstring
-         *          o   String
-         *          o   Mapping<String, VariantValue>
-         *          o   Sequence<VariantValue>
-         *          o   map<wstring, VariantValue>
-         *          o   vector<VariantValue>
-         *          o   boost::json::value  (iff __has_include("boost/json/value.hpp"))
+         *  Only specifically specialized variants are supported (see requires clause).
          *
          *  \note   Why As<T> () instead of conversion operator / static_cast support?
          *          1) - not sure - maybe a mistake
@@ -326,7 +313,7 @@ namespace Stroika::Foundation::DataExchange {
          *          Coerces String value 'true' - case sensitive - to true, and any integer or unsigned integer value
          *          to true if non-zero.
          *
-         *  \note   About As<Memory::BLOB> ()
+         *  \note   About As<BLOB> ()
          *          If type=eBLOB, return that. If type = null, return empty blob.
          *          Else, converts any type to String, and use base64 conversion.
          *          Similarly - for As<String> on types that are eBLOB - they are decoded as Base64.
@@ -341,7 +328,15 @@ namespace Stroika::Foundation::DataExchange {
          *          an exception.
          */
         template <typename RETURNTYPE>
-        nonvirtual RETURNTYPE As () const;
+        nonvirtual RETURNTYPE As () const
+            requires (same_as<RETURNTYPE, bool> or same_as<RETURNTYPE, BLOB> or integral<RETURNTYPE> or floating_point<RETURNTYPE> or
+                      same_as<RETURNTYPE, Date> or same_as<RETURNTYPE, DateTime> or same_as<RETURNTYPE, wstring> or same_as<RETURNTYPE, String> or
+                      same_as<RETURNTYPE, Mapping<String, VariantValue>> or same_as<RETURNTYPE, Sequence<VariantValue>> or
+                      same_as<RETURNTYPE, map<wstring, VariantValue>> or same_as<RETURNTYPE, vector<VariantValue>>
+#if qHasFeature_boost
+                      or same_as<RETURNTYPE, boost::json::value>
+#endif
+            );
 
     public:
         /**
@@ -374,11 +369,19 @@ namespace Stroika::Foundation::DataExchange {
         nonvirtual VariantValue Normalize () const;
 
     private:
-        nonvirtual Memory::BLOB         AsBLOB_ () const;
+        nonvirtual bool                 AsBool_ () const;
+        nonvirtual Date                 AsDate_ () const;
+        nonvirtual DateTime             AsDateTime_ () const;
+        nonvirtual BLOB                 AsBLOB_ () const;
         nonvirtual IntegerType_         AsInteger_ () const;
         nonvirtual UnsignedIntegerType_ AsUnsignedInteger_ () const;
         nonvirtual FloatType_           AsFloatType_ () const;
         nonvirtual String               AsString_ () const;
+        nonvirtual Mapping<String, VariantValue> AsMapping_ () const;
+        nonvirtual Sequence<VariantValue> AsSequence_ () const;
+#if qHasFeature_boost
+        nonvirtual boost::json::value AsBoostJSONValue_ () const;
+#endif
 
     public:
         /**
@@ -413,69 +416,22 @@ namespace Stroika::Foundation::DataExchange {
         static const shared_ptr<IRep_> kTrueRep_;
     };
 
-    template <>
-    bool VariantValue::As () const;
-    template <>
-    Memory::BLOB VariantValue::As () const;
-    template <>
-    signed char VariantValue::As () const;
-    template <>
-    short int VariantValue::As () const;
-    template <>
-    int VariantValue::As () const;
-    template <>
-    long int VariantValue::As () const;
-    template <>
-    long long int VariantValue::As () const;
-    template <>
-    unsigned char VariantValue::As () const;
-    template <>
-    unsigned short int VariantValue::As () const;
-    template <>
-    unsigned int VariantValue::As () const;
-    template <>
-    unsigned long int VariantValue::As () const;
-    template <>
-    unsigned long long VariantValue::As () const;
-    template <>
-    float VariantValue::As () const;
-    template <>
-    double VariantValue::As () const;
-    template <>
-    long double VariantValue::As () const;
-    template <>
-    Date VariantValue::As () const;
-    template <>
-    DateTime VariantValue::As () const;
-    template <>
-    wstring VariantValue::As () const;
-    template <>
-    String VariantValue::As () const;
-    template <>
-    map<wstring, VariantValue> VariantValue::As () const;
-    template <>
-    Mapping<String, VariantValue> VariantValue::As () const;
-    template <>
-    vector<VariantValue> VariantValue::As () const;
-    template <>
-    Sequence<VariantValue> VariantValue::As () const;
-
     /**
      *  \brief Compares values as if first normalized with Normalize () method
      * 
      *  \note Before Stroika v3.0d1, EqualsComparer had an fExactTypeMatchOnly option, which defaulted false.
-     *        This did various not clearly specified type coersions - being expensive, and buggy, and confusing.
+     *        This did various not clearly specified type coercions - being expensive, and buggy, and confusing.
      * 
      *        The trickiest part is that to do this properly, we needed to pass along the flag (through default constructors
      *        using thread_local storage trick) - and that was never done.
      * 
      *        I know of no use-case for this functionality, its ambiguous, and costly. So we lose it.
      * 
-     *        The ONLY remaining coertions that are done in comparing, are that if two numbers (int,unsigned, float) are compared
+     *        The ONLY remaining coercions that are done in comparing, are that if two numbers (int,unsigned, float) are compared
      *        they are first promoted.
      */
     struct VariantValue::EqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
-        constexpr EqualsComparer ();
+        constexpr EqualsComparer () = default;
         nonvirtual bool operator() (const VariantValue& lhs, const VariantValue& rhs) const;
     };
 
@@ -483,18 +439,18 @@ namespace Stroika::Foundation::DataExchange {
      *  \brief Compares values as if first normalized with Normalize () method
      * 
      *  \note Before Stroika v3.0d1, EqualsComparer had an fExactTypeMatchOnly option, which defaulted false.
-     *        This did various not clearly specified type coersions - being expensive, and buggy, and confusing.
+     *        This did various not clearly specified type coercions - being expensive, and buggy, and confusing.
      * 
      *        The trickiest part is that to do this properly, we needed to pass along the flag (through default constructors
      *        using thread_local storage trick) - and that was never done.
      * 
      *        I know of no use-case for this functionality, its ambiguous, and costly. So we lose it.
      * 
-     *        The ONLY remaining coertions that are done in comparing, are that if two numbers (int,unsigned, float) are compared
+     *        The ONLY remaining coercions that are done in comparing, are that if two numbers (int,unsigned, float) are compared
      *        they are first promoted.
      */
     struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr ThreeWayComparer ();
+        constexpr ThreeWayComparer () = default;
         nonvirtual strong_ordering operator() (const VariantValue& lhs, const VariantValue& rhs) const;
     };
 

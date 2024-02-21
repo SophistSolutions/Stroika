@@ -63,85 +63,63 @@ namespace Stroika::Foundation::DataExchange {
     {
         return fVal_ != nullptr;
     }
-    template <>
-    inline Memory::BLOB VariantValue::As () const
+    template <typename RETURNTYPE>
+    inline RETURNTYPE VariantValue::As () const
+        requires (same_as<RETURNTYPE, bool> or same_as<RETURNTYPE, BLOB> or integral<RETURNTYPE> or floating_point<RETURNTYPE> or
+                  same_as<RETURNTYPE, Date> or same_as<RETURNTYPE, DateTime> or same_as<RETURNTYPE, wstring> or same_as<RETURNTYPE, String> or
+                  same_as<RETURNTYPE, Mapping<String, VariantValue>> or same_as<RETURNTYPE, Sequence<VariantValue>> or
+                  same_as<RETURNTYPE, map<wstring, VariantValue>> or same_as<RETURNTYPE, vector<VariantValue>>
+#if qHasFeature_boost
+                  or same_as<RETURNTYPE, boost::json::value>
+#endif
+        )
     {
-        return AsBLOB_ ();
-    }
-    template <>
-    inline signed char VariantValue::As () const
-    {
-        return static_cast<signed char> (AsInteger_ ());
-    }
-    template <>
-    inline short int VariantValue::As () const
-    {
-        return static_cast<short> (AsInteger_ ());
-    }
-    template <>
-    inline int VariantValue::As () const
-    {
-        return static_cast<int> (AsInteger_ ());
-    }
-    template <>
-    inline long int VariantValue::As () const
-    {
-        return static_cast<long int> (AsInteger_ ());
-    }
-    template <>
-    inline long long int VariantValue::As () const
-    {
-        return static_cast<long long int> (AsInteger_ ());
-    }
-    template <>
-    inline unsigned char VariantValue::As () const
-    {
-        return static_cast<unsigned char> (AsUnsignedInteger_ ());
-    }
-    template <>
-    inline unsigned short int VariantValue::As () const
-    {
-        return static_cast<unsigned short int> (AsUnsignedInteger_ ());
-    }
-    template <>
-    inline unsigned int VariantValue::As () const
-    {
-        return static_cast<unsigned int> (AsUnsignedInteger_ ());
-    }
-    template <>
-    inline unsigned long int VariantValue::As () const
-    {
-        return static_cast<unsigned long int> (AsUnsignedInteger_ ());
-    }
-    template <>
-    inline unsigned long long int VariantValue::As () const
-    {
-        return static_cast<unsigned long long int> (AsUnsignedInteger_ ());
-    }
-    template <>
-    inline float VariantValue::As () const
-    {
-        return static_cast<float> (AsFloatType_ ());
-    }
-    template <>
-    inline double VariantValue::As () const
-    {
-        return static_cast<double> (AsFloatType_ ());
-    }
-    template <>
-    inline long double VariantValue::As () const
-    {
-        return static_cast<long double> (AsFloatType_ ());
-    }
-    template <>
-    inline wstring VariantValue::As () const
-    {
-        return AsString_ ().As<wstring> ();
-    }
-    template <>
-    inline String VariantValue::As () const
-    {
-        return AsString_ ();
+        if constexpr (same_as<RETURNTYPE, bool>) {
+            return this->AsBool_ ();
+        }
+        else if constexpr (same_as<RETURNTYPE, Memory::BLOB>) {
+            return this->AsBLOB_ ();
+        }
+        else if constexpr (signed_integral<RETURNTYPE>) {
+            return static_cast<RETURNTYPE> (this->AsInteger_ ());
+        }
+        else if constexpr (unsigned_integral<RETURNTYPE>) {
+            return static_cast<RETURNTYPE> (this->AsUnsignedInteger_ ());
+        }
+        else if constexpr (floating_point<RETURNTYPE>) {
+            return static_cast<RETURNTYPE> (this->AsFloatType_ ());
+        }
+        else if constexpr (same_as<RETURNTYPE, Time::Date>) {
+            return this->AsDate_ ();
+        }
+        else if constexpr (same_as<RETURNTYPE, Time::DateTime>) {
+            return this->AsDateTime_ ();
+        }
+        else if constexpr (same_as<RETURNTYPE, wstring>) {
+            return this->AsString_ ().As<wstring> ();
+        }
+        else if constexpr (same_as<RETURNTYPE, String>) {
+            return this->AsString_ ();
+        }
+        else if constexpr (same_as<RETURNTYPE, Mapping<String, VariantValue>>) {
+            return this->AsMapping_ ();
+        }
+        else if constexpr (same_as<RETURNTYPE, Sequence<VariantValue>>) {
+            return this->AsSequence_ ();
+        }
+        else if constexpr (same_as<RETURNTYPE, map<wstring, VariantValue>>) {
+            return this->AsMapping_ ().Map<map<wstring, VariantValue>> ([] (auto v) -> pair<wstring, VariantValue> {
+                return {v.fKey.As<wstring> (), v.fValue};
+            });
+        }
+        else if constexpr (same_as<RETURNTYPE, vector<VariantValue>>) {
+            return this->AsSequence_ ().As<vector<VariantValue>> ();
+        }
+#if qHasFeature_boost
+        else if constexpr (same_as<RETURNTYPE, boost::json::value>) {
+            return this->AsBoostJSONValue_ ();
+        }
+#endif
     }
     inline strong_ordering VariantValue::operator<=> (const VariantValue& rhs) const
     {
@@ -151,24 +129,6 @@ namespace Stroika::Foundation::DataExchange {
     {
         Ensure (EqualsComparer{}(*this, rhs) == (ThreeWayComparer{}(*this, rhs) == 0)); // These must return the same answer
         return EqualsComparer{}(*this, rhs);
-    }
-
-    /*
-     ********************************************************************************
-     ***** Stroika::Foundation::DataExchange::VariantValue::EqualsComparer **********
-     ********************************************************************************
-     */
-    constexpr VariantValue::EqualsComparer::EqualsComparer ()
-    {
-    }
-
-    /*
-     ********************************************************************************
-     ************************* VariantValue::ThreeWayComparer ***********************
-     ********************************************************************************
-     */
-    constexpr VariantValue::ThreeWayComparer::ThreeWayComparer ()
-    {
     }
 
 }

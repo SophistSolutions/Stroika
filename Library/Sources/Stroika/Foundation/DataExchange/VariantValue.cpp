@@ -214,7 +214,7 @@ VariantValue::VariantValue (const Traversal::Iterable<VariantValue>& val)
 {
 }
 
-#if __has_include("boost/json/value.hpp")
+#if qHasFeature_boost
 namespace {
     inline auto mk_ (const boost::json::value& val) -> VariantValue
     {
@@ -321,8 +321,7 @@ String VariantValue::ToString () const
     return As<String> ();
 }
 
-template <>
-bool VariantValue::As () const
+bool VariantValue::AsBool_ () const
 {
     if (fVal_ == nullptr) {
         return false;
@@ -334,8 +333,8 @@ bool VariantValue::As () const
             return v->fVal;
         }
         case Type::eString: {
-            //return tmp != "false";          // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
-            return As<String> () == "true"sv; // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
+            //return tmp != "false";          // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensitive
+            return As<String> () == "true"sv; // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensitive
         }
         case Type::eInteger: {
             return As<IntegerType_> () != 0;
@@ -580,8 +579,7 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
     }
 }
 
-template <>
-Date VariantValue::As () const
+Date VariantValue::AsDate_ () const
 {
     if (fVal_ == nullptr) {
         Execution::Throw (Date::FormatException::kThe); // until Stroika v2.1d11 this returned Date{}, but no nonger support empty Date objects
@@ -612,11 +610,10 @@ Date VariantValue::As () const
     }
 }
 
-template <>
-DateTime VariantValue::As () const
+DateTime VariantValue::AsDateTime_ () const
 {
     if (fVal_ == nullptr) {
-        Execution::Throw (DateTime::FormatException::kThe); // until Stroika v2.1d11 this returned DateTime{}, but no nonger support empty DateTime objects
+        Execution::Throw (DateTime::FormatException::kThe); // until Stroika v2.1d11 this returned DateTime{}, but no longer support empty DateTime objects
     }
     switch (fVal_->GetType ()) {
         case Type::eDate: {
@@ -644,9 +641,8 @@ DateTime VariantValue::As () const
     }
 }
 
-#if __has_include("boost/json/value.hpp")
-template <>
-boost::json::value VariantValue::As () const
+#if qHasFeature_boost
+boost::json::value VariantValue::AsBoostJSONValue_ () const
 {
     using namespace boost;
     if (fVal_ == nullptr) {
@@ -815,39 +811,11 @@ String VariantValue::AsString_ () const
     }
 }
 
-template <>
-map<wstring, VariantValue> VariantValue::As () const
+Mapping<String, VariantValue> VariantValue::AsMapping_ () const
 {
     using namespace Characters;
     if (fVal_ == nullptr) [[unlikely]] {
-        return map<wstring, VariantValue> ();
-    }
-    switch (fVal_->GetType ()) {
-        case Type::eMap: {
-            auto v = Debug::UncheckedDynamicCast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
-            AssertNotNull (v);
-            map<wstring, VariantValue> tmp;
-            for (const auto& i : v->fVal) {
-                tmp.insert ({i.fKey.As<wstring> (), i.fValue});
-            }
-            return tmp;
-        }
-        default: {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-map<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (),
-                      Characters::ToString (*this).c_str ());
-#endif
-            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to map"sv});
-        }
-    }
-}
-
-template <>
-Mapping<String, VariantValue> VariantValue::As () const
-{
-    using namespace Characters;
-    if (fVal_ == nullptr) [[unlikely]] {
-        return Mapping<String, VariantValue> ();
+        return Mapping<String, VariantValue>{};
     }
     switch (fVal_->GetType ()) {
         case Type::eMap: {
@@ -865,14 +833,7 @@ Mapping<String, VariantValue> VariantValue::As () const
     }
 }
 
-template <>
-vector<VariantValue> VariantValue::As () const
-{
-    return As<Sequence<VariantValue>> ().As<vector<VariantValue>> ();
-}
-
-template <>
-Sequence<VariantValue> VariantValue::As () const
+Sequence<VariantValue> VariantValue::AsSequence_ () const
 {
     if (fVal_ == nullptr) [[unlikely]] {
         return Sequence<VariantValue>{};
