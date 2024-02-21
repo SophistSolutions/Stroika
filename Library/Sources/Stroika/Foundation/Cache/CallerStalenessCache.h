@@ -245,7 +245,18 @@ namespace Stroika::Foundation::Cache {
         };
 
     private:
-        using DT_ = conditional_t<is_same_v<void, KEY>, optional<myVal_>, Containers::Mapping<KEY, myVal_>>;
+        // @todo see if we can clean this up (https://stackoverflow.com/questions/28432977/generic-way-of-lazily-evaluating-short-circuiting-with-stdconditional-t)
+        template <bool B, template <typename...> class TrueTemplate, template <typename...> class FalseTemplate>
+        struct MyLazyConditional_;
+        template <template <typename...> class TrueTemplate, template <typename...> class FalseTemplate>
+        struct MyLazyConditional_<true, TrueTemplate, FalseTemplate> {
+            using type = TrueTemplate<myVal_>;
+        };
+        template <template <typename...> class TrueTemplate, template <typename...> class FalseTemplate>
+        struct MyLazyConditional_<false, TrueTemplate, FalseTemplate> {
+            using type = FalseTemplate<KEY, myVal_>;
+        };
+        using DT_ = typename MyLazyConditional_<same_as<void, KEY>, optional, Containers::Mapping>::type;
         DT_ fData_;
     };
 
