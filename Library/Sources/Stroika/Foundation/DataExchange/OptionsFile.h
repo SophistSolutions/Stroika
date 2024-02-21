@@ -31,7 +31,7 @@
  *
  *  GIST:
  *      if you have mapper object for type T) � one line create object that writes/reads
- *      it to/from filessytem (defaults to good places) � and handles logging warning if created,
+ *      it to/from filesystem (defaults to good places) � and handles logging warning if created,
  *      or bad, and rewrites for if changes detected (added/renamed etc).
  *      Maybe hook / configure options for these features.
  *

@@ -63,13 +63,21 @@
     <AdditionalOptions>/std:c++latest</AdditionalOptions>
   </PropertyGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\AppConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Main.cpp" />
+    <ClCompile Include="..\..\Sources\MoreConfiguration.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Makefile" />
+    <None Include="..\..\Sources\AppConfiguration.inl" />
+    <None Include="..\..\Sources\MoreConfiguration.inl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Sources\AppConfiguration.h" />
+    <ClInclude Include="..\..\Sources\MoreConfiguration.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

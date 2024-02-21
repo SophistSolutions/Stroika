@@ -20,6 +20,8 @@ VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	:=	\
+	$(ObjDir)AppConfiguration${OBJ_SUFFIX}\
+	$(ObjDir)MoreConfiguration${OBJ_SUFFIX}\
 	$(ObjDir)Main${OBJ_SUFFIX}\
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
