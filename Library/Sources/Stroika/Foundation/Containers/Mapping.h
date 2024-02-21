@@ -23,7 +23,7 @@
  *              Especially HashTable, RedBlackTree
  *
  *      @todo   Not sure where this note goes - but eventually add "Database-Based" implementation of mapping
- *              and/or extenral file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
+ *              and/or external file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
  *              other db module would inherit from mapping).
  *
  *      @todo   Keys() method should probably return Set<key_type> - instead of Iterable<key_type>, but concerned about
@@ -42,12 +42,24 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *  @todo consider moving this elesewhere in containers code (Containers/Common.h) as this maybe useful elsewhere
+     *  @todo consider moving this elsewhere in containers code (Containers/Common.h) as this maybe useful elsewhere
      */
     enum class AddReplaceMode {
         eAddIfMissing,
         eAddReplaces
     };
+
+    /**
+     *  \brief document requires for a Mapping key
+     */
+    template <typename KEY_TYPE>
+    concept Mapping_IKey = copy_constructible<KEY_TYPE>;
+
+    /**
+     *  \brief document requires for a Mapping value
+     */
+    template <typename MAPPED_VALUE_TYPE>
+    concept Mapping_IMappedValue = copy_constructible<MAPPED_VALUE_TYPE> and assignable_from<MAPPED_VALUE_TYPE&, MAPPED_VALUE_TYPE>;
 
     /**
      *      Mapping which allows for the association of two elements: a key and
@@ -57,7 +69,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   Design Note:
      *      \note   We used Iterable<KeyValuePair<Key,T>> instead of Iterable<pair<Key,T>> because it makes for
-     *              more readable usage (foo.fKey versus foo.first, and foo.fValue verus foo.second).
+     *              more readable usage (foo.fKey versus foo.first, and foo.fValue versus foo.second).
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -72,10 +84,10 @@ namespace Stroika::Foundation::Containers {
      *
      *  \em Design Note:
      *      Included <map> and have explicit CTOR for map<> so that Stroika Mapping can be used more interoperably
-     *      with map<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
+     *      with map<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental conversions. But
      *      if you declare an API with Mapping<KEY_TYPE,MAPPED_VALUE_TYPE> arguments, its important STL sources passing in map<> work transparently.
      *
-     *      Similarly for std::initalizer_list.
+     *      Similarly for std::initializer_list.
      *
      *  \note   See <a href="./ReadMe.md">ReadMe.md</a> for common features of all Stroika containers (especially
      *          constructors, iterators, etc)
@@ -85,10 +97,10 @@ namespace Stroika::Foundation::Containers {
      *
      *          Two Mappings are considered equal if they contain the same elements (keys) and each key is associated
      *          with the same value. There is no need for the items to appear in the same order for the two Mappings to
-     *          be equal. There is no need for the backends to be of the same underlying representation either (stlmap
-     *          vers linkedlist).
+     *          be equal. There is no need for the backends to be of the same underlying representation either (stl map
+     *          vers linked list).
      *
-     *          \req lhs and rhs arguments must have the same (or equivilent) EqualsComparers.
+     *          \req lhs and rhs arguments must have the same (or equivalent) EqualsComparers.
      *
      *          @todo - document computational complexity
      *
@@ -97,6 +109,10 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class [[nodiscard]] Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
+        // @todo consider using requirements for these static asserts, but then need to copy the declaration all over the place..
+        static_assert (Mapping_IKey<KEY_TYPE>);
+        static_assert (Mapping_IMappedValue<MAPPED_VALUE_TYPE>);
+
     private:
         using inherited = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
 
