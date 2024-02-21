@@ -61,7 +61,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline VariantValue::operator bool () const
     {
-        return GetType () != Type::eNull;
+        return fVal_ != nullptr;
     }
     template <>
     inline Memory::BLOB VariantValue::As () const
