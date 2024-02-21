@@ -109,7 +109,7 @@ namespace Stroika::Foundation::DataExchange {
         }
         else if constexpr (same_as<RETURNTYPE, map<wstring, VariantValue>>) {
             return this->AsMapping_ ().Map<map<wstring, VariantValue>> ([] (auto v) -> pair<wstring, VariantValue> {
-                return {v.fKey.As<wstring> (), v.fValue};
+                return {v.fKey.template As<wstring> (), v.fValue};
             });
         }
         else if constexpr (same_as<RETURNTYPE, vector<VariantValue>>) {
