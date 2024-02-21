@@ -51,6 +51,8 @@ namespace Stroika::Foundation::Containers {
 
     /**
      *  \brief document requires for a Mapping key
+     * 
+     *  \note we do NOT require equality_comparable<KEY_TYPE>, but if its not, Mapping's must be created with a comparison function.
      */
     template <typename KEY_TYPE>
     concept Mapping_IKey = copy_constructible<KEY_TYPE>;
@@ -59,8 +61,8 @@ namespace Stroika::Foundation::Containers {
      *  \brief document requires for a Mapping value
      * 
      *  \note the assignable_from is needed for
-     *       void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI)
-     *       We COULD remove the element and re-add there if not assignable. But that would appear to be adding a modest amount of complexity (association faces this too and many backends)
+     *      void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI)
+     *      We COULD remove the element and re-add there if not assignable. But that would appear to be adding a modest amount of complexity (association faces this too and many backends)
      *      for little gain (allowing Mapping<A, const B>).
      */
     template <typename MAPPED_VALUE_TYPE>
@@ -112,10 +114,9 @@ namespace Stroika::Foundation::Containers {
      *          ThreeWayComparer support is NOT provided for Mapping, because there is no intrinsic ordering among the elements
      *          of the mapping (keys) - even if there was some way to compare the values.
      */
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <Mapping_IKey KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class [[nodiscard]] Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
         // @todo consider using requirements for these static asserts, but then need to copy the declaration all over the place..
-        static_assert (Mapping_IKey<KEY_TYPE>);
         static_assert (Mapping_IMappedValue<MAPPED_VALUE_TYPE>);
 
     private:
@@ -660,7 +661,7 @@ namespace Stroika::Foundation::Containers {
      *  Protected abstract interface to support concrete implementations of
      *  the Mapping<T> container API.
      */
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <Mapping_IKey KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep {
     private:
         using inherited = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep;
@@ -691,7 +692,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   Not to be confused with GetKeyEqualsComparer () which compares KEY ELEMENTS of Mapping for equality.
      */
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <Mapping_IKey KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename VALUE_EQUALS_COMPARER>
     struct Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer
         : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {

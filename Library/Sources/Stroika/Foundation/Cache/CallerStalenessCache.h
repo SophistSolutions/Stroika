@@ -19,7 +19,7 @@
  *
  *      @todo   Add() overload where caller provides the time data was captured (don't assume now)
  *
- *      @todo   Consider adding way to retreive timestamp for key 'k'. Also consider Iterable<> method (like LRUCache)
+ *      @todo   Consider adding way to retrieve timestamp for key 'k'. Also consider Iterable<> method (like LRUCache)
  *              so we can dump cache (including timestamps)
  *
  */
@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Cache {
      * Shorthand to make code clearer - for caches that support missing key type.
      */
     template <typename KEY>
-    static constexpr bool IsKeyedCache = not is_same_v<KEY, void>;
+    static constexpr bool IsKeyedCache = not same_as<KEY, void>;
 
     /**
      */
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Cache {
      *  This differs from other forms of caches in that:
      *      o   It records the timestamp when a value is last-updated
      *      o   It doesn't EXPIRE the data ever (except by explicit Clear or ClearOlderThan call)
-     *      o   The lookup caller specifies its tollerance for data staleness, and refreshes the data as needed.
+     *      o   The lookup caller specifies its tolerance for data staleness, and refreshes the data as needed.
      *
      *  \note   Principal difference between CallerStalenessCache and TimedCache lies in where you specify the
      *          max-age for an item: with CallerStalenessCache, its specified on each lookup call (ie with the caller), and with
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note   KEY may be 'void' - and if so, the KEY parameter to the various Add/Lookup etc functions - is omitted.
      *
-     *  \note   Why take 'valid-since' argument to lookup functions, and not just 'backThisTime' - in otherwords, why force
+     *  \note   Why take 'valid-since' argument to lookup functions, and not just 'backThisTime' - in other words, why force
      *          the use of 'Ago()'. The reason is that in a complex system (say web services) - where the final requester
      *          of the data specifies the allowed staleness, you want the 'ago' computation based on ITS time (not the time
      *          the lookup happens). This is only approximate too, since it doesn't take into account the latency of the return
@@ -196,7 +196,7 @@ namespace Stroika::Foundation::Cache {
          *  Usually one will use this as (cache fillter overload):
          *      VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
          *
-         *  However, the overload returing an optional is occasionally useful, if you don't want to fill the cache
+         *  However, the overload returning an optional is occasionally useful, if you don't want to fill the cache
          *  but just see if a value is present.
          *
          *  Both the overload with cacheFiller, and defaultValue will update the 'time stored' for the argument key.
@@ -246,6 +246,7 @@ namespace Stroika::Foundation::Cache {
 
     private:
         // @todo see if we can clean this up (https://stackoverflow.com/questions/28432977/generic-way-of-lazily-evaluating-short-circuiting-with-stdconditional-t)
+        // Point of all this mumbo jumbo is - if using void as KEY, trick, we just store an optional single item in caller stalenss cache - dont need whole Map of bogus key to value
         template <bool B, template <typename...> class TrueTemplate, template <typename...> class FalseTemplate>
         struct MyLazyConditional_;
         template <template <typename...> class TrueTemplate, template <typename...> class FalseTemplate>

@@ -13,7 +13,7 @@
  */
 
 namespace Stroika::Foundation::Containers {
-    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <Mapping_IKey KEY_TYPE, typename VALUE_TYPE>
     class Mapping;
 }
 
