@@ -20,7 +20,7 @@
  *
  *  TODO:
  *      @todo   Support more backends
- *              Especially HashTable, RedBlackTree
+ *              Especially HashTable, RedBlackTree (though these two basically implemented via STL but better docs/exposition of we have simple impl ourselves).
  *
  *      @todo   Not sure where this note goes - but eventually add "Database-Based" implementation of mapping
  *              and/or external file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  \brief document requires for a Mapping key
+     *  \brief document requirements for a Mapping key
      * 
      *  \note we do NOT require equality_comparable<KEY_TYPE>, but if its not, Mapping's must be created with a comparison function.
      */
@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers {
     concept Mapping_IKey = copy_constructible<KEY_TYPE>;
 
     /**
-     *  \brief document requires for a Mapping value
+     *  \brief document requirements for a Mapping value
      * 
      *  \note the assignable_from is needed for
      *      void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI)
@@ -114,11 +114,8 @@ namespace Stroika::Foundation::Containers {
      *          ThreeWayComparer support is NOT provided for Mapping, because there is no intrinsic ordering among the elements
      *          of the mapping (keys) - even if there was some way to compare the values.
      */
-    template <Mapping_IKey KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <Mapping_IKey KEY_TYPE, Mapping_IMappedValue MAPPED_VALUE_TYPE>
     class [[nodiscard]] Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
-        // @todo consider using requirements for these static asserts, but then need to copy the declaration all over the place..
-        static_assert (Mapping_IMappedValue<MAPPED_VALUE_TYPE>);
-
     private:
         using inherited = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
 
@@ -163,7 +160,7 @@ namespace Stroika::Foundation::Containers {
          *  This constructor creates a concrete mapping object, either empty, or initialized with any argument
          *  values.
          *
-         *  The underlying data structure (and performance characteristcs) of the Mapping is
+         *  The underlying data structure (and performance characteristics) of the Mapping is
          *  defined by @see Factory::Mapping_Factory<>
          *
          *  \par Example Usage
@@ -239,14 +236,14 @@ namespace Stroika::Foundation::Containers {
          *  \note   Keys () will return a an Iterable producing (iterating) elements in
          *          the same order as the Mapping it is created from.
          *
-         *          It is equivilent to copying the underlying Mapping and 'projecting' the
+         *          It is equivalent to copying the underlying Mapping and 'projecting' the
          *          key fields (so the result will be sorted in a SortedMapping).
          *
          *          This means that Keys() is detached from the original Mapping (should that change)
          *          and its lifetime may extend past the lifetime of the original mapping.
          *
          *  \em Design Note:
-         *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
+         *      The analogous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
          *      (http://msdn.microsoft.com/en-us/library/yt2fy5zk(v=vs.110).aspx) returns a live reference
          *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
          *
@@ -269,14 +266,14 @@ namespace Stroika::Foundation::Containers {
          *  \note   MappedValues () will return a an Iterable producing (iterating) elements in
          *          the same order as the collection it is created from.
          *
-         *          It is equivilent to copying the underlying collection and 'projecting' the
+         *          It is equivalent to copying the underlying collection and 'projecting' the
          *          value fields.
          *
          *          This means that Keys() is detached from the original Mapping (should that change)
          *          and its lifetime may extend past the lifetime of the original mapping.
          *
          *  \em Design Note:
-         *      The analagous method in C#.net - Dictionary<TKey, TValue>.ValueCollection
+         *      The analogous method in C#.net - Dictionary<TKey, TValue>.ValueCollection
          *      (https://msdn.microsoft.com/en-us/library/x8bctb9c%28v=vs.110%29.aspx).aspx) returns a live reference
          *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
          *
@@ -298,13 +295,13 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Note - as since Lookup/1 returns an optional<T> - it can be used very easily to provide
          *  a default value on Lookup (so for case where not present) - as in:
-         *      returm m.Lookup (key).Value (putDefaultValueHere);
+         *      return m.Lookup (key).Value (putDefaultValueHere);
          *
          *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
          *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
          *      \req    Ensure (item == nullptr or returnValue == item->has_value());
          *
-         *  \note   Alias - Lookup (key, mapped_type* value) - is equivilent to .Net TryGetValue ()
+         *  \note   Alias - Lookup (key, mapped_type* value) - is equivalent to .Net TryGetValue ()
          * 
          *  \@todo https://stroika.atlassian.net/browse/STK-928 - add overload 'returning' Iterator<>, so can use with Update method
          */
@@ -380,15 +377,15 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note This behavior when the entry already exists differs from the behavior of std::map::insert (@see http://en.cppreference.com/w/cpp/container/map/insert)
          *        "Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key".
-         *        This behavior is analagous to the new std-c++17 std::map::insert_or_assign () - @see http://en.cppreference.com/w/cpp/container/map/insert_or_assign
+         *        This behavior is analogous to the new std-c++17 std::map::insert_or_assign () - @see http://en.cppreference.com/w/cpp/container/map/insert_or_assign
          *
          *  \note mutates container
          *
-         *  \note - this returns true if a CLEAR change happened. But mappings dont have a VALUE_COMPARER by default. So no way
+         *  \note - this returns true if a CLEAR change happened. But mappings don't have a VALUE_COMPARER by default. So no way
          *          to return if the MAPPING ITSELF changed. @todo - CONSIDER adding optional VALUE_COMPARER to AddIf, so it can return
          *          true if the mapping CHANGES (mapped to value changes). May need a different name (meaning maybe we've picked a bad name here)
          *
-         *  \note Similar to Set<>::AddIf() - but here there is the ambiguity about whether to change what is mapped to (which we do differntly
+         *  \note Similar to Set<>::AddIf() - but here there is the ambiguity about whether to change what is mapped to (which we do differently
          *        between Add and AddIf) and no such issue exists with Set<>::AddIf. But return true if they make a change.
          */
         nonvirtual bool Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
@@ -661,7 +658,7 @@ namespace Stroika::Foundation::Containers {
      *  Protected abstract interface to support concrete implementations of
      *  the Mapping<T> container API.
      */
-    template <Mapping_IKey KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <Mapping_IKey KEY_TYPE, Mapping_IMappedValue MAPPED_VALUE_TYPE>
     class Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep {
     private:
         using inherited = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep;
@@ -692,7 +689,7 @@ namespace Stroika::Foundation::Containers {
      *
      *  \note   Not to be confused with GetKeyEqualsComparer () which compares KEY ELEMENTS of Mapping for equality.
      */
-    template <Mapping_IKey KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    template <Mapping_IKey KEY_TYPE, Mapping_IMappedValue MAPPED_VALUE_TYPE>
     template <typename VALUE_EQUALS_COMPARER>
     struct Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer
         : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
