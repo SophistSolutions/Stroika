@@ -57,6 +57,11 @@ namespace Stroika::Foundation::Containers {
 
     /**
      *  \brief document requires for a Mapping value
+     * 
+     *  \note the assignable_from is needed for
+     *       void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI)
+     *       We COULD remove the element and re-add there if not assignable. But that would appear to be adding a modest amount of complexity (association faces this too and many backends)
+     *      for little gain (allowing Mapping<A, const B>).
      */
     template <typename MAPPED_VALUE_TYPE>
     concept Mapping_IMappedValue = copy_constructible<MAPPED_VALUE_TYPE> and assignable_from<MAPPED_VALUE_TYPE&, MAPPED_VALUE_TYPE>;
