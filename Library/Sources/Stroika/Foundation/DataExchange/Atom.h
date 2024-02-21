@@ -15,7 +15,7 @@
  *  \file
  *
  * TODO:
- *      @todo   Very weak (performance), first draft implementaiton of AtomManager_Default.
+ *      @todo   Very weak (performance), first draft implementation of AtomManager_Default.
  *
  *              Instead, store a linked list of BLOBs - and for each BLOB keep
  *              a map<> of strings in each BLOB.
@@ -31,11 +31,11 @@ namespace Stroika::Foundation::DataExchange {
     using Characters::String;
 
     /**
-     * Default is single global registey. Implement using compact storage - with strings allocated
-     *  in memory blcoks next to one another (not full string objects)
+     * Default is single global registry. Implement using compact storage - with strings allocated
+     *  in memory blocks next to one another (not full string objects)
      *  and then return String_Constant objects that point into it.
      *
-     * like blockallocation - gains in performacne due to not ever having to free anything
+     * like block allocation - gains in performance due to not ever having to free anything
      *
      *  @todo - CLEANUP DOCS
      */
@@ -63,8 +63,8 @@ namespace Stroika::Foundation::DataExchange {
      *  The name 'atom' comes from LISP, and how it represented symbol names.
      *
      *  An Atom is much cheaper to copy/store and compare than a String. However - note that the compare is NOT the same as
-     *  the traditioanl string compare. One Atom is equal to another IFF the underlying Strings would be
-     *  equal. But the < behavior is very arbitrary. The only garuantee is that its consistent for the lifetime
+     *  the traditional string compare. One Atom is equal to another IFF the underlying Strings would be
+     *  equal. But the < behavior is very arbitrary. The only guarantee is that its consistent for the lifetime
      *  of the ATOM_MANAGER.
      *
      *  Note converting a String to an Atom maybe expensive, but if you can store the values as Atoms, future lookups
@@ -75,14 +75,14 @@ namespace Stroika::Foundation::DataExchange {
      *  \em Design Choice:
      *      In some ways, this could be more powerful if the Atom construction took a ATOM_MANAGER as parameter.
      *      Then we could store the pointer, and do wholesale clearing / throwing away of atom names. But to make
-     *      that work would have alot of cost (always passing in extra param to construction), and
+     *      that work would have a lot of cost (always passing in extra param to construction), and
      *      tracking that pointer in each atom instance (would have to use shared_ptr to manage lifetimes or somehow
      *      assure lifetimes of atoms longer than their owning manager.
      *
      *      That might make sense todo, but would have a lot of cost. It COULD be done in the future (this API would then
      *      just be a type specialization).
      *
-     *      But thats not where we start.
+     *      But that's not where we start.
      *
      *  \em Extending Atom type and funky Managers
      *
