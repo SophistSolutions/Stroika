@@ -156,33 +156,33 @@ namespace {
 
             InternetMediaType ct1{L"text/plain;charset=ascii"};
             EXPECT_EQ (ct1.GetParameters (), (Containers::Mapping{Common::KeyValuePair<String, String>{"charset", "ascii"}}));
-            EXPECT_EQ (ct1.GetSuffix () , nullopt);
+            EXPECT_EQ (ct1.GetSuffix (), nullopt);
 
             InternetMediaType ct2{"text/plain; charset = ascii"};
-            EXPECT_EQ (ct1 , ct2);
+            EXPECT_EQ (ct1, ct2);
 
             InternetMediaType ct3{"text/plain; charset = \"ascii\""};
-            EXPECT_EQ (ct1 , ct3);
+            EXPECT_EQ (ct1, ct3);
 
             InternetMediaType ct4{"text/plain; charset = \"ASCII\""}; // case insensitive compare key, but not value
             EXPECT_TRUE (ct1 != ct4);
 
             InternetMediaType ct5{"application/vnd.ms-excel"};
-            EXPECT_EQ (ct5.GetType () , "application");
-            EXPECT_EQ (ct5.GetSubType () , "vnd.ms-excel");
-            EXPECT_EQ (ct5.GetSuffix () , nullopt);
+            EXPECT_EQ (ct5.GetType (), "application");
+            EXPECT_EQ (ct5.GetSubType (), "vnd.ms-excel");
+            EXPECT_EQ (ct5.GetSuffix (), nullopt);
 
             InternetMediaType ct6{"application/mathml+xml"};
-            EXPECT_EQ (ct6.GetType () , "application");
-            EXPECT_EQ (ct6.GetSubType () , "mathml");
-            EXPECT_EQ (ct6.GetSuffix () , "xml");
-            EXPECT_EQ (ct6.As<wstring> () , L"application/mathml+xml");
+            EXPECT_EQ (ct6.GetType (), "application");
+            EXPECT_EQ (ct6.GetSubType (), "mathml");
+            EXPECT_EQ (ct6.GetSuffix (), "xml");
+            EXPECT_EQ (ct6.As<wstring> (), L"application/mathml+xml");
         }
         {
             // Example from https://tools.ietf.org/html/rfc2045#page-10 - comments ignored, and quotes on value
             InternetMediaType ct1{"text/plain; charset=us-ascii (Plain text)"};
             InternetMediaType ct2{"text/plain; charset=\"us-ascii\""};
-            EXPECT_EQ (ct1 , ct2);
+            EXPECT_EQ (ct1, ct2);
             EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (ct1));
         }
         {
@@ -255,6 +255,21 @@ namespace {
             EXPECT_TRUE (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
             EXPECT_TRUE (not origRegistry.GetMediaTypes ().Contains (kHFType_));
             EXPECT_TRUE (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
+        }
+        {
+            // Noticed mistake in InternetMediaTypeRegistry::Get ().IsA () -- as=application/x-ccrddd should not match ISA relationship with application/c-ccr
+            const InternetMediaType kCCR{"application/x-ccr"sv};
+            const InternetMediaType kCCR_LegitAlt{"application/x-ccr+xml"sv};
+            const InternetMediaType kCCR_Typo1{"application/x-ccx"sv};
+            const InternetMediaType kCCR_Typo2{"application/x-ccrPLUSEXTRASTUFFATTHEEND"sv};
+            const InternetMediaType kCCR_WRONG_CASE1{"APPLICATION/x-ccr"sv};
+            const InternetMediaType kCCR_WRONG_CASE2{"APPLICATION/X-CCR"sv};
+            EXPECT_EQ (kCCR, kCCR_WRONG_CASE1);
+            EXPECT_EQ (kCCR, kCCR_WRONG_CASE2);
+            EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsA (kCCR, kCCR));
+            EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsA (kCCR, kCCR_LegitAlt));
+            EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsA (kCCR, kCCR_Typo1));
+            EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsA (kCCR, kCCR_Typo2));
         }
     }
 }

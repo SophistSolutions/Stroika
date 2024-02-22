@@ -298,7 +298,12 @@ namespace Stroika::Foundation::DataExchange {
          *  @todo REDO this - and dont count on above old algorith. Will add new mechanism EITHER based on what I can read from
          *        the MIME config files on each OS (except it appears windows), or from some registration;
          *        see https://stroika.atlassian.net/browse/STK-714
-         *        
+         * 
+         *  As of Stroika v3.0d5 - this just checks the type and subtype atoms for equality (which are already case insensitive) and 
+         *  ignores file suffix and parameters.
+         * 
+         *  However, unclear how to capture semantic things like XML is a kind of text, or CCR is a kind of XML. And certainly nothing like the -1, -2 stuff
+         *  above with HELATHFRAME PHR format.
          */
         nonvirtual bool IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const;
     };

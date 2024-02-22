@@ -818,11 +818,14 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
 
 bool InternetMediaTypeRegistry::IsA (const InternetMediaType& moreGeneralType, const InternetMediaType& moreSpecificType) const
 {
+    DbgTrace (L"mg = %s", Characters::ToString (moreGeneralType).c_str ());
+    DbgTrace (L"moreSpecificType = %s", Characters::ToString (moreSpecificType).c_str ());
+    /**
+     *  Generally simple to compare because AtomType code and parser handle case and breaking off bits like +xml, and ; parameters
+     * 
+     *  Only trick is that no good way to tell more general relationships between types, but doesn't appear well defined (like CCR is a kind of XML).
+     */
     using AtomType = InternetMediaType::AtomType;
-    if (moreSpecificType.GetType<AtomType> () != moreGeneralType.GetType<AtomType> ()) {
-        return false;
-    }
-    // compare just the subtypes, for prefix equals
-    // @todo temporary algorithm - works for old HealtFrame code but add some more general mechanism - configurable and based on /user/share/MIME
-    return moreSpecificType.GetSubType<String> ().StartsWith (moreGeneralType.GetSubType<String> (), Characters::eCaseInsensitive);
+    return moreSpecificType.GetType<AtomType> () == moreGeneralType.GetType<AtomType> () and
+           moreSpecificType.GetSubType<AtomType> () == moreGeneralType.GetSubType<AtomType> ();
 }
