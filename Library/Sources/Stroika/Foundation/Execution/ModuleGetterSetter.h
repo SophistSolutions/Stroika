@@ -25,6 +25,11 @@ namespace Stroika::Foundation ::Execution {
      *      o   automatically intrinsically threadsafe
      *      o   Init underling object on first access, so easy to declare globally (static init) and less worry about running before main
      *      o   IMPL need not worry about thread safety. Just init on CTOR, and implement Get/Set methods.
+     * 
+     *  Why use this instead of std c++ static inline object initialization?
+     *      o   This provides internal syncrhonization for reads/writes (std c++ object initialization only guarantees threadsafe initialization
+     *          across modules)
+     *      o   Lazy construction - so underlying object construction (intended for the case where this is costly, like read/parse files)
      *
      *  \par Example Usage
      *      \code
@@ -83,7 +88,7 @@ namespace Stroika::Foundation ::Execution {
      *              }
      *          }
      *      \endcode
-     *
+     * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      *
      */
@@ -104,6 +109,20 @@ namespace Stroika::Foundation ::Execution {
          *  Set the global value, performing any necessary write-locks automatically.
          */
         nonvirtual void Set (const T& v);
+
+    public:
+        /**
+         *  Experimental API as of 2024-02-22 - if works well - store shared_ptr internally - now SharedByValue - and then can return
+         *  its shared_ptr - safely - always readonly? Anyhow - COULD be done so returned shared_ptr not constructed all the time... But still
+         *  lock safety stuff...
+         * 
+         *  \note this API fully threadsafe - as it returns a shared_ptr to data that is a snapshot as of when called if the wrapped data.
+         *        If some thread does a write - doesn't affect the returned data here.
+         */
+        shared_ptr<const T> operator->() const
+        {
+            return make_shared<T> (Get ());
+        }
 
     public:
         /**
