@@ -31,16 +31,16 @@ using Traversal::Iterable;
 
 #if qHasFeature_GoogleTest
 namespace {
-    void Test1_Atom_ ()
+    GTEST_TEST (Foundation_DataExchange_Other, Test1_Atom_)
     {
         Debug::TraceContextBumper ctx{"{}::Test1_Atom_"};
         {
             Atom<> a = L"d";
-            Atom<> b = L"d";
-            EXPECT_TRUE (a == b);
-            EXPECT_TRUE (a.GetPrintName () == L"d");
-            EXPECT_TRUE (a.As<String> () == L"d");
-            EXPECT_TRUE (a.As<wstring> () == L"d");
+            Atom<> b = "d";
+            EXPECT_EQ (a, b);
+            EXPECT_EQ (a.GetPrintName (), L"d");
+            EXPECT_EQ (a.As<String> (), L"d");
+            EXPECT_EQ (a.As<wstring> (), L"d");
             EXPECT_TRUE (not a.empty ());
         }
         {
@@ -52,13 +52,13 @@ namespace {
             EXPECT_TRUE (a != b);
             EXPECT_TRUE (not a.empty ());
             Atom<> c = a;
-            EXPECT_TRUE (c == a);
+            EXPECT_EQ (c, a);
         }
     }
 }
 
 namespace {
-    void Test2_OptionsFile_ ()
+    GTEST_TEST (Foundation_DataExchange_Other, Test2_OptionsFile_)
     {
         Debug::TraceContextBumper ctx{"{}::Test2_OptionsFile_"};
         struct MyData_ {
@@ -125,7 +125,7 @@ namespace {
 
     ModuleGetterSetter<MyData_, ModuleGetterSetter_Implementation_MyData_> sModuleConfiguration_;
 
-    void Test3_ModuleGetterSetter_ ()
+    GTEST_TEST (Foundation_DataExchange_Other, Test3_ModuleGetterSetter_)
     {
         Debug::TraceContextBumper ctx{"{}::Test3_ModuleGetterSetter_"};
         if (sModuleConfiguration_.Get ().fEnabled) {
@@ -135,8 +135,8 @@ namespace {
     }
 }
 
-namespace Test4_VariantValue_ {
-    void RunTests ()
+namespace {
+    GTEST_TEST (Foundation_DataExchange_Other, Test4_VariantValue_)
     {
         Debug::TraceContextBumper            ctx{"{}::Test4_VariantValue_"};
         Containers::Collection<VariantValue> vc;
@@ -145,131 +145,117 @@ namespace Test4_VariantValue_ {
 }
 
 namespace {
-    namespace Test5_InternetMediaType_ {
-        void RunTests ()
+    GTEST_TEST (Foundation_DataExchange_Other, Test5_InternetMediaType_)
+    {
+        Debug::TraceContextBumper ctx{"{}::Test5_InternetMediaType_"};
         {
-            Debug::TraceContextBumper ctx{"{}::Test5_InternetMediaType_"};
-            {
-                InternetMediaType ct0{"text/plain"};
-                EXPECT_TRUE (ct0.GetType () == "text");
-                EXPECT_TRUE (ct0.GetSubType () == "plain");
-                EXPECT_TRUE (ct0.GetSuffix () == nullopt);
+            InternetMediaType ct0{"text/plain"};
+            EXPECT_EQ (ct0.GetType (), "text");
+            EXPECT_EQ (ct0.GetSubType (), "plain");
+            EXPECT_EQ (ct0.GetSuffix (), nullopt);
 
-                InternetMediaType ct1{L"text/plain;charset=ascii"};
-                EXPECT_TRUE ((ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{"charset", "ascii"}}));
-                EXPECT_TRUE (ct1.GetSuffix () == nullopt);
+            InternetMediaType ct1{L"text/plain;charset=ascii"};
+            EXPECT_EQ (ct1.GetParameters (), (Containers::Mapping{Common::KeyValuePair<String, String>{"charset", "ascii"}}));
+            EXPECT_EQ (ct1.GetSuffix () , nullopt);
 
-                InternetMediaType ct2{"text/plain; charset = ascii"};
-                EXPECT_TRUE (ct1 == ct2);
+            InternetMediaType ct2{"text/plain; charset = ascii"};
+            EXPECT_EQ (ct1 , ct2);
 
-                InternetMediaType ct3{"text/plain; charset = \"ascii\""};
-                EXPECT_TRUE (ct1 == ct3);
+            InternetMediaType ct3{"text/plain; charset = \"ascii\""};
+            EXPECT_EQ (ct1 , ct3);
 
-                InternetMediaType ct4{"text/plain; charset = \"ASCII\""}; // case insensitive compare key, but not value
-                EXPECT_TRUE (ct1 != ct4);
+            InternetMediaType ct4{"text/plain; charset = \"ASCII\""}; // case insensitive compare key, but not value
+            EXPECT_TRUE (ct1 != ct4);
 
-                InternetMediaType ct5{"application/vnd.ms-excel"};
-                EXPECT_TRUE (ct5.GetType () == "application");
-                EXPECT_TRUE (ct5.GetSubType () == "vnd.ms-excel");
-                EXPECT_TRUE (ct5.GetSuffix () == nullopt);
+            InternetMediaType ct5{"application/vnd.ms-excel"};
+            EXPECT_EQ (ct5.GetType () , "application");
+            EXPECT_EQ (ct5.GetSubType () , "vnd.ms-excel");
+            EXPECT_EQ (ct5.GetSuffix () , nullopt);
 
-                InternetMediaType ct6{"application/mathml+xml"};
-                EXPECT_TRUE (ct6.GetType () == "application");
-                EXPECT_TRUE (ct6.GetSubType () == "mathml");
-                EXPECT_TRUE (ct6.GetSuffix () == "xml");
-                EXPECT_TRUE (ct6.As<wstring> () == L"application/mathml+xml");
-            }
-            {
-                // Example from https://tools.ietf.org/html/rfc2045#page-10 - comments ignored, and quotes on value
-                InternetMediaType ct1{"text/plain; charset=us-ascii (Plain text)"};
-                InternetMediaType ct2{"text/plain; charset=\"us-ascii\""};
-                EXPECT_TRUE (ct1 == ct2);
-                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (ct1));
-            }
-            {
-                auto dumpCT = [] ([[maybe_unused]] const String& label, InternetMediaType i) {
-                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
-                    DbgTrace (L"SUFFIX(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
-                    DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.As<wstring> ().c_str (),
-                              Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
-                    DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.As<wstring> ().c_str (),
-                              Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
-                };
-                auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
-                    [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
-                    using namespace Characters;
-                    if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
-                        Stroika::Frameworks::Test::WarnTestIssue (
-                            Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (),
-                                    ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), ToString (possibleFileSuffixes).c_str ())
-                                .c_str ());
-                    }
-                    if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
-                        Stroika::Frameworks::Test::WarnTestIssue (
-                            Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
-                                    ToString (possibleFileSuffixes).c_str (), ToString (i).c_str (),
-                                    ToString (possibleFileSuffixes
-                                                  .Map<Iterable<InternetMediaType>> (
-                                                      [&] (String suffix) { return r.GetAssociatedContentType (suffix); })
-                                                  .As<Set<InternetMediaType>> ())
-                                        .c_str ())
-                                .c_str ());
-                    }
-                };
-                dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
-                checkCT (InternetMediaTypes::kText_PLAIN, {".txt"});
-                dumpCT (L"HTML", InternetMediaTypes::kHTML);
-                checkCT (InternetMediaTypes::kHTML, {".html", ".htm"});
-                dumpCT (L"JSON", InternetMediaTypes::kJSON);
-                checkCT (InternetMediaTypes::kJSON, {".json"});
-                dumpCT (L"PNG", InternetMediaTypes::kPNG);
-                checkCT (InternetMediaTypes::kPNG, {".png"});
-                {
-                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kPNG));
-                    EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kJSON));
-                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kXML));
-                    EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kText_PLAIN));
-                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_PLAIN));
-                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kXML));
-                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kHTML));
-                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kJSON));
-                    EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kPNG));
-                    EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar"}));
-                    EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar+xml"}));
+            InternetMediaType ct6{"application/mathml+xml"};
+            EXPECT_EQ (ct6.GetType () , "application");
+            EXPECT_EQ (ct6.GetSubType () , "mathml");
+            EXPECT_EQ (ct6.GetSuffix () , "xml");
+            EXPECT_EQ (ct6.As<wstring> () , L"application/mathml+xml");
+        }
+        {
+            // Example from https://tools.ietf.org/html/rfc2045#page-10 - comments ignored, and quotes on value
+            InternetMediaType ct1{"text/plain; charset=us-ascii (Plain text)"};
+            InternetMediaType ct2{"text/plain; charset=\"us-ascii\""};
+            EXPECT_EQ (ct1 , ct2);
+            EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (ct1));
+        }
+        {
+            auto dumpCT = [] ([[maybe_unused]] const String& label, InternetMediaType i) {
+                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
+                DbgTrace (L"SUFFIX(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
+                DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
+                DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.As<wstring> ().c_str (),
+                          Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
+            };
+            auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
+                [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
+                using namespace Characters;
+                if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
+                    Stroika::Frameworks::Test::WarnTestIssue (Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (),
+                                                                      ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (),
+                                                                      ToString (possibleFileSuffixes).c_str ())
+                                                                  .c_str ());
                 }
-            }
-            {
-                Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry::Get ().GetMediaTypes()"};
-                // enumerate all content types
-                for (auto ct : InternetMediaTypeRegistry::Get ().GetMediaTypes ()) {
-                    DbgTrace (L"i=%s", Characters::ToString (ct).c_str ());
+                if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
+                    Stroika::Frameworks::Test::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
+                                                                      ToString (possibleFileSuffixes).c_str (), ToString (i).c_str (),
+                                                                      ToString (possibleFileSuffixes
+                                                                                    .Map<Iterable<InternetMediaType>> ([&] (String suffix) {
+                                                                                        return r.GetAssociatedContentType (suffix);
+                                                                                    })
+                                                                                    .As<Set<InternetMediaType>> ())
+                                                                          .c_str ())
+                                                                  .c_str ());
                 }
-            }
+            };
+            dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);
+            checkCT (InternetMediaTypes::kText_PLAIN, {".txt"});
+            dumpCT (L"HTML", InternetMediaTypes::kHTML);
+            checkCT (InternetMediaTypes::kHTML, {".html", ".htm"});
+            dumpCT (L"JSON", InternetMediaTypes::kJSON);
+            checkCT (InternetMediaTypes::kJSON, {".json"});
+            dumpCT (L"PNG", InternetMediaTypes::kPNG);
+            checkCT (InternetMediaTypes::kPNG, {".png"});
             {
-                Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry - updating"};
-                InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
-                InternetMediaTypeRegistry updatedRegistry = origRegistry;
-                const auto                kHFType_        = InternetMediaType{"application/fake-heatlthframe-phr+xml"};
-                EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
-                updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Containers::Set<String>{".HPHR"}, ".HPHR"});
-                InternetMediaTypeRegistry::Set (updatedRegistry);
-                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
-                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
-                EXPECT_TRUE (not origRegistry.GetMediaTypes ().Contains (kHFType_));
-                EXPECT_TRUE (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
+                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kPNG));
+                EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsImageFormat (InternetMediaTypes::kJSON));
+                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kXML));
+                EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaTypes::kText_PLAIN));
+                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kText_PLAIN));
+                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kXML));
+                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kHTML));
+                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kJSON));
+                EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsTextFormat (InternetMediaTypes::kPNG));
+                EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar"}));
+                EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (InternetMediaType{"text/foobar+xml"}));
             }
         }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Caching, all)
-    {
-        Test1_Atom_ ();
-        Test2_OptionsFile_ ();
-        Test3_ModuleGetterSetter_ ();
-        Test4_VariantValue_::RunTests ();
-        Test5_InternetMediaType_::RunTests ();
+        {
+            Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry::Get ().GetMediaTypes()"};
+            // enumerate all content types
+            for (auto ct : InternetMediaTypeRegistry::Get ().GetMediaTypes ()) {
+                DbgTrace (L"i=%s", Characters::ToString (ct).c_str ());
+            }
+        }
+        {
+            Debug::TraceContextBumper ctx1{"InternetMediaTypeRegistry - updating"};
+            InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
+            InternetMediaTypeRegistry updatedRegistry = origRegistry;
+            const auto                kHFType_        = InternetMediaType{"application/fake-heatlthframe-phr+xml"};
+            EXPECT_TRUE (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+            updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Containers::Set<String>{".HPHR"}, ".HPHR"});
+            InternetMediaTypeRegistry::Set (updatedRegistry);
+            EXPECT_TRUE (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
+            EXPECT_TRUE (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
+            EXPECT_TRUE (not origRegistry.GetMediaTypes ().Contains (kHFType_));
+            EXPECT_TRUE (updatedRegistry.GetMediaTypes ().Contains (kHFType_));
+        }
     }
 }
 #endif
