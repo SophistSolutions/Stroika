@@ -233,9 +233,9 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
     }
 
-    DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d", this,
-              fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options));
-    fWaitForReadyConnectionThread_.Start (); // start here instead of autostart so a guaranteed initialized before thead main starts - see https://stroika.atlassian.net/browse/STK-706
+    DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d, and listening on %s", this,
+              fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options), Characters::ToString (bindAddresses).c_str ());
+    fWaitForReadyConnectionThread_.Start (); // start here instead of AutoStart so a guaranteed initialized before thread main starts - see https://stroika.atlassian.net/browse/STK-706
 }
 
 #if qStroika_Foundation_Debug_Trace_DefaultTracingOn
@@ -269,7 +269,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
 void ConnectionManager::WaitForReadyConnectionLoop_ ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::WaitForReadyConnectionLoop_")};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs ("ConnectionManager::WaitForReadyConnectionLoop_")};
 #endif
 
     // run til thread aborted
@@ -290,7 +290,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                 auto handleActivatedConnection = [this, readyConnection] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx{
-                        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop")};
+                        Stroika_Foundation_Debug_OptionalizeTraceArgs ("ConnectionManager::...processConnectionLoop")};
 #endif
 
                     /*
