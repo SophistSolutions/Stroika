@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename IMPL>
-    inline T ModuleGetterSetter<T, IMPL>::Get ()
+    inline T ModuleGetterSetter<T, IMPL>::Get () const
     {
         {
             // most of the time, the value will have already been initialized, so use a readlock

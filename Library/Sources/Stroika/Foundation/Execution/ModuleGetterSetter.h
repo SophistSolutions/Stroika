@@ -102,7 +102,7 @@ namespace Stroika::Foundation ::Execution {
          *          since its inlined, for most cases, much of that case may be optimized away (the most expensive
          *          unavoidable piece being the readlock).
          */
-        nonvirtual T Get ();
+        nonvirtual T Get () const;
 
     public:
         /**
@@ -153,11 +153,13 @@ namespace Stroika::Foundation ::Execution {
         nonvirtual optional<T> Update (const function<optional<T> (const T&)>& updaterFunction);
 
     private:
-        RWSynchronized<optional<IMPL>> fIndirect_;
+        // Declare 'Get' method as const since it doesn't CONCEPTUALLY modify the object, but in fact it does. Works better for c++
+        // standard thread safety rules (const unsyncrhonized) - since this object internally syncrhonized.
+        mutable RWSynchronized<optional<IMPL>> fIndirect_;
 
     private:
         // separate this method out so the callers can be inlined, this more rarely executed, and longer segment of code is not
-        nonvirtual void DoInitOutOfLine_ (typename RWSynchronized<optional<IMPL>>::WritableReference* ref);
+        static void DoInitOutOfLine_ (typename RWSynchronized<optional<IMPL>>::WritableReference* ref);
     };
 
 }
