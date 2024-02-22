@@ -1225,7 +1225,7 @@ void WordProcessorTextIOSinkStream::Flush ()
     // Flush the cached paragraph info
     {
         if constexpr (qDebug) {
-            size_t curInsert = whereToInsert;
+            [[maybe_unused]] size_t curInsert = whereToInsert;
             for (auto i = fSavedParaInfo.begin (); i != fSavedParaInfo.end (); ++i) {
                 curInsert += (*i).second;
             }
