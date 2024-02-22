@@ -121,7 +121,7 @@ namespace Stroika::Foundation ::Execution {
          */
         shared_ptr<const T> operator->() const
         {
-            return make_shared<T> (Get ());
+            return make_shared<const T> (Get ());
         }
 
     public:
