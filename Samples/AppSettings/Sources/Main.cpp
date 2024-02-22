@@ -22,7 +22,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
 
     // Simplest example
-    [[maybe_unused]] uint16_t usePort = gAppConfiguration.Get ().WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default);
+    [[maybe_unused]] uint16_t usePort = gAppConfiguration->WebServerPort.value_or (AppConfigurationType::kWebServerPort_Default);
 
     // Fancier examples
     TestUse1 ();
