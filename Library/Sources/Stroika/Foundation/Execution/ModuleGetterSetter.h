@@ -27,7 +27,7 @@ namespace Stroika::Foundation ::Execution {
      *      o   IMPL need not worry about thread safety. Just init on CTOR, and implement Get/Set methods.
      * 
      *  Why use this instead of std c++ static inline object initialization?
-     *      o   This provides internal syncrhonization for reads/writes (std c++ object initialization only guarantees threadsafe initialization
+     *      o   This provides internal synchronization for reads/writes (std c++ object initialization only guarantees threadsafe initialization
      *          across modules)
      *      o   Lazy construction - so underlying object construction (intended for the case where this is costly, like read/parse files)
      *
@@ -100,7 +100,7 @@ namespace Stroika::Foundation ::Execution {
          *
          *  \note - this returns a copy of T, not a reference, in order to properly manage locking, though
          *          since its inlined, for most cases, much of that case may be optimized away (the most expensive
-         *          unavoidable piece being the readlock).
+         *          unavoidable piece being the read lock).
          */
         nonvirtual T Get () const;
 
@@ -154,7 +154,7 @@ namespace Stroika::Foundation ::Execution {
 
     private:
         // Declare 'Get' method as const since it doesn't CONCEPTUALLY modify the object, but in fact it does. Works better for c++
-        // standard thread safety rules (const unsyncrhonized) - since this object internally syncrhonized.
+        // standard thread safety rules (const unsynchronized) - since this object internally synchronized.
         mutable RWSynchronized<optional<IMPL>> fIndirect_;
 
     private:
