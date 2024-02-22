@@ -13,6 +13,8 @@
 
 /**
  *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ * 
+ *  \todo   add Concept for IMPL type so clear documentation on how to use.
  */
 
 namespace Stroika::Foundation ::Execution {
@@ -90,7 +92,6 @@ namespace Stroika::Foundation ::Execution {
      *      \endcode
      * 
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
-     *
      */
     template <typename T, typename IMPL>
     struct ModuleGetterSetter {
