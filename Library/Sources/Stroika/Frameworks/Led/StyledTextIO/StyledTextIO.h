@@ -54,10 +54,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     class StyledTextIOReader {
     public:
         /*
-        @CLASS:         StyledTextIOReader::SrcStream
         @DESCRIPTION:   <p>A StyledTextIOReader needs a pointer to a function which is a source of raw bytes
             to be interpretted as text which will be inserted into a text buffer. SrcStream is an abstract class
             defining this API.</p>
+
+             \@todo THIS IS OBSOLETE - and should be switched to using Streams::InputStream<byte> --LGP 2024-02-22
+
         */
         class SrcStream {
         public:
@@ -507,8 +509,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     };
 
     /*
-    @CLASS:         StyledTextIOWriter::SinkStream
-    @DESCRIPTION:   <p>Abstract base class for @'StyledTextIOWriter's to dump their text content to.</p>
+       <p>Abstract base class for @'StyledTextIOWriter's to dump their text content to.</p>
+
+       \@todo THIS IS OBSOLETE - and should be switched to using Streams::OutputStream<byte> --LGP 2024-02-22
     */
     class StyledTextIOWriter::SinkStream {
     public:
@@ -688,42 +691,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     }
 
     /*
-    @CLASS:         StyledTextIOSrcStream_FileDescriptor
-    @BASES:         @'StyledTextIOReader::SrcStream'
-    @DESCRIPTION:   <p>If you have a file which contains the untyped contents which will be converted by some
-        reader (@'StyledTextIOReader'), you use this as the @'StyledTextIOReader::SrcStream'. Just initialize one of these
-        with the open file descriptor, and pass this to the appropriate @'StyledTextIOReader'.</p>
-            <p>NB: This class doesn't close the argument file descriptor. It is up the the caller todo that, and only after
-        this SrcStream object has been destroyed. Typically, this follows trivially from a sequential, stack-based allocation
-        strategy, where the data comes from some object declared earlier on the stack.</p>
-    */
-    class StyledTextIOSrcStream_FileDescriptor : public StyledTextIOReader::SrcStream {
-    public:
-        // NB: On the Mac - this FD refers to a mac file access path - not the result of an ::open () call.
-        StyledTextIOSrcStream_FileDescriptor (int fd);
-        virtual ~StyledTextIOSrcStream_FileDescriptor ();
-
-    public:
-        virtual size_t current_offset () const override;
-        virtual void   seek_to (size_t to) override;
-        virtual size_t read (void* buffer, size_t bytes) override;
-
-    public:
-        nonvirtual size_t GetBufferSize () const;
-        nonvirtual void   SetBufferSize (size_t bufSize); // set to zero for unbuffered IO
-    private:
-        nonvirtual void ReadInWindow (size_t startAt); // zero based startAt
-
-    private:
-        int    fFileDescriptor{};
-        size_t fCurSeekPos{};
-        char*  fInputBuffer{}; // buffer is simply a performance hack...
-        size_t fInputBufferSize{};
-        size_t fBufferWindowStart{};
-        size_t fBufferWindowEnd{};
-    };
-
-    /*
         ********* Some StyledTextIOReader::SrcStream subclasses *********
         */
     /*
@@ -753,43 +720,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         size_t fBytesUsed;
         size_t fBytesAllocated;
         char*  fCurPtr;
-    };
-
-    /*
-    @CLASS:         StyledTextIOWriterSinkStream_FileDescriptor
-    @BASES:         @'StyledTextIOWriter::SinkStream'
-    @DESCRIPTION:
-    */
-    class StyledTextIOWriterSinkStream_FileDescriptor : public StyledTextIOWriter::SinkStream {
-    public:
-        // NB: On the Mac - this FD refers to a mac file access path - not the result of an ::open () call.
-        StyledTextIOWriterSinkStream_FileDescriptor (int fd);
-        // NB: flushes, but doesn't close on DTOR
-        ~StyledTextIOWriterSinkStream_FileDescriptor ();
-
-    public:
-        virtual size_t current_offset () const override;
-        virtual void   seek_to (size_t to) override;
-        virtual void   write (const void* buffer, size_t bytes) override;
-
-    public:
-        nonvirtual size_t GetBufferSize () const;
-        nonvirtual void   SetBufferSize (size_t bufSize); // set to zero for unbuffered IO
-
-        // This is done automatically on DTOR, but we cannot throw exceptions out of there, so if you want
-        // to be sure exception is thrown if this operation fails, call this EXPLICITLY.
-    public:
-        nonvirtual void Flush ();
-        nonvirtual void UpdateEOF ();
-
-    private:
-        int    fFileDescriptor;
-        char*  fOutputBuffer; // buffer is simply a performance hack...
-        size_t fOutputBufferSize;
-        size_t fBufferWindowStart;
-        size_t fBufferWindowEnd;
-        size_t fFurthestDiskWriteAt;
-        size_t fCurSeekPos; // zero-based
     };
 
 #if qStroika_Frameworks_Led_SupportGDI
@@ -963,12 +893,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     {
     }
 
-    // class StyledTextIOSrcStream_FileDescriptor
-    inline size_t StyledTextIOSrcStream_FileDescriptor::GetBufferSize () const
-    {
-        return fInputBufferSize;
-    }
-
     // class StyledTextIOWriterSinkStream_Memory
     inline const void* StyledTextIOWriterSinkStream_Memory::PeekAtData () const
     {
@@ -977,12 +901,6 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     inline size_t StyledTextIOWriterSinkStream_Memory::GetLength () const
     {
         return fBytesUsed;
-    }
-
-    // class StyledTextIOWriterSinkStream_FileDescriptor
-    inline size_t StyledTextIOWriterSinkStream_FileDescriptor::GetBufferSize () const
-    {
-        return fOutputBufferSize;
     }
 
 }
