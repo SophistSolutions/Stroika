@@ -517,7 +517,7 @@ namespace Stroika::Frameworks::Led {
     public:
         // Force users to be EXPLICIT about this object-slicing, since many of the fields
         // maybe invalid... Will the compiler REALLY do this check???? We'll see - LGP 970314
-        FontSpecification ();
+        FontSpecification () = default;
 #if qPlatform_Windows
         explicit FontSpecification (const LOGFONT& logFont);
 #endif
@@ -571,19 +571,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual SubOrSuperScript GetStyle_SubOrSuperScript () const;
         nonvirtual void             SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
 
-#if qPlatform_MacOS
-        nonvirtual bool GetStyle_Outline () const;
-        nonvirtual void SetStyle_Outline (bool isOutline);
-
-        nonvirtual bool GetStyle_Shadow () const;
-        nonvirtual void SetStyle_Shadow (bool isShadow);
-
-        nonvirtual bool GetStyle_Condensed () const;
-        nonvirtual void SetStyle_Condensed (bool isCondensed);
-
-        nonvirtual bool GetStyle_Extended () const;
-        nonvirtual void SetStyle_Extended (bool isExtended);
-#elif qPlatform_Windows
+#if qPlatform_Windows
         nonvirtual bool GetStyle_Strikeout () const;
         nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
@@ -627,16 +615,16 @@ namespace Stroika::Frameworks::Led {
 
     private:
 #if qPlatform_Windows
-        LOGFONT fFontInfo; // Could make this MUCH smaller on windows - do for future release!
+        LOGFONT fFontInfo{}; // Could make this MUCH smaller on windows - do for future release!
 #else
-        FontNameSpecifier fFontFamily;
-        bool              fBold : 1;
-        bool              fItalics : 1;
-        bool              fUnderline : 1;
-        short             fFontSize;
+        FontNameSpecifier fFontFamily{false};
+        bool              fBold : 1 {false};
+        bool              fItalics : 1 {false};
+        bool              fUnderline : 1 {false};
+        short             fFontSize{0};
 #endif
-        SubOrSuperScript fSubOrSuperScript;
-        Color            fTextColor;
+        SubOrSuperScript fSubOrSuperScript{SubOrSuperScript::eNoSubOrSuperscript};
+        Color            fTextColor{false};
     };
 
     /*
@@ -653,7 +641,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = FontSpecification;
 
     public:
-        IncrementalFontSpecification ();
+        IncrementalFontSpecification () = default;
 
         // I may end up regretting this, for all the confusion it
         // can cause, but it sure makes a number of things simpler
@@ -707,27 +695,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void             InvalidateStyle_SubOrSuperScript ();
         nonvirtual void             SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
 
-#if qPlatform_MacOS
-        nonvirtual bool GetStyle_Outline () const;
-        nonvirtual bool GetStyle_Outline_Valid () const;
-        nonvirtual void InvalidateStyle_Outline ();
-        nonvirtual void SetStyle_Outline (bool isOutline);
-
-        nonvirtual bool GetStyle_Shadow () const;
-        nonvirtual bool GetStyle_Shadow_Valid () const;
-        nonvirtual void InvalidateStyle_Shadow ();
-        nonvirtual void SetStyle_Shadow (bool isShadow);
-
-        nonvirtual bool GetStyle_Condensed () const;
-        nonvirtual bool GetStyle_Condensed_Valid () const;
-        nonvirtual void InvalidateStyle_Condensed ();
-        nonvirtual void SetStyle_Condensed (bool isCondensed);
-
-        nonvirtual bool GetStyle_Extended () const;
-        nonvirtual bool GetStyle_Extended_Valid () const;
-        nonvirtual void InvalidateStyle_Extended ();
-        nonvirtual void SetStyle_Extended (bool isExtended);
-#elif qPlatform_Windows
+#if qPlatform_Windows
         nonvirtual bool GetStyle_Strikeout () const;
         nonvirtual bool GetStyle_Strikeout_Valid () const;
         nonvirtual void InvalidateStyle_Strikeout ();
@@ -776,23 +744,18 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void MergeIn (const IncrementalFontSpecification& addInTheseAttributes);
 
     private:
-        bool fFontSpecifierValid : 1;
-        bool fStyleValid_Bold : 1;
-        bool fStyleValid_Italic : 1;
-        bool fStyleValid_Underline : 1;
-        bool fStyleValid_SubOrSuperScript : 1;
-#if qPlatform_MacOS
-        bool fStyleValid_Outline : 1;
-        bool fStyleValid_Shadow : 1;
-        bool fStyleValid_Condensed : 1;
-        bool fStyleValid_Extended : 1;
-#elif qPlatform_Windows
-        bool fStyleValid_Strikeout : 1;
-        bool fDidSetOSRepCallFlag : 1;
+        bool fFontSpecifierValid : 1 {false};
+        bool fStyleValid_Bold : 1 {false};
+        bool fStyleValid_Italic : 1 {false};
+        bool fStyleValid_Underline : 1 {false};
+        bool fStyleValid_SubOrSuperScript : 1 {false};
+#if qPlatform_Windows
+        bool fStyleValid_Strikeout : 1 {false};
+        bool fDidSetOSRepCallFlag : 1 {false};
 #endif
-        bool fFontSizeValid : 1;
-        bool fFontSizeIncrementValid : 1;
-        bool fTextColorValid : 1;
+        bool fFontSizeValid : 1 {false};
+        bool fFontSizeIncrementValid : 1 {false};
+        bool fTextColorValid : 1 {false};
     };
 
     IncrementalFontSpecification Intersection (const IncrementalFontSpecification& lhs, const IncrementalFontSpecification& rhs);

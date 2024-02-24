@@ -1519,40 +1519,17 @@ namespace Stroika::Frameworks::Led {
      ****************************** FontSpecification *******************************
      ********************************************************************************
      */
-    inline FontSpecification::FontSpecification ()
-        :
-#if qPlatform_Windows
-        fFontInfo ()
-        ,
-#elif qStroika_FeatureSupported_XWindows
-        fFontFamily ()
-        , fBold (false)
-        , fItalics (false)
-        , fUnderline (false)
-        , fFontSize (0)
-        ,
-#endif
-        fSubOrSuperScript (eNoSubOrSuperscript)
-        , fTextColor (Color::kBlack)
-    {
-#if qPlatform_Windows
-        (void)::memset (&fFontInfo, 0, sizeof (fFontInfo));
-#endif
-    }
     inline FontSpecification::FontSpecification (const IncrementalFontSpecification& from)
-        :
 #if qPlatform_Windows
-        fFontInfo (((const FontSpecification&)from).fFontInfo)
-        ,
+        : fFontInfo (((const FontSpecification&)from).fFontInfo)
 #elif qStroika_FeatureSupported_XWindows
-        fFontFamily (from.fFontFamily)
+       : fFontFamily (from.fFontFamily)
         , fBold (from.fBold)
         , fItalics (from.fItalics)
         , fUnderline (from.fUnderline)
         , fFontSize (from.fFontSize)
-        ,
 #endif
-        fSubOrSuperScript (((const FontSpecification&)from).fSubOrSuperScript)
+       , fSubOrSuperScript (((const FontSpecification&)from).fSubOrSuperScript)
         , fTextColor (((const FontSpecification&)from).fTextColor)
     {
     }
@@ -1892,23 +1869,6 @@ namespace Stroika::Frameworks::Led {
      ************************** IncrementalFontSpecification ************************
      ********************************************************************************
      */
-    inline IncrementalFontSpecification::IncrementalFontSpecification ()
-        : fFontSpecifierValid (false)
-        , fStyleValid_Bold (false)
-        , fStyleValid_Italic (false)
-        , fStyleValid_Underline (false)
-        , fStyleValid_SubOrSuperScript (false)
-        ,
-#if qPlatform_Windows
-        fStyleValid_Strikeout (false)
-        , fDidSetOSRepCallFlag (false)
-        ,
-#endif
-        fFontSizeValid (false)
-        , fFontSizeIncrementValid (false)
-        , fTextColorValid (false)
-    {
-    }
     inline IncrementalFontSpecification::IncrementalFontSpecification (const FontSpecification& fontSpec)
         : FontSpecification{fontSpec}
         , fFontSpecifierValid (true)
