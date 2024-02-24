@@ -18,6 +18,7 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 # because we list multiple targets in PRODUCED_OUTPUT_ARTIFACTS, all of which are built with the same script
 .NOTPARALLEL:
 
+# https://www.sqlite.org/download.html
 VERSION:=3450100
 #VERSION=3450000
 #VERSION=3440200
