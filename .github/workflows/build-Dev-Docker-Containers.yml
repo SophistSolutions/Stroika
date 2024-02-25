@@ -58,7 +58,7 @@ jobs:
       - name: Build Windows Container Images (STEP1-vs2k22)
         # Done as separate step since takes so long, and can see the time for this step more clearly... (could be omitted)
         run: |
-          make --directory DockerBuildContainers --no-print-directory sophistsolutionsinc/stroika-buildvm-windows-vs2k22
+          make --directory DockerBuildContainers --no-print-directory EXTRA_DOCKER_BUILD_ARGS="--storage-opt 'size=50GB'" sophistsolutionsinc/stroika-buildvm-windows-vs2k22
       - name: Build Windows Container Images
         run: |
           make --directory DockerBuildContainers --no-print-directory build-images

@@ -33,13 +33,13 @@ help:
 DOCKER_NETWORK?=nat
 
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-EXTRA_DOCKER_BUILD_ARGS_=
-EXTRA_DOCKER_BUILD_ARGS_ +=	--network "${DOCKER_NETWORK}"
+EXTRA_DOCKER_BUILD_ARGS=
+EXTRA_DOCKER_BUILD_ARGS +=	--network "${DOCKER_NETWORK}"
 
 # to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
 # in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
 # Build with -m 4GB cuz default of 1GB pages alot
-#EXTRA_DOCKER_BUILD_ARGS_= --storage-opts "size 100GB" 
+#EXTRA_DOCKER_BUILD_ARGS= --storage-opts "size 100GB" 
 #
 endif
 build-images:
@@ -60,13 +60,13 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 endif
 
 sophistsolutionsinc/stroika-buildvm-windows-vs2k22:
-	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 -t $@ .
+	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 -t $@ .
 
 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
-	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-Cygwin/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 -t $@ .
+	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-Cygwin/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 -t $@ .
 
 sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
-	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-MSYS/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 -t $@ .
+	docker build ${EXTRA_DOCKER_BUILD_ARGS} -f Windows-MSYS/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 -t $@ .
 
 
 stroika-dev-containers:
