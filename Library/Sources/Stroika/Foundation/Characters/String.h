@@ -389,7 +389,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Create a String object from UNICODE Latin-1 Supplement (https://en.wikipedia.org/wiki/Latin-1_Supplement)
          *
-         *  This is roughly, but not exactly, the same as the ISO-Latin-1 single-byte characterset (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
+         *  This is roughly, but not exactly, the same as the ISO-Latin-1 single-byte character set (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
          *
          *  \note if character code point >= 256, this will throw an exception - not defined for that range (only checked if sizeof (CHAR_T) > 1)
          *
