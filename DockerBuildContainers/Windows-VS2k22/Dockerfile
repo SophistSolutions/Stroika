@@ -51,9 +51,10 @@ ARG VS_17_8_3=https://download.visualstudio.microsoft.com/download/pr/63b5064f-a
 ARG VS_17_8_5=https://download.visualstudio.microsoft.com/download/pr/94f523ce-4fb4-4d35-83ec-e749572654de/62a94be40397078cdb3f4771a252dc0a085bab1f4ed120d10b6b8923de703346/vs_BuildTools.exe
 ARG VS_17_8_6=https://download.visualstudio.microsoft.com/download/pr/5bebe58c-9308-4a5b-9696-b6f84e90a32e/a2e920fe6fc18aba57bb4b1a70865be01888aa21dd8c7f6a9ec7b4aa25c8cfaa/vs_BuildTools.exe
 ARG VS_17_9_0=https://download.visualstudio.microsoft.com/download/pr/9a62f360-5491-46e0-b370-3b90f2545317/1fe0fa017b38845fabadea5201f1d82aaa378a415474da7a469abc04df071326/vs_BuildTools.exe
+ARG VS_17_9_1=https://download.visualstudio.microsoft.com/download/pr/63fee7e3-bede-41ad-97a2-97b8b9f535d1/d4af71832828f344373f7366c2af3461a83569d297dee8b43d30b7da71e9b5ed/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_9_0" \
+RUN Invoke-WebRequest "$env:VS_17_9_1" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 ## ALTERNATE COMPONENT LINES TO CONSIDER
@@ -92,6 +93,13 @@ RUN Invoke-WebRequest "$env:VS_17_9_0" \
 # Probably add soon
     # --add Microsoft.VisualStudio.Component.Vcpkg \
 
+#   WINDOWS SDK:
+#       Windows10SDK.20348 is apparently the final Windows 10 SDK (WAG/been this number for a while).
+#       Windows10SDK.22621 appears to be a windows 11 SDK (not my typo) - still untested using this instead
+#       of the windows 10 SDK... try next release... --LGP 2024-02-24
+ARG USEWINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.20348"
+#ARG USEWINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.22621"
+
 # del stuff to minimize space left in the filesystem layer
 SHELL ["cmd", "/S", "/C"]
 RUN (%TEMP%\vs_buildtools.exe \
@@ -105,7 +113,7 @@ RUN (%TEMP%\vs_buildtools.exe \
     --add Microsoft.VisualStudio.Component.VC.ATL \
     --add Microsoft.VisualStudio.Component.VC.ATLMFC \
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \ 
-    --add Microsoft.VisualStudio.Component.Windows10SDK.20348 \
+    %USEWINSDK% \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
     && (del /f /s /q "%TEMP%\*.*")
