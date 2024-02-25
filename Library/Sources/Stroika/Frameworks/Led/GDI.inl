@@ -1522,14 +1522,14 @@ namespace Stroika::Frameworks::Led {
     inline FontSpecification::FontSpecification (const IncrementalFontSpecification& from)
 #if qPlatform_Windows
         : fFontInfo (((const FontSpecification&)from).fFontInfo)
-#elif qStroika_FeatureSupported_XWindows
-       : fFontFamily (from.fFontFamily)
+#else
+        : fFontFamily (from.fFontFamily)
         , fBold (from.fBold)
         , fItalics (from.fItalics)
         , fUnderline (from.fUnderline)
         , fFontSize (from.fFontSize)
 #endif
-       , fSubOrSuperScript (((const FontSpecification&)from).fSubOrSuperScript)
+        , fSubOrSuperScript (((const FontSpecification&)from).fSubOrSuperScript)
         , fTextColor (((const FontSpecification&)from).fTextColor)
     {
     }

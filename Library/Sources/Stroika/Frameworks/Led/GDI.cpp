@@ -925,28 +925,7 @@ IncrementalFontSpecification Led::Intersection (const IncrementalFontSpecificati
             result.InvalidateStyle_SubOrSuperScript ();
         }
     }
-#if qPlatform_MacOS
-    {
-        if (not lhs.GetStyle_Outline_Valid () or not rhs.GetStyle_Outline_Valid () or lhs.GetStyle_Outline () != rhs.GetStyle_Outline ()) {
-            result.InvalidateStyle_Outline ();
-        }
-    }
-    {
-        if (not lhs.GetStyle_Shadow_Valid () or not rhs.GetStyle_Shadow_Valid () or lhs.GetStyle_Shadow () != rhs.GetStyle_Shadow ()) {
-            result.InvalidateStyle_Shadow ();
-        }
-    }
-    {
-        if (not lhs.GetStyle_Condensed_Valid () or not rhs.GetStyle_Condensed_Valid () or lhs.GetStyle_Condensed () != rhs.GetStyle_Condensed ()) {
-            result.InvalidateStyle_Condensed ();
-        }
-    }
-    {
-        if (not lhs.GetStyle_Extended_Valid () or not rhs.GetStyle_Extended_Valid () or lhs.GetStyle_Extended () != rhs.GetStyle_Extended ()) {
-            result.InvalidateStyle_Extended ();
-        }
-    }
-#elif qPlatform_Windows
+#if qPlatform_Windows
     {
         if (not lhs.GetStyle_Strikeout_Valid () or not rhs.GetStyle_Strikeout_Valid () or lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
             result.InvalidateStyle_Strikeout ();

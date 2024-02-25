@@ -515,12 +515,13 @@ namespace Stroika::Frameworks::Led {
      */
     class FontSpecification {
     public:
-        // Force users to be EXPLICIT about this object-slicing, since many of the fields
-        // maybe invalid... Will the compiler REALLY do this check???? We'll see - LGP 970314
+        FontSpecification (const FontSpecification&) = default;
         FontSpecification () = default;
 #if qPlatform_Windows
         explicit FontSpecification (const LOGFONT& logFont);
 #endif
+        // Force users to be EXPLICIT about this object-slicing, since many of the fields
+        // maybe invalid... Will the compiler REALLY do this check???? We'll see - LGP 970314
         explicit FontSpecification (const IncrementalFontSpecification& from);
 
     public:
@@ -617,14 +618,14 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_Windows
         LOGFONT fFontInfo{}; // Could make this MUCH smaller on windows - do for future release!
 #else
-        FontNameSpecifier fFontFamily{false};
+        FontNameSpecifier fFontFamily{};
         bool              fBold : 1 {false};
         bool              fItalics : 1 {false};
         bool              fUnderline : 1 {false};
         short             fFontSize{0};
 #endif
         SubOrSuperScript fSubOrSuperScript{SubOrSuperScript::eNoSubOrSuperscript};
-        Color            fTextColor{false};
+        Color            fTextColor{Color::kBlack};
     };
 
     /*

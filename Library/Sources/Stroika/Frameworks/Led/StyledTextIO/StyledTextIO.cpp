@@ -21,16 +21,6 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-#ifndef qUseCompiledSetHack
-#if qBitSetTemplateAvailable
-// Preliminary testing on Mac indicates this compiled set hack doesn't help. Test on PC, as well...
-// LGP 970326
-#define qUseCompiledSetHack 1
-#else
-#define qUseCompiledSetHack 0
-#endif
-#endif
-
 /*
  ********************************************************************************
  ************************ StyledTextIOReader::SinkStream ************************

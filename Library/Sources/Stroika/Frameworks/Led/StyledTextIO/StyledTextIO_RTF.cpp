@@ -26,15 +26,7 @@
 
 #include "StyledTextIO_RTF.h"
 
-#ifndef qUseCompiledSetHack
-#if qBitSetTemplateAvailable
-// Preliminary testing on Mac indicates this compiled set hack doesn't help. Test on PC, as well...
-// LGP 970326
-#define qUseCompiledSetHack 1
-#else
-#define qUseCompiledSetHack 0
-#endif
-#endif
+#define qUseCompiledSetHack true
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -3676,23 +3668,6 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
             fontSpec.SetStyle_Italic (turnStyleOn);
         } break;
 
-#if qPlatform_MacOS
-        case RTFIO::eControlAtom_outl: {
-            bool turnStyleOn = true; // no arg means ON
-            if (cw.fHasArg) {
-                turnStyleOn = cw.fValue;
-            }
-            fontSpec.SetStyle_Outline (turnStyleOn);
-        } break;
-
-        case RTFIO::eControlAtom_shad: {
-            bool turnStyleOn = true; // no arg means ON
-            if (cw.fHasArg) {
-                turnStyleOn = cw.fValue;
-            }
-            fontSpec.SetStyle_Shadow (turnStyleOn);
-        } break;
-#endif
         case RTFIO::eControlAtom_sub: {
             fontSpec.SetStyle_SubOrSuperScript (FontSpecification::eSubscript);
         } break;
@@ -3836,7 +3811,6 @@ void StyledTextIOReader_RTF::ScanForwardFor (const char* setOfChars)
         // ignore these exceptions - just return if we reach EOF
         return;
     }
-#undef qUseCompiledSetHack
 }
 
 /*
