@@ -36,9 +36,9 @@ using namespace Stroika::Foundation::Traversal;
 using namespace Stroika::Frameworks;
 
 #if qHasFeature_GoogleTest
-namespace {
 
-    void Test_1_BasicRange_ ()
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test_1_BasicRange_)
     {
         Debug::TraceContextBumper ctx{"{}::Test_1_BasicRange_ ()"};
         {
@@ -134,8 +134,10 @@ namespace {
             EXPECT_TRUE (verifyIntersectsIsCommutative (Range<int>{5, 10, eClosed, eClosed}, Range<int>{5, 5, eClosed, eClosed}));
         }
     }
+}
 
-    void Test_2_BasicDiscreteRangeIteration_ ()
+namespace {
+    GTEST_TEST (Foundation_Traversal, Test_2_BasicDiscreteRangeIteration_)
     {
         Debug::TraceContextBumper ctx{"{}::Test_2_BasicDiscreteRangeIteration_"};
         {
@@ -178,7 +180,7 @@ namespace {
 }
 
 namespace {
-    void Test_3_SimpleDiscreteRangeWithEnumsTest_ ()
+    GTEST_TEST (Foundation_Traversal, Test_3_SimpleDiscreteRangeWithEnumsTest_)
     {
         Debug::TraceContextBumper ctx{"{}::Test_3_SimpleDiscreteRangeWithEnumsTest_"};
         enum class Color {
@@ -256,7 +258,7 @@ namespace {
 }
 
 namespace {
-    void Test4_FunctionalApplicationContext_MapTest_ ()
+    GTEST_TEST (Foundation_Traversal, Test4_FunctionalApplicationContext_MapTest_)
     {
         Debug::TraceContextBumper ctx{"{}::Test4_FunctionalApplicationContext_MapTest_"};
         {
@@ -275,7 +277,7 @@ namespace {
 }
 
 namespace {
-    void Test5_ReduceTest_ ()
+    GTEST_TEST (Foundation_Traversal, Test5_ReduceTest_)
     {
         Debug::TraceContextBumper ctx{"{}::Test5_ReduceTest_"};
         {
@@ -290,7 +292,7 @@ namespace {
 }
 
 namespace {
-    void Test6_FunctionApplicationContext_ ()
+    GTEST_TEST (Foundation_Traversal, Test6_FunctionApplicationContext_)
     {
         Debug::TraceContextBumper ctx{"{}::Test6_FunctionApplicationContext_"};
         using Containers::Sequence;
@@ -380,7 +382,7 @@ namespace {
 }
 
 namespace {
-    void Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ()
+    GTEST_TEST (Foundation_Traversal, Test7_FunctionApplicationContextWithDiscreteRangeEtc_)
     {
         Debug::TraceContextBumper ctx{"{}::Test7_FunctionApplicationContextWithDiscreteRangeEtc_"};
         using Containers::Sequence;
@@ -401,7 +403,7 @@ namespace {
 }
 
 namespace {
-    void Test8_DiscreteRangeTestFromDocs_ ()
+    GTEST_TEST (Foundation_Traversal, Test8_DiscreteRangeTestFromDocs_)
     {
         Debug::TraceContextBumper ctx{"{}::Test8_DiscreteRangeTestFromDocs_"};
         // From Docs in DiscreteRange<> class
@@ -414,7 +416,7 @@ namespace {
 }
 
 namespace {
-    void Test9_Generators_ ()
+    GTEST_TEST (Foundation_Traversal, Test9_Generators_)
     {
         Debug::TraceContextBumper ctx{"{}::Test9_Generators_"};
         {
@@ -440,7 +442,7 @@ namespace {
 }
 
 namespace {
-    void Test10_MakeIterableFromIterator_ ()
+    GTEST_TEST (Foundation_Traversal, Test10_MakeIterableFromIterator_)
     {
         static_assert (ranges::range<Iterable<int>>);
         Debug::TraceContextBumper ctx{"{}::Test10_MakeIterableFromIterator_"};
@@ -458,7 +460,7 @@ namespace {
 }
 
 namespace {
-    void Test11_GetDistanceSpanned_ ()
+    GTEST_TEST (Foundation_Traversal, Test11_GetDistanceSpanned_)
     {
         Debug::TraceContextBumper ctx{"{}::Test11_GetDistanceSpanned_"};
         using IntRange = Range<unsigned int>;
@@ -468,7 +470,7 @@ namespace {
 }
 
 namespace {
-    void Test12_RangeConstExpr_ ()
+    GTEST_TEST (Foundation_Traversal, Test12_RangeConstExpr_)
     {
         Debug::TraceContextBumper ctx{"{}::Test12_RangeConstExpr_"};
         using IntRange = Range<unsigned int>;
@@ -483,7 +485,7 @@ namespace {
 }
 
 namespace {
-    void Test13_DisjointRange_ ()
+    GTEST_TEST (Foundation_Traversal, Test13_DisjointRange_)
     {
         Debug::TraceContextBumper ctx{"{}::Test13_DisjointRange_"};
         {
@@ -747,7 +749,7 @@ namespace {
 }
 
 namespace {
-    void Test14_ToString_ ()
+    GTEST_TEST (Foundation_Traversal, Test14_ToString_)
     {
         Debug::TraceContextBumper ctx{"{}::Test14_ToString_"};
         EXPECT_TRUE ((Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4]"));
@@ -769,7 +771,7 @@ namespace {
 }
 
 namespace {
-    void Test15_Partition_ ()
+    GTEST_TEST (Foundation_Traversal, Test15_Partition_)
     {
         Debug::TraceContextBumper ctx{"{}::Test15_Partition_"};
         {
@@ -792,7 +794,7 @@ namespace {
 }
 
 namespace {
-    void Test16_LinqLikeFunctions_ ()
+    GTEST_TEST (Foundation_Traversal, Test16_LinqLikeFunctions_)
     {
         Debug::TraceContextBumper ctx{"{}::Test16_LinqLikeFunctions_"};
         {
@@ -911,7 +913,7 @@ namespace {
 }
 
 namespace {
-    void Test17_DurationRange_ ()
+    GTEST_TEST (Foundation_Traversal, Test17_DurationRange_)
     {
         Debug::TraceContextBumper ctx{"{}::Test17_DurationRange_"};
         using Time::Duration;
@@ -933,7 +935,7 @@ namespace {
 }
 
 namespace {
-    void Test18_IterableConstructors_ ()
+    GTEST_TEST (Foundation_Traversal, Test18_IterableConstructors_)
     {
         Debug::TraceContextBumper ctx{"{}::Test18_IterableConstructors_"};
 
@@ -950,7 +952,7 @@ namespace {
 }
 
 namespace {
-    void Test19_CreateGeneratorBug_ ()
+    GTEST_TEST (Foundation_Traversal, Test19_CreateGeneratorBug_)
     {
         Debug::TraceContextBumper ctx{"{}::Test19_CreateGeneratorBug_"};
         auto                      t1 = [] () {
@@ -1041,13 +1043,16 @@ namespace {
         {
             using IO::Network::InternetAddress;
             Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
+#if !qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
             EXPECT_EQ (c.Join (), "localhost, INADDR_ANY");
             EXPECT_EQ (c.Join (L"; "), "localhost; INADDR_ANY");
+#endif
         }
         {
             using namespace Characters;
             const Iterable<String> kT1_{"a", "b"};
             const Iterable<String> kT2_{"a", "b", "c"};
+#if !qCompilerAndStdLib_arm_ubsan_callDirectFunInsteadOfThruLamdba_Buggy
             EXPECT_EQ (kT1_.Join (Characters::UnoverloadedToString<String>), "'a', 'b'");
             EXPECT_EQ (kT1_.Join (Iterable<String>::kDefaultToStringConverter<String>), kT1_.Join ());
             EXPECT_EQ (kT1_.Join (Common::Identity{}, [] (auto l, auto r, bool) { return l + r; }), "ab");
@@ -1055,6 +1060,7 @@ namespace {
             EXPECT_EQ (kT1_.Join (" "), "a b");
             EXPECT_EQ (kT1_.Join (", ", " and "), "a and b");
             EXPECT_EQ (kT2_.Join (", ", " and "), "a, b and c");
+#endif
             EXPECT_EQ (kT2_.Join ([] (auto i) { return i.ToUpperCase (); }), "A, B, C");
             EXPECT_EQ (kT2_.Join ([] (auto i) { return i.ToUpperCase (); }, "; "sv, " and "sv), "A; B and C");
         }
@@ -1062,7 +1068,7 @@ namespace {
 }
 
 namespace {
-    void Test21_Repeat_ ()
+    GTEST_TEST (Foundation_Traversal, Test21_Repeat_)
     {
         Debug::TraceContextBumper ctx{"{}::Test21_Repeat_"};
         {
@@ -1072,15 +1078,15 @@ namespace {
         {
             using IO::Network::InternetAddress;
             Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
-            EXPECT_TRUE (c.Repeat (0).size () == 0);
+            EXPECT_EQ (c.Repeat (0).size (), 0);
             EXPECT_TRUE (c.Repeat (1).SequentialEquals (c));
-            EXPECT_TRUE (c.Repeat (10).size () == 20);
+            EXPECT_EQ (c.Repeat (10).size (), 20);
         }
     }
 }
 
 namespace {
-    void Test22_Top_ ()
+    GTEST_TEST (Foundation_Traversal, Test22_Top_)
     {
         Debug::TraceContextBumper ctx{"{}::Test22_Top_"};
         {
@@ -1094,7 +1100,7 @@ namespace {
 }
 
 namespace {
-    void Test23_Iterable_Map_ ()
+    GTEST_TEST (Foundation_Traversal, Test23_Iterable_Map_)
     {
         Debug::TraceContextBumper ctx{"{}::Test23_Iterable_Map_"};
         {
@@ -1109,35 +1115,6 @@ namespace {
             auto r5 = t.Map ([] (int i) -> optional<int> { return i == 1 ? optional<int>{} : i; });
             EXPECT_TRUE (r5.SequentialEquals ({2, 3}));
         }
-    }
-}
-
-namespace {
-    GTEST_TEST (Foundation_Traversal, all)
-    {
-        Debug::TraceContextBumper ctx{"{}::DoRegressionTests_"};
-        Test_1_BasicRange_ ();
-        Test_2_BasicDiscreteRangeIteration_ ();
-        Test_3_SimpleDiscreteRangeWithEnumsTest_ ();
-        Test4_FunctionalApplicationContext_MapTest_ ();
-        Test5_ReduceTest_ ();
-        Test6_FunctionApplicationContext_ ();
-        Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ();
-        Test8_DiscreteRangeTestFromDocs_ ();
-        Test9_Generators_ ();
-        Test10_MakeIterableFromIterator_ ();
-        Test11_GetDistanceSpanned_ ();
-        Test12_RangeConstExpr_ ();
-        Test13_DisjointRange_ ();
-        Test14_ToString_ ();
-        Test15_Partition_ ();
-        Test16_LinqLikeFunctions_ ();
-        Test17_DurationRange_ ();
-        Test18_IterableConstructors_ ();
-        Test19_CreateGeneratorBug_ ();
-        Test21_Repeat_ ();
-        Test22_Top_ ();
-        Test23_Iterable_Map_ ();
     }
 }
 #endif
