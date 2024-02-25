@@ -516,7 +516,7 @@ namespace Stroika::Frameworks::Led {
     class FontSpecification {
     public:
         FontSpecification (const FontSpecification&) = default;
-        FontSpecification () = default;
+        FontSpecification ()                         = default;
 #if qPlatform_Windows
         explicit FontSpecification (const LOGFONT& logFont);
 #endif
