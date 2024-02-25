@@ -103,15 +103,6 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 endif
 
 
-pull-base-images:
-ifeq (${DETECTED_HOST_OS},Linux)
-	docker pull ubuntu:20.04
-	docker pull ubuntu:22.04
-	docker pull ubuntu:23.10
-endif
-ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	docker pull mcr.microsoft.com/windows/servercore:ltsc2022
-endif
 
 
 export DOCKER_PUSH_LINE_=\
