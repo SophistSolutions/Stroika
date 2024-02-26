@@ -25,7 +25,7 @@ help:
 #		replace
 #			make build-images
 #		with
-#			DOCKER_NETWORK="Default Switch" make build-iamges
+#			DOCKER_NETWORK="Default Switch" make build-images
 #
 #	Cannot find any way to change the default network for docker build, but it appears you can override
 #	it with --network XXX and that that XXX defaults to nat (not documented I can find, but empirically).
