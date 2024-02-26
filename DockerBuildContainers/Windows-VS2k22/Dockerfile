@@ -99,6 +99,7 @@ RUN Invoke-WebRequest "$env:VS_17_9_1" \
 #       of the windows 10 SDK... try next release... --LGP 2024-02-24
 ARG USEWINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.20348"
 #ARG USEWINSDK="--add Microsoft.VisualStudio.Component.Windows10SDK.22621"
+ARG REMOVEWINSDK="--remove Microsoft.VisualStudio.Component.Windows10SDK.10240 --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 --remove Microsoft.VisualStudio.Component.Windows10SDK.14393"
 
 # del stuff to minimize space left in the filesystem layer
 SHELL ["cmd", "/S", "/C"]
@@ -114,6 +115,7 @@ RUN (%TEMP%\vs_buildtools.exe \
     --add Microsoft.VisualStudio.Component.VC.ATLMFC \
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \ 
     %USEWINSDK% \
+    %REMOVEWINSDK% \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
     && (del /f /s /q "%TEMP%\*.*")
